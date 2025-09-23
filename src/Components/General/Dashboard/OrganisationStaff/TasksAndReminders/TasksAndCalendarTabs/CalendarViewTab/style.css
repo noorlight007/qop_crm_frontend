@@ -1,0 +1,40 @@
+.big-calendar {
+  min-width: 100%;
+  min-height: 600px;
+  font-size: 1.25rem; /* Increase font size */
+  border: none !important;
+  border-radius: 16px !important;
+  background: #fff !important;
+  padding: 8px 8px 0 8px !important;
+}
+
+.big-calendar .react-calendar__tile {
+  min-height: 80px;
+  border: 1px solid #e5e7eb !important; /* Light border for each date */
+  box-shadow: none !important;
+  border-radius: 0 !important; /* Square corners for grid look */
+  background: #fff !important;
+  transition: background 0.2s;
+}
+
+/* Optional: Add a subtle hover effect */
+.big-calendar .react-calendar__tile:hover {
+  background: #f5f7fa !important;
+}
+
+/* Optional: Keep active/selected day rounded and colored */
+.big-calendar .react-calendar__tile--active {
+  background: #f0f6ff !important;
+  color: #3dbb5d !important;
+  border: 1.5px solid #3dbb5d !important;
+}
+
+.big-calendar .react-calendar__tile--now {
+  background: transparent !important;
+  color: inherit !important;
+  border: 1px solid #ea9400 !important; /* Optional: border for today */
+}
+
+.big-calendar .react-calendar__month-view__days__day {
+  font-size: 1rem;
+}

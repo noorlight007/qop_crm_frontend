@@ -1,0 +1,43 @@
+export const cartHeaderData = [
+  {
+    image: "dashboard-2/2.png",
+    title: "Microwave",
+    price: 500,
+    value: 1,
+  },
+];
+
+export const notificationData = [
+  {
+    date: "30-04-2024",
+    time: "Today",
+    dotColor: "primary",
+    fontColor: "primary",
+    name: "Alice Goodwin",
+    message: "Fashion should be fun. It shouldn't be labelled intellectual.",
+  },
+  {
+    date: "28-06-2024",
+    time: "1 hour ago",
+    dotColor: "secondary",
+    fontColor: "secondary",
+    name: "Herry Venter",
+    message: "I am convinced that there can be luxury in simplicity.",
+  },
+  {
+    date: "04-08-2024",
+    time: "Today",
+    dotColor: "primary",
+    fontColor: "primary",
+    name: "Loain Deo",
+    message: "I feel that things happen for open new opportunities.",
+  },
+  {
+    date: "12-11-2024",
+    time: "Yesterday",
+    dotColor: "secondary",
+    fontColor: "secondary",
+    name: "Fenter Jessy",
+    message: "Sometimes the simplest things are the most profound.",
+  },
+];

@@ -1,0 +1,18 @@
+.custom_input_field {
+  min-height: 38px;
+  cursor: pointer;
+}
+.dropdown_style {
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.dropdown_close span:hover {
+  cursor: pointer;
+  color: red;
+}
+
+.dropdown_item:hover {
+  background-color: #308e8899;
+  cursor: pointer;
+}

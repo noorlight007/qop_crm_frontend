@@ -1,0 +1,1293 @@
+import { useAddEmploymentDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import {
+  AddEmploymentDetailsModalProps,
+  EmploymentDetailsProps,
+} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import {
+  Button,
+  Col,
+  Form,
+  FormGroup,
+  FormText,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  Row,
+} from "reactstrap";
+
+const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
+  isOpen,
+  toggle,
+  employmentData,
+}) => {
+  const params = useParams();
+  const { casealias } = params;
+
+  const [addEmploymentDetails, { isLoading }] =
+    useAddEmploymentDetailsMutation();
+
+  const [formValues, setFormValues] = useState<EmploymentDetailsProps | null>(
+    null
+  );
+
+  const handleInputChange = (
+    name: string,
+    value: string | number | boolean | string[] | null
+  ) => {
+    if (name === "employment_commenced" || name === "employment_ended") {
+      setFormValues((prevValues) => ({
+        ...prevValues!,
+        [name]: value === "" ? null : value,
+      }));
+    } else {
+      setFormValues((prevValues) => ({
+        ...prevValues!,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await addEmploymentDetails({
+      case_alias: casealias,
+      employer_id: employmentData?.user?.id,
+      employmentDetails: formValues,
+    });
+    toggle(); // Close the modal
+    if (res.data) {
+      toast.success("Employment details added successfully!");
+    } else if (res.error) {
+      const errorMessage =
+        (res.error as any)?.data?.detail || "Failed to add employment details.";
+      toast.error(errorMessage);
+    } else {
+      toast.error("Failed to update employment details.");
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} toggle={toggle} centered size="xl">
+      {/* Modal Header */}
+      <ModalHeader toggle={toggle}>
+        <h2 className="text-primary">Add Employment Details</h2>
+      </ModalHeader>
+
+      {/* Modal Body */}
+      <ModalBody className="px-4">
+        <Form onSubmit={handleSubmit}>
+          <Row className="d-flex justify-content-center align-items-center pt-0 mt-0">
+            <Col md={6}>
+              <FormGroup>
+                <Label for="employmentStatus" className="fs-5">
+                  Employment Status*
+                </Label>
+                <Input
+                  type="select"
+                  id="employmentStatus"
+                  className="border-primary"
+                  value={formValues?.employment_status || ""}
+                  onChange={(e) =>
+                    handleInputChange("employment_status", e.target.value)
+                  }
+                  required
+                >
+                  <option value="">Select...</option>
+                  <option value="EMPLOYED">Employed</option>
+                  <option value="SELF_EMPLOYED">Self Employed</option>
+                  <option value="RETIRED">Retired</option>
+                  <option value="OTHER">Other</option>
+                  <option value="UNEMPLOYED">Unemployed</option>
+                  <option value="HOUSEPERSON">Houseperson</option>
+                  <option value="CONTRACTOR">Contractor</option>
+                </Input>
+              </FormGroup>
+            </Col>
+          </Row>
+          <hr className="border-secondary" />
+          <Row>
+            {formValues?.employment_status === "EMPLOYED" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="employmentType">Employment Type</Label>
+                  <Input
+                    type="select"
+                    id="employmentType"
+                    value={formValues?.employment_type || ""}
+                    onChange={(e) =>
+                      handleInputChange("employment_type", e.target.value)
+                    }
+                  >
+                    <option value="">Select...</option>
+                    <option value="PERMANENT">Permanent</option>
+                    <option value="CONTRACT">Contract</option>
+                    <option value="TEMPORARY">Temporary</option>
+                  </Input>
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "SELF_EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="occupation">Occupation*</Label>
+                  <Input
+                    type="text"
+                    id="occupation"
+                    value={formValues?.occupation || ""}
+                    onChange={(e) =>
+                      handleInputChange("occupation", e.target.value)
+                    }
+                    required
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "SELF_EMPLOYED") && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="industry">Industry</Label>
+                  <Input
+                    type="text"
+                    id="industry"
+                    value={formValues?.industry || ""}
+                    onChange={(e) =>
+                      handleInputChange("industry", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="employerName">Employer Name*</Label>
+                  <Input
+                    type="text"
+                    id="employerName"
+                    value={formValues?.employer_name || ""}
+                    onChange={(e) =>
+                      handleInputChange("employer_name", e.target.value)
+                    }
+                    required
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="employerTelephone">Employer's Telephone</Label>
+                  <Input
+                    type="text"
+                    id="employerTelephone"
+                    value={formValues?.employer_telephone || ""}
+                    onChange={(e) =>
+                      handleInputChange("employer_telephone", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "EMPLOYED" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="employers_name_for_reference">
+                    Employer's Name for Reference
+                  </Label>
+                  <Input
+                    type="text"
+                    id="employers_name_for_reference"
+                    value={formValues?.employers_name_for_reference || ""}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "employers_name_for_reference",
+                        e.target.value
+                      )
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            {formValues?.employment_status === "EMPLOYED" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="employerEmail">
+                    Employer's Email for Reference
+                  </Label>
+                  <Input
+                    type="email"
+                    id="employerEmail"
+                    value={formValues?.employer_email_for_reference || ""}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "employer_email_for_reference",
+                        e.target.value
+                      )
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerPostcode">Employer's Postcode</Label>
+                    <Input
+                      type="text"
+                      id="employerPostcode"
+                      value={formValues?.employer_postcode || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_postcode", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerHouseNumber">
+                      Employer's House Name or Number
+                    </Label>
+                    <Input
+                      type="text"
+                      id="employerHouseNumber"
+                      value={formValues?.employer_house_name_or_number || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "employer_house_name_or_number",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerAddressLine1">
+                      Employer's Address Line 1
+                    </Label>
+                    <Input
+                      type="text"
+                      id="employerAddressLine1"
+                      value={formValues?.employer_address_line_1 || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "employer_address_line_1",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerAddressLine2">
+                      Employer's Address Line 2
+                    </Label>
+                    <Input
+                      type="text"
+                      id="employerAddressLine2"
+                      value={formValues?.employer_address_line_2 || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "employer_address_line_2",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="employerCity">Employer's City</Label>
+                    <Input
+                      type="text"
+                      id="employerCity"
+                      value={formValues?.employer_city || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_city", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="employerCounty">Employer's County</Label>
+                    <Input
+                      type="text"
+                      id="employerCounty"
+                      value={formValues?.employer_county || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_county", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="employerCountry">Employer's Country</Label>
+                    <Input
+                      type="text"
+                      id="employerCountry"
+                      value={formValues?.employer_country || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_country", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "EMPLOYED" && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employmentCommenced">
+                      Employment Commenced*
+                    </Label>
+                    <Input
+                      type="date"
+                      id="employmentCommenced"
+                      value={formValues?.employment_commenced || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "employment_commenced",
+                          e.target.value
+                        )
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employmentEnded">Employment Ended</Label>
+                    <Input
+                      type="date"
+                      id="employmentEnded"
+                      value={formValues?.employment_ended || ""}
+                      onChange={(e) =>
+                        handleInputChange("employment_ended", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          {formValues?.employment_status === "EMPLOYED" && (
+            <Row>
+              <p>Please enter previous employment details where applicable.</p>
+            </Row>
+          )}
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "RETIRED") && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="grossMonthlyIncome">
+                    Gross Monthly Income(£)*
+                  </Label>
+                  <Input
+                    type="number"
+                    id="grossMonthlyIncome"
+                    placeholder="0"
+                    value={formValues?.gross_monthly_income || ""}
+                    onChange={(e) =>
+                      handleInputChange("gross_monthly_income", e.target.value)
+                    }
+                    required
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            {formValues?.employment_status === "EMPLOYED" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="netMonthlyIncome">Net Monthly Income(£)</Label>
+                  <Input
+                    type="number"
+                    id="netMonthlyIncome"
+                    placeholder="0"
+                    value={formValues?.net_monthly_income || ""}
+                    onChange={(e) =>
+                      handleInputChange("net_monthly_income", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            {formValues?.employment_status === "RETIRED" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="income_source">Income Source</Label>
+                  <Input
+                    type="text"
+                    id="income_source"
+                    value={formValues?.income_source || ""}
+                    onChange={(e) =>
+                      handleInputChange("income_source", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "EMPLOYED" && (
+              <Col md={6}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      name="probationaryPeriod"
+                      checked={formValues?.is_probationary_period || false}
+                      onChange={(e) =>
+                        setFormValues((prevValues) => ({
+                          ...prevValues!,
+                          is_probationary_period: e.target.checked,
+                        }))
+                      }
+                    />
+                    Are you on a probationary period?
+                  </Label>
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "SELF_EMPLOYED" ||
+              formValues?.employment_status === "RETIRED" ||
+              formValues?.employment_status === "OTHER" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <>
+                <Col md={6}>
+                  <FormGroup check>
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        name="foreignCurrency"
+                        checked={
+                          formValues?.is_income_in_foreign_currency || false
+                        }
+                        onChange={(e) =>
+                          setFormValues((prevValues) => ({
+                            ...prevValues!,
+                            is_income_in_foreign_currency: e.target.checked,
+                          }))
+                        }
+                      />
+                      Is any income paid in a foreign currency?
+                    </Label>
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  {formValues?.is_income_in_foreign_currency && (
+                    <FormGroup>
+                      <Label for="further_details">Further Details*</Label>
+                      <Input
+                        type="textarea"
+                        id="further_details"
+                        value={formValues?.further_details || ""}
+                        onChange={(e) =>
+                          handleInputChange("further_details", e.target.value)
+                        }
+                        required
+                      />
+                    </FormGroup>
+                  )}
+                </Col>
+              </>
+            )}
+          </Row>
+          {formValues?.employment_status === "EMPLOYED" && (
+            <>
+              <Row className="d-flex justify-content-between">
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="bonus">Bonus(£)*</Label>
+                    <Input
+                      type="number"
+                      id="bonus"
+                      placeholder="0"
+                      value={formValues?.bonus || ""}
+                      onChange={(e) =>
+                        handleInputChange("bonus", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup
+                    check
+                    className="d-flex justify-content-center align-content-center"
+                  >
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        name="is_bonus_guaranteed"
+                        checked={formValues?.is_bonus_guaranteed || false}
+                        onChange={(e) =>
+                          setFormValues((prevValues) => ({
+                            ...prevValues!,
+                            is_bonus_guaranteed: e.target.checked,
+                          }))
+                        }
+                      />
+                      Bonus Guaranteed?
+                    </Label>
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="bonusFrequency">Bonus Frequency</Label>
+                    <Input
+                      type="select"
+                      id="bonusFrequency"
+                      value={formValues?.bonus_frequency || ""}
+                      onChange={(e) =>
+                        handleInputChange("bonus_frequency", e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="BI_WEEKLY">Bi Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="BI_MONTHLY">Bi Monthly</option>
+                      <option value="QUARTERLY">Quarterly</option>
+                      <option value="BI_ANNUALLY">Bi Annually</option>
+                      <option value="ANNUALLY">Annually</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row className="d-flex justify-content-between">
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="overtime">Overtime(£)*</Label>
+                    <Input
+                      type="number"
+                      id="overtime"
+                      placeholder="0"
+                      value={formValues?.overtime || ""}
+                      onChange={(e) =>
+                        handleInputChange("overtime", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup
+                    check
+                    className="d-flex justify-content-center align-content-center"
+                  >
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        name="is_overtime_guaranteed"
+                        checked={formValues?.is_overtime_guaranteed || false}
+                        onChange={(e) =>
+                          setFormValues((prevValues) => ({
+                            ...prevValues!,
+                            is_overtime_guaranteed: e.target.checked,
+                          }))
+                        }
+                      />
+                      Overtime Guaranteed?
+                    </Label>
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="overtimeFrequency">Overtime Frequency</Label>
+                    <Input
+                      type="select"
+                      id="overtimeFrequency"
+                      value={formValues?.overtime_frequency || ""}
+                      onChange={(e) =>
+                        handleInputChange("overtime_frequency", e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="BI_WEEKLY">Bi Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="BI_MONTHLY">Bi Monthly</option>
+                      <option value="QUARTERLY">Quarterly</option>
+                      <option value="BI_ANNUALLY">Bi Annually</option>
+                      <option value="ANNUALLY">Annually</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row className="d-flex justify-content-between">
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="allowance">Allowance(£)*</Label>
+                    <Input
+                      type="number"
+                      id="allowance"
+                      placeholder="0"
+                      value={formValues?.allowance || ""}
+                      onChange={(e) =>
+                        handleInputChange("allowance", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup
+                    check
+                    className="d-flex justify-content-center align-content-center"
+                  >
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        name="is_allowance_guaranteed"
+                        checked={formValues?.is_allowance_guaranteed || false}
+                        onChange={(e) =>
+                          setFormValues((prevValues) => ({
+                            ...prevValues!,
+                            is_allowance_guaranteed: e.target.checked,
+                          }))
+                        }
+                      />
+                      Allowance Guaranteed?
+                    </Label>
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="allowanceFrequency">Allowance Frequency</Label>
+                    <Input
+                      type="select"
+                      id="allowanceFrequency"
+                      value={formValues?.allowance_frequency || ""}
+                      onChange={(e) =>
+                        handleInputChange("allowance_frequency", e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="DAILY">Daily</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="BI_WEEKLY">Bi Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="BI_MONTHLY">Bi Monthly</option>
+                      <option value="QUARTERLY">Quarterly</option>
+                      <option value="BI_ANNUALLY">Bi Annually</option>
+                      <option value="ANNUALLY">Annually</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              </Row>
+            </>
+          )}
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={6}>
+                  <Label for="employmentTime">Employment Time</Label>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Input
+                          type="number"
+                          id="employment_time_year"
+                          placeholder="0"
+                          value={formValues?.employment_time_year || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "employment_time_year",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <FormText>Years</FormText>
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Input
+                          type="number"
+                          id="employment_time_month"
+                          placeholder="0"
+                          value={formValues?.employment_time_month || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "employment_time_month",
+                              e.target.value
+                            )
+                          }
+                        />
+                        <FormText>Months</FormText>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_telephone">Business Telephone</Label>
+                    <Input
+                      type="text"
+                      id="business_telephone"
+                      value={formValues?.business_telephone || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_telephone", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_address_line_1">
+                      Business Address Line 1
+                    </Label>
+                    <Input
+                      type="text"
+                      id="business_address_line_1"
+                      value={formValues?.business_address_line_1 || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "business_address_line_1",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_address_line_2">
+                      Business Address Line 2
+                    </Label>
+                    <Input
+                      type="text"
+                      id="business_address_line_2"
+                      value={formValues?.business_address_line_2 || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "business_address_line_2",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="business_city">Business City</Label>
+                    <Input
+                      type="text"
+                      id="business_city"
+                      value={formValues?.business_city || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_city", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="business_county">Business County</Label>
+                    <Input
+                      type="text"
+                      id="business_county"
+                      value={formValues?.business_county || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_county", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="business_country">Business Country</Label>
+                    <Input
+                      type="text"
+                      id="business_country"
+                      value={formValues?.business_country || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_country", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="job_title">Job Title</Label>
+                    <Input
+                      type="text"
+                      id="job_title"
+                      value={formValues?.job_title || ""}
+                      onChange={(e) =>
+                        handleInputChange("job_title", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_name">Business Name</Label>
+                    <Input
+                      type="text"
+                      id="business_name"
+                      value={formValues?.business_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_name", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_type">Business Type</Label>
+                    <Input
+                      type="select"
+                      id="business_type"
+                      value={formValues?.business_type || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_type", e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="SOLE_TRADER">Sole Trader</option>
+                      <option value="PUBLIC_LIMITED">
+                        Public Limited Company
+                      </option>
+                      <option value="PRIVATE_LIMITED">
+                        Private Limited Company
+                      </option>
+                      <option value="PARTNERSHIP">Partnership</option>
+                      <option value="LLP">LLP</option>
+                      <option value="INDIVIDUAL">Individual</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="percentage_of_business_owned">
+                      Percentage Of Business Owned(%)
+                    </Label>
+                    <Input
+                      type="text"
+                      id="percentage_of_business_owned"
+                      value={formValues?.percentage_of_business_owned || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "percentage_of_business_owned",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <Col md={6}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      name="is_accounts_available"
+                      checked={formValues?.is_accounts_available || false}
+                      onChange={(e) =>
+                        setFormValues((prevValues) => ({
+                          ...prevValues!,
+                          is_accounts_available: e.target.checked,
+                        }))
+                      }
+                    />
+                    Accounts Available?
+                  </Label>
+                </FormGroup>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="accountant_name">Accountant Name</Label>
+                    <Input
+                      type="text"
+                      id="accountant_name"
+                      value={formValues?.accountant_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("accountant_name", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="accountant_qualifications">
+                      Accountant Qualifications
+                    </Label>
+                    <Input
+                      type="text"
+                      id="accountant_qualifications"
+                      value={formValues?.accountant_qualifications || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "accountant_qualifications",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="salary">Salary(£)*</Label>
+                    <Input
+                      type="number"
+                      id="salary"
+                      placeholder="0"
+                      value={formValues?.salary || ""}
+                      onChange={(e) =>
+                        handleInputChange("salary", e.target.value)
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="dividends">Dividends(£)*</Label>
+                    <Input
+                      type="number"
+                      id="dividends"
+                      placeholder="0"
+                      value={formValues?.dividends || ""}
+                      onChange={(e) =>
+                        handleInputChange("dividends", e.target.value)
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="turnover">Turn Over(£)</Label>
+                    <Input
+                      type="number"
+                      id="turnover"
+                      placeholder="0"
+                      value={formValues?.turnover || ""}
+                      onChange={(e) =>
+                        handleInputChange("turnover", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+          </Row>
+          {formValues?.employment_status === "OTHER" && (
+            <>
+              <Row>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="other_income">Other Income(£)</Label>
+                    <Input
+                      type="number"
+                      id="other_income"
+                      placeholder="0"
+                      value={formValues?.other_income || ""}
+                      onChange={(e) =>
+                        handleInputChange("other_income", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="other_income_source">
+                      Other Income Source*
+                    </Label>
+                    <Input
+                      type="select"
+                      id="other_income_source"
+                      required
+                      value={formValues?.other_income_source || ""}
+                      onChange={(e) =>
+                        handleInputChange("other_income_source", e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="CARERS_ALLOWANCE">
+                        Carer's Allowance
+                      </option>
+                      <option value="CHILD_BENEFIT">Child Benefit</option>
+                      <option value="CHILD_MAINTENANCE_COURT_ORDERED">
+                        Child Maintenance Court Ordered
+                      </option>
+                      <option value="CHILD_MAINTENANCE_NON_COURT_ORDERED">
+                        Child Maintenance Non Court Ordered
+                      </option>
+                      <option value="CHILD_TAX_CREDITS">
+                        Child Tax Credits
+                      </option>
+                      <option value="DISABILITY_LIVING_ALLOWANCE">
+                        Disability Living Allowance (DLA)
+                      </option>
+                      <option value="EMPLOYMENT_AND_SUPPORT_ALLOWANCE">
+                        Employment and Support Allowance (ESA)
+                      </option>
+                      <option value="MAINTENANCE_INCOME">
+                        Maintenance Income
+                      </option>
+                      <option value="PERSONAL_INDEPENDENCE_PAYMENTS">
+                        Personal Independence Payments (PIP)
+                      </option>
+                      <option value="MATERNITY_PAY">Maternity Pay</option>
+                      <option value="PENSION_CREDIT">Pension Credit</option>
+                      <option value="RENTAL_INCOME">Rental Income</option>
+                      <option value="WORKING_TAX_CREDITS">
+                        Working Tax Credits
+                      </option>
+                      <option value="OTHER">Other</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                {formValues?.other_income_source === "OTHER" && (
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="other">Other Income Source Details</Label>
+                      <Input
+                        type="text"
+                        id="other"
+                        value={formValues?.other || ""}
+                        onChange={(e) =>
+                          handleInputChange("other", e.target.value)
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="other_income_start_date">
+                      Other income start date
+                    </Label>
+                    <Input
+                      type="date"
+                      id="other_income_start_date"
+                      value={formValues?.other_income_start_date || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "other_income_start_date",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </>
+          )}
+          {formValues?.employment_status === "CONTRACTOR" && (
+            <>
+              <Row>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="contractor_industry">Contractor Industry</Label>
+                    <Input
+                      type="text"
+                      id="contractor_industry"
+                      value={formValues?.contractor_industry || ""}
+                      onChange={(e) =>
+                        handleInputChange("contractor_industry", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="current_contract_start">
+                      Current Contract Start*
+                    </Label>
+                    <Input
+                      type="date"
+                      id="current_contract_start"
+                      value={formValues?.current_contract_start || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "current_contract_start",
+                          e.target.value
+                        )
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="current_contract_end">
+                      Current Contract End*
+                    </Label>
+                    <Input
+                      type="date"
+                      id="current_contract_end"
+                      value={formValues?.current_contract_end || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "current_contract_end",
+                          e.target.value
+                        )
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="time_contracting">Time contracting*</Label>
+                    <Input
+                      type="text"
+                      id="time_contracting"
+                      value={formValues?.time_contracting || ""}
+                      onChange={(e) =>
+                        handleInputChange("time_contracting", e.target.value)
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="day_rate">Day Rate(£)*</Label>
+                    <Input
+                      type="number"
+                      id="day_rate"
+                      placeholder="0"
+                      value={formValues?.day_rate || ""}
+                      onChange={(e) =>
+                        handleInputChange("day_rate", e.target.value)
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="hourly_rate">Hourly Rate(£)</Label>
+                    <Input
+                      type="number"
+                      id="hourly_rate"
+                      placeholder="0"
+                      value={formValues?.hourly_rate || ""}
+                      onChange={(e) =>
+                        handleInputChange("hourly_rate", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            </>
+          )}
+          <Row>
+            <Col md={12}>
+              <FormGroup>
+                <Label for="note">Note</Label>
+                <Input
+                  type="textarea"
+                  id="note"
+                  value={formValues?.note || ""}
+                  onChange={(e) => handleInputChange("note", e.target.value)}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="d-flex justify-content-end gap-2 pt-3">
+              <Button color="secondary" onClick={toggle}>
+                Cancel
+              </Button>
+              <Button color="primary" type="submit">
+                {isLoading ? "Saving..." : "Save Details"}
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </ModalBody>
+    </Modal>
+  );
+};
+
+export default AddEmploymentDetailsModal;

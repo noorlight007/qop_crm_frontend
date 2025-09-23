@@ -1,0 +1,22 @@
+.text_decoration_hover {
+  text-decoration: none;
+  color: #308e87;
+  position: relative;
+}
+
+.text_decoration_hover::after {
+  content: "";
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  height: 0.095rem;
+  width: 100%;
+  transform: scaleX(0);
+  border-radius: 6px;
+  background-color: #308e87;
+  transition: transform 500ms;
+}
+
+.text_decoration_hover:hover::after {
+  transform: scaleX(1);
+}
