@@ -27,7 +27,6 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import "../Cases.css";
 import AddNewCaseModal from "./Modals/AddNewCaseModal";
 import DeleteCaseModal from "./Modals/DeleteCaseModal";
 import UpdateCaseModal from "./Modals/UpdateCaseModal";
