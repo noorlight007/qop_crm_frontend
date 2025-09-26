@@ -8,6 +8,8 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
   commonDashboardData,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
+  let allValuesZero = true;
+
   if (!isLoading && commonDashboardData?.lender_counts) {
     const {
       lender_counts: {
@@ -97,6 +99,95 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
         WEST_ONE_LOANS,
       },
     } = commonDashboardData;
+
+    const values = [
+      ATOM_BANK ?? 0,
+      ACCORD_MORTGAGES ?? 0,
+      AHLI_UNITED_BANK ?? 0,
+      AL_RAYAN_BANK ?? 0,
+      ALDERMORE_MORTGAGES ?? 0,
+      AMICUS_PLC ?? 0,
+      ASSETZ_CAPITAL ?? 0,
+      AVIVA_EQUITY_RELEASE ?? 0,
+      AXIS_BANK ?? 0,
+      BANK_AND_CLIENTS_PLC ?? 0,
+      BANK_OF_CHINA ?? 0,
+      BANK_OF_CYPRUS_UK ?? 0,
+      BANK_OF_IRELAND ?? 0,
+      BARCLAYS ?? 0,
+      BARCLAYS_COMMERCIAL ?? 0,
+      BATH_BUILDING_SOCIETY ?? 0,
+      BEVERLEY_BUILDING_SOCIETY ?? 0,
+      BLUESTONE_MORTGAGES ?? 0,
+      BLUEZEST ?? 0,
+      BM_SOLUTIONS ?? 0,
+      BOOST_CAPITAL ?? 0,
+      BRIDGEWATER_EQUITY_RELEASE ?? 0,
+      BUCKINGHAMSHIRE_BUILDING_SOCIETY ?? 0,
+      CAMBRIDGE_AND_COUNTIES_BANK ?? 0,
+      CAMBRIDGE_BUILDING_SOCIETY ?? 0,
+      CENTRAL_TRUST ?? 0,
+      CHARTERBANK ?? 0,
+      CHL_MORTGAGES ?? 0,
+      CHORLEY_DISTRICT_BUILDING_SOCIETY ?? 0,
+      CLEARLY_LOANS ?? 0,
+      COUTTS ?? 0,
+      COVENTRY_BUILDING_SOCIETY ?? 0,
+      CROWN_EQUITY_RELEASE ?? 0,
+      CUMBERLAND_BUILDING_SOCIETY ?? 0,
+      DANSKE_BANK ?? 0,
+      DARLINGTON_BUILDING_SOCIETY ?? 0,
+      DIGITAL_MORTGAGES ?? 0,
+      DUDLEY_BUILDING_SOCIETY ?? 0,
+      EARL_SHILTON_BUILDING_SOCIETY ?? 0,
+      ECOLOGY_BUILDING_SOCIETY ?? 0,
+      EQUIFINANCE ?? 0,
+      FAMILY_BUILDING_SOCIETY ?? 0,
+      FINSEC ?? 0,
+      FIRST_TRUST_BANK ?? 0,
+      FLEET_MORTGAGES ?? 0,
+      FOUNDATION_HOME_LOANS ?? 0,
+      FURNESS_BUILDING_SOCIETY ?? 0,
+      GATEHOUSE_BANK ?? 0,
+      GENERATION_HOME ?? 0,
+      GODIVA_MORTGAGES ?? 0,
+      HALIFAX ?? 0,
+      HAMPSHIRE_TRUST_BANK ?? 0,
+      HANDELSBANKEN ?? 0,
+      HANLEY_ECONOMIC_BUILDING_SOCIETY ?? 0,
+      HARPDEN_BUILDING_SOCIETY ?? 0,
+      HSBC ?? 0,
+      ICICI_BANK ?? 0,
+      INTERBAY_COMMERCIAL ?? 0,
+      INVESTEC ?? 0,
+      IPSWICH_BUILDING_SOCIETY ?? 0,
+      JUST_RETIREMENT_SOLUTIONS ?? 0,
+      KENSINGTON_MORTGAGES ?? 0,
+      KENT_RELIANCE ?? 0,
+      KEYSTONE_PROPERTY_FINANCE ?? 0,
+      LEEDS_BUILDING_SOCIETY ?? 0,
+      LEEK_UNITED_BUILDING_SOCIETY ?? 0,
+      METRO_BANK ?? 0,
+      MONMOUTHSHIRE_BUILDING_SOCIETY ?? 0,
+      NATIONWIDE ?? 0,
+      NATWEST ?? 0,
+      NOTTINGHAM_BUILDING_SOCIETY ?? 0,
+      PARAGON_MORTGAGES ?? 0,
+      PEPPER_MONEY ?? 0,
+      POST_OFFICE_MORTGAGES ?? 0,
+      PRINCIPALITY_BUILDING_SOCIETY ?? 0,
+      SANTANDER ?? 0,
+      SKIPTON_BUILDING_SOCIETY ?? 0,
+      TSB ?? 0,
+      ULSTER_BANK ?? 0,
+      UNKNOWN ?? 0,
+      UNKNOWN_DEFAULT ?? 0,
+      VIDA_HOMELOANS ?? 0,
+      WEST_BROMWICH_BUILDING_SOCIETY ?? 0,
+      WEST_ONE_LOANS ?? 0,
+    ];
+
+    allValuesZero = values.every((value) => value === 0);
 
     // Push all lenders with formatted names
     chartData.push(["Atom Bank", ATOM_BANK ?? 0]);
@@ -310,6 +401,13 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
                 backgroundColor: "#e0e0e0",
               }}
             />
+          </div>
+        ) : allValuesZero ? (
+          <div
+            style={{ height: "340px", width: "100%" }}
+            className="d-flex justify-content-center align-items-center py-5 text-muted"
+          >
+            No data available yet
           </div>
         ) : (
           <Chart
