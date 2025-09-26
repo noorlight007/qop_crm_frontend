@@ -8,6 +8,8 @@ const MortgagesChart: React.FC<CommonDashboardProps> = ({
   commonDashboardData,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
+  let allValuesZero = true;
+
   if (!isLoading && commonDashboardData) {
     const {
       mortgage_type_counts: {
@@ -22,6 +24,20 @@ const MortgagesChart: React.FC<CommonDashboardProps> = ({
         OTHER,
       },
     } = commonDashboardData;
+    const values = [
+      PURCHASE ?? 0,
+      REMORTGAGE ?? 0,
+      SECURED_LOAN ?? 0,
+      FURTHER_ADVANCE ?? 0,
+      PRODUCT_TRANSFER ?? 0,
+      UNSECURED ?? 0,
+      INVOICE_DISCOUNTING ?? 0,
+      ASSET_FINANCE ?? 0,
+      OTHER ?? 0,
+    ];
+
+    allValuesZero = values.every((value) => value === 0);
+
     chartData.push(["Purchase", PURCHASE ?? 0]);
     chartData.push(["Remortgage", REMORTGAGE ?? 0]);
     chartData.push(["Secure Loan", SECURED_LOAN ?? 0]);
@@ -101,6 +117,13 @@ const MortgagesChart: React.FC<CommonDashboardProps> = ({
                 backgroundColor: "#e0e0e0",
               }}
             />
+          </div>
+        ) : allValuesZero ? (
+          <div
+            style={{ height: "340px", width: "100%" }}
+            className="d-flex justify-content-center align-items-center py-5 text-muted"
+          >
+            No data available yet
           </div>
         ) : (
           <Chart
