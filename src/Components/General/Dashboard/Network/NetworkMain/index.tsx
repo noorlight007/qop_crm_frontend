@@ -30,7 +30,7 @@ const ContainerNetwork = () => {
               }}
             />
           ) : (
-            `${networkName} Dashboard`
+            `${networkName} - Dashboard`
           )
         }
         subTitle="Welcome to the Network Dashboard"

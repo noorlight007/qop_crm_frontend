@@ -34,7 +34,7 @@ const OrganisationContainer = () => {
             />
           ) : (
             <>
-              {organisationName} Dashboard
+              {organisationName} - Dashboard
               <small
                 className={`ms-2 ${
                   isNetworkNotAssigned ? "text-muted" : "text-secondary"
