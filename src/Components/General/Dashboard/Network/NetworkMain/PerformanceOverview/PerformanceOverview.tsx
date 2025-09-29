@@ -58,8 +58,8 @@ const PerformanceOverview: React.FC<CommonDashboardProps> = ({
                 index < 3 ? { xl: 4, lg: 4, md: 6 } : { xl: 6, lg: 6, md: 6 };
 
               return (
-                <Col {...colSize} sm={12} key={index} className="mb-3">
-                  <Card className="border-0 rounded-2 shadow-sm bg-white h-100">
+                <Col {...colSize} sm={12} key={index}>
+                  <Card className="border-0 rounded-2 shadow-sm bg-white">
                     <CardBody className="p-4">
                       <div className="d-flex justify-content-between">
                         <div style={{ width: "70%" }}>
@@ -95,8 +95,8 @@ const PerformanceOverview: React.FC<CommonDashboardProps> = ({
                 index < 3 ? { xl: 4, lg: 4, md: 6 } : { xl: 6, lg: 6, md: 6 };
 
               return (
-                <Col {...colSize} sm={12} key={index} className="mb-3">
-                  <Card className="border-0 shadow h-100">
+                <Col {...colSize} sm={12} key={index}>
+                  <Card className="border-0 shadow ">
                     <CardBody className="p-4">
                       <div className="d-flex justify-content-between">
                         <div>
