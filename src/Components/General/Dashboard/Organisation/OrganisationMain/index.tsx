@@ -13,9 +13,28 @@ const OrganisationContainer = () => {
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
 
+  // Get organisation name from meta data, fallback to "Not Assigned"
+  const organisationName = commonDashboardData?.meta?.name || "Not Assigned";
+  const networkName = commonDashboardData?.meta?.network || "Not Assigned";
+  const isNetworkNotAssigned = networkName === "Not Assigned";
+
   return (
     <>
-      <Breadcrumbs title="Dashboard" subTitle="Hello there! Welcome back" />
+      <Breadcrumbs
+        title={
+          <>
+            {organisationName} Dashboard
+            <small
+              className={`ms-2 ${
+                isNetworkNotAssigned ? "text-muted" : "text-secondary"
+              }`}
+            >
+              (Network: {networkName})
+            </small>
+          </>
+        }
+        subTitle="Hello there! Welcome back"
+      />
       <Container fluid>
         {/* 1st row  */}
         <DashboardOverview

@@ -12,10 +12,13 @@ const ContainerNetwork = () => {
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
 
+  // Get network name from meta data, fallback to "Not Assigned"
+  const networkName = commonDashboardData?.meta?.name || "Not Assigned";
+
   return (
     <>
       <Breadcrumbs
-        title="Dashboard"
+        title={`${networkName} Dashboard`}
         subTitle="Welcome to the Network Dashboard"
       />
       <Container fluid>
