@@ -68,7 +68,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 </Button>
               </div>
             </div>
-            <CardTitle tag="h3" className="mt-5 text-success">
+            <CardTitle tag="h3" className="text-success" style={{ marginTop: "70px" }}>
               {singleOrgInfo?.organization?.name}
             </CardTitle>
             <CardText>

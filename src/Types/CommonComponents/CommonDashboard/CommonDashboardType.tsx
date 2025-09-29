@@ -119,6 +119,10 @@ export interface CommonDashboardDataProps {
     total_cases?: number;
   };
   top_performing_advisers?: Adviser[];
+  meta?: {
+    name?: string;
+    network?: string;
+  };
 }
 
 export interface CommonDashboardProps {
