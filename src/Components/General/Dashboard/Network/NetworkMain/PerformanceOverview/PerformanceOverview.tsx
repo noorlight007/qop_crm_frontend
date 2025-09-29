@@ -51,40 +51,52 @@ const PerformanceOverview: React.FC<CommonDashboardProps> = ({
       <Row className="py-2">
         {isLoading
           ? // Skeleton Loaders
-            [...Array(5)].map((_, index) => (
-              <Col key={index} className="mb-2">
-                <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
-                  <CardBody className="p-2">
-                    <div className="d-flex justify-content-between">
-                      <div style={{ width: "70%" }}>
-                        <div
-                          className="skeleton-loading mb-2"
-                          style={{
-                            width: "80%",
-                            height: "16px",
-                            backgroundColor: "#e0e0e0",
-                          }}
-                        />
-                        <div
-                          className="skeleton-loading"
-                          style={{
-                            width: "50%",
-                            height: "24px",
-                            backgroundColor: "#e0e0e0",
-                          }}
-                        />
+            [...Array(5)].map((_, index) => {
+              // First 3 cards take 4 columns each (3 cards per row)
+              // Last 2 cards take 6 columns each (2 cards per row, full width)
+              const colSize =
+                index < 3 ? { xl: 4, lg: 4, md: 6 } : { xl: 6, lg: 6, md: 6 };
+
+              return (
+                <Col {...colSize} sm={12} key={index} className="mb-3">
+                  <Card className="border-0 rounded-2 shadow-sm bg-white h-100">
+                    <CardBody className="p-4">
+                      <div className="d-flex justify-content-between">
+                        <div style={{ width: "70%" }}>
+                          <div
+                            className="skeleton-loading mb-2"
+                            style={{
+                              width: "80%",
+                              height: "16px",
+                              backgroundColor: "#e0e0e0",
+                            }}
+                          />
+                          <div
+                            className="skeleton-loading"
+                            style={{
+                              width: "50%",
+                              height: "24px",
+                              backgroundColor: "#e0e0e0",
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))
+                    </CardBody>
+                  </Card>
+                </Col>
+              );
+            })
           : // Render actual performance cards
             performanceCards.map((card, index) => {
               const IconComponent = card.icon;
+              // First 3 cards take 4 columns each (3 cards per row)
+              // Last 2 cards take 6 columns each (2 cards per row, full width)
+              const colSize =
+                index < 3 ? { xl: 4, lg: 4, md: 6 } : { xl: 6, lg: 6, md: 6 };
+
               return (
-                <Col key={index} >
-                  <Card className="border-0 shadow">
+                <Col {...colSize} sm={12} key={index} className="mb-3">
+                  <Card className="border-0 shadow h-100">
                     <CardBody className="p-4">
                       <div className="d-flex justify-content-between">
                         <div>
