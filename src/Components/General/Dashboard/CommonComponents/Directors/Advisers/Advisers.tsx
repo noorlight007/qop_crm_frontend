@@ -7,7 +7,6 @@ import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -127,7 +126,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
           <Col md="3">
             <h2>Advisers</h2>
           </Col>
-          <Col md={6}>
+          <Col md={3}>
             <InputGroup>
               <Input
                 type="text"
@@ -141,7 +140,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
               </InputGroupText>
             </InputGroup>
           </Col>
-          <Col
+          {/* <Col
             md="3"
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
@@ -154,7 +153,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
               <TbCirclePlus size={18} />
               <span>Add adviser</span>
             </Button>
-          </Col>
+          </Col> */}
         </Row>
         <Row>
           <Table hover responsive>
@@ -217,24 +216,34 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                     </td>
                     <td>
                       <p className="m-0">
-                        {adviser.created_by?.title
-                          ? adviser.created_by?.title.charAt(0).toUpperCase() +
-                            adviser.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {adviser?.created_by?.first_name}{" "}
-                        {adviser?.created_by?.middle_name}{" "}
-                        {adviser?.created_by?.last_name}
+                        {adviser.created_by
+                          ? `${
+                              adviser.created_by?.title
+                                ? adviser.created_by.title
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                  adviser.created_by.title
+                                    .slice(1)
+                                    .toLowerCase() +
+                                  ". "
+                                : ""
+                            }${adviser.created_by.first_name || ""} ${
+                              adviser.created_by.middle_name || ""
+                            } ${adviser.created_by.last_name || ""}`.trim()
+                          : "Not found"}
                       </p>
                       <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
                         (
                         {adviser.created_by?.user_type
-                          ?.split("_")
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")}
+                          ? adviser.created_by.user_type
+                              .split("_")
+                              .map(
+                                (word: any) =>
+                                  word.charAt(0).toUpperCase() +
+                                  word.slice(1).toLowerCase()
+                              )
+                              .join(" ")
+                          : "Not found"}
                         )
                       </p>
                     </td>
