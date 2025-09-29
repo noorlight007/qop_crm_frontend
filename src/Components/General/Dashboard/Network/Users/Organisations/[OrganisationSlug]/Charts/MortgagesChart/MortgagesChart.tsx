@@ -121,7 +121,7 @@ const OrgMortgagesChart: React.FC<FetchSingleOrganisationProps> = ({
           </div>
         ) : allValuesZero ? (
           <div
-            style={{ height: "340px", width: "100%" }}
+            style={{ height: "365px", width: "100%" }}
             className="d-flex justify-content-center align-items-center py-5 text-muted"
           >
             No data available yet
@@ -130,7 +130,7 @@ const OrgMortgagesChart: React.FC<FetchSingleOrganisationProps> = ({
           <Chart
             chartType="PieChart"
             width="100%"
-            height="340px"
+            height="365px"
             data={chartData}
             options={chartOptions}
           />
