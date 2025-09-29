@@ -1,16 +1,11 @@
 "use client";
-
-import { FunctionComponent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
-  const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
+  const router = useRouter();
   useEffect(() => {
-    (async () => {
-      if (typeof window !== "undefined") {
-        const newClient = (await import("@/Components/Landing")).default;
-        setClient(() => newClient);
-      }
-    })();
-  }, []);
-  return MyAwesomeMap ? <MyAwesomeMap /> : "";
+    router.push("/auth/login");
+  }, [router]);
+  return <main></main>;
 }
