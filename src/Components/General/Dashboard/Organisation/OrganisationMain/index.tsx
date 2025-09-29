@@ -22,16 +22,28 @@ const OrganisationContainer = () => {
     <>
       <Breadcrumbs
         title={
-          <>
-            {organisationName} Dashboard
-            <small
-              className={`ms-2 ${
-                isNetworkNotAssigned ? "text-muted" : "text-secondary"
-              }`}
-            >
-              (Network: {networkName})
-            </small>
-          </>
+          isLoading ? (
+            <div
+              className="skeleton-loading"
+              style={{
+                width: "320px",
+                height: "24px",
+                backgroundColor: "#e0e0e0",
+                borderRadius: "4px",
+              }}
+            />
+          ) : (
+            <>
+              {organisationName} Dashboard
+              <small
+                className={`ms-2 ${
+                  isNetworkNotAssigned ? "text-muted" : "text-secondary"
+                }`}
+              >
+                (Network: {networkName})
+              </small>
+            </>
+          )
         }
         subTitle="Hello there! Welcome back"
       />

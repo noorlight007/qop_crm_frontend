@@ -18,7 +18,21 @@ const ContainerNetwork = () => {
   return (
     <>
       <Breadcrumbs
-        title={`${networkName} Dashboard`}
+        title={
+          isLoading ? (
+            <div
+              className="skeleton-loading"
+              style={{
+                width: "200px",
+                height: "24px",
+                backgroundColor: "#e0e0e0",
+                borderRadius: "4px",
+              }}
+            />
+          ) : (
+            `${networkName} Dashboard`
+          )
+        }
         subTitle="Welcome to the Network Dashboard"
       />
       <Container fluid>
