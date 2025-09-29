@@ -68,34 +68,34 @@ const NetworkOwnerMenu: MenuItem[] = [
           },
         ],
       },
-      {
-        title: "Reports & Tasks",
-        type: "sub",
-        icon: "Edit",
-        lanClass: "lan-4",
-        children: [
-          {
-            path: "/dashboard/network/usermanagement",
-            title: "User Management",
-            type: "link",
-          },
-          {
-            path: "/dashboard/network/systemreports",
-            title: "System Reports",
-            type: "link",
-          },
-          {
-            path: "/dashboard/network/auditlog",
-            title: "Audit Log",
-            type: "link",
-          },
-          {
-            path: "/dashboard/network/securitypolicy",
-            title: "Security Policy",
-            type: "link",
-          },
-        ],
-      },
+      // {
+      //   title: "Reports & Tasks",
+      //   type: "sub",
+      //   icon: "Edit",
+      //   lanClass: "lan-4",
+      //   children: [
+      //     {
+      //       path: "/dashboard/network/usermanagement",
+      //       title: "User Management",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/network/systemreports",
+      //       title: "System Reports",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/network/auditlog",
+      //       title: "Audit Log",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/network/securitypolicy",
+      //       title: "Security Policy",
+      //       type: "link",
+      //     },
+      //   ],
+      // },
     ],
   },
 ];
@@ -141,23 +141,23 @@ const NetworkAdviserMenu: MenuItem[] = [
           },
         ],
       },
-      {
-        title: "Users",
-        icon: "Profile",
-        type: "sub",
-        children: [
-          {
-            path: "/dashboard/netadviser/marketinghub",
-            title: "Marketing Hub",
-            type: "link",
-          },
-          {
-            path: "/dashboard/netadviser/tasksandreminders",
-            title: "Tasks & Reminders",
-            type: "link",
-          },
-        ],
-      },
+      // {
+      //   title: "Users",
+      //   icon: "Profile",
+      //   type: "sub",
+      //   children: [
+      //     {
+      //       path: "/dashboard/netadviser/marketinghub",
+      //       title: "Marketing Hub",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/netadviser/tasksandreminders",
+      //       title: "Tasks & Reminders",
+      //       type: "link",
+      //     },
+      //   ],
+      // },
     ],
   },
 ];
@@ -230,29 +230,29 @@ const OrganisationOwnerMenu: MenuItem[] = [
           },
         ],
       },
-      {
-        title: "Reports & Tasks",
-        type: "sub",
-        icon: "Edit",
-        lanClass: "lan-4",
-        children: [
-          {
-            path: "/dashboard/organisation/usersandroles",
-            title: "Users & Roles",
-            type: "link",
-          },
-          {
-            path: "/dashboard/organisation/workflowsandintegrations",
-            title: "Workflows & Integrations",
-            type: "link",
-          },
-          {
-            path: "/dashboard/organisation/systemreportsandlogs",
-            title: "System Reports & Logs",
-            type: "link",
-          },
-        ],
-      },
+      // {
+      //   title: "Reports & Tasks",
+      //   type: "sub",
+      //   icon: "Edit",
+      //   lanClass: "lan-4",
+      //   children: [
+      //     {
+      //       path: "/dashboard/organisation/usersandroles",
+      //       title: "Users & Roles",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/organisation/workflowsandintegrations",
+      //       title: "Workflows & Integrations",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/organisation/systemreportsandlogs",
+      //       title: "System Reports & Logs",
+      //       type: "link",
+      //     },
+      //   ],
+      // },
     ],
   },
 ];
@@ -299,24 +299,24 @@ const OrganisationAdviserMenu: MenuItem[] = [
           },
         ],
       },
-      {
-        title: "Users",
-        type: "sub",
-        icon: "Profile",
-        lanClass: "lan-4",
-        children: [
-          {
-            path: "/dashboard/orgadviser/marketinghub",
-            title: "Marketing Hub",
-            type: "link",
-          },
-          {
-            path: "/dashboard/orgadviser/tasksandreminders",
-            title: "Tasks & Reminders",
-            type: "link",
-          },
-        ],
-      },
+      // {
+      //   title: "Users",
+      //   type: "sub",
+      //   icon: "Profile",
+      //   lanClass: "lan-4",
+      //   children: [
+      //     {
+      //       path: "/dashboard/orgadviser/marketinghub",
+      //       title: "Marketing Hub",
+      //       type: "link",
+      //     },
+      //     {
+      //       path: "/dashboard/orgadviser/tasksandreminders",
+      //       title: "Tasks & Reminders",
+      //       type: "link",
+      //     },
+      //   ],
+      // },
     ],
   },
 ];
@@ -348,13 +348,13 @@ const OrganisationStaffMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/dashboard/orgstaff/reports",
       },
-      {
-        title: "Tasks & Reminders",
-        icon: "Edit",
-        type: "link",
-        lanClass: "lan-3",
-        path: "/dashboard/orgstaff/tasksandreminders",
-      },
+      // {
+      //   title: "Tasks & Reminders",
+      //   icon: "Edit",
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/dashboard/orgstaff/tasksandreminders",
+      // },
       {
         title: "Adviser Clients",
         icon: "Profile",
@@ -362,27 +362,27 @@ const OrganisationStaffMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/dashboard/orgstaff/adviserclient",
       },
-      {
-        title: "Document Management",
-        icon: "Paper",
-        type: "link",
-        lanClass: "lan-3",
-        path: "/dashboard/orgstaff/documentmanagement",
-      },
-      {
-        title: "Chat & Communication",
-        icon: "Chat",
-        type: "link",
-        lanClass: "lan-3",
-        path: "/dashboard/orgstaff/chatandcommunication",
-      },
-      {
-        title: "Comments",
-        icon: "Message",
-        type: "link",
-        lanClass: "lan-3",
-        path: "/dashboard/orgstaff/comments",
-      },
+      // {
+      //   title: "Document Management",
+      //   icon: "Paper",
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/dashboard/orgstaff/documentmanagement",
+      // },
+      // {
+      //   title: "Chat & Communication",
+      //   icon: "Chat",
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/dashboard/orgstaff/chatandcommunication",
+      // },
+      // {
+      //   title: "Comments",
+      //   icon: "Message",
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/dashboard/orgstaff/comments",
+      // },
     ],
   },
 ];
