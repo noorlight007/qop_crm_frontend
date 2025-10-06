@@ -118,12 +118,14 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
             <Col md={12}>
               <FormGroup>
                 <Label for="fileUpload" className="form-label">
-                  Select Documents<span className="text-danger">*</span>
+                  Select Documents (Multiple files allowed)
+                  <span className="text-danger">*</span>
                 </Label>
                 <Input
                   type="file"
                   id="fileUpload"
                   name="fileUpload"
+                  multiple
                   onChange={handleDocumentChange}
                 />
               </FormGroup>
