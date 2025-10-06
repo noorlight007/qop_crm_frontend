@@ -273,13 +273,29 @@ const LoanDetailsFormTab2: React.FC<LoanDetailsFormTab2Props> = ({
                 }
               >
                 <option value="">Select...</option>
-                <option value="UNKNOWN">Unknown</option>
                 {LenderList.map((lender) => (
                   <option key={lender.value} value={lender.value}>
                     {lender.label}
                   </option>
                 ))}
               </Input>
+            </FormGroup>
+          </Col>
+        )}
+        {formData.current_lender === "OTHER" && (
+          <Col md={6}>
+            <FormGroup>
+              <Label for="current_lender_other_note">
+                Other Current Lender Note
+              </Label>
+              <Input
+                type="text"
+                name="current_lender_other_note"
+                value={formData.current_lender_other_note || ""}
+                onChange={(e) =>
+                  handleFormChange(e.target.name, e.target.value)
+                }
+              />
             </FormGroup>
           </Col>
         )}
