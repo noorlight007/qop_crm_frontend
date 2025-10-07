@@ -7,6 +7,7 @@ import ClientSurveyContent from "./ClientSurvey/ClientSurveyContent";
 import { ComplianceTab } from "./Compliance/ComplianceTab";
 import CreditCommitmentsContent from "./CreditCommitments/CreditCommitmentsContent";
 import DIPHistoryTab from "./DIPHistory/DIPHistoryTab";
+import Documents from "./Documents/Documents";
 import { EmploymentTab } from "./Employment/EmploymentTab";
 import ExistingProtectionTab from "./ExistingProtection/ExistingProtectionTab";
 import FeesTab from "./Fees/FeesTab";
@@ -40,6 +41,7 @@ const tabComponents: Record<string, React.FC> = {
   Fees: FeesTab,
   Compliance: ComplianceTab,
   "Client Survey": ClientSurveyContent,
+  Documents: Documents,
 };
 
 export const CaseDetailsTabContent: React.FC = () => {

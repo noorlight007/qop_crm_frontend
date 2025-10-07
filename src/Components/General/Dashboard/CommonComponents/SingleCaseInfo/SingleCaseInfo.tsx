@@ -10,7 +10,6 @@ import { Container, Row } from "reactstrap";
 import CalenderContainer from "./Components/Calender/CalenderContainer";
 import CaseDetails from "./Components/CaseDetails/CaseDetails";
 import CaseInfo from "./Components/CaseInfo/CaseInfo";
-import Documents from "./Components/Documents/Documents";
 import JointUsers from "./Components/JointUsers/JointUsers";
 import MeetingHistory from "./Components/MeetingHistory/MeetingHistory";
 
@@ -92,9 +91,6 @@ const SingleCaseInfo: React.FC = () => {
         </Row>
         <Row>
           <CaseDetails caseStage={caseInfo?.case_stage || ""} />
-        </Row>
-        <Row>
-          <Documents />
         </Row>
         <Row>
           <JointUsers
