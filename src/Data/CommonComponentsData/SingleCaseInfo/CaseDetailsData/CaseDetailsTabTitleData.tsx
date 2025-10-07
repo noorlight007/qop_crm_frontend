@@ -4,6 +4,7 @@ export const EnqueryTabTitleData = [
   { id: "3", nav: "Portfolio" },
   { id: "4", nav: "Notes" },
   { id: "5", nav: "Product" },
+  { id: "6", nav: "Documents" },
 ];
 
 export const FFDTabTitleData = [
@@ -25,6 +26,7 @@ export const FFDTabTitleData = [
   { id: "16", nav: "Insurance Health" },
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
+  { id: "19", nav: "Documents" },
 ];
 
 export const RCCTabTitleData = [
@@ -46,6 +48,7 @@ export const RCCTabTitleData = [
   { id: "16", nav: "Insurance Health" },
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
+  { id: "19", nav: "Documents" },
 ];
 
 export const DIPTabTitleData = [
@@ -67,6 +70,7 @@ export const DIPTabTitleData = [
   { id: "16", nav: "Insurance Health" },
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
+  { id: "19", nav: "Documents" },
 ];
 
 export const FMATabTitleData = [
@@ -89,6 +93,7 @@ export const FMATabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const OFBTabTitleData = [
@@ -111,6 +116,7 @@ export const OFBTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const LegalTabTitleData = [
@@ -133,6 +139,7 @@ export const LegalTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const CompletionTabTitleData = [
@@ -155,6 +162,7 @@ export const CompletionTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const FOPTabTitleData = [
@@ -177,6 +185,7 @@ export const FOPTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const NPDTabTitleData = [
@@ -199,4 +208,5 @@ export const NPDTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
+  { id: "20", nav: "Documents" },
 ];
