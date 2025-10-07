@@ -31,6 +31,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const { casealias } = params;
   const [fileOwners, setfileOwners] = useState<DocumentOwnerProps | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [fileErrors, setFileErrors] = useState<{ [key: number]: string[] }>({});
 
   // rtk hooks
   const { data: caseUsers, isLoading } = useGetCaseUsersQuery({
@@ -57,30 +58,64 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
+      const errors: { [key: number]: string[] } = {};
 
-      // Check file sizes (limit to 10MB per file)
-      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-      const oversizedFiles = filesArray.filter((file) => file.size > maxSize);
+      // Validate each file
+      filesArray.forEach((file, index) => {
+        const fileErrors: string[] = [];
 
-      if (oversizedFiles.length > 0) {
-        toast.error(
-          `Some files exceed the 10MB limit: ${oversizedFiles
-            .map((f) => f.name)
-            .join(", ")}`
-        );
-        return;
-      }
+        // Check file size (limit to 10MB per file)
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        if (file.size > maxSize) {
+          fileErrors.push(
+            `File size exceeds 10MB limit (${(file.size / 1024 / 1024).toFixed(
+              2
+            )}MB)`
+          );
+        }
 
+        // Check filename length (max 100 characters)
+        if (file.name.length > 100) {
+          fileErrors.push(
+            `Ensure this filename has at most 100 characters (it has ${file.name.length}).`
+          );
+        }
+
+        if (fileErrors.length > 0) {
+          errors[index] = fileErrors;
+        }
+      });
+
+      setFileErrors(errors);
       setDocuments(filesArray);
     }
   };
 
   const removeFile = (indexToRemove: number) => {
-    setDocuments(documents.filter((_, index) => index !== indexToRemove));
+    const newDocuments = documents.filter(
+      (_, index) => index !== indexToRemove
+    );
+    const newErrors = { ...fileErrors };
+    delete newErrors[indexToRemove];
+
+    // Reindex errors for remaining files
+    const reindexedErrors: { [key: number]: string[] } = {};
+    Object.keys(newErrors).forEach((key) => {
+      const oldIndex = parseInt(key);
+      if (oldIndex > indexToRemove) {
+        reindexedErrors[oldIndex - 1] = newErrors[oldIndex];
+      } else if (oldIndex < indexToRemove) {
+        reindexedErrors[oldIndex] = newErrors[oldIndex];
+      }
+    });
+
+    setDocuments(newDocuments);
+    setFileErrors(reindexedErrors);
   };
 
   const clearAllFiles = () => {
     setDocuments([]);
+    setFileErrors({});
   };
 
   const handleInputChange = (
@@ -102,6 +137,13 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
 
     if (!formData.fileType || !formData.fileOwner) {
       toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    // Check if there are any file validation errors
+    const hasErrors = Object.keys(fileErrors).length > 0;
+    if (hasErrors) {
+      toast.error("Please fix the file validation errors before uploading.");
       return;
     }
 
@@ -187,7 +229,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   <span className="text-danger">*</span>
                   <br />
                   <small className="text-muted">
-                    Max file size: 10MB per file
+                    Max file size: 10MB per file | Max filename length: 100
+                    characters
                   </small>
                 </Label>
                 <Input
@@ -215,28 +258,68 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                         </Button>
                       )}
                     </div>
-                    <ul className="list-unstyled mt-1">
+                    {Object.keys(fileErrors).length > 0 && (
+                      <div className="alert alert-danger mt-2 py-2 px-3">
+                        <small>
+                          <i className="fa fa-exclamation-triangle me-1"></i>
+                          {Object.keys(fileErrors).length} file(s) have
+                          validation errors. Please fix them before uploading.
+                        </small>
+                      </div>
+                    )}
+                    <ul className="list-unstyled mt-1 border rounded p-3 bg-dark-light">
                       {documents.map((file, index) => (
                         <li
                           key={index}
-                          className="d-flex justify-content-between align-items-center py-1 border-bottom"
+                          className={`py-2 border-bottom ${
+                            fileErrors[index] ? "border-danger" : ""
+                          }`}
                         >
-                          <div>
-                            <i className="fa fa-file me-1"></i>
-                            <span className="text-sm">{file.name}</span>
-                            <small className="text-muted ms-2">
-                              ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                            </small>
+                          <div className="d-flex justify-content-between align-items-start">
+                            <div className="flex-grow-1">
+                              <div className="d-flex align-items-center">
+                                <i
+                                  className={`fa fa-file me-1 ${
+                                    fileErrors[index] ? "text-danger" : ""
+                                  }`}
+                                ></i>
+                                <span
+                                  className={`text-sm ${
+                                    fileErrors[index] ? "text-danger" : ""
+                                  }`}
+                                >
+                                  {file.name}
+                                </span>
+                                <small className="text-muted ms-2">
+                                  ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                </small>
+                              </div>
+                              {fileErrors[index] && (
+                                <div className="mt-1">
+                                  {fileErrors[index].map(
+                                    (error, errorIndex) => (
+                                      <div
+                                        key={errorIndex}
+                                        className="text-danger small"
+                                      >
+                                        <i className="fa fa-exclamation-triangle me-1"></i>
+                                        {error}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              color="danger"
+                              size="sm"
+                              outline
+                              onClick={() => removeFile(index)}
+                              className="ms-2"
+                            >
+                              <i className="fa fa-times"></i>
+                            </Button>
                           </div>
-                          <Button
-                            color="danger"
-                            size="sm"
-                            outline
-                            onClick={() => removeFile(index)}
-                            className="ms-2"
-                          >
-                            <i className="fa fa-times"></i>
-                          </Button>
                         </li>
                       ))}
                     </ul>
@@ -404,9 +487,15 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           <Button color="secondary" onClick={toggle} disabled={isUploading}>
             Cancel
           </Button>
-          <Button color="primary" type="submit" disabled={isUploading}>
+          <Button
+            color="primary"
+            type="submit"
+            disabled={isUploading || Object.keys(fileErrors).length > 0}
+          >
             {isUploading
               ? `Uploading... (${uploadProgress}%)`
+              : Object.keys(fileErrors).length > 0
+              ? "Fix errors to upload"
               : `Upload ${
                   documents.length > 0 ? documents.length : ""
                 } Document${documents.length !== 1 ? "s" : ""}`}

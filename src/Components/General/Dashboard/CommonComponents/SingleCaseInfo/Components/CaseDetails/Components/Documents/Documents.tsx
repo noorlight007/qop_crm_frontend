@@ -20,7 +20,7 @@ import DocumentUploadModal from "./Modals/DocumentUploadModal";
 
 const Documents: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const filesPerPage = 5;
+  const filesPerPage = 10;
   const [caseDocuments, setCaseDocuments] = useState<CaseDocumentProps[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
