@@ -197,14 +197,14 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         {adviser?.user?.middle_name} {adviser?.user?.last_name}
                       </span>
                     </td>
-                    <td>{adviser?.official_email || "-"}</td>
+                    <td>{adviser?.user?.email || "-"}</td>
                     <td>
-                      {adviser?.official_phone ? (
+                      {adviser?.user?.phone ? (
                         <a
-                          href={`tel:${adviser?.official_phone}`}
+                          href={`tel:${adviser?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {adviser?.official_phone}
+                          {adviser?.user?.phone}
                         </a>
                       ) : (
                         "-"
