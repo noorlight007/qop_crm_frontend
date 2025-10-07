@@ -10,6 +10,7 @@ export interface LoanDetailsFormTab1Props {
     loan_purpose: string;
     borrower_type: string;
     interest_rate_type: string;
+    interest_rate: string;
     product_term: string;
     lender: string;
     other_lender_note: string;
