@@ -18,6 +18,7 @@ import {
 import BatchDeleteModal from "./Modals/BatchDeleteModal";
 import DocumentDeleteModal from "./Modals/DocumentDeleteModal";
 import DocumentUploadModal from "./Modals/DocumentUploadModal";
+import UpdateInfoModal from "./Modals/UpdateInfoModal";
 
 const Documents: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +27,10 @@ const Documents: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] =
+    useState<CaseDocumentProps | null>(null);
+  const [selectedDocumentForUpdate, setSelectedDocumentForUpdate] =
     useState<CaseDocumentProps | null>(null);
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
     new Set()
@@ -99,6 +103,13 @@ const Documents: React.FC = () => {
   const toggleDeleteModal = () => setDeleteModalOpen(!deleteModalOpen);
   const toggleBatchDeleteModal = () =>
     setBatchDeleteModalOpen(!batchDeleteModalOpen);
+  const toggleUpdateModal = () => {
+    setUpdateModalOpen(!updateModalOpen);
+    if (updateModalOpen) {
+      // Clear selected document when closing modal
+      setSelectedDocumentForUpdate(null);
+    }
+  };
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -107,6 +118,11 @@ const Documents: React.FC = () => {
   const handleDeleteClick = (fileData: CaseDocumentProps) => {
     setSelectedDocument(fileData);
     toggleDeleteModal();
+  };
+
+  const handleUpdateClick = (fileData: CaseDocumentProps) => {
+    setSelectedDocumentForUpdate(fileData);
+    toggleUpdateModal();
   };
 
   // Batch selection functions
@@ -317,6 +333,13 @@ const Documents: React.FC = () => {
                                 <i className="fa-solid fa-download"></i>
                               </a>
                               <button
+                                className="btn btn-primary btn-sm"
+                                title="Update Info"
+                                onClick={() => handleUpdateClick(fileData)}
+                              >
+                                <i className="fa-solid fa-edit"></i>
+                              </button>
+                              <button
                                 className="btn btn-danger btn-sm"
                                 title="Delete"
                                 onClick={() => handleDeleteClick(fileData)}
@@ -399,6 +422,15 @@ const Documents: React.FC = () => {
           fileData={selectedDocument}
           case_alias={casealias?.toString()}
           fileAlias={selectedDocument.alias}
+        />
+      )}
+
+      {selectedDocumentForUpdate && (
+        <UpdateInfoModal
+          isOpen={updateModalOpen}
+          toggle={toggleUpdateModal}
+          documentData={selectedDocumentForUpdate}
+          caseAlias={casealias?.toString() || ""}
         />
       )}
 

@@ -21,6 +21,15 @@ export const DocumentsApi = baseApi.injectEndpoints({
       invalidatesTags: ["CaseDocuments"],
     }),
 
+    updateCaseDocument: builder.mutation({
+      query: ({ case_alias, file_alias, payload }) => ({
+        url: `/cases/${case_alias}/files/${file_alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["CaseDocuments"],
+    }),
+
     deleteCaseDocument: builder.mutation({
       query: ({ case_alias, file_alias }) => ({
         url: `/cases/${case_alias}/files/${file_alias}/`,
@@ -34,5 +43,6 @@ export const DocumentsApi = baseApi.injectEndpoints({
 export const {
   useGetCaseDocumentsQuery,
   useUploadCaseDocumentMutation,
+  useUpdateCaseDocumentMutation,
   useDeleteCaseDocumentMutation,
 } = DocumentsApi;
