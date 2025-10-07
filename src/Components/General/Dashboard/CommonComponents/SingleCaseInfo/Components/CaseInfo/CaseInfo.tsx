@@ -22,6 +22,275 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   const toggleUpdateCaseModal = () =>
     setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
 
+  // Dynamic column sizing configuration
+  const getCardColumns = (index: number) => {
+    // First 3 cards: 4 columns each (3 per row)
+    // Last 2 cards: 6 columns each (2 per row)
+    if (index < 3) {
+      return { xl: 4, lg: 4, md: 6, sm: 12 };
+    } else {
+      return { xl: 6, lg: 6, md: 6, sm: 12 };
+    }
+  };
+
+  // Card configuration array
+  const cardData = [
+    {
+      title: "Case User",
+      borderClass: "border-b-primary",
+      spinnerColor: "primary",
+      content: (
+        <Row className="pt-2">
+          <Col xs="12">
+            <h6 className="pt-1">
+              <span className="small">Name:</span>{" "}
+              <strong className="small">
+                {caseInfo?.lead_user?.title
+                  ? caseInfo.lead_user.title[0].toUpperCase() +
+                    caseInfo.lead_user.title.slice(1).toLowerCase()
+                  : ""}
+                {"."} {caseInfo?.lead_user?.first_name}{" "}
+                {caseInfo?.lead_user?.middle_name}{" "}
+                {caseInfo?.lead_user?.last_name}
+              </strong>
+            </h6>
+            <h6 className="pt-1">
+              <span className="small">Email:</span>{" "}
+              <strong>
+                <small>{caseInfo?.lead_user?.email}</small>
+              </strong>
+            </h6>
+            <h6 className="pt-1">
+              {caseInfo?.lead_user?.phone ? (
+                <>
+                  <span className="small">Phone:</span>{" "}
+                  <strong>
+                    <a
+                      className="text-dark text_decoration_hover small"
+                      href={`tel:${caseInfo?.lead_user?.phone}`}
+                    >
+                      {caseInfo?.lead_user?.phone}
+                    </a>
+                  </strong>
+                </>
+              ) : (
+                <>
+                  <span className="small">Phone:</span>{" "}
+                  <strong className="text-muted opacity-50 small">
+                    Not Found
+                  </strong>
+                </>
+              )}
+            </h6>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      title: "Case Info",
+      borderClass: "border-b-warning",
+      spinnerColor: "warning",
+      content: (
+        <Row className="pt-2">
+          <Col xs="12">
+            <h6 className="pt-1">
+              <span className="small">Case Category:</span>{" "}
+              <strong className="small">
+                {caseInfo?.case_category
+                  ? caseInfo.case_category
+                      .split("_")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")
+                  : "N/A"}
+              </strong>
+            </h6>
+            <h6 className="pt-1">
+              <span className="small">Case Status:</span>{" "}
+              <strong
+                className={`rounded-1 px-1 small ${
+                  caseInfo?.is_removed ? "bg-danger" : "bg-success"
+                }`}
+              >
+                {caseInfo?.is_removed ? "Removed" : "Active"}
+              </strong>
+            </h6>
+            <h6 className="pt-1">
+              <span className="small">Case Stage:</span>{" "}
+              <strong className="small">
+                {caseInfo?.case_stage
+                  ? caseInfo.case_stage
+                      .split("_")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")
+                  : "N/A"}
+              </strong>
+            </h6>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      title: "Assigned Advisor",
+      borderClass: "border-b-info",
+      spinnerColor: "info",
+      content: (
+        <Row className="pt-2">
+          <Col xs="12">
+            {caseInfo?.assigned_user ? (
+              <>
+                <h6 className="pt-1">
+                  <span className="small">Name:</span>{" "}
+                  <strong className="small">
+                    {caseInfo?.assigned_user?.title
+                      ? caseInfo.assigned_user.title[0].toUpperCase() +
+                        caseInfo.assigned_user.title.slice(1).toLowerCase()
+                      : ""}
+                    {"."} {caseInfo?.assigned_user?.first_name}{" "}
+                    {caseInfo?.assigned_user?.middle_name}{" "}
+                    {caseInfo?.assigned_user?.last_name}
+                  </strong>
+                </h6>
+                <h6 className="pt-1">
+                  <span className="small">Email:</span>{" "}
+                  <strong>
+                    <small>{caseInfo?.assigned_user?.email}</small>
+                  </strong>
+                </h6>
+                <h6 className="pt-1">
+                  <span className="small">User Type:</span>{" "}
+                  <strong className="small">
+                    {caseInfo?.assigned_user?.user_type
+                      ? caseInfo.assigned_user?.user_type
+                          .split("_")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase()
+                          )
+                          .join(" ")
+                      : "N/A"}
+                  </strong>
+                </h6>
+              </>
+            ) : (
+              <div className="text-center py-3 mt-2">
+                <h6 className="text-muted">
+                  <em>Not Assigned Yet</em>
+                </h6>
+              </div>
+            )}
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      title: "Created By",
+      borderClass: "border-b-success",
+      spinnerColor: "success",
+      content: (
+        <Row className="pt-2">
+          <Col xs="12">
+            <h6 className="pt-1">
+              <span className="small">Name:</span>{" "}
+              <strong className="small">
+                {caseInfo?.created_by?.title
+                  ? caseInfo.created_by.title[0].toUpperCase() +
+                    caseInfo.created_by.title.slice(1).toLowerCase()
+                  : ""}
+                {"."} {caseInfo?.created_by?.first_name}{" "}
+                {caseInfo?.created_by?.middle_name}{" "}
+                {caseInfo?.created_by?.last_name}
+              </strong>
+            </h6>
+            <h6 className="pt-1">
+              <span className="small">Email:</span>{" "}
+              <strong>
+                <small>{caseInfo?.created_by?.email}</small>
+              </strong>
+            </h6>
+            <h6 className="pt-1">
+              <span className="small">User Type:</span>{" "}
+              <strong className="small">
+                {caseInfo?.created_by?.user_type
+                  ? caseInfo.created_by?.user_type
+                      .split("_")
+                      .map(
+                        (word) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")
+                  : "N/A"}
+              </strong>
+            </h6>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      title: "Updated By",
+      borderClass: "border-b-secondary",
+      spinnerColor: "secondary",
+      content: (
+        <Row className="pt-2">
+          <Col xs="12">
+            {caseInfo?.updated_by ? (
+              <>
+                <h6 className="pt-1">
+                  <span className="small">Name:</span>{" "}
+                  <strong className="small">
+                    {caseInfo?.updated_by?.title
+                      ? caseInfo.updated_by.title[0].toUpperCase() +
+                        caseInfo.updated_by.title.slice(1).toLowerCase()
+                      : ""}
+                    {"."} {caseInfo?.updated_by?.first_name}{" "}
+                    {caseInfo?.updated_by?.middle_name}{" "}
+                    {caseInfo?.updated_by?.last_name}
+                  </strong>
+                </h6>
+                <h6 className="pt-1">
+                  <span className="small">Email:</span>{" "}
+                  <strong>
+                    <small>{caseInfo?.updated_by?.email}</small>
+                  </strong>
+                </h6>
+                <h6 className="pt-1">
+                  <span className="small">User Type:</span>{" "}
+                  <strong className="small">
+                    {caseInfo?.updated_by?.user_type
+                      ? caseInfo.updated_by?.user_type
+                          .split("_")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase()
+                          )
+                          .join(" ")
+                      : "N/A"}
+                  </strong>
+                </h6>
+              </>
+            ) : (
+              <div className="text-center py-3 mt-2">
+                <h6 className="text-muted">
+                  <em>No Updates Yet</em>
+                </h6>
+              </div>
+            )}
+          </Col>
+        </Row>
+      ),
+    },
+  ];
+
   const openUpdateCaseModal = (caseInfo: CaseInfoPrpos) => {
     setCurrentCase(caseInfo);
     toggleUpdateCaseModal();
@@ -49,335 +318,41 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         </CardHeader>
 
         <Row className="px-3 mt-3">
-          {/* Case User */}
-          <Col sm="12" md="6" lg="3">
-            <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-primary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Case User</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner
-                        animation="border"
-                        role="status"
-                        color="primary"
-                      />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      <h6 className="pt-1">
-                        <span className="small">Name:</span>{" "}
-                        <strong className="small">
-                          {caseInfo?.lead_user?.title
-                            ? caseInfo.lead_user.title[0].toUpperCase() +
-                              caseInfo.lead_user.title.slice(1).toLowerCase()
-                            : ""}
-                          {"."} {caseInfo?.lead_user?.first_name}{" "}
-                          {caseInfo?.lead_user?.middle_name}{" "}
-                          {caseInfo?.lead_user?.last_name}
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Email:</span>{" "}
-                        <strong>
-                          <small>{caseInfo?.lead_user?.email}</small>
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        {caseInfo?.lead_user?.phone ? (
-                          <>
-                            <span className="small">Phone:</span>{" "}
-                            <strong>
-                              <a
-                                className="text-dark text_decoration_hover small"
-                                href={`tel:${caseInfo?.lead_user?.phone}`}
-                              >
-                                {caseInfo?.lead_user?.phone}
-                              </a>
-                            </strong>
-                          </>
-                        ) : (
-                          <>
-                            <span className="small">Phone:</span>{" "}
-                            <strong className="text-muted opacity-50 small">
-                              Not Found
-                            </strong>
-                          </>
-                        )}
-                      </h6>
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-          {/* Case Info */}
-          <Col sm="12" md="6" lg="3">
-            <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-warning">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Case Info</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner
-                        animation="border"
-                        role="status"
-                        color="warning"
-                      />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      <h6 className="pt-1">
-                        <span className="small">Case Category:</span>{" "}
-                        <strong className="small">
-                          {caseInfo?.case_category
-                            ? caseInfo.case_category
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
-                            : "N/A"}
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Case Status:</span>{" "}
-                        <strong
-                          className={`rounded-1 px-1 small ${
-                            caseInfo?.is_removed ? "bg-danger" : "bg-success"
-                          }`}
-                        >
-                          {caseInfo?.is_removed ? "Removed" : "Active"}
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Case Stage:</span>{" "}
-                        <strong className="small">
-                          {caseInfo?.case_stage
-                            ? caseInfo.case_stage
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
-                            : "N/A"}
-                        </strong>
-                      </h6>
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-          {/* Assigned Advisor */}
-          <Col sm="12" md="6" lg="3">
-            <Card className="shadow ">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-info">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Assigned Advisor</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner animation="border" role="status" color="info" />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      {caseInfo?.assigned_user ? (
-                        <>
-                          <h6 className="pt-1">
-                            <span className="small">Name:</span>{" "}
-                            <strong className="small">
-                              {caseInfo?.assigned_user?.title
-                                ? caseInfo.assigned_user.title[0].toUpperCase() +
-                                  caseInfo.assigned_user.title
-                                    .slice(1)
-                                    .toLowerCase()
-                                : ""}
-                              {"."} {caseInfo?.assigned_user?.first_name}{" "}
-                              {caseInfo?.assigned_user?.middle_name}{" "}
-                              {caseInfo?.assigned_user?.last_name}
-                            </strong>
-                          </h6>
-                          <h6 className="pt-1">
-                            <span className="small">Email:</span>{" "}
-                            <strong>
-                              <small>{caseInfo?.assigned_user?.email}</small>
-                            </strong>
-                          </h6>
-                          <h6 className="pt-1">
-                            <span className="small">User Type:</span>{" "}
-                            <strong className="small">
-                              {caseInfo?.assigned_user?.user_type
-                                ? caseInfo.assigned_user?.user_type
-                                    .split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")
-                                : "N/A"}
-                            </strong>
-                          </h6>
-                        </>
-                      ) : (
-                        <div className="text-center py-3 mt-2">
-                          <h6 className="text-muted">
-                            <em>Not Assigned Yet</em>
-                          </h6>
-                        </div>
-                      )}
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-          {/* Created By */}
-          <Col sm="12" md="6" lg="3">
-            <Card className="shadow ">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-success">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Created By</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner
-                        animation="border"
-                        role="status"
-                        color="success"
-                      />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      <h6 className="pt-1">
-                        <span className="small">Name:</span>{" "}
-                        <strong className="small">
-                          {caseInfo?.created_by?.title
-                            ? caseInfo.created_by.title[0].toUpperCase() +
-                              caseInfo.created_by.title.slice(1).toLowerCase()
-                            : ""}
-                          {"."} {caseInfo?.created_by?.first_name}{" "}
-                          {caseInfo?.created_by?.middle_name}{" "}
-                          {caseInfo?.created_by?.last_name}
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Email:</span>{" "}
-                        <strong>
-                          <small>{caseInfo?.created_by?.email}</small>
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        <span className="small">User Type:</span>{" "}
-                        <strong className="small">
-                          {caseInfo?.created_by?.user_type
-                            ? caseInfo.created_by?.user_type
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
-                            : "N/A"}
-                        </strong>
-                      </h6>
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-          {/* Updated By */}
-          <Col sm="12" md="6" lg="3">
-            <Card className="shadow ">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Updated By</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner
-                        animation="border"
-                        role="status"
-                        color="secondary"
-                      />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      {caseInfo?.updated_by ? (
-                        <>
-                          <h6 className="pt-1">
-                            <span className="small">Name:</span>{" "}
-                            <strong className="small">
-                              {caseInfo?.updated_by?.title
-                                ? caseInfo.updated_by.title[0].toUpperCase() +
-                                  caseInfo.updated_by.title
-                                    .slice(1)
-                                    .toLowerCase()
-                                : ""}
-                              {"."} {caseInfo?.updated_by?.first_name}{" "}
-                              {caseInfo?.updated_by?.middle_name}{" "}
-                              {caseInfo?.updated_by?.last_name}
-                            </strong>
-                          </h6>
-                          <h6 className="pt-1">
-                            <span className="small">Email:</span>{" "}
-                            <strong>
-                              <small>{caseInfo?.updated_by?.email}</small>
-                            </strong>
-                          </h6>
-                          <h6 className="pt-1">
-                            <span className="small">User Type:</span>{" "}
-                            <strong className="small">
-                              {caseInfo?.updated_by?.user_type
-                                ? caseInfo.updated_by?.user_type
-                                    .split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")
-                                : "N/A"}
-                            </strong>
-                          </h6>
-                        </>
-                      ) : (
-                        <div className="text-center py-3 mt-2">
-                          <h6 className="text-muted">
-                            <em>No Updates Yet</em>
-                          </h6>
-                        </div>
-                      )}
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
+          {cardData.map((card, index) => {
+            const columns = getCardColumns(index);
+            return (
+              <Col
+                key={card.title}
+                sm={columns.sm}
+                md={columns.md}
+                lg={columns.lg}
+                xl={columns.xl}
+              >
+                <Card className="shadow">
+                  <CardBody
+                    className={`support-ticket-font pt-2 border-3 rounded-3 ${card.borderClass}`}
+                  >
+                    <CardHeader className="pt-0 pb-1 m-0 text-center">
+                      <h6 className="fw-bold">{card.title}</h6>
+                    </CardHeader>
+                    {isLoading ? (
+                      <Row className="pt-2">
+                        <Col xs="12" className="text-center">
+                          <Spinner
+                            animation="border"
+                            role="status"
+                            color={card.spinnerColor}
+                          />
+                        </Col>
+                      </Row>
+                    ) : (
+                      card.content
+                    )}
+                  </CardBody>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
         <Row className="px-3">
           <div>
