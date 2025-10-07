@@ -33,7 +33,9 @@ export interface CaseDocumentProps {
   file_owner_info: {
     email?: string;
     phone?: string;
+    title?: string;
     first_name?: string;
+    middle_name?: string;
     last_name?: string;
     profile_image?: string;
     user_type?: string;
@@ -44,7 +46,9 @@ export interface CaseDocumentProps {
   created_by: {
     email?: string;
     phone?: string;
+    title?: string;
     first_name?: string;
+    middle_name?: string;
     last_name?: string;
     profile_image?: string;
     user_type?: string;
@@ -52,7 +56,9 @@ export interface CaseDocumentProps {
   updated_by: {
     email?: string;
     phone?: string;
+    title?: string;
     first_name?: string;
+    middle_name?: string;
     last_name?: string;
     profile_image?: string;
     user_type?: string;
@@ -70,7 +76,7 @@ export interface DocumentUploadModalProps {
 export interface DocumentDeleteModalProps {
   isOpen?: boolean;
   toggle?: () => void;
-  file?: { name?: string; file_type?: string };
+  fileData?: { name?: string; file_type?: string };
   case_alias?: string;
   fileAlias?: string;
 }

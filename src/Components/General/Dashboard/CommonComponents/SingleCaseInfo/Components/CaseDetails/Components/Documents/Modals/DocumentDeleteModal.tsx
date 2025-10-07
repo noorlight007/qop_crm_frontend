@@ -7,13 +7,13 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 const DocumentDeleteModal: React.FC<DocumentDeleteModalProps> = ({
   isOpen,
   toggle,
-  file,
+  fileData,
   case_alias,
   fileAlias,
 }) => {
   const [deleteCaseDocument, { isLoading }] = useDeleteCaseDocumentMutation();
 
-  if (!file) {
+  if (!fileData) {
     return null;
   }
 
@@ -34,11 +34,22 @@ const DocumentDeleteModal: React.FC<DocumentDeleteModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Confirm Delete</ModalHeader>
+    <Modal isOpen={isOpen} toggle={toggle} centered>
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-danger">Confirm Delete</h3>
+      </ModalHeader>
       <ModalBody>
         Are you sure you want to delete the{" "}
-        <span className="text-danger">{file?.file_type}</span> file?
+        <span className="text-danger">
+          {fileData?.file_type
+            ?.split("_")
+            .map(
+              (word) =>
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            )
+            .join(" ")}
+        </span>{" "}
+        file?
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDeleteFile} disabled={isLoading}>

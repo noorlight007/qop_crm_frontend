@@ -59,8 +59,8 @@ const Documents: React.FC = () => {
     setCurrentPage(pageNumber);
   };
 
-  const handleDeleteClick = (file: CaseDocumentProps) => {
-    setSelectedDocument(file);
+  const handleDeleteClick = (fileData: CaseDocumentProps) => {
+    setSelectedDocument(fileData);
     toggleDeleteModal();
   };
 
@@ -156,20 +156,32 @@ const Documents: React.FC = () => {
                   </thead>
                   <tbody>
                     {currentDocuments.length > 0 ? (
-                      currentDocuments.map((file, index) => (
+                      currentDocuments.map((fileData, index) => (
                         <tr key={index}>
                           <td>{indexOfFirstDocument + index + 1}</td>
                           <td>
-                            {file?.name
-                              ? file.name
-                              : file.file?.split("/").pop() || "-"}
+                            {fileData?.name
+                              ? fileData.name
+                              : fileData.file?.split("/").pop() || "-"}
                           </td>
                           <td>
-                            {file?.file_owner_info?.first_name}{" "}
-                            {file?.file_owner_info?.last_name}
+                            {fileData?.file_owner_info?.title
+                              ? fileData.file_owner_info.title
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                fileData.file_owner_info.title
+                                  .slice(1)
+                                  .toLowerCase()
+                              : ""}
+                            {fileData?.file_owner_info?.title ? ". " : ""}
+                            {fileData?.file_owner_info?.first_name}{" "}
+                            {fileData?.file_owner_info?.middle_name
+                              ? fileData.file_owner_info.middle_name + " "
+                              : ""}
+                            {fileData?.file_owner_info?.last_name}
                           </td>
                           <td>
-                            {file?.file_type
+                            {fileData?.file_type
                               ?.split("_")
                               .map(
                                 (word) =>
@@ -181,7 +193,7 @@ const Documents: React.FC = () => {
                           <td>
                             <div className="d-flex justify-content-center gap-2 align-items-center">
                               <a
-                                href={file?.file}
+                                href={fileData?.file}
                                 className="btn btn-success btn-sm"
                                 target="_blank"
                                 title="Download"
@@ -192,7 +204,7 @@ const Documents: React.FC = () => {
                               <button
                                 className="btn btn-danger btn-sm"
                                 title="Delete"
-                                onClick={() => handleDeleteClick(file)}
+                                onClick={() => handleDeleteClick(fileData)}
                               >
                                 <i className="fa-regular fa-trash-can"></i>
                               </button>
@@ -257,7 +269,7 @@ const Documents: React.FC = () => {
         <DocumentDeleteModal
           isOpen={deleteModalOpen}
           toggle={toggleDeleteModal}
-          file={selectedDocument}
+          fileData={selectedDocument}
           case_alias={casealias?.toString()}
           fileAlias={selectedDocument.alias}
         />
