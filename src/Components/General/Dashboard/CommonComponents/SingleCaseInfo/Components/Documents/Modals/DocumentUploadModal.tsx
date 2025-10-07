@@ -25,10 +25,11 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   isOpen,
   toggle,
 }) => {
-  const [documents, setDocuments] = useState<Document | null>(null);
+  const [documents, setDocuments] = useState<File[]>([]);
   const params = useParams();
   const { casealias } = params;
   const [fileOwners, setfileOwners] = useState<DocumentOwnerProps | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
   // rtk hooks
   const { data: caseUsers, isLoading } = useGetCaseUsersQuery({
@@ -54,8 +55,31 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
 
   const handleDocumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setDocuments(e.target.files[0] as unknown as Document);
+      const filesArray = Array.from(e.target.files);
+
+      // Check file sizes (limit to 10MB per file)
+      const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+      const oversizedFiles = filesArray.filter((file) => file.size > maxSize);
+
+      if (oversizedFiles.length > 0) {
+        toast.error(
+          `Some files exceed the 10MB limit: ${oversizedFiles
+            .map((f) => f.name)
+            .join(", ")}`
+        );
+        return;
+      }
+
+      setDocuments(filesArray);
     }
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    setDocuments(documents.filter((_, index) => index !== indexToRemove));
+  };
+
+  const clearAllFiles = () => {
+    setDocuments([]);
   };
 
   const handleInputChange = (
@@ -70,27 +94,51 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!documents) {
+    if (documents.length === 0) {
+      toast.error("Please select at least one file to upload.");
+      return;
+    }
+
+    if (!formData.fileType || !formData.fileOwner) {
       toast.error("Please fill in all required fields.");
       return;
     }
 
-    const uploadData = new FormData();
-    // Append all fields including the file
-    uploadData.append("file", documents as unknown as File);
-    uploadData.append("file_type", formData.fileType);
-    uploadData.append("file_owner", formData.fileOwner.toString());
-    uploadData.append("name", formData.DocumentName);
-    uploadData.append("description", formData.description);
-    uploadData.append("special_notes", formData.specialNotes);
-
     try {
-      await uploadCaseDocument({
-        case_alias: casealias,
-        payload: uploadData,
-      }).unwrap();
-      // Reset form data after successful upload
-      setDocuments(null);
+      // Upload each file individually
+      let successCount = 0;
+      let failedFiles: string[] = [];
+
+      for (let i = 0; i < documents.length; i++) {
+        const file = documents[i];
+        setUploadProgress(Math.round(((i + 1) / documents.length) * 100));
+
+        try {
+          const uploadData = new FormData();
+
+          // Append all fields including the current file
+          uploadData.append("file", file);
+          uploadData.append("file_type", formData.fileType);
+          uploadData.append("file_owner", formData.fileOwner.toString());
+          uploadData.append("name", formData.DocumentName || file.name);
+          uploadData.append("description", formData.description);
+          uploadData.append("special_notes", formData.specialNotes);
+
+          await uploadCaseDocument({
+            case_alias: casealias,
+            payload: uploadData,
+          }).unwrap();
+
+          successCount++;
+        } catch (fileError) {
+          console.error(`Error uploading ${file.name}:`, fileError);
+          failedFiles.push(file.name);
+        }
+      }
+
+      // Reset form data after upload attempts
+      setDocuments([]);
+      setUploadProgress(0);
       setFormData({
         file: "",
         fileType: "",
@@ -99,11 +147,27 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
         description: "",
         specialNotes: "",
       });
-      toast.success("Document uploaded successfully!");
-      toggle();
+
+      // Show appropriate success/error messages
+      if (successCount === documents.length) {
+        toast.success(`All ${successCount} document(s) uploaded successfully!`);
+        toggle();
+      } else if (successCount > 0) {
+        toast.warning(
+          `${successCount} documents uploaded successfully. Failed: ${failedFiles.join(
+            ", "
+          )}`
+        );
+        toggle();
+      } else {
+        toast.error(
+          `Failed to upload all documents: ${failedFiles.join(", ")}`
+        );
+      }
     } catch (error) {
-      console.error("Error uploading file:", error);
-      toast.error("Failed to upload file.");
+      console.error("Error uploading files:", error);
+      setUploadProgress(0);
+      toast.error("Failed to upload documents.");
     }
   };
 
@@ -120,6 +184,10 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                 <Label for="fileUpload" className="form-label">
                   Select Documents (Multiple files allowed)
                   <span className="text-danger">*</span>
+                  <br />
+                  <small className="text-muted">
+                    Max file size: 10MB per file
+                  </small>
                 </Label>
                 <Input
                   type="file"
@@ -128,6 +196,51 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   multiple
                   onChange={handleDocumentChange}
                 />
+                {documents.length > 0 && (
+                  <div className="mt-2">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <small className="text-muted">
+                        Selected files ({documents.length}):
+                      </small>
+                      {documents.length > 1 && (
+                        <Button
+                          color="warning"
+                          size="sm"
+                          outline
+                          onClick={clearAllFiles}
+                        >
+                          <i className="fa fa-trash me-1"></i>
+                          Clear All
+                        </Button>
+                      )}
+                    </div>
+                    <ul className="list-unstyled mt-1">
+                      {documents.map((file, index) => (
+                        <li
+                          key={index}
+                          className="d-flex justify-content-between align-items-center py-1 border-bottom"
+                        >
+                          <div>
+                            <i className="fa fa-file me-1"></i>
+                            <span className="text-sm">{file.name}</span>
+                            <small className="text-muted ms-2">
+                              ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                            </small>
+                          </div>
+                          <Button
+                            color="danger"
+                            size="sm"
+                            outline
+                            onClick={() => removeFile(index)}
+                            className="ms-2"
+                          >
+                            <i className="fa fa-times"></i>
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -214,12 +327,21 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
               <FormGroup>
                 <Label for="DocumentName" className="form-label">
                   Document Name
+                  {documents.length > 1 && (
+                    <small className="text-muted ms-2">
+                      (Optional - file names will be used if empty)
+                    </small>
+                  )}
                 </Label>
                 <Input
                   type="text"
                   id="DocumentName"
                   name="DocumentName"
-                  placeholder="Write your document name"
+                  placeholder={
+                    documents.length > 1
+                      ? "Optional - individual file names will be used if empty"
+                      : "Write your document name"
+                  }
                   value={formData.DocumentName}
                   onChange={handleInputChange}
                 />
@@ -261,11 +383,32 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggle}>
+          {isUploading && documents.length > 1 && (
+            <div className="w-100 mb-2">
+              <small className="text-muted">
+                Upload Progress: {uploadProgress}%
+              </small>
+              <div className="progress" style={{ height: "6px" }}>
+                <div
+                  className="progress-bar"
+                  role="progressbar"
+                  style={{ width: `${uploadProgress}%` }}
+                  aria-valuenow={uploadProgress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                ></div>
+              </div>
+            </div>
+          )}
+          <Button color="secondary" onClick={toggle} disabled={isUploading}>
             Cancel
           </Button>
-          <Button color="primary">
-            {isUploading ? "Uploading..." : "Upload Document"}
+          <Button color="primary" type="submit" disabled={isUploading}>
+            {isUploading
+              ? `Uploading... (${uploadProgress}%)`
+              : `Upload ${
+                  documents.length > 0 ? documents.length : ""
+                } Document${documents.length !== 1 ? "s" : ""}`}
           </Button>
         </ModalFooter>
       </Form>

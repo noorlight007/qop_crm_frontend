@@ -88,7 +88,7 @@ const Documents: React.FC = () => {
                 <TbCircleArrowUp size={18} className="me-1" />
                 Upload Document
               </Button>
-              <Button>
+              <Button disabled>
                 <TbEye size={18} className="me-1" />
                 OCR Upload
               </Button>
@@ -211,7 +211,7 @@ const Documents: React.FC = () => {
                 </Table>
 
                 {caseDocuments.length > filesPerPage && (
-                  <div className="d-flex justify-content-center mt-3">
+                  <div className="d-flex justify-content-end mt-3">
                     <Button
                       color="primary"
                       size="sm"
