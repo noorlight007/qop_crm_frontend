@@ -19,6 +19,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Progress,
   Row,
 } from "reactstrap";
 
@@ -472,16 +473,14 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
               <small className="text-muted">
                 Upload Progress: {uploadProgress}%
               </small>
-              <div className="progress" style={{ height: "6px" }}>
-                <div
-                  className="progress-bar"
-                  role="progressbar"
-                  style={{ width: `${uploadProgress}%` }}
-                  aria-valuenow={uploadProgress}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                ></div>
-              </div>
+              <Progress
+                animated
+                striped
+                value={uploadProgress}
+                className="mb-3"
+              >
+                {uploadProgress}%
+              </Progress>
             </div>
           )}
           <Button color="secondary" onClick={toggle} disabled={isUploading}>

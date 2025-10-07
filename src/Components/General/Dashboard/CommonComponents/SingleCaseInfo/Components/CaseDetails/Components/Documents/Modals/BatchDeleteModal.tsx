@@ -119,7 +119,13 @@ const BatchDeleteModal: React.FC<BatchDeleteModalProps> = ({
             <p>
               Deleted {deletedCount} of {selectedDocuments.size} documents
             </p>
-            <Progress value={deleteProgress} className="mb-3">
+            <Progress
+              color="danger"
+              animated
+              striped
+              value={deleteProgress}
+              className="mb-3"
+            >
               {deleteProgress}%
             </Progress>
             <small className="text-muted">
