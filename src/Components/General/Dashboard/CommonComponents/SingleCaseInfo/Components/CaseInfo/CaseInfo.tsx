@@ -49,7 +49,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         </CardHeader>
 
         <Row className="px-3 mt-3">
-          {/* 1st card */}
+          {/* Case User */}
           <Col sm="12" md="6" lg="3">
             <Card className="shadow">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-primary">
@@ -115,7 +115,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
-          {/* 2nd card */}
+          {/* Case Info */}
           <Col sm="12" md="6" lg="3">
             <Card className="shadow">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-warning">
@@ -181,7 +181,74 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
-          {/* 3rd card */}
+          {/* Assigned Advisor */}
+          <Col sm="12" md="6" lg="3">
+            <Card className="shadow ">
+              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-info">
+                <CardHeader className="pt-0 pb-1 m-0 text-center">
+                  <h6 className="fw-bold">Assigned Advisor</h6>
+                </CardHeader>
+                {isLoading ? (
+                  <Row className="pt-2">
+                    <Col xs="12" className="text-center">
+                      <Spinner animation="border" role="status" color="info" />
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="pt-2">
+                    <Col xs="12">
+                      {caseInfo?.assigned_user ? (
+                        <>
+                          <h6 className="pt-1">
+                            <span className="small">Name:</span>{" "}
+                            <strong className="small">
+                              {caseInfo?.assigned_user?.title
+                                ? caseInfo.assigned_user.title[0].toUpperCase() +
+                                  caseInfo.assigned_user.title
+                                    .slice(1)
+                                    .toLowerCase()
+                                : ""}
+                              {"."} {caseInfo?.assigned_user?.first_name}{" "}
+                              {caseInfo?.assigned_user?.middle_name}{" "}
+                              {caseInfo?.assigned_user?.last_name}
+                            </strong>
+                          </h6>
+                          <h6 className="pt-1">
+                            <span className="small">Email:</span>{" "}
+                            <strong>
+                              <small>{caseInfo?.assigned_user?.email}</small>
+                            </strong>
+                          </h6>
+                          <h6 className="pt-1">
+                            <span className="small">User Type:</span>{" "}
+                            <strong className="small">
+                              {caseInfo?.assigned_user?.user_type
+                                ? caseInfo.assigned_user?.user_type
+                                    .split("_")
+                                    .map(
+                                      (word) =>
+                                        word.charAt(0).toUpperCase() +
+                                        word.slice(1).toLowerCase()
+                                    )
+                                    .join(" ")
+                                : "N/A"}
+                            </strong>
+                          </h6>
+                        </>
+                      ) : (
+                        <div className="text-center py-3 mt-2">
+                          <h6 className="text-muted">
+                            <em>Not Assigned Yet</em>
+                          </h6>
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                )}
+              </CardBody>
+            </Card>
+          </Col>
+          {/* Created By */}
           <Col sm="12" md="6" lg="3">
             <Card className="shadow ">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-success">
@@ -240,49 +307,53 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
-          {/* 4th card */}
+          {/* Updated By */}
           <Col sm="12" md="6" lg="3">
             <Card className="shadow ">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-info">
+              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Assigned Advisor</h6>
+                  <h6 className="fw-bold">Updated By</h6>
                 </CardHeader>
                 {isLoading ? (
                   <Row className="pt-2">
                     <Col xs="12" className="text-center">
-                      <Spinner animation="border" role="status" color="info" />
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        color="secondary"
+                      />
                     </Col>
                   </Row>
                 ) : (
                   <Row className="pt-2">
                     <Col xs="12">
-                      {caseInfo?.assigned_user ? (
+                      {caseInfo?.updated_by ? (
                         <>
                           <h6 className="pt-1">
                             <span className="small">Name:</span>{" "}
                             <strong className="small">
-                              {caseInfo?.assigned_user?.title
-                                ? caseInfo.assigned_user.title[0].toUpperCase() +
-                                  caseInfo.assigned_user.title
+                              {caseInfo?.updated_by?.title
+                                ? caseInfo.updated_by.title[0].toUpperCase() +
+                                  caseInfo.updated_by.title
                                     .slice(1)
                                     .toLowerCase()
                                 : ""}
-                              {"."} {caseInfo?.assigned_user?.first_name}{" "}
-                              {caseInfo?.assigned_user?.middle_name}{" "}
-                              {caseInfo?.assigned_user?.last_name}
+                              {"."} {caseInfo?.updated_by?.first_name}{" "}
+                              {caseInfo?.updated_by?.middle_name}{" "}
+                              {caseInfo?.updated_by?.last_name}
                             </strong>
                           </h6>
                           <h6 className="pt-1">
                             <span className="small">Email:</span>{" "}
                             <strong>
-                              <small>{caseInfo?.assigned_user?.email}</small>
+                              <small>{caseInfo?.updated_by?.email}</small>
                             </strong>
                           </h6>
                           <h6 className="pt-1">
                             <span className="small">User Type:</span>{" "}
                             <strong className="small">
-                              {caseInfo?.assigned_user?.user_type
-                                ? caseInfo.assigned_user?.user_type
+                              {caseInfo?.updated_by?.user_type
+                                ? caseInfo.updated_by?.user_type
                                     .split("_")
                                     .map(
                                       (word) =>
@@ -297,7 +368,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                       ) : (
                         <div className="text-center py-3 mt-2">
                           <h6 className="text-muted">
-                            <em>Not Assigned Yet</em>
+                            <em>No Updates Yet</em>
                           </h6>
                         </div>
                       )}
