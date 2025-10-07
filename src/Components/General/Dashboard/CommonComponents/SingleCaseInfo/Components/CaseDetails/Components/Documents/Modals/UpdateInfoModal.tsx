@@ -47,6 +47,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
   const [formData, setFormData] = useState({
     fileOwner: 0,
     document_type: "",
+    document_name: "",
   });
 
   useEffect(() => {
@@ -105,6 +106,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
       setFormData({
         fileOwner: currentOwnerId,
         document_type: documentData.file_type || "",
+        document_name: documentData.name || "",
       });
     }
   }, [documentData, fileOwners]);
@@ -140,10 +142,22 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
       return;
     }
 
+    if (!formData.document_name.trim()) {
+      toast.error("Please enter a document name");
+      return;
+    }
+
+    // Validate document name length (max 100 characters)
+    if (formData.document_name.trim().length > 100) {
+      toast.error("Document name must be at most 100 characters");
+      return;
+    }
+
     try {
       const payload = {
         file_owner: formData.fileOwner,
         file_type: formData.document_type,
+        name: formData.document_name.trim(),
       };
 
       await updateCaseDocument({
@@ -165,6 +179,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
     setFormData({
       fileOwner: 0,
       document_type: "",
+      document_name: "",
     });
     toggle();
   };
@@ -200,6 +215,29 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
                 : "N/A"}
             </p>
           </div>
+
+          <Row>
+            <Col md={12}>
+              <FormGroup>
+                <Label for="document_name">
+                  Document Name <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  id="document_name"
+                  name="document_name"
+                  value={formData.document_name}
+                  onChange={handleInputChange}
+                  placeholder="Enter document name..."
+                  maxLength={100}
+                  required
+                />
+                <small className="text-muted">
+                  Maximum 100 characters ({formData.document_name.length}/100)
+                </small>
+              </FormGroup>
+            </Col>
+          </Row>
 
           <Row>
             <Col md={12}>
