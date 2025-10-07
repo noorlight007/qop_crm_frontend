@@ -2,6 +2,7 @@ import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/Sing
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { TbCircleArrowUp, TbEye } from "react-icons/tb";
 import {
   Button,
@@ -340,42 +341,49 @@ const Documents: React.FC = () => {
                     )}
                   </tbody>
                 </Table>
-
-                {caseDocuments.length > filesPerPage && (
-                  <div className="d-flex justify-content-end mt-3">
-                    <Button
-                      color="primary"
-                      size="sm"
-                      disabled={currentPage === 1}
-                      onClick={() => handlePageChange(currentPage - 1)}
-                    >
-                      Previous
-                    </Button>
-                    {[...Array(totalPages)].map((_, pageIndex) => (
-                      <Button
-                        key={pageIndex}
-                        color={
-                          currentPage === pageIndex + 1
-                            ? "primary"
-                            : "secondary"
-                        }
-                        size="sm"
-                        className="mx-1"
-                        onClick={() => handlePageChange(pageIndex + 1)}
-                      >
-                        {pageIndex + 1}
-                      </Button>
-                    ))}
-                    <Button
-                      color="primary"
-                      size="sm"
-                      disabled={currentPage === totalPages}
-                      onClick={() => handlePageChange(currentPage + 1)}
-                    >
-                      Next
-                    </Button>
+                <div className="d-flex justify-content-between mt-3">
+                  <div>
+                    <span>
+                      Show {currentDocuments.length} entries | Total:{" "}
+                      {caseDocuments.length} entries
+                    </span>
                   </div>
-                )}
+                  {caseDocuments.length > filesPerPage && (
+                    <div className="d-flex justify-content-end mt-3">
+                      <Button
+                        color="primary"
+                        size="sm"
+                        disabled={currentPage === 1}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                      >
+                        <FaChevronLeft /> {/* Previous */}
+                      </Button>
+                      {[...Array(totalPages)].map((_, pageIndex) => (
+                        <Button
+                          key={pageIndex}
+                          color={
+                            currentPage === pageIndex + 1
+                              ? "primary"
+                              : "border border-primary"
+                          }
+                          size="sm"
+                          className="mx-1"
+                          onClick={() => handlePageChange(pageIndex + 1)}
+                        >
+                          {pageIndex + 1}
+                        </Button>
+                      ))}
+                      <Button
+                        color="primary"
+                        size="sm"
+                        disabled={currentPage === totalPages}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      >
+                        <FaChevronRight /> {/* Next */}
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </>
             )}
           </Row>
