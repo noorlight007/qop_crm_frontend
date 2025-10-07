@@ -15,6 +15,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import BatchDeleteModal from "./Modals/BatchDeleteModal";
 import DocumentDeleteModal from "./Modals/DocumentDeleteModal";
 import DocumentUploadModal from "./Modals/DocumentUploadModal";
 
@@ -24,8 +25,13 @@ const Documents: React.FC = () => {
   const [caseDocuments, setCaseDocuments] = useState<CaseDocumentProps[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] =
     useState<CaseDocumentProps | null>(null);
+  const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
+    new Set()
+  );
+  const [selectAll, setSelectAll] = useState(false);
   const [filterIcon, setFilterIcon] = useState(false);
   const params = useParams();
   const { casealias } = params;
@@ -49,11 +55,18 @@ const Documents: React.FC = () => {
     }
   }, [caseDocumentsData]);
 
+  // Clear selection when changing pages
+  useEffect(() => {
+    clearSelection();
+  }, [currentPage]);
+
   //filter icon toggle
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const toggleDeleteModal = () => setDeleteModalOpen(!deleteModalOpen);
+  const toggleBatchDeleteModal = () =>
+    setBatchDeleteModalOpen(!batchDeleteModalOpen);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -64,19 +77,83 @@ const Documents: React.FC = () => {
     toggleDeleteModal();
   };
 
+  // Batch selection functions
+  const handleSelectDocument = (documentAlias: string) => {
+    const newSelected = new Set(selectedDocuments);
+    if (newSelected.has(documentAlias)) {
+      newSelected.delete(documentAlias);
+    } else {
+      newSelected.add(documentAlias);
+    }
+    setSelectedDocuments(newSelected);
+    setSelectAll(newSelected.size === currentDocuments.length);
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedDocuments(new Set());
+    } else {
+      const allDocumentAliases = new Set(
+        currentDocuments.map((doc) => doc.alias)
+      );
+      setSelectedDocuments(allDocumentAliases);
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedDocuments.size > 0) {
+      toggleBatchDeleteModal();
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedDocuments(new Set());
+    setSelectAll(false);
+  };
+
+  // Helper function to create document names map
+  const getDocumentNamesMap = (): Map<string, string> => {
+    const nameMap = new Map<string, string>();
+    caseDocuments.forEach((doc) => {
+      const displayName = doc?.name
+        ? doc.name
+        : doc.file?.split("/").pop() || doc.alias;
+      nameMap.set(doc.alias, displayName);
+    });
+    return nameMap;
+  };
+
   return (
     <Col sm="12" className="box-col-12">
       <Card>
         <CardHeader>
           <Row>
-            <Col lg="3" sm="12">
+            <Col lg="4" sm="12">
               <h3>Documents</h3>
+              {selectedDocuments.size > 0 && (
+                <small className="text-muted">
+                  {selectedDocuments.size} document(s) selected
+                </small>
+              )}
             </Col>
             <Col
-              lg="9"
+              lg="8"
               sm="12"
               className="d-flex flex-md-row flex-xs-column justify-content-end gap-2"
             >
+              {selectedDocuments.size > 0 && (
+                <>
+                  <Button color="danger" onClick={handleBatchDelete}>
+                    <i className="fa-solid fa-trash me-1"></i>
+                    Delete Selected ({selectedDocuments.size})
+                  </Button>
+                  <Button color="secondary" outline onClick={clearSelection}>
+                    <i className="fa-solid fa-times me-1"></i>
+                    Clear Selection
+                  </Button>
+                </>
+              )}
               <Button color="success" onClick={toggleFilterIcon}>
                 {filterIcon ? (
                   <i className="fa-solid fa-filter-circle-xmark"></i>
@@ -147,6 +224,25 @@ const Documents: React.FC = () => {
                 <Table hover responsive className="text-center">
                   <thead>
                     <tr>
+                      <th>
+                        <Input
+                          type="checkbox"
+                          checked={selectAll}
+                          onChange={handleSelectAll}
+                          className="form-check-input"
+                          style={
+                            {
+                              borderColor: "#dc3545",
+                              borderWidth: "1px",
+                              accentColor: "#dc3545",
+                              backgroundColor: selectAll
+                                ? "#dc3545"
+                                : "transparent",
+                              "--bs-form-check-bg": "#dc3545",
+                            } as React.CSSProperties
+                          }
+                        />
+                      </th>
                       <th>#</th>
                       <th>Document Name</th>
                       <th>Owner Name</th>
@@ -158,6 +254,29 @@ const Documents: React.FC = () => {
                     {currentDocuments.length > 0 ? (
                       currentDocuments.map((fileData, index) => (
                         <tr key={index}>
+                          <td>
+                            <Input
+                              type="checkbox"
+                              checked={selectedDocuments.has(fileData.alias)}
+                              onChange={() =>
+                                handleSelectDocument(fileData.alias)
+                              }
+                              className="form-check-input"
+                              style={
+                                {
+                                  borderColor: "#dc3545",
+                                  borderWidth: "1px",
+                                  accentColor: "#dc3545",
+                                  backgroundColor: selectedDocuments.has(
+                                    fileData.alias
+                                  )
+                                    ? "#dc3545"
+                                    : "transparent",
+                                  "--bs-form-check-bg": "#dc3545",
+                                } as React.CSSProperties
+                              }
+                            />
+                          </td>
                           <td>{indexOfFirstDocument + index + 1}</td>
                           <td>
                             {fileData?.name
@@ -274,6 +393,15 @@ const Documents: React.FC = () => {
           fileAlias={selectedDocument.alias}
         />
       )}
+
+      <BatchDeleteModal
+        isOpen={batchDeleteModalOpen}
+        toggle={toggleBatchDeleteModal}
+        selectedDocuments={selectedDocuments}
+        documentNames={getDocumentNamesMap()}
+        case_alias={casealias?.toString() || ""}
+        onDeleteComplete={clearSelection}
+      />
     </Col>
   );
 };
