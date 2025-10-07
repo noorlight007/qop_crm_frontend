@@ -11,7 +11,6 @@ import {
   CardHeader,
   Col,
   Input,
-  Label,
   Row,
   Spinner,
   Table,
@@ -33,7 +32,7 @@ const Documents: React.FC = () => {
     new Set()
   );
   const [selectAll, setSelectAll] = useState(false);
-  const [filterIcon, setFilterIcon] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const params = useParams();
   const { casealias } = params;
 
@@ -42,10 +41,40 @@ const Documents: React.FC = () => {
     case_alias: casealias,
   });
 
-  const totalPages = Math.ceil(caseDocuments.length / filesPerPage);
+  // Filter documents based on search term
+  const filteredDocuments = caseDocuments.filter((doc) => {
+    if (!searchTerm) return true;
+
+    const searchLower = searchTerm.toLowerCase();
+
+    // Search by document name
+    const documentName = doc.name?.toLowerCase() || "";
+
+    // Search by owner name (first, middle, last name)
+    const ownerFirstName = doc.file_owner_info?.first_name?.toLowerCase() || "";
+    const ownerMiddleName =
+      doc.file_owner_info?.middle_name?.toLowerCase() || "";
+    const ownerLastName = doc.file_owner_info?.last_name?.toLowerCase() || "";
+    const ownerFullName =
+      `${ownerFirstName} ${ownerMiddleName} ${ownerLastName}`.trim();
+
+    // Search by document type
+    const documentType = doc.file_type?.toLowerCase() || "";
+
+    return (
+      documentName.includes(searchLower) ||
+      ownerFirstName.includes(searchLower) ||
+      ownerMiddleName.includes(searchLower) ||
+      ownerLastName.includes(searchLower) ||
+      ownerFullName.includes(searchLower) ||
+      documentType.includes(searchLower)
+    );
+  });
+
+  const totalPages = Math.ceil(filteredDocuments.length / filesPerPage);
   const indexOfLastDocument = currentPage * filesPerPage;
   const indexOfFirstDocument = indexOfLastDocument - filesPerPage;
-  const currentDocuments = caseDocuments.slice(
+  const currentDocuments = filteredDocuments.slice(
     indexOfFirstDocument,
     indexOfLastDocument
   );
@@ -61,8 +90,10 @@ const Documents: React.FC = () => {
     clearSelection();
   }, [currentPage]);
 
-  //filter icon toggle
-  const toggleFilterIcon = () => setFilterIcon(!filterIcon);
+  // Reset current page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   const toggleModal = () => setModalOpen(!modalOpen);
   const toggleDeleteModal = () => setDeleteModalOpen(!deleteModalOpen);
@@ -155,13 +186,17 @@ const Documents: React.FC = () => {
                   </Button>
                 </>
               )}
-              <Button color="success" onClick={toggleFilterIcon}>
-                {filterIcon ? (
-                  <i className="fa-solid fa-filter-circle-xmark"></i>
-                ) : (
-                  <i className="fa-solid fa-filter"></i>
-                )}
-              </Button>
+              <div className="position-relative" style={{ minWidth: "250px" }}>
+                <Input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pe-5"
+                  style={{ padding: "10px" }}
+                />
+                <i className="fa-solid fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+              </div>
               <Button color="primary" onClick={toggleModal}>
                 <TbCircleArrowUp size={18} className="me-1" />
                 Upload Document
@@ -175,46 +210,6 @@ const Documents: React.FC = () => {
         </CardHeader>
 
         <CardBody>
-          <Row>
-            {filterIcon && (
-              <Card className="shadow-lg p-3 bg-light-success">
-                <Row className="g-3">
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Document Name</Label>
-                    <Input type="select" id="1" className="py-1">
-                      <option value="">All</option>
-                      <option value="1">Select Employee</option>
-                      <option value="2">Select Employee</option>
-                    </Input>
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Document Owner</Label>
-                    <Input type="select" id="1" className="py-1">
-                      <option value="">All</option>
-                      <option value="A">A</option>
-                      <option value="B">B</option>
-                    </Input>
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Document Type</Label>
-                    <Input type="select" id="2" className="py-1">
-                      <option value="">All</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                    </Input>
-                  </Col>
-                  {/* Clear All Filters Button */}
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Clear Filters</Label>
-                    <Button outline color="danger" className="w-100">
-                      Clear
-                    </Button>
-                  </Col>
-                </Row>
-              </Card>
-            )}
-          </Row>
           <Row>
             {isLoading ? (
               <div className="d-flex justify-content-center my-5">
@@ -345,10 +340,15 @@ const Documents: React.FC = () => {
                   <div>
                     <span>
                       Show {currentDocuments.length} entries | Total:{" "}
-                      {caseDocuments.length} entries
+                      {filteredDocuments.length} entries
+                      {searchTerm && (
+                        <span className="text-muted ms-2">
+                          (filtered from {caseDocuments.length} total)
+                        </span>
+                      )}
                     </span>
                   </div>
-                  {caseDocuments.length > filesPerPage && (
+                  {filteredDocuments.length > filesPerPage && (
                     <div className="d-flex justify-content-end mt-3">
                       <Button
                         color="primary"
