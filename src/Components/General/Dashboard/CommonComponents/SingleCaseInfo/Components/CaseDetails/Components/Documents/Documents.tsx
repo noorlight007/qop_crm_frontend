@@ -1,5 +1,5 @@
-import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/Documents/DocumentsApi";
-import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/Documents/DocumentsTypes";
+import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
+import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { TbCircleArrowUp, TbEye } from "react-icons/tb";

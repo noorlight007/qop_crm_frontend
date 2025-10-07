@@ -1,9 +1,10 @@
+import { useUploadCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
-import { useUploadCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/Documents/DocumentsApi";
 import {
   DocumentOwnerProps,
   DocumentUploadModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/Documents/DocumentsTypes";
+} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
