@@ -76,6 +76,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     deposit_source: null as string | null,
     current_monthly_payment: null as string | null,
     current_lender: "",
+    current_lender_other_note: "",
     original_purchase_price: 0,
     date_of_purchase: null as string | null,
     advice_level: "",
@@ -144,6 +145,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
         current_monthly_payment:
           loandetailsData.current_monthly_payment || null,
         current_lender: loandetailsData.current_lender || "",
+        current_lender_other_note:
+          loandetailsData.current_lender_other_note || "",
         original_purchase_price: loandetailsData.original_purchase_price || 0,
         date_of_purchase: loandetailsData.date_of_purchase || null,
         advice_level: loandetailsData.advice_level || "",

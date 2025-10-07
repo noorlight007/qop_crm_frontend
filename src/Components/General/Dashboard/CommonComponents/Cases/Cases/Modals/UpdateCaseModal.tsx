@@ -5,6 +5,7 @@ import {
   UpdateCaseModalProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -24,6 +25,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   toggle,
   caseData,
 }) => {
+  const { data: session } = useSession();
   // Initialize formData with proper assigned_to mapping
   const getInitialFormData = (data: CaseInfoPrpos | null) => {
     if (!data) return null;
@@ -150,39 +152,42 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                 <option value="NOT_PROCEED">Not Proceed</option>
               </Input>
             </FormGroup>
-            <FormGroup>
-              <Label for="adviser">Assign Adviser</Label>
-              <Input
-                id="adviser"
-                name="assigned_to"
-                type="select"
-                value={formData?.assigned_to || ""}
-                onChange={handleInputChange}
-              >
-                <option value="">Select...</option>
-                {advisers.length > 0 ? (
-                  advisers.map((adviser) => (
-                    <option key={adviser.user.id} value={adviser.user.id}>
-                      {`${
-                        adviser.user?.title
-                          ? adviser.user.title.charAt(0).toUpperCase() +
-                            adviser.user.title.slice(1).toLowerCase() +
-                            ". "
-                          : ""
-                      }${adviser.user?.first_name}${
-                        adviser.user?.middle_name
-                          ? " " + adviser.user.middle_name
-                          : ""
-                      } ${adviser.user?.last_name}`}
+            {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+              session?.user?.user_type === "NETWORK_ADMIN") && (
+              <FormGroup>
+                <Label for="adviser">Assign Adviser</Label>
+                <Input
+                  id="adviser"
+                  name="assigned_to"
+                  type="select"
+                  value={formData?.assigned_to || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  {advisers.length > 0 ? (
+                    advisers.map((adviser) => (
+                      <option key={adviser.user.id} value={adviser.user.id}>
+                        {`${
+                          adviser.user?.title
+                            ? adviser.user.title.charAt(0).toUpperCase() +
+                              adviser.user.title.slice(1).toLowerCase() +
+                              ". "
+                            : ""
+                        }${adviser.user?.first_name}${
+                          adviser.user?.middle_name
+                            ? " " + adviser.user.middle_name
+                            : ""
+                        } ${adviser.user?.last_name}`}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No advisers available
                     </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No advisers available
-                  </option>
-                )}
-              </Input>
-            </FormGroup>
+                  )}
+                </Input>
+              </FormGroup>
+            )}
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Input

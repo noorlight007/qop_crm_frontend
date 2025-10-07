@@ -38,6 +38,7 @@ export interface LoanDetailsFormTab2Props {
     deposit_source: string | null;
     current_monthly_payment: null | string;
     current_lender: string;
+    current_lender_other_note: string;
     original_purchase_price: number;
     date_of_purchase: string | null;
     advice_level: string;

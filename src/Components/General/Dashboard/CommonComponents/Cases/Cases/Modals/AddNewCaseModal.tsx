@@ -227,52 +227,55 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               <option value="GENERAL_INSURANCE">General Insurance</option>
             </Input>
           </FormGroup>
-          <FormGroup>
-            <Label for="adviser">Assign Adviser</Label>
-            <Input
-              id="adviser"
-              name="assigned_to"
-              type="select"
-              value={formData.assigned_to}
-              onChange={handleChange}
-            >
-              <option value="">Select...</option>
-              {advisers.length > 0 ? (
-                advisers.map((adviser) => (
-                  <option key={adviser.user.id} value={adviser.user.id}>
-                    {`${
-                      adviser.user?.title
-                        ? adviser.user.title.charAt(0).toUpperCase() +
-                          adviser.user.title.slice(1).toLowerCase() +
-                          ". "
-                        : ""
-                    }${adviser.user?.first_name}${
-                      adviser.user?.middle_name
-                        ? " " + adviser.user.middle_name
-                        : ""
-                    } ${adviser.user?.last_name}`}
+          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+            session?.user?.user_type === "NETWORK_ADMIN") && (
+            <FormGroup>
+              <Label for="adviser">Assign Adviser</Label>
+              <Input
+                id="adviser"
+                name="assigned_to"
+                type="select"
+                value={formData.assigned_to}
+                onChange={handleChange}
+              >
+                <option value="">Select...</option>
+                {advisers.length > 0 ? (
+                  advisers.map((adviser) => (
+                    <option key={adviser.user.id} value={adviser.user.id}>
+                      {`${
+                        adviser.user?.title
+                          ? adviser.user.title.charAt(0).toUpperCase() +
+                            adviser.user.title.slice(1).toLowerCase() +
+                            ". "
+                          : ""
+                      }${adviser.user?.first_name}${
+                        adviser.user?.middle_name
+                          ? " " + adviser.user.middle_name
+                          : ""
+                      } ${adviser.user?.last_name}`}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No advisers available
                   </option>
-                ))
-              ) : (
-                <option value="" disabled>
-                  No advisers available
-                </option>
+                )}
+              </Input>
+              {advisers.length === 0 && (
+                <div className="mt-2">
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={handleOpenAddAdviser}
+                    toggle={toggle}
+                  >
+                    <TbCirclePlus size={16} className="me-1" />
+                    Add Adviser
+                  </Button>
+                </div>
               )}
-            </Input>
-            {advisers.length === 0 && (
-              <div className="mt-2">
-                <Button
-                  size="sm"
-                  color="primary"
-                  onClick={handleOpenAddAdviser}
-                  toggle={toggle}
-                >
-                  <TbCirclePlus size={16} className="me-1" />
-                  Add Adviser
-                </Button>
-              </div>
-            )}
-          </FormGroup>
+            </FormGroup>
+          )}
           <FormGroup>
             <Label for="notes">Notes</Label>
             <Input

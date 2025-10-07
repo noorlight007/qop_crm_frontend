@@ -29,11 +29,6 @@ const Profile = () => {
             width={64}
             height={59}
             src={session?.user?.profile_image || `${ImagePath}/profile.png`}
-            // src={
-            //   session?.user?.profile_image
-            //     ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/${session.user.profile_image}`
-            //     : `${ImagePath}/profile.png`
-            // }
             alt="user"
           />
         </div>
