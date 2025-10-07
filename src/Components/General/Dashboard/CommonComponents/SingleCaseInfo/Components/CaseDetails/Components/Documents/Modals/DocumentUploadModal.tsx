@@ -216,7 +216,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg">
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
         <span className="fs-4 text-primary">Upload Document</span>
       </ModalHeader>
@@ -404,65 +404,6 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                       </option>
                     ))}
                 </Input>
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={12}>
-              <FormGroup>
-                <Label for="DocumentName" className="form-label">
-                  Document Name
-                  {documents.length > 1 && (
-                    <small className="text-muted ms-2">
-                      (Optional - file names will be used if empty)
-                    </small>
-                  )}
-                </Label>
-                <Input
-                  type="text"
-                  id="DocumentName"
-                  name="DocumentName"
-                  placeholder={
-                    documents.length > 1
-                      ? "Optional - individual file names will be used if empty"
-                      : "Write your document name"
-                  }
-                  value={formData.DocumentName}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="description" className="form-label">
-                  Description
-                </Label>
-                <Input
-                  type="textarea"
-                  id="description"
-                  name="description"
-                  placeholder="Enter description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              {" "}
-              <FormGroup>
-                <Label for="specialNotes" className="form-label">
-                  Special Notes
-                </Label>
-                <Input
-                  type="textarea"
-                  id="specialNotes"
-                  name="specialNotes"
-                  placeholder="Enter special notes"
-                  value={formData.specialNotes}
-                  onChange={handleInputChange}
-                />
               </FormGroup>
             </Col>
           </Row>
