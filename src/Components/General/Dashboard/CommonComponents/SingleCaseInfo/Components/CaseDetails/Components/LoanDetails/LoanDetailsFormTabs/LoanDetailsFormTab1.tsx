@@ -126,24 +126,20 @@ const LoanDetailsFormTab1: React.FC<LoanDetailsFormTab1Props> = ({
               <option value="ALL">All</option>
             </Input>
           </FormGroup>
-          {formData.interest_rate_type === "FIXED" && (
-            <FormGroup>
-              <Label>
-                Interest Rate{" "}
-                <small className="text-muted">(This Field is Read-Only)</small>{" "}
-              </Label>
-              <Input
-                type="text"
-                name="interest_rate"
-                readOnly
-                value={formData.interest_rate}
-                placeholder="No value set yet"
-                onChange={(e) =>
-                  handleFormChange(e.target.name, e.target.value)
-                }
-              />
-            </FormGroup>
-          )}
+          <FormGroup>
+            <Label>
+              Interest Rate{" "}
+              <small className="text-muted">(This Field is Read-Only)</small>{" "}
+            </Label>
+            <Input
+              type="text"
+              name="interest_rate"
+              readOnly
+              value={formData.interest_rate || 0}
+              placeholder="No value set yet"
+              onChange={(e) => handleFormChange(e.target.name, e.target.value)}
+            />
+          </FormGroup>
         </Col>
 
         {/* Second Column */}
