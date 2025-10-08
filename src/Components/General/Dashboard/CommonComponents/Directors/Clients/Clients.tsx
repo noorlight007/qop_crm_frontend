@@ -196,14 +196,14 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                         {client?.user?.middle_name} {client?.user?.last_name}
                       </span>
                     </td>
-                    <td>{client?.official_email || "-"}</td>
+                    <td>{client?.user?.email || "-"}</td>
                     <td>
-                      {client?.official_phone ? (
+                      {client?.user?.phone ? (
                         <a
-                          href={`tel:${client?.official_phone}`}
+                          href={`tel:${client?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {client?.official_phone}
+                          {client?.user?.phone}
                         </a>
                       ) : (
                         "-"

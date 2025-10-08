@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Block sensitive areas
+Disallow: /api/
+Disallow: /auth/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /contact
+Allow: /features
+Allow: /pricing
+
+# Sitemap location
+Sitemap: https://qop-crm.com/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
