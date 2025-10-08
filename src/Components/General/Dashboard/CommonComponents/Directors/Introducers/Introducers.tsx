@@ -199,14 +199,14 @@ const Introducers: React.FC<IntroducersProps> = ({
                         {introducer?.user?.last_name}
                       </span>
                     </td>
-                    <td>{introducer?.official_email || "-"}</td>
+                    <td>{introducer?.user?.email || "-"}</td>
                     <td>
-                      {introducer?.official_phone ? (
+                      {introducer?.user?.phone ? (
                         <a
-                          href={`tel:${introducer?.official_phone}`}
+                          href={`tel:${introducer?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {introducer?.official_phone}
+                          {introducer?.user?.phone}
                         </a>
                       ) : (
                         "-"

@@ -187,14 +187,14 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         {lead?.user?.last_name}
                       </span>
                     </td>
-                    <td>{lead?.official_email || "-"}</td>
+                    <td>{lead?.user?.email || "-"}</td>
                     <td>
-                      {lead?.official_phone ? (
+                      {lead?.user?.phone ? (
                         <a
-                          href={`tel:${lead?.official_phone}`}
+                          href={`tel:${lead?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {lead?.official_phone}
+                          {lead?.user?.phone}
                         </a>
                       ) : (
                         "-"
