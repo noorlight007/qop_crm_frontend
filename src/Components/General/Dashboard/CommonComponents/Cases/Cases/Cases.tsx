@@ -1,6 +1,9 @@
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
-import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
+import {
+  CaseInfoPrpos,
+  CaseUser,
+} from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
@@ -379,7 +382,7 @@ const Cases: React.FC = () => {
                   <thead className="thead-light text-center">
                     <tr>
                       <th>Case Name</th>
-                      <th>Lead User</th>
+                      <th>Case Users</th>
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Case Stage</th>
@@ -416,22 +419,69 @@ const Cases: React.FC = () => {
                               )}
                             </Link>
                           </td>
-                          <td>
-                            {caseItem.lead_user
-                              ? `${
-                                  caseItem?.lead_user?.title
-                                    ? caseItem.lead_user.title[0].toUpperCase() +
-                                      caseItem.lead_user.title
-                                        .slice(1)
-                                        .toLowerCase() +
-                                      ". "
-                                    : ""
-                                }${caseItem.lead_user.first_name} ${
-                                  caseItem.lead_user.middle_name
-                                    ? caseItem.lead_user.middle_name + " "
-                                    : ""
-                                }${caseItem.lead_user.last_name}`
-                              : "-"}
+                          <td className="text-start">
+                            <ul
+                              style={{
+                                listStyleType: "disc",
+                                paddingLeft: "40px",
+                              }}
+                            >
+                              <li>
+                                {caseItem.lead_user
+                                  ? `${
+                                      caseItem?.lead_user?.title
+                                        ? caseItem.lead_user.title[0].toUpperCase() +
+                                          caseItem.lead_user.title
+                                            .slice(1)
+                                            .toLowerCase() +
+                                          ". "
+                                        : ""
+                                    }${caseItem.lead_user.first_name} ${
+                                      caseItem.lead_user.middle_name
+                                        ? caseItem.lead_user.middle_name + " "
+                                        : ""
+                                    }${caseItem.lead_user.last_name}`
+                                  : "-"}
+                              </li>
+                              {caseItem.joint_users &&
+                              caseItem.joint_users.length > 0 ? (
+                                caseItem.joint_users.map((joint: CaseUser) => (
+                                  <li key={joint.alias || joint.id}>
+                                    {joint.title
+                                      ? joint.title[0].toUpperCase() +
+                                        joint.title.slice(1).toLowerCase() +
+                                        ". "
+                                      : ""}
+                                    {joint.first_name}{" "}
+                                    {joint.middle_name
+                                      ? joint.middle_name + " "
+                                      : ""}
+                                    {joint.last_name}
+                                    {joint.user_type ? (
+                                      <span
+                                        className="ms-1 text-muted"
+                                        style={{ fontSize: "0.85em" }}
+                                      >
+                                        <small>
+                                          (
+                                          {joint.user_type
+                                            ?.split("_")
+                                            .map(
+                                              (word) =>
+                                                word.charAt(0).toUpperCase() +
+                                                word.slice(1).toLowerCase()
+                                            )
+                                            .join(" ")}
+                                          )
+                                        </small>
+                                      </span>
+                                    ) : null}
+                                  </li>
+                                ))
+                              ) : (
+                                <></>
+                              )}
+                            </ul>
                           </td>
                           <td>
                             {caseItem.lead_user.phone ? (

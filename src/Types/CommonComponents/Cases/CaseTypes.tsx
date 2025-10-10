@@ -12,6 +12,7 @@ export interface CaseInfoPrpos {
     profile_image: string;
     user_type: string;
   };
+  joint_users?: CaseUser[];
   case_category: string;
   applicant_type: string;
   case_status: string;
@@ -52,6 +53,19 @@ export interface CaseInfoPrpos {
     user_type: string;
   };
   caseData?: any;
+}
+
+export interface CaseUser {
+  id: number;
+  alias?: string;
+  email?: string;
+  phone?: string | null;
+  title?: string | null;
+  first_name: string;
+  middle_name?: string | null;
+  last_name: string;
+  profile_image?: string | null;
+  user_type?: string;
 }
 export interface SingleCaseProps {
   caseInfo: CaseInfoPrpos | undefined;
