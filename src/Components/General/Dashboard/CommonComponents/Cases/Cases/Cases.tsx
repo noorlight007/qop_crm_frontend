@@ -427,21 +427,43 @@ const Cases: React.FC = () => {
                               }}
                             >
                               <li>
-                                {caseItem.lead_user
-                                  ? `${
-                                      caseItem?.lead_user?.title
-                                        ? caseItem.lead_user.title[0].toUpperCase() +
-                                          caseItem.lead_user.title
-                                            .slice(1)
-                                            .toLowerCase() +
-                                          ". "
-                                        : ""
-                                    }${caseItem.lead_user.first_name} ${
-                                      caseItem.lead_user.middle_name
-                                        ? caseItem.lead_user.middle_name + " "
-                                        : ""
-                                    }${caseItem.lead_user.last_name}`
-                                  : "-"}
+                                {caseItem.lead_user ? (
+                                  <>
+                                    {caseItem.lead_user.title
+                                      ? caseItem.lead_user.title[0].toUpperCase() +
+                                        caseItem.lead_user.title
+                                          .slice(1)
+                                          .toLowerCase() +
+                                        ". "
+                                      : ""}
+                                    {caseItem.lead_user.first_name}{" "}
+                                    {caseItem.lead_user.middle_name
+                                      ? caseItem.lead_user.middle_name + " "
+                                      : ""}
+                                    {caseItem.lead_user.last_name}
+                                    {caseItem.lead_user.user_type && (
+                                      <span
+                                        className="ms-1 text-muted"
+                                        style={{ fontSize: "0.85em" }}
+                                      >
+                                        <small>
+                                          (
+                                          {caseItem.lead_user.user_type
+                                            .split("_")
+                                            .map(
+                                              (word) =>
+                                                word.charAt(0).toUpperCase() +
+                                                word.slice(1).toLowerCase()
+                                            )
+                                            .join(" ")}
+                                          )
+                                        </small>
+                                      </span>
+                                    )}
+                                  </>
+                                ) : (
+                                  "-"
+                                )}
                               </li>
                               {caseItem.joint_users &&
                               caseItem.joint_users.length > 0 ? (
