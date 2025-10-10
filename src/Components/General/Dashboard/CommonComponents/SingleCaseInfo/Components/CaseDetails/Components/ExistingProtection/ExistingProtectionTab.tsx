@@ -28,17 +28,6 @@ const ExistingProtectionTab: React.FC = () => {
       case_alias: casealias,
     });
 
-  // Group existingProtection details by user ID
-  const groupByUserId = (data: ExistingProtectionDetailsProps[]) => {
-    const grouped: Record<number, ExistingProtectionDetailsProps[]> = {};
-    data?.forEach((record) => {
-      if (!grouped[record.user.id]) {
-        grouped[record.user.id] = [];
-      }
-      grouped[record.user.id].push(record);
-    });
-    return grouped;
-  };
   // Add this function after groupByUserId
   // Calculate sum assured for each user
   const calculateUserSumAssured = (
@@ -68,9 +57,6 @@ const ExistingProtectionTab: React.FC = () => {
     existingProtectionDetails || []
   );
 
-  // Group existingProtection details by user ID
-  const groupedData = groupByUserId(existingProtectionDetails || []);
-
   // Set the first user and their first existingProtection as default when data is fetched
   useEffect(() => {
     if (existingProtectionDetails && existingProtectionDetails.length > 0) {
@@ -94,66 +80,80 @@ const ExistingProtectionTab: React.FC = () => {
               className="nav-warning d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
-              {Object.keys(groupedData).map((userId) => {
-                const user = groupedData[Number(userId)][0].user; // Get the first record's user info
-                return (
-                  <NavItem key={user.id}>
-                    <NavLink
-                      className={`${activeUser === user.id ? "active" : ""}`}
-                      onClick={() => {
-                        setActiveUser(user.id);
-                        setActiveTab(groupedData[user.id][0]?.alias || null);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {`${
-                        user.title
-                          ? user?.title[0].toUpperCase() +
-                            user?.title.slice(1).toLowerCase() +
-                            "."
-                          : ""
-                      } ${user.first_name} ${user.middle_name} ${
-                        user.last_name
-                      } (£${
-                        userSumAssured[user.id]?.total
-                          ? parseFloat(
-                              userSumAssured[user.id].total.toString()
-                            ).toLocaleString("en-GB", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                              useGrouping: true,
-                            })
-                          : "0.00"
-                      })`}
-                    </NavLink>
-                  </NavItem>
-                );
-              })}
+              {existingProtectionDetails?.map(
+                (existingProtection: ExistingProtectionDetailsProps) => {
+                  const user = existingProtection.user;
+                  return (
+                    <NavItem key={user.id}>
+                      <NavLink
+                        className={`${activeUser === user.id ? "active" : ""}`}
+                        onClick={() => {
+                          setActiveUser(user.id);
+                          setActiveTab(existingProtection.alias || null);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {`${
+                          user.title
+                            ? user?.title[0].toUpperCase() +
+                              user?.title.slice(1).toLowerCase() +
+                              "."
+                            : ""
+                        } ${user.first_name} ${user.middle_name} ${
+                          user.last_name
+                        } (£${
+                          userSumAssured[user.id]?.total
+                            ? parseFloat(
+                                userSumAssured[user.id].total.toString()
+                              ).toLocaleString("en-GB", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                                useGrouping: true,
+                              })
+                            : "0.00"
+                        })`}
+                      </NavLink>
+                    </NavItem>
+                  );
+                }
+              )}
             </Nav>
           </CardHeader>
 
           {/* Inner Navigation Tabs (Properties for the selected user) */}
-          {activeUser && groupedData[activeUser] && (
+          {activeUser && (
             <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-3 pt-3 pb-0">
               <Nav
                 tabs
                 className="border-tab mb-0 d-flex flex-wrap gap-2 justify-content-center"
               >
-                {groupedData[activeUser].map((existingProtection, index) => (
-                  <NavItem key={existingProtection.alias}>
-                    <NavLink
-                      className={`nav-border text-info tab-info ${
-                        activeTab === existingProtection.alias ? "active" : ""
-                      }`}
-                      onClick={() =>
-                        setActiveTab(existingProtection.alias || null)
-                      }
-                      style={{ cursor: "pointer", fontSize: "0.7rem" }}
-                    >
-                      Security {index + 1}
-                    </NavLink>
-                  </NavItem>
-                ))}
+                {existingProtectionDetails
+                  ?.filter(
+                    (ep: ExistingProtectionDetailsProps) =>
+                      ep.user.id === activeUser
+                  )
+                  .map(
+                    (
+                      existingProtection: ExistingProtectionDetailsProps,
+                      index: number
+                    ) => (
+                      <NavItem key={existingProtection.alias}>
+                        <NavLink
+                          className={`nav-border text-info tab-info ${
+                            activeTab === existingProtection.alias
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() =>
+                            setActiveTab(existingProtection.alias || null)
+                          }
+                          style={{ cursor: "pointer", fontSize: "0.7rem" }}
+                        >
+                          Security {index + 1}
+                        </NavLink>
+                      </NavItem>
+                    )
+                  )}
               </Nav>
             </CardHeader>
           )}
@@ -163,7 +163,21 @@ const ExistingProtectionTab: React.FC = () => {
             <ExistingProtectionContent
               activeTab={activeTab}
               activeUser={activeUser}
-              groupedData={groupedData}
+              groupedData={
+                existingProtectionDetails?.reduce(
+                  (
+                    acc: Record<number, ExistingProtectionDetailsProps[]>,
+                    ep: ExistingProtectionDetailsProps
+                  ) => {
+                    if (!acc[ep.user.id]) {
+                      acc[ep.user.id] = [];
+                    }
+                    acc[ep.user.id].push(ep);
+                    return acc;
+                  },
+                  {} as Record<number, ExistingProtectionDetailsProps[]>
+                ) || {}
+              }
             />
           )}
         </CardBody>

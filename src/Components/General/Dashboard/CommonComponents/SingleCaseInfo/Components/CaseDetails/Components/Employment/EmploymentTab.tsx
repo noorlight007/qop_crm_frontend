@@ -36,20 +36,6 @@ export const EmploymentTab = () => {
     }
   }, [employmentData]);
 
-  // Helper function to group employment data by user ID
-  const groupByUserId = (data: EmploymentDetailsProps[]) => {
-    const grouped: Record<number, EmploymentDetailsProps[]> = {};
-    data?.forEach((record) => {
-      if (!grouped[record.user.id]) {
-        grouped[record.user.id] = [];
-      }
-      grouped[record.user.id].push(record);
-    });
-    return grouped;
-  };
-
-  // Group employment data by user ID
-  const groupedData = groupByUserId(employmentData || []);
   if (isEmploymentDetailLoading) return <LoadingSpinner />;
 
   return (
@@ -62,15 +48,15 @@ export const EmploymentTab = () => {
               className="nav-warning d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
-              {Object.keys(groupedData).map((userId) => {
-                const user = groupedData[Number(userId)][0].user; // Get the first record's user info
+              {employmentData?.map((employment: EmploymentDetailsProps) => {
+                const user = employment.user;
                 return (
                   <NavItem key={user.id}>
                     <NavLink
                       className={`${activeUser === user.id ? "active" : ""}`}
                       onClick={() => {
                         setActiveUser(user.id);
-                        setActiveTab(groupedData[user.id][0]?.alias || null); // Set first employment as active
+                        setActiveTab(employment.alias || null);
                       }}
                       style={{ cursor: "pointer" }}
                     >
@@ -90,40 +76,42 @@ export const EmploymentTab = () => {
             </Nav>
           </CardHeader>
           {/* Inner Navigation Tabs (Employment Records) */}
-          {activeUser && groupedData[activeUser] && (
+          {activeUser && (
             <CardHeader className=" d-flex justify-content-center align-items-center flex-wrap gap-3 pt-3 pb-0">
               <Nav
                 tabs
                 className="border-tab mb-0 d-flex flex-wrap gap-2 justify-content-center"
               >
-                {groupedData[activeUser].map((employment) => (
-                  <NavItem key={employment.alias}>
-                    <NavLink
-                      className={`nav-border text-info tab-info ${
-                        activeTab === employment.alias ? "active" : ""
-                      }`}
-                      onClick={() => setActiveTab(employment.alias || null)}
-                      style={{ cursor: "pointer", fontSize: "0.7rem" }}
-                    >
-                      {employment?.employment_status
-                        ? (() => {
-                            const label = employment.employment_status.replace(
-                              /_/g,
-                              " "
-                            );
-                            return label
-                              .toLowerCase()
-                              .split(" ")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() + word.slice(1)
-                              )
-                              .join(" ");
-                          })()
-                        : "(N/A)"}
-                    </NavLink>
-                  </NavItem>
-                ))}
+                {employmentData
+                  ?.filter(
+                    (emp: EmploymentDetailsProps) => emp.user.id === activeUser
+                  )
+                  .map((employment: EmploymentDetailsProps) => (
+                    <NavItem key={employment.alias}>
+                      <NavLink
+                        className={`nav-border text-info tab-info ${
+                          activeTab === employment.alias ? "active" : ""
+                        }`}
+                        onClick={() => setActiveTab(employment.alias || null)}
+                        style={{ cursor: "pointer", fontSize: "0.7rem" }}
+                      >
+                        {employment?.employment_status
+                          ? (() => {
+                              const label =
+                                employment.employment_status.replace(/_/g, " ");
+                              return label
+                                .toLowerCase()
+                                .split(" ")
+                                .map(
+                                  (word: string) =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                )
+                                .join(" ");
+                            })()
+                          : "(N/A)"}
+                      </NavLink>
+                    </NavItem>
+                  ))}
               </Nav>
             </CardHeader>
           )}
@@ -133,7 +121,21 @@ export const EmploymentTab = () => {
             <EmploymentTabContent
               activeTab={activeTab}
               activeUser={activeUser}
-              groupedData={groupedData}
+              groupedData={
+                employmentData?.reduce(
+                  (
+                    acc: Record<number, EmploymentDetailsProps[]>,
+                    emp: EmploymentDetailsProps
+                  ) => {
+                    if (!acc[emp.user.id]) {
+                      acc[emp.user.id] = [];
+                    }
+                    acc[emp.user.id].push(emp);
+                    return acc;
+                  },
+                  {} as Record<number, EmploymentDetailsProps[]>
+                ) || {}
+              }
             />
           )}
         </CardBody>
