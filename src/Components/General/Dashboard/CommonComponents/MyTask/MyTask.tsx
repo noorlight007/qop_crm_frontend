@@ -1,4 +1,5 @@
 import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { Edit, Trash2 } from "react-feather";
 import { FaSearch } from "react-icons/fa";
@@ -25,6 +26,7 @@ import DeleteTaskModal from "./Modals/DeleteTaskModal";
 import EditTaskModal from "./Modals/EditTaskModal";
 
 const MyTask: React.FC = () => {
+  const { data: session } = useSession();
   const [tasks, setTasks] = useState<TaskProps[]>([
     {
       id: "1",
@@ -235,49 +237,51 @@ const MyTask: React.FC = () => {
   };
 
   return (
-    <Row>
-      <Col xxl="12">
-        <Card>
-          <CardHeader>
-            <Row className="d-flex justify-content-between py-1">
-              <Col md="3" xs="12">
-                <div className="d-flex align-items-center">
-                  <i className="fa fa-tasks me-2"></i>
-                  <h5 className="mb-0">My Tasks</h5>
-                </div>
-              </Col>
-              <Col md={6} xs="12">
-                <InputGroup>
-                  <Input
-                    type="text"
-                    placeholder="Search tasks, clients, or case names..."
-                    style={{ padding: "10px 10px" }}
-                    value={filters.searchTerm}
-                    onChange={(e) =>
-                      handleFilterChange("searchTerm", e.target.value)
-                    }
-                  />
-                  <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                    <FaSearch />
-                  </InputGroupText>
-                </InputGroup>
-              </Col>
-              <Col
-                md="3"
-                xs="12"
-                className="d-flex justify-content-end mt-sm-0 mt-2"
+    <>
+      <Card className="mt-4">
+        <CardHeader>
+          <Row className="d-flex justify-content-between py-1">
+            <Col md="3" xs="12">
+              <div className="d-flex align-items-center">
+                <i className="fa fa-tasks me-2"></i>
+                <h5 className="mb-0">My Tasks</h5>
+              </div>
+            </Col>
+            <Col md={6} xs="12">
+              <InputGroup>
+                <Input
+                  type="text"
+                  placeholder="Search tasks, clients, or case names..."
+                  style={{ padding: "10px 10px" }}
+                  value={filters.searchTerm}
+                  onChange={(e) =>
+                    handleFilterChange("searchTerm", e.target.value)
+                  }
+                />
+                <InputGroupText className="bg-success rounded-start-0 border-start-0">
+                  <FaSearch />
+                </InputGroupText>
+              </InputGroup>
+            </Col>
+            <Col
+              md="3"
+              xs="12"
+              className="d-flex justify-content-end mt-sm-0 mt-2"
+            >
+              <Button
+                color="success"
+                onClick={toggleFilterIcon}
+                className="me-2"
               >
-                <Button
-                  color="success"
-                  onClick={toggleFilterIcon}
-                  className="me-2"
-                >
-                  {filterIcon ? (
-                    <i className="fa-solid fa-filter-circle-xmark"></i>
-                  ) : (
-                    <i className="fa-solid fa-filter"></i>
-                  )}
-                </Button>
+                {filterIcon ? (
+                  <i className="fa-solid fa-filter-circle-xmark"></i>
+                ) : (
+                  <i className="fa-solid fa-filter"></i>
+                )}
+              </Button>
+              {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
+                session?.user?.user_type === "NETWORK_ADMIN") && (
                 <Button
                   color="primary"
                   onClick={() => setIsAddModalOpen(true)}
@@ -286,218 +290,224 @@ const MyTask: React.FC = () => {
                   <TbCirclePlus size={18} />
                   <span>Add New Task</span>
                 </Button>
-              </Col>
-            </Row>
-          </CardHeader>
+              )}
+            </Col>
+          </Row>
+        </CardHeader>
 
-          <CardBody className="p-2 m-0">
-            {/* Conditional Filters Section */}
-            {filterIcon && (
-              <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
-                <Row className="justify-content-center g-3">
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Assigned To</Label>
-                    <Input
-                      type="select"
-                      id="assignedTo"
-                      className="py-1"
-                      value={filters.assignedTo}
-                      onChange={(e) =>
-                        handleFilterChange("assignedTo", e.target.value)
-                      }
-                    >
-                      <option value="All">All Employees</option>
-                      <option value="Mostafizur Rahman">
-                        Mostafizur Rahman
-                      </option>
-                      <option value="John Doe">John Doe</option>
-                    </Input>
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Task Type</Label>
-                    <Input
-                      type="select"
-                      id="taskType"
-                      className="py-1"
-                      value={filters.taskType}
-                      onChange={(e) =>
-                        handleFilterChange("taskType", e.target.value)
-                      }
-                    >
-                      <option value="All">All Types</option>
-                      <option value="Legal">Legal</option>
-                      <option value="Application">Application</option>
-                      <option value="Follow-up">Follow-up</option>
-                    </Input>
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Priority</Label>
-                    <Input
-                      type="select"
-                      id="priority"
-                      className="py-1"
-                      value={filters.priority}
-                      onChange={(e) =>
-                        handleFilterChange("priority", e.target.value)
-                      }
-                    >
-                      <option value="All">All Priorities</option>
-                      <option value="High">High</option>
-                      <option value="Normal">Normal</option>
-                      <option value="Low">Low</option>
-                    </Input>
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Task Name</Label>
-                    <Input
-                      type="text"
-                      id="taskNameFilter"
-                      className="py-2"
-                      placeholder="Search task name..."
-                      value={filters.searchTerm}
-                      onChange={(e) =>
-                        handleFilterChange("searchTerm", e.target.value)
-                      }
-                    />
-                  </Col>
-                </Row>
-                <Row className="justify-content-center g-3 mt-2">
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Due Date From</Label>
-                    <Input
-                      type="date"
-                      id="dueDateFrom"
-                      className="py-2"
-                      value={filters.dueDateFrom}
-                      onChange={(e) =>
-                        handleFilterChange("dueDateFrom", e.target.value)
-                      }
-                    />
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Due Date To</Label>
-                    <Input
-                      type="date"
-                      id="dueDateTo"
-                      className="py-2"
-                      value={filters.dueDateTo}
-                      onChange={(e) =>
-                        handleFilterChange("dueDateTo", e.target.value)
-                      }
-                    />
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Status</Label>
-                    <Input
-                      type="select"
-                      id="status"
-                      className="py-1"
-                      value={filters.status || "All"}
-                      onChange={(e) =>
-                        handleFilterChange("status", e.target.value)
-                      }
-                    >
-                      <option value="All">All Status</option>
-                      <option value="Pending">Pending</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Overdue">Overdue</option>
-                    </Input>
-                  </Col>
-                  <Col xs="12" sm="6" md="3">
-                    <Label>Clear All Filters</Label>
-                    <Button
-                      outline
-                      className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
-                      onClick={() => {
-                        setFilters({
-                          assignedTo: "All",
-                          taskType: "All",
-                          priority: "All",
-                          searchTerm: "",
-                          dueDateFrom: "",
-                          dueDateTo: "",
-                          status: "All",
-                        });
-                        setCurrentPage(1);
-                      }}
-                    >
-                      Clear<i className="fa-solid fa-xmark"></i>
-                    </Button>
-                  </Col>
-                </Row>
-              </Card>
-            )}
+        <CardBody className="p-2 m-0">
+          {/* Conditional Filters Section */}
+          {filterIcon && (
+            <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
+              <Row className="justify-content-center g-3">
+                <Col xs="12" sm="6" md="3">
+                  <Label>Assigned To</Label>
+                  <Input
+                    type="select"
+                    id="assignedTo"
+                    className="py-1"
+                    value={filters.assignedTo}
+                    onChange={(e) =>
+                      handleFilterChange("assignedTo", e.target.value)
+                    }
+                  >
+                    <option value="All">All Employees</option>
+                    <option value="Mostafizur Rahman">Mostafizur Rahman</option>
+                    <option value="John Doe">John Doe</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Task Type</Label>
+                  <Input
+                    type="select"
+                    id="taskType"
+                    className="py-1"
+                    value={filters.taskType}
+                    onChange={(e) =>
+                      handleFilterChange("taskType", e.target.value)
+                    }
+                  >
+                    <option value="All">All Types</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Application">Application</option>
+                    <option value="Follow-up">Follow-up</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Priority</Label>
+                  <Input
+                    type="select"
+                    id="priority"
+                    className="py-1"
+                    value={filters.priority}
+                    onChange={(e) =>
+                      handleFilterChange("priority", e.target.value)
+                    }
+                  >
+                    <option value="All">All Priorities</option>
+                    <option value="High">High</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Low">Low</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Task Name</Label>
+                  <Input
+                    type="text"
+                    id="taskNameFilter"
+                    className="py-2"
+                    placeholder="Search task name..."
+                    value={filters.searchTerm}
+                    onChange={(e) =>
+                      handleFilterChange("searchTerm", e.target.value)
+                    }
+                  />
+                </Col>
+              </Row>
+              <Row className="justify-content-center g-3 mt-2">
+                <Col xs="12" sm="6" md="3">
+                  <Label>Due Date From</Label>
+                  <Input
+                    type="date"
+                    id="dueDateFrom"
+                    className="py-2"
+                    value={filters.dueDateFrom}
+                    onChange={(e) =>
+                      handleFilterChange("dueDateFrom", e.target.value)
+                    }
+                  />
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Due Date To</Label>
+                  <Input
+                    type="date"
+                    id="dueDateTo"
+                    className="py-2"
+                    value={filters.dueDateTo}
+                    onChange={(e) =>
+                      handleFilterChange("dueDateTo", e.target.value)
+                    }
+                  />
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Status</Label>
+                  <Input
+                    type="select"
+                    id="status"
+                    className="py-1"
+                    value={filters.status || "All"}
+                    onChange={(e) =>
+                      handleFilterChange("status", e.target.value)
+                    }
+                  >
+                    <option value="All">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Overdue">Overdue</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Clear All Filters</Label>
+                  <Button
+                    outline
+                    className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
+                    onClick={() => {
+                      setFilters({
+                        assignedTo: "All",
+                        taskType: "All",
+                        priority: "All",
+                        searchTerm: "",
+                        dueDateFrom: "",
+                        dueDateTo: "",
+                        status: "All",
+                      });
+                      setCurrentPage(1);
+                    }}
+                  >
+                    Clear<i className="fa-solid fa-xmark"></i>
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          )}
 
-            {/* Tasks List */}
-            <Row>
-              <Table hover responsive className="mt-3">
-                <thead className="thead-light text-center">
-                  <tr>
-                    <th>Date & Time</th>
-                    <th>Case Name</th>
-                    <th>Client Name</th>
-                    <th>Company</th>
-                    <th>Task Name</th>
-                    <th>Task Type</th>
-                    <th>Assigned To</th>
-                    <th>Priority</th>
-                    <th>Status</th>
+          {/* Tasks List */}
+          <Row>
+            <Table hover responsive className="mt-3">
+              <thead className="thead-light text-center">
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Case Name</th>
+                  <th>Client Name</th>
+                  <th>Company</th>
+                  <th>Task Name</th>
+                  <th>Task Type</th>
+                  <th>Assigned To</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                    session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
+                    session?.user?.user_type === "NETWORK_ADMIN") && (
                     <th>Actions</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="text-center">
+                {currentTasks.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="text-center p-4">
+                      <p className="text-muted mb-0">
+                        No tasks found matching your criteria.
+                      </p>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="text-center">
-                  {currentTasks.length === 0 ? (
-                    <tr>
-                      <td colSpan={10} className="text-center p-4">
-                        <p className="text-muted mb-0">
-                          No tasks found matching your criteria.
-                        </p>
+                ) : (
+                  currentTasks.map((task) => (
+                    <tr key={task.id}>
+                      <td>{task.date}</td>
+                      <td>
+                        <span className="text-primary fw-bold">
+                          {task.caseName}
+                        </span>
                       </td>
-                    </tr>
-                  ) : (
-                    currentTasks.map((task) => (
-                      <tr key={task.id}>
-                        <td>{task.date}</td>
-                        <td>
-                          <span className="text-primary fw-bold">
-                            {task.caseName}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-dark">{task.clientName}</span>
-                        </td>
-                        <td>
-                          <span className="text-muted">{task.company}</span>
-                        </td>
-                        <td>
-                          <span className="fw-bold text-start">
-                            {task.taskName}
-                          </span>
-                        </td>
-                        <td>
-                          <Badge color="info" className="px-2">
-                            {task.taskType}
-                          </Badge>
-                        </td>
-                        <td>
-                          <p className="m-0">{task.assignedTo}</p>
-                        </td>
-                        <td>
-                          <Badge
-                            color={getPriorityBadgeColor(task.priority)}
-                            className="px-2"
-                          >
-                            {task.priority}
-                          </Badge>
-                        </td>
-                        <td>
-                          <Badge
-                            color={getStatusBadgeColor(task.status)}
-                            className="px-2"
-                          >
-                            {task.status}
-                          </Badge>
-                        </td>
+                      <td>
+                        <span className="text-dark">{task.clientName}</span>
+                      </td>
+                      <td>
+                        <span className="text-muted">{task.company}</span>
+                      </td>
+                      <td>
+                        <span className="fw-bold text-start">
+                          {task.taskName}
+                        </span>
+                      </td>
+                      <td>
+                        <Badge color="info" className="px-2">
+                          {task.taskType}
+                        </Badge>
+                      </td>
+                      <td>
+                        <p className="m-0">{task.assignedTo}</p>
+                      </td>
+                      <td>
+                        <Badge
+                          color={getPriorityBadgeColor(task.priority)}
+                          className="px-2"
+                        >
+                          {task.priority}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge
+                          color={getStatusBadgeColor(task.status)}
+                          className="px-2"
+                        >
+                          {task.status}
+                        </Badge>
+                      </td>
+                      {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                        session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
+                        session?.user?.user_type === "NETWORK_ADMIN") && (
                         <td>
                           <div className="d-flex justify-content-center align-items-center">
                             <Button
@@ -519,151 +529,145 @@ const MyTask: React.FC = () => {
                             </Button>
                           </div>
                         </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </Table>
-            </Row>
+                      )}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </Row>
 
-            {/* Pagination */}
-            <Row>
-              <div className="d-flex justify-content-between px-4 py-3">
-                <div>
-                  <p className="text-success">
-                    Showing {indexOfFirstTask + 1} to{" "}
-                    {Math.min(indexOfLastTask, filteredTasks.length)} of{" "}
-                    {filteredTasks.length} tasks
-                  </p>
-                </div>
-                <Pagination>
-                  <PaginationItem disabled={currentPage === 1}>
-                    <PaginationLink first onClick={() => setCurrentPage(1)} />
-                  </PaginationItem>
-                  <PaginationItem disabled={currentPage === 1}>
-                    <PaginationLink
-                      previous
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                    />
-                  </PaginationItem>
-
-                  {/* Generate visible page numbers */}
-                  {(() => {
-                    const pages = [];
-                    const total = totalPages;
-                    const currentPageNumber = currentPage;
-
-                    let start = Math.max(2, currentPageNumber - 2);
-                    let end = Math.min(total - 1, currentPageNumber + 2);
-
-                    // Always show page 1
-                    if (total >= 1) {
-                      pages.push(
-                        <PaginationItem
-                          key={1}
-                          active={currentPageNumber === 1}
-                        >
-                          <PaginationLink onClick={() => setCurrentPage(1)}>
-                            1
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-
-                    // Add ellipsis if needed before middle pages
-                    if (start > 2) {
-                      pages.push(
-                        <PaginationItem key="ellipsis-start" disabled>
-                          <PaginationLink>...</PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-
-                    // Show middle pages
-                    for (let i = start; i <= end; i++) {
-                      pages.push(
-                        <PaginationItem
-                          key={i}
-                          active={currentPageNumber === i}
-                        >
-                          <PaginationLink onClick={() => setCurrentPage(i)}>
-                            {i}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-
-                    // Add ellipsis if needed after middle pages
-                    if (end < total - 1) {
-                      pages.push(
-                        <PaginationItem key="ellipsis-end" disabled>
-                          <PaginationLink>...</PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-
-                    // Always show last page
-                    if (total > 1) {
-                      pages.push(
-                        <PaginationItem
-                          key={total}
-                          active={currentPageNumber === total}
-                        >
-                          <PaginationLink onClick={() => setCurrentPage(total)}>
-                            {total}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-
-                    return pages;
-                  })()}
-
-                  <PaginationItem disabled={currentPage === totalPages}>
-                    <PaginationLink
-                      next
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                    />
-                  </PaginationItem>
-                  <PaginationItem disabled={currentPage === totalPages}>
-                    <PaginationLink
-                      last
-                      onClick={() => setCurrentPage(totalPages)}
-                    />
-                  </PaginationItem>
-                </Pagination>
+          {/* Pagination */}
+          <Row>
+            <div className="d-flex justify-content-between px-4 py-3">
+              <div>
+                <p className="text-success">
+                  Showing {indexOfFirstTask + 1} to{" "}
+                  {Math.min(indexOfLastTask, filteredTasks.length)} of{" "}
+                  {filteredTasks.length} tasks
+                </p>
               </div>
-            </Row>
-          </CardBody>
-        </Card>
+              <Pagination>
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink first onClick={() => setCurrentPage(1)} />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink
+                    previous
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  />
+                </PaginationItem>
 
-        {/* Add Task Modal */}
-        <AddTaskModal
-          isAddModalOpen={isAddModalOpen}
-          setIsAddModalOpen={setIsAddModalOpen}
-          newTask={newTask}
-          setNewTask={setNewTask}
-          handleAddTask={handleAddTask}
-        />
+                {/* Generate visible page numbers */}
+                {(() => {
+                  const pages = [];
+                  const total = totalPages;
+                  const currentPageNumber = currentPage;
 
-        {/* Edit Task Modal */}
-        <EditTaskModal
-          isEditModalOpen={isEditModalOpen}
-          setIsEditModalOpen={setIsEditModalOpen}
-          selectedTask={selectedTask}
-          setSelectedTask={setSelectedTask}
-          handleEditTask={handleEditTask}
-        />
+                  let start = Math.max(2, currentPageNumber - 2);
+                  let end = Math.min(total - 1, currentPageNumber + 2);
 
-        {/* Delete Task Modal */}
-        <DeleteTaskModal
-          isDeleteModalOpen={isDeleteModalOpen}
-          setIsDeleteModalOpen={setIsDeleteModalOpen}
-          selectedTask={selectedTask}
-          handleDeleteTask={handleDeleteTask}
-        />
-      </Col>
-    </Row>
+                  // Always show page 1
+                  if (total >= 1) {
+                    pages.push(
+                      <PaginationItem key={1} active={currentPageNumber === 1}>
+                        <PaginationLink onClick={() => setCurrentPage(1)}>
+                          1
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Add ellipsis if needed before middle pages
+                  if (start > 2) {
+                    pages.push(
+                      <PaginationItem key="ellipsis-start" disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Show middle pages
+                  for (let i = start; i <= end; i++) {
+                    pages.push(
+                      <PaginationItem key={i} active={currentPageNumber === i}>
+                        <PaginationLink onClick={() => setCurrentPage(i)}>
+                          {i}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Add ellipsis if needed after middle pages
+                  if (end < total - 1) {
+                    pages.push(
+                      <PaginationItem key="ellipsis-end" disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  // Always show last page
+                  if (total > 1) {
+                    pages.push(
+                      <PaginationItem
+                        key={total}
+                        active={currentPageNumber === total}
+                      >
+                        <PaginationLink onClick={() => setCurrentPage(total)}>
+                          {total}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  }
+
+                  return pages;
+                })()}
+
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    next
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    last
+                    onClick={() => setCurrentPage(totalPages)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            </div>
+          </Row>
+        </CardBody>
+      </Card>
+
+      {/* Add Task Modal */}
+      <AddTaskModal
+        isAddModalOpen={isAddModalOpen}
+        setIsAddModalOpen={setIsAddModalOpen}
+        newTask={newTask}
+        setNewTask={setNewTask}
+        handleAddTask={handleAddTask}
+      />
+
+      {/* Edit Task Modal */}
+      <EditTaskModal
+        isEditModalOpen={isEditModalOpen}
+        setIsEditModalOpen={setIsEditModalOpen}
+        selectedTask={selectedTask}
+        setSelectedTask={setSelectedTask}
+        handleEditTask={handleEditTask}
+      />
+
+      {/* Delete Task Modal */}
+      <DeleteTaskModal
+        isDeleteModalOpen={isDeleteModalOpen}
+        setIsDeleteModalOpen={setIsDeleteModalOpen}
+        selectedTask={selectedTask}
+        handleDeleteTask={handleDeleteTask}
+      />
+    </>
   );
 };
 

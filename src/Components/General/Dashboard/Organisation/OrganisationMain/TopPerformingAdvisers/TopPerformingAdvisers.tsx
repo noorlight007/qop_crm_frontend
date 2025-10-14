@@ -10,8 +10,8 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
   };
 
   return (
-    <Card className="border-0 rounded-lg bg-white p-3 shadow-sm">
-      <CardBody className="p-0">
+    <Card className="border-0 rounded-lg bg-white shadow-sm mb-0">
+      <CardBody className="p-3">
         <h4>Top Performing Advisers</h4>
         {isLoading ? (
           <>
