@@ -1,11 +1,10 @@
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../CommonComponents/MyTask/MyTask";
 import AdviserTaskOverview from "./AdviserTaskOverview/AdviserTaskOverview";
 import CaseProgress from "./CaseProgress/CaseProgress";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
-import RecentActivity from "./RecentActivity/RecentActivity";
-import UpcomingTasks from "./UpcommingTasks/UpCommingTasks";
 
 const OrganisationStaffContainer: React.FC = () => {
   return (
@@ -25,11 +24,8 @@ const OrganisationStaffContainer: React.FC = () => {
         </Row>
         {/* 3rd row  */}
         <Row>
-          <Col md={6} sm={12}>
-            <RecentActivity />
-          </Col>
-          <Col md={6} sm={12}>
-            <UpcomingTasks />
+          <Col>
+            <MyTask />
           </Col>
         </Row>
         {/* 4th row  */}

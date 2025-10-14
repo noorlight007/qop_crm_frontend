@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import React from "react";
-import { Card } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 
 // Dynamically import ApexCharts with SSR disabled
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -112,14 +112,16 @@ const ClientGrowth: React.FC = () => {
   };
 
   return (
-    <Card className="bg-white p-4 shadow-sm">
-      <h4 className="mb-4 text-lg font-semibold">Client Growth</h4>
-      <Chart
-        options={options as any}
-        series={series}
-        type="line"
-        height={300}
-      />
+    <Card className="bg-white shadow-sm mb-0">
+      <CardBody className="p-4">
+        <h4 className="mb-4 text-lg font-semibold">Client Growth</h4>
+        <Chart
+          options={options as any}
+          series={series}
+          type="line"
+          height={300}
+        />
+      </CardBody>
     </Card>
   );
 };

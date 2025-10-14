@@ -70,7 +70,7 @@ const AdviserStatus = () => {
   return (
     <Row>
       <Col xs={12}>
-        <Card className="shadow-sm p-1">
+        <Card className="shadow-sm p-1 mb-2">
           <div className="d-flex justify-content-between align-items-center p-3 bg-white border-bottom rounded-top-5">
             <h4 className="mb-0 fw-bold">Adviser Status</h4>
             <div>
@@ -109,7 +109,9 @@ const AdviserStatus = () => {
                   </th>
                   <th className="border-0 small text-uppercase">Bridging</th>
                   <th className="border-0 small text-uppercase">Protection</th>
-                  <th className="border-0 small text-uppercase">General Insurance</th>
+                  <th className="border-0 small text-uppercase">
+                    General Insurance
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-center">

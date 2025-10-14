@@ -1,6 +1,7 @@
 import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../CommonComponents/MyTask/MyTask";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
 import ClientGrowth from "./ClientGrowth/ClientGrowth";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
@@ -75,6 +76,12 @@ const OrganisationContainer = () => {
           </Col>
         </Row>
         {/* 4th row  */}
+        <Row>
+          <Col>
+            <MyTask />
+          </Col>
+        </Row>
+        {/* 5th row */}
         <Row>
           <Col md={6} sm={12}>
             <RecentAuditLogs />
