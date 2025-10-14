@@ -9,22 +9,19 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Form,
-  FormGroup,
   Input,
   InputGroup,
   InputGroupText,
   Label,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   Pagination,
   PaginationItem,
   PaginationLink,
   Row,
   Table,
 } from "reactstrap";
+import AddTaskModal from "./Modals/AddTaskModal";
+import DeleteTaskModal from "./Modals/DeleteTaskModal";
+import EditTaskModal from "./Modals/EditTaskModal";
 
 interface Task {
   id: string;
@@ -86,6 +83,7 @@ const MyTask: React.FC = () => {
   const [filterIcon, setFilterIcon] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [newTask, setNewTask] = useState<Partial<Task>>({
     clientName: "",
@@ -212,9 +210,12 @@ const MyTask: React.FC = () => {
   };
 
   const handleDeleteTask = (taskId: string) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      setTasks((prev) => prev.filter((task) => task.id !== taskId));
-    }
+    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+  };
+
+  const openDeleteModal = (task: Task) => {
+    setSelectedTask(task);
+    setIsDeleteModalOpen(true);
   };
 
   const openEditModal = (task: Task) => {
@@ -253,7 +254,7 @@ const MyTask: React.FC = () => {
       <Col xxl="12">
         <Card>
           <CardHeader>
-            <Row className="d-flex justify-content-between py-4">
+            <Row className="d-flex justify-content-between py-1">
               <Col md="3" xs="12">
                 <div className="d-flex align-items-center">
                   <i className="fa fa-tasks me-2"></i>
@@ -471,9 +472,7 @@ const MyTask: React.FC = () => {
                   ) : (
                     currentTasks.map((task) => (
                       <tr key={task.id}>
-                        <td>
-                          <small className="text-muted">{task.date}</small>
-                        </td>
+                        <td>{task.date}</td>
                         <td>
                           <span className="text-primary fw-bold">
                             {task.caseNumber}
@@ -528,7 +527,7 @@ const MyTask: React.FC = () => {
                             <Button
                               color="danger"
                               size="sm"
-                              onClick={() => handleDeleteTask(task.id)}
+                              onClick={() => openDeleteModal(task)}
                               title="Delete Task"
                             >
                               <Trash2 size={12} />
@@ -654,329 +653,30 @@ const MyTask: React.FC = () => {
         </Card>
 
         {/* Add Task Modal */}
-        <Modal
-          isOpen={isAddModalOpen}
-          toggle={() => setIsAddModalOpen(false)}
-          size="lg"
-        >
-          <ModalHeader toggle={() => setIsAddModalOpen(false)}>
-            Add New Task
-          </ModalHeader>
-          <ModalBody>
-            <Form>
-              <Row>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="clientName">Client Name</Label>
-                    <Input
-                      type="text"
-                      id="clientName"
-                      value={newTask.clientName || ""}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          clientName: e.target.value,
-                        }))
-                      }
-                      placeholder="Enter client name"
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="company">Company</Label>
-                    <Input
-                      type="text"
-                      id="company"
-                      value={newTask.company || ""}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          company: e.target.value,
-                        }))
-                      }
-                      placeholder="Enter company name"
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md="12">
-                  <FormGroup>
-                    <Label for="taskName">Task Name</Label>
-                    <Input
-                      type="text"
-                      id="taskName"
-                      value={newTask.taskName || ""}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          taskName: e.target.value,
-                        }))
-                      }
-                      placeholder="Enter task description"
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md="4">
-                  <FormGroup>
-                    <Label for="priority">Priority</Label>
-                    <Input
-                      type="select"
-                      id="priority"
-                      value={newTask.priority || "Normal"}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          priority: e.target.value as any,
-                        }))
-                      }
-                    >
-                      <option value="Low">Low</option>
-                      <option value="Normal">Normal</option>
-                      <option value="High">High</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-                <Col md="4">
-                  <FormGroup>
-                    <Label for="taskType">Task Type</Label>
-                    <Input
-                      type="select"
-                      id="taskType"
-                      value={newTask.taskType || ""}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          taskType: e.target.value,
-                        }))
-                      }
-                    >
-                      <option value="">Select type</option>
-                      <option value="Legal">Legal</option>
-                      <option value="Application">Application</option>
-                      <option value="Follow-up">Follow-up</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-                <Col md="4">
-                  <FormGroup>
-                    <Label for="dueDate">Due Date</Label>
-                    <Input
-                      type="date"
-                      id="dueDate"
-                      value={newTask.dueDate || ""}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          dueDate: e.target.value,
-                        }))
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="assignedTo">Assigned To</Label>
-                    <Input
-                      type="select"
-                      id="assignedTo"
-                      value={newTask.assignedTo || ""}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          assignedTo: e.target.value,
-                        }))
-                      }
-                    >
-                      <option value="">Select assignee</option>
-                      <option value="Mostafizur Rahman">
-                        Mostafizur Rahman
-                      </option>
-                      <option value="John Doe">John Doe</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-                <Col md="6">
-                  <FormGroup>
-                    <Label for="status">Status</Label>
-                    <Input
-                      type="select"
-                      id="status"
-                      value={newTask.status || "Pending"}
-                      onChange={(e) =>
-                        setNewTask((prev) => ({
-                          ...prev,
-                          status: e.target.value as any,
-                        }))
-                      }
-                    >
-                      <option value="Pending">Pending</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Overdue">Overdue</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-              </Row>
-            </Form>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={() => setIsAddModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button color="primary" onClick={handleAddTask}>
-              Add Task
-            </Button>
-          </ModalFooter>
-        </Modal>
+        <AddTaskModal
+          isAddModalOpen={isAddModalOpen}
+          setIsAddModalOpen={setIsAddModalOpen}
+          newTask={newTask}
+          setNewTask={setNewTask}
+          handleAddTask={handleAddTask}
+        />
 
         {/* Edit Task Modal */}
-        <Modal
-          isOpen={isEditModalOpen}
-          toggle={() => setIsEditModalOpen(false)}
-          size="lg"
-        >
-          <ModalHeader toggle={() => setIsEditModalOpen(false)}>
-            Edit Task
-          </ModalHeader>
-          <ModalBody>
-            {selectedTask && (
-              <Form>
-                <Row>
-                  <Col md="6">
-                    <FormGroup>
-                      <Label for="editClientName">Client Name</Label>
-                      <Input
-                        type="text"
-                        id="editClientName"
-                        value={selectedTask.clientName}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev
-                              ? { ...prev, clientName: e.target.value }
-                              : null
-                          )
-                        }
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Label for="editCompany">Company</Label>
-                      <Input
-                        type="text"
-                        id="editCompany"
-                        value={selectedTask.company}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev ? { ...prev, company: e.target.value } : null
-                          )
-                        }
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
+        <EditTaskModal
+          isEditModalOpen={isEditModalOpen}
+          setIsEditModalOpen={setIsEditModalOpen}
+          selectedTask={selectedTask}
+          setSelectedTask={setSelectedTask}
+          handleEditTask={handleEditTask}
+        />
 
-                <Row>
-                  <Col md="12">
-                    <FormGroup>
-                      <Label for="editTaskName">Task Name</Label>
-                      <Input
-                        type="text"
-                        id="editTaskName"
-                        value={selectedTask.taskName}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev ? { ...prev, taskName: e.target.value } : null
-                          )
-                        }
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col md="4">
-                    <FormGroup>
-                      <Label for="editPriority">Priority</Label>
-                      <Input
-                        type="select"
-                        id="editPriority"
-                        value={selectedTask.priority}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev
-                              ? { ...prev, priority: e.target.value as any }
-                              : null
-                          )
-                        }
-                      >
-                        <option value="Low">Low</option>
-                        <option value="Normal">Normal</option>
-                        <option value="High">High</option>
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                  <Col md="4">
-                    <FormGroup>
-                      <Label for="editTaskType">Task Type</Label>
-                      <Input
-                        type="select"
-                        id="editTaskType"
-                        value={selectedTask.taskType}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev ? { ...prev, taskType: e.target.value } : null
-                          )
-                        }
-                      >
-                        <option value="Legal">Legal</option>
-                        <option value="Application">Application</option>
-                        <option value="Follow-up">Follow-up</option>
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                  <Col md="4">
-                    <FormGroup>
-                      <Label for="editStatus">Status</Label>
-                      <Input
-                        type="select"
-                        id="editStatus"
-                        value={selectedTask.status}
-                        onChange={(e) =>
-                          setSelectedTask((prev) =>
-                            prev
-                              ? { ...prev, status: e.target.value as any }
-                              : null
-                          )
-                        }
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Overdue">Overdue</option>
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Form>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={() => setIsEditModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button color="primary" onClick={handleEditTask}>
-              Update Task
-            </Button>
-          </ModalFooter>
-        </Modal>
+        {/* Delete Task Modal */}
+        <DeleteTaskModal
+          isDeleteModalOpen={isDeleteModalOpen}
+          setIsDeleteModalOpen={setIsDeleteModalOpen}
+          selectedTask={selectedTask}
+          handleDeleteTask={handleDeleteTask}
+        />
       </Col>
     </Row>
   );
