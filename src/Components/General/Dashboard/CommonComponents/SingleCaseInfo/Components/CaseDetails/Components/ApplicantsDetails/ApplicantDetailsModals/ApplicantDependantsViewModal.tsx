@@ -36,7 +36,7 @@ const ApplicantDependantsViewModal: React.FC<
     );
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} centered>
+    <Modal isOpen={isOpen} size="lg" toggle={toggle} centered>
       {/* Modal Header */}
       <ModalHeader toggle={toggle}>
         <h2>Applicant Dependants</h2>
@@ -47,11 +47,11 @@ const ApplicantDependantsViewModal: React.FC<
         <div className="table-responsive">
           <table className="table table-bordered">
             <thead>
-              <tr>
-                <th className="text-primary">Serial No</th>
-                <th className="text-primary">Name</th>
-                <th className="text-primary">Date of Birth</th>
-                <th className="text-primary">Age</th>
+              <tr className="text-center text-primary small">
+                <th>Serial No</th>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
               </tr>
             </thead>
             <tbody>
@@ -61,7 +61,7 @@ const ApplicantDependantsViewModal: React.FC<
                     dependant: { name: any; date_of_birth: any },
                     index: number
                   ) => (
-                    <tr key={index}>
+                    <tr className="text-center" key={index}>
                       <td>{index + 1}</td>
                       <td>{dependant.name || "-"}</td>
                       <td>{dependant.date_of_birth || "-"}</td>

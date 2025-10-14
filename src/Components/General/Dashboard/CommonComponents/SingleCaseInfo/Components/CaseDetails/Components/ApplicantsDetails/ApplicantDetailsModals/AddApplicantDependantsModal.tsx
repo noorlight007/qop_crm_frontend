@@ -61,6 +61,8 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
     });
     if (response.data) {
       toast.success("Dependant added successfully");
+      setFormData({ name: "", date_of_birth: "" });
+      setAge("");
       toggle();
     }
   };
@@ -68,14 +70,14 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle}>
-        <p className=" fs-3 text-primary fw-bold">Add Dependants</p>
+        <p className=" fs-4 text-primary fw-bold">Add Dependants</p>
       </ModalHeader>
       <ModalBody>
-        <Container className="m-2 p-4 border rounded shadow-sm">
+        <Container className="p-4 border rounded shadow-sm">
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="name" className="small">
-                Name
+                Name*
               </Label>
               <Input
                 type="text"
@@ -84,12 +86,13 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter name"
+                required
               />
             </FormGroup>
 
             <FormGroup>
               <Label for="date_of_birth" className="small">
-                Date of Birth
+                Date of Birth*
               </Label>
               <Row className="g-2 align-items-center">
                 <Col>
@@ -99,6 +102,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                     id="date_of_birth"
                     value={formData.date_of_birth}
                     onChange={handleChange}
+                    required
                   />
                 </Col>
                 <Col
@@ -120,13 +124,18 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
               </Row>
             </FormGroup>
 
-            <Row className="justify-content-end">
-              <Col xs="auto">
-                <Button color="primary" type="submit">
-                  {isDependantsLoading ? "Loading..." : "Submit"}
-                </Button>
-              </Col>
-            </Row>
+            <div className="d-flex gap-2 justify-content-end mt-4">
+              <Button color="secondary" onClick={toggle}>
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                type="submit"
+                disabled={isDependantsLoading}
+              >
+                {isDependantsLoading ? "Loading..." : "Submit"}
+              </Button>
+            </div>
           </Form>
         </Container>
       </ModalBody>
