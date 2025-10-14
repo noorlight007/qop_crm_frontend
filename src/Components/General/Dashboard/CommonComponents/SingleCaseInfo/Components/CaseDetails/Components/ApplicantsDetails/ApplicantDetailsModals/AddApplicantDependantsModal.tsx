@@ -28,9 +28,28 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
     name: "",
     date_of_birth: "",
   });
+  const [age, setAge] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === "date_of_birth") {
+      const calc = (dob: string) => {
+        if (!dob) return "";
+        const birth = new Date(dob);
+        if (isNaN(birth.getTime())) return "";
+        const today = new Date();
+        let years = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+          years--;
+        }
+        return years >= 0 ? String(years) : "";
+      };
+
+      setAge(calc(value));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -72,13 +91,33 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
               <Label for="date_of_birth" className="small">
                 Date of Birth
               </Label>
-              <Input
-                type="date"
-                name="date_of_birth"
-                id="date_of_birth"
-                value={formData.date_of_birth}
-                onChange={handleChange}
-              />
+              <Row className="g-2 align-items-center">
+                <Col>
+                  <Input
+                    type="date"
+                    name="date_of_birth"
+                    id="date_of_birth"
+                    value={formData.date_of_birth}
+                    onChange={handleChange}
+                  />
+                </Col>
+                <Col
+                  xs="auto"
+                  className="text-muted small d-flex align-items-center border rounded-1 p-2"
+                >
+                  {formData.date_of_birth ? (
+                    age !== "" ? (
+                      <span>
+                        Age: {age} yr{age !== "1" ? "s" : ""}
+                      </span>
+                    ) : (
+                      <span>Age: 0 yrs</span>
+                    )
+                  ) : (
+                    <span>Age: 0 yrs</span>
+                  )}
+                </Col>
+              </Row>
             </FormGroup>
 
             <Row className="justify-content-end">

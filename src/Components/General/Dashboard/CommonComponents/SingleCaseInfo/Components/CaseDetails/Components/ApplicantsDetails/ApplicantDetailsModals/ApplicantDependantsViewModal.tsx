@@ -15,6 +15,19 @@ const ApplicantDependantsViewModal: React.FC<
     applicantDetails_alias: applicantAlias,
   });
 
+  const calcAge = (dob?: string | null) => {
+    if (!dob) return "";
+    const birth = new Date(dob);
+    if (isNaN(birth.getTime())) return "";
+    const today = new Date();
+    let years = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      years--;
+    }
+    return years >= 0 ? String(years) : "";
+  };
+
   if (isLoading)
     return (
       <div>
@@ -38,10 +51,11 @@ const ApplicantDependantsViewModal: React.FC<
                 <th className="text-primary">Serial No</th>
                 <th className="text-primary">Name</th>
                 <th className="text-primary">Date of Birth</th>
+                <th className="text-primary">Age</th>
               </tr>
             </thead>
             <tbody>
-              {applicantDependantsData?.length > 0 ? (
+              {applicantDependantsData && applicantDependantsData.length > 0 ? (
                 applicantDependantsData.map(
                   (
                     dependant: { name: any; date_of_birth: any },
@@ -51,12 +65,13 @@ const ApplicantDependantsViewModal: React.FC<
                       <td>{index + 1}</td>
                       <td>{dependant.name || "-"}</td>
                       <td>{dependant.date_of_birth || "-"}</td>
+                      <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
                     </tr>
                   )
                 )
               ) : (
                 <tr>
-                  <td colSpan={3} className="text-center">
+                  <td colSpan={4} className="text-center">
                     No dependants found.
                   </td>
                 </tr>
