@@ -511,7 +511,7 @@ const MyTask: React.FC = () => {
                         <td>
                           <div className="d-flex justify-content-center align-items-center">
                             <Button
-                              color="info"
+                              color="success"
                               size="sm"
                               className="me-2"
                               onClick={() => openEditModal(task)}

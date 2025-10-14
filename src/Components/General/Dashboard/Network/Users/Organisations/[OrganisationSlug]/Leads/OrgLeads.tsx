@@ -187,8 +187,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                         {lead.user?.title
                           ? lead.user?.title.charAt(0).toUpperCase() +
                             lead.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
+                          : ""}{" "}
+                        {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
                         {lead?.user?.last_name}
                       </span>
                     </td>
@@ -214,8 +214,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                         {lead.created_by?.title
                           ? lead.created_by?.title.charAt(0).toUpperCase() +
                             lead.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {lead?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {lead?.created_by?.first_name}{" "}
                         {lead?.created_by?.middle_name}{" "}
                         {lead?.created_by?.last_name}
                       </p>

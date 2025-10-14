@@ -193,8 +193,8 @@ const Introducers: React.FC<IntroducersProps> = ({
                         {introducer.user?.title
                           ? introducer.user?.title.charAt(0).toUpperCase() +
                             introducer.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {introducer?.user?.first_name}{" "}
+                          : ""}{" "}
+                        {introducer?.user?.first_name}{" "}
                         {introducer?.user?.middle_name}{" "}
                         {introducer?.user?.last_name}
                       </span>
@@ -223,8 +223,8 @@ const Introducers: React.FC<IntroducersProps> = ({
                               .charAt(0)
                               .toUpperCase() +
                             introducer.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {introducer?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {introducer?.created_by?.first_name}{" "}
                         {introducer?.created_by?.middle_name}{" "}
                         {introducer?.created_by?.last_name}
                       </p>
@@ -392,7 +392,22 @@ const Introducers: React.FC<IntroducersProps> = ({
           isOpen={isDeleteModalOpen}
           toggle={toggleDeleteModal}
           introducerAlias={introducerToDelete?.alias}
-          introducerName={`${introducerToDelete?.user?.first_name} ${introducerToDelete?.user?.last_name}`}
+          introducerName={
+            `${
+              introducerToDelete?.user?.title
+                ? introducerToDelete?.user?.title.charAt(0).toUpperCase() +
+                  introducerToDelete?.user?.title.slice(1).toLowerCase() +
+                  " "
+                : ""
+            }` +
+            `${introducerToDelete?.user?.first_name || ""} ` +
+            `${
+              introducerToDelete?.user?.middle_name
+                ? introducerToDelete?.user?.middle_name + " "
+                : ""
+            }` +
+            `${introducerToDelete?.user?.last_name || ""}`
+          }
         />
         {/* modals end */}
       </CardBody>

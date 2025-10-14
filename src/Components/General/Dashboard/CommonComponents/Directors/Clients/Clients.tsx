@@ -191,9 +191,9 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                         {client.user?.title
                           ? client.user?.title.charAt(0).toUpperCase() +
                             client.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {client?.user?.first_name}{" "}
-                        {client?.user?.middle_name} {client?.user?.last_name}
+                          : ""}{" "}
+                        {client?.user?.first_name} {client?.user?.middle_name}{" "}
+                        {client?.user?.last_name}
                       </span>
                     </td>
                     <td>{client?.user?.email || "-"}</td>
@@ -218,8 +218,8 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                         {client.created_by?.title
                           ? client.created_by?.title.charAt(0).toUpperCase() +
                             client.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {client?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {client?.created_by?.first_name}{" "}
                         {client?.created_by?.middle_name}{" "}
                         {client?.created_by?.last_name}
                       </p>
@@ -378,15 +378,15 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
           toggle={toggleUpdateModal}
           onSave={() => {
             toggleUpdateModal();
-          }}
-          selectedClient={selectedClient}
-        />
-        <DeleteClientModal
-          isOpen={isDeleteModalOpen}
-          toggle={toggleDeleteModal}
-          clientAlias={clientToDelete?.alias || ""}
-          clientName={`${clientToDelete?.user?.first_name} ${clientToDelete?.user?.last_name}`}
-        />
+            }}
+            selectedClient={selectedClient}
+          />
+          <DeleteClientModal
+            isOpen={isDeleteModalOpen}
+            toggle={toggleDeleteModal}
+            clientAlias={clientToDelete?.alias || ""}
+            clientName={`${clientToDelete?.user?.title ? clientToDelete?.user?.title + " " : ""}${clientToDelete?.user?.first_name} ${clientToDelete?.user?.middle_name ? clientToDelete?.user?.middle_name + " " : ""}${clientToDelete?.user?.last_name}`}
+          />
         {/* modals end */}
       </CardBody>
     </Card>

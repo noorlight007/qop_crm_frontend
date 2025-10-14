@@ -192,9 +192,9 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         {adviser.user?.title
                           ? adviser.user?.title.charAt(0).toUpperCase() +
                             adviser.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {adviser?.user?.first_name}{" "}
-                        {adviser?.user?.middle_name} {adviser?.user?.last_name}
+                          : ""}{" "}
+                        {adviser?.user?.first_name} {adviser?.user?.middle_name}{" "}
+                        {adviser?.user?.last_name}
                       </span>
                     </td>
                     <td>{adviser?.user?.email || "-"}</td>
@@ -225,7 +225,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                                   adviser.created_by.title
                                     .slice(1)
                                     .toLowerCase() +
-                                  ". "
+                                  " "
                                 : ""
                             }${adviser.created_by.first_name || ""} ${
                               adviser.created_by.middle_name || ""
@@ -396,7 +396,17 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
           isOpen={isDeleteModalOpen}
           toggle={toggleDeleteModal}
           adviserAlias={adviserToDelete?.alias || ""}
-          adviserName={`${adviserToDelete?.user?.first_name} ${adviserToDelete?.user?.last_name}`}
+          adviserName={`${
+            adviserToDelete?.user?.title ? adviserToDelete.user.title + " " : ""
+          }${adviserToDelete?.user?.first_name || ""}${
+            adviserToDelete?.user?.middle_name
+              ? " " + adviserToDelete.user.middle_name
+              : ""
+          }${
+            adviserToDelete?.user?.last_name
+              ? " " + adviserToDelete.user.last_name
+              : ""
+          }`}
         />
         {/* modals end */}
       </CardBody>
