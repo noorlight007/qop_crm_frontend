@@ -1,0 +1,985 @@
+import React, { useState } from "react";
+import { Edit, Trash2 } from "react-feather";
+import { FaSearch } from "react-icons/fa";
+import { TbCirclePlus } from "react-icons/tb";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  InputGroup,
+  InputGroupText,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Row,
+  Table,
+} from "reactstrap";
+
+interface Task {
+  id: string;
+  date: string;
+  caseNumber: string;
+  clientName: string;
+  company: string;
+  taskName: string;
+  priority: "Low" | "Normal" | "High";
+  status: "Pending" | "Completed" | "Overdue";
+  assignedTo: string;
+  taskType: string;
+  dueDate: string;
+}
+
+const MyTask: React.FC = () => {
+  const [tasks, setTasks] = useState<Task[]>([
+    {
+      id: "1",
+      date: "28/07/2019 00:00",
+      caseNumber: "APP0004972",
+      clientName: "Sundararajan Sunassee",
+      company: "The Mortgage Works",
+      taskName: "Confirm Solicitors have Received Offer",
+      priority: "Low",
+      status: "Overdue",
+      assignedTo: "Mostafizur Rahman",
+      taskType: "Legal",
+      dueDate: "30/07/2019",
+    },
+    {
+      id: "2",
+      date: "31/07/2019 00:00",
+      caseNumber: "APP0004312",
+      clientName: "Ismail Matin",
+      company: "Barclays",
+      taskName: "Application Completed",
+      priority: "Normal",
+      status: "Overdue",
+      assignedTo: "Mostafizur Rahman",
+      taskType: "Application",
+      dueDate: "02/08/2019",
+    },
+    // Add more sample data as needed
+  ]);
+
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tasksPerPage] = useState(10);
+  const [filters, setFilters] = useState({
+    assignedTo: "All",
+    taskType: "All",
+    priority: "All",
+    searchTerm: "",
+    dueDateFrom: "",
+    dueDateTo: "",
+    status: "All",
+  });
+  const [filterIcon, setFilterIcon] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [newTask, setNewTask] = useState<Partial<Task>>({
+    clientName: "",
+    company: "",
+    taskName: "",
+    priority: "Normal",
+    status: "Pending",
+    assignedTo: "",
+    taskType: "",
+    dueDate: "",
+  });
+
+  const toggleFilterIcon = () => setFilterIcon(!filterIcon);
+
+  // Filter tasks based on current filters
+  React.useEffect(() => {
+    let filtered = tasks.filter((task) => {
+      const matchesAssignedTo =
+        filters.assignedTo === "All" || task.assignedTo === filters.assignedTo;
+      const matchesTaskType =
+        filters.taskType === "All" || task.taskType === filters.taskType;
+      const matchesPriority =
+        filters.priority === "All" || task.priority === filters.priority;
+      const matchesStatus =
+        filters.status === "All" || task.status === filters.status;
+      const matchesSearch =
+        task.taskName
+          .toLowerCase()
+          .includes(filters.searchTerm.toLowerCase()) ||
+        task.clientName
+          .toLowerCase()
+          .includes(filters.searchTerm.toLowerCase()) ||
+        task.caseNumber
+          .toLowerCase()
+          .includes(filters.searchTerm.toLowerCase());
+
+      // Date range filtering
+      let matchesDateRange = true;
+      if (filters.dueDateFrom || filters.dueDateTo) {
+        const taskDueDate = new Date(
+          task.dueDate.split("/").reverse().join("-")
+        ); // Convert DD/MM/YYYY to YYYY-MM-DD
+
+        if (filters.dueDateFrom) {
+          const fromDate = new Date(filters.dueDateFrom);
+          matchesDateRange = matchesDateRange && taskDueDate >= fromDate;
+        }
+
+        if (filters.dueDateTo) {
+          const toDate = new Date(filters.dueDateTo);
+          matchesDateRange = matchesDateRange && taskDueDate <= toDate;
+        }
+      }
+
+      return (
+        matchesAssignedTo &&
+        matchesTaskType &&
+        matchesPriority &&
+        matchesStatus &&
+        matchesSearch &&
+        matchesDateRange
+      );
+    });
+
+    setFilteredTasks(filtered);
+    setCurrentPage(1);
+  }, [tasks, filters]);
+
+  // Pagination
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
+  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
+
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters((prev) => ({
+      ...prev,
+      [filterName]: value,
+    }));
+  };
+
+  const handleAddTask = () => {
+    // Basic validation
+    if (
+      !newTask.clientName ||
+      !newTask.taskName ||
+      !newTask.assignedTo ||
+      !newTask.taskType
+    ) {
+      alert(
+        "Please fill in all required fields: Client Name, Task Name, Assigned To, and Task Type"
+      );
+      return;
+    }
+
+    const task: Task = {
+      ...(newTask as Task),
+      id: Date.now().toString(),
+      date: new Date().toLocaleDateString("en-GB") + " 00:00",
+      caseNumber: `APP${Date.now().toString().slice(-6)}`,
+    };
+    setTasks((prev) => [...prev, task]);
+    setIsAddModalOpen(false);
+    setNewTask({
+      clientName: "",
+      company: "",
+      taskName: "",
+      priority: "Normal",
+      status: "Pending",
+      assignedTo: "",
+      taskType: "",
+      dueDate: "",
+    });
+  };
+
+  const handleEditTask = () => {
+    if (selectedTask) {
+      setTasks((prev) =>
+        prev.map((task) => (task.id === selectedTask.id ? selectedTask : task))
+      );
+      setIsEditModalOpen(false);
+      setSelectedTask(null);
+    }
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    if (window.confirm("Are you sure you want to delete this task?")) {
+      setTasks((prev) => prev.filter((task) => task.id !== taskId));
+    }
+  };
+
+  const openEditModal = (task: Task) => {
+    setSelectedTask(task);
+    setIsEditModalOpen(true);
+  };
+
+  const getPriorityBadgeColor = (priority: string) => {
+    switch (priority) {
+      case "High":
+        return "danger";
+      case "Normal":
+        return "info";
+      case "Low":
+        return "primary";
+      default:
+        return "secondary";
+    }
+  };
+
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "Completed":
+        return "success";
+      case "Pending":
+        return "warning";
+      case "Overdue":
+        return "danger";
+      default:
+        return "secondary";
+    }
+  };
+
+  return (
+    <Row>
+      <Col xxl="12">
+        <Card>
+          <CardHeader>
+            <Row className="d-flex justify-content-between py-4">
+              <Col md="3" xs="12">
+                <div className="d-flex align-items-center">
+                  <i className="fa fa-tasks me-2"></i>
+                  <h5 className="mb-0">My Tasks</h5>
+                </div>
+              </Col>
+              <Col md={6} xs="12">
+                <InputGroup>
+                  <Input
+                    type="text"
+                    placeholder="Search tasks, clients, or case numbers..."
+                    style={{ padding: "10px 10px" }}
+                    value={filters.searchTerm}
+                    onChange={(e) =>
+                      handleFilterChange("searchTerm", e.target.value)
+                    }
+                  />
+                  <InputGroupText className="bg-success rounded-start-0 border-start-0">
+                    <FaSearch />
+                  </InputGroupText>
+                </InputGroup>
+              </Col>
+              <Col
+                md="3"
+                xs="12"
+                className="d-flex justify-content-end mt-sm-0 mt-2"
+              >
+                <Button
+                  color="success"
+                  onClick={toggleFilterIcon}
+                  className="me-2"
+                >
+                  {filterIcon ? (
+                    <i className="fa-solid fa-filter-circle-xmark"></i>
+                  ) : (
+                    <i className="fa-solid fa-filter"></i>
+                  )}
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="d-flex justify-content-center align-items-center gap-1"
+                >
+                  <TbCirclePlus size={18} />
+                  <span>Add New Task</span>
+                </Button>
+              </Col>
+            </Row>
+          </CardHeader>
+
+          <CardBody className="p-2 m-0">
+            {/* Conditional Filters Section */}
+            {filterIcon && (
+              <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
+                <Row className="justify-content-center g-3">
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Assigned To</Label>
+                    <Input
+                      type="select"
+                      id="assignedTo"
+                      className="py-1"
+                      value={filters.assignedTo}
+                      onChange={(e) =>
+                        handleFilterChange("assignedTo", e.target.value)
+                      }
+                    >
+                      <option value="All">All Employees</option>
+                      <option value="Mostafizur Rahman">
+                        Mostafizur Rahman
+                      </option>
+                      <option value="John Doe">John Doe</option>
+                    </Input>
+                  </Col>
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Task Type</Label>
+                    <Input
+                      type="select"
+                      id="taskType"
+                      className="py-1"
+                      value={filters.taskType}
+                      onChange={(e) =>
+                        handleFilterChange("taskType", e.target.value)
+                      }
+                    >
+                      <option value="All">All Types</option>
+                      <option value="Legal">Legal</option>
+                      <option value="Application">Application</option>
+                      <option value="Follow-up">Follow-up</option>
+                    </Input>
+                  </Col>
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Priority</Label>
+                    <Input
+                      type="select"
+                      id="priority"
+                      className="py-1"
+                      value={filters.priority}
+                      onChange={(e) =>
+                        handleFilterChange("priority", e.target.value)
+                      }
+                    >
+                      <option value="All">All Priorities</option>
+                      <option value="High">High</option>
+                      <option value="Normal">Normal</option>
+                      <option value="Low">Low</option>
+                    </Input>
+                  </Col>
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Task Name</Label>
+                    <Input
+                      type="text"
+                      id="taskNameFilter"
+                      className="py-2"
+                      placeholder="Search task name..."
+                      value={filters.searchTerm}
+                      onChange={(e) =>
+                        handleFilterChange("searchTerm", e.target.value)
+                      }
+                    />
+                  </Col>
+                </Row>
+                <Row className="justify-content-center g-3 mt-2">
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Due Date From</Label>
+                    <Input
+                      type="date"
+                      id="dueDateFrom"
+                      className="py-2"
+                      value={filters.dueDateFrom}
+                      onChange={(e) =>
+                        handleFilterChange("dueDateFrom", e.target.value)
+                      }
+                    />
+                  </Col>
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Due Date To</Label>
+                    <Input
+                      type="date"
+                      id="dueDateTo"
+                      className="py-2"
+                      value={filters.dueDateTo}
+                      onChange={(e) =>
+                        handleFilterChange("dueDateTo", e.target.value)
+                      }
+                    />
+                  </Col>
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Status</Label>
+                    <Input
+                      type="select"
+                      id="status"
+                      className="py-1"
+                      value={filters.status || "All"}
+                      onChange={(e) =>
+                        handleFilterChange("status", e.target.value)
+                      }
+                    >
+                      <option value="All">All Status</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Overdue">Overdue</option>
+                    </Input>
+                  </Col>
+                  <Col xs="12" sm="6" md="3">
+                    <Label>Clear All Filters</Label>
+                    <Button
+                      outline
+                      className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
+                      onClick={() => {
+                        setFilters({
+                          assignedTo: "All",
+                          taskType: "All",
+                          priority: "All",
+                          searchTerm: "",
+                          dueDateFrom: "",
+                          dueDateTo: "",
+                          status: "All",
+                        });
+                        setCurrentPage(1);
+                      }}
+                    >
+                      Clear<i className="fa-solid fa-xmark"></i>
+                    </Button>
+                  </Col>
+                </Row>
+              </Card>
+            )}
+
+            {/* Tasks List */}
+            <Row>
+              <Table hover responsive className="mt-3">
+                <thead className="thead-light text-center">
+                  <tr>
+                    <th>Date & Time</th>
+                    <th>Case Number</th>
+                    <th>Client Name</th>
+                    <th>Company</th>
+                    <th>Task Name</th>
+                    <th>Task Type</th>
+                    <th>Assigned To</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center">
+                  {currentTasks.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="text-center p-4">
+                        <p className="text-muted mb-0">
+                          No tasks found matching your criteria.
+                        </p>
+                      </td>
+                    </tr>
+                  ) : (
+                    currentTasks.map((task) => (
+                      <tr key={task.id}>
+                        <td>
+                          <small className="text-muted">{task.date}</small>
+                        </td>
+                        <td>
+                          <span className="text-primary fw-bold">
+                            {task.caseNumber}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="text-dark">{task.clientName}</span>
+                        </td>
+                        <td>
+                          <span className="text-muted">{task.company}</span>
+                        </td>
+                        <td>
+                          <span className="fw-bold text-start">
+                            {task.taskName}
+                          </span>
+                        </td>
+                        <td>
+                          <Badge color="info" className="px-2">
+                            {task.taskType}
+                          </Badge>
+                        </td>
+                        <td>
+                          <p className="m-0">{task.assignedTo}</p>
+                        </td>
+                        <td>
+                          <Badge
+                            color={getPriorityBadgeColor(task.priority)}
+                            className="px-2"
+                          >
+                            {task.priority}
+                          </Badge>
+                        </td>
+                        <td>
+                          <Badge
+                            color={getStatusBadgeColor(task.status)}
+                            className="px-2"
+                          >
+                            {task.status}
+                          </Badge>
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-center align-items-center">
+                            <Button
+                              color="info"
+                              size="sm"
+                              className="me-2"
+                              onClick={() => openEditModal(task)}
+                              title="Edit Task"
+                            >
+                              <Edit size={12} />
+                            </Button>
+                            <Button
+                              color="danger"
+                              size="sm"
+                              onClick={() => handleDeleteTask(task.id)}
+                              title="Delete Task"
+                            >
+                              <Trash2 size={12} />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </Table>
+            </Row>
+
+            {/* Pagination */}
+            <Row>
+              <div className="d-flex justify-content-between px-4 py-3">
+                <div>
+                  <p className="text-success">
+                    Showing {indexOfFirstTask + 1} to{" "}
+                    {Math.min(indexOfLastTask, filteredTasks.length)} of{" "}
+                    {filteredTasks.length} tasks
+                  </p>
+                </div>
+                <Pagination>
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink first onClick={() => setCurrentPage(1)} />
+                  </PaginationItem>
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink
+                      previous
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    />
+                  </PaginationItem>
+
+                  {/* Generate visible page numbers */}
+                  {(() => {
+                    const pages = [];
+                    const total = totalPages;
+                    const currentPageNumber = currentPage;
+
+                    let start = Math.max(2, currentPageNumber - 2);
+                    let end = Math.min(total - 1, currentPageNumber + 2);
+
+                    // Always show page 1
+                    if (total >= 1) {
+                      pages.push(
+                        <PaginationItem
+                          key={1}
+                          active={currentPageNumber === 1}
+                        >
+                          <PaginationLink onClick={() => setCurrentPage(1)}>
+                            1
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Add ellipsis if needed before middle pages
+                    if (start > 2) {
+                      pages.push(
+                        <PaginationItem key="ellipsis-start" disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Show middle pages
+                    for (let i = start; i <= end; i++) {
+                      pages.push(
+                        <PaginationItem
+                          key={i}
+                          active={currentPageNumber === i}
+                        >
+                          <PaginationLink onClick={() => setCurrentPage(i)}>
+                            {i}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Add ellipsis if needed after middle pages
+                    if (end < total - 1) {
+                      pages.push(
+                        <PaginationItem key="ellipsis-end" disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+
+                    // Always show last page
+                    if (total > 1) {
+                      pages.push(
+                        <PaginationItem
+                          key={total}
+                          active={currentPageNumber === total}
+                        >
+                          <PaginationLink onClick={() => setCurrentPage(total)}>
+                            {total}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+
+                    return pages;
+                  })()}
+
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      next
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    />
+                  </PaginationItem>
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      last
+                      onClick={() => setCurrentPage(totalPages)}
+                    />
+                  </PaginationItem>
+                </Pagination>
+              </div>
+            </Row>
+          </CardBody>
+        </Card>
+
+        {/* Add Task Modal */}
+        <Modal
+          isOpen={isAddModalOpen}
+          toggle={() => setIsAddModalOpen(false)}
+          size="lg"
+        >
+          <ModalHeader toggle={() => setIsAddModalOpen(false)}>
+            Add New Task
+          </ModalHeader>
+          <ModalBody>
+            <Form>
+              <Row>
+                <Col md="6">
+                  <FormGroup>
+                    <Label for="clientName">Client Name</Label>
+                    <Input
+                      type="text"
+                      id="clientName"
+                      value={newTask.clientName || ""}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          clientName: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter client name"
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="6">
+                  <FormGroup>
+                    <Label for="company">Company</Label>
+                    <Input
+                      type="text"
+                      id="company"
+                      value={newTask.company || ""}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          company: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter company name"
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md="12">
+                  <FormGroup>
+                    <Label for="taskName">Task Name</Label>
+                    <Input
+                      type="text"
+                      id="taskName"
+                      value={newTask.taskName || ""}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          taskName: e.target.value,
+                        }))
+                      }
+                      placeholder="Enter task description"
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md="4">
+                  <FormGroup>
+                    <Label for="priority">Priority</Label>
+                    <Input
+                      type="select"
+                      id="priority"
+                      value={newTask.priority || "Normal"}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          priority: e.target.value as any,
+                        }))
+                      }
+                    >
+                      <option value="Low">Low</option>
+                      <option value="Normal">Normal</option>
+                      <option value="High">High</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md="4">
+                  <FormGroup>
+                    <Label for="taskType">Task Type</Label>
+                    <Input
+                      type="select"
+                      id="taskType"
+                      value={newTask.taskType || ""}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          taskType: e.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Select type</option>
+                      <option value="Legal">Legal</option>
+                      <option value="Application">Application</option>
+                      <option value="Follow-up">Follow-up</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md="4">
+                  <FormGroup>
+                    <Label for="dueDate">Due Date</Label>
+                    <Input
+                      type="date"
+                      id="dueDate"
+                      value={newTask.dueDate || ""}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          dueDate: e.target.value,
+                        }))
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md="6">
+                  <FormGroup>
+                    <Label for="assignedTo">Assigned To</Label>
+                    <Input
+                      type="select"
+                      id="assignedTo"
+                      value={newTask.assignedTo || ""}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          assignedTo: e.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Select assignee</option>
+                      <option value="Mostafizur Rahman">
+                        Mostafizur Rahman
+                      </option>
+                      <option value="John Doe">John Doe</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md="6">
+                  <FormGroup>
+                    <Label for="status">Status</Label>
+                    <Input
+                      type="select"
+                      id="status"
+                      value={newTask.status || "Pending"}
+                      onChange={(e) =>
+                        setNewTask((prev) => ({
+                          ...prev,
+                          status: e.target.value as any,
+                        }))
+                      }
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Overdue">Overdue</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Form>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setIsAddModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button color="primary" onClick={handleAddTask}>
+              Add Task
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        {/* Edit Task Modal */}
+        <Modal
+          isOpen={isEditModalOpen}
+          toggle={() => setIsEditModalOpen(false)}
+          size="lg"
+        >
+          <ModalHeader toggle={() => setIsEditModalOpen(false)}>
+            Edit Task
+          </ModalHeader>
+          <ModalBody>
+            {selectedTask && (
+              <Form>
+                <Row>
+                  <Col md="6">
+                    <FormGroup>
+                      <Label for="editClientName">Client Name</Label>
+                      <Input
+                        type="text"
+                        id="editClientName"
+                        value={selectedTask.clientName}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev
+                              ? { ...prev, clientName: e.target.value }
+                              : null
+                          )
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <Label for="editCompany">Company</Label>
+                      <Input
+                        type="text"
+                        id="editCompany"
+                        value={selectedTask.company}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev ? { ...prev, company: e.target.value } : null
+                          )
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md="12">
+                    <FormGroup>
+                      <Label for="editTaskName">Task Name</Label>
+                      <Input
+                        type="text"
+                        id="editTaskName"
+                        value={selectedTask.taskName}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev ? { ...prev, taskName: e.target.value } : null
+                          )
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+
+                <Row>
+                  <Col md="4">
+                    <FormGroup>
+                      <Label for="editPriority">Priority</Label>
+                      <Input
+                        type="select"
+                        id="editPriority"
+                        value={selectedTask.priority}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev
+                              ? { ...prev, priority: e.target.value as any }
+                              : null
+                          )
+                        }
+                      >
+                        <option value="Low">Low</option>
+                        <option value="Normal">Normal</option>
+                        <option value="High">High</option>
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <Label for="editTaskType">Task Type</Label>
+                      <Input
+                        type="select"
+                        id="editTaskType"
+                        value={selectedTask.taskType}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev ? { ...prev, taskType: e.target.value } : null
+                          )
+                        }
+                      >
+                        <option value="Legal">Legal</option>
+                        <option value="Application">Application</option>
+                        <option value="Follow-up">Follow-up</option>
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <Label for="editStatus">Status</Label>
+                      <Input
+                        type="select"
+                        id="editStatus"
+                        value={selectedTask.status}
+                        onChange={(e) =>
+                          setSelectedTask((prev) =>
+                            prev
+                              ? { ...prev, status: e.target.value as any }
+                              : null
+                          )
+                        }
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Overdue">Overdue</option>
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </Form>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setIsEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button color="primary" onClick={handleEditTask}>
+              Update Task
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </Col>
+    </Row>
+  );
+};
+
+export default MyTask;

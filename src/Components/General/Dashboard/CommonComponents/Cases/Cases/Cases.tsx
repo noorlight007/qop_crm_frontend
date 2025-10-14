@@ -382,7 +382,7 @@ const Cases: React.FC = () => {
                   <thead className="thead-light text-center">
                     <tr>
                       <th>Case Name</th>
-                      <th>Case Users</th>
+                      <th>Clients</th>
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Case Stage</th>
