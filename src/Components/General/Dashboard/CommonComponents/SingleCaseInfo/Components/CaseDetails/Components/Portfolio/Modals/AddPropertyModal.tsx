@@ -159,8 +159,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                           {applicant?.title
                             ? applicant?.title.charAt(0).toUpperCase() +
                               applicant?.title.slice(1).toLowerCase()
-                            : ""}
-                          {"."} {applicant?.first_name} {applicant?.middle_name}{" "}
+                            : ""}{" "}
+                          {applicant?.first_name} {applicant?.middle_name}{" "}
                           {applicant?.last_name}
                           <span className="ms-1">x</span>
                         </span>
@@ -198,8 +198,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                           {applicant?.title
                             ? applicant?.title.charAt(0).toUpperCase() +
                               applicant?.title.slice(1).toLowerCase()
-                            : ""}
-                          {"."} {applicant?.first_name} {applicant?.middle_name}{" "}
+                            : ""}{" "}
+                          {applicant?.first_name} {applicant?.middle_name}{" "}
                           {applicant?.last_name}
                         </div>
                       ))}

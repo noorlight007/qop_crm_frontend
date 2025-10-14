@@ -261,7 +261,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
                           ? user.title.charAt(0).toUpperCase() +
                             user.title.slice(1).toLowerCase()
                           : ""}
-                        {user?.title ? ". " : ""}
+                        {user?.title ? " " : ""}
                         {user.first_name} {user.middle_name} {user.last_name}
                       </option>
                     ))}

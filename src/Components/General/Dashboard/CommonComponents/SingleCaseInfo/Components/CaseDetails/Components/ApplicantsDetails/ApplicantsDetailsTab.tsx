@@ -61,7 +61,7 @@ export const ApplicantsDetailsTab = () => {
                           applicantData?.applicant?.title
                             .slice(1)
                             .toLowerCase() +
-                          "."
+                          ""
                         : ""
                     } ${applicantData?.applicant?.first_name} ${
                       applicantData?.applicant?.middle_name

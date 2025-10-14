@@ -398,9 +398,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                         {user?.title
                           ? user.title.charAt(0).toUpperCase() +
                             user.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {user.first_name} {user.middle_name}{" "}
-                        {user.last_name}
+                          : ""}{" "}
+                        {user.first_name} {user.middle_name} {user.last_name}
                       </option>
                     ))}
                 </Input>

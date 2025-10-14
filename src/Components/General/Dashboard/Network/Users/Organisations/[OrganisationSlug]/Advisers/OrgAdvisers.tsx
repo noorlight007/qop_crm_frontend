@@ -230,7 +230,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
                                   adviser.created_by.title
                                     .slice(1)
                                     .toLowerCase() +
-                                  ". "
+                                  " "
                                 : ""
                             }${adviser.created_by.first_name || ""} ${
                               adviser.created_by.middle_name || ""

@@ -434,7 +434,7 @@ const Cases: React.FC = () => {
                                         caseItem.lead_user.title
                                           .slice(1)
                                           .toLowerCase() +
-                                        ". "
+                                        " "
                                       : ""}
                                     {caseItem.lead_user.first_name}{" "}
                                     {caseItem.lead_user.middle_name
@@ -472,7 +472,7 @@ const Cases: React.FC = () => {
                                     {joint.title
                                       ? joint.title[0].toUpperCase() +
                                         joint.title.slice(1).toLowerCase() +
-                                        ". "
+                                        " "
                                       : ""}
                                     {joint.first_name}{" "}
                                     {joint.middle_name
@@ -545,7 +545,7 @@ const Cases: React.FC = () => {
                                   caseItem.created_by.title
                                     .slice(1)
                                     .toLowerCase() +
-                                  ". "
+                                  " "
                                 : ""}
                               {caseItem.created_by?.first_name}{" "}
                               {caseItem.created_by?.middle_name
@@ -578,7 +578,7 @@ const Cases: React.FC = () => {
                                       caseItem.assigned_user.title
                                         .slice(1)
                                         .toLowerCase() +
-                                      ". "
+                                      " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
                                   {caseItem.assigned_user.middle_name

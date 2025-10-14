@@ -196,9 +196,9 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                         {client.user?.title
                           ? client.user?.title.charAt(0).toUpperCase() +
                             client.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {client?.user?.first_name}{" "}
-                        {client?.user?.middle_name} {client?.user?.last_name}
+                          : ""}{" "}
+                        {client?.user?.first_name} {client?.user?.middle_name}{" "}
+                        {client?.user?.last_name}
                       </span>
                     </td>
                     <td>{client?.official_email || "-"}</td>
@@ -223,8 +223,8 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                         {client.created_by?.title
                           ? client.created_by?.title.charAt(0).toUpperCase() +
                             client.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {client?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {client?.created_by?.first_name}{" "}
                         {client?.created_by?.middle_name}{" "}
                         {client?.created_by?.last_name}
                       </p>

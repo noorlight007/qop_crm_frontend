@@ -34,7 +34,14 @@ const JointUserDeleteModal: React.FC<JointUserDeleteModalProps> = ({
       <ModalBody>
         Are you sure you want to delete the file{" "}
         <strong>
+          {selectedUser?.joint_user_details?.title &&
+            selectedUser.joint_user_details.title.charAt(0).toUpperCase() +
+              selectedUser.joint_user_details.title.slice(1).toLowerCase() +
+              " "}{" "}
           {selectedUser?.joint_user_details?.first_name}{" "}
+          {selectedUser?.joint_user_details?.middle_name && (
+            <>{selectedUser.joint_user_details.middle_name} </>
+          )}
           {selectedUser?.joint_user_details?.last_name}
         </strong>
         ?

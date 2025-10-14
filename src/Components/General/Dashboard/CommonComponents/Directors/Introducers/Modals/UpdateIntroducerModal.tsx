@@ -109,15 +109,15 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
                   required
                 >
                   <option value="">Select...</option>
-                  <option value="MR">Mr.</option>
-                  <option value="MRS">Mrs.</option>
-                  <option value="MS">Ms.</option>
-                  <option value="DR">Dr.</option>
-                  <option value="MISS">Miss.</option>
-                  <option value="MADAM">Madam.</option>
-                  <option value="MAIDEN">Maiden.</option>
-                  <option value="PROFESSOR">Professor.</option>
-                  <option value="DOCTOR">Doctor.</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
                 </Input>
               </FormGroup>
             </Col>

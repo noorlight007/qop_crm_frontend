@@ -28,8 +28,8 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
               {selectedClient.user?.title
                 ? selectedClient.user?.title.charAt(0).toUpperCase() +
                   selectedClient.user?.title.slice(1).toLowerCase()
-                : ""}
-              {"."} {selectedClient?.user?.first_name}{" "}
+                : ""}{" "}
+              {selectedClient?.user?.first_name}{" "}
               {selectedClient?.user?.middle_name}{" "}
               {selectedClient?.user?.last_name}
             </small>
@@ -79,8 +79,13 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">User Type:</span>
             <small>
               {selectedClient?.user?.user_type ? (
-                selectedClient.user.user_type.charAt(0).toUpperCase() +
-                selectedClient.user.user_type.slice(1).toLowerCase()
+                selectedClient.user.user_type
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -90,8 +95,13 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">User Role:</span>
             <small>
               {selectedClient?.role ? (
-                selectedClient.role.charAt(0).toUpperCase() +
-                selectedClient.role.slice(1).toLowerCase()
+                selectedClient.role
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -114,8 +124,8 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
                   {selectedClient.created_by.title
                     ? selectedClient.created_by.title.charAt(0).toUpperCase() +
                       selectedClient.created_by.title.slice(1).toLowerCase()
-                    : ""}
-                  {". "} {selectedClient.created_by.first_name}{" "}
+                    : ""}{" "}
+                  {selectedClient.created_by.first_name}{" "}
                   {selectedClient.created_by.middle_name}{" "}
                   {selectedClient.created_by.last_name}
                 </>

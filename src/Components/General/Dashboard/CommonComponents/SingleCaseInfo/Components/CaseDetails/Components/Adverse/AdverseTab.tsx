@@ -62,7 +62,7 @@ export const AdverseTab = () => {
                       adverse?.user?.title
                         ? adverse?.user?.title[0].toUpperCase() +
                           adverse?.user?.title.slice(1).toLowerCase() +
-                          "."
+                          ""
                         : ""
                     } ${adverse?.user?.first_name} ${
                       adverse?.user?.middle_name

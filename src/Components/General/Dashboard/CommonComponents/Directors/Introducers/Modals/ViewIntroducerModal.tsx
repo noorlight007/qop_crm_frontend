@@ -29,8 +29,8 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
               {selectedIntroducer.user?.title
                 ? selectedIntroducer.user?.title.charAt(0).toUpperCase() +
                   selectedIntroducer.user?.title.slice(1).toLowerCase()
-                : ""}
-              {"."} {selectedIntroducer?.user?.first_name}{" "}
+                : ""}{" "}
+              {selectedIntroducer?.user?.first_name}{" "}
               {selectedIntroducer?.user?.middle_name}{" "}
               {selectedIntroducer?.user?.last_name}
             </small>
@@ -101,8 +101,13 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">User Type:</span>
             <small>
               {selectedIntroducer?.user?.user_type ? (
-                selectedIntroducer.user.user_type.charAt(0).toUpperCase() +
-                selectedIntroducer.user.user_type.slice(1).toLowerCase()
+                selectedIntroducer.user.user_type
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -112,8 +117,13 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">User Role:</span>
             <small>
               {selectedIntroducer?.role ? (
-                selectedIntroducer.role.charAt(0).toUpperCase() +
-                selectedIntroducer.role.slice(1).toLowerCase()
+                selectedIntroducer.role
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  )
+                  .join(" ")
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -138,8 +148,8 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
                         .charAt(0)
                         .toUpperCase() +
                       selectedIntroducer.created_by.title.slice(1).toLowerCase()
-                    : ""}
-                  {". "} {selectedIntroducer.created_by.first_name}{" "}
+                    : ""}{" "}
+                  {selectedIntroducer.created_by.first_name}{" "}
                   {selectedIntroducer.created_by.middle_name}{" "}
                   {selectedIntroducer.created_by.last_name}
                 </>

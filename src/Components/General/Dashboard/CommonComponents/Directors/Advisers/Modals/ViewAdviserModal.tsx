@@ -29,8 +29,8 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
               {selectedAdviser.user?.title
                 ? selectedAdviser.user?.title.charAt(0).toUpperCase() +
                   selectedAdviser.user?.title.slice(1).toLowerCase()
-                : ""}
-              {"."} {selectedAdviser?.user?.first_name}{" "}
+                : ""}{" "}
+              {selectedAdviser?.user?.first_name}{" "}
               {selectedAdviser?.user?.middle_name}{" "}
               {selectedAdviser?.user?.last_name}
             </small>
@@ -101,8 +101,14 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <span className="text-muted">User Type:</span>
             <small>
               {selectedAdviser?.user?.user_type ? (
-                selectedAdviser.user.user_type.charAt(0).toUpperCase() +
-                selectedAdviser.user.user_type.slice(1).toLowerCase()
+                selectedAdviser.user.user_type
+                  .split("_")
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() +
+                      word.slice(1).toLowerCase()
+                  )
+                  .join(" ")
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -137,7 +143,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
                     ? selectedAdviser.created_by.title.charAt(0).toUpperCase() +
                       selectedAdviser.created_by.title.slice(1).toLowerCase()
                     : ""}
-                  {". "} {selectedAdviser.created_by.first_name}{" "}
+                  {" "} {selectedAdviser.created_by.first_name}{" "}
                   {selectedAdviser.created_by.middle_name}{" "}
                   {selectedAdviser.created_by.last_name}
                 </>

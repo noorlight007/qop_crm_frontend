@@ -30,7 +30,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                 ? selectedLead.user?.title.charAt(0).toUpperCase() +
                   selectedLead.user?.title.slice(1).toLowerCase()
                 : ""}
-              {"."} {selectedLead?.user?.first_name}{" "}
+              {" "} {selectedLead?.user?.first_name}{" "}
               {selectedLead?.user?.middle_name} {selectedLead?.user?.last_name}
             </small>
           </Col>
@@ -114,7 +114,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                     ? selectedLead.created_by.title.charAt(0).toUpperCase() +
                       selectedLead.created_by.title.slice(1).toLowerCase()
                     : ""}
-                  {". "} {selectedLead.created_by.first_name}{" "}
+                  {" "} {selectedLead.created_by.first_name}{" "}
                   {selectedLead.created_by.middle_name}{" "}
                   {selectedLead.created_by.last_name}
                 </>

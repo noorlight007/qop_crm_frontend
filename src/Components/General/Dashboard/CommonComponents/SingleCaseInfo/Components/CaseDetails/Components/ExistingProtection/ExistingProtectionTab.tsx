@@ -97,7 +97,7 @@ const ExistingProtectionTab: React.FC = () => {
                           user.title
                             ? user?.title[0].toUpperCase() +
                               user?.title.slice(1).toLowerCase() +
-                              "."
+                              ""
                             : ""
                         } ${user.first_name} ${user.middle_name} ${
                           user.last_name

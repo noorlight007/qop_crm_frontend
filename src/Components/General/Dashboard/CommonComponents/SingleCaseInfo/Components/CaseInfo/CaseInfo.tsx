@@ -48,8 +48,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 {caseInfo?.lead_user?.title
                   ? caseInfo.lead_user.title[0].toUpperCase() +
                     caseInfo.lead_user.title.slice(1).toLowerCase()
-                  : ""}
-                {"."} {caseInfo?.lead_user?.first_name}{" "}
+                  : ""}{" "}
+                {caseInfo?.lead_user?.first_name}{" "}
                 {caseInfo?.lead_user?.middle_name}{" "}
                 {caseInfo?.lead_user?.last_name}
               </strong>
@@ -152,8 +152,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                     {caseInfo?.assigned_user?.title
                       ? caseInfo.assigned_user.title[0].toUpperCase() +
                         caseInfo.assigned_user.title.slice(1).toLowerCase()
-                      : ""}
-                    {"."} {caseInfo?.assigned_user?.first_name}{" "}
+                      : ""}{" "}
+                    {caseInfo?.assigned_user?.first_name}{" "}
                     {caseInfo?.assigned_user?.middle_name}{" "}
                     {caseInfo?.assigned_user?.last_name}
                   </strong>
@@ -204,8 +204,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 {caseInfo?.created_by?.title
                   ? caseInfo.created_by.title[0].toUpperCase() +
                     caseInfo.created_by.title.slice(1).toLowerCase()
-                  : ""}
-                {"."} {caseInfo?.created_by?.first_name}{" "}
+                  : ""}{" "}
+                {caseInfo?.created_by?.first_name}{" "}
                 {caseInfo?.created_by?.middle_name}{" "}
                 {caseInfo?.created_by?.last_name}
               </strong>
@@ -250,8 +250,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                     {caseInfo?.updated_by?.title
                       ? caseInfo.updated_by.title[0].toUpperCase() +
                         caseInfo.updated_by.title.slice(1).toLowerCase()
-                      : ""}
-                    {"."} {caseInfo?.updated_by?.first_name}{" "}
+                      : ""}{" "}
+                    {caseInfo?.updated_by?.first_name}{" "}
                     {caseInfo?.updated_by?.middle_name}{" "}
                     {caseInfo?.updated_by?.last_name}
                   </strong>
