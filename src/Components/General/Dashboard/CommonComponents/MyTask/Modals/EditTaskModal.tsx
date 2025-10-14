@@ -1,3 +1,4 @@
+import { EditTaskModalProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
 import React from "react";
 import {
   Button,
@@ -12,28 +13,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-interface Task {
-  id: string;
-  date: string;
-  caseNumber: string;
-  clientName: string;
-  company: string;
-  taskName: string;
-  priority: "Low" | "Normal" | "High";
-  status: "Pending" | "Completed" | "Overdue";
-  assignedTo: string;
-  taskType: string;
-  dueDate: string;
-}
-
-interface EditTaskModalProps {
-  isEditModalOpen: boolean;
-  setIsEditModalOpen: (open: boolean) => void;
-  selectedTask: Task | null;
-  setSelectedTask: React.Dispatch<React.SetStateAction<Task | null>>;
-  handleEditTask: () => void;
-}
 
 const EditTaskModal: React.FC<EditTaskModalProps> = ({
   isEditModalOpen,

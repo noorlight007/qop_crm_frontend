@@ -1,3 +1,4 @@
+import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
 import React, { useState } from "react";
 import { Edit, Trash2 } from "react-feather";
 import { FaSearch } from "react-icons/fa";
@@ -23,26 +24,12 @@ import AddTaskModal from "./Modals/AddTaskModal";
 import DeleteTaskModal from "./Modals/DeleteTaskModal";
 import EditTaskModal from "./Modals/EditTaskModal";
 
-interface Task {
-  id: string;
-  date: string;
-  caseNumber: string;
-  clientName: string;
-  company: string;
-  taskName: string;
-  priority: "Low" | "Normal" | "High";
-  status: "Pending" | "Completed" | "Overdue";
-  assignedTo: string;
-  taskType: string;
-  dueDate: string;
-}
-
 const MyTask: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>([
+  const [tasks, setTasks] = useState<TaskProps[]>([
     {
       id: "1",
       date: "28/07/2019 00:00",
-      caseNumber: "APP0004972",
+      caseName: "APP0004972",
       clientName: "Sundararajan Sunassee",
       company: "The Mortgage Works",
       taskName: "Confirm Solicitors have Received Offer",
@@ -55,7 +42,7 @@ const MyTask: React.FC = () => {
     {
       id: "2",
       date: "31/07/2019 00:00",
-      caseNumber: "APP0004312",
+      caseName: "APP0004312",
       clientName: "Ismail Matin",
       company: "Barclays",
       taskName: "Application Completed",
@@ -68,7 +55,7 @@ const MyTask: React.FC = () => {
     // Add more sample data as needed
   ]);
 
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
+  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>(tasks);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(10);
   const [filters, setFilters] = useState({
@@ -84,8 +71,8 @@ const MyTask: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [newTask, setNewTask] = useState<Partial<Task>>({
+  const [selectedTask, setSelectedTask] = useState<TaskProps | null>(null);
+  const [newTask, setNewTask] = useState<Partial<TaskProps>>({
     clientName: "",
     company: "",
     taskName: "",
@@ -116,9 +103,7 @@ const MyTask: React.FC = () => {
         task.clientName
           .toLowerCase()
           .includes(filters.searchTerm.toLowerCase()) ||
-        task.caseNumber
-          .toLowerCase()
-          .includes(filters.searchTerm.toLowerCase());
+        task.caseName.toLowerCase().includes(filters.searchTerm.toLowerCase());
 
       // Date range filtering
       let matchesDateRange = true;
@@ -179,11 +164,11 @@ const MyTask: React.FC = () => {
       return;
     }
 
-    const task: Task = {
-      ...(newTask as Task),
+    const task: TaskProps = {
+      ...(newTask as TaskProps),
       id: Date.now().toString(),
       date: new Date().toLocaleDateString("en-GB") + " 00:00",
-      caseNumber: `APP${Date.now().toString().slice(-6)}`,
+      caseName: `APP${Date.now().toString().slice(-6)}`,
     };
     setTasks((prev) => [...prev, task]);
     setIsAddModalOpen(false);
@@ -213,12 +198,12 @@ const MyTask: React.FC = () => {
     setTasks((prev) => prev.filter((task) => task.id !== taskId));
   };
 
-  const openDeleteModal = (task: Task) => {
+  const openDeleteModal = (task: TaskProps) => {
     setSelectedTask(task);
     setIsDeleteModalOpen(true);
   };
 
-  const openEditModal = (task: Task) => {
+  const openEditModal = (task: TaskProps) => {
     setSelectedTask(task);
     setIsEditModalOpen(true);
   };
@@ -265,7 +250,7 @@ const MyTask: React.FC = () => {
                 <InputGroup>
                   <Input
                     type="text"
-                    placeholder="Search tasks, clients, or case numbers..."
+                    placeholder="Search tasks, clients, or case names..."
                     style={{ padding: "10px 10px" }}
                     value={filters.searchTerm}
                     onChange={(e) =>
@@ -449,7 +434,7 @@ const MyTask: React.FC = () => {
                 <thead className="thead-light text-center">
                   <tr>
                     <th>Date & Time</th>
-                    <th>Case Number</th>
+                    <th>Case Name</th>
                     <th>Client Name</th>
                     <th>Company</th>
                     <th>Task Name</th>
@@ -475,7 +460,7 @@ const MyTask: React.FC = () => {
                         <td>{task.date}</td>
                         <td>
                           <span className="text-primary fw-bold">
-                            {task.caseNumber}
+                            {task.caseName}
                           </span>
                         </td>
                         <td>

@@ -1,27 +1,7 @@
+import { DeleteTaskModalProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
 import React from "react";
 import { AlertTriangle } from "react-feather";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
-interface Task {
-  id: string;
-  date: string;
-  caseNumber: string;
-  clientName: string;
-  company: string;
-  taskName: string;
-  priority: "Low" | "Normal" | "High";
-  status: "Pending" | "Completed" | "Overdue";
-  assignedTo: string;
-  taskType: string;
-  dueDate: string;
-}
-
-interface DeleteTaskModalProps {
-  isDeleteModalOpen: boolean;
-  setIsDeleteModalOpen: (open: boolean) => void;
-  selectedTask: Task | null;
-  handleDeleteTask: (taskId: string) => void;
-}
 
 const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
   isDeleteModalOpen,
@@ -63,7 +43,7 @@ const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
                 <strong>Company:</strong> {selectedTask.company}
               </p>
               <p className="mb-1">
-                <strong>Case Number:</strong> {selectedTask.caseNumber}
+                <strong>Case Name:</strong> {selectedTask.caseName}
               </p>
               <p className="mb-0">
                 <strong>Assigned To:</strong> {selectedTask.assignedTo}

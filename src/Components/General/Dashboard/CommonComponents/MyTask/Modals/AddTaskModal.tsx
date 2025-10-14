@@ -1,3 +1,4 @@
+import { AddTaskModalProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
 import React from "react";
 import {
   Button,
@@ -12,28 +13,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-interface Task {
-  id: string;
-  date: string;
-  caseNumber: string;
-  clientName: string;
-  company: string;
-  taskName: string;
-  priority: "Low" | "Normal" | "High";
-  status: "Pending" | "Completed" | "Overdue";
-  assignedTo: string;
-  taskType: string;
-  dueDate: string;
-}
-
-interface AddTaskModalProps {
-  isAddModalOpen: boolean;
-  setIsAddModalOpen: (open: boolean) => void;
-  newTask: Partial<Task>;
-  setNewTask: React.Dispatch<React.SetStateAction<Partial<Task>>>;
-  handleAddTask: () => void;
-}
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({
   isAddModalOpen,
