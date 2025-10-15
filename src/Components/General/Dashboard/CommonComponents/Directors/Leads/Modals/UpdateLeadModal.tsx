@@ -56,8 +56,19 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
   const handleUpdateLead = async (leadData: Partial<LeadsInfo>) => {
     try {
       if (leadData.alias) {
+        // Only include email if it has changed
+        let payload = { ...leadData };
+        const originalEmail = selectedLead?.user?.email || "";
+        const updatedEmail = leadData?.user?.email || "";
+        if (originalEmail === updatedEmail) {
+          // Remove email from payload if not changed
+          if (payload.user) {
+            const { email, ...restUser } = payload.user;
+            payload.user = restUser;
+          }
+        }
         const result = await updateLeadDetails({
-          payload: leadData,
+          payload,
           leadAlias: leadData.alias,
         });
 
@@ -67,8 +78,18 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
           const errorMessage =
             (result.error as any)?.data?.user?.email?.[0] ||
             (result.error as any)?.data?.user?.nid?.[0] ||
+            (result.error as any)?.data?.detail ||
             "Invalid Request...";
-          toast.error(errorMessage);
+          // Custom error for duplicate email
+          if (
+            typeof errorMessage === "string" &&
+            errorMessage.toLowerCase().includes("email") &&
+            errorMessage.toLowerCase().includes("exist")
+          ) {
+            toast.error("User with this email already exists.");
+          } else {
+            toast.error(errorMessage);
+          }
         } else {
           toast.error("Invalid Request...");
         }
