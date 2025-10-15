@@ -31,8 +31,8 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
     lastName: "",
     email: "",
     phone: "",
-    dob: "",
     gender: "",
+    reason_for_enquiry: "",
   });
 
   // Add state for AddNewCaseModal
@@ -90,8 +90,8 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      dob: formData.dob || null,
       gender: formData.gender,
+      reason_for_enquiry: formData.reason_for_enquiry,
     };
 
     try {
@@ -139,8 +139,8 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      dob: formData.dob || null,
       gender: formData.gender,
+      reason_for_enquiry: formData.reason_for_enquiry,
     };
 
     try {
@@ -155,8 +155,8 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
           lastName: "",
           email: "",
           phone: "",
-          dob: "",
           gender: "",
+          reason_for_enquiry: "",
         });
         toggle(); // Close the modal
       } else if ("error" in result) {
@@ -294,19 +294,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                 />
               </FormGroup>
             </Col>
-            {/* <Col md={6}>
-              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
-              <FormGroup>
-                <Input
-                  id="reasonForEnquiry"
-                  name="reasonForEnquiry"
-                  type="text"
-                  className="rounded-end-0"
-                  value={formData.reason_for_enquiry}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col> */}
             <Col md={6}>
               <FormGroup>
                 <Label for="gender">
@@ -325,6 +312,19 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   <option value="FEMALE">Female</option>
                   <option value="OTHER">Other</option>
                 </Input>
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
+              <FormGroup>
+                <Input
+                  id="reasonForEnquiry"
+                  name="reasonForEnquiry"
+                  type="text"
+                  className="rounded-end-0"
+                  value={formData.reason_for_enquiry}
+                  onChange={handleInputChange}
+                />
               </FormGroup>
             </Col>
           </Row>

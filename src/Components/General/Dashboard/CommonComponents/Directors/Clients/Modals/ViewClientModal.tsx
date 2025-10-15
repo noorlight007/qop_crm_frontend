@@ -57,14 +57,6 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             )}
           </Col>
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Date of Birth:</span>
-            <small>
-              {selectedClient?.dob || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
             <span className="text-muted">Gender:</span>
             <small>
               {selectedClient?.gender ? (
@@ -152,19 +144,10 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             </small>
           </Col>
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Permanent Address:</span>
+            <span className="text-muted">Reason for Enquiry:</span>
             <small>
-              {(selectedClient?.permanent_address &&
-                formatDateToDMYAndTime(selectedClient?.permanent_address)) || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Present Address:</span>
-            <small>
-              {(selectedClient?.present_address &&
-                formatDateToDMYAndTime(selectedClient?.present_address)) || (
+              {(selectedClient?.reason_for_enquiry &&
+                formatDateToDMYAndTime(selectedClient?.reason_for_enquiry)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>

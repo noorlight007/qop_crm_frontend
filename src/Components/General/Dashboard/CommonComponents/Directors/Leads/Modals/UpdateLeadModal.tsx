@@ -163,13 +163,14 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
             </Col>
             <Col md="6" sm="12">
               <FormGroup>
-                <Label for="dob">Official Email</Label>
+                <Label for="email">Email*</Label>
                 <Input
                   type="email"
-                  id="official_email"
-                  name="official_email"
-                  placeholder="Official Email"
-                  value={leadData?.official_email || ""}
+                  id="email"
+                  name="user.email"
+                  placeholder="Email"
+                  required
+                  value={leadData?.user?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -177,72 +178,32 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
             </Col>
             <Col md="6" sm="12">
               <FormGroup>
-                <Label for="official_phone">Official Phone</Label>
+                <Label for="phone">Phone</Label>
                 <Input
                   type="number"
-                  id="official_phone"
-                  name="official_phone"
-                  placeholder="Official Phone"
-                  value={leadData?.official_phone || ""}
+                  id="phone"
+                  name="user.phone"
+                  placeholder="Phone"
+                  value={leadData?.user?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
               </FormGroup>
             </Col>
-            {/* <Col md="6" sm="12">
+            <Col sm="12">
               <FormGroup>
-                <Label for="user_type">User Type</Label>
+                <Label for="reason_for_enquiry">Reason for Enquiry</Label>
                 <Input
-                  type="select"
-                  id="user_type"
-                  name="user.user_type"
-                  placeholder="User Type"
-                  value={leadData?.user?.user_type || ""}
-                  onChange={handleChange}
-                  className="mb-2 pointer-event"
-                >
-                  <option value="">Select...</option>
-                  <option value="LEAD">LEAD</option>
-                  <option value="CLIENT">CLIENT</option>
-                  <option value="ADVISOR">ADVISOR</option>
-                  <option value="INTRODUCER">INTRODUCER</option>
-                </Input>
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Label for="role">Role</Label>
-                <Input
-                  type="select"
-                  id="role"
-                  name="role"
-                  placeholder="Role"
-                  value={leadData?.role || ""}
-                  onChange={handleChange}
-                  className="mb-2 pointer-event"
-                >
-                  <option value="">Select..</option>
-                  <option value="LEAD">LEAD</option>
-                  <option value="CLIENT">CLIENT</option>
-                  <option value="ADVISOR">ADVISOR</option>
-                  <option value="INTRODUCER">INTRODUCER</option>
-                </Input>
-              </FormGroup>
-            </Col> */}
-            {/* <Col sm="12">
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  id="profile_image"
-                  name="profile_image"
-                  placeholder="Image"
+                  type="text"
+                  id="reason_for_enquiry"
+                  name="reason_for_enquiry"
+                  placeholder="Reason for Enquiry"
+                  value={leadData?.reason_for_enquiry || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
               </FormGroup>
-            </Col> */}
+            </Col>
           </Row>
         </ModalBody>
         <ModalFooter>

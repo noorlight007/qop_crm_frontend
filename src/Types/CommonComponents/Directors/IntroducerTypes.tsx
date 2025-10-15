@@ -12,12 +12,8 @@ export interface IntroducerInfoProps {
     user_type: string;
   };
   role: string;
-  official_email: string;
-  official_phone: string;
-  permanent_address: string;
-  present_address: string;
-  dob: string;
   gender: string;
+  joining_date: string;
   created_by: {
     title?: string;
     first_name?: string;

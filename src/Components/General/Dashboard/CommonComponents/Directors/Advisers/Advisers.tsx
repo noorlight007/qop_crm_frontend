@@ -53,12 +53,8 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
     gender: "",
+    joining_date: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -92,13 +88,15 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
   // openmodals end
 
   const filteredAdvisers = advisers.filter((adviser) => {
-    const fullName = `${adviser?.user?.first_name || ""} ${
+    const fullName = `${adviser?.user?.title || ""} ${
+      adviser?.user?.first_name || ""
+    } ${adviser?.user?.middle_name || ""} ${
       adviser?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      adviser?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      adviser?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -163,6 +161,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Role</th>
+                <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -213,6 +212,12 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                     <td>
                       {adviser?.role?.charAt(0)?.toUpperCase() +
                         adviser?.role?.slice(1)?.toLowerCase()}
+                    </td>
+                    <td>
+                      {adviser?.joining_date &&
+                      !isNaN(Date.parse(adviser.joining_date))
+                        ? formatDateToDMYAndTime(adviser.joining_date)
+                        : "-"}
                     </td>
                     <td>
                       <p className="m-0">

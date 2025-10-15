@@ -54,12 +54,8 @@ const Introducers: React.FC<IntroducersProps> = ({
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
     gender: "",
+    joining_date: "",
   });
 
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
@@ -93,15 +89,15 @@ const Introducers: React.FC<IntroducersProps> = ({
   // openaddmodals end
 
   const filteredIntroducers = introducers.filter((introducer) => {
-    const fullName = `${introducer?.user?.first_name || ""} ${
+    const fullName = `${introducer?.user?.title || ""} ${
+      introducer?.user?.first_name || ""
+    } ${introducer?.user?.middle_name || ""} ${
       introducer?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      introducer?.official_email
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase())
+      introducer?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -127,7 +123,7 @@ const Introducers: React.FC<IntroducersProps> = ({
           <Col md="3">
             <h2>Introducers</h2>
           </Col>
-          <Col md={6}>
+          <Col md={3}>
             <InputGroup>
               <Input
                 type="text"
@@ -164,6 +160,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Role</th>
+                <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -215,6 +212,11 @@ const Introducers: React.FC<IntroducersProps> = ({
                     <td>
                       {introducer?.role?.charAt(0)?.toUpperCase() +
                         introducer?.role?.slice(1)?.toLowerCase()}
+                    </td>
+                    <td>
+                      {introducer?.joining_date && !isNaN(Date.parse(introducer.joining_date))
+                        ? formatDateToDMYAndTime(introducer.joining_date)
+                        : "-"}
                     </td>
                     <td>
                       <p className="m-0">

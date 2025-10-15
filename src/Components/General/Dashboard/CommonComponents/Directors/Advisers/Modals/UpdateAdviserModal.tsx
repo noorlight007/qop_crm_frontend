@@ -166,13 +166,13 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
             </Col>
             <Col md="6" xs="12">
               <FormGroup>
-                <Label for="official_email">Official Email</Label>
+                <Label for="email">Email</Label>
                 <Input
                   type="email"
-                  id="official_email"
-                  name="official_email"
-                  placeholder="Official Email"
-                  value={advisorData.official_email || ""}
+                  id="email"
+                  name="email"
+                  placeholder="Email"
+                  value={advisorData.user?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -180,13 +180,13 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="official_phone">Official Phone</Label>
+                <Label for="phone">Phone</Label>
                 <Input
                   type="number"
-                  id="official_phone"
-                  name="official_phone"
-                  placeholder="Official Phone"
-                  value={advisorData.official_phone || ""}
+                  id="phone"
+                  name="phone"
+                  placeholder="Phone"
+                  value={advisorData.user?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -194,13 +194,13 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="dob">Date of Birth</Label>
+                <Label for="joining_date">Joining Date</Label>
                 <Input
                   type="date"
-                  id="dob"
-                  name="dob"
-                  placeholder="Date of Birth"
-                  value={advisorData.dob || ""}
+                  id="joining_date"
+                  name="joining_date"
+                  placeholder="Joining Date"
+                  value={advisorData.joining_date || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -220,34 +220,6 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 />
               </FormGroup>
             </Col> */}
-            <Col md={6} xs={6}>
-              <FormGroup>
-                <Label for="present_address">Present Address</Label>
-                <Input
-                  type="text"
-                  id="present_address"
-                  name="present_address"
-                  placeholder="Present Address"
-                  value={advisorData.present_address || ""}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6} xs={6}>
-              <FormGroup>
-                <Label for="permanent_address">Permanent Address</Label>
-                <Input
-                  type="text"
-                  id="permanent_address"
-                  name="permanent_address"
-                  placeholder="Permanent Address"
-                  value={advisorData.permanent_address || ""}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-              </FormGroup>
-            </Col>
           </Row>
         </ModalBody>
         <ModalFooter>

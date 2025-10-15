@@ -169,13 +169,14 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
             </Col>
             <Col md="6" sm="12">
               <FormGroup>
-                <Label for="official_email">Official Email</Label>
+                <Label for="email">Email*</Label>
                 <Input
                   type="email"
-                  id="official_email"
-                  name="official_email"
-                  placeholder="Official Email"
-                  value={clientData.official_email || ""}
+                  id="email"
+                  name="user.email"
+                  placeholder="Email"
+                  required
+                  value={clientData?.user?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -183,104 +184,26 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
             </Col>
             <Col md="6" sm="12">
               <FormGroup>
-                <Label for="official_phone">Official Phone</Label>
+                <Label for="phone">Phone</Label>
                 <Input
                   type="number"
-                  id="official_phone"
-                  name="official_phone"
-                  placeholder="Official Phone"
-                  value={clientData.official_phone || ""}
+                  id="phone"
+                  name="phone"
+                  placeholder="Phone"
+                  value={clientData?.user?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
               </FormGroup>
             </Col>
-            {/* <Col md={6} xs={12}>
+            <Col md={12}>
               <FormGroup>
-                <Label for="user_type">User Type</Label>
+                <Label for="reason_for_enquiry">Reason for Enquiry</Label>
                 <Input
-                  type="select"
-                  id="user_type"
-                  name="user.user_type"
-                  placeholder="User Type"
-                  value={clientData.user?.user_type || ""}
-                  onChange={handleChange}
-                  className="mb-2 pointer-event"
-                >
-                  <option value="">Select...</option>
-                  <option value="LEAD">Lead</option>
-                  <option value="CLIENT">Client</option>
-                  <option value="ADVISOR">Adviser</option>
-                  <option value="INTRODUCER">Introducer</option>
-                </Input>
-              </FormGroup>
-            </Col>
-            <Col md={6} xs={12}>
-              <FormGroup>
-                <Label for="role">Role</Label>
-                <Input
-                  type="select"
-                  id="role"
-                  name="role"
-                  placeholder="Role"
-                  value={clientData.role || ""}
-                  onChange={handleChange}
-                  className="mb-2 pointer-event"
-                >
-                  <option value="">Select...</option>
-                  <option value="LEAD">Lead</option>
-                  <option value="CLIENT">Client</option>
-                  <option value="ADVISOR">Adviser</option>
-                  <option value="INTRODUCER">Introducer</option>
-                </Input>
-              </FormGroup>
-            </Col>
-            <Col sm="12">
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  id="profile_image"
-                  name="profile_image"
-                  placeholder="Image"
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-              </FormGroup>
-            </Col> */}
-            <Col md={6}>
-              <FormGroup>
-                <Label for="dob">Date of Birth</Label>
-                <Input
-                  id="dob"
-                  name="dob"
-                  type="date"
-                  value={clientData.dob}
-                  onChange={handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="present_address">Present Address</Label>
-                <Input
-                  id="present_address"
-                  name="present_address"
+                  id="reason_for_enquiry"
+                  name="reason_for_enquiry"
                   type="text"
-                  value={clientData.present_address}
-                  onChange={handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="permanent_address">Permanent Address</Label>
-                <Input
-                  id="permanent_address"
-                  name="permanent_address"
-                  type="text"
-                  value={clientData.permanent_address}
+                  value={clientData.reason_for_enquiry || ""}
                   onChange={handleChange}
                 />
               </FormGroup>

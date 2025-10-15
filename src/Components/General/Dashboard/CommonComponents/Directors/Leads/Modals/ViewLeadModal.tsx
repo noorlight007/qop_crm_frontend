@@ -29,9 +29,9 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
               {selectedLead.user?.title
                 ? selectedLead.user?.title.charAt(0).toUpperCase() +
                   selectedLead.user?.title.slice(1).toLowerCase()
-                : ""}
-              {" "} {selectedLead?.user?.first_name}{" "}
-              {selectedLead?.user?.middle_name} {selectedLead?.user?.last_name}
+                : ""}{" "}
+              {selectedLead?.user?.first_name} {selectedLead?.user?.middle_name}{" "}
+              {selectedLead?.user?.last_name}
             </small>
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column">
@@ -54,14 +54,6 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
             ) : (
               <span className="text-muted small">Not available</span>
             )}
-          </Col>
-          <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Date of Birth:</span>
-            <small>
-              {selectedLead?.dob || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Gender:</span>
@@ -113,8 +105,8 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                   {selectedLead.created_by.title
                     ? selectedLead.created_by.title.charAt(0).toUpperCase() +
                       selectedLead.created_by.title.slice(1).toLowerCase()
-                    : ""}
-                  {" "} {selectedLead.created_by.first_name}{" "}
+                    : ""}{" "}
+                  {selectedLead.created_by.first_name}{" "}
                   {selectedLead.created_by.middle_name}{" "}
                   {selectedLead.created_by.last_name}
                 </>
@@ -138,6 +130,14 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                     .join(" ")
                 : "Not available"}
               )
+            </small>
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">Reason for Enquiry:</span>
+            <small>
+              {selectedLead?.reason_for_enquiry || (
+                <span className="text-muted">Not available</span>
+              )}
             </small>
           </Col>
         </Row>

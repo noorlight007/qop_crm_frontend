@@ -12,10 +12,8 @@ export interface LeadsInfo {
     user_type: string;
   };
   role: string;
-  official_email: string;
-  official_phone: string;
-  dob: string;
   gender: string;
+  reason_for_enquiry: string;
   created_by?: {
     title: string;
     first_name: string;
