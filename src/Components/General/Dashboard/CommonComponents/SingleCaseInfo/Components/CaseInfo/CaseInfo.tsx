@@ -24,19 +24,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
   // Dynamic column sizing configuration
   const getCardColumns = (index: number) => {
-    // First 3 cards: 4 columns each (3 per row)
-    // Last 2 cards: 6 columns each (2 per row)
-    if (index < 3) {
-      return { xl: 4, lg: 4, md: 6, sm: 12 };
-    } else {
-      return { xl: 6, lg: 6, md: 6, sm: 12 };
-    }
+    // All cards: 4 columns each (3 per row on xl/lg)
+    return { xl: 4, lg: 4, md: 6, sm: 12 };
   };
 
   // Card configuration array
   const cardData = [
     {
-      title: "Case User",
+      title: "Client User",
       borderClass: "border-b-primary",
       spinnerColor: "primary",
       content: (
@@ -82,6 +77,48 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 </>
               )}
             </h6>
+          </Col>
+        </Row>
+      ),
+    },
+    {
+      title: "Other Clients",
+      borderClass: "border-b-dark",
+      spinnerColor: "dark",
+      content: (
+        <Row className="pt-2">
+          <Col xs="12" style={{ height: "55px", overflowY: "auto" }}>
+            {Array.isArray(caseInfo?.joint_users) &&
+            caseInfo.joint_users.length > 0 ? (
+              <ul
+                className="mb-0 ps-3"
+                style={{
+                  listStyleType: "disc",
+                  paddingLeft: "40px",
+                  marginBottom: 0,
+                }}
+              >
+                {caseInfo.joint_users.map((user, idx) => (
+                  <li key={user.id || idx} className="small">
+                    <strong>
+                      {user.title
+                        ? user.title[0].toUpperCase() +
+                          user.title.slice(1).toLowerCase()
+                        : ""}{" "}
+                      {user.first_name} {user.middle_name}
+                      {user.middle_name ? " " : ""}
+                      {user.last_name}
+                    </strong>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="d-flex align-items-center justify-content-center h-100">
+                <h6 className="text-muted small">
+                  <em>No joint users found</em>
+                </h6>
+              </div>
+            )}
           </Col>
         </Row>
       ),
