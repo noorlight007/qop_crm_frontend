@@ -54,23 +54,32 @@ const Documents: React.FC = () => {
     // Search by document name
     const documentName = doc.name?.toLowerCase() || "";
 
-    // Search by owner name (first, middle, last name)
-    const ownerFirstName = doc.file_owner_info?.first_name?.toLowerCase() || "";
-    const ownerMiddleName =
-      doc.file_owner_info?.middle_name?.toLowerCase() || "";
-    const ownerLastName = doc.file_owner_info?.last_name?.toLowerCase() || "";
-    const ownerFullName =
-      `${ownerFirstName} ${ownerMiddleName} ${ownerLastName}`.trim();
+    // Search by owner name (support array of owners or single owner)
+    const owners = Array.isArray(doc.file_owner_info)
+      ? doc.file_owner_info
+      : doc.file_owner_info
+      ? [doc.file_owner_info]
+      : [];
+
+    const ownerMatch = owners.some((owner: any) => {
+      const first = owner?.first_name?.toLowerCase() || "";
+      const middle = owner?.middle_name?.toLowerCase() || "";
+      const last = owner?.last_name?.toLowerCase() || "";
+      const full = `${first} ${middle} ${last}`.trim();
+      return (
+        first.includes(searchLower) ||
+        middle.includes(searchLower) ||
+        last.includes(searchLower) ||
+        full.includes(searchLower)
+      );
+    });
 
     // Search by document type
     const documentType = doc.file_type?.toLowerCase() || "";
 
     return (
       documentName.includes(searchLower) ||
-      ownerFirstName.includes(searchLower) ||
-      ownerMiddleName.includes(searchLower) ||
-      ownerLastName.includes(searchLower) ||
-      ownerFullName.includes(searchLower) ||
+      ownerMatch ||
       documentType.includes(searchLower)
     );
   });
@@ -295,21 +304,49 @@ const Documents: React.FC = () => {
                               ? fileData.name
                               : fileData.file?.split("/").pop() || "-"}
                           </td>
-                          <td>
-                            {fileData?.file_owner_info?.title
-                              ? fileData.file_owner_info.title
-                                  .charAt(0)
-                                  .toUpperCase() +
-                                fileData.file_owner_info.title
-                                  .slice(1)
-                                  .toLowerCase()
-                              : ""}
-                            {fileData?.file_owner_info?.title ? ". " : ""}
-                            {fileData?.file_owner_info?.first_name}{" "}
-                            {fileData?.file_owner_info?.middle_name
-                              ? fileData.file_owner_info.middle_name + " "
-                              : ""}
-                            {fileData?.file_owner_info?.last_name}
+                          <td className="text-start">
+                            {/* Render multiple owners as a list when file_owner_info is an array */}
+                            {Array.isArray(fileData?.file_owner_info) ? (
+                              <ul
+                                className="mb-0"
+                                style={{
+                                  listStyleType: "disc",
+                                  paddingLeft: "40px",
+                                }}
+                              >
+                                {fileData.file_owner_info.map((owner: any) => (
+                                  <li key={owner.alias || owner.email}>
+                                    {owner?.title
+                                      ? owner.title.charAt(0).toUpperCase() +
+                                        owner.title.slice(1).toLowerCase() +
+                                        ". "
+                                      : ""}
+                                    {owner?.first_name || ""}{" "}
+                                    {owner?.middle_name
+                                      ? owner.middle_name + " "
+                                      : ""}
+                                    {owner?.last_name || ""}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <>
+                                {fileData?.file_owner_info?.title
+                                  ? fileData.file_owner_info.title
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                    fileData.file_owner_info.title
+                                      .slice(1)
+                                      .toLowerCase()
+                                  : ""}
+                                {fileData?.file_owner_info?.title ? ". " : ""}
+                                {fileData?.file_owner_info?.first_name}{" "}
+                                {fileData?.file_owner_info?.middle_name
+                                  ? fileData.file_owner_info.middle_name + " "
+                                  : ""}
+                                {fileData?.file_owner_info?.last_name}
+                              </>
+                            )}
                           </td>
                           <td>
                             {fileData?.file_type

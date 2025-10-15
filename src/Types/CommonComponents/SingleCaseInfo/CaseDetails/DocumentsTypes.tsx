@@ -1,12 +1,16 @@
 export interface DocumentOwnerProps {
   id: number;
+  title: string;
   first_name: string;
+  middle_name: string;
   last_name: string;
   lead_user: {
     id: number;
     email: string;
     phone: string;
+    title: string;
     first_name: string;
+    middle_name: string;
     last_name: string;
     profile_image: string | null;
     user_type: string;
@@ -16,7 +20,9 @@ export interface DocumentOwnerProps {
       id: number;
       email: string;
       phone: string;
+      title: string;
       first_name: string;
+      middle_name: string;
       last_name: string;
       profile_image: string | null;
       user_type: string;
@@ -30,7 +36,7 @@ export interface CaseDocumentProps {
   alias: string;
   file?: string;
   file_type?: string;
-  file_owner_info: {
+  file_owner_info?: {
     email?: string;
     phone?: string;
     title?: string;
@@ -40,6 +46,16 @@ export interface CaseDocumentProps {
     profile_image?: string;
     user_type?: string;
   };
+  file_owners_info?: {
+    email?: string;
+    phone?: string;
+    title?: string;
+    first_name?: string;
+    middle_name?: string;
+    last_name?: string;
+    profile_image?: string;
+    user_type?: string;
+  }[];
   name?: string;
   description?: string;
   special_notes?: string;
