@@ -26,7 +26,6 @@ import AddClientModal from "./Modals/AddClientModal";
 import DeleteClientModal from "./Modals/DeleteClientModal";
 import UpdateClientModal from "./Modals/UpdateClientModal";
 import ViewClientModal from "./Modals/ViewClientModal";
-import { TbCirclePlus } from "react-icons/tb";
 
 const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   const [clients, setClients] = useState<ClientInfoProps[]>([]);
@@ -138,7 +137,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               </InputGroupText>
             </InputGroup>
           </Col>
-          <Col
+          {/* <Col
             md="3"
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
@@ -151,7 +150,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               <TbCirclePlus size={18} />
               <span>Add Client</span>
             </Button>
-          </Col>
+          </Col> */}
         </Row>
         <Row>
           <Table hover responsive>
