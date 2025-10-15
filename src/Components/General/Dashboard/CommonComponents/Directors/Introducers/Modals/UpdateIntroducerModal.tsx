@@ -62,6 +62,10 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
       if (introducerData.alias) {
         // Only include email if it has changed
         let payload = { ...introducerData };
+        // If joining_date is empty string, send null
+        if (payload.joining_date === "") {
+          payload.joining_date = null as unknown as any;
+        }
         const originalEmail = selectedIntroducer?.user?.email || "";
         const updatedEmail = introducerData?.user?.email || "";
         if (originalEmail === updatedEmail) {

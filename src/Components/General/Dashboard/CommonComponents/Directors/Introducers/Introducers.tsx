@@ -169,7 +169,7 @@ const Introducers: React.FC<IntroducersProps> = ({
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -268,7 +268,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     No introducers available.
                   </td>
                 </tr>
