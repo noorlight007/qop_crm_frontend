@@ -57,7 +57,8 @@ const AddAdviserModal: React.FC<AddAdviserModalProps> = ({
         password: formData.password,
       },
       gender: formData.gender,
-      joining_date: formData.joining_date,
+      // If joining date is empty string, send null
+      joining_date: formData.joining_date ? formData.joining_date : null,
     };
 
     try {

@@ -25,7 +25,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
   onSave,
   selectedAdviser,
 }) => {
-  const [advisorData, setAdviserData] =
+  const [adviserData, setAdviserData] =
     useState<Partial<AdviserInfoProps>>(selectedAdviser);
   const [isModified, setIsModified] = useState(false);
   const [updateAdviserDetails, { isLoading }] =
@@ -55,13 +55,29 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
   };
 
   const handleUpdateAdviser = async (
-    advisorData: Partial<AdviserInfoProps>
+    adviserData: Partial<AdviserInfoProps>
   ) => {
     try {
-      if (advisorData.alias) {
+      if (adviserData.alias) {
+        // Only include email if it has changed
+        let payload: Partial<AdviserInfoProps> = { ...adviserData };
+
+        // If joining_date is empty string, send null
+        if (payload.joining_date === "") {
+          payload.joining_date = null as unknown as any;
+        }
+        const originalEmail = selectedAdviser?.user?.email || "";
+        const updatedEmail = adviserData?.user?.email || "";
+        if (originalEmail === updatedEmail) {
+          // Remove email from payload if not changed
+          if (payload.user) {
+            const { email, ...restUser } = payload.user;
+            payload.user = restUser;
+          }
+        }
         const result = await updateAdviserDetails({
-          payload: advisorData,
-          advisorAlias: advisorData.alias,
+          payload,
+          adviserAlias: adviserData.alias,
         });
 
         if (result.data) {
@@ -70,21 +86,32 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
           const errorMessage =
             (result.error as any)?.data?.user?.email?.[0] ||
             (result.error as any)?.data?.user?.nid?.[0] ||
+            (result.error as any)?.data?.detail ||
             "Invalid Request...";
-          toast.error(errorMessage);
+          // Custom error for duplicate email
+          if (
+            typeof errorMessage === "string" &&
+            errorMessage.toLowerCase().includes("email") &&
+            errorMessage.toLowerCase().includes("exist")
+          ) {
+            toast.error("User with this email already exists.");
+          } else {
+            toast.error(errorMessage);
+          }
         } else {
           toast.error("Invalid Request...");
         }
       }
     } catch (error) {
+      toast.error("Failed to update adviser.");
       console.error("Error saving advisor:", error);
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleUpdateAdviser(advisorData); // Pass the updated data to the server
-    onSave(advisorData); // Pass the updated data to the parent component
+    handleUpdateAdviser(adviserData); // Pass the updated data to the server
+    onSave(adviserData); // Pass the updated data to the parent component
     toggle();
   };
 
@@ -103,7 +130,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="title"
                   name="user.title"
                   type="select"
-                  value={advisorData?.user?.title || ""}
+                  value={adviserData?.user?.title || ""}
                   onChange={handleChange}
                   required
                 >
@@ -128,7 +155,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="firstName"
                   name="user.first_name"
                   placeholder="First Name"
-                  value={advisorData.user?.first_name || ""}
+                  value={adviserData.user?.first_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -143,7 +170,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="middleName"
                   name="user.middle_name"
                   placeholder="Middle Name(s)"
-                  value={advisorData.user?.middle_name || ""}
+                  value={adviserData.user?.middle_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -157,7 +184,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="lastName"
                   name="user.last_name"
                   placeholder="Last Name"
-                  value={advisorData.user?.last_name || ""}
+                  value={adviserData.user?.last_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -170,9 +197,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="email"
                   id="email"
-                  name="email"
+                  name="user.email"
                   placeholder="Email"
-                  value={advisorData.user?.email || ""}
+                  value={adviserData.user?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -184,9 +211,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="number"
                   id="phone"
-                  name="phone"
+                  name="user.phone"
                   placeholder="Phone"
-                  value={advisorData.user?.phone || ""}
+                  value={adviserData.user?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -200,7 +227,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="joining_date"
                   name="joining_date"
                   placeholder="Joining Date"
-                  value={advisorData.joining_date || ""}
+                  value={adviserData.joining_date || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
