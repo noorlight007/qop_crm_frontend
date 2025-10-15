@@ -62,8 +62,19 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
   const handleUpdateClient = async (clientData: Partial<ClientInfoProps>) => {
     try {
       if (clientData.alias) {
+        // Only include email if it has changed
+        let payload = { ...clientData };
+        const originalEmail = selectedClient?.user?.email || "";
+        const updatedEmail = clientData?.user?.email || "";
+        if (originalEmail === updatedEmail) {
+          // Remove email from payload if not changed
+          if (payload.user) {
+            const { email, ...restUser } = payload.user;
+            payload.user = restUser;
+          }
+        }
         const result = await updateClientDetails({
-          payload: clientData,
+          payload,
           clientAlias: clientData.alias,
         });
         if (result.data) {
@@ -72,8 +83,18 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
           const errorMessage =
             (result.error as any)?.data?.user?.email?.[0] ||
             (result.error as any)?.data?.user?.nid?.[0] ||
+            (result.error as any)?.data?.detail ||
             "Invalid Request...";
-          toast.error(errorMessage);
+          // Custom error for duplicate email
+          if (
+            typeof errorMessage === "string" &&
+            errorMessage.toLowerCase().includes("email") &&
+            errorMessage.toLowerCase().includes("exist")
+          ) {
+            toast.error("User with this email already exists.");
+          } else {
+            toast.error(errorMessage);
+          }
         } else {
           toast.error("Failed to update client.");
         }
@@ -188,7 +209,7 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                 <Input
                   type="number"
                   id="phone"
-                  name="phone"
+                  name="user.phone"
                   placeholder="Phone"
                   value={clientData?.user?.phone || ""}
                   onChange={handleChange}
