@@ -1,5 +1,6 @@
 import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import { saveAs } from "file-saver";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -37,6 +38,7 @@ const Documents: React.FC = () => {
   );
   const [selectAll, setSelectAll] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
   const params = useParams();
   const { casealias } = params;
 
@@ -169,6 +171,41 @@ const Documents: React.FC = () => {
     setSelectAll(false);
   };
 
+  // Batch download via server (avoids CORS/auth issues)
+  const handleBatchDownload = async () => {
+    if (selectedDocuments.size === 0 || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const files = caseDocuments
+        .filter((doc) => selectedDocuments.has(doc.alias) && !!doc.file)
+        .map((doc) => ({
+          url: doc.file as string,
+          name:
+            doc?.name ||
+            (doc.file ? doc.file.split("/").pop() : doc.alias) ||
+            doc.alias,
+        }));
+
+      if (files.length === 0) {
+        setIsDownloading(false);
+        return;
+      }
+
+      const res = await fetch("/api/documents/batch-download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files }),
+      });
+      if (!res.ok) throw new Error("Failed to create zip");
+      const blob = await res.blob();
+      saveAs(blob, "documents.zip");
+    } catch (err) {
+      console.error("Batch download failed", err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   // Helper function to create document names map
   const getDocumentNamesMap = (): Map<string, string> => {
     const nameMap = new Map<string, string>();
@@ -195,7 +232,6 @@ const Documents: React.FC = () => {
               )}
             </Col>
             <Col
-              lg="8"
               sm="12"
               className="d-flex flex-md-row flex-xs-column justify-content-end gap-2"
             >
@@ -204,6 +240,16 @@ const Documents: React.FC = () => {
                   <Button color="danger" onClick={handleBatchDelete}>
                     <i className="fa-solid fa-trash me-1"></i>
                     Delete Selected ({selectedDocuments.size})
+                  </Button>
+                  <Button
+                    color="info"
+                    onClick={handleBatchDownload}
+                    disabled={isDownloading}
+                  >
+                    <i className="fa-solid fa-download me-1"></i>
+                    {isDownloading
+                      ? "Preparing…"
+                      : `Download Selected (${selectedDocuments.size})`}
                   </Button>
                   <Button color="secondary" outline onClick={clearSelection}>
                     <i className="fa-solid fa-times me-1"></i>
