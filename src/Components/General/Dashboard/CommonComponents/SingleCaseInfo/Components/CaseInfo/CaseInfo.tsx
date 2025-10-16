@@ -9,6 +9,7 @@ import { ClientInfoProps } from "@/Types/CommonComponents/Directors/ClientTypes"
 import { useEffect, useState } from "react";
 import { FaUserEdit } from "react-icons/fa";
 import { TbCircleArrowUp } from "react-icons/tb";
+import { toast } from "react-toastify";
 import {
   Button,
   Card,
@@ -98,8 +99,30 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                     style={{ position: "absolute", top: "-5px", right: "0px" }}
                     onClick={() => {
                       if (!caseInfo?.lead_user) return;
+                      // Try to find the client's alias using the lead user's email
+                      const clientsList: ClientInfoProps[] | undefined =
+                        Array.isArray(dirClientsData)
+                          ? (dirClientsData as ClientInfoProps[])
+                          : (dirClientsData as any)?.clients;
+
+                      const leadEmail = caseInfo.lead_user.email?.toLowerCase();
+                      const matchedClient:
+                        | Partial<ClientInfoProps>
+                        | undefined = clientsList?.find(
+                        (c: ClientInfoProps) =>
+                          c?.user?.email?.toLowerCase() === leadEmail
+                      );
+
+                      if (!matchedClient?.alias) {
+                        toast.error(
+                          "Client record not found for this lead user."
+                        );
+                        return;
+                      }
+
+                      // Prefill from matched client (ensures alias is present for update API)
                       const prefill: Partial<ClientInfoProps> = {
-                        alias: "",
+                        alias: matchedClient.alias,
                         user: {
                           title: caseInfo.lead_user.title,
                           first_name: caseInfo.lead_user.first_name,
@@ -109,7 +132,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                           phone: caseInfo.lead_user.phone,
                           user_type: caseInfo.lead_user.user_type,
                         },
-                      };
+                        // Carry over optional fields if present
+                        role: (matchedClient as any)?.role,
+                        gender: (matchedClient as any)?.gender,
+                        reason_for_enquiry: (matchedClient as any)
+                          ?.reason_for_enquiry,
+                      } as Partial<ClientInfoProps>;
+
                       setSelectedClient(prefill);
                       setIsUpdateClientModalOpen(true);
                     }}
