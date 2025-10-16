@@ -58,11 +58,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
+    joining_date: "",
     gender: "",
   });
 
@@ -97,13 +93,15 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
   // openmodals end
 
   const filteredAdvisers = advisers.filter((adviser) => {
-    const fullName = `${adviser?.user?.first_name || ""} ${
+    const fullName = `${adviser?.user?.title || ""} ${
+      adviser?.user?.first_name || ""
+    } ${adviser?.user?.middle_name || ""} ${
       adviser?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      adviser?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      adviser?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -202,14 +200,14 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
                         {adviser?.user?.middle_name} {adviser?.user?.last_name}
                       </span>
                     </td>
-                    <td>{adviser?.official_email || "-"}</td>
+                    <td>{adviser?.user?.email || "-"}</td>
                     <td>
-                      {adviser?.official_phone ? (
+                      {adviser?.user?.phone ? (
                         <a
-                          href={`tel:${adviser?.official_phone}`}
+                          href={`tel:${adviser?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {adviser?.official_phone}
+                          {adviser?.user?.phone}
                         </a>
                       ) : (
                         "-"
