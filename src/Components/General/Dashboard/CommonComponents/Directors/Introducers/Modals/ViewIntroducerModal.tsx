@@ -43,14 +43,6 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
               <span className="text-muted small">Not available</span>
             )}
           </Col>
-          <Col md="4" sm="12" className="d-flex flex-column">
-            <span className="text-muted">Official Email:</span>
-            {selectedIntroducer?.official_email ? (
-              <small>{selectedIntroducer.official_email}</small>
-            ) : (
-              <span className="text-muted small">Not available</span>
-            )}
-          </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Phone:</span>
 
@@ -64,27 +56,6 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             ) : (
               <span className="text-muted small">Not available</span>
             )}
-          </Col>
-          <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Official Phone:</span>
-            {selectedIntroducer?.official_phone ? (
-              <a
-                className="text-dark text_decoration_hover small"
-                href={`tel:${selectedIntroducer?.official_phone}`}
-              >
-                {selectedIntroducer.official_phone}
-              </a>
-            ) : (
-              <span className="text-muted small">Not available</span>
-            )}
-          </Col>
-          <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Date of Birth:</span>
-            <small>
-              {selectedIntroducer?.dob || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Gender:</span>
@@ -176,19 +147,12 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             </small>
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Permanent Address:</span>
+            <span className="text-muted">Joining Date:</span>
             <small>
-              {selectedIntroducer?.permanent_address || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Present Address:</span>
-            <small>
-              {selectedIntroducer?.present_address || (
-                <span className="text-muted">Not available</span>
-              )}
+              {selectedIntroducer?.joining_date &&
+              !isNaN(Date.parse(selectedIntroducer.joining_date))
+                ? formatDateToDMYAndTime(selectedIntroducer.joining_date)
+                : "Not available"}
             </small>
           </Col>
         </Row>

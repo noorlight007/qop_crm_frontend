@@ -26,10 +26,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
     email: "",
     phone: "",
     password: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
     gender: "",
+    reason_for_enquiry: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,10 +51,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
         phone: formData.phone || "",
         password: formData.password,
       },
-      permanent_address: formData.permanent_address || "",
-      present_address: formData.present_address || "",
-      dob: formData.dob || null,
       gender: formData.gender,
+      reason_for_enquiry: formData.reason_for_enquiry,
     };
 
     try {
@@ -72,10 +68,8 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
           email: "",
           phone: "",
           password: "",
-          permanent_address: "",
-          present_address: "",
-          dob: "",
           gender: "",
+          reason_for_enquiry: "",
         });
         toggle();
       } else if ("error" in result) {
@@ -229,38 +223,14 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
                 </Input>
               </FormGroup>
             </Col>
-            <Col md={6}>
+            <Col md={12}>
               <FormGroup>
-                <Label for="dob">Date of Birth</Label>
+                <Label for="reason_for_enquiry">Reason for Enquiry</Label>
                 <Input
-                  id="dob"
-                  name="dob"
-                  type="date"
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="present_address">Present Address</Label>
-                <Input
-                  id="present_address"
-                  name="present_address"
+                  id="reason_for_enquiry"
+                  name="reason_for_enquiry"
                   type="text"
-                  value={formData.present_address}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="permanent_address">Permanent Address</Label>
-                <Input
-                  id="permanent_address"
-                  name="permanent_address"
-                  type="text"
-                  value={formData.permanent_address}
+                  value={formData.reason_for_enquiry || ""}
                   onChange={handleInputChange}
                 />
               </FormGroup>

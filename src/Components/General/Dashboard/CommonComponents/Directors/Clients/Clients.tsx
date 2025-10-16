@@ -7,7 +7,6 @@ import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -54,10 +53,8 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    dob: "",
     gender: "",
+    reason_for_enquiry: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -90,13 +87,15 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   // openmodals end
 
   const filteredClients = clients.filter((client) => {
-    const fullName = `${client?.user?.first_name || ""} ${
+    const fullName = `${client?.user?.title || ""} ${
+      client?.user?.first_name || ""
+    } ${client?.user?.middle_name || ""} ${
       client?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      client?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      client?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -124,7 +123,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
           <Col md="3">
             <h2>Clients</h2>
           </Col>
-          <Col md={6}>
+          <Col md={3} xs={12}>
             <InputGroup>
               <Input
                 type="text"
@@ -138,7 +137,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               </InputGroupText>
             </InputGroup>
           </Col>
-          <Col
+          {/* <Col
             md="3"
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
@@ -151,7 +150,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               <TbCirclePlus size={18} />
               <span>Add Client</span>
             </Button>
-          </Col>
+          </Col> */}
         </Row>
         <Row>
           <Table hover responsive>
@@ -378,15 +377,21 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
           toggle={toggleUpdateModal}
           onSave={() => {
             toggleUpdateModal();
-            }}
-            selectedClient={selectedClient}
-          />
-          <DeleteClientModal
-            isOpen={isDeleteModalOpen}
-            toggle={toggleDeleteModal}
-            clientAlias={clientToDelete?.alias || ""}
-            clientName={`${clientToDelete?.user?.title ? clientToDelete?.user?.title + " " : ""}${clientToDelete?.user?.first_name} ${clientToDelete?.user?.middle_name ? clientToDelete?.user?.middle_name + " " : ""}${clientToDelete?.user?.last_name}`}
-          />
+          }}
+          selectedClient={selectedClient}
+        />
+        <DeleteClientModal
+          isOpen={isDeleteModalOpen}
+          toggle={toggleDeleteModal}
+          clientAlias={clientToDelete?.alias || ""}
+          clientName={`${
+            clientToDelete?.user?.title ? clientToDelete?.user?.title + " " : ""
+          }${clientToDelete?.user?.first_name} ${
+            clientToDelete?.user?.middle_name
+              ? clientToDelete?.user?.middle_name + " "
+              : ""
+          }${clientToDelete?.user?.last_name}`}
+        />
         {/* modals end */}
       </CardBody>
     </Card>

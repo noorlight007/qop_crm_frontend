@@ -15,7 +15,9 @@ const DeleteAdviserModal: React.FC<DeleteAdviserModalProps> = ({
   const handleDelete = async () => {
     if (!adviserAlias) return;
     try {
-      const response = await deleteAdviserDetails({ adviserAlias });
+      const response = await deleteAdviserDetails({
+        adviserAlias: adviserAlias,
+      });
       if ("data" in response) {
         toast.success("Adviser deleted successfully.");
         toggle();

@@ -43,14 +43,6 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
               <span className="text-muted small">Not available</span>
             )}
           </Col>
-          <Col md="4" sm="6" className="d-flex flex-column">
-            <span className="text-muted">Official Email:</span>
-            {selectedAdviser?.official_email ? (
-              <small>{selectedAdviser.official_email}</small>
-            ) : (
-              <span className="text-muted small">Not available</span>
-            )}
-          </Col>
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
             <span className="text-muted">Phone:</span>
 
@@ -64,27 +56,6 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             ) : (
               <span className="text-muted small">Not available</span>
             )}
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Official Phone:</span>
-            {selectedAdviser?.official_phone ? (
-              <a
-                className="text-dark text_decoration_hover small"
-                href={`tel:${selectedAdviser?.official_phone}`}
-              >
-                {selectedAdviser.official_phone}
-              </a>
-            ) : (
-              <span className="text-muted small">Not available</span>
-            )}
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Date of Birth:</span>
-            <small>
-              {selectedAdviser?.dob || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
           </Col>
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
             <span className="text-muted">Gender:</span>
@@ -105,8 +76,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
                   .split("_")
                   .map(
                     (word) =>
-                      word.charAt(0).toUpperCase() +
-                      word.slice(1).toLowerCase()
+                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
                   )
                   .join(" ")
               ) : (
@@ -142,8 +112,8 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
                   {selectedAdviser.created_by.title
                     ? selectedAdviser.created_by.title.charAt(0).toUpperCase() +
                       selectedAdviser.created_by.title.slice(1).toLowerCase()
-                    : ""}
-                  {" "} {selectedAdviser.created_by.first_name}{" "}
+                    : ""}{" "}
+                  {selectedAdviser.created_by.first_name}{" "}
                   {selectedAdviser.created_by.middle_name}{" "}
                   {selectedAdviser.created_by.last_name}
                 </>
@@ -170,19 +140,12 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             </small>
           </Col>
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Permanent Address:</span>
+            <span className="text-muted">Joining Date:</span>
             <small>
-              {selectedAdviser?.permanent_address || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Present Address:</span>
-            <small>
-              {selectedAdviser?.present_address || (
-                <span className="text-muted">Not available</span>
-              )}
+              {selectedAdviser?.joining_date &&
+              !isNaN(Date.parse(selectedAdviser.joining_date))
+                ? formatDateToDMYAndTime(selectedAdviser.joining_date)
+                : "Not available"}
             </small>
           </Col>
         </Row>

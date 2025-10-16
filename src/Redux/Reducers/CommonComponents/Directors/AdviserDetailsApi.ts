@@ -18,16 +18,16 @@ export const AdviserDetailsApi = baseApi.injectEndpoints({
       invalidatesTags: ["AdviserDetails"],
     }),
     updateAdviserDetails: builder.mutation({
-      query: ({ advisorAlias, payload }) => ({
-        url: `/director/advisors/${advisorAlias}/`,
+      query: ({ adviserAlias, payload }) => ({
+        url: `/director/advisors/${adviserAlias}/`,
         method: "PUT",
         body: payload,
       }),
       invalidatesTags: ["AdviserDetails"],
     }),
     deleteAdviserDetails: builder.mutation({
-      query: ({ advisorAlias }) => ({
-        url: `/director/advisors/${advisorAlias}/`,
+      query: ({ adviserAlias }) => ({
+        url: `/director/advisors/${adviserAlias}/`,
         method: "DELETE",
       }),
       invalidatesTags: ["AdviserDetails"],

@@ -50,10 +50,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    dob: "",
     gender: "",
+    reason_for_enquiry: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -85,13 +83,15 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
   // openmodals end
 
   const filteredLeads = leads.filter((lead) => {
-    const fullName = `${lead?.user?.first_name || ""} ${
+    const fullName = `${lead?.user?.title || ""} ${
+      lead?.user?.first_name || ""
+    } ${lead?.user?.middle_name || ""} ${
       lead?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      lead?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      lead?.user.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -116,7 +116,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
           <Col md="3" xs="12">
             <h2>Leads</h2>
           </Col>
-          <Col md={6} xs="12">
+          <Col md={3} xs="12">
             <InputGroup>
               <Input
                 type="text"
