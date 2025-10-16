@@ -36,7 +36,9 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
 }) => {
   const params = useParams();
   const { casealias } = params;
-  const [fileOwners, setfileOwners] = useState<DocumentOwnerProps | null>(null);
+  const [fileOwners, setfileOwners] = useState<DocumentOwnerProps[] | null>(
+    null
+  );
   const { data: caseUsers, isLoading: isLoadingCaseUsers } =
     useGetCaseUsersQuery({
       case_alias: casealias,
@@ -45,14 +47,14 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
 
   // Form state
   const [formData, setFormData] = useState({
-    fileOwner: 0,
+    fileOwners: [] as number[], // Multiple owners with checkboxes
     document_type: "",
     document_name: "",
   });
 
   useEffect(() => {
     if (caseUsers) {
-      setfileOwners(caseUsers);
+      setfileOwners(caseUsers as DocumentOwnerProps[]);
     }
   }, [caseUsers]);
 
@@ -91,20 +93,49 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
   // Initialize form data when document changes
   useEffect(() => {
     if (documentData && fileOwners) {
-      // Find the current owner ID by matching with file_owner_info
-      let currentOwnerId = 0;
+      // Find the current owner IDs by matching with file_owner_info or file_owners_info
+      let currentOwnerIds: number[] = [];
       if (Array.isArray(fileOwners)) {
-        const currentOwner = fileOwners.find(
-          (user) =>
-            user.first_name === documentData.file_owner_info?.first_name &&
-            user.last_name === documentData.file_owner_info?.last_name &&
-            user.email === documentData.file_owner_info?.email
-        );
-        currentOwnerId = currentOwner?.id || 0;
+        // Normalize possible owner shapes from API into an array of owner-info objects
+        const ownersArray: Array<
+          | NonNullable<CaseDocumentProps["file_owner_info"]>
+          | NonNullable<CaseDocumentProps["file_owners_info"]>[number]
+        > = Array.isArray(documentData.file_owner_info)
+          ? (documentData.file_owner_info as any)
+          : Array.isArray(documentData.file_owners_info)
+          ? (documentData.file_owners_info as any)
+          : documentData.file_owner_info
+          ? [documentData.file_owner_info]
+          : [];
+
+        if (ownersArray.length > 0) {
+          // Map owner infos to user ids by matching email or name
+          const matchedIds = new Set<number>();
+          ownersArray.forEach((ownerInfo) => {
+            const match = fileOwners.find((user) => {
+              const emailMatch =
+                (user.lead_user?.email || "").toLowerCase() ===
+                (ownerInfo.email || "").toLowerCase();
+              const nameMatch =
+                (user.first_name || "").toLowerCase() ===
+                  (ownerInfo.first_name || "").toLowerCase() &&
+                (user.last_name || "").toLowerCase() ===
+                  (ownerInfo.last_name || "").toLowerCase();
+              const leadNameMatch =
+                (user.lead_user?.first_name || "").toLowerCase() ===
+                  (ownerInfo.first_name || "").toLowerCase() &&
+                (user.lead_user?.last_name || "").toLowerCase() ===
+                  (ownerInfo.last_name || "").toLowerCase();
+              return emailMatch || nameMatch || leadNameMatch;
+            });
+            if (match) matchedIds.add(match.id);
+          });
+          currentOwnerIds = Array.from(matchedIds);
+        }
       }
 
       setFormData({
-        fileOwner: currentOwnerId,
+        fileOwners: currentOwnerIds, // Keep array for multiple selection
         document_type: documentData.file_type || "",
         document_name: documentData.name || "",
       });
@@ -118,7 +149,34 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "fileOwner" ? Number(value) : value,
+      [name]: value,
+    }));
+  };
+
+  // Handle checkbox changes for multiple owner selection
+  const handleOwnerChange = (ownerId: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      fileOwners: prev.fileOwners.includes(ownerId)
+        ? prev.fileOwners.filter((id) => id !== ownerId)
+        : [...prev.fileOwners, ownerId],
+    }));
+  };
+
+  // Handle select all/clear all
+  const handleSelectAll = () => {
+    if (Array.isArray(fileOwners)) {
+      setFormData((prev) => ({
+        ...prev,
+        fileOwners: fileOwners.map((user) => user.id),
+      }));
+    }
+  };
+
+  const handleClearAll = () => {
+    setFormData((prev) => ({
+      ...prev,
+      fileOwners: [],
     }));
   };
 
@@ -132,8 +190,8 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
     }
 
     // Validate required fields
-    if (!formData.fileOwner) {
-      toast.error("Please select a document owner");
+    if (formData.fileOwners.length === 0) {
+      toast.error("Please select at least one document owner");
       return;
     }
 
@@ -155,10 +213,11 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
 
     try {
       const payload = {
-        file_owner: formData.fileOwner,
+        // API expects 'file_owner' which can be a list of IDs for multiple owners
+        file_owner: formData.fileOwners,
         file_type: formData.document_type,
         name: formData.document_name.trim(),
-      };
+      } as any;
 
       await updateCaseDocument({
         case_alias: caseAlias,
@@ -177,7 +236,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
   // Handle modal close
   const handleClose = () => {
     setFormData({
-      fileOwner: 0,
+      fileOwners: [],
       document_type: "",
       document_name: "",
     });
@@ -199,10 +258,10 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
           <div className="mb-4 p-3 bg-light-dark rounded">
             <h6 className="text-muted mb-2">Document Details:</h6>
             <p className="mb-1">
-              <strong>Name:</strong> {documentData.name || "N/A"}
+              <span className="text-muted">Name:</span> {documentData.name || "N/A"}
             </p>
             <p className="mb-0">
-              <strong>Current Type:</strong>{" "}
+              <span className="text-muted">Current Type:</span>{" "}
               {documentData.file_type
                 ? documentData.file_type
                     .split("_")
@@ -242,30 +301,68 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
           <Row>
             <Col md={12}>
               <FormGroup>
-                <Label for="fileOwner">
+                <Label>
                   Document Owner <span className="text-danger">*</span>
                 </Label>
-                <Input
-                  type="select"
-                  id="fileOwner"
-                  name="fileOwner"
-                  value={formData.fileOwner}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select document owner...</option>
-                  {Array.isArray(fileOwners) &&
-                    fileOwners.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user?.title
-                          ? user.title.charAt(0).toUpperCase() +
-                            user.title.slice(1).toLowerCase()
-                          : ""}
-                        {user?.title ? ". " : ""}
-                        {user.first_name} {user.middle_name} {user.last_name}
-                      </option>
-                    ))}
-                </Input>
+                <div className="border rounded p-3 bg-light-primary">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <span className="text-muted">Select owners</span>
+                    <div>
+                      <Button
+                        color="link"
+                        size="sm"
+                        className="p-0 me-3 text-primary"
+                        onClick={handleSelectAll}
+                        type="button"
+                      >
+                        All
+                      </Button>
+                      <Button
+                        color="link"
+                        size="sm"
+                        className="p-0 text-primary"
+                        onClick={handleClearAll}
+                        type="button"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                  <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    {Array.isArray(fileOwners) &&
+                      fileOwners.map((user) => {
+                        const isChecked = formData.fileOwners.includes(user.id);
+                        return (
+                          <div key={user.id} className="form-check mb-2">
+                            <Input
+                              type="checkbox"
+                              id={`owner-${user.id}`}
+                              className="form-check-input"
+                              checked={isChecked}
+                              onChange={() => handleOwnerChange(user.id)}
+                            />
+                            <Label
+                              className="form-check-label ms-2"
+                              for={`owner-${user.id}`}
+                            >
+                              {user?.title
+                                ? user.title.charAt(0).toUpperCase() +
+                                  user.title.slice(1).toLowerCase()
+                                : ""}
+                              {user?.title ? " " : ""}
+                              {user.first_name} {user.middle_name}{" "}
+                              {user.last_name}
+                            </Label>
+                          </div>
+                        );
+                      })}
+                  </div>
+                  {formData.fileOwners.length > 0 && (
+                    <small className="text-success">
+                      {formData.fileOwners.length} owner(s) selected
+                    </small>
+                  )}
+                </div>
               </FormGroup>
             </Col>
           </Row>

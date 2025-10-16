@@ -91,7 +91,7 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                                     .slice(1)
                                     .toLowerCase()
                                 : ""}
-                              {"."} {userInfo.joint_user_details?.first_name}{" "}
+                              {" "} {userInfo.joint_user_details?.first_name}{" "}
                               {userInfo.joint_user_details?.middle_name}{" "}
                               {userInfo.joint_user_details?.last_name}
                             </h6>

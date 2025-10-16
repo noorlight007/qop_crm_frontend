@@ -31,10 +31,8 @@ const AddIntroducerModal: React.FC<AddIntroducerModalProps> = ({
     email: "",
     phone: "",
     password: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
     gender: "",
+    joining_date: "",
   });
 
   const handleInputChange = (
@@ -59,10 +57,9 @@ const AddIntroducerModal: React.FC<AddIntroducerModalProps> = ({
         phone: formData.phone || null,
         password: formData.password,
       },
-      permanent_address: formData.permanent_address || null,
-      present_address: formData.present_address || null,
-      dob: formData.dob || null,
       gender: formData.gender,
+      // If joining date is empty string, send null
+      joining_date: formData.joining_date ? formData.joining_date : null,
     };
 
     try {
@@ -78,10 +75,8 @@ const AddIntroducerModal: React.FC<AddIntroducerModalProps> = ({
           email: "",
           phone: "",
           password: "",
-          permanent_address: "",
-          present_address: "",
-          dob: "",
           gender: "",
+          joining_date: "",
         });
         toggle();
       } else if ("error" in result) {
@@ -118,15 +113,15 @@ const AddIntroducerModal: React.FC<AddIntroducerModalProps> = ({
                   onChange={handleInputChange}
                 >
                   <option value="">Select...</option>
-                  <option value="MR">Mr.</option>
-                  <option value="MRS">Mrs.</option>
-                  <option value="MS">Ms.</option>
-                  <option value="DR">Dr.</option>
-                  <option value="MISS">Miss.</option>
-                  <option value="MADAM">Madam.</option>
-                  <option value="MAIDEN">Maiden.</option>
-                  <option value="PROFESSOR">Professor.</option>
-                  <option value="DOCTOR">Doctor.</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
                 </Input>
               </FormGroup>
             </Col>
@@ -235,36 +230,12 @@ const AddIntroducerModal: React.FC<AddIntroducerModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="dob">Date of Birth</Label>
+                <Label for="joining_date">Joining Date</Label>
                 <Input
-                  id="dob"
-                  name="dob"
+                  id="joining_date"
+                  name="joining_date"
                   type="date"
-                  value={formData.dob}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="present_address">Present Address</Label>
-                <Input
-                  id="present_address"
-                  name="present_address"
-                  type="text"
-                  value={formData.present_address}
-                  onChange={handleInputChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="permanent_address">Permanent Address</Label>
-                <Input
-                  id="permanent_address"
-                  name="permanent_address"
-                  type="text"
-                  value={formData.permanent_address}
+                  value={formData.joining_date}
                   onChange={handleInputChange}
                 />
               </FormGroup>

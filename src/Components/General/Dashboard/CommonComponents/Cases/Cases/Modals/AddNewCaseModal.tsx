@@ -182,7 +182,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                       lead.user?.title
                         ? lead.user.title.charAt(0).toUpperCase() +
                           lead.user.title.slice(1).toLowerCase() +
-                          ". "
+                          " "
                         : ""
                     }${lead.user?.first_name}${
                       lead.user?.middle_name ? " " + lead.user.middle_name : ""

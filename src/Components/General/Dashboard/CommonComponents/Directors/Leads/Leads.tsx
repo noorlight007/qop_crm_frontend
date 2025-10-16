@@ -50,10 +50,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    dob: "",
     gender: "",
+    reason_for_enquiry: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -85,13 +83,15 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
   // openmodals end
 
   const filteredLeads = leads.filter((lead) => {
-    const fullName = `${lead?.user?.first_name || ""} ${
+    const fullName = `${lead?.user?.title || ""} ${
+      lead?.user?.first_name || ""
+    } ${lead?.user?.middle_name || ""} ${
       lead?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      lead?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      lead?.user.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -116,7 +116,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
           <Col md="3" xs="12">
             <h2>Leads</h2>
           </Col>
-          <Col md={6} xs="12">
+          <Col md={3} xs="12">
             <InputGroup>
               <Input
                 type="text"
@@ -182,8 +182,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         {lead.user?.title
                           ? lead.user?.title.charAt(0).toUpperCase() +
                             lead.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
+                          : ""}{" "}
+                        {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
                         {lead?.user?.last_name}
                       </span>
                     </td>
@@ -209,8 +209,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         {lead.created_by?.title
                           ? lead.created_by?.title.charAt(0).toUpperCase() +
                             lead.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {lead?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {lead?.created_by?.first_name}{" "}
                         {lead?.created_by?.middle_name}{" "}
                         {lead?.created_by?.last_name}
                       </p>
@@ -378,7 +378,17 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
           isOpen={isDeleteModalOpen}
           toggle={toggleDeleteModal}
           leadAlias={leadToDelete?.alias}
-          leadName={`${leadToDelete?.user?.first_name} ${leadToDelete?.user?.last_name}`}
+          leadName={`${
+            leadToDelete?.user?.title
+              ? leadToDelete?.user?.title.charAt(0).toUpperCase() +
+                leadToDelete?.user?.title.slice(1).toLowerCase() +
+                " "
+              : ""
+          }${leadToDelete?.user?.first_name} ${
+            leadToDelete?.user?.middle_name
+              ? leadToDelete?.user?.middle_name + " "
+              : ""
+          }${leadToDelete?.user?.last_name}`}
         />
         {/* modals end */}
       </CardBody>

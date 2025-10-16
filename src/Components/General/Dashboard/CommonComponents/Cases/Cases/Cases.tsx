@@ -292,7 +292,7 @@ const Cases: React.FC = () => {
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
                     <Col xs="12" sm="6" md="3">
-                      <Label>Select Employee</Label>
+                      <Label>Select Case Created Employee</Label>
                       <Input
                         type="select"
                         id="employeeFilter"
@@ -305,7 +305,16 @@ const Cases: React.FC = () => {
                         <option value="">All Employee</option>
                         {adviserData?.map((adviser: AdviserInfoProps) => (
                           <option key={adviser.alias} value={adviser.user.id}>
-                            {adviser.user.first_name} {adviser.user.last_name}
+                            {adviser.user.title
+                              ? adviser.user.title[0].toUpperCase() +
+                                adviser.user.title.slice(1).toLowerCase() +
+                                " "
+                              : ""}
+                            {adviser.user.first_name}{" "}
+                            {adviser.user.middle_name
+                              ? adviser.user.middle_name + " "
+                              : ""}
+                            {adviser.user.last_name}
                           </option>
                         ))}
                       </Input>
@@ -382,7 +391,7 @@ const Cases: React.FC = () => {
                   <thead className="thead-light text-center">
                     <tr>
                       <th>Case Name</th>
-                      <th>Case Users</th>
+                      <th>Clients</th>
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Case Stage</th>
@@ -434,7 +443,7 @@ const Cases: React.FC = () => {
                                         caseItem.lead_user.title
                                           .slice(1)
                                           .toLowerCase() +
-                                        ". "
+                                        " "
                                       : ""}
                                     {caseItem.lead_user.first_name}{" "}
                                     {caseItem.lead_user.middle_name
@@ -472,7 +481,7 @@ const Cases: React.FC = () => {
                                     {joint.title
                                       ? joint.title[0].toUpperCase() +
                                         joint.title.slice(1).toLowerCase() +
-                                        ". "
+                                        " "
                                       : ""}
                                     {joint.first_name}{" "}
                                     {joint.middle_name
@@ -545,7 +554,7 @@ const Cases: React.FC = () => {
                                   caseItem.created_by.title
                                     .slice(1)
                                     .toLowerCase() +
-                                  ". "
+                                  " "
                                 : ""}
                               {caseItem.created_by?.first_name}{" "}
                               {caseItem.created_by?.middle_name
@@ -578,7 +587,7 @@ const Cases: React.FC = () => {
                                       caseItem.assigned_user.title
                                         .slice(1)
                                         .toLowerCase() +
-                                      ". "
+                                      " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
                                   {caseItem.assigned_user.middle_name

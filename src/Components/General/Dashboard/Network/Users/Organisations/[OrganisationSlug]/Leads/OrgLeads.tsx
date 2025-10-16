@@ -55,9 +55,7 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    dob: "",
+    reason_for_enquiry: "",
     gender: "",
   });
 
@@ -90,13 +88,15 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
   // openmodals end
 
   const filteredLeads = leads.filter((lead) => {
-    const fullName = `${lead?.user?.first_name || ""} ${
+    const fullName = `${lead?.user?.title || ""} ${
+      lead?.user?.first_name || ""
+    } ${lead?.user?.middle_name || ""} ${
       lead?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      lead?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      lead?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -187,19 +187,19 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                         {lead.user?.title
                           ? lead.user?.title.charAt(0).toUpperCase() +
                             lead.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
+                          : ""}{" "}
+                        {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
                         {lead?.user?.last_name}
                       </span>
                     </td>
-                    <td>{lead?.official_email || "-"}</td>
+                    <td>{lead?.user?.email || "-"}</td>
                     <td>
-                      {lead?.official_phone ? (
+                      {lead?.user?.phone ? (
                         <a
-                          href={`tel:${lead?.official_phone}`}
+                          href={`tel:${lead?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {lead?.official_phone}
+                          {lead?.user?.phone}
                         </a>
                       ) : (
                         "-"
@@ -214,8 +214,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                         {lead.created_by?.title
                           ? lead.created_by?.title.charAt(0).toUpperCase() +
                             lead.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {lead?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {lead?.created_by?.first_name}{" "}
                         {lead?.created_by?.middle_name}{" "}
                         {lead?.created_by?.last_name}
                       </p>

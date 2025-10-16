@@ -171,7 +171,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                           adviser.user?.title
                             ? adviser.user.title.charAt(0).toUpperCase() +
                               adviser.user.title.slice(1).toLowerCase() +
-                              ". "
+                              " "
                             : ""
                         }${adviser.user?.first_name}${
                           adviser.user?.middle_name

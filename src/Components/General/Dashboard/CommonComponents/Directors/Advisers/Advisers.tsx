@@ -53,12 +53,8 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
     gender: "",
+    joining_date: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -92,13 +88,15 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
   // openmodals end
 
   const filteredAdvisers = advisers.filter((adviser) => {
-    const fullName = `${adviser?.user?.first_name || ""} ${
+    const fullName = `${adviser?.user?.title || ""} ${
+      adviser?.user?.first_name || ""
+    } ${adviser?.user?.middle_name || ""} ${
       adviser?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      adviser?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      adviser?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -163,6 +161,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Role</th>
+                <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -171,7 +170,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -192,9 +191,9 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         {adviser.user?.title
                           ? adviser.user?.title.charAt(0).toUpperCase() +
                             adviser.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {adviser?.user?.first_name}{" "}
-                        {adviser?.user?.middle_name} {adviser?.user?.last_name}
+                          : ""}{" "}
+                        {adviser?.user?.first_name} {adviser?.user?.middle_name}{" "}
+                        {adviser?.user?.last_name}
                       </span>
                     </td>
                     <td>{adviser?.user?.email || "-"}</td>
@@ -215,6 +214,12 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         adviser?.role?.slice(1)?.toLowerCase()}
                     </td>
                     <td>
+                      {adviser?.joining_date &&
+                      !isNaN(Date.parse(adviser.joining_date))
+                        ? formatDateToDMYAndTime(adviser.joining_date)
+                        : "-"}
+                    </td>
+                    <td>
                       <p className="m-0">
                         {adviser.created_by
                           ? `${
@@ -225,7 +230,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                                   adviser.created_by.title
                                     .slice(1)
                                     .toLowerCase() +
-                                  ". "
+                                  " "
                                 : ""
                             }${adviser.created_by.first_name || ""} ${
                               adviser.created_by.middle_name || ""
@@ -272,7 +277,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     No advisers available.
                   </td>
                 </tr>
@@ -396,7 +401,17 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
           isOpen={isDeleteModalOpen}
           toggle={toggleDeleteModal}
           adviserAlias={adviserToDelete?.alias || ""}
-          adviserName={`${adviserToDelete?.user?.first_name} ${adviserToDelete?.user?.last_name}`}
+          adviserName={`${
+            adviserToDelete?.user?.title ? adviserToDelete.user.title + " " : ""
+          }${adviserToDelete?.user?.first_name || ""}${
+            adviserToDelete?.user?.middle_name
+              ? " " + adviserToDelete.user.middle_name
+              : ""
+          }${
+            adviserToDelete?.user?.last_name
+              ? " " + adviserToDelete.user.last_name
+              : ""
+          }`}
         />
         {/* modals end */}
       </CardBody>

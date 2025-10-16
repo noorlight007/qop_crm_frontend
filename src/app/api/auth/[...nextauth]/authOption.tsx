@@ -71,7 +71,6 @@ export const authoption: NextAuthOptions = {
                   response.data.user.title
                     ? response.data.user.title[0].toUpperCase() +
                       response.data.user.title.slice(1).toLowerCase() +
-                      "." +
                       " "
                     : ""
                 }${response.data.user.first_name || ""}${

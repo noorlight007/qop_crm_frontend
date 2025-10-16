@@ -1,6 +1,9 @@
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
-import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
+import {
+  CaseInfoPrpos,
+  CaseUser,
+} from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
@@ -289,7 +292,7 @@ const ActiveCases: React.FC = () => {
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
                     <Col xs="12" sm="6" md="3">
-                      <Label>Select Employee</Label>
+                      <Label>Select Case Created Employee</Label>
                       <Input
                         type="select"
                         id="employeeFilter"
@@ -302,7 +305,16 @@ const ActiveCases: React.FC = () => {
                         <option value="">All Employee</option>
                         {adviserData?.map((adviser: AdviserInfoProps) => (
                           <option key={adviser.alias} value={adviser.user.id}>
-                            {adviser.user.first_name} {adviser.user.last_name}
+                            {adviser.user.title
+                              ? adviser.user.title[0].toUpperCase() +
+                                adviser.user.title.slice(1).toLowerCase() +
+                                " "
+                              : ""}
+                            {adviser.user.first_name}{" "}
+                            {adviser.user.middle_name
+                              ? adviser.user.middle_name + " "
+                              : ""}
+                            {adviser.user.last_name}
                           </option>
                         ))}
                       </Input>
@@ -379,7 +391,7 @@ const ActiveCases: React.FC = () => {
                   <thead className="thead-light text-center">
                     <tr>
                       <th>Case Name</th>
-                      <th>Lead User</th>
+                      <th>Clients</th>
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Case Stage</th>
@@ -414,22 +426,95 @@ const ActiveCases: React.FC = () => {
                                 {caseItem.name}
                               </Link>
                             </td>
-                            <td>
-                              {caseItem?.lead_user
-                                ? `${
-                                    caseItem?.lead_user?.title
-                                      ? caseItem.lead_user.title[0].toUpperCase() +
-                                        caseItem.lead_user.title
-                                          .slice(1)
-                                          .toLowerCase() +
-                                        ". "
-                                      : ""
-                                  }${caseItem.lead_user.first_name} ${
-                                    caseItem.lead_user.middle_name
-                                      ? caseItem.lead_user.middle_name + " "
-                                      : ""
-                                  }${caseItem.lead_user.last_name}`
-                                : "-"}
+                            <td className="text-start">
+                              <ul
+                                style={{
+                                  listStyleType: "disc",
+                                  paddingLeft: "40px",
+                                }}
+                              >
+                                <li>
+                                  {caseItem.lead_user ? (
+                                    <>
+                                      {caseItem.lead_user.title
+                                        ? caseItem.lead_user.title[0].toUpperCase() +
+                                          caseItem.lead_user.title
+                                            .slice(1)
+                                            .toLowerCase() +
+                                          " "
+                                        : ""}
+                                      {caseItem.lead_user.first_name}{" "}
+                                      {caseItem.lead_user.middle_name
+                                        ? caseItem.lead_user.middle_name + " "
+                                        : ""}
+                                      {caseItem.lead_user.last_name}
+                                      {caseItem.lead_user.user_type && (
+                                        <span
+                                          className="ms-1 text-muted"
+                                          style={{ fontSize: "0.85em" }}
+                                        >
+                                          <small>
+                                            (
+                                            {caseItem.lead_user.user_type
+                                              .split("_")
+                                              .map(
+                                                (word) =>
+                                                  word.charAt(0).toUpperCase() +
+                                                  word.slice(1).toLowerCase()
+                                              )
+                                              .join(" ")}
+                                            )
+                                          </small>
+                                        </span>
+                                      )}
+                                    </>
+                                  ) : (
+                                    "-"
+                                  )}
+                                </li>
+                                {caseItem.joint_users &&
+                                caseItem.joint_users.length > 0 ? (
+                                  caseItem.joint_users.map(
+                                    (joint: CaseUser) => (
+                                      <li key={joint.alias || joint.id}>
+                                        {joint.title
+                                          ? joint.title[0].toUpperCase() +
+                                            joint.title.slice(1).toLowerCase() +
+                                            " "
+                                          : ""}
+                                        {joint.first_name}{" "}
+                                        {joint.middle_name
+                                          ? joint.middle_name + " "
+                                          : ""}
+                                        {joint.last_name}
+                                        {joint.user_type ? (
+                                          <span
+                                            className="ms-1 text-muted"
+                                            style={{ fontSize: "0.85em" }}
+                                          >
+                                            <small>
+                                              (
+                                              {joint.user_type
+                                                ?.split("_")
+                                                .map(
+                                                  (word) =>
+                                                    word
+                                                      .charAt(0)
+                                                      .toUpperCase() +
+                                                    word.slice(1).toLowerCase()
+                                                )
+                                                .join(" ")}
+                                              )
+                                            </small>
+                                          </span>
+                                        ) : null}
+                                      </li>
+                                    )
+                                  )
+                                ) : (
+                                  <></>
+                                )}
+                              </ul>
                             </td>
                             <td>
                               {caseItem.lead_user.phone ? (
@@ -473,7 +558,7 @@ const ActiveCases: React.FC = () => {
                                     caseItem.created_by.title
                                       .slice(1)
                                       .toLowerCase() +
-                                    ". "
+                                    " "
                                   : ""}
                                 {caseItem.created_by?.first_name}{" "}
                                 {caseItem.created_by?.middle_name
@@ -506,7 +591,7 @@ const ActiveCases: React.FC = () => {
                                         caseItem.assigned_user.title
                                           .slice(1)
                                           .toLowerCase() +
-                                        ". "
+                                        " "
                                       : ""}
                                     {caseItem.assigned_user.first_name}{" "}
                                     {caseItem.assigned_user.middle_name

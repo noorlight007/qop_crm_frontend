@@ -12,12 +12,8 @@ export interface ClientInfoProps {
     user_type: string;
   };
   role: string;
-  official_email: string;
-  official_phone: string;
-  dob: string;
   gender: string;
-  permanent_address: string;
-  present_address: string;
+  reason_for_enquiry: string;
   created_by: {
     title?: string;
     first_name?: string;

@@ -1,5 +1,6 @@
 import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import { saveAs } from "file-saver";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -37,6 +38,7 @@ const Documents: React.FC = () => {
   );
   const [selectAll, setSelectAll] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDownloading, setIsDownloading] = useState(false);
   const params = useParams();
   const { casealias } = params;
 
@@ -54,23 +56,32 @@ const Documents: React.FC = () => {
     // Search by document name
     const documentName = doc.name?.toLowerCase() || "";
 
-    // Search by owner name (first, middle, last name)
-    const ownerFirstName = doc.file_owner_info?.first_name?.toLowerCase() || "";
-    const ownerMiddleName =
-      doc.file_owner_info?.middle_name?.toLowerCase() || "";
-    const ownerLastName = doc.file_owner_info?.last_name?.toLowerCase() || "";
-    const ownerFullName =
-      `${ownerFirstName} ${ownerMiddleName} ${ownerLastName}`.trim();
+    // Search by owner name (support array of owners or single owner)
+    const owners = Array.isArray(doc.file_owner_info)
+      ? doc.file_owner_info
+      : doc.file_owner_info
+      ? [doc.file_owner_info]
+      : [];
+
+    const ownerMatch = owners.some((owner: any) => {
+      const first = owner?.first_name?.toLowerCase() || "";
+      const middle = owner?.middle_name?.toLowerCase() || "";
+      const last = owner?.last_name?.toLowerCase() || "";
+      const full = `${first} ${middle} ${last}`.trim();
+      return (
+        first.includes(searchLower) ||
+        middle.includes(searchLower) ||
+        last.includes(searchLower) ||
+        full.includes(searchLower)
+      );
+    });
 
     // Search by document type
     const documentType = doc.file_type?.toLowerCase() || "";
 
     return (
       documentName.includes(searchLower) ||
-      ownerFirstName.includes(searchLower) ||
-      ownerMiddleName.includes(searchLower) ||
-      ownerLastName.includes(searchLower) ||
-      ownerFullName.includes(searchLower) ||
+      ownerMatch ||
       documentType.includes(searchLower)
     );
   });
@@ -160,6 +171,41 @@ const Documents: React.FC = () => {
     setSelectAll(false);
   };
 
+  // Batch download via server (avoids CORS/auth issues)
+  const handleBatchDownload = async () => {
+    if (selectedDocuments.size === 0 || isDownloading) return;
+    setIsDownloading(true);
+    try {
+      const files = caseDocuments
+        .filter((doc) => selectedDocuments.has(doc.alias) && !!doc.file)
+        .map((doc) => ({
+          url: doc.file as string,
+          name:
+            doc?.name ||
+            (doc.file ? doc.file.split("/").pop() : doc.alias) ||
+            doc.alias,
+        }));
+
+      if (files.length === 0) {
+        setIsDownloading(false);
+        return;
+      }
+
+      const res = await fetch("/api/documents/batch-download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files }),
+      });
+      if (!res.ok) throw new Error("Failed to create zip");
+      const blob = await res.blob();
+      saveAs(blob, "documents.zip");
+    } catch (err) {
+      console.error("Batch download failed", err);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   // Helper function to create document names map
   const getDocumentNamesMap = (): Map<string, string> => {
     const nameMap = new Map<string, string>();
@@ -186,7 +232,6 @@ const Documents: React.FC = () => {
               )}
             </Col>
             <Col
-              lg="8"
               sm="12"
               className="d-flex flex-md-row flex-xs-column justify-content-end gap-2"
             >
@@ -195,6 +240,16 @@ const Documents: React.FC = () => {
                   <Button color="danger" onClick={handleBatchDelete}>
                     <i className="fa-solid fa-trash me-1"></i>
                     Delete Selected ({selectedDocuments.size})
+                  </Button>
+                  <Button
+                    color="info"
+                    onClick={handleBatchDownload}
+                    disabled={isDownloading}
+                  >
+                    <i className="fa-solid fa-download me-1"></i>
+                    {isDownloading
+                      ? "Preparing…"
+                      : `Download Selected (${selectedDocuments.size})`}
                   </Button>
                   <Button color="secondary" outline onClick={clearSelection}>
                     <i className="fa-solid fa-times me-1"></i>
@@ -295,21 +350,49 @@ const Documents: React.FC = () => {
                               ? fileData.name
                               : fileData.file?.split("/").pop() || "-"}
                           </td>
-                          <td>
-                            {fileData?.file_owner_info?.title
-                              ? fileData.file_owner_info.title
-                                  .charAt(0)
-                                  .toUpperCase() +
-                                fileData.file_owner_info.title
-                                  .slice(1)
-                                  .toLowerCase()
-                              : ""}
-                            {fileData?.file_owner_info?.title ? ". " : ""}
-                            {fileData?.file_owner_info?.first_name}{" "}
-                            {fileData?.file_owner_info?.middle_name
-                              ? fileData.file_owner_info.middle_name + " "
-                              : ""}
-                            {fileData?.file_owner_info?.last_name}
+                          <td className="text-start">
+                            {/* Render multiple owners as a list when file_owner_info is an array */}
+                            {Array.isArray(fileData?.file_owner_info) ? (
+                              <ul
+                                className="mb-0"
+                                style={{
+                                  listStyleType: "disc",
+                                  paddingLeft: "40px",
+                                }}
+                              >
+                                {fileData.file_owner_info.map((owner: any) => (
+                                  <li key={owner.alias || owner.email}>
+                                    {owner?.title
+                                      ? owner.title.charAt(0).toUpperCase() +
+                                        owner.title.slice(1).toLowerCase() +
+                                        ". "
+                                      : ""}
+                                    {owner?.first_name || ""}{" "}
+                                    {owner?.middle_name
+                                      ? owner.middle_name + " "
+                                      : ""}
+                                    {owner?.last_name || ""}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <>
+                                {fileData?.file_owner_info?.title
+                                  ? fileData.file_owner_info.title
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                    fileData.file_owner_info.title
+                                      .slice(1)
+                                      .toLowerCase()
+                                  : ""}
+                                {fileData?.file_owner_info?.title ? ". " : ""}
+                                {fileData?.file_owner_info?.first_name}{" "}
+                                {fileData?.file_owner_info?.middle_name
+                                  ? fileData.file_owner_info.middle_name + " "
+                                  : ""}
+                                {fileData?.file_owner_info?.last_name}
+                              </>
+                            )}
                           </td>
                           <td>
                             {fileData?.file_type

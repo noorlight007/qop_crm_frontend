@@ -4,7 +4,7 @@ export const ThemePrimary: string = "var(--theme-default)";
 
 //Layout
 export const Loading: string = "Loading...";
-export const SearchQOP: string = "Type to Search...";
+export const SearchQOP: string = "Type to Search Menu...";
 export const SearchQOPTheme: string = "Search QOP ..";
 export const Cart: string = "Cart";
 export const Notifications: string = "Notifications";

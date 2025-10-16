@@ -1,6 +1,7 @@
 import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
-import { Container, Row } from "reactstrap";
+import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../CommonComponents/MyTask/MyTask";
 import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
 import OrganisationCards from "./OrganisationCards/OrganisationCards";
@@ -46,6 +47,11 @@ const ContainerNetwork = () => {
         />
         <OrganisationCards />
         <AdviserStatus />
+        <Row>
+          <Col>
+            <MyTask />
+          </Col>
+        </Row>
         <Row>
           <RecentActivity />
         </Row>

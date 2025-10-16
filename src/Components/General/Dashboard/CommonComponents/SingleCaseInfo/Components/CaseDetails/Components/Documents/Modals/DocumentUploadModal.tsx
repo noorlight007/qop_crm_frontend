@@ -11,6 +11,9 @@ import { toast } from "react-toastify";
 import {
   Button,
   Col,
+  Dropdown,
+  DropdownMenu,
+  DropdownToggle,
   Form,
   FormGroup,
   Input,
@@ -30,7 +33,9 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const [documents, setDocuments] = useState<File[]>([]);
   const params = useParams();
   const { casealias } = params;
-  const [fileOwners, setfileOwners] = useState<DocumentOwnerProps | null>(null);
+  const [fileOwners, setfileOwners] = useState<DocumentOwnerProps[] | null>(
+    null
+  );
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [fileErrors, setFileErrors] = useState<{ [key: number]: string[] }>({});
 
@@ -44,7 +49,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const [formData, setFormData] = useState({
     file: "",
     fileType: "",
-    fileOwner: 0,
+    // store multiple owners as number[]
+    fileOwner: [] as number[],
     DocumentName: "",
     description: "",
     specialNotes: "",
@@ -52,7 +58,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
 
   useEffect(() => {
     if (caseUsers) {
-      setfileOwners(caseUsers);
+      // assume caseUsers is an array
+      setfileOwners(caseUsers as DocumentOwnerProps[]);
     }
   }, [caseUsers]);
 
@@ -92,6 +99,40 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
     }
   };
 
+  // Dropdown for owners
+  const [ownerDropdownOpen, setOwnerDropdownOpen] = useState(false);
+
+  const toggleOwnerDropdown = () => setOwnerDropdownOpen((s) => !s);
+
+  const toggleOwnerSelection = (ownerId: number) => {
+    const current = Array.isArray(formData.fileOwner)
+      ? [...formData.fileOwner]
+      : [];
+    const idx = current.indexOf(ownerId);
+    if (idx > -1) {
+      current.splice(idx, 1);
+    } else {
+      current.push(ownerId);
+    }
+    setFormData({ ...formData, fileOwner: current });
+  };
+
+  const selectAllOwners = () => {
+    if (!Array.isArray(fileOwners)) return;
+    const allIds = fileOwners.map((u: any) => u.id);
+    setFormData({ ...formData, fileOwner: allIds });
+  };
+
+  const clearOwners = () => setFormData({ ...formData, fileOwner: [] });
+
+  // compute selected owner objects for display
+  const selectedOwners = Array.isArray(fileOwners)
+    ? fileOwners.filter(
+        (u: any) =>
+          Array.isArray(formData.fileOwner) && formData.fileOwner.includes(u.id)
+      )
+    : [];
+
   const removeFile = (indexToRemove: number) => {
     const newDocuments = documents.filter(
       (_, index) => index !== indexToRemove
@@ -122,11 +163,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === "fileOwner" ? Number(value) : value,
-    });
+    const { name, value } = e.target as HTMLInputElement & HTMLSelectElement;
+    setFormData({ ...formData, [name]: value } as any);
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -136,7 +174,12 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       return;
     }
 
-    if (!formData.fileType || !formData.fileOwner) {
+    // Validate required fields: fileType and at least one file owner
+    const hasOwnerSelected = Array.isArray(formData.fileOwner)
+      ? formData.fileOwner.length > 0
+      : !!formData.fileOwner;
+
+    if (!formData.fileType || !hasOwnerSelected) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -163,7 +206,23 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           // Append all fields including the current file
           uploadData.append("file", file);
           uploadData.append("file_type", formData.fileType);
-          uploadData.append("file_owner", formData.fileOwner.toString());
+
+          // append multiple owners as repeated 'file_owner' entries
+          if (
+            Array.isArray(formData.fileOwner) &&
+            formData.fileOwner.length > 0
+          ) {
+            formData.fileOwner.forEach((ownerId) => {
+              uploadData.append("file_owner", ownerId.toString());
+            });
+          } else {
+            // fallback to single owner or empty
+            uploadData.append(
+              "file_owner",
+              (formData.fileOwner as any).toString()
+            );
+          }
+
           uploadData.append("name", formData.DocumentName || file.name);
           uploadData.append("description", formData.description);
           uploadData.append("special_notes", formData.specialNotes);
@@ -186,7 +245,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       setFormData({
         file: "",
         fileType: "",
-        fileOwner: 0,
+        fileOwner: [],
         DocumentName: "",
         description: "",
         specialNotes: "",
@@ -241,6 +300,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                   multiple
                   onChange={handleDocumentChange}
                 />
+
                 {documents.length > 0 && (
                   <div className="mt-2">
                     <div className="d-flex justify-content-between align-items-center">
@@ -254,11 +314,11 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                           outline
                           onClick={clearAllFiles}
                         >
-                          <i className="fa fa-trash me-1"></i>
-                          Clear All
+                          <i className="fa fa-trash me-1"></i> Clear All
                         </Button>
                       )}
                     </div>
+
                     {Object.keys(fileErrors).length > 0 && (
                       <div className="alert alert-danger mt-2 py-2 px-3">
                         <small>
@@ -268,6 +328,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                         </small>
                       </div>
                     )}
+
                     <ul className="list-unstyled mt-1 border rounded p-3 bg-dark-light">
                       {documents.map((file, index) => (
                         <li
@@ -329,6 +390,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
               </FormGroup>
             </Col>
           </Row>
+
           <Row>
             <Col md={6}>
               <FormGroup>
@@ -377,33 +439,111 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                 </Input>
               </FormGroup>
             </Col>
+
             <Col md={6}>
               <FormGroup>
                 <Label for="fileOwner" className="form-label">
                   Document Owner<span className="text-danger">*</span>
                 </Label>
-                <Input
-                  type="select"
-                  id="fileOwner"
-                  name="fileOwner"
-                  value={formData.fileOwner}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select...</option>
 
-                  {/* Options for Joint Users */}
-                  {Array.isArray(fileOwners) &&
-                    fileOwners.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user?.title
-                          ? user.title.charAt(0).toUpperCase() +
-                            user.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {user.first_name} {user.middle_name}{" "}
-                        {user.last_name}
-                      </option>
-                    ))}
-                </Input>
+                <Dropdown
+                  isOpen={ownerDropdownOpen}
+                  toggle={toggleOwnerDropdown}
+                >
+                  <DropdownToggle
+                    caret
+                    color="light"
+                    className="w-100 text-start py-2"
+                    style={{
+                      whiteSpace: "normal",
+                      minHeight: 44,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {selectedOwners && selectedOwners.length > 0 ? (
+                      <div className="d-flex flex-wrap" style={{ gap: 6 }}>
+                        {selectedOwners.slice(0, 3).map((u: any) => (
+                          <span
+                            key={u.id}
+                            className="badge bg-primary border text-truncate"
+                            style={{ maxWidth: 200, display: "inline-block" }}
+                            title={`${u.title ? u.title + " " : ""}${
+                              u.first_name
+                            } ${u.middle_name ? u.middle_name + " " : ""}${
+                              u.last_name
+                            }`}
+                          >
+                            {u.title ? (
+                              <>
+                                {u.title.charAt(0).toUpperCase() +
+                                  u.title.slice(1).toLowerCase()}{" "}
+                              </>
+                            ) : null}
+                            {u.first_name}{" "}
+                            {u.middle_name ? u.middle_name + " " : ""}
+                            {u.last_name}
+                          </span>
+                        ))}
+                        {selectedOwners.length > 3 && (
+                          <span className="badge bg-secondary text-white">
+                            +{selectedOwners.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      "Select..."
+                    )}
+                  </DropdownToggle>
+                  <DropdownMenu className="p-2" style={{ minWidth: 300 }}>
+                    <div className="d-flex justify-content-between mb-2">
+                      <small className="text-muted">Select owners</small>
+                      <div>
+                        <Button
+                          size="sm"
+                          color="link"
+                          onClick={selectAllOwners}
+                        >
+                          All
+                        </Button>
+                        <Button size="sm" color="link" onClick={clearOwners}>
+                          Clear
+                        </Button>
+                      </div>
+                    </div>
+                    <div style={{ maxHeight: 200, overflowY: "auto" }}>
+                      {Array.isArray(fileOwners) &&
+                        fileOwners.map((user) => (
+                          <div className="form-check" key={user.id}>
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={`owner-${user.id}`}
+                              checked={
+                                Array.isArray(formData.fileOwner) &&
+                                formData.fileOwner.includes(user.id)
+                              }
+                              onChange={() => toggleOwnerSelection(user.id)}
+                            />
+                            <label
+                              className="form-check-label ms-2"
+                              htmlFor={`owner-${user.id}`}
+                            >
+                              {user?.title
+                                ? `${
+                                    user.title.charAt(0).toUpperCase() +
+                                    user.title.slice(1).toLowerCase()
+                                  } `
+                                : ""}
+                              {user.first_name}{" "}
+                              {user.middle_name ? user.middle_name + " " : ""}
+                              {user.last_name}
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                  </DropdownMenu>
+                </Dropdown>
               </FormGroup>
             </Col>
           </Row>

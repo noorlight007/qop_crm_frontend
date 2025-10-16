@@ -375,7 +375,7 @@ const OrgCases: React.FC = () => {
                                       caseItem.assigned_user.title
                                         .slice(1)
                                         .toLowerCase() +
-                                      ". "
+                                      " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
                                   {caseItem.assigned_user.middle_name

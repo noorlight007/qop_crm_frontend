@@ -54,12 +54,8 @@ const Introducers: React.FC<IntroducersProps> = ({
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    permanent_address: "",
-    present_address: "",
-    dob: "",
     gender: "",
+    joining_date: "",
   });
 
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
@@ -93,15 +89,15 @@ const Introducers: React.FC<IntroducersProps> = ({
   // openaddmodals end
 
   const filteredIntroducers = introducers.filter((introducer) => {
-    const fullName = `${introducer?.user?.first_name || ""} ${
+    const fullName = `${introducer?.user?.title || ""} ${
+      introducer?.user?.first_name || ""
+    } ${introducer?.user?.middle_name || ""} ${
       introducer?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      introducer?.official_email
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase())
+      introducer?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -127,7 +123,7 @@ const Introducers: React.FC<IntroducersProps> = ({
           <Col md="3">
             <h2>Introducers</h2>
           </Col>
-          <Col md={6}>
+          <Col md={3}>
             <InputGroup>
               <Input
                 type="text"
@@ -164,6 +160,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Role</th>
+                <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -172,7 +169,7 @@ const Introducers: React.FC<IntroducersProps> = ({
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -193,8 +190,8 @@ const Introducers: React.FC<IntroducersProps> = ({
                         {introducer.user?.title
                           ? introducer.user?.title.charAt(0).toUpperCase() +
                             introducer.user?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {introducer?.user?.first_name}{" "}
+                          : ""}{" "}
+                        {introducer?.user?.first_name}{" "}
                         {introducer?.user?.middle_name}{" "}
                         {introducer?.user?.last_name}
                       </span>
@@ -217,14 +214,19 @@ const Introducers: React.FC<IntroducersProps> = ({
                         introducer?.role?.slice(1)?.toLowerCase()}
                     </td>
                     <td>
+                      {introducer?.joining_date && !isNaN(Date.parse(introducer.joining_date))
+                        ? formatDateToDMYAndTime(introducer.joining_date)
+                        : "-"}
+                    </td>
+                    <td>
                       <p className="m-0">
                         {introducer.created_by?.title
                           ? introducer.created_by?.title
                               .charAt(0)
                               .toUpperCase() +
                             introducer.created_by?.title.slice(1).toLowerCase()
-                          : ""}
-                        {"."} {introducer?.created_by?.first_name}{" "}
+                          : ""}{" "}
+                        {introducer?.created_by?.first_name}{" "}
                         {introducer?.created_by?.middle_name}{" "}
                         {introducer?.created_by?.last_name}
                       </p>
@@ -266,7 +268,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     No introducers available.
                   </td>
                 </tr>
@@ -392,7 +394,22 @@ const Introducers: React.FC<IntroducersProps> = ({
           isOpen={isDeleteModalOpen}
           toggle={toggleDeleteModal}
           introducerAlias={introducerToDelete?.alias}
-          introducerName={`${introducerToDelete?.user?.first_name} ${introducerToDelete?.user?.last_name}`}
+          introducerName={
+            `${
+              introducerToDelete?.user?.title
+                ? introducerToDelete?.user?.title.charAt(0).toUpperCase() +
+                  introducerToDelete?.user?.title.slice(1).toLowerCase() +
+                  " "
+                : ""
+            }` +
+            `${introducerToDelete?.user?.first_name || ""} ` +
+            `${
+              introducerToDelete?.user?.middle_name
+                ? introducerToDelete?.user?.middle_name + " "
+                : ""
+            }` +
+            `${introducerToDelete?.user?.last_name || ""}`
+          }
         />
         {/* modals end */}
       </CardBody>

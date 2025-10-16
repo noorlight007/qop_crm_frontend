@@ -60,8 +60,23 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
   ) => {
     try {
       if (introducerData.alias) {
+        // Only include email if it has changed
+        let payload = { ...introducerData };
+        // If joining_date is empty string, send null
+        if (payload.joining_date === "") {
+          payload.joining_date = null as unknown as any;
+        }
+        const originalEmail = selectedIntroducer?.user?.email || "";
+        const updatedEmail = introducerData?.user?.email || "";
+        if (originalEmail === updatedEmail) {
+          // Remove email from payload if not changed
+          if (payload.user) {
+            const { email, ...restUser } = payload.user;
+            payload.user = restUser;
+          }
+        }
         const result = await updateIntroducerDetails({
-          payload: introducerData,
+          payload,
           introducerAlias: introducerData.alias,
         });
         if (result.data) {
@@ -70,8 +85,18 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
           const errorMessage =
             (result.error as any)?.data?.user?.email?.[0] ||
             (result.error as any)?.data?.user?.nid?.[0] ||
+            (result.error as any)?.data?.detail ||
             "Invalid Request...";
-          toast.error(errorMessage);
+          // Custom error for duplicate email
+          if (
+            typeof errorMessage === "string" &&
+            errorMessage.toLowerCase().includes("email") &&
+            errorMessage.toLowerCase().includes("exist")
+          ) {
+            toast.error("User with this email already exists.");
+          } else {
+            toast.error(errorMessage);
+          }
         } else {
           toast.error("Invalid Request...");
         }
@@ -109,15 +134,15 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
                   required
                 >
                   <option value="">Select...</option>
-                  <option value="MR">Mr.</option>
-                  <option value="MRS">Mrs.</option>
-                  <option value="MS">Ms.</option>
-                  <option value="DR">Dr.</option>
-                  <option value="MISS">Miss.</option>
-                  <option value="MADAM">Madam.</option>
-                  <option value="MAIDEN">Maiden.</option>
-                  <option value="PROFESSOR">Professor.</option>
-                  <option value="DOCTOR">Doctor.</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
                 </Input>
               </FormGroup>
             </Col>
@@ -166,13 +191,14 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
             </Col>
             <Col md={6} xs={12}>
               <FormGroup>
-                <Label for="official_email">Official Email</Label>
+                <Label for="email">Email*</Label>
                 <Input
                   type="email"
-                  id="official_email"
-                  name="official_email"
-                  placeholder="Official Email"
-                  value={introducerData?.official_email || ""}
+                  id="email"
+                  name="user.email"
+                  placeholder="Email"
+                  required
+                  value={introducerData?.user?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -180,13 +206,13 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
             </Col>
             <Col md={6} xs={12}>
               <FormGroup>
-                <Label for="official_phone">Official Phone</Label>
+                <Label for="phone">Phone</Label>
                 <Input
                   type="number"
-                  id="official_phone"
-                  name="official_phone"
-                  placeholder="Official Phone"
-                  value={introducerData?.official_phone || ""}
+                  id="phone"
+                  name="user.phone"
+                  placeholder="Phone"
+                  value={introducerData?.user?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -194,13 +220,12 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
             </Col>
             <Col md={6} xs={12}>
               <FormGroup>
-                <Label for="dob">Date of Birth</Label>
+                <Label for="joining_date">Joining Date</Label>
                 <Input
                   type="date"
-                  id="dob"
-                  name="dob"
-                  placeholder="Date of Birth"
-                  value={introducerData?.dob || ""}
+                  id="joining_date"
+                  name="joining_date"
+                  value={introducerData?.joining_date || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -220,35 +245,6 @@ const UpdateIntroducerModal: React.FC<UpdateIntroducerModalProps> = ({
                 />
               </FormGroup>
             </Col> */}
-            <Col md={6} xs={12}>
-              <FormGroup>
-                <Label for="present_address">Present Address</Label>
-                <Input
-                  type="text"
-                  id="present_address"
-                  name="present_address"
-                  placeholder="Present Address"
-                  value={introducerData?.present_address || ""}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6} xs={12}>
-              {" "}
-              <FormGroup>
-                <Label for="permanent_address">Permanent Address</Label>
-                <Input
-                  type="text"
-                  id="permanent_address"
-                  name="permanent_address"
-                  placeholder="Permanent Address"
-                  value={introducerData?.permanent_address || ""}
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-              </FormGroup>
-            </Col>
           </Row>
         </ModalBody>
         <ModalFooter>

@@ -816,6 +816,43 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <>
               <Col md={6}>
                 <FormGroup>
+                  <Label for="business_house_name_or_number">
+                    Business House Name/Number
+                  </Label>
+                  <Input
+                    type="text"
+                    id="business_house_name_or_number"
+                    value={formValues?.business_house_name_or_number || ""}
+                    onChange={(e) =>
+                      handleInputChange(
+                        "business_house_name_or_number",
+                        e.target.value
+                      )
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="business_postcode">Business Postcode</Label>
+                  <Input
+                    type="text"
+                    id="business_postcode"
+                    value={formValues?.business_postcode || ""}
+                    onChange={(e) =>
+                      handleInputChange("business_postcode", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            </>
+          )}
+        </Row>
+        <Row>
+          {formValues?.employment_status === "SELF_EMPLOYED" && (
+            <>
+              <Col md={6}>
+                <FormGroup>
                   <Label for="business_address_line_1">
                     Business Address Line 1
                   </Label>
@@ -1152,18 +1189,13 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               {formValues?.other_income_source === "OTHER" && (
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="other">
-                      Other Income Source Details
-                    </Label>
+                    <Label for="other">Other Income Source Details</Label>
                     <Input
                       type="text"
                       id="other"
                       value={formValues?.other || ""}
                       onChange={(e) =>
-                        handleInputChange(
-                          "other",
-                          e.target.value
-                        )
+                        handleInputChange("other", e.target.value)
                       }
                     />
                   </FormGroup>
