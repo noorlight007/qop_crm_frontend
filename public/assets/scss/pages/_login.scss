@@ -36,6 +36,7 @@
   margin: 0 auto;
   background: url("../../images/login/login_bg.jpg");
   background-position: center;
+  background-repeat: no-repeat;
   padding: 30px 12px;
   &.login-bg {
     background: rgba($primary-color, 0.06) !important;

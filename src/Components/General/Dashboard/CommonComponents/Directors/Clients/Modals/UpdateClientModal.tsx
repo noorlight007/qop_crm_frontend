@@ -61,43 +61,60 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
 
   const handleUpdateClient = async (clientData: Partial<ClientInfoProps>) => {
     try {
-      if (clientData.alias) {
-        // Only include email if it has changed
-        let payload = { ...clientData };
-        const originalEmail = selectedClient?.user?.email || "";
-        const updatedEmail = clientData?.user?.email || "";
-        if (originalEmail === updatedEmail) {
-          // Remove email from payload if not changed
-          if (payload.user) {
-            const { email, ...restUser } = payload.user;
-            payload.user = restUser;
-          }
-        }
-        const result = await updateClientDetails({
-          payload,
-          clientAlias: clientData.alias,
-        });
-        if (result.data) {
-          toast.success("Client update successfully.");
-        } else if ("error" in result) {
-          const errorMessage =
-            (result.error as any)?.data?.user?.email?.[0] ||
-            (result.error as any)?.data?.user?.nid?.[0] ||
-            (result.error as any)?.data?.detail ||
-            "Invalid Request...";
-          // Custom error for duplicate email
-          if (
-            typeof errorMessage === "string" &&
-            errorMessage.toLowerCase().includes("email") &&
-            errorMessage.toLowerCase().includes("exist")
-          ) {
-            toast.error("User with this email already exists.");
-          } else {
-            toast.error(errorMessage);
-          }
+      if (!clientData.alias) return;
+
+      // Deep clone and sanitize payload
+      let payload: Partial<ClientInfoProps> = JSON.parse(
+        JSON.stringify(clientData)
+      );
+
+      // Remove invalid empty choice fields to satisfy backend validators
+      if (payload.role === "" || payload.role == null) {
+        delete (payload as any).role;
+      }
+      if (payload.gender === "" || payload.gender == null) {
+        delete (payload as any).gender;
+      }
+      if (
+        (payload as any).reason_for_enquiry === "" ||
+        (payload as any).reason_for_enquiry == null
+      ) {
+        delete (payload as any).reason_for_enquiry;
+      }
+
+      // Only include email if it has changed
+      const originalEmail = selectedClient?.user?.email || "";
+      const updatedEmail = payload?.user?.email || "";
+      if (originalEmail === updatedEmail && payload.user) {
+        const { email, ...restUser } = payload.user;
+        payload.user = restUser;
+      }
+
+      const result = await updateClientDetails({
+        payload,
+        clientAlias: clientData.alias,
+      });
+
+      if ((result as any)?.data) {
+        toast.success("Client updated successfully.");
+      } else if ("error" in result) {
+        const errorMessage =
+          (result.error as any)?.data?.user?.email?.[0] ||
+          (result.error as any)?.data?.user?.nid?.[0] ||
+          (result.error as any)?.data?.detail ||
+          "Invalid Request...";
+        // Custom error for duplicate email
+        if (
+          typeof errorMessage === "string" &&
+          errorMessage.toLowerCase().includes("email") &&
+          errorMessage.toLowerCase().includes("exist")
+        ) {
+          toast.error("User with this email already exists.");
         } else {
-          toast.error("Failed to update client.");
+          toast.error(errorMessage);
         }
+      } else {
+        toast.error("Failed to update client.");
       }
     } catch (error) {
       toast.error("An error occurred while updating the client.");
