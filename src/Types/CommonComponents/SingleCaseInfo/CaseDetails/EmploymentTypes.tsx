@@ -46,6 +46,8 @@ export interface EmploymentDetailsProps {
   employment_time_year: number | null;
   employment_time_month: number | null;
   business_telephone: string | null;
+  business_house_name_or_number: string | null;
+  business_postcode: string | null;
   business_address_line_1: string | null;
   business_address_line_2: string | null;
   business_city: string | null;
