@@ -55,9 +55,7 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    dob: "",
+    reason_for_enquiry: "",
     gender: "",
   });
 
@@ -90,13 +88,15 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
   // openmodals end
 
   const filteredLeads = leads.filter((lead) => {
-    const fullName = `${lead?.user?.first_name || ""} ${
+    const fullName = `${lead?.user?.title || ""} ${
+      lead?.user?.first_name || ""
+    } ${lead?.user?.middle_name || ""} ${
       lead?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      lead?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      lead?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
@@ -192,14 +192,14 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                         {lead?.user?.last_name}
                       </span>
                     </td>
-                    <td>{lead?.official_email || "-"}</td>
+                    <td>{lead?.user?.email || "-"}</td>
                     <td>
-                      {lead?.official_phone ? (
+                      {lead?.user?.phone ? (
                         <a
-                          href={`tel:${lead?.official_phone}`}
+                          href={`tel:${lead?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {lead?.official_phone}
+                          {lead?.user?.phone}
                         </a>
                       ) : (
                         "-"

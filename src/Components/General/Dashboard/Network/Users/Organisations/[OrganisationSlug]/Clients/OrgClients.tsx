@@ -59,9 +59,7 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
       user_type: "",
     },
     role: "",
-    official_email: "",
-    official_phone: "",
-    dob: "",
+    reason_for_enquiry: "",
     gender: "",
   });
 
@@ -95,13 +93,15 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
   // openmodals end
 
   const filteredClients = clients.filter((client) => {
-    const fullName = `${client?.user?.first_name || ""} ${
+    const fullName = `${client?.user?.title || ""} ${
+      client?.user?.first_name || ""
+    } ${client?.user?.middle_name || ""} ${
       client?.user?.last_name || ""
     }`.toLowerCase();
 
     return (
       fullName.includes(searchQuery.toLowerCase()) ||
-      client?.official_email?.toLowerCase().includes(searchQuery.toLowerCase())
+      client?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
