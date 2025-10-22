@@ -68,6 +68,10 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
         HANDELSBANKEN,
         HANLEY_ECONOMIC_BUILDING_SOCIETY,
         HARPDEN_BUILDING_SOCIETY,
+        HINCKLEY_AND_RUGBY_BUILDING_SOCIETY,
+        HODGE_BANK,
+        HODGE_LIFETIME,
+        HOLMESDALE_BUILDING_SOCIETY,
         HSBC,
         ICICI_BANK,
         INTERBAY_COMMERCIAL,
@@ -77,23 +81,78 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
         KENSINGTON_MORTGAGES,
         KENT_RELIANCE,
         KEYSTONE_PROPERTY_FINANCE,
+        LANDBAY,
         LEEDS_BUILDING_SOCIETY,
         LEEK_UNITED_BUILDING_SOCIETY,
+        LEGAL_AND_GENERAL_HOME_FINANCE,
+        LENDINVEST,
+        LLOYDS_COMMERCIAL,
+        LV,
+        MAGELLAN_HOMELOANS,
+        MANSFIELD_BUILDING_SOCIETY,
+        MARKET_HARBOROUGH_BUILDING_SOCIETY,
+        MARSDEN_BUILDING_SOCIETY,
+        MASTHAVEN_BANK,
+        MBS_LENDING_LTD,
         METRO_BANK,
+        MOLO_FINANCE,
         MONMOUTHSHIRE_BUILDING_SOCIETY,
+        MORE_2_LIFE_LIMITED,
+        N_AND_P_COMMERCIAL,
         NATIONWIDE,
         NATWEST,
+        NATWEST_INTERMEDIARY_SOLUTIONS,
+        NATWEST_INTERNATIONAL,
+        NEW_STREET_MORTGAGES,
+        NEWBURY_BUILDING_SOCIETY,
+        NEWCASTLE_BUILDING_SOCIETY,
+        NORTON_FINANCE,
         NOTTINGHAM_BUILDING_SOCIETY,
+        NUCLEUS_COMMERCIAL,
+        OFFA,
+        OMNI_CAPITAL,
+        ONEFAMILY_LIFETIME_MORTGAGES,
+        OPLO,
+        OPTIMUM_CREDIT,
+        OTHER,
         PARAGON_MORTGAGES,
         PEPPER_MONEY,
+        PLATFORM,
         POST_OFFICE_MORTGAGES,
+        PRECISE_MORTGAGES,
+        PRESTIGE_FINANCE,
         PRINCIPALITY_BUILDING_SOCIETY,
+        PROGRESSIVE_BUILDING_SOCIETY,
+        PURE_RETIREMENT,
+        SAFFRON_BUILDING_SOCIETY,
+        SAINSBURYS_BANK,
         SANTANDER,
+        SCOTTISH_BUILDING_SOCIETY,
+        SCOTTISH_WIDOWS,
+        SECURE_TRUST_BANK,
+        SHAWBROOK_BANK,
         SKIPTON_BUILDING_SOCIETY,
+        SKIPTON_INTERNATIONAL,
+        SPRING_FINANCE,
+        STAFFORD_RAILWAY_BUILDING_SOCIETY,
+        STATE_BANK_OF_INDIA_UK,
+        STEP_ONE_FINANCE,
+        STRIDE_UP,
+        SUFFOLK_BUILDING_SOCIETY,
+        SWANSEA_BUILDING_SOCIETY,
+        TANDEM_HOME_LOANS,
+        TEACHERS_BUILDING_SOCIETY,
+        TESCO_BANK,
+        THE_MELTON_BUILDING_SOCIETY,
+        THE_MORTGAGE_LENDER,
+        THE_MORTGAGE_WORKS,
+        TIPTON_AND_COSELEY_BUILDING_SOCIETY,
+        TOGETHER_MONEY,
         TSB,
         ULSTER_BANK,
         UNKNOWN,
         UNKNOWN_DEFAULT,
+        VERNON_BUILDING_SOCIETY,
         VIDA_HOMELOANS,
         WEST_BROMWICH_BUILDING_SOCIETY,
         WEST_ONE_LOANS,
@@ -156,6 +215,10 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       HANDELSBANKEN ?? 0,
       HANLEY_ECONOMIC_BUILDING_SOCIETY ?? 0,
       HARPDEN_BUILDING_SOCIETY ?? 0,
+      HINCKLEY_AND_RUGBY_BUILDING_SOCIETY ?? 0,
+      HODGE_BANK ?? 0,
+      HODGE_LIFETIME ?? 0,
+      HOLMESDALE_BUILDING_SOCIETY ?? 0,
       HSBC ?? 0,
       ICICI_BANK ?? 0,
       INTERBAY_COMMERCIAL ?? 0,
@@ -165,23 +228,78 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       KENSINGTON_MORTGAGES ?? 0,
       KENT_RELIANCE ?? 0,
       KEYSTONE_PROPERTY_FINANCE ?? 0,
+      LANDBAY ?? 0,
       LEEDS_BUILDING_SOCIETY ?? 0,
       LEEK_UNITED_BUILDING_SOCIETY ?? 0,
+      LEGAL_AND_GENERAL_HOME_FINANCE ?? 0,
+      LENDINVEST ?? 0,
+      LLOYDS_COMMERCIAL ?? 0,
+      LV ?? 0,
+      MAGELLAN_HOMELOANS ?? 0,
+      MANSFIELD_BUILDING_SOCIETY ?? 0,
+      MARKET_HARBOROUGH_BUILDING_SOCIETY ?? 0,
+      MARSDEN_BUILDING_SOCIETY ?? 0,
+      MASTHAVEN_BANK ?? 0,
+      MBS_LENDING_LTD ?? 0,
       METRO_BANK ?? 0,
+      MOLO_FINANCE ?? 0,
       MONMOUTHSHIRE_BUILDING_SOCIETY ?? 0,
+      MORE_2_LIFE_LIMITED ?? 0,
+      N_AND_P_COMMERCIAL ?? 0,
       NATIONWIDE ?? 0,
       NATWEST ?? 0,
+      NATWEST_INTERMEDIARY_SOLUTIONS ?? 0,
+      NATWEST_INTERNATIONAL ?? 0,
+      NEW_STREET_MORTGAGES ?? 0,
+      NEWBURY_BUILDING_SOCIETY ?? 0,
+      NEWCASTLE_BUILDING_SOCIETY ?? 0,
+      NORTON_FINANCE ?? 0,
       NOTTINGHAM_BUILDING_SOCIETY ?? 0,
+      NUCLEUS_COMMERCIAL ?? 0,
+      OFFA ?? 0,
+      OMNI_CAPITAL ?? 0,
+      ONEFAMILY_LIFETIME_MORTGAGES ?? 0,
+      OPLO ?? 0,
+      OPTIMUM_CREDIT ?? 0,
+      OTHER ?? 0,
       PARAGON_MORTGAGES ?? 0,
       PEPPER_MONEY ?? 0,
+      PLATFORM ?? 0,
       POST_OFFICE_MORTGAGES ?? 0,
+      PRECISE_MORTGAGES ?? 0,
+      PRESTIGE_FINANCE ?? 0,
       PRINCIPALITY_BUILDING_SOCIETY ?? 0,
+      PROGRESSIVE_BUILDING_SOCIETY ?? 0,
+      PURE_RETIREMENT ?? 0,
+      SAFFRON_BUILDING_SOCIETY ?? 0,
+      SAINSBURYS_BANK ?? 0,
       SANTANDER ?? 0,
+      SCOTTISH_BUILDING_SOCIETY ?? 0,
+      SCOTTISH_WIDOWS ?? 0,
+      SECURE_TRUST_BANK ?? 0,
+      SHAWBROOK_BANK ?? 0,
       SKIPTON_BUILDING_SOCIETY ?? 0,
+      SKIPTON_INTERNATIONAL ?? 0,
+      SPRING_FINANCE ?? 0,
+      STAFFORD_RAILWAY_BUILDING_SOCIETY ?? 0,
+      STATE_BANK_OF_INDIA_UK ?? 0,
+      STEP_ONE_FINANCE ?? 0,
+      STRIDE_UP ?? 0,
+      SUFFOLK_BUILDING_SOCIETY ?? 0,
+      SWANSEA_BUILDING_SOCIETY ?? 0,
+      TANDEM_HOME_LOANS ?? 0,
+      TEACHERS_BUILDING_SOCIETY ?? 0,
+      TESCO_BANK ?? 0,
+      THE_MELTON_BUILDING_SOCIETY ?? 0,
+      THE_MORTGAGE_LENDER ?? 0,
+      THE_MORTGAGE_WORKS ?? 0,
+      TIPTON_AND_COSELEY_BUILDING_SOCIETY ?? 0,
+      TOGETHER_MONEY ?? 0,
       TSB ?? 0,
       ULSTER_BANK ?? 0,
       UNKNOWN ?? 0,
       UNKNOWN_DEFAULT ?? 0,
+      VERNON_BUILDING_SOCIETY ?? 0,
       VIDA_HOMELOANS ?? 0,
       WEST_BROMWICH_BUILDING_SOCIETY ?? 0,
       WEST_ONE_LOANS ?? 0,
@@ -278,6 +396,10 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       HANLEY_ECONOMIC_BUILDING_SOCIETY ?? 0,
     ]);
     chartData.push(["Harpden Building Society", HARPDEN_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Hinckley and Rugby Building Society", HINCKLEY_AND_RUGBY_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Hodge Bank", HODGE_BANK ?? 0]);
+    chartData.push(["Hodge Lifetime", HODGE_LIFETIME ?? 0]);
+    chartData.push(["Holmesdale Building Society", HOLMESDALE_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Hsbc", HSBC ?? 0]);
     chartData.push(["Icici Bank", ICICI_BANK ?? 0]);
     chartData.push(["Interbay Commercial", INTERBAY_COMMERCIAL ?? 0]);
@@ -293,38 +415,93 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       "Keystone Property Finance",
       KEYSTONE_PROPERTY_FINANCE ?? 0,
     ]);
+    chartData.push(["Landbay", LANDBAY ?? 0]);
     chartData.push(["Leeds Building Society", LEEDS_BUILDING_SOCIETY ?? 0]);
     chartData.push([
       "Leek United Building Society",
       LEEK_UNITED_BUILDING_SOCIETY ?? 0,
     ]);
+    chartData.push(["Legal and General Home Finance", LEGAL_AND_GENERAL_HOME_FINANCE ?? 0]);
+    chartData.push(["Lendinvest", LENDINVEST ?? 0]);
+    chartData.push(["Lloyds Commercial", LLOYDS_COMMERCIAL ?? 0]);
+    chartData.push(["LV", LV ?? 0]);
+    chartData.push(["Magellan Homeloans", MAGELLAN_HOMELOANS ?? 0]);
+    chartData.push(["Mansfield Building Society", MANSFIELD_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Market Harborough Building Society", MARKET_HARBOROUGH_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Marsden Building Society", MARSDEN_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Masthaven Bank", MASTHAVEN_BANK ?? 0]);
+    chartData.push(["MBS Lending Ltd", MBS_LENDING_LTD ?? 0]);
     chartData.push(["Metro Bank", METRO_BANK ?? 0]);
+    chartData.push(["Molo Finance", MOLO_FINANCE ?? 0]);
     chartData.push([
       "Monmouthshire Building Society",
       MONMOUTHSHIRE_BUILDING_SOCIETY ?? 0,
     ]);
+    chartData.push(["More 2 Life Limited", MORE_2_LIFE_LIMITED ?? 0]);
+    chartData.push(["N and P Commercial", N_AND_P_COMMERCIAL ?? 0]);
     chartData.push(["Nationwide", NATIONWIDE ?? 0]);
     chartData.push(["Natwest", NATWEST ?? 0]);
+    chartData.push(["Natwest Intermediary Solutions", NATWEST_INTERMEDIARY_SOLUTIONS ?? 0]);
+    chartData.push(["Natwest International", NATWEST_INTERNATIONAL ?? 0]);
+    chartData.push(["New Street Mortgages", NEW_STREET_MORTGAGES ?? 0]);
+    chartData.push(["Newbury Building Society", NEWBURY_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Newcastle Building Society", NEWCASTLE_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Norton Finance", NORTON_FINANCE ?? 0]);
     chartData.push([
       "Nottingham Building Society",
       NOTTINGHAM_BUILDING_SOCIETY ?? 0,
     ]);
+    chartData.push(["Nucleus Commercial", NUCLEUS_COMMERCIAL ?? 0]);
+    chartData.push(["Offa", OFFA ?? 0]);
+    chartData.push(["Omni Capital", OMNI_CAPITAL ?? 0]);
+    chartData.push(["OneFamily Lifetime Mortgages", ONEFAMILY_LIFETIME_MORTGAGES ?? 0]);
+    chartData.push(["Oplo", OPLO ?? 0]);
+    chartData.push(["Optimum Credit", OPTIMUM_CREDIT ?? 0]);
+    chartData.push(["Other", OTHER ?? 0]);
     chartData.push(["Paragon Mortgages", PARAGON_MORTGAGES ?? 0]);
     chartData.push(["Pepper Money", PEPPER_MONEY ?? 0]);
+    chartData.push(["Platform", PLATFORM ?? 0]);
     chartData.push(["Post Office Mortgages", POST_OFFICE_MORTGAGES ?? 0]);
+    chartData.push(["Precise Mortgages", PRECISE_MORTGAGES ?? 0]);
+    chartData.push(["Prestige Finance", PRESTIGE_FINANCE ?? 0]);
     chartData.push([
       "Principality Building Society",
       PRINCIPALITY_BUILDING_SOCIETY ?? 0,
     ]);
+    chartData.push(["Progressive Building Society", PROGRESSIVE_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Pure Retirement", PURE_RETIREMENT ?? 0]);
+    chartData.push(["Saffron Building Society", SAFFRON_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Sainsburys Bank", SAINSBURYS_BANK ?? 0]);
     chartData.push(["Santander", SANTANDER ?? 0]);
+    chartData.push(["Scottish Building Society", SCOTTISH_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Scottish Widows", SCOTTISH_WIDOWS ?? 0]);
+    chartData.push(["Secure Trust Bank", SECURE_TRUST_BANK ?? 0]);
+    chartData.push(["Shawbrook Bank", SHAWBROOK_BANK ?? 0]);
     chartData.push(["Skipton Building Society", SKIPTON_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Skipton International", SKIPTON_INTERNATIONAL ?? 0]);
+    chartData.push(["Spring Finance", SPRING_FINANCE ?? 0]);
+    chartData.push(["Stafford Railway Building Society", STAFFORD_RAILWAY_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["State Bank of India UK", STATE_BANK_OF_INDIA_UK ?? 0]);
+    chartData.push(["Step One Finance", STEP_ONE_FINANCE ?? 0]);
+    chartData.push(["Stride Up", STRIDE_UP ?? 0]);
+    chartData.push(["Suffolk Building Society", SUFFOLK_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Swansea Building Society", SWANSEA_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Tandem Home Loans", TANDEM_HOME_LOANS ?? 0]);
+    chartData.push(["Teachers Building Society", TEACHERS_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Tesco Bank", TESCO_BANK ?? 0]);
+    chartData.push(["The Melton Building Society", THE_MELTON_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["The Mortgage Lender", THE_MORTGAGE_LENDER ?? 0]);
+    chartData.push(["The Mortgage Works", THE_MORTGAGE_WORKS ?? 0]);
+    chartData.push(["Tipton and Coseley Building Society", TIPTON_AND_COSELEY_BUILDING_SOCIETY ?? 0]);
+    chartData.push(["Together Money", TOGETHER_MONEY ?? 0]);
     chartData.push(["Tsb", TSB ?? 0]);
     chartData.push(["Ulster Bank", ULSTER_BANK ?? 0]);
     chartData.push(["Unknown", UNKNOWN ?? 0]);
     chartData.push(["Unknown Default", UNKNOWN_DEFAULT ?? 0]);
+    chartData.push(["Vernon Building Society", VERNON_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Vida Homeloans", VIDA_HOMELOANS ?? 0]);
     chartData.push([
-      "West Bromwich Building Society",
+      "West Bromwich Building Society",  
       WEST_BROMWICH_BUILDING_SOCIETY ?? 0,
     ]);
     chartData.push(["West One Loans", WEST_ONE_LOANS ?? 0]);
@@ -367,7 +544,7 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       "#FF8A80", // Light Red
       "#A5D6A7", // Light Green
       "#C5E1A5", // Lighter Green
-    ],
+    ],  
     chartArea: { left: 30, top: 30, width: "90%", height: "90%" },
     backgroundColor: "transparent",
     tooltip: {
