@@ -396,10 +396,16 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       HANLEY_ECONOMIC_BUILDING_SOCIETY ?? 0,
     ]);
     chartData.push(["Harpden Building Society", HARPDEN_BUILDING_SOCIETY ?? 0]);
-    chartData.push(["Hinckley and Rugby Building Society", HINCKLEY_AND_RUGBY_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Hinckley and Rugby Building Society",
+      HINCKLEY_AND_RUGBY_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Hodge Bank", HODGE_BANK ?? 0]);
     chartData.push(["Hodge Lifetime", HODGE_LIFETIME ?? 0]);
-    chartData.push(["Holmesdale Building Society", HOLMESDALE_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Holmesdale Building Society",
+      HOLMESDALE_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Hsbc", HSBC ?? 0]);
     chartData.push(["Icici Bank", ICICI_BANK ?? 0]);
     chartData.push(["Interbay Commercial", INTERBAY_COMMERCIAL ?? 0]);
@@ -421,13 +427,22 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       "Leek United Building Society",
       LEEK_UNITED_BUILDING_SOCIETY ?? 0,
     ]);
-    chartData.push(["Legal and General Home Finance", LEGAL_AND_GENERAL_HOME_FINANCE ?? 0]);
+    chartData.push([
+      "Legal and General Home Finance",
+      LEGAL_AND_GENERAL_HOME_FINANCE ?? 0,
+    ]);
     chartData.push(["Lendinvest", LENDINVEST ?? 0]);
     chartData.push(["Lloyds Commercial", LLOYDS_COMMERCIAL ?? 0]);
     chartData.push(["LV", LV ?? 0]);
     chartData.push(["Magellan Homeloans", MAGELLAN_HOMELOANS ?? 0]);
-    chartData.push(["Mansfield Building Society", MANSFIELD_BUILDING_SOCIETY ?? 0]);
-    chartData.push(["Market Harborough Building Society", MARKET_HARBOROUGH_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Mansfield Building Society",
+      MANSFIELD_BUILDING_SOCIETY ?? 0,
+    ]);
+    chartData.push([
+      "Market Harborough Building Society",
+      MARKET_HARBOROUGH_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Marsden Building Society", MARSDEN_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Masthaven Bank", MASTHAVEN_BANK ?? 0]);
     chartData.push(["MBS Lending Ltd", MBS_LENDING_LTD ?? 0]);
@@ -441,11 +456,17 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
     chartData.push(["N and P Commercial", N_AND_P_COMMERCIAL ?? 0]);
     chartData.push(["Nationwide", NATIONWIDE ?? 0]);
     chartData.push(["Natwest", NATWEST ?? 0]);
-    chartData.push(["Natwest Intermediary Solutions", NATWEST_INTERMEDIARY_SOLUTIONS ?? 0]);
+    chartData.push([
+      "Natwest Intermediary Solutions",
+      NATWEST_INTERMEDIARY_SOLUTIONS ?? 0,
+    ]);
     chartData.push(["Natwest International", NATWEST_INTERNATIONAL ?? 0]);
     chartData.push(["New Street Mortgages", NEW_STREET_MORTGAGES ?? 0]);
     chartData.push(["Newbury Building Society", NEWBURY_BUILDING_SOCIETY ?? 0]);
-    chartData.push(["Newcastle Building Society", NEWCASTLE_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Newcastle Building Society",
+      NEWCASTLE_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Norton Finance", NORTON_FINANCE ?? 0]);
     chartData.push([
       "Nottingham Building Society",
@@ -454,7 +475,10 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
     chartData.push(["Nucleus Commercial", NUCLEUS_COMMERCIAL ?? 0]);
     chartData.push(["Offa", OFFA ?? 0]);
     chartData.push(["Omni Capital", OMNI_CAPITAL ?? 0]);
-    chartData.push(["OneFamily Lifetime Mortgages", ONEFAMILY_LIFETIME_MORTGAGES ?? 0]);
+    chartData.push([
+      "OneFamily Lifetime Mortgages",
+      ONEFAMILY_LIFETIME_MORTGAGES ?? 0,
+    ]);
     chartData.push(["Oplo", OPLO ?? 0]);
     chartData.push(["Optimum Credit", OPTIMUM_CREDIT ?? 0]);
     chartData.push(["Other", OTHER ?? 0]);
@@ -468,31 +492,49 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       "Principality Building Society",
       PRINCIPALITY_BUILDING_SOCIETY ?? 0,
     ]);
-    chartData.push(["Progressive Building Society", PROGRESSIVE_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Progressive Building Society",
+      PROGRESSIVE_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Pure Retirement", PURE_RETIREMENT ?? 0]);
     chartData.push(["Saffron Building Society", SAFFRON_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Sainsburys Bank", SAINSBURYS_BANK ?? 0]);
     chartData.push(["Santander", SANTANDER ?? 0]);
-    chartData.push(["Scottish Building Society", SCOTTISH_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Scottish Building Society",
+      SCOTTISH_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Scottish Widows", SCOTTISH_WIDOWS ?? 0]);
     chartData.push(["Secure Trust Bank", SECURE_TRUST_BANK ?? 0]);
     chartData.push(["Shawbrook Bank", SHAWBROOK_BANK ?? 0]);
     chartData.push(["Skipton Building Society", SKIPTON_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Skipton International", SKIPTON_INTERNATIONAL ?? 0]);
     chartData.push(["Spring Finance", SPRING_FINANCE ?? 0]);
-    chartData.push(["Stafford Railway Building Society", STAFFORD_RAILWAY_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Stafford Railway Building Society",
+      STAFFORD_RAILWAY_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["State Bank of India UK", STATE_BANK_OF_INDIA_UK ?? 0]);
     chartData.push(["Step One Finance", STEP_ONE_FINANCE ?? 0]);
     chartData.push(["Stride Up", STRIDE_UP ?? 0]);
     chartData.push(["Suffolk Building Society", SUFFOLK_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Swansea Building Society", SWANSEA_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Tandem Home Loans", TANDEM_HOME_LOANS ?? 0]);
-    chartData.push(["Teachers Building Society", TEACHERS_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Teachers Building Society",
+      TEACHERS_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Tesco Bank", TESCO_BANK ?? 0]);
-    chartData.push(["The Melton Building Society", THE_MELTON_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "The Melton Building Society",
+      THE_MELTON_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["The Mortgage Lender", THE_MORTGAGE_LENDER ?? 0]);
     chartData.push(["The Mortgage Works", THE_MORTGAGE_WORKS ?? 0]);
-    chartData.push(["Tipton and Coseley Building Society", TIPTON_AND_COSELEY_BUILDING_SOCIETY ?? 0]);
+    chartData.push([
+      "Tipton and Coseley Building Society",
+      TIPTON_AND_COSELEY_BUILDING_SOCIETY ?? 0,
+    ]);
     chartData.push(["Together Money", TOGETHER_MONEY ?? 0]);
     chartData.push(["Tsb", TSB ?? 0]);
     chartData.push(["Ulster Bank", ULSTER_BANK ?? 0]);
@@ -501,7 +543,7 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
     chartData.push(["Vernon Building Society", VERNON_BUILDING_SOCIETY ?? 0]);
     chartData.push(["Vida Homeloans", VIDA_HOMELOANS ?? 0]);
     chartData.push([
-      "West Bromwich Building Society",  
+      "West Bromwich Building Society",
       WEST_BROMWICH_BUILDING_SOCIETY ?? 0,
     ]);
     chartData.push(["West One Loans", WEST_ONE_LOANS ?? 0]);
@@ -509,10 +551,10 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
 
   const chartOptions = {
     title: "",
+    // keep 3D as requested
     is3D: true,
     pieHole: 0,
     pieStartAngle: 0,
-    opacity: 0.1,
     legend: {
       position: "right" as const,
       alignment: "center" as const,
@@ -520,9 +562,8 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
         fontSize: 12,
       },
     },
-    slices: {
-      0: { offset: 0.05 },
-    },
+    // we'll compute `slices` dynamically below (so we can offset the top few slices)
+    slices: {},
     colors: [
       "#8FA4D7", // Light Blue
       "#F28FB1", // Light Pink
@@ -544,7 +585,7 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
       "#FF8A80", // Light Red
       "#A5D6A7", // Light Green
       "#C5E1A5", // Lighter Green
-    ],  
+    ],
     chartArea: { left: 30, top: 30, width: "90%", height: "90%" },
     backgroundColor: "transparent",
     tooltip: {
@@ -554,6 +595,40 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
     },
     fontSize: 11,
   };
+
+  // Post-process chartData: filter out zero values, sort desc and group remaining small lenders
+  const processedChartData = (() => {
+    const header = chartData[0];
+    const rows = chartData.slice(1) as [string, number][];
+    // keep only positive values
+    const positive = rows.filter(([, v]) => (v ?? 0) > 0);
+    if (positive.length === 0) return chartData;
+
+    // sort descending by value so largest slices appear first
+    positive.sort((a, b) => b[1] - a[1]);
+
+    const MAX_SLICES = 10; // show top 10 lenders and group the rest as Others
+    let finalRows: [string, number][] = [];
+    if (positive.length > MAX_SLICES) {
+      const top = positive.slice(0, MAX_SLICES);
+      const rest = positive.slice(MAX_SLICES);
+      const restSum = rest.reduce((s, [, v]) => s + v, 0);
+      top.push(["Others", restSum]);
+      finalRows = top;
+    } else {
+      finalRows = positive;
+    }
+
+    return [header, ...finalRows];
+  })();
+
+  // Build slices offsets: only offset the first slice (index 0)
+  const slicesObj: Record<number, { offset: number }> = {};
+  if (processedChartData.length > 1) {
+    slicesObj[0] = { offset: 0.05 };
+  }
+
+  const optionsWithSlices = { ...chartOptions, slices: slicesObj };
 
   return (
     <Card>
@@ -591,8 +666,8 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
             chartType="PieChart"
             width="100%"
             height="280px"
-            data={chartData}
-            options={chartOptions}
+            data={processedChartData}
+            options={optionsWithSlices}
           />
         )}
       </CardBody>
