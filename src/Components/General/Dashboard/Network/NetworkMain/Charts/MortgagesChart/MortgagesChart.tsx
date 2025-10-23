@@ -94,6 +94,39 @@ const MortgagesChart: React.FC<CommonDashboardProps> = ({
     fontSize: 11,
   };
 
+  // Post-process chartData: filter out zero values, sort desc and group remaining small lenders
+  const processedChartData = (() => {
+    const header = chartData[0];
+    const rows = chartData.slice(1) as [string, number][];
+    // keep only positive values
+    const positive = rows.filter(([, v]) => (v ?? 0) > 0);
+    if (positive.length === 0) return chartData;
+
+    // sort descending by value so largest slices appear first
+    positive.sort((a, b) => b[1] - a[1]);
+
+    const MAX_SLICES = 10; // show top 10 lenders and group the rest as Others
+    let finalRows: [string, number][] = [];
+    if (positive.length > MAX_SLICES) {
+      const top = positive.slice(0, MAX_SLICES);
+      const rest = positive.slice(MAX_SLICES);
+      const restSum = rest.reduce((s, [, v]) => s + v, 0);
+      top.push(["Others", restSum]);
+      finalRows = top;
+    } else {
+      finalRows = positive;
+    }
+
+    return [header, ...finalRows];
+  })();
+
+  // Build slices offsets: only offset the first slice (index 0)
+  const slicesObj: Record<number, { offset: number }> = {};
+  if (processedChartData.length > 1) {
+    slicesObj[0] = { offset: 0.05 };
+  }
+  const optionsWithSlices = { ...chartOptions, slices: slicesObj };
+
   return (
     <Card>
       <CommonCardHeader title="Mortgages" />
@@ -130,8 +163,8 @@ const MortgagesChart: React.FC<CommonDashboardProps> = ({
             chartType="PieChart"
             width="100%"
             height="280px"
-            data={chartData}
-            options={chartOptions}
+            data={processedChartData}
+            options={optionsWithSlices}
           />
         )}
       </CardBody>

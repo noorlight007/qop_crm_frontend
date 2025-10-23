@@ -1,6 +1,6 @@
 import { Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import Cases from "../../../CommonComponents/Cases/Cases/Cases";
+import Cases from "../../../CommonComponents/Cases/Cases";
 
 const NetworkCaseContainer: React.FC = () => {
   return (

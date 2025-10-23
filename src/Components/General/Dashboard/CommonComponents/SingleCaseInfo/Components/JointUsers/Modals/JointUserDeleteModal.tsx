@@ -30,7 +30,7 @@ const JointUserDeleteModal: React.FC<JointUserDeleteModalProps> = ({
   };
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Delete Joint User</ModalHeader>
+      <ModalHeader toggle={toggle}>Delete Joint Applicant</ModalHeader>
       <ModalBody>
         Are you sure you want to delete the file{" "}
         <strong>
