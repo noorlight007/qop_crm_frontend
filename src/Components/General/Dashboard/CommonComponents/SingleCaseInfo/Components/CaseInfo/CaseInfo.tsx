@@ -115,7 +115,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
                       if (!matchedClient?.alias) {
                         toast.error(
-                          "Client record not found for this lead user."
+                          "Client record not found for this lead user. Or this is Organisation Client."
                         );
                         return;
                       }
@@ -170,6 +170,17 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                           {displayLeadUser?.first_name}{" "}
                           {displayLeadUser?.middle_name}{" "}
                           {displayLeadUser?.last_name}
+                          {caseInfo?.joint_users &&
+                          caseInfo.joint_users.length > 0 ? (
+                            <>
+                              <small className="fw-lighter">
+                                {" "}
+                                (Joint Applicant)
+                              </small>
+                            </>
+                          ) : (
+                            ""
+                          )}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
