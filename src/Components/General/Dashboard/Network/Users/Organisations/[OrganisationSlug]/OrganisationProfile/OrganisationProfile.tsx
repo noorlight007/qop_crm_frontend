@@ -41,7 +41,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
             <div>
               <Image
                 width={300}
-                height={200}
+                height={190}
                 className="rounded-top-3 w-100 object-fit-cover"
                 src={
                   singleOrgInfo?.organization?.profile_image ||
@@ -68,7 +68,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 </Button>
               </div>
             </div>
-            <CardTitle tag="h3" className="text-success" style={{ marginTop: "70px" }}>
+            <CardTitle
+              tag="h3"
+              className="text-success"
+              style={{ marginTop: "70px" }}
+            >
               {singleOrgInfo?.organization?.name}
             </CardTitle>
             <CardText>
@@ -82,15 +86,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               </strong>
             </CardText>
             {/* Contact Details */}
-            <div className="mt-4 d-flex justify-content-between px-4">
-              <div>
-                <span className="text-muted">Email:</span>{" "}
-                {singleOrgInfo?.organization?.email ? (
-                  <strong>{singleOrgInfo?.organization?.email}</strong>
-                ) : (
-                  <strong className="text-muted">Not Available</strong>
-                )}
-              </div>
+            <div className="mt-2 px-4">
               <div>
                 <span className="text-muted">Phone:</span>{" "}
                 {singleOrgInfo?.organization?.primary_mobile ? (
@@ -102,6 +98,14 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       {singleOrgInfo?.organization?.primary_mobile}
                     </a>
                   </strong>
+                ) : (
+                  <strong className="text-muted">Not Available</strong>
+                )}
+              </div>
+              <div>
+                <span className="text-muted">Email:</span>{" "}
+                {singleOrgInfo?.organization?.email ? (
+                  <strong>{singleOrgInfo?.organization?.email}</strong>
                 ) : (
                   <strong className="text-muted">Not Available</strong>
                 )}

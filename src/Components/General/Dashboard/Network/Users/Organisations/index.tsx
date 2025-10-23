@@ -134,7 +134,7 @@ const OrganisationsContainer = () => {
                             <Image
                               width="28"
                               height="28"
-                              className="img-fluid object-fit-cover"
+                              className="object-fit-cover"
                               src={
                                 item.logo || "/assets/images/network/logo.jpg"
                               }

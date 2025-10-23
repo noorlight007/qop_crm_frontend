@@ -18,7 +18,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import AddNewCaseModal from "../../../Cases/Cases/Modals/AddNewCaseModal";
+import AddNewCaseModal from "../../../Cases/Modals/AddNewCaseModal";
 
 const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
   const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();

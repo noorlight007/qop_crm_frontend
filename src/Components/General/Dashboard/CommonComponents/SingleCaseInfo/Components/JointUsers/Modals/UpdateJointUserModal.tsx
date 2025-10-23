@@ -113,7 +113,7 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Joint User</span>
+        <span className="fs-4 text-primary">Update Joint Applicant</span>
       </ModalHeader>
       <ModalBody>
         <Form>

@@ -1,4 +1,4 @@
-import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Cases/Modals/UpdateCaseModal";
+import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/UpdateClientModal";
 import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/ClientDetailsApi";
 import {
@@ -87,7 +87,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
         <Row className="px-3 mt-3">
           {/* Client User Card */}
-          <Col sm={12} md={6} lg={4} xl={4}>
+          <Col sm={12} md={6}>
             <Card className="shadow">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-primary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center position-relative">
@@ -115,7 +115,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
                       if (!matchedClient?.alias) {
                         toast.error(
-                          "Client record not found for this lead user."
+                          "Client record not found for this lead user. Or this is Organisation Client."
                         );
                         return;
                       }
@@ -170,6 +170,17 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                           {displayLeadUser?.first_name}{" "}
                           {displayLeadUser?.middle_name}{" "}
                           {displayLeadUser?.last_name}
+                          {caseInfo?.joint_users &&
+                          caseInfo.joint_users.length > 0 ? (
+                            <>
+                              <small className="fw-lighter">
+                                {" "}
+                                (Joint Applicant)
+                              </small>
+                            </>
+                          ) : (
+                            ""
+                          )}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
@@ -207,62 +218,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
             </Card>
           </Col>
 
-          {/* Other Clients Card */}
-          <Col sm={12} md={6} lg={4} xl={4}>
-            <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-dark">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Other Clients</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner animation="border" role="status" color="dark" />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12" style={{ height: "55px", overflowY: "auto" }}>
-                      {Array.isArray(caseInfo?.joint_users) &&
-                      caseInfo.joint_users.length > 0 ? (
-                        <ul
-                          className="mb-0 ps-3"
-                          style={{
-                            listStyleType: "disc",
-                            paddingLeft: "40px",
-                            marginBottom: 0,
-                          }}
-                        >
-                          {caseInfo.joint_users.map((user, idx) => (
-                            <li key={user.id || idx} className="small">
-                              <strong>
-                                {user.title
-                                  ? user.title[0].toUpperCase() +
-                                    user.title.slice(1).toLowerCase()
-                                  : ""}{" "}
-                                {user.first_name} {user.middle_name}
-                                {user.middle_name ? " " : ""}
-                                {user.last_name}
-                              </strong>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <div className="d-flex align-items-center justify-content-center h-100">
-                          <h6 className="text-muted small">
-                            <em>No joint users found</em>
-                          </h6>
-                        </div>
-                      )}
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-
           {/* Case Info Card */}
-          <Col sm={12} md={6} lg={4} xl={4}>
+          <Col sm={12} md={6}>
             <Card className="shadow">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-warning">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
@@ -329,7 +286,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           </Col>
 
           {/* Assigned Advisor Card */}
-          <Col sm={12} md={6} lg={4} xl={4}>
+          <Col sm={12} md={6}>
             <Card className="shadow">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-info">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
@@ -397,7 +354,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           </Col>
 
           {/* Created By Card */}
-          <Col sm={12} md={6} lg={4} xl={4}>
+          <Col sm={12} md={6}>
             <Card className="shadow">
               <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-success">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
@@ -455,81 +412,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
-
-          {/* Updated By Card */}
-          <Col sm={12} md={6} lg={4} xl={4}>
-            <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Updated By</h6>
-                </CardHeader>
-                {isLoading ? (
-                  <Row className="pt-2">
-                    <Col xs="12" className="text-center">
-                      <Spinner
-                        animation="border"
-                        role="status"
-                        color="secondary"
-                      />
-                    </Col>
-                  </Row>
-                ) : (
-                  <Row className="pt-2">
-                    <Col xs="12">
-                      {caseInfo?.updated_by ? (
-                        <>
-                          <h6 className="pt-1">
-                            <span className="small">Name:</span>{" "}
-                            <strong className="small">
-                              {caseInfo?.updated_by?.title
-                                ? caseInfo.updated_by.title[0].toUpperCase() +
-                                  caseInfo.updated_by.title
-                                    .slice(1)
-                                    .toLowerCase()
-                                : ""}{" "}
-                              {caseInfo?.updated_by?.first_name}{" "}
-                              {caseInfo?.updated_by?.middle_name}{" "}
-                              {caseInfo?.updated_by?.last_name}
-                            </strong>
-                          </h6>
-                          <h6 className="pt-1">
-                            <span className="small">Email:</span>{" "}
-                            <strong>
-                              <small>{caseInfo?.updated_by?.email}</small>
-                            </strong>
-                          </h6>
-                          <h6 className="pt-1">
-                            <span className="small">User Type:</span>{" "}
-                            <strong className="small">
-                              {caseInfo?.updated_by?.user_type
-                                ? caseInfo.updated_by?.user_type
-                                    .split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")
-                                : "N/A"}
-                            </strong>
-                          </h6>
-                        </>
-                      ) : (
-                        <div className="text-center py-3 mt-2">
-                          <h6 className="text-muted">
-                            <em>No Updates Yet</em>
-                          </h6>
-                        </div>
-                      )}
-                    </Col>
-                  </Row>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
         </Row>
         <Row className="px-3">
-          <div>
+          <Col className="border-2 border-r-light">
+            <h4>Property Address:</h4>
+          </Col>
+          <Col>
             <h4>Notes:</h4>
             <p className="text-muted p-1">
               {caseInfo?.notes
@@ -537,7 +425,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                   caseInfo.notes.slice(1).toLowerCase()
                 : "Notes not available"}
             </p>
-          </div>
+          </Col>
         </Row>
       </Card>
       {selectedClient && (
