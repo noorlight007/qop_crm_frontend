@@ -37,14 +37,14 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
     <Col sm="12" className="box-col-12">
       <Card>
         <CardHeader className="d-flex justify-content-between">
-          <h3>Joint Users</h3>
+          <h3>Joint Applicants</h3>
           <Button
             color="primary"
             onClick={toggleAddModal}
             className="d-flex justify-content-center align-items-center gap-1"
           >
             <TbCirclePlus size={18} className="me-1" />
-            <span>Add Joint User</span>
+            <span>Add Joint Applicant</span>
           </Button>
         </CardHeader>
         <CardBody className="pt-0 recent-order">
@@ -56,7 +56,6 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                   <th>User</th>
                   <th>Email</th>
                   <th>Phone</th>
-                  <th>User Type</th>
                   <th>Relationship</th>
                   <th className="text-center">Action</th>
                 </tr>
@@ -90,8 +89,8 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                                   userInfo.joint_user_details?.title
                                     .slice(1)
                                     .toLowerCase()
-                                : ""}
-                              {" "} {userInfo.joint_user_details?.first_name}{" "}
+                                : ""}{" "}
+                              {userInfo.joint_user_details?.first_name}{" "}
                               {userInfo.joint_user_details?.middle_name}{" "}
                               {userInfo.joint_user_details?.last_name}
                             </h6>
@@ -108,16 +107,6 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                         >
                           {userInfo.joint_user_details?.phone}
                         </a>
-                      </td>
-                      <td className="f-w-600">
-                        {userInfo.joint_user_details?.user_type
-                          ?.split("_")
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")}
                       </td>
                       <td>{userInfo?.relationship || "-"}</td>
                       <td>
