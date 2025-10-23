@@ -19,7 +19,7 @@ import "../../Users/Organisations/Organisations.css";
 
 const OrganisationCards = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
 
   //RTK Hooks
   const { data: organisationList, isLoading } = useGetOrganisationListQuery({
@@ -95,7 +95,7 @@ const OrganisationCards = () => {
                           <Image
                             width="28"
                             height="28"
-                            className="img-fluid object-fit-cover"
+                            className="object-fit-cover"
                             src={item.logo || "/assets/images/network/logo.jpg"}
                             alt="Organisation"
                           />
