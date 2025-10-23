@@ -14,7 +14,7 @@ const OrgLendersChart: React.FC<FetchSingleOrganisationProps> = ({
   if (!isLoading && singleOrgInfo?.lender_counts) {
     const {
       lender_counts: {
-         ATOM_BANK,
+        ATOM_BANK,
         ACCORD_MORTGAGES,
         AHLI_UNITED_BANK,
         AL_RAYAN_BANK,
@@ -160,7 +160,7 @@ const OrgLendersChart: React.FC<FetchSingleOrganisationProps> = ({
       },
     } = singleOrgInfo;
 
-      const values = [
+    const values = [
       ATOM_BANK ?? 0,
       ACCORD_MORTGAGES ?? 0,
       AHLI_UNITED_BANK ?? 0,
@@ -629,7 +629,6 @@ const OrgLendersChart: React.FC<FetchSingleOrganisationProps> = ({
   if (processedChartData.length > 1) {
     slicesObj[0] = { offset: 0.05 };
   }
-
   const optionsWithSlices = { ...chartOptions, slices: slicesObj };
 
   return (

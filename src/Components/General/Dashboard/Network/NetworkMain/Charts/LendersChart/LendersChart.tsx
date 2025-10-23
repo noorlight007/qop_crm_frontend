@@ -627,7 +627,6 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
   if (processedChartData.length > 1) {
     slicesObj[0] = { offset: 0.05 };
   }
-
   const optionsWithSlices = { ...chartOptions, slices: slicesObj };
 
   return (
