@@ -1,6 +1,6 @@
 import AddNewCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Cases/Modals/AddNewCaseModal";
-import DeleteCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Cases/Modals/DeleteCaseModal";
-import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Cases/Modals/UpdateCaseModal";
+import DeleteCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/DeleteCaseModal";
+import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCases";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";

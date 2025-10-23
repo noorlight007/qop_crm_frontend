@@ -34,7 +34,15 @@ import AddNewCaseModal from "./Modals/AddNewCaseModal";
 import DeleteCaseModal from "./Modals/DeleteCaseModal";
 import UpdateCaseModal from "./Modals/UpdateCaseModal";
 
-const Cases: React.FC = () => {
+interface CasesProps {
+  /**
+   * Optional initial value for the `is_removed` filter.
+   * Pass "false" to show active cases only, "true" to show removed only, or "" for all.
+   */
+  initialIsRemoved?: string;
+}
+
+const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -51,7 +59,8 @@ const Cases: React.FC = () => {
     applicant_type: "",
     case_status: "",
     case_stage: "",
-    is_removed: "",
+    // allow parent components to set initial is_removed filter
+    is_removed: initialIsRemoved ?? "",
   };
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -390,8 +399,8 @@ const Cases: React.FC = () => {
                 <Table hover responsive className="mt-3">
                   <thead className="thead-light text-center">
                     <tr>
-                      <th>Case Name</th>
-                      <th>Clients</th>
+                      <th>Case ID</th>
+                      <th>Applicants</th>
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Case Stage</th>
@@ -450,25 +459,6 @@ const Cases: React.FC = () => {
                                       ? caseItem.lead_user.middle_name + " "
                                       : ""}
                                     {caseItem.lead_user.last_name}
-                                    {caseItem.lead_user.user_type && (
-                                      <span
-                                        className="ms-1 text-muted"
-                                        style={{ fontSize: "0.85em" }}
-                                      >
-                                        <small>
-                                          (
-                                          {caseItem.lead_user.user_type
-                                            .split("_")
-                                            .map(
-                                              (word) =>
-                                                word.charAt(0).toUpperCase() +
-                                                word.slice(1).toLowerCase()
-                                            )
-                                            .join(" ")}
-                                          )
-                                        </small>
-                                      </span>
-                                    )}
                                   </>
                                 ) : (
                                   "-"
@@ -488,25 +478,9 @@ const Cases: React.FC = () => {
                                       ? joint.middle_name + " "
                                       : ""}
                                     {joint.last_name}
-                                    {joint.user_type ? (
-                                      <span
-                                        className="ms-1 text-muted"
-                                        style={{ fontSize: "0.85em" }}
-                                      >
-                                        <small>
-                                          (
-                                          {joint.user_type
-                                            ?.split("_")
-                                            .map(
-                                              (word) =>
-                                                word.charAt(0).toUpperCase() +
-                                                word.slice(1).toLowerCase()
-                                            )
-                                            .join(" ")}
-                                          )
-                                        </small>
-                                      </span>
-                                    ) : null}
+                                    <small style={{ fontSize: "9px" }}>
+                                      (JA)
+                                    </small>
                                   </li>
                                 ))
                               ) : (

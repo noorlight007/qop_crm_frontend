@@ -1,4 +1,4 @@
-import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Cases/Modals/UpdateCaseModal";
+import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/UpdateClientModal";
 import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/ClientDetailsApi";
 import {

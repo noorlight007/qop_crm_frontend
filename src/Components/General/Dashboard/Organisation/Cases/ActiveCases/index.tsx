@@ -1,6 +1,6 @@
 import { Container } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import ActiveCases from "../../../CommonComponents/Cases/ActiveCases/ActiveCases";
+import Cases from "../../../CommonComponents/Cases/Cases";
 
 const OrganisationActiveCasesContainer: React.FC = () => {
   return (
@@ -12,7 +12,7 @@ const OrganisationActiveCasesContainer: React.FC = () => {
         child="Active Cases"
       />
       <Container fluid>
-        <ActiveCases />
+        <Cases initialIsRemoved="false" />
       </Container>
     </>
   );

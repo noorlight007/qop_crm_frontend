@@ -21,8 +21,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import AddAdviserModal from "../../../Directors/Advisers/Modals/AddAdviserModal";
-import AddLeadModal from "../../../Directors/Leads/Modals/AddLeadModal";
+import AddAdviserModal from "../../Directors/Advisers/Modals/AddAdviserModal";
+import AddLeadModal from "../../Directors/Leads/Modals/AddLeadModal";
 
 const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,
