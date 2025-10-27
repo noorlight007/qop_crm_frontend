@@ -1,6 +1,8 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetSingleOrganisationQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/SingleOrganisationApi";
-import { SingleOrganisationsProps } from "@/Types/Network/OrganisationsTypes";
+import {
+  useGetSingleOrganisationDashboardDataQuery,
+  useGetSingleOrganisationQuery,
+} from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/SingleOrganisationApi";
 import LoadingSpinner from "@/app/loading";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,10 +17,11 @@ import DangerZone from "./DangerZone/DangerZone";
 import OrgLeads from "./Leads/OrgLeads";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
+import { SingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
 
 const SingleOrganisationContainer: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] =
-    useState<SingleOrganisationsProps>();
+    useState<SingleOrganisationProps>();
   const { organisationslug } = useParams();
   const router = useRouter();
 
@@ -34,6 +37,14 @@ const SingleOrganisationContainer: React.FC = () => {
     }
   );
 
+  const { data: singleOrgDashboardData, isLoading: isDashboardLoading } =
+    useGetSingleOrganisationDashboardDataQuery(
+      { organisationslug },
+      {
+        skip: !organisationslug,
+      }
+    );
+
   useEffect(() => {
     if (!isLoading) {
       if (isError || !singleOrgData) {
@@ -42,7 +53,7 @@ const SingleOrganisationContainer: React.FC = () => {
         return;
       }
 
-      if (singleOrgData?.organization.slug !== organisationslug) {
+      if (singleOrgData?.slug !== organisationslug) {
         router.push("/dashboard/network");
         toast.error("Find Wrong URL! Redirecting...");
         return;
@@ -77,25 +88,36 @@ const SingleOrganisationContainer: React.FC = () => {
           <Col md="4">
             <OrganisationProfile
               singleOrgInfo={singleOrgInfo}
+              singleOrgDashboardData={singleOrgDashboardData}
               isLoading={isLoading}
+              isDashboardLoading={isDashboardLoading}
             />
           </Col>
           <Col md="4">
             <OrgMortgagesChart
               singleOrgInfo={singleOrgInfo}
+              singleOrgDashboardData={singleOrgDashboardData}
               isLoading={isLoading}
+              isDashboardLoading={isDashboardLoading}
             />
           </Col>
           <Col md="4">
             <OrgLendersChart
               singleOrgInfo={singleOrgInfo}
+              singleOrgDashboardData={singleOrgDashboardData}
               isLoading={isLoading}
+              isDashboardLoading={isDashboardLoading}
             />
           </Col>
         </Row>
         <Row>
           <Col md="12">
-            <Overview singleOrgInfo={singleOrgInfo} isLoading={isLoading} />
+            <Overview
+              singleOrgInfo={singleOrgInfo}
+              singleOrgDashboardData={singleOrgDashboardData}
+              isLoading={isLoading}
+              isDashboardLoading={isDashboardLoading}
+            />
             <OrgLeads />
             <OrgCases />
             <OrgClients />

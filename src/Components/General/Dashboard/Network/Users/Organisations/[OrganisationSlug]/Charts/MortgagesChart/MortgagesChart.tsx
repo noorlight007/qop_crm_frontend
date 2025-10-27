@@ -4,13 +4,13 @@ import { Chart } from "react-google-charts";
 import { Card, CardBody } from "reactstrap";
 
 const OrgMortgagesChart: React.FC<FetchSingleOrganisationProps> = ({
-  isLoading,
-  singleOrgInfo,
+  singleOrgDashboardData,
+  isDashboardLoading,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
   let allValuesZero = true;
 
-  if (!isLoading && singleOrgInfo) {
+  if (!isDashboardLoading && singleOrgDashboardData) {
     const {
       mortgage_type_counts: {
         PURCHASE,
@@ -23,7 +23,7 @@ const OrgMortgagesChart: React.FC<FetchSingleOrganisationProps> = ({
         ASSET_FINANCE,
         OTHER,
       },
-    } = singleOrgInfo;
+    } = singleOrgDashboardData;
 
     const values = [
       PURCHASE ?? 0,
@@ -131,7 +131,7 @@ const OrgMortgagesChart: React.FC<FetchSingleOrganisationProps> = ({
     <Card className="shadow-lg">
       <CommonCardHeader title="Mortgages" />
       <CardBody className="google-chart">
-        {isLoading ? (
+        {isDashboardLoading ? (
           <div className="d-flex justify-content-between align-items-center gap-3 ms-5">
             <div
               className="skeleton-loading"

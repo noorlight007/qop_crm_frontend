@@ -10,12 +10,12 @@ import {
 } from "reactstrap";
 
 const Overview: React.FC<FetchSingleOrganisationProps> = ({
-  singleOrgInfo,
-  isLoading,
+  singleOrgDashboardData,
+  isDashboardLoading,
 }) => {
   return (
     <div>
-      {isLoading ? (
+      {isDashboardLoading ? (
         <Card className="d-flex justify-content-center align-items-center w-100 p-4">
           <Spinner color="primary" />
         </Card>
@@ -36,7 +36,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">Enquiry:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.ENQUIRY || (
+                          {singleOrgDashboardData?.stage_counts?.ENQUIRY || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -44,7 +44,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">Fact Find:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.FACT_FIND || (
+                          {singleOrgDashboardData?.stage_counts?.FACT_FIND || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -54,7 +54,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                           Research &amp; Compliance:
                         </span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts
+                          {singleOrgDashboardData?.stage_counts
                             ?.RESEARCH_COMPLIANCE_CHECK || (
                             <span className="text-muted">{0}</span>
                           )}
@@ -65,7 +65,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                           Decision in Principle:
                         </span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts
+                          {singleOrgDashboardData?.stage_counts
                             ?.DECISION_IN_PRINCIPLE || (
                             <span className="text-muted">{0}</span>
                           )}
@@ -76,7 +76,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                           Full Mortgage Application:
                         </span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts
+                          {singleOrgDashboardData?.stage_counts
                             ?.FULL_MORTGAGE_APPLICATION || (
                             <span className="text-muted">{0}</span>
                           )}
@@ -85,7 +85,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">Offer from Bank:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.OFFER_FROM_BANK || (
+                          {singleOrgDashboardData?.stage_counts?.OFFER_FROM_BANK || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -93,7 +93,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">Legal:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.LEGAL || (
+                          {singleOrgDashboardData?.stage_counts?.LEGAL || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -101,7 +101,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">Completion:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.COMPLETION || (
+                          {singleOrgDashboardData?.stage_counts?.COMPLETION || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -109,7 +109,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">Future Opportunity:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.FUTURE_OPPORTUNITY || (
+                          {singleOrgDashboardData?.stage_counts?.FUTURE_OPPORTUNITY || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -117,7 +117,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">Not Proceed:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.stage_counts?.NOT_PROCEED || (
+                          {singleOrgDashboardData?.stage_counts?.NOT_PROCEED || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -136,7 +136,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">Mortgage:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.category_counts?.MORTGAGE || (
+                          {singleOrgDashboardData?.category_counts?.MORTGAGE || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -144,7 +144,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">Protection:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.category_counts?.PROTECTION || (
+                          {singleOrgDashboardData?.category_counts?.PROTECTION || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -152,7 +152,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">General Insurance:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.category_counts
+                          {singleOrgDashboardData?.category_counts
                             ?.GENERAL_INSURANCE || (
                             <span className="text-muted">{0}</span>
                           )}
@@ -170,7 +170,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">New Lead:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.status_counts?.NEW_LEAD || (
+                          {singleOrgDashboardData?.status_counts?.NEW_LEAD || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -178,7 +178,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">Call Back:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.status_counts?.CALL_BACK || (
+                          {singleOrgDashboardData?.status_counts?.CALL_BACK || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -186,7 +186,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                       <Col md="4" sm="12" className="d-flex flex-column">
                         <span className="text-muted">Meeting:</span>
                         <span className="fw-bold">
-                          {singleOrgInfo?.status_counts?.MEETING || (
+                          {singleOrgDashboardData?.status_counts?.MEETING || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>

@@ -17,6 +17,8 @@ import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
 const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
   isLoading,
+  singleOrgDashboardData,
+  isDashboardLoading,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -44,7 +46,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 height={190}
                 className="rounded-top-3 w-100 object-fit-cover"
                 src={
-                  singleOrgInfo?.organization?.profile_image ||
+                  singleOrgInfo?.profile_image ||
                   "/assets/images/network/bg-profile.jpg"
                 }
                 alt="Banner"
@@ -56,7 +58,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 width={120}
                 height={120}
                 src={
-                  singleOrgInfo?.organization?.logo ||
+                  singleOrgInfo?.logo ||
                   "/assets/images/network/logo.jpg"
                 }
                 alt="Logo"
@@ -73,13 +75,13 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               className="text-success"
               style={{ marginTop: "70px" }}
             >
-              {singleOrgInfo?.organization?.name}
+              {singleOrgInfo?.name}
             </CardTitle>
             <CardText>
               <span className="text-muted">Network:</span>{" "}
               <strong>
-                {singleOrgInfo?.organization?.network ? (
-                  singleOrgInfo?.organization?.network
+                {singleOrgInfo?.network?.name ? (
+                  singleOrgInfo?.network?.name
                 ) : (
                   <strong className="text-muted">Not Available</strong>
                 )}
@@ -89,13 +91,13 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
             <div className="mt-2 px-4">
               <div>
                 <span className="text-muted">Phone:</span>{" "}
-                {singleOrgInfo?.organization?.primary_mobile ? (
+                {singleOrgInfo?.primary_mobile ? (
                   <strong>
                     <a
                       className="text-dark text_decoration_hover"
-                      href={`tel:${singleOrgInfo?.organization?.primary_mobile}`}
+                      href={`tel:${singleOrgInfo?.primary_mobile}`}
                     >
-                      {singleOrgInfo?.organization?.primary_mobile}
+                      {singleOrgInfo?.primary_mobile}
                     </a>
                   </strong>
                 ) : (
@@ -104,8 +106,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               </div>
               <div>
                 <span className="text-muted">Email:</span>{" "}
-                {singleOrgInfo?.organization?.email ? (
-                  <strong>{singleOrgInfo?.organization?.email}</strong>
+                {singleOrgInfo?.email ? (
+                  <strong>{singleOrgInfo?.email}</strong>
                 ) : (
                   <strong className="text-muted">Not Available</strong>
                 )}
@@ -116,7 +118,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgInfo?.counters?.total_cases
+                    singleOrgDashboardData?.counters?.total_cases
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Cases</strong>
@@ -124,7 +126,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgInfo?.counters?.total_leads
+                    singleOrgDashboardData?.counters?.total_leads
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Leads</strong>
@@ -132,7 +134,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgInfo?.counters?.total_clients
+                    singleOrgDashboardData?.counters?.total_clients
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Clients</strong>
@@ -140,7 +142,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgInfo?.counters?.total_advisers
+                    singleOrgDashboardData?.counters?.total_advisers
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Advisers</strong>
@@ -148,7 +150,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgInfo?.counters?.total_introducers
+                    singleOrgDashboardData?.counters?.total_introducers
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Introducers</strong>
@@ -161,7 +163,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       <UpdateOrganisationModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
-        slug={singleOrgInfo?.organization?.slug}
+        slug={singleOrgInfo?.slug}
         organisationData={singleOrgInfo}
       />
     </>

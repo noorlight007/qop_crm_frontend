@@ -83,7 +83,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
             </Button>
           </div>
           {/* Delete modal  */}
-          {singleOrgInfo?.organization?.slug && (
+          {singleOrgInfo?.slug && (
             <DeleteOrganisationModal
               isOpen={isModalOpen}
               toggle={toggleModal}
