@@ -36,7 +36,7 @@ const TasksViewTab: FC<TasksViewTabProps> = ({ tasks }) => {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task) => (
+            {tasks?.map((task) => (
               <tr key={task.alias}>
                 {" "}
                 {/* Using alias instead of id */}
@@ -73,7 +73,7 @@ const TasksViewTab: FC<TasksViewTabProps> = ({ tasks }) => {
       <Row className="mt-3 align-items-center">
         <Col sm={5}>
           <div className="text-muted">
-            Showing 1 to {tasks.length} of {tasks.length} entries
+            Showing 1 to {tasks?.length} of {tasks?.length} entries
           </div>
         </Col>
       </Row>

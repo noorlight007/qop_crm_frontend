@@ -23,13 +23,8 @@ const TABLE_COLUMNS = [
 const CATEGORIES = [
   { display: "All Categories", value: "" },
   { display: "Uncategorised", value: "UNCATEGORISED" },
-  { display: "Client Note", value: "CLIENT_NOTE" },
-  { display: "Introducer Note", value: "INTRODUCER_NOTE" },
-  { display: "Declaration", value: "DECLARATION" },
-  { display: "Email Communication", value: "EMAIL_COMMUNICATION" },
-  { display: "SMS Communication", value: "SMS_COMMUNICATION" },
   { display: "Email Correspondence", value: "EMAIL_CORRESPONDENCE" },
-  { display: "Telephone conversation", value: "TELEPHONE_CONVERSATION" },
+  { display: "Telephone Conversation", value: "TELEPHONE_CONVERSATION" },
   { display: "Lender Correspondence", value: "LENDER_CORRESPONDENCE" },
   { display: "Solicitor Correspondence", value: "SOLICITOR_CORRESPONDENCE" },
   { display: "Compliance Correspondence", value: "COMPLIANCE_CORRESPONDENCE" },
@@ -170,9 +165,9 @@ const NotesViewTab: FC<NotesViewTabProps> = ({ notes }) => {
             </tr>
           </thead>
           <tbody>
-            {filteredNotes.map((note) => (
+            {filteredNotes?.map((note) => (
               <tr key={note.alias}>
-                {TABLE_COLUMNS.map((column) => (
+                {TABLE_COLUMNS?.map((column) => (
                   <td key={`${note.alias}-${column.key}`}>
                     {renderCell(note, column, handleDeleteNote)}
                   </td>
@@ -186,7 +181,7 @@ const NotesViewTab: FC<NotesViewTabProps> = ({ notes }) => {
       <Row className="mt-3 align-items-center">
         <Col sm={5}>
           <div className="text-muted">
-            Showing {filteredNotes.length} entries
+            Showing {filteredNotes?.length} entries
           </div>
         </Col>
       </Row>
