@@ -4,6 +4,13 @@ export const SingleOrganisationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSingleOrganisation: builder.query({
       query: ({ organisationslug }) => ({
+        url: `/organization/list/${organisationslug}/`,
+        method: "GET",
+      }),
+      providesTags: ["SingleOrganisation"],
+    }),
+    getSingleOrganisationDashboardData: builder.query({
+      query: ({ organisationslug }) => ({
         url: `/dashboard/organization/${organisationslug}/`,
         method: "GET",
       }),
@@ -29,6 +36,7 @@ export const SingleOrganisationApi = baseApi.injectEndpoints({
 
 export const {
   useGetSingleOrganisationQuery,
+  useGetSingleOrganisationDashboardDataQuery,
   useUpdateOrganisationMutation,
   useDeleteOrganisationMutation,
 } = SingleOrganisationApi;

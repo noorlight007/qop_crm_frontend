@@ -4,14 +4,14 @@ import Chart from "react-google-charts";
 import { Card, CardBody } from "reactstrap";
 
 const OrgLendersChart: React.FC<FetchSingleOrganisationProps> = ({
-  isLoading,
-  singleOrgInfo,
+   singleOrgDashboardData,
+  isDashboardLoading,
 }) => {
-  // console.log("ttt: ", singleOrgInfo?.lender_counts);
+  // console.log("ttt: ", singleOrgDashboardData?.lender_counts);
   const chartData: (string | number)[][] = [["Category", "Value"]];
   let allValuesZero = true;
 
-  if (!isLoading && singleOrgInfo?.lender_counts) {
+  if (!isDashboardLoading && singleOrgDashboardData?.lender_counts) {
     const {
       lender_counts: {
         ATOM_BANK,
@@ -158,7 +158,7 @@ const OrgLendersChart: React.FC<FetchSingleOrganisationProps> = ({
         WEST_BROMWICH_BUILDING_SOCIETY,
         WEST_ONE_LOANS,
       },
-    } = singleOrgInfo;
+    } = singleOrgDashboardData;
 
     const values = [
       ATOM_BANK ?? 0,
@@ -635,7 +635,7 @@ const OrgLendersChart: React.FC<FetchSingleOrganisationProps> = ({
     <Card className="shadow-lg">
       <CommonCardHeader title="Lenders" />
       <CardBody className="google-chart">
-        {isLoading ? (
+        {isDashboardLoading ? (
           <div className="d-flex justify-content-between align-items-center gap-3 ms-5">
             <div
               className="skeleton-loading"

@@ -1,4 +1,33 @@
-export interface SingleOrganisationsProps {
+export interface SingleOrganisationProps {
+  slug?: string;
+  network?: {
+    slug?: string;
+    name?: string;
+    email?: string;
+    logo?: string | null;
+    profile_image?: string | null;
+    hero_image?: string | null;
+    primary_mobile?: string;
+  };
+  name?: string;
+  email?: string;
+  logo?: string | null;
+  profile_image?: string | null;
+  hero_image?: string | null;
+  primary_mobile?: string;
+  other_contact?: string | null;
+  contact_person?: string | null;
+  contact_person_designation?: string | null;
+  website?: string | null;
+  license_no?: string | null;
+  license_image?: string | null;
+  is_removed?: boolean;
+  is_approved?: boolean;
+  is_active?: boolean;
+  is_staff?: boolean;
+}
+
+export interface SingleOrganisationDashboardProps {
   organisationSlug?: string | undefined;
   organization: {
     slug?: string;
@@ -201,9 +230,10 @@ export interface SingleOrganisationsProps {
   };
 }
 export interface FetchSingleOrganisationProps {
-  singleOrgInfo?: SingleOrganisationsProps | undefined;
-  fetchsetOrganisationInfo?: any;
+  singleOrgInfo?: SingleOrganisationProps | undefined;
+  singleOrgDashboardData?: SingleOrganisationDashboardProps | undefined;
   isLoading?: boolean;
+  isDashboardLoading?: boolean;
 }
 export interface AddOrganisationProps {
   [key: string]: string | File | null | boolean; // Allow any string key, with values being string, File, or null
