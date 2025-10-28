@@ -1,6 +1,6 @@
 "use client";
 import { useGetOrganisationReportsMutation } from "@/Redux/Reducers/Organisation/Reports/OrganisationReportsApi";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -22,6 +22,7 @@ import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 const OrganisationReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const [getOrganisationReports, { isLoading }] =
     useGetOrganisationReportsMutation();
 
@@ -122,16 +123,38 @@ const OrganisationReportsContainer: React.FC = () => {
     const resetFilters = {
       date_filter: "",
       case_category: "",
-      applicant_type: "",
-      case_status: "",
       case_stage: "",
       report_type: "",
     };
     const resetDate = { from_date: "", to_date: "" };
     setFilters(resetFilters);
     setDateRange(resetDate);
-    router.push("?");
+    // Replace to the base pathname without query params
+    router.replace(pathname || "/");
   };
+
+  // Sync filters -> URL but only include keys with non-empty values
+  useEffect(() => {
+    // Build query params from filters (omit empty values)
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        params.set(key, value as string);
+      }
+    });
+
+    // If custom range is selected, include from/to when present
+    if (filters.date_filter === "range") {
+      if (dateRange.from_date) params.set("from_date", dateRange.from_date);
+      if (dateRange.to_date) params.set("to_date", dateRange.to_date);
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `${pathname}?${queryString}` : pathname || "/";
+    // use replace to avoid polluting history while keeping URL in sync
+    router.replace(url);
+    // we intentionally don't include router.replace in deps beyond router to avoid re-creating
+  }, [filters, dateRange, pathname, router]);
 
   const handleDownloadReport = async () => {
     if (
@@ -142,13 +165,19 @@ const OrganisationReportsContainer: React.FC = () => {
       return;
     }
     try {
-      const payload = {
-        ...filters,
-        ...(filters.date_filter === "range" && {
-          from_date: dateRange.from_date,
-          to_date: dateRange.to_date,
-        }),
-      };
+      // Build payload but omit keys that are empty strings or null/undefined
+      const payload: Record<string, string> = {};
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          payload[key] = value;
+        }
+      });
+
+      // If custom range selected, include from/to dates (they are validated above)
+      if (filters.date_filter === "range") {
+        payload.from_date = dateRange.from_date;
+        payload.to_date = dateRange.to_date;
+      }
       const blob = await getOrganisationReports(payload).unwrap();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -163,6 +192,19 @@ const OrganisationReportsContainer: React.FC = () => {
       toast.error("Failed to download report. Please try again.");
     }
   };
+
+  // Compute disabled state for the download button explicitly
+  const isDownloadDisabled = (() => {
+    // If loading, always disabled
+    if (isLoading) return true;
+    // Require Date Range selection before enabling download
+    if (!filters.date_filter) return true;
+    // If custom range selected, require both dates
+    if (filters.date_filter === "range") {
+      if (!dateRange.from_date || !dateRange.to_date) return true;
+    }
+    return false;
+  })();
 
   return (
     <div>
@@ -190,13 +232,16 @@ const OrganisationReportsContainer: React.FC = () => {
                   <Col md={6} className="text-end">
                     <Button
                       color="success"
-                      onClick={handleDownloadReport}
-                      disabled={
-                        isLoading ||
-                        (!filters.date_filter &&
-                          !filters.case_category &&
-                          !filters.case_stage &&
-                          !filters.report_type)
+                      onClick={(e: any) => {
+                        // guard in case something triggers click while disabled
+                        if (isDownloadDisabled) return;
+                        return handleDownloadReport();
+                      }}
+                      disabled={isDownloadDisabled}
+                      title={
+                        isDownloadDisabled && filters.date_filter === "range"
+                          ? "Please select both start and end dates for custom range"
+                          : undefined
                       }
                     >
                       {isLoading ? (
@@ -250,7 +295,7 @@ const OrganisationReportsContainer: React.FC = () => {
                       <FormGroup>
                         <Label className="fw-semibold text-dark">
                           <i className="fa fa-calendar me-2 text-primary"></i>
-                          Date Range
+                          Date Range<small className="text-danger">(required)</small>
                         </Label>
                         <Input
                           type="select"
