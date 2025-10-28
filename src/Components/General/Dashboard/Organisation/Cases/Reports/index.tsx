@@ -28,10 +28,8 @@ const OrganisationReportsContainer: React.FC = () => {
   const [filters, setFilters] = useState({
     date_filter: "",
     case_category: "",
-    applicant_type: "",
-    case_status: "",
     case_stage: "",
-    is_removed: "",
+    report_type: "",
   });
 
   const [dateRange, setDateRange] = useState({
@@ -49,39 +47,34 @@ const OrganisationReportsContainer: React.FC = () => {
     ],
     caseCategories: [
       { value: "", label: "All Categories" },
-      { value: "mortgage", label: "Mortgage" },
-      { value: "protection", label: "Protection" },
-      { value: "general_insurance", label: "General Insurance" },
-    ],
-    applicantTypes: [
-      { value: "", label: "All Types" },
-      { value: "individual", label: "Individual" },
-      { value: "joint", label: "Joint" },
-    ],
-    caseStatuses: [
-      { value: "", label: "All Statuses" },
-      { value: "care", label: "Care" },
-      { value: "closed", label: "Closed" },
-      { value: "pending", label: "Pending" },
+      { value: "MORTGAGE", label: "Mortgage" },
+      { value: "PROTECTION", label: "Protection" },
+      { value: "GENERAL_INSURANCE", label: "General Insurance" },
     ],
     caseStages: [
       { value: "", label: "All Stages" },
-      { value: "enquiry", label: "Enquiry" },
-      { value: "fact_find", label: "Fact Find" },
+      { value: "ENQUIRY", label: "Enquiry" },
+      { value: "FACT_FIND", label: "Fact Find" },
       {
-        value: "research_compliance_check",
+        value: "RESEARCH_COMPLIANCE_CHECK",
         label: "Research & Compliance Check",
       },
-      { value: "decision_in_principle", label: "Decision in Principle" },
+      { value: "DECISION_IN_PRINCIPLE", label: "Decision in Principle" },
       {
-        value: "full_mortgage_application",
+        value: "FULL_MORTGAGE_APPLICATION",
         label: "Full Mortgage Application",
       },
-      { value: "offer_from_bank", label: "Offer from Bank" },
-      { value: "legal", label: "Legal" },
-      { value: "completion", label: "Completion" },
-      { value: "future_opportunity", label: "Future Opportunity" },
-      { value: "not_proceed", label: "Not Proceed" },
+      { value: "OFFER_FROM_BANK", label: "Offer from Bank" },
+      { value: "LEGAL", label: "Legal" },
+      { value: "COMPLETION", label: "Completion" },
+      { value: "FUTURE_OPPORTUNITY", label: "Future Opportunity" },
+      { value: "NOT_PROCEED", label: "Not Proceed" },
+    ],
+    reportTypes: [
+      { value: "", label: "All Types" },
+      { value: "standard", label: "Standard" },
+      { value: "submitted", label: "Submitted" },
+      { value: "completed", label: "Completed" },
     ],
   };
 
@@ -132,7 +125,7 @@ const OrganisationReportsContainer: React.FC = () => {
       applicant_type: "",
       case_status: "",
       case_stage: "",
-      is_removed: "",
+      report_type: "",
     };
     const resetDate = { from_date: "", to_date: "" };
     setFilters(resetFilters);
@@ -202,9 +195,8 @@ const OrganisationReportsContainer: React.FC = () => {
                         isLoading ||
                         (!filters.date_filter &&
                           !filters.case_category &&
-                          !filters.applicant_type &&
-                          !filters.case_status &&
-                          !filters.case_stage)
+                          !filters.case_stage &&
+                          !filters.report_type)
                       }
                     >
                       {isLoading ? (
@@ -348,52 +340,6 @@ const OrganisationReportsContainer: React.FC = () => {
                     <Col md={6} lg={3} className="mb-3">
                       <FormGroup>
                         <Label className="fw-semibold text-dark">
-                          <i className="fa fa-user me-2 text-info"></i>
-                          Applicant Type
-                        </Label>
-                        <Input
-                          type="select"
-                          value={filters.applicant_type}
-                          onChange={(e) =>
-                            handleFilterChange("applicant_type", e.target.value)
-                          }
-                          className="form-select"
-                        >
-                          {filterOptions.applicantTypes.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Input>
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={6} lg={3} className="mb-3">
-                      <FormGroup>
-                        <Label className="fw-semibold text-dark">
-                          <i className="fa fa-flag me-2 text-warning"></i>
-                          Case Status
-                        </Label>
-                        <Input
-                          type="select"
-                          value={filters.case_status}
-                          onChange={(e) =>
-                            handleFilterChange("case_status", e.target.value)
-                          }
-                          className="form-select"
-                        >
-                          {filterOptions.caseStatuses.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Input>
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={6} lg={3} className="mb-3">
-                      <FormGroup>
-                        <Label className="fw-semibold text-dark">
                           <i className="fa fa-tasks me-2 text-danger"></i>
                           Case Stage
                         </Label>
@@ -418,19 +364,21 @@ const OrganisationReportsContainer: React.FC = () => {
                       <FormGroup>
                         <Label className="fw-semibold text-dark">
                           <i className="fa fa-eye me-2 text-secondary"></i>
-                          Include Removed
+                          Report Type
                         </Label>
                         <Input
                           type="select"
-                          value={filters.is_removed}
+                          value={filters.report_type}
                           onChange={(e) =>
-                            handleFilterChange("is_removed", e.target.value)
+                            handleFilterChange("report_type", e.target.value)
                           }
                           className="form-select"
                         >
-                          <option value="">All Cases</option>
-                          <option value="false">Active Only</option>
-                          <option value="true">Removed Only</option>
+                          {filterOptions.reportTypes.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
                         </Input>
                       </FormGroup>
                     </Col>
