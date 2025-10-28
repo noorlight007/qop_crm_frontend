@@ -28,8 +28,7 @@ const Tasks: React.FC = () => {
               session?.user?.user_type === "CLIENT" && tasksData?.length > 0
             }
           >
-            Add New Note/Task
-            <i className="fa-solid fa-circle-plus ms-1"></i>
+            <i className="fa-solid fa-circle-plus"></i> Add New Task
           </Button>
         </Col>
       </Row>
@@ -50,7 +49,7 @@ const Tasks: React.FC = () => {
             {isLoading ? (
               <tr>
                 <td colSpan={6} className="text-center">
-                    Loading...
+                  Loading...
                 </td>
               </tr>
             ) : tasksData && tasksData.length > 0 ? (

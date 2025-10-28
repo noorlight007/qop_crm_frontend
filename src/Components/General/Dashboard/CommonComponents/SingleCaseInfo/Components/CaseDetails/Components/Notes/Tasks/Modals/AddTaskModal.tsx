@@ -1,4 +1,5 @@
-import { useAddNotesMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
+import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
 import { useParams } from "next/navigation";
 import { FC, useState } from "react";
 import { toast } from "react-toastify";
@@ -23,57 +24,41 @@ interface AddTaskModalProps {
 
 const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
-  const [isNote, setIsNote] = useState(true);
-  const [brokerVisible, setBrokerVisible] = useState(false);
-  const [clientVisible, setClientVisible] = useState(false);
+  const [name, setName] = useState("");
   const [priority, setPriority] = useState("LOW");
-  const [dueDate, setDueDate] = useState(
-    new Date().toLocaleDateString("en-GB")
-  );
-  const [dueTime, setDueTime] = useState("");
-  const [assignedTo, setAssignedTo] = useState("1");
-  const [category, setCategory] = useState("");
+  // store ISO date (yyyy-mm-dd) from the browser date picker
+  const [dueDate, setDueDate] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
   const [comments, setComments] = useState("");
-  const [addNotes, { isLoading }] = useAddNotesMutation();
 
-  const categories = [
-    "Uncategorised",
-    "Email Correspondence",
-    "Telephone conversation",
-    "Lender Correspondence",
-    "Solicitor Correspondence",
-    "Compliance Correspondence",
-  ];
+  // rtk hooks
+  const [addTask, { isLoading }] = useAddTasksMutation();
+  const { data: advisersData, isLoading: isAdvisersLoading } =
+    useGetAdviserDetailsQuery(undefined);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Convert date and time to ISO string format if both exist
-    const combinedDateTime =
-      dueTime && dueDate
-        ? new Date(
-            `${dueDate.split("/").reverse().join("-")}T${dueTime}:00Z`
-          ).toISOString()
-        : null;
-
     // Create API payload with null checks
+    // Convert stored ISO date (yyyy-mm-dd) to dd/mm/yyyy if present
     const apiPayload = {
-      note_visible_to_introducer: !isNote ? brokerVisible : false,
-      note_visible_to_client: !isNote ? clientVisible : false,
-      category: category ? category.toUpperCase().replace(/ /g, "_") : null,
-      note: comments || "",
+      name: name || null,
+      task_priority: priority || null,
+      due_date: dueDate || null,
+      assigned_to: assignedTo || null,
+      note: comments || null,
     };
 
-    const response = await addNotes({
+    const response = await addTask({
       case_alias: casealias,
-      note: apiPayload,
+      task: apiPayload,
     });
     if (response.data) {
-      toast.success("Note added successfully");
+      toast.success("Task added successfully");
       toggle();
     } else if (response.error) {
       const errorMessage =
-        (response.error as any)?.data?.detail || "Failed to add note";
+        (response.error as any)?.data?.detail || "Failed to add task";
       toast.error(errorMessage);
     } else {
       toast.error("Something went wrong");
@@ -86,59 +71,85 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
         toggle={toggle}
         className="d-flex justify-content-between align-items-center"
       >
-        Create Note
+        Create Task
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
             <Col md={6}>
-              <Row>
-                <Col md={12}>
-                  <FormGroup
-                    switch
-                    className="d-flex justify-content-between align-items-center mb-2"
-                  >
-                    <Label check>Note visible to introducer?</Label>
-                    <Input
-                      type="switch"
-                      checked={brokerVisible}
-                      onChange={(e) => setBrokerVisible(e.target.checked)}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col md={12}>
-                  <FormGroup
-                    switch
-                    className="d-flex justify-content-between align-items-center"
-                  >
-                    <Label check>Note visible to client?</Label>
-                    <Input
-                      type="switch"
-                      checked={clientVisible}
-                      onChange={(e) => setClientVisible(e.target.checked)}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
+              <FormGroup>
+                <Label for="name">
+                  Task name <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter task name"
+                  required
+                />
+              </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="category">
-                  Category <span className="text-danger">*</span>
+                <Label for="priority">
+                  Task Priority <span className="text-danger">*</span>
                 </Label>
                 <Input
                   type="select"
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  id="priority"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
                   required
                 >
-                  <option value="">Select...</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
+                  <option value="LOW">Low</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="HIGH">High</option>
+                  <option value="URGENT">Urgent</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="dueDate">
+                  Due Date <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="date"
+                  id="dueDate"
+                  value={dueDate}
+                  // keep ISO value (yyyy-mm-dd) so the native date picker works
+                  onChange={(e) => setDueDate(e.target.value)}
+                  required
+                />
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="assignedTo">
+                  Assigned To <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="select"
+                  id="assignedTo"
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                  required
+                >
+                  <option value="">Select an adviser</option>
+                  {advisersData &&
+                    advisersData.map((adviser: any) => (
+                      <option key={adviser?.user.id} value={adviser?.user.id}>
+                        {adviser?.user?.title
+                          ? adviser.user.title.charAt(0).toUpperCase() +
+                            adviser.user.title.slice(1).toLowerCase()
+                          : ""}{" "}
+                        {adviser?.user?.first_name} {adviser?.user?.middle_name}{" "}
+                        {adviser?.user?.last_name}
+                      </option>
+                    ))}
+                  {/* Add more options as needed */}
                 </Input>
               </FormGroup>
             </Col>

@@ -54,8 +54,8 @@ export interface TaskProps {
   name: string;
   task_priority: string;
   due_date: Date | null;
+  assigned_to: number | null;
   note: string | null;
-  applicant_type: string;
   created_by: {
     id: number;
     alias: string;
