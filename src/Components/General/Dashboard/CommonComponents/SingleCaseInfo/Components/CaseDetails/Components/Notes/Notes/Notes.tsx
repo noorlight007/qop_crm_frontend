@@ -92,47 +92,61 @@ const Notes: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {notesData?.map((note: NoteProps) => (
-              <tr key={note.alias}>
-                <td>
-                  {note.category
-                    ?.split("_")
-                    .map(
-                      (word: any) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")}
-                </td>
-                <td>{formatDateToDMYAndTime(note.created_at)}</td>
-                <td>
-                  {note.case.case_stage
-                    ?.split("_")
-                    .map(
-                      (word: any) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")}
-                </td>
-                <td>
-                  {note?.user?.title
-                    ? note?.user?.title.charAt(0).toUpperCase() +
-                      note?.user?.title?.charAt(1).toLowerCase()
-                    : null}{" "}
-                  {note?.user?.first_name} {note?.user?.middle_name}{" "}
-                  {note?.user?.last_name}
-                </td>
-                <td>{note.note}</td>
-                <td>{note.note_visible_to_introducer ? "Yes" : "No"}</td>
-                <td>{note.note_visible_to_client ? "Yes" : "No"}</td>
-                <td className="text-center">
-                  <Button color="link" className="p-0">
-                    <Trash2 size={16} className="text-danger" />
-                  </Button>
+            {isLoading ? (
+              <tr>
+                <td colSpan={TABLE_COLUMNS.length} className="text-center">
+                  Loading...
                 </td>
               </tr>
-            ))}
+            ) : notesData && notesData.length > 0 ? (
+              notesData.map((note: NoteProps) => (
+                <tr key={note.alias}>
+                  <td>
+                    {note.category
+                      ?.split("_")
+                      .map(
+                        (word: any) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")}
+                  </td>
+                  <td>{formatDateToDMYAndTime(note.created_at)}</td>
+                  <td>
+                    {note.case.case_stage
+                      ?.split("_")
+                      .map(
+                        (word: any) =>
+                          word.charAt(0).toUpperCase() +
+                          word.slice(1).toLowerCase()
+                      )
+                      .join(" ")}
+                  </td>
+                  <td>
+                    {note?.user?.title
+                      ? note?.user?.title.charAt(0).toUpperCase() +
+                        note?.user?.title?.charAt(1).toLowerCase()
+                      : null}{" "}
+                    {note?.user?.first_name} {note?.user?.middle_name}{" "}
+                    {note?.user?.last_name}
+                  </td>
+                  <td>{note.note}</td>
+                  <td>{note.note_visible_to_introducer ? "Yes" : "No"}</td>
+                  <td>{note.note_visible_to_client ? "Yes" : "No"}</td>
+                  <td className="text-center">
+                    <Button color="link" className="p-0">
+                      <Trash2 size={16} className="text-danger" />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={TABLE_COLUMNS.length} className="text-center">
+                  No notes found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </Table>
       </div>

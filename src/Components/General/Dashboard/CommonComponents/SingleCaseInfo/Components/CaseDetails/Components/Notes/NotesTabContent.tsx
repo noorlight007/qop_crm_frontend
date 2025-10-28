@@ -1,8 +1,6 @@
-import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
 import { NotesTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -11,8 +9,7 @@ import React from "react";
 import { toast } from "react-toastify";
 import { Button, TabContent, TabPane } from "reactstrap";
 import Notes from "./Notes/Notes";
-import TasksViewTab from "./NotesViewTabs/TasksViewTab";
-import { NoteTask } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
+import Tasks from "./Tasks/Tasks";
 
 export const NotesTabContent: React.FC<NotesTabContentProps> = ({
   tabId,
@@ -20,19 +17,13 @@ export const NotesTabContent: React.FC<NotesTabContentProps> = ({
 }) => {
   const { data: session } = useSession();
   const { casealias } = useParams();
-  const {
-    data: caseData,
-    isLoading: isCaseFetching,
-    isError,
-  } = useGetSingleCaseQuery({ case_alias: casealias }, { skip: !casealias });
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias }
+  );
   const dispatch = useAppDispatch();
 
-  const { data, isLoading } = useGetNotesQuery({ case_alias: casealias });
-
   const handleNext = () => setTabId((parseInt(tabId) + 1).toString());
-  // Use API data if available, otherwise use static data
-  const notes = data?.filter((item: NoteTask) => item.note_task === "NOTE");
-  const tasks = data?.filter((item: NoteTask) => item.note_task === "TASK");
 
   const currentTab: string | null = useAppSelector(
     (state) => state.caseDetails.basicTabId
@@ -45,13 +36,6 @@ export const NotesTabContent: React.FC<NotesTabContentProps> = ({
       toast.warning("This is the last tab.");
     }
   };
-  if (isLoading) {
-    return (
-      <div>
-        <LoadingSpinner />
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -64,7 +48,7 @@ export const NotesTabContent: React.FC<NotesTabContentProps> = ({
           </Button>
         </TabPane>
         <TabPane tabId="2">
-          <TasksViewTab tasks={tasks} />
+          <Tasks />
           <div className=" d-flex justify-content-end">
             <Button
               type="submit"
@@ -83,5 +67,3 @@ export const NotesTabContent: React.FC<NotesTabContentProps> = ({
     </div>
   );
 };
-
-

@@ -16,12 +16,12 @@ import {
   Row,
 } from "reactstrap";
 
-interface AddNoteModalProps {
+interface AddTaskModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
 
-const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
+const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
   const [isNote, setIsNote] = useState(true);
   const [brokerVisible, setBrokerVisible] = useState(false);
@@ -172,4 +172,4 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
   );
 };
 
-export default AddNoteModal;
+export default AddTaskModal;
