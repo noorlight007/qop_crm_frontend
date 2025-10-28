@@ -37,6 +37,7 @@ const OrganisationReportsContainer: React.FC = () => {
     from_date: "",
     to_date: "",
   });
+  const [dateRangeError, setDateRangeError] = useState("");
 
   const filterOptions = {
     dateFilters: [
@@ -117,6 +118,22 @@ const OrganisationReportsContainer: React.FC = () => {
   const handleDateRangeChange = (key: string, value: string) => {
     const updatedRange = { ...dateRange, [key]: value };
     setDateRange(updatedRange);
+
+    // Validate the date range whenever both dates are present
+    const { from_date, to_date } = updatedRange;
+    if (from_date && to_date) {
+      // Compare as Date objects to handle formatting reliably
+      const from = new Date(from_date);
+      const to = new Date(to_date);
+      if (from > to) {
+        setDateRangeError("Start date must be before or equal to End date.");
+      } else {
+        setDateRangeError("");
+      }
+    } else {
+      // If one of the dates is missing, clear the error (other validations will handle requiredness)
+      setDateRangeError("");
+    }
   };
 
   const clearFilters = () => {
@@ -202,6 +219,8 @@ const OrganisationReportsContainer: React.FC = () => {
     // If custom range selected, require both dates
     if (filters.date_filter === "range") {
       if (!dateRange.from_date || !dateRange.to_date) return true;
+      // If date range is present but invalid, disable download
+      if (dateRangeError) return true;
     }
     return false;
   })();
@@ -239,7 +258,11 @@ const OrganisationReportsContainer: React.FC = () => {
                       }}
                       disabled={isDownloadDisabled}
                       title={
-                        isDownloadDisabled && filters.date_filter === "range"
+                        // Prefer the explicit date range error message if present
+                        dateRangeError
+                          ? dateRangeError
+                          : isDownloadDisabled &&
+                            filters.date_filter === "range"
                           ? "Please select both start and end dates for custom range"
                           : undefined
                       }
@@ -295,7 +318,8 @@ const OrganisationReportsContainer: React.FC = () => {
                       <FormGroup>
                         <Label className="fw-semibold text-dark">
                           <i className="fa fa-calendar me-2 text-primary"></i>
-                          Date Range<small className="text-danger">(required)</small>
+                          Date Range
+                          <small className="text-danger">(required)</small>
                         </Label>
                         <Input
                           type="select"
@@ -330,6 +354,7 @@ const OrganisationReportsContainer: React.FC = () => {
                               min={dateLimits.min}
                               max={dateLimits.max}
                               style={{ padding: "10px 10px" }}
+                              aria-invalid={!!dateRangeError}
                               onChange={(e) =>
                                 handleDateRangeChange(
                                   "from_date",
@@ -350,10 +375,16 @@ const OrganisationReportsContainer: React.FC = () => {
                               min={dateLimits.min}
                               max={dateLimits.max}
                               style={{ padding: "10px 10px" }}
+                              aria-invalid={!!dateRangeError}
                               onChange={(e) =>
                                 handleDateRangeChange("to_date", e.target.value)
                               }
                             />
+                            {dateRangeError && (
+                              <div className="text-danger small mt-1">
+                                {dateRangeError}
+                              </div>
+                            )}
                           </FormGroup>
                         </Col>
                       </>
