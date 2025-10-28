@@ -1,0 +1,186 @@
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
+import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
+import { useParams } from "next/navigation";
+import { FC, useState } from "react";
+import { toast } from "react-toastify";
+import {
+  Button,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
+
+interface AddTaskModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
+  const { casealias } = useParams();
+  const [name, setName] = useState("");
+  const [priority, setPriority] = useState("LOW");
+  // store ISO date (yyyy-mm-dd) from the browser date picker
+  const [dueDate, setDueDate] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
+  const [comments, setComments] = useState("");
+
+  // rtk hooks
+  const [addTask, { isLoading }] = useAddTasksMutation();
+  const { data: advisersData, isLoading: isAdvisersLoading } =
+    useGetAdviserDetailsQuery(undefined);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Create API payload with null checks
+    // Convert stored ISO date (yyyy-mm-dd) to dd/mm/yyyy if present
+    const apiPayload = {
+      name: name || null,
+      task_priority: priority || null,
+      due_date: dueDate || null,
+      assigned_to: assignedTo || null,
+      note: comments || null,
+    };
+
+    const response = await addTask({
+      case_alias: casealias,
+      task: apiPayload,
+    });
+    if (response.data) {
+      toast.success("Task added successfully");
+      toggle();
+    } else if (response.error) {
+      const errorMessage =
+        (response.error as any)?.data?.detail || "Failed to add task";
+      toast.error(errorMessage);
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
+
+  return (
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+      <ModalHeader
+        toggle={toggle}
+        className="d-flex justify-content-between align-items-center"
+      >
+        Create Task
+      </ModalHeader>
+      <Form onSubmit={handleSubmit}>
+        <ModalBody>
+          <Row>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="name">
+                  Task name <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="text"
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter task name"
+                  required
+                />
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="priority">
+                  Task Priority <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="select"
+                  id="priority"
+                  value={priority}
+                  onChange={(e) => setPriority(e.target.value)}
+                  required
+                >
+                  <option value="LOW">Low</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="HIGH">High</option>
+                  <option value="URGENT">Urgent</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="dueDate">
+                  Due Date <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="date"
+                  id="dueDate"
+                  value={dueDate}
+                  // keep ISO value (yyyy-mm-dd) so the native date picker works
+                  onChange={(e) => setDueDate(e.target.value)}
+                  required
+                />
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="assignedTo">
+                  Assigned To <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  type="select"
+                  id="assignedTo"
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                  required
+                >
+                  <option value="">Select an adviser</option>
+                  {advisersData &&
+                    advisersData.map((adviser: any) => (
+                      <option key={adviser?.user.id} value={adviser?.user.id}>
+                        {adviser?.user?.title
+                          ? adviser.user.title.charAt(0).toUpperCase() +
+                            adviser.user.title.slice(1).toLowerCase()
+                          : ""}{" "}
+                        {adviser?.user?.first_name} {adviser?.user?.middle_name}{" "}
+                        {adviser?.user?.last_name}
+                      </option>
+                    ))}
+                  {/* Add more options as needed */}
+                </Input>
+              </FormGroup>
+            </Col>
+          </Row>
+
+          <FormGroup>
+            <Label for="comments">
+              Comments <span className="text-danger">*</span>
+            </Label>
+            <Input
+              type="textarea"
+              id="comments"
+              rows={5}
+              value={comments}
+              onChange={(e) => setComments(e.target.value)}
+              placeholder="Enter your comments here..."
+              required
+            />
+          </FormGroup>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggle}>
+            Cancel
+          </Button>
+          <Button color="primary" type="submit" disabled={isLoading}>
+            {isLoading ? "Loading..." : "Create"}
+          </Button>
+        </ModalFooter>
+      </Form>
+    </Modal>
+  );
+};
+
+export default AddTaskModal;

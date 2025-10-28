@@ -1,6 +1,6 @@
 "use client";
 import { useGetOrganisationAdviserReportsMutation } from "@/Redux/Reducers/OrganisationAdviser/Reports/OrganisationAdviserReportsApi";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -20,24 +20,24 @@ import {
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
 const OrganisationAdviserReportsContainer: React.FC = () => {
-  const [getOrganisationAdviserReports, { isLoading }] =
-    useGetOrganisationAdviserReportsMutation();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
+  const [getOrganisationAdviserReports, { isLoading }] =
+    useGetOrganisationAdviserReportsMutation();
 
   const [filters, setFilters] = useState({
     date_filter: "",
     case_category: "",
-    applicant_type: "",
-    case_status: "",
     case_stage: "",
-    is_removed: "",
+    report_type: "",
   });
 
   const [dateRange, setDateRange] = useState({
     from_date: "",
     to_date: "",
   });
+  const [dateRangeError, setDateRangeError] = useState("");
 
   const filterOptions = {
     dateFilters: [
@@ -49,41 +49,37 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
     ],
     caseCategories: [
       { value: "", label: "All Categories" },
-      { value: "mortgage", label: "Mortgage" },
-      { value: "protection", label: "Protection" },
-      { value: "general_insurance", label: "General Insurance" },
-    ],
-    applicantTypes: [
-      { value: "", label: "All Types" },
-      { value: "individual", label: "Individual" },
-      { value: "joint", label: "Joint" },
-    ],
-    caseStatuses: [
-      { value: "", label: "All Statuses" },
-      { value: "care", label: "Care" },
-      { value: "closed", label: "Closed" },
-      { value: "pending", label: "Pending" },
+      { value: "MORTGAGE", label: "Mortgage" },
+      { value: "PROTECTION", label: "Protection" },
+      { value: "GENERAL_INSURANCE", label: "General Insurance" },
     ],
     caseStages: [
       { value: "", label: "All Stages" },
-      { value: "enquiry", label: "Enquiry" },
-      { value: "fact_find", label: "Fact Find" },
+      { value: "ENQUIRY", label: "Enquiry" },
+      { value: "FACT_FIND", label: "Fact Find" },
       {
-        value: "research_compliance_check",
+        value: "RESEARCH_COMPLIANCE_CHECK",
         label: "Research & Compliance Check",
       },
-      { value: "decision_in_principle", label: "Decision in Principle" },
+      { value: "DECISION_IN_PRINCIPLE", label: "Decision in Principle" },
       {
-        value: "full_mortgage_application",
+        value: "FULL_MORTGAGE_APPLICATION",
         label: "Full Mortgage Application",
       },
-      { value: "offer_from_bank", label: "Offer from Bank" },
-      { value: "legal", label: "Legal" },
-      { value: "completion", label: "Completion" },
-      { value: "future_opportunity", label: "Future Opportunity" },
-      { value: "not_proceed", label: "Not Proceed" },
+      { value: "OFFER_FROM_BANK", label: "Offer from Bank" },
+      { value: "LEGAL", label: "Legal" },
+      { value: "COMPLETION", label: "Completion" },
+      { value: "FUTURE_OPPORTUNITY", label: "Future Opportunity" },
+      { value: "NOT_PROCEED", label: "Not Proceed" },
+    ],
+    reportTypes: [
+      { value: "", label: "All Types" },
+      { value: "standard", label: "Standard" },
+      { value: "submitted", label: "Submitted" },
+      { value: "completed", label: "Completed" },
     ],
   };
+
   // Get current date and calculate date range (one year from today)
   const getCurrentDateLimits = () => {
     const today = new Date();
@@ -122,22 +118,60 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
   const handleDateRangeChange = (key: string, value: string) => {
     const updatedRange = { ...dateRange, [key]: value };
     setDateRange(updatedRange);
+
+    // Validate the date range whenever both dates are present
+    const { from_date, to_date } = updatedRange;
+    if (from_date && to_date) {
+      // Compare as Date objects to handle formatting reliably
+      const from = new Date(from_date);
+      const to = new Date(to_date);
+      if (from > to) {
+        setDateRangeError("Start date must be before or equal to End date.");
+      } else {
+        setDateRangeError("");
+      }
+    } else {
+      // If one of the dates is missing, clear the error (other validations will handle requiredness)
+      setDateRangeError("");
+    }
   };
 
   const clearFilters = () => {
     const resetFilters = {
       date_filter: "",
       case_category: "",
-      applicant_type: "",
-      case_status: "",
       case_stage: "",
-      is_removed: "",
+      report_type: "",
     };
     const resetDate = { from_date: "", to_date: "" };
     setFilters(resetFilters);
     setDateRange(resetDate);
-    router.push("?");
+    // Replace to the base pathname without query params
+    router.replace(pathname || "/");
   };
+
+  // Sync filters -> URL but only include keys with non-empty values
+  useEffect(() => {
+    // Build query params from filters (omit empty values)
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        params.set(key, value as string);
+      }
+    });
+
+    // If custom range is selected, include from/to when present
+    if (filters.date_filter === "range") {
+      if (dateRange.from_date) params.set("from_date", dateRange.from_date);
+      if (dateRange.to_date) params.set("to_date", dateRange.to_date);
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `${pathname}?${queryString}` : pathname || "/";
+    // use replace to avoid polluting history while keeping URL in sync
+    router.replace(url);
+    // we intentionally don't include router.replace in deps beyond router to avoid re-creating
+  }, [filters, dateRange, pathname, router]);
 
   const handleDownloadReport = async () => {
     if (
@@ -148,13 +182,19 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
       return;
     }
     try {
-      const payload = {
-        ...filters,
-        ...(filters.date_filter === "range" && {
-          from_date: dateRange.from_date,
-          to_date: dateRange.to_date,
-        }),
-      };
+      // Build payload but omit keys that are empty strings or null/undefined
+      const payload: Record<string, string> = {};
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          payload[key] = value;
+        }
+      });
+
+      // If custom range selected, include from/to dates (they are validated above)
+      if (filters.date_filter === "range") {
+        payload.from_date = dateRange.from_date;
+        payload.to_date = dateRange.to_date;
+      }
       const blob = await getOrganisationAdviserReports(payload).unwrap();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -170,11 +210,26 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
     }
   };
 
+  // Compute disabled state for the download button explicitly
+  const isDownloadDisabled = (() => {
+    // If loading, always disabled
+    if (isLoading) return true;
+    // Require Date Range selection before enabling download
+    if (!filters.date_filter) return true;
+    // If custom range selected, require both dates
+    if (filters.date_filter === "range") {
+      if (!dateRange.from_date || !dateRange.to_date) return true;
+      // If date range is present but invalid, disable download
+      if (dateRangeError) return true;
+    }
+    return false;
+  })();
+
   return (
     <div>
       <Breadcrumbs
-        title="Organisation Adviser Reports"
-        subTitle="Generate and analyze comprehensive organisation adviser reports"
+        title="Organisation Reports"
+        subTitle="Generate and analyze comprehensive organisation reports"
         parent="Cases"
         child="Reports"
       />
@@ -187,7 +242,7 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                   <Col md={6}>
                     <h4 className="mb-0 text-primary fw-bold">
                       <i className="fa fa-chart-line me-2"></i>
-                      Organisation Adviser Reports Dashboard
+                      Organisation Reports Dashboard
                     </h4>
                     <p className="text-muted mb-0 mt-1">
                       Generate comprehensive reports across your organisation
@@ -196,14 +251,20 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                   <Col md={6} className="text-end">
                     <Button
                       color="success"
-                      onClick={handleDownloadReport}
-                      disabled={
-                        isLoading ||
-                        (!filters.date_filter &&
-                          !filters.case_category &&
-                          !filters.applicant_type &&
-                          !filters.case_status &&
-                          !filters.case_stage)
+                      onClick={(e: any) => {
+                        // guard in case something triggers click while disabled
+                        if (isDownloadDisabled) return;
+                        return handleDownloadReport();
+                      }}
+                      disabled={isDownloadDisabled}
+                      title={
+                        // Prefer the explicit date range error message if present
+                        dateRangeError
+                          ? dateRangeError
+                          : isDownloadDisabled &&
+                            filters.date_filter === "range"
+                          ? "Please select both start and end dates for custom range"
+                          : undefined
                       }
                     >
                       {isLoading ? (
@@ -258,6 +319,7 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                         <Label className="fw-semibold text-dark">
                           <i className="fa fa-calendar me-2 text-primary"></i>
                           Date Range
+                          <small className="text-danger">(required)</small>
                         </Label>
                         <Input
                           type="select"
@@ -292,6 +354,7 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                               min={dateLimits.min}
                               max={dateLimits.max}
                               style={{ padding: "10px 10px" }}
+                              aria-invalid={!!dateRangeError}
                               onChange={(e) =>
                                 handleDateRangeChange(
                                   "from_date",
@@ -312,10 +375,16 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                               min={dateLimits.min}
                               max={dateLimits.max}
                               style={{ padding: "10px 10px" }}
+                              aria-invalid={!!dateRangeError}
                               onChange={(e) =>
                                 handleDateRangeChange("to_date", e.target.value)
                               }
                             />
+                            {dateRangeError && (
+                              <div className="text-danger small mt-1">
+                                {dateRangeError}
+                              </div>
+                            )}
                           </FormGroup>
                         </Col>
                       </>
@@ -336,52 +405,6 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                           className="form-select"
                         >
                           {filterOptions.caseCategories.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Input>
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={6} lg={3} className="mb-3">
-                      <FormGroup>
-                        <Label className="fw-semibold text-dark">
-                          <i className="fa fa-user me-2 text-info"></i>
-                          Applicant Type
-                        </Label>
-                        <Input
-                          type="select"
-                          value={filters.applicant_type}
-                          onChange={(e) =>
-                            handleFilterChange("applicant_type", e.target.value)
-                          }
-                          className="form-select"
-                        >
-                          {filterOptions.applicantTypes.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </Input>
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={6} lg={3} className="mb-3">
-                      <FormGroup>
-                        <Label className="fw-semibold text-dark">
-                          <i className="fa fa-flag me-2 text-warning"></i>
-                          Case Status
-                        </Label>
-                        <Input
-                          type="select"
-                          value={filters.case_status}
-                          onChange={(e) =>
-                            handleFilterChange("case_status", e.target.value)
-                          }
-                          className="form-select"
-                        >
-                          {filterOptions.caseStatuses.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
@@ -417,19 +440,21 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                       <FormGroup>
                         <Label className="fw-semibold text-dark">
                           <i className="fa fa-eye me-2 text-secondary"></i>
-                          Include Removed
+                          Report Type
                         </Label>
                         <Input
                           type="select"
-                          value={filters.is_removed}
+                          value={filters.report_type}
                           onChange={(e) =>
-                            handleFilterChange("is_removed", e.target.value)
+                            handleFilterChange("report_type", e.target.value)
                           }
                           className="form-select"
                         >
-                          <option value="">All Cases</option>
-                          <option value="false">Active Only</option>
-                          <option value="true">Removed Only</option>
+                          {filterOptions.reportTypes.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
                         </Input>
                       </FormGroup>
                     </Col>
