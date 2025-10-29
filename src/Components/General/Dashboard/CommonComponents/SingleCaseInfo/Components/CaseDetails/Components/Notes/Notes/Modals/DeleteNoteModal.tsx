@@ -44,7 +44,7 @@ const DeleteNoteModal: React.FC<DeleteNoteModalProps> = ({
         {selectedNote && (
           <div className="border p-2 mb-3 rounded bg-light-dark">
             <strong>Note:</strong>
-            <div>{selectedNote.note}</div>
+            <div className="text-truncate">{selectedNote.note}</div>
           </div>
         )}
         <div className="d-flex justify-content-end">

@@ -65,17 +65,12 @@ const Notes: React.FC = () => {
   const [selectedNote, setSelectedNote] = useState<NoteProps | null>(null);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
-  // Category selection: `category` is the currently-selected value in the UI,
-  // `appliedCategory` is the filter currently applied to the query (applied when user clicks Filter)
   const [category, setCategory] = useState<string>("");
   const [appliedCategory, setAppliedCategory] = useState<string>("");
 
-  // Request a specific page from the API. The API returns a paginated
-  // response of the shape: { count, next, previous, results }
   const { data: notesData, isLoading } = useGetNotesQuery({
     case_alias: caseAlias,
     page,
-    // pass category only when it's applied
     category: appliedCategory || undefined,
   });
 
