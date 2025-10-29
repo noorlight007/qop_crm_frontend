@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/app/loading";
 import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
 import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
@@ -171,7 +172,7 @@ const Notes: React.FC = () => {
             {isLoading ? (
               <tr>
                 <td colSpan={TABLE_COLUMNS.length} className="text-center">
-                  Loading...
+                  <LoadingSpinner />
                 </td>
               </tr>
             ) : notesData &&
