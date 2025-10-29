@@ -319,7 +319,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
               <FormGroup>
                 <Input
                   id="reasonForEnquiry"
-                  name="reasonForEnquiry"
+                  name="reason_for_enquiry"
                   type="text"
                   className="rounded-end-0"
                   value={formData.reason_for_enquiry}
