@@ -53,6 +53,14 @@ export interface CaseInfoPrpos {
     user_type: string;
   };
   caseData?: any;
+  organization: {
+    id: number;
+    name: string;
+  };
+  network: {
+    id: number;
+    name: string;
+  };
 }
 
 export interface CaseUser {

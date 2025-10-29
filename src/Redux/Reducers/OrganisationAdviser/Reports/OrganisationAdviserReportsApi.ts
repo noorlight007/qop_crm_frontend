@@ -4,7 +4,7 @@ export const NetworkReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganisationAdviserReports: builder.mutation({
       query: (params) => ({
-        url: "reports/adviser",
+        url: "reports/adviser/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),

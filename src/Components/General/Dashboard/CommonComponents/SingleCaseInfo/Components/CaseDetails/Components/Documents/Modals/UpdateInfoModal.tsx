@@ -4,6 +4,7 @@ import {
   CaseDocumentProps,
   DocumentOwnerProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -258,19 +259,13 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
           <div className="mb-4 p-3 bg-light-dark rounded">
             <h6 className="text-muted mb-2">Document Details:</h6>
             <p className="mb-1">
-              <span className="text-muted">Name:</span> {documentData.name || "N/A"}
+              <span className="text-muted">Name:</span>{" "}
+              {documentData.name || "N/A"}
             </p>
             <p className="mb-0">
               <span className="text-muted">Current Type:</span>{" "}
               {documentData.file_type
-                ? documentData.file_type
-                    .split("_")
-                    .map(
-                      (word) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")
+                ? formatChoiceFieldValue(documentData.file_type)
                 : "N/A"}
             </p>
           </div>
@@ -346,8 +341,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
                               for={`owner-${user.id}`}
                             >
                               {user?.title
-                                ? user.title.charAt(0).toUpperCase() +
-                                  user.title.slice(1).toLowerCase()
+                                ? formatChoiceFieldValue(user.title)
                                 : ""}
                               {user?.title ? " " : ""}
                               {user.first_name} {user.middle_name}{" "}

@@ -7,6 +7,7 @@ import {
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -405,6 +406,19 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <th>Case Category</th>
                       <th>Case Stage</th>
                       <th>Created At</th>
+                      <th>
+                        {session?.user?.user_type === "NETWORK_ADMIN" ||
+                        session?.user?.user_type === "NETWORK_ADVISER"
+                          ? "Organisation"
+                          : session?.user?.user_type === "ORGANISATION_ADMIN" ||
+                            session?.user?.user_type === "ORGANISATION_ADVISER" ||
+                            session?.user?.user_type === "ORGANISATION_SUPPORT" ||
+                            session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                            session?.user?.user_type === "ORGANIZATION_ADVISER" ||
+                            session?.user?.user_type === "ORGANIZATION_SUPPORT"
+                          ? "Network"
+                          : "Unknown"}
+                      </th>
                       <th>Created By</th>
                       <th>Assigned To</th>
                       <th>Action</th>
@@ -437,7 +451,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               )}
                             </Link>
                           </td>
-                          <td className="text-start">
+                          <td className="text-start text-truncate">
                             <ul
                               style={{
                                 listStyleType: "disc",
@@ -448,11 +462,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 {caseItem.lead_user ? (
                                   <>
                                     {caseItem.lead_user.title
-                                      ? caseItem.lead_user.title[0].toUpperCase() +
-                                        caseItem.lead_user.title
-                                          .slice(1)
-                                          .toLowerCase() +
-                                        " "
+                                      ? formatChoiceFieldValue(
+                                          caseItem.lead_user.title
+                                        ) + " "
                                       : ""}
                                     {caseItem.lead_user.first_name}{" "}
                                     {caseItem.lead_user.middle_name
@@ -469,8 +481,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 caseItem.joint_users.map((joint: CaseUser) => (
                                   <li key={joint.alias || joint.id}>
                                     {joint.title
-                                      ? joint.title[0].toUpperCase() +
-                                        joint.title.slice(1).toLowerCase() +
+                                      ? formatChoiceFieldValue(joint.title) +
                                         " "
                                       : ""}
                                     {joint.first_name}{" "}
@@ -502,33 +513,35 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           </td>
                           <td>
                             {caseItem.case_category
-                              .split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(caseItem.case_category)
+                              : "-"}
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {caseItem.case_stage
-                              .split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(caseItem.case_stage)
+                              : "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
-                          <td>
+                          <td className="text-truncate">
+                            {userType === "NETWORK_ADMIN" || userType === "NETWORK_ADVISER" ? (
+                              caseItem.organization?.name ?? "-"
+                            ) : userType === "ORGANISATION_ADMIN" ||
+                              userType === "ORGANISATION_ADVISER" ||
+                              userType === "ORGANISATION_SUPPORT" ||
+                              userType === "ORGANIZATION_ADMIN" ||
+                              userType === "ORGANIZATION_ADVISER" ||
+                              userType === "ORGANIZATION_SUPPORT" ? (
+                              caseItem.network?.name ?? "-"
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td className="text-truncate">
                             <p className="m-0">
                               {caseItem.created_by?.title
-                                ? caseItem.created_by.title[0].toUpperCase() +
-                                  caseItem.created_by.title
-                                    .slice(1)
-                                    .toLowerCase() +
-                                  " "
+                                ? formatChoiceFieldValue(
+                                    caseItem.created_by.title
+                                  ) + " "
                                 : ""}
                               {caseItem.created_by?.first_name}{" "}
                               {caseItem.created_by?.middle_name
@@ -542,26 +555,21 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             >
                               (
                               {caseItem.created_by?.user_type
-                                ?.split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")}
+                                ? formatChoiceFieldValue(
+                                    caseItem.created_by.user_type
+                                  )
+                                : ""}
                               )
                             </p>
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {caseItem.assigned_user ? (
                               <>
                                 <p className="m-0">
                                   {caseItem.assigned_user.title
-                                    ? caseItem.assigned_user.title[0].toUpperCase() +
-                                      caseItem.assigned_user.title
-                                        .slice(1)
-                                        .toLowerCase() +
-                                      " "
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_user.title
+                                      ) + " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
                                   {caseItem.assigned_user.middle_name
@@ -575,13 +583,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 >
                                   (
                                   {caseItem.assigned_user.user_type
-                                    ?.split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")}
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_user.user_type
+                                      )
+                                    : ""}
                                   )
                                 </p>
                               </>

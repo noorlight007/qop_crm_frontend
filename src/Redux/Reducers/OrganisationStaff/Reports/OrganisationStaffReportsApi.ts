@@ -4,7 +4,7 @@ export const OrganisationStaffReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgStaffReports: builder.mutation({
       query: (params) => ({
-        url: "reports/admin",
+        url: "reports/organization-staff/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),

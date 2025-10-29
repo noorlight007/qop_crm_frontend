@@ -1,5 +1,6 @@
 import { ViewAdviserModalProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
   Col,
@@ -27,8 +28,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <span className="text-muted">Name:</span>
             <small>
               {selectedAdviser.user?.title
-                ? selectedAdviser.user?.title.charAt(0).toUpperCase() +
-                  selectedAdviser.user?.title.slice(1).toLowerCase()
+                ? formatChoiceFieldValue(selectedAdviser.user.title)
                 : ""}{" "}
               {selectedAdviser?.user?.first_name}{" "}
               {selectedAdviser?.user?.middle_name}{" "}
@@ -61,8 +61,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <span className="text-muted">Gender:</span>
             <small>
               {selectedAdviser?.gender ? (
-                selectedAdviser.gender.charAt(0).toUpperCase() +
-                selectedAdviser.gender.slice(1).toLowerCase()
+                formatChoiceFieldValue(selectedAdviser.gender)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -72,13 +71,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <span className="text-muted">User Type:</span>
             <small>
               {selectedAdviser?.user?.user_type ? (
-                selectedAdviser.user.user_type
-                  .split("_")
-                  .map(
-                    (word) =>
-                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                  )
-                  .join(" ")
+                formatChoiceFieldValue(selectedAdviser.user.user_type)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -88,8 +81,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <span className="text-muted">User Role:</span>
             <small>
               {selectedAdviser?.role ? (
-                selectedAdviser.role.charAt(0).toUpperCase() +
-                selectedAdviser.role.slice(1).toLowerCase()
+                formatChoiceFieldValue(selectedAdviser.role)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -110,8 +102,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
               {selectedAdviser?.created_by ? (
                 <>
                   {selectedAdviser.created_by.title
-                    ? selectedAdviser.created_by.title.charAt(0).toUpperCase() +
-                      selectedAdviser.created_by.title.slice(1).toLowerCase()
+                    ? formatChoiceFieldValue(selectedAdviser.created_by.title)
                     : ""}{" "}
                   {selectedAdviser.created_by.first_name}{" "}
                   {selectedAdviser.created_by.middle_name}{" "}
@@ -127,14 +118,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             >
               (
               {selectedAdviser?.created_by?.user_type
-                ? selectedAdviser.created_by.user_type
-                    .split("_")
-                    .map(
-                      (word) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")
+                ? formatChoiceFieldValue(selectedAdviser.created_by.user_type)
                 : "Not available"}
               )
             </small>

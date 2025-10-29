@@ -1,4 +1,5 @@
 import { JointUserProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import {
@@ -83,12 +84,9 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                           <div className="flex-grow-1">
                             <h6>
                               {userInfo.joint_user_details?.title
-                                ? userInfo.joint_user_details?.title
-                                    .charAt(0)
-                                    .toUpperCase() +
-                                  userInfo.joint_user_details?.title
-                                    .slice(1)
-                                    .toLowerCase()
+                                ? formatChoiceFieldValue(
+                                    userInfo.joint_user_details?.title
+                                  )
                                 : ""}{" "}
                               {userInfo.joint_user_details?.first_name}{" "}
                               {userInfo.joint_user_details?.middle_name}{" "}

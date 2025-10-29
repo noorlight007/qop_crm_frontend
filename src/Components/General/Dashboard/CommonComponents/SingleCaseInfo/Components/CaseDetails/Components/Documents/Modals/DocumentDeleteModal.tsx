@@ -1,5 +1,6 @@
 import { useDeleteCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { DocumentDeleteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -42,12 +43,8 @@ const DocumentDeleteModal: React.FC<DocumentDeleteModalProps> = ({
         Are you sure you want to delete the{" "}
         <span className="text-danger">
           {fileData?.file_type
-            ?.split("_")
-            .map(
-              (word) =>
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            )
-            .join(" ")}
+            ? formatChoiceFieldValue(fileData.file_type)
+            : "-"}
         </span>{" "}
         file?
       </ModalBody>

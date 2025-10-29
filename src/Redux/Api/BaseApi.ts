@@ -27,6 +27,7 @@ export const baseApi = createApi({
     "ClientDetails",
     "AdviserDetails",
     "IntroducerDetails",
+    "Users",
     // Common components end
 
     // Single case info start
@@ -55,6 +56,7 @@ export const baseApi = createApi({
     "ExistingProtectionDetails",
     "MortgageYourNeeds",
     "Notes",
+    "Tasks",
     "BudgetPlanner",
     "ProductDetails",
     "DIPHistoryDetails",

@@ -3,7 +3,9 @@ interface User {
   alias: string;
   email: string;
   phone: string;
+  title: string;
   first_name: string;
+  middle_name: string;
   last_name: string;
   profile_image: string | null;
   user_type: string;

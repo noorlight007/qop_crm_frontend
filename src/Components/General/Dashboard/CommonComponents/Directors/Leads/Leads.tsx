@@ -5,6 +5,7 @@ import {
 } from "@/Types/CommonComponents/Directors/LeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
@@ -180,8 +181,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         style={{ cursor: "pointer" }}
                       >
                         {lead.user?.title
-                          ? lead.user?.title.charAt(0).toUpperCase() +
-                            lead.user?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(lead.user?.title)
                           : ""}{" "}
                         {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
                         {lead?.user?.last_name}
@@ -201,14 +201,12 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      {lead?.role?.charAt(0)?.toUpperCase() +
-                        lead?.role?.slice(1)?.toLowerCase()}
+                      {lead?.role ? formatChoiceFieldValue(lead?.role) : "-"}
                     </td>
                     <td>
                       <p className="m-0">
                         {lead.created_by?.title
-                          ? lead.created_by?.title.charAt(0).toUpperCase() +
-                            lead.created_by?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(lead.created_by?.title)
                           : ""}{" "}
                         {lead?.created_by?.first_name}{" "}
                         {lead?.created_by?.middle_name}{" "}
@@ -217,13 +215,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                       <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
                         (
                         {lead.created_by?.user_type
-                          ?.split("_")
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")}
+                          ? formatChoiceFieldValue(lead.created_by?.user_type)
+                          : "N/A"}
                         )
                       </p>
                     </td>
@@ -380,9 +373,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
           leadAlias={leadToDelete?.alias}
           leadName={`${
             leadToDelete?.user?.title
-              ? leadToDelete?.user?.title.charAt(0).toUpperCase() +
-                leadToDelete?.user?.title.slice(1).toLowerCase() +
-                " "
+              ? formatChoiceFieldValue(leadToDelete?.user?.title) + " "
               : ""
           }${leadToDelete?.user?.first_name} ${
             leadToDelete?.user?.middle_name

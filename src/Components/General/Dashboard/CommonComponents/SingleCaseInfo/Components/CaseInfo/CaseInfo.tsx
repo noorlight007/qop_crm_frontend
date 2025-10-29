@@ -6,6 +6,7 @@ import {
   SingleCaseProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { ClientInfoProps } from "@/Types/CommonComponents/Directors/ClientTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
 import { FaUserEdit } from "react-icons/fa";
 import { TbCircleArrowUp } from "react-icons/tb";
@@ -164,8 +165,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                         <span className="small">Name:</span>{" "}
                         <strong className="small">
                           {displayLeadUser?.title
-                            ? displayLeadUser.title[0].toUpperCase() +
-                              displayLeadUser.title.slice(1).toLowerCase()
+                            ? formatChoiceFieldValue(displayLeadUser.title)
                             : ""}{" "}
                           {displayLeadUser?.first_name}{" "}
                           {displayLeadUser?.middle_name}{" "}
@@ -242,14 +242,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                         <span className="small">Case Category:</span>{" "}
                         <strong className="small">
                           {caseInfo?.case_category
-                            ? caseInfo.case_category
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
+                            ? formatChoiceFieldValue(caseInfo.case_category)
                             : "N/A"}
                         </strong>
                       </h6>
@@ -267,14 +260,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                         <span className="small">Case Stage:</span>{" "}
                         <strong className="small">
                           {caseInfo?.case_stage
-                            ? caseInfo.case_stage
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
+                            ? formatChoiceFieldValue(caseInfo.case_stage)
                             : "N/A"}
                         </strong>
                       </h6>
@@ -307,10 +293,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                             <span className="small">Name:</span>{" "}
                             <strong className="small">
                               {caseInfo?.assigned_user?.title
-                                ? caseInfo.assigned_user.title[0].toUpperCase() +
-                                  caseInfo.assigned_user.title
-                                    .slice(1)
-                                    .toLowerCase()
+                                ? formatChoiceFieldValue(
+                                    caseInfo.assigned_user.title
+                                  )
                                 : ""}{" "}
                               {caseInfo?.assigned_user?.first_name}{" "}
                               {caseInfo?.assigned_user?.middle_name}{" "}
@@ -327,14 +312,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                             <span className="small">User Type:</span>{" "}
                             <strong className="small">
                               {caseInfo?.assigned_user?.user_type
-                                ? caseInfo.assigned_user?.user_type
-                                    .split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")
+                                ? formatChoiceFieldValue(
+                                    caseInfo.assigned_user?.user_type
+                                  )
                                 : "N/A"}
                             </strong>
                           </h6>
@@ -377,8 +357,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                         <span className="small">Name:</span>{" "}
                         <strong className="small">
                           {caseInfo?.created_by?.title
-                            ? caseInfo.created_by.title[0].toUpperCase() +
-                              caseInfo.created_by.title.slice(1).toLowerCase()
+                            ? formatChoiceFieldValue(caseInfo.created_by.title)
                             : ""}{" "}
                           {caseInfo?.created_by?.first_name}{" "}
                           {caseInfo?.created_by?.middle_name}{" "}
@@ -395,14 +374,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                         <span className="small">User Type:</span>{" "}
                         <strong className="small">
                           {caseInfo?.created_by?.user_type
-                            ? caseInfo.created_by?.user_type
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
+                            ? formatChoiceFieldValue(
+                                caseInfo.created_by?.user_type
+                              )
                             : "N/A"}
                         </strong>
                       </h6>
@@ -421,8 +395,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
             <h4>Notes:</h4>
             <p className="text-muted p-1">
               {caseInfo?.notes
-                ? caseInfo.notes.charAt(0).toUpperCase() +
-                  caseInfo.notes.slice(1).toLowerCase()
+                ? formatChoiceFieldValue(caseInfo.notes)
                 : "Notes not available"}
             </p>
           </Col>
