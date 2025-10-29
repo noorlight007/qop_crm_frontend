@@ -22,7 +22,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("LOW");
-  // store ISO date (yyyy-mm-dd) from the browser date picker
   const [dueDate, setDueDate] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [comments, setComments] = useState("");
