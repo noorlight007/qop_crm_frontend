@@ -380,7 +380,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
           toggle={toggleDeleteModal}
           clientAlias={clientToDelete?.alias || ""}
           clientName={`${
-            clientToDelete?.user?.title ? clientToDelete?.user?.title + " " : ""
+            clientToDelete?.user?.title ? formatChoiceFieldValue(clientToDelete?.user?.title) + " " : ""
           }${clientToDelete?.user?.first_name} ${
             clientToDelete?.user?.middle_name
               ? clientToDelete?.user?.middle_name + " "

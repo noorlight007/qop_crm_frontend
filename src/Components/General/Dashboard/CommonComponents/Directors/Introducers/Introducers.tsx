@@ -393,9 +393,7 @@ const Introducers: React.FC<IntroducersProps> = ({
           introducerName={
             `${
               introducerToDelete?.user?.title
-                ? introducerToDelete?.user?.title.charAt(0).toUpperCase() +
-                  introducerToDelete?.user?.title.slice(1).toLowerCase() +
-                  " "
+                ? formatChoiceFieldValue(introducerToDelete?.user?.title) + " "
                 : ""
             }` +
             `${introducerToDelete?.user?.first_name || ""} ` +

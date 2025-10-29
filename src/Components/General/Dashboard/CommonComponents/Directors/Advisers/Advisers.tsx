@@ -392,7 +392,9 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
           toggle={toggleDeleteModal}
           adviserAlias={adviserToDelete?.alias || ""}
           adviserName={`${
-            adviserToDelete?.user?.title ? adviserToDelete.user.title + " " : ""
+            adviserToDelete?.user?.title
+              ? formatChoiceFieldValue(adviserToDelete?.user?.title) + " "
+              : ""
           }${adviserToDelete?.user?.first_name || ""}${
             adviserToDelete?.user?.middle_name
               ? " " + adviserToDelete.user.middle_name
