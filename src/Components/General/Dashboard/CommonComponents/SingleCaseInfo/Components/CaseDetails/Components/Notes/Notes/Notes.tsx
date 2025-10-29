@@ -2,9 +2,20 @@ import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseIn
 import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { Trash2 } from "react-feather";
-import { Button, Col, Container, Input, Row, Table } from "reactstrap";
+import { useEffect, useState } from "react";
+import { Trash2, X } from "react-feather";
+import { FaFilter, FaRegCheckCircle, FaRegTimesCircle } from "react-icons/fa";
+import {
+  Button,
+  Col,
+  Container,
+  Input,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Row,
+  Table,
+} from "reactstrap";
 import AddNoteModal from "./Modals/AddNoteModal";
 
 // Categories constant
@@ -34,40 +45,100 @@ const TABLE_COLUMNS = [
     key: "introducer",
     label: "Introducer Visible",
     width: "150px",
-    textAlign: "left",
+    textAlign: "center",
   },
-  { key: "client", label: "Client Visible", width: "150px", textAlign: "left" },
+  {
+    key: "client",
+    label: "Client Visible",
+    width: "150px",
+    textAlign: "center",
+  },
   { key: "actions", label: "Actions", width: "100px", textAlign: "center" },
 ] as const;
 
 const Notes: React.FC = () => {
   const { casealias } = useParams();
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [isOpenAddNoteModal, setIsOpenAddNoteModal] = useState(false);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number | undefined>(undefined);
+  // Category selection: `category` is the currently-selected value in the UI,
+  // `appliedCategory` is the filter currently applied to the query (applied when user clicks Filter)
+  const [category, setCategory] = useState<string>("");
+  const [appliedCategory, setAppliedCategory] = useState<string>("");
 
+  // Request a specific page from the API. The API returns a paginated
+  // response of the shape: { count, next, previous, results }
   const { data: notesData, isLoading } = useGetNotesQuery({
-    case_alias: casealias,
+    case_alias: caseAlias,
+    page,
+    // pass category only when it's applied
+    category: appliedCategory || undefined,
   });
 
+  // Reset page when the case alias changes
+  useEffect(() => {
+    setPage(1);
+  }, [caseAlias]);
+
+  // Infer pageSize from the results when available (used to compute totalPages)
+  useEffect(() => {
+    const resultsLength =
+      (notesData as any)?.results?.length ??
+      (Array.isArray(notesData) ? notesData.length : undefined);
+    if (resultsLength && !pageSize) {
+      setPageSize(resultsLength);
+    }
+  }, [notesData, pageSize]);
+
   const toggleAddNoteModal = () => setIsOpenAddNoteModal(!isOpenAddNoteModal);
+
+  const applyFilter = () => {
+    setAppliedCategory(category);
+    setPage(1);
+  };
+
+  const clearFilter = () => {
+    setCategory("");
+    setAppliedCategory("");
+    setPage(1);
+  };
 
   return (
     <Container fluid className="py-4">
       <Row className="mb-3 align-items-center">
-        <Col md={4}>
-          <div className="input-group">
-            <Input type="select">
-              {CATEGORIES.map((category) => (
-                <option key={category.value} value={category.value}>
-                  {category.display}
+        <Col md={6}>
+          <div className="d-flex gap-1">
+            <Input
+              type="select"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.display}
                 </option>
               ))}
             </Input>
-            <Button color="primary" className="ms-2">
+            <Button
+              color="primary"
+              className="d-flex gap-1"
+              onClick={applyFilter}
+            >
+              <FaFilter size={12} />
               Filter
+            </Button>
+            <Button
+              color="danger"
+              className="d-flex gap-1"
+              onClick={clearFilter}
+            >
+              <X size={14} />
+              Clear
             </Button>
           </div>
         </Col>
-        <Col md={8} className="text-end ">
+        <Col md={6} className="text-end ">
           <Button color="primary" onClick={toggleAddNoteModal}>
             <i className="fa-solid fa-circle-plus"></i> Add New Note
           </Button>
@@ -98,8 +169,10 @@ const Notes: React.FC = () => {
                   Loading...
                 </td>
               </tr>
-            ) : notesData && notesData.length > 0 ? (
-              notesData.map((note: NoteProps) => (
+            ) : notesData &&
+              (notesData.results?.length ?? (notesData as any)?.length) > 0 ? (
+              // support old non-paginated array response and new paginated response
+              (notesData.results ?? notesData).map((note: NoteProps) => (
                 <tr key={note.alias}>
                   <td>
                     {note.category
@@ -131,11 +204,28 @@ const Notes: React.FC = () => {
                     {note?.user?.last_name}
                   </td>
                   <td>{note.note}</td>
-                  <td>{note.note_visible_to_introducer ? "Yes" : "No"}</td>
-                  <td>{note.note_visible_to_client ? "Yes" : "No"}</td>
                   <td className="text-center">
-                    <Button color="link" className="p-0">
-                      <Trash2 size={16} className="text-danger" />
+                    {
+                      // support both old and new API boolean fields
+                      (note as any).note_visible_to_introducer ??
+                      (note as any).is_visible_to_introducer ? (
+                        <FaRegCheckCircle size={20} className="text-primary" />
+                      ) : (
+                        <FaRegTimesCircle size={20} className="text-danger" />
+                      )
+                    }
+                  </td>
+                  <td className="text-center">
+                    {(note as any).note_visible_to_client ??
+                    (note as any).is_visible_to_client ? (
+                      <FaRegCheckCircle size={20} className="text-primary" />
+                    ) : (
+                      <FaRegTimesCircle size={20} className="text-danger" />
+                    )}
+                  </td>
+                  <td className="text-center">
+                    <Button color="danger" className="p-1">
+                      <Trash2 size={20} />
                     </Button>
                   </td>
                 </tr>
@@ -152,8 +242,132 @@ const Notes: React.FC = () => {
       </div>
 
       <Row className="mt-3 align-items-center">
-        <Col sm={5}>
-          <div className="text-muted">Showing {notesData?.length} entries</div>
+        <Col sm={6}>
+          <div className="text-muted">
+            Showing {(notesData?.results ?? notesData)?.length ?? 0} entries
+            {notesData && (notesData as any).count
+              ? ` of ${(notesData as any).count}`
+              : ""}
+          </div>
+        </Col>
+        <Col sm={6} className="text-end">
+          {/**
+           * Pagination UI: uses a sliding window when there are many pages.
+           * We infer `pageSize` from the results and compute `totalPages` from `count`.
+           */}
+          {notesData && (notesData as any).count ? (
+            (() => {
+              const count = (notesData as any).count as number;
+              const pageSizeInferred = pageSize ?? 1;
+              const totalPages = Math.max(
+                1,
+                Math.ceil(count / pageSizeInferred)
+              );
+              const leadsPerPage = 5; // max page links to show in compact mode
+
+              return (
+                <Pagination className="d-flex justify-content-end p-2">
+                  <PaginationItem disabled={page === 1}>
+                    <PaginationLink first onClick={() => setPage(1)} />
+                  </PaginationItem>
+                  <PaginationItem disabled={page === 1}>
+                    <PaginationLink
+                      previous
+                      onClick={() => setPage(Math.max(1, page - 1))}
+                    />
+                  </PaginationItem>
+
+                  {totalPages <= leadsPerPage ? (
+                    Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (pageNumber) => (
+                        <PaginationItem
+                          key={pageNumber}
+                          active={pageNumber === page}
+                        >
+                          <PaginationLink onClick={() => setPage(pageNumber)}>
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )
+                    )
+                  ) : (
+                    <>
+                      <PaginationItem active={page === 1}>
+                        <PaginationLink onClick={() => setPage(1)}>
+                          1
+                        </PaginationLink>
+                      </PaginationItem>
+
+                      {page > 3 && (
+                        <PaginationItem disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      )}
+
+                      {Array.from({ length: 3 }, (_, i) => page - 1 + i)
+                        .filter(
+                          (pageNumber) =>
+                            pageNumber > 1 && pageNumber < totalPages
+                        )
+                        .map((pageNumber) => (
+                          <PaginationItem
+                            key={pageNumber}
+                            active={pageNumber === page}
+                          >
+                            <PaginationLink onClick={() => setPage(pageNumber)}>
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+
+                      {page < totalPages - 2 && (
+                        <PaginationItem disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      )}
+
+                      <PaginationItem active={page === totalPages}>
+                        <PaginationLink onClick={() => setPage(totalPages)}>
+                          {totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    </>
+                  )}
+
+                  <PaginationItem disabled={page === totalPages}>
+                    <PaginationLink
+                      next
+                      onClick={() => setPage(Math.min(totalPages, page + 1))}
+                    />
+                  </PaginationItem>
+                  <PaginationItem disabled={page === totalPages}>
+                    <PaginationLink last onClick={() => setPage(totalPages)} />
+                  </PaginationItem>
+                </Pagination>
+              );
+            })()
+          ) : (
+            // Fallback simple prev/next when count is not available
+            <div className="btn-group">
+              <Button
+                color="light"
+                disabled={!notesData || !(notesData as any).previous}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Previous
+              </Button>
+              <Button color="light" disabled>
+                Page {page}
+              </Button>
+              <Button
+                color="light"
+                disabled={!notesData || !(notesData as any).next}
+                onClick={() => setPage((p) => p + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </Col>
       </Row>
       {/* Add Note Modal */}
