@@ -5,6 +5,7 @@ import {
 } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -189,8 +190,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         style={{ cursor: "pointer" }}
                       >
                         {adviser.user?.title
-                          ? adviser.user?.title.charAt(0).toUpperCase() +
-                            adviser.user?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(adviser.user.title)
                           : ""}{" "}
                         {adviser?.user?.first_name} {adviser?.user?.middle_name}{" "}
                         {adviser?.user?.last_name}
@@ -210,8 +210,9 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      {adviser?.role?.charAt(0)?.toUpperCase() +
-                        adviser?.role?.slice(1)?.toLowerCase()}
+                      {adviser?.role
+                        ? formatChoiceFieldValue(adviser.role)
+                        : "-"}
                     </td>
                     <td>
                       {adviser?.joining_date &&
@@ -224,13 +225,9 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         {adviser.created_by
                           ? `${
                               adviser.created_by?.title
-                                ? adviser.created_by.title
-                                    .charAt(0)
-                                    .toUpperCase() +
-                                  adviser.created_by.title
-                                    .slice(1)
-                                    .toLowerCase() +
-                                  " "
+                                ? formatChoiceFieldValue(
+                                    adviser.created_by.title
+                                  ) + " "
                                 : ""
                             }${adviser.created_by.first_name || ""} ${
                               adviser.created_by.middle_name || ""
@@ -240,14 +237,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                       <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
                         (
                         {adviser.created_by?.user_type
-                          ? adviser.created_by.user_type
-                              .split("_")
-                              .map(
-                                (word: any) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")
+                          ? formatChoiceFieldValue(adviser.created_by.user_type)
                           : "Not found"}
                         )
                       </p>

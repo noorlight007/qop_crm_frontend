@@ -1,5 +1,6 @@
 import { ViewIntroducerModalProps } from "@/Types/CommonComponents/Directors/IntroducerTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
   Col,
@@ -27,8 +28,7 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">Name:</span>
             <small>
               {selectedIntroducer.user?.title
-                ? selectedIntroducer.user?.title.charAt(0).toUpperCase() +
-                  selectedIntroducer.user?.title.slice(1).toLowerCase()
+                ? formatChoiceFieldValue(selectedIntroducer.user?.title)
                 : ""}{" "}
               {selectedIntroducer?.user?.first_name}{" "}
               {selectedIntroducer?.user?.middle_name}{" "}
@@ -61,8 +61,7 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">Gender:</span>
             <small>
               {selectedIntroducer?.gender ? (
-                selectedIntroducer.gender.charAt(0).toUpperCase() +
-                selectedIntroducer.gender.slice(1).toLowerCase()
+                formatChoiceFieldValue(selectedIntroducer?.gender)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -72,13 +71,7 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">User Type:</span>
             <small>
               {selectedIntroducer?.user?.user_type ? (
-                selectedIntroducer.user.user_type
-                  .split("_")
-                  .map(
-                    (word) =>
-                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                  )
-                  .join(" ")
+                formatChoiceFieldValue(selectedIntroducer?.user?.user_type)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -88,13 +81,7 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">User Role:</span>
             <small>
               {selectedIntroducer?.role ? (
-                selectedIntroducer.role
-                  .split("_")
-                  .map(
-                    (word) =>
-                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                  )
-                  .join(" ")
+                formatChoiceFieldValue(selectedIntroducer?.role)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -115,10 +102,9 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
               {selectedIntroducer?.created_by ? (
                 <>
                   {selectedIntroducer.created_by.title
-                    ? selectedIntroducer.created_by.title
-                        .charAt(0)
-                        .toUpperCase() +
-                      selectedIntroducer.created_by.title.slice(1).toLowerCase()
+                    ? formatChoiceFieldValue(
+                        selectedIntroducer.created_by.title
+                      )
                     : ""}{" "}
                   {selectedIntroducer.created_by.first_name}{" "}
                   {selectedIntroducer.created_by.middle_name}{" "}
@@ -134,14 +120,9 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             >
               (
               {selectedIntroducer?.created_by?.user_type
-                ? selectedIntroducer.created_by.user_type
-                    .split("_")
-                    .map(
-                      (word) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")
+                ? formatChoiceFieldValue(
+                    selectedIntroducer.created_by.user_type
+                  )
                 : "Not available"}
               )
             </small>

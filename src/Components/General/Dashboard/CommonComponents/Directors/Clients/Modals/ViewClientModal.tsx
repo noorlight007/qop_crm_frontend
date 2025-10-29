@@ -1,5 +1,6 @@
 import { ViewClientModalProps } from "@/Types/CommonComponents/Directors/ClientTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
   Col,
@@ -26,8 +27,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">Name:</span>
             <small>
               {selectedClient.user?.title
-                ? selectedClient.user?.title.charAt(0).toUpperCase() +
-                  selectedClient.user?.title.slice(1).toLowerCase()
+                ? formatChoiceFieldValue(selectedClient.user.title)
                 : ""}{" "}
               {selectedClient?.user?.first_name}{" "}
               {selectedClient?.user?.middle_name}{" "}
@@ -87,13 +87,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">User Role:</span>
             <small>
               {selectedClient?.role ? (
-                selectedClient.role
-                  .split("_")
-                  .map(
-                    (word) =>
-                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                  )
-                  .join(" ")
+                formatChoiceFieldValue(selectedClient?.role)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -114,8 +108,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
               {selectedClient?.created_by ? (
                 <>
                   {selectedClient.created_by.title
-                    ? selectedClient.created_by.title.charAt(0).toUpperCase() +
-                      selectedClient.created_by.title.slice(1).toLowerCase()
+                    ? formatChoiceFieldValue(selectedClient.created_by.title)
                     : ""}{" "}
                   {selectedClient.created_by.first_name}{" "}
                   {selectedClient.created_by.middle_name}{" "}
@@ -131,14 +124,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             >
               (
               {selectedClient?.created_by?.user_type
-                ? selectedClient.created_by.user_type
-                    .split("_")
-                    .map(
-                      (word) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")
+                ? formatChoiceFieldValue(selectedClient.created_by.user_type)
                 : "Not available"}
               )
             </small>
