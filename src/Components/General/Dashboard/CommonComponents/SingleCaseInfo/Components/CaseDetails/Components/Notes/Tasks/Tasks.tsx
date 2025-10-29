@@ -5,7 +5,6 @@ import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Trash2 } from "react-feather";
 import {
   Badge,
   Button,
@@ -80,16 +79,13 @@ const Tasks: React.FC = () => {
           <thead>
             <tr>
               <th style={{ minWidth: "50px" }}>Type</th>
+              <th style={{ minWidth: "50px" }}>Priority</th>
               <th style={{ minWidth: "120px" }}>Task Name</th>
               <th style={{ minWidth: "120px" }}>Activity Date</th>
               <th style={{ minWidth: "120px" }}>Due Date</th>
               <th style={{ minWidth: "200px" }}>Stage</th>
               <th style={{ minWidth: "150px" }}>User</th>
               <th style={{ minWidth: "400px" }}>Information</th>
-              <th style={{ minWidth: "150px" }}>Priority</th>
-              <th style={{ minWidth: "100px" }} className="text-center">
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -104,6 +100,14 @@ const Tasks: React.FC = () => {
               (tasksData.results ?? tasksData).map((task: TaskProps) => (
                 <tr key={task?.alias}>
                   <td>Task/System</td>
+                  <td>
+                    <Badge color={getBadgeColor(task.task_priority)}>
+                      {task.task_priority
+                        ? task.task_priority.charAt(0).toUpperCase() +
+                          task.task_priority.slice(1).toLowerCase()
+                        : "N/A"}
+                    </Badge>
+                  </td>
                   <td>{task.name}</td>
                   <td>{formatDateToDMYAndTime(task.created_at)}</td>
                   <td>{formatDateToDMYAndTime(task.due_date)}</td>
@@ -126,23 +130,6 @@ const Tasks: React.FC = () => {
                       dangerouslySetInnerHTML={{ __html: task.note || "" }}
                       style={{ wordBreak: "break-word", maxWidth: "400px" }}
                     />
-                  </td>
-                  <td>
-                    <Badge color={getBadgeColor(task.task_priority)}>
-                      {task.task_priority
-                        ? task.task_priority.charAt(0).toUpperCase() +
-                          task.task_priority.slice(1).toLowerCase()
-                        : "N/A"}
-                    </Badge>
-                  </td>
-                  <td className="text-center">
-                    <Button
-                      color="danger"
-                      className="p-1"
-                      // onClick={() => handleDeleteClick(note)}
-                    >
-                      <Trash2 size={20} />
-                    </Button>
                   </td>
                 </tr>
               ))
