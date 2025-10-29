@@ -17,6 +17,7 @@ import {
   Table,
 } from "reactstrap";
 import AddNoteModal from "./Modals/AddNoteModal";
+import DeleteNoteModal from "./Modals/DeleteNoteModal";
 
 // Categories constant
 const CATEGORIES = [
@@ -60,6 +61,8 @@ const Notes: React.FC = () => {
   const { casealias } = useParams();
   const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [isOpenAddNoteModal, setIsOpenAddNoteModal] = useState(false);
+  const [isDeleteNoteModalOpen, setIsDeleteNoteModalOpen] = useState(false);
+  const [selectedNote, setSelectedNote] = useState<NoteProps | null>(null);
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   // Category selection: `category` is the currently-selected value in the UI,
@@ -92,6 +95,13 @@ const Notes: React.FC = () => {
   }, [notesData, pageSize]);
 
   const toggleAddNoteModal = () => setIsOpenAddNoteModal(!isOpenAddNoteModal);
+  const toggleDeleteNoteModal = () =>
+    setIsDeleteNoteModalOpen(!isDeleteNoteModalOpen);
+
+  const handleDeleteClick = (note: NoteProps) => {
+    setSelectedNote(note);
+    setIsDeleteNoteModalOpen(true);
+  };
 
   const applyFilter = () => {
     setAppliedCategory(category);
@@ -224,7 +234,11 @@ const Notes: React.FC = () => {
                     )}
                   </td>
                   <td className="text-center">
-                    <Button color="danger" className="p-1">
+                    <Button
+                      color="danger"
+                      className="p-1"
+                      onClick={() => handleDeleteClick(note)}
+                    >
                       <Trash2 size={20} />
                     </Button>
                   </td>
@@ -251,10 +265,6 @@ const Notes: React.FC = () => {
           </div>
         </Col>
         <Col sm={6} className="text-end">
-          {/**
-           * Pagination UI: uses a sliding window when there are many pages.
-           * We infer `pageSize` from the results and compute `totalPages` from `count`.
-           */}
           {notesData && (notesData as any).count ? (
             (() => {
               const count = (notesData as any).count as number;
@@ -372,6 +382,13 @@ const Notes: React.FC = () => {
       </Row>
       {/* Add Note Modal */}
       <AddNoteModal isOpen={isOpenAddNoteModal} toggle={toggleAddNoteModal} />
+      {/* Delete Note Modal */}
+      <DeleteNoteModal
+        isOpen={isDeleteNoteModalOpen}
+        toggle={toggleDeleteNoteModal}
+        caseAlias={caseAlias}
+        selectedNote={selectedNote}
+      />
     </Container>
   );
 };

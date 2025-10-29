@@ -33,7 +33,15 @@ export const NotesApi = baseApi.injectEndpoints({
       },
       providesTags: ["Notes"],
     }),
+    deleteNote: builder.mutation({
+      query: ({ case_alias, note_alias }) => ({
+        url: `/cases/${case_alias}/notes/${note_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Notes"],
+    }),
   }),
 });
 
-export const { useAddNotesMutation, useGetNotesQuery } = NotesApi;
+export const { useAddNotesMutation, useGetNotesQuery, useDeleteNoteMutation } =
+  NotesApi;
