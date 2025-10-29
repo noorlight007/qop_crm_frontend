@@ -1,5 +1,5 @@
 import { useAddNotesMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
-import { AddNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
+import { AddNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";

@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
-import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
+import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";

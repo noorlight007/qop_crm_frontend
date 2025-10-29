@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetTasksQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
-import { TaskProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
+import { TaskProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";

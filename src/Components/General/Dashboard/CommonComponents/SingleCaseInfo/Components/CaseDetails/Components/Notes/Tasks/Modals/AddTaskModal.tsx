@@ -1,5 +1,6 @@
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
 import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
+import { AddTaskModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { useParams } from "next/navigation";
 import { FC, useState } from "react";
 import { toast } from "react-toastify";
@@ -17,11 +18,6 @@ import {
   Row,
 } from "reactstrap";
 
-interface AddTaskModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
 const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
   const [name, setName] = useState("");
@@ -38,9 +34,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Create API payload with null checks
-    // Convert stored ISO date (yyyy-mm-dd) to dd/mm/yyyy if present
     const apiPayload = {
       name: name || null,
       task_priority: priority || null,
