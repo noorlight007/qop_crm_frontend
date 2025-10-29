@@ -63,6 +63,7 @@ export interface TaskProps {
     profile_image: string | null;
     user_type: string;
   };
+  type: string;
   name: string;
   task_priority: string;
   due_date: Date | null;

@@ -50,15 +50,15 @@ const Tasks: React.FC = () => {
   const getBadgeColor = (priority: string | null | undefined) => {
     switch (priority) {
       case "LOW":
-        return "dark";
+        return "light-dark";
       case "NORMAL":
-        return "primary";
+        return "light-primary";
       case "HIGH":
-        return "warning";
+        return "light-warning";
       case "URGENT":
-        return "danger";
+        return "light-danger";
       default:
-        return "info";
+        return "light-info";
     }
   };
 
@@ -103,22 +103,23 @@ const Tasks: React.FC = () => {
               (tasksData.results?.length ?? (tasksData as any)?.length) > 0 ? (
               (tasksData.results ?? tasksData).map((task: TaskProps) => (
                 <tr key={task?.alias}>
-                  <td>Task/System</td>
+                  <td>{formatChoiceFieldValue(task?.type || "-")}</td>
                   <td>
-                    <Badge color={getBadgeColor(task.task_priority)}>
-                      {task.task_priority
-                        ? task.task_priority.charAt(0).toUpperCase() +
-                          task.task_priority.slice(1).toLowerCase()
-                        : "N/A"}
+                    <Badge color={getBadgeColor(task?.task_priority)}>
+                      {formatChoiceFieldValue(task?.task_priority || "-")}
                     </Badge>
                   </td>
-                  <td>{task.name}</td>
-                  <td>{formatDateToDMYAndTime(task.created_at)}</td>
-                  <td>{formatDateToDMY(task.due_date)}</td>
-                  <td>{formatChoiceFieldValue(task.case.case_stage)}</td>
-                  <td>{`${formatChoiceFieldValue(task.created_by.title)} ${
-                    task.created_by.first_name
-                  } ${task.created_by.last_name}`}</td>
+                  <td>{task?.name || "-"}</td>
+                  <td>{formatDateToDMYAndTime(task?.created_at || "-")}</td>
+                  <td>{formatDateToDMY(task?.due_date || "-")}</td>
+                  <td>
+                    {formatChoiceFieldValue(task?.case?.case_stage || "-")}
+                  </td>
+                  <td>{`${formatChoiceFieldValue(task?.created_by?.title)} ${
+                    task?.created_by?.first_name
+                  } ${task?.created_by?.middle_name} ${
+                    task?.created_by?.last_name
+                  }`}</td>
                   <td>
                     <div
                       dangerouslySetInnerHTML={{ __html: task.note || "" }}

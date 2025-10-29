@@ -2,6 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
 import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Trash2, X } from "react-feather";
@@ -180,36 +181,15 @@ const Notes: React.FC = () => {
               // support old non-paginated array response and new paginated response
               (notesData.results ?? notesData).map((note: NoteProps) => (
                 <tr key={note.alias}>
+                  <td>{formatChoiceFieldValue(note.category || "-")}</td>
+                  <td>{formatDateToDMYAndTime(note.created_at || "-")}</td>
+                  <td>{formatChoiceFieldValue(note.case.case_stage || "-")}</td>
                   <td>
-                    {note.category
-                      ?.split("_")
-                      .map(
-                        (word: any) =>
-                          word.charAt(0).toUpperCase() +
-                          word.slice(1).toLowerCase()
-                      )
-                      .join(" ")}
-                  </td>
-                  <td>{formatDateToDMYAndTime(note.created_at)}</td>
-                  <td>
-                    {note.case.case_stage
-                      ?.split("_")
-                      .map(
-                        (word: any) =>
-                          word.charAt(0).toUpperCase() +
-                          word.slice(1).toLowerCase()
-                      )
-                      .join(" ")}
-                  </td>
-                  <td>
-                    {note?.user?.title
-                      ? note?.user?.title.charAt(0).toUpperCase() +
-                        note?.user?.title?.charAt(1).toLowerCase()
-                      : null}{" "}
+                    {formatChoiceFieldValue(note?.user?.title)}{" "}
                     {note?.user?.first_name} {note?.user?.middle_name}{" "}
                     {note?.user?.last_name}
                   </td>
-                  <td>{note.note}</td>
+                  <td>{note.note || "-"}</td>
                   <td className="text-center">
                     {
                       // support both old and new API boolean fields
