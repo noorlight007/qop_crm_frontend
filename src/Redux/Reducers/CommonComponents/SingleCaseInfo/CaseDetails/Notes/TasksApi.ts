@@ -11,10 +11,14 @@ export const TasksApi = baseApi.injectEndpoints({
       invalidatesTags: ["Tasks"],
     }),
     getTasks: builder.query({
-      query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/tasks/`,
-        method: "GET",
-      }),
+      query: ({ case_alias, page }: { case_alias: string; page?: number }) => {
+        const base = `/cases/${case_alias}/tasks/`;
+        const url = page ? `${base}?page=${page}` : base;
+        return {
+          url,
+          method: "GET",
+        };
+      },
       providesTags: ["Tasks"],
     }),
   }),
