@@ -1,6 +1,7 @@
 import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
 import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
 import { AddTaskModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { formatChoiceFieldValue } from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -126,7 +127,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   type="date"
                   id="dueDate"
                   value={dueDate}
-                  // keep ISO value (yyyy-mm-dd) so the native date picker works
                   onChange={(e) => setDueDate(e.target.value)}
                   required
                 />
@@ -148,22 +148,10 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   {usersData &&
                     usersData.map((user: any) => (
                       <option key={user?.id} value={user?.id}>
-                        {user?.name}{" "}
-                        <small>
-                          {user?.user_type
-                            ? user.user_type
-                                .split("_")
-                                .map(
-                                  (word: any) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")
-                            : ""}
-                        </small>
+                        {user?.name} (
+                        {formatChoiceFieldValue(user?.user_type || null)})
                       </option>
                     ))}
-                  {/* Add more options as needed */}
                 </Input>
               </FormGroup>
             </Col>

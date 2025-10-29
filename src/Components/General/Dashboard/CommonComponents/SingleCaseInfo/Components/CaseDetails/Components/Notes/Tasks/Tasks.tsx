@@ -1,7 +1,11 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetTasksQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
 import { TaskProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import {
+  formatDateToDMY,
+  formatDateToDMYAndTime,
+} from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -110,21 +114,11 @@ const Tasks: React.FC = () => {
                   </td>
                   <td>{task.name}</td>
                   <td>{formatDateToDMYAndTime(task.created_at)}</td>
-                  <td>{formatDateToDMYAndTime(task.due_date)}</td>
-                  <td>
-                    {task.case.case_stage
-                      ? task.case.case_stage
-                          .split("_")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")
-                      : "N/A"}
-                  </td>
-                  <td>{`${task.created_by.first_name} ${task.created_by.last_name}`}</td>{" "}
-                  {/* User name */}
+                  <td>{formatDateToDMY(task.due_date)}</td>
+                  <td>{formatChoiceFieldValue(task.case.case_stage)}</td>
+                  <td>{`${formatChoiceFieldValue(task.created_by.title)} ${
+                    task.created_by.first_name
+                  } ${task.created_by.last_name}`}</td>
                   <td>
                     <div
                       dangerouslySetInnerHTML={{ __html: task.note || "" }}
