@@ -1,6 +1,7 @@
 import { useAddNotesMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
+import { AddNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
 import { useParams } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -16,18 +17,25 @@ import {
   Row,
 } from "reactstrap";
 
-interface AddNoteModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
 const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [brokerVisible, setBrokerVisible] = useState(false);
   const [clientVisible, setClientVisible] = useState(false);
   const [category, setCategory] = useState("");
   const [comments, setComments] = useState("");
   const [addNotes, { isLoading }] = useAddNotesMutation();
+
+  const resetForm = () => {
+    setBrokerVisible(false);
+    setClientVisible(false);
+    setCategory("");
+    setComments("");
+  };
+
+  useEffect(() => {
+    if (!isOpen) resetForm();
+  }, [isOpen]);
 
   const categories = [
     "Uncategorised",
@@ -41,20 +49,21 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Create API payload with null checks
     const apiPayload = {
-      note_visible_to_introducer: brokerVisible ? brokerVisible : false,
-      note_visible_to_client: clientVisible ? clientVisible : false,
+      is_visible_to_introducer: !!brokerVisible,
+      is_visible_to_client: !!clientVisible,
       category: category ? category.toUpperCase().replace(/ /g, "_") : null,
       note: comments || "",
     };
 
     const response = await addNotes({
-      case_alias: casealias,
+      case_alias: caseAlias,
       note: apiPayload,
     });
     if (response.data) {
       toast.success("Note added successfully");
+      // reset form then close modal
+      resetForm();
       toggle();
     } else if (response.error) {
       const errorMessage =
@@ -79,10 +88,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
             <Col md={6}>
               <Row>
                 <Col md={12}>
-                  <FormGroup
-                    switch
-                    className="d-flex justify-content-between align-items-center mb-2"
-                  >
+                  <FormGroup className="d-flex justify-content-between align-items-center mb-2">
                     <Label check>Note visible to introducer?</Label>
                     <Input
                       type="switch"
@@ -92,10 +98,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                   </FormGroup>
                 </Col>
                 <Col md={12}>
-                  <FormGroup
-                    switch
-                    className="d-flex justify-content-between align-items-center"
-                  >
+                  <FormGroup className="d-flex justify-content-between align-items-center">
                     <Label check>Note visible to client?</Label>
                     <Input
                       type="switch"

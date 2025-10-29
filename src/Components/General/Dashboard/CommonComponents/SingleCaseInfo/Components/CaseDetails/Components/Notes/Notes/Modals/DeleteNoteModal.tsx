@@ -1,14 +1,7 @@
 import { useDeleteNoteMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
-import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
+import { DeleteNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesTypes";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
-
-export interface DeleteNoteModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  caseAlias: string;
-  selectedNote?: NoteProps | null;
-}
 
 const DeleteNoteModal: React.FC<DeleteNoteModalProps> = ({
   isOpen,

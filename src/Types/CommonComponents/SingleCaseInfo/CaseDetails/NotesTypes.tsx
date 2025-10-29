@@ -71,3 +71,15 @@ export interface TaskProps {
   created_at: string;
   updated_at: string;
 }
+
+export interface AddNoteModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
+
+export interface DeleteNoteModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  caseAlias: string;
+  selectedNote?: NoteProps | null;
+}
