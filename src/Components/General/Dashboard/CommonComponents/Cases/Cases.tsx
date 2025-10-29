@@ -7,6 +7,7 @@ import {
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -448,11 +449,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 {caseItem.lead_user ? (
                                   <>
                                     {caseItem.lead_user.title
-                                      ? caseItem.lead_user.title[0].toUpperCase() +
-                                        caseItem.lead_user.title
-                                          .slice(1)
-                                          .toLowerCase() +
-                                        " "
+                                      ? formatChoiceFieldValue(
+                                          caseItem.lead_user.title
+                                        ) + " "
                                       : ""}
                                     {caseItem.lead_user.first_name}{" "}
                                     {caseItem.lead_user.middle_name
@@ -469,8 +468,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 caseItem.joint_users.map((joint: CaseUser) => (
                                   <li key={joint.alias || joint.id}>
                                     {joint.title
-                                      ? joint.title[0].toUpperCase() +
-                                        joint.title.slice(1).toLowerCase() +
+                                      ? formatChoiceFieldValue(joint.title) +
                                         " "
                                       : ""}
                                     {joint.first_name}{" "}
@@ -502,33 +500,21 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           </td>
                           <td>
                             {caseItem.case_category
-                              .split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(caseItem.case_category)
+                              : "-"}
                           </td>
                           <td>
                             {caseItem.case_stage
-                              .split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(caseItem.case_stage)
+                              : "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td>
                             <p className="m-0">
                               {caseItem.created_by?.title
-                                ? caseItem.created_by.title[0].toUpperCase() +
-                                  caseItem.created_by.title
-                                    .slice(1)
-                                    .toLowerCase() +
-                                  " "
+                                ? formatChoiceFieldValue(
+                                    caseItem.created_by.title
+                                  ) + " "
                                 : ""}
                               {caseItem.created_by?.first_name}{" "}
                               {caseItem.created_by?.middle_name
@@ -542,13 +528,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             >
                               (
                               {caseItem.created_by?.user_type
-                                ?.split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")}
+                                ? formatChoiceFieldValue(
+                                    caseItem.created_by.user_type
+                                  )
+                                : ""}
                               )
                             </p>
                           </td>
@@ -557,11 +540,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               <>
                                 <p className="m-0">
                                   {caseItem.assigned_user.title
-                                    ? caseItem.assigned_user.title[0].toUpperCase() +
-                                      caseItem.assigned_user.title
-                                        .slice(1)
-                                        .toLowerCase() +
-                                      " "
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_user.title
+                                      ) + " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
                                   {caseItem.assigned_user.middle_name
@@ -575,13 +556,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 >
                                   (
                                   {caseItem.assigned_user.user_type
-                                    ?.split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")}
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_user.user_type
+                                      )
+                                    : ""}
                                   )
                                 </p>
                               </>

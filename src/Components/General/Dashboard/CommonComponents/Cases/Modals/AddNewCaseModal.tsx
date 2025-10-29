@@ -4,6 +4,7 @@ import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/Direct
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { LeadsInfo } from "@/Types/CommonComponents/Directors/LeadTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -180,9 +181,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   <option key={lead.user.id} value={lead.user.id}>
                     {`${
                       lead.user?.title
-                        ? lead.user.title.charAt(0).toUpperCase() +
-                          lead.user.title.slice(1).toLowerCase() +
-                          " "
+                        ? formatChoiceFieldValue(lead.user.title) + " "
                         : ""
                     }${lead.user?.first_name}${
                       lead.user?.middle_name ? " " + lead.user.middle_name : ""
@@ -244,9 +243,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                     <option key={adviser.user.id} value={adviser.user.id}>
                       {`${
                         adviser.user?.title
-                          ? adviser.user.title.charAt(0).toUpperCase() +
-                            adviser.user.title.slice(1).toLowerCase() +
-                            ". "
+                          ? formatChoiceFieldValue(adviser.user.title) + " "
                           : ""
                       }${adviser.user?.first_name}${
                         adviser.user?.middle_name
