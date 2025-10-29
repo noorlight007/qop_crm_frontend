@@ -1,4 +1,5 @@
 import apiClient from "@/services/api-client";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -69,9 +70,7 @@ export const authoption: NextAuthOptions = {
               name:
                 `${
                   response.data.user.title
-                    ? response.data.user.title[0].toUpperCase() +
-                      response.data.user.title.slice(1).toLowerCase() +
-                      " "
+                    ? formatChoiceFieldValue(response.data.user.title) + " "
                     : ""
                 }${response.data.user.first_name || ""}${
                   response.data.user.middle_name

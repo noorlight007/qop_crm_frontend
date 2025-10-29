@@ -2,6 +2,7 @@ import {
   useAddPropertyDetailsMutation,
   useGetPortfolioApplicantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { X } from "react-feather";
@@ -157,8 +158,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                           }}
                         >
                           {applicant?.title
-                            ? applicant?.title.charAt(0).toUpperCase() +
-                              applicant?.title.slice(1).toLowerCase()
+                            ? formatChoiceFieldValue(applicant?.title)
                             : ""}{" "}
                           {applicant?.first_name} {applicant?.middle_name}{" "}
                           {applicant?.last_name}
@@ -196,8 +196,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                           onClick={() => handleSelect(applicant.id)}
                         >
                           {applicant?.title
-                            ? applicant?.title.charAt(0).toUpperCase() +
-                              applicant?.title.slice(1).toLowerCase()
+                            ? formatChoiceFieldValue(applicant?.title)
                             : ""}{" "}
                           {applicant?.first_name} {applicant?.middle_name}{" "}
                           {applicant?.last_name}

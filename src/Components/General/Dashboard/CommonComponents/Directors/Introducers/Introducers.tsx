@@ -5,6 +5,7 @@ import {
 } from "@/Types/CommonComponents/Directors/IntroducerTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
@@ -188,8 +189,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                         style={{ cursor: "pointer" }}
                       >
                         {introducer.user?.title
-                          ? introducer.user?.title.charAt(0).toUpperCase() +
-                            introducer.user?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(introducer.user?.title)
                           : ""}{" "}
                         {introducer?.user?.first_name}{" "}
                         {introducer?.user?.middle_name}{" "}
@@ -210,21 +210,20 @@ const Introducers: React.FC<IntroducersProps> = ({
                       )}
                     </td>
                     <td>
-                      {introducer?.role?.charAt(0)?.toUpperCase() +
-                        introducer?.role?.slice(1)?.toLowerCase()}
+                      {introducer?.role
+                        ? formatChoiceFieldValue(introducer.role)
+                        : "-"}
                     </td>
                     <td>
-                      {introducer?.joining_date && !isNaN(Date.parse(introducer.joining_date))
+                      {introducer?.joining_date &&
+                      !isNaN(Date.parse(introducer.joining_date))
                         ? formatDateToDMYAndTime(introducer.joining_date)
                         : "-"}
                     </td>
                     <td>
                       <p className="m-0">
                         {introducer.created_by?.title
-                          ? introducer.created_by?.title
-                              .charAt(0)
-                              .toUpperCase() +
-                            introducer.created_by?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(introducer.created_by?.title)
                           : ""}{" "}
                         {introducer?.created_by?.first_name}{" "}
                         {introducer?.created_by?.middle_name}{" "}
@@ -233,13 +232,10 @@ const Introducers: React.FC<IntroducersProps> = ({
                       <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
                         (
                         {introducer.created_by?.user_type
-                          ?.split("_")
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")}
+                          ? formatChoiceFieldValue(
+                              introducer.created_by?.user_type
+                            )
+                          : ""}
                         )
                       </p>
                     </td>
@@ -397,9 +393,7 @@ const Introducers: React.FC<IntroducersProps> = ({
           introducerName={
             `${
               introducerToDelete?.user?.title
-                ? introducerToDelete?.user?.title.charAt(0).toUpperCase() +
-                  introducerToDelete?.user?.title.slice(1).toLowerCase() +
-                  " "
+                ? formatChoiceFieldValue(introducerToDelete?.user?.title) + " "
                 : ""
             }` +
             `${introducerToDelete?.user?.first_name || ""} ` +

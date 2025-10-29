@@ -2,6 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleCLientApplication/SingleCLientApplicationApi";
 import { SingleClientApplicationProps } from "@/Types/Client/SingleClientApplicationTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import Link from "next/link";
 import React from "react";
 import { Card, CardBody, CardHeader, Table } from "reactstrap";
@@ -50,26 +51,27 @@ const MyApplications: React.FC = () => {
                 <td>{formatDateToDMYAndTime(app.created_at)}</td>
                 <td>
                   {app.case_category
-                    ?.split("_")
-                    .map(
-                      (word) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")}
+                    ? formatChoiceFieldValue(app.case_category)
+                    : "-"}
                 </td>
                 <td>
                   {app.case_stage
-                    ?.split("_")
-                    .map(
-                      (word) =>
-                        word.charAt(0).toUpperCase() +
-                        word.slice(1).toLowerCase()
-                    )
-                    .join(" ")}
+                    ? formatChoiceFieldValue(app.case_stage)
+                    : "-"}
                 </td>
                 <td>
-                  {app.lead_user.first_name + " " + app.lead_user.last_name}
+                  {app.lead_user.title
+                    ? formatChoiceFieldValue(app.lead_user.title) + " "
+                    : ""}
+                  {app.lead_user.first_name
+                    ? formatChoiceFieldValue(app.lead_user.first_name) + " "
+                    : ""}
+                  {app.lead_user.middle_name
+                    ? formatChoiceFieldValue(app.lead_user.middle_name) + " "
+                    : ""}
+                  {app.lead_user.last_name
+                    ? formatChoiceFieldValue(app.lead_user.last_name)
+                    : ""}
                 </td>
                 <td>
                   <a

@@ -1,5 +1,6 @@
 import { useGetCommitmentPaymentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
 import { ViewCommitmentPaymentsMissedModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -62,13 +63,8 @@ const ViewCommitmentPaymentsMissedModal: React.FC<
                   <tr key={index}>
                     <td>
                       {item?.commitment_type
-                        ?.split("_")
-                        .map(
-                          (word: any) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(" ")}
+                        ? formatChoiceFieldValue(item.commitment_type)
+                        : "-"}
                     </td>
                     <td>{item?.loan_company_name || "-"}</td>
                     <td>{item?.cleared ? "Cleared" : "Not Cleared"}</td>

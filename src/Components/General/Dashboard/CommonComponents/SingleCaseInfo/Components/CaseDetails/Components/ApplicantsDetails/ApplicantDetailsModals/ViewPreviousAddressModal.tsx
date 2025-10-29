@@ -4,6 +4,7 @@ import {
   PreviousAddressProps,
   ViewPreviousAddressModalProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
@@ -96,13 +97,8 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                   </td>
                   <td>
                     {addressData.residential_status
-                      ?.split("_")
-                      .map(
-                        (word) =>
-                          word.charAt(0).toUpperCase() +
-                          word.slice(1).toLowerCase()
-                      )
-                      .join(" ")}
+                      ? formatChoiceFieldValue(addressData.residential_status)
+                      : ""}
                   </td>
                   <td>{addressData.notes}</td>
                   <td>

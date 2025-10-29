@@ -4,6 +4,7 @@ import {
   DocumentOwnerProps,
   DocumentUploadModalProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -474,12 +475,9 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                               u.last_name
                             }`}
                           >
-                            {u.title ? (
-                              <>
-                                {u.title.charAt(0).toUpperCase() +
-                                  u.title.slice(1).toLowerCase()}{" "}
-                              </>
-                            ) : null}
+                            {u.title
+                              ? formatChoiceFieldValue(u.title) + " "
+                              : null}
                             {u.first_name}{" "}
                             {u.middle_name ? u.middle_name + " " : ""}
                             {u.last_name}
@@ -530,10 +528,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                               htmlFor={`owner-${user.id}`}
                             >
                               {user?.title
-                                ? `${
-                                    user.title.charAt(0).toUpperCase() +
-                                    user.title.slice(1).toLowerCase()
-                                  } `
+                                ? formatChoiceFieldValue(user.title) + " "
                                 : ""}
                               {user.first_name}{" "}
                               {user.middle_name ? user.middle_name + " " : ""}

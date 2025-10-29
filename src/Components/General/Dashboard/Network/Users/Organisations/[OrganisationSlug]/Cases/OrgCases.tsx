@@ -6,6 +6,7 @@ import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/Sing
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -288,14 +289,11 @@ const OrgCases: React.FC = () => {
                             {caseItem.lead_user ? (
                               <>
                                 {caseItem.lead_user?.title
-                                  ? caseItem.lead_user.title
-                                      .charAt(0)
-                                      .toUpperCase() +
-                                    caseItem.lead_user.title
-                                      .slice(1)
-                                      .toLowerCase()
-                                  : ""}
-                                {". "} {caseItem.lead_user?.first_name}{" "}
+                                  ? formatChoiceFieldValue(
+                                      caseItem.lead_user?.title
+                                    )
+                                  : ""}{" "}
+                                {caseItem.lead_user?.first_name}{" "}
                                 {caseItem.lead_user?.middle_name}{" "}
                                 {caseItem.lead_user?.last_name}
                               </>
@@ -317,34 +315,21 @@ const OrgCases: React.FC = () => {
                           </td>
                           <td>
                             {caseItem.case_category
-                              .split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(caseItem.case_category)
+                              : "-"}
                           </td>
                           <td>
                             {caseItem.case_stage
-                              .split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(caseItem.case_stage)
+                              : "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td>
                             <p className="m-0">
                               {caseItem.created_by?.title
-                                ? caseItem.created_by?.title
-                                    .charAt(0)
-                                    .toUpperCase() +
-                                  caseItem.created_by?.title
-                                    .slice(1)
-                                    .toLowerCase()
+                                ? formatChoiceFieldValue(
+                                    caseItem.created_by?.title
+                                  )
                                 : ""}
                               {"."} {caseItem?.created_by?.first_name}{" "}
                               {caseItem?.created_by?.middle_name}{" "}
@@ -356,13 +341,10 @@ const OrgCases: React.FC = () => {
                             >
                               (
                               {caseItem.created_by?.user_type
-                                ?.split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() +
-                                    word.slice(1).toLowerCase()
-                                )
-                                .join(" ")}
+                                ? formatChoiceFieldValue(
+                                    caseItem.created_by?.user_type
+                                  )
+                                : "-"}
                               )
                             </p>
                           </td>
@@ -371,11 +353,9 @@ const OrgCases: React.FC = () => {
                               <>
                                 <p className="m-0">
                                   {caseItem.assigned_user.title
-                                    ? caseItem.assigned_user.title[0].toUpperCase() +
-                                      caseItem.assigned_user.title
-                                        .slice(1)
-                                        .toLowerCase() +
-                                      " "
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_user.title
+                                      ) + " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
                                   {caseItem.assigned_user.middle_name
@@ -389,13 +369,10 @@ const OrgCases: React.FC = () => {
                                 >
                                   (
                                   {caseItem.assigned_user.user_type
-                                    ?.split("_")
-                                    .map(
-                                      (word) =>
-                                        word.charAt(0).toUpperCase() +
-                                        word.slice(1).toLowerCase()
-                                    )
-                                    .join(" ")}
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_user.user_type
+                                      )
+                                    : "-"}
                                   )
                                 </p>
                               </>

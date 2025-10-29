@@ -5,6 +5,7 @@ import {
   UpdateCaseModalProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -169,9 +170,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                       <option key={adviser.user.id} value={adviser.user.id}>
                         {`${
                           adviser.user?.title
-                            ? adviser.user.title.charAt(0).toUpperCase() +
-                              adviser.user.title.slice(1).toLowerCase() +
-                              " "
+                            ? formatChoiceFieldValue(adviser.user.title) + " "
                             : ""
                         }${adviser.user?.first_name}${
                           adviser.user?.middle_name
