@@ -7,6 +7,7 @@ import {
 } from "@/Types/CommonComponents/Directors/ClientTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -194,8 +195,7 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                         style={{ cursor: "pointer" }}
                       >
                         {client.user?.title
-                          ? client.user?.title.charAt(0).toUpperCase() +
-                            client.user?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(client.user?.title)
                           : ""}{" "}
                         {client?.user?.first_name} {client?.user?.middle_name}{" "}
                         {client?.user?.last_name}
@@ -215,14 +215,14 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                       )}
                     </td>
                     <td>
-                      {client?.role?.charAt(0)?.toUpperCase() +
-                        client?.role?.slice(1)?.toLowerCase()}
+                      {client?.role
+                        ? formatChoiceFieldValue(client?.role)
+                        : "-"}
                     </td>
                     <td>
                       <p className="m-0">
                         {client.created_by?.title
-                          ? client.created_by?.title.charAt(0).toUpperCase() +
-                            client.created_by?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(client.created_by?.title)
                           : ""}{" "}
                         {client?.created_by?.first_name}{" "}
                         {client?.created_by?.middle_name}{" "}
@@ -231,13 +231,8 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                       <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
                         (
                         {client.created_by?.user_type
-                          ?.split("_")
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")}
+                          ? formatChoiceFieldValue(client.created_by?.user_type)
+                          : "-"}
                         )
                       </p>
                     </td>

@@ -1,5 +1,6 @@
 import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { saveAs } from "file-saver";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -363,9 +364,8 @@ const Documents: React.FC = () => {
                                 {fileData.file_owner_info.map((owner: any) => (
                                   <li key={owner.alias || owner.email}>
                                     {owner?.title
-                                      ? owner.title.charAt(0).toUpperCase() +
-                                        owner.title.slice(1).toLowerCase() +
-                                        ". "
+                                      ? formatChoiceFieldValue(owner.title) +
+                                        " "
                                       : ""}
                                     {owner?.first_name || ""}{" "}
                                     {owner?.middle_name
@@ -378,14 +378,10 @@ const Documents: React.FC = () => {
                             ) : (
                               <>
                                 {fileData?.file_owner_info?.title
-                                  ? fileData.file_owner_info.title
-                                      .charAt(0)
-                                      .toUpperCase() +
-                                    fileData.file_owner_info.title
-                                      .slice(1)
-                                      .toLowerCase()
+                                  ? formatChoiceFieldValue(
+                                      fileData.file_owner_info.title
+                                    ) + " "
                                   : ""}
-                                {fileData?.file_owner_info?.title ? ". " : ""}
                                 {fileData?.file_owner_info?.first_name}{" "}
                                 {fileData?.file_owner_info?.middle_name
                                   ? fileData.file_owner_info.middle_name + " "
@@ -396,13 +392,8 @@ const Documents: React.FC = () => {
                           </td>
                           <td>
                             {fileData?.file_type
-                              ?.split("_")
-                              .map(
-                                (word) =>
-                                  word.charAt(0).toUpperCase() +
-                                  word.slice(1).toLowerCase()
-                              )
-                              .join(" ")}
+                              ? formatChoiceFieldValue(fileData.file_type)
+                              : "-"}
                           </td>
                           <td>
                             <div className="d-flex justify-content-center gap-2 align-items-center">

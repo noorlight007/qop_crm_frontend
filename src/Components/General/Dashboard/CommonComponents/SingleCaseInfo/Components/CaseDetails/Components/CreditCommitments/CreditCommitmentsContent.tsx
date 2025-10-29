@@ -4,6 +4,7 @@ import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseI
 import { useGetCreditCommitmentsDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -352,14 +353,7 @@ const CreditCommitmentsContent: React.FC = () => {
                       </div>
                     </td>
                     <td>
-                      {item.type
-                        ?.split("_")
-                        .map(
-                          (word: any) =>
-                            word.charAt(0).toUpperCase() +
-                            word.slice(1).toLowerCase()
-                        )
-                        .join(" ") || "-"}
+                      {item.type ? formatChoiceFieldValue(item.type) : "-"}
                     </td>
                     <td>{item.company || "-"}</td>
                     <td>{item.account_no || "-"}</td>

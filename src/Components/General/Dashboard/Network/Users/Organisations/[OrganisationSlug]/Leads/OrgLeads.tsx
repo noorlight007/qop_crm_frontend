@@ -7,6 +7,7 @@ import {
 } from "@/Types/CommonComponents/Directors/LeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -185,8 +186,7 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                         style={{ cursor: "pointer" }}
                       >
                         {lead.user?.title
-                          ? lead.user?.title.charAt(0).toUpperCase() +
-                            lead.user?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(lead.user?.title)
                           : ""}{" "}
                         {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
                         {lead?.user?.last_name}
@@ -206,14 +206,12 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                       )}
                     </td>
                     <td>
-                      {lead?.role?.charAt(0)?.toUpperCase() +
-                        lead?.role?.slice(1)?.toLowerCase()}
+                      {lead?.role ? formatChoiceFieldValue(lead.role) : "-"}
                     </td>
                     <td>
                       <p className="m-0">
                         {lead.created_by?.title
-                          ? lead.created_by?.title.charAt(0).toUpperCase() +
-                            lead.created_by?.title.slice(1).toLowerCase()
+                          ? formatChoiceFieldValue(lead.created_by?.title)
                           : ""}{" "}
                         {lead?.created_by?.first_name}{" "}
                         {lead?.created_by?.middle_name}{" "}
@@ -222,13 +220,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                       <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
                         (
                         {lead.created_by?.user_type
-                          ?.split("_")
-                          .map(
-                            (word: any) =>
-                              word.charAt(0).toUpperCase() +
-                              word.slice(1).toLowerCase()
-                          )
-                          .join(" ")}
+                          ? formatChoiceFieldValue(lead.created_by?.user_type)
+                          : ""}
                         )
                       </p>
                     </td>

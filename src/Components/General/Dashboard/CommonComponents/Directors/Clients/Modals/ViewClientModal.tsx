@@ -60,8 +60,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">Gender:</span>
             <small>
               {selectedClient?.gender ? (
-                selectedClient.gender.charAt(0).toUpperCase() +
-                selectedClient.gender.slice(1).toLowerCase()
+                formatChoiceFieldValue(selectedClient?.gender)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -71,13 +70,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">User Type:</span>
             <small>
               {selectedClient?.user?.user_type ? (
-                selectedClient.user.user_type
-                  .split("_")
-                  .map(
-                    (word) =>
-                      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                  )
-                  .join(" ")
+                formatChoiceFieldValue(selectedClient.user.user_type)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
