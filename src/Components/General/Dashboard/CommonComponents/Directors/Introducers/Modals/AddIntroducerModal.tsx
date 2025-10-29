@@ -223,8 +223,9 @@ const AddIntroducerModal: React.FC<AddIntroducerModalProps> = ({
                   required
                 >
                   <option value="">Select...</option>
-                  <option value="MALE">MALE</option>
-                  <option value="FEMALE">FEMALE</option>
+                  <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                  <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>
             </Col>
