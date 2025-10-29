@@ -1,7 +1,9 @@
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
 import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
+import { AddTaskModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { formatChoiceFieldValue } from "@/utils/formatters";
 import { useParams } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -17,30 +19,22 @@ import {
   Row,
 } from "reactstrap";
 
-interface AddTaskModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
 const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("LOW");
-  // store ISO date (yyyy-mm-dd) from the browser date picker
   const [dueDate, setDueDate] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [comments, setComments] = useState("");
 
   // rtk hooks
   const [addTask, { isLoading }] = useAddTasksMutation();
-  const { data: advisersData, isLoading: isAdvisersLoading } =
-    useGetAdviserDetailsQuery(undefined);
+  const { data: usersData, isLoading: isUsersLoading } =
+    useGetUsersQuery(undefined);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Create API payload with null checks
-    // Convert stored ISO date (yyyy-mm-dd) to dd/mm/yyyy if present
     const apiPayload = {
       name: name || null,
       task_priority: priority || null,
@@ -48,13 +42,14 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
       assigned_to: assignedTo || null,
       note: comments || null,
     };
-
     const response = await addTask({
-      case_alias: casealias,
+      case_alias: caseAlias,
       task: apiPayload,
     });
     if (response.data) {
       toast.success("Task added successfully");
+      // reset form and close
+      resetForm();
       toggle();
     } else if (response.error) {
       const errorMessage =
@@ -64,6 +59,19 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
       toast.error("Something went wrong");
     }
   };
+
+  const resetForm = () => {
+    setName("");
+    setPriority("LOW");
+    setDueDate("");
+    setAssignedTo("");
+    setComments("");
+  };
+
+  // Reset form when modal is closed so next open starts fresh
+  useEffect(() => {
+    if (!isOpen) resetForm();
+  }, [isOpen]);
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -119,7 +127,6 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   type="date"
                   id="dueDate"
                   value={dueDate}
-                  // keep ISO value (yyyy-mm-dd) so the native date picker works
                   onChange={(e) => setDueDate(e.target.value)}
                   required
                 />
@@ -137,19 +144,14 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   onChange={(e) => setAssignedTo(e.target.value)}
                   required
                 >
-                  <option value="">Select an adviser</option>
-                  {advisersData &&
-                    advisersData.map((adviser: any) => (
-                      <option key={adviser?.user.id} value={adviser?.user.id}>
-                        {adviser?.user?.title
-                          ? adviser.user.title.charAt(0).toUpperCase() +
-                            adviser.user.title.slice(1).toLowerCase()
-                          : ""}{" "}
-                        {adviser?.user?.first_name} {adviser?.user?.middle_name}{" "}
-                        {adviser?.user?.last_name}
+                  <option value="">Select a user</option>
+                  {usersData &&
+                    usersData.map((user: any) => (
+                      <option key={user?.id} value={user?.id}>
+                        {user?.name} (
+                        {formatChoiceFieldValue(user?.user_type || null)})
                       </option>
                     ))}
-                  {/* Add more options as needed */}
                 </Input>
               </FormGroup>
             </Col>
