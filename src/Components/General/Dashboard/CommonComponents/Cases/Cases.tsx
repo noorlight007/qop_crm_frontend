@@ -406,6 +406,19 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <th>Case Category</th>
                       <th>Case Stage</th>
                       <th>Created At</th>
+                      <th>
+                        {session?.user?.user_type === "NETWORK_ADMIN" ||
+                        session?.user?.user_type === "NETWORK_ADVISER"
+                          ? "Organisation"
+                          : session?.user?.user_type === "ORGANISATION_ADMIN" ||
+                            session?.user?.user_type === "ORGANISATION_ADVISER" ||
+                            session?.user?.user_type === "ORGANISATION_SUPPORT" ||
+                            session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                            session?.user?.user_type === "ORGANIZATION_ADVISER" ||
+                            session?.user?.user_type === "ORGANIZATION_SUPPORT"
+                          ? "Network"
+                          : "Unknown"}
+                      </th>
                       <th>Created By</th>
                       <th>Assigned To</th>
                       <th>Action</th>
@@ -438,7 +451,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               )}
                             </Link>
                           </td>
-                          <td className="text-start">
+                          <td className="text-start text-truncate">
                             <ul
                               style={{
                                 listStyleType: "disc",
@@ -503,13 +516,27 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               ? formatChoiceFieldValue(caseItem.case_category)
                               : "-"}
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {caseItem.case_stage
                               ? formatChoiceFieldValue(caseItem.case_stage)
                               : "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
-                          <td>
+                          <td className="text-truncate">
+                            {userType === "NETWORK_ADMIN" || userType === "NETWORK_ADVISER" ? (
+                              caseItem.organization?.name ?? "-"
+                            ) : userType === "ORGANISATION_ADMIN" ||
+                              userType === "ORGANISATION_ADVISER" ||
+                              userType === "ORGANISATION_SUPPORT" ||
+                              userType === "ORGANIZATION_ADMIN" ||
+                              userType === "ORGANIZATION_ADVISER" ||
+                              userType === "ORGANIZATION_SUPPORT" ? (
+                              caseItem.network?.name ?? "-"
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td className="text-truncate">
                             <p className="m-0">
                               {caseItem.created_by?.title
                                 ? formatChoiceFieldValue(
@@ -535,7 +562,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               )
                             </p>
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {caseItem.assigned_user ? (
                               <>
                                 <p className="m-0">
