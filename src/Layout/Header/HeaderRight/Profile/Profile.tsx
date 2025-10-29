@@ -17,6 +17,24 @@ const Profile = () => {
   };
 
   const handleLogout = async () => {
+    // notify other tabs about logout
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("qop_logout", Date.now().toString());
+      } catch (err) {
+        // ignore
+      }
+      try {
+        if ((window as any).BroadcastChannel) {
+          const bc = new BroadcastChannel("qop_channel");
+          bc.postMessage("logout");
+          bc.close();
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+
     await signOut({ redirect: false });
     router.push("/auth/login");
   };
