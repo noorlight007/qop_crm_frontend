@@ -16,19 +16,6 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
       <Card className="shadow p-2">
         <CardHeader className="h3 text-danger">Danger Zone</CardHeader>
         <CardBody className="border-danger rounded-2 mb-4">
-          {/** Change Visibility Section **/}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <h5 className="fw-bold">Change organisation visibility</h5>
-              <p className="mb-0 opacity-75">
-                This organisation is currently public.
-              </p>
-            </div>
-            <Button color="danger" disabled>
-              Change visibility
-            </Button>
-          </div>
-          <hr />
           {/** Disable Organisation Protection Rules Section **/}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div>
@@ -56,19 +43,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
             </Button>
           </div>
           <hr />
-          {/** Archive Organisation Section **/}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <h5 className="fw-bold">Archive this organisation</h5>
-              <p className="mb-0 opacity-75">
-                Mark this organisation as archived and read-only.
-              </p>
-            </div>
-            <Button color="danger" disabled>
-              Archive this organisation
-            </Button>
-          </div>
-          <hr />
+
           {/** Delete organisation Section **/}
           <div className="d-flex justify-content-between align-items-center">
             <div>
