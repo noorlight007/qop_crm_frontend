@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -22,7 +21,7 @@ export const NotesTab = () => {
             <Nav className="nav-warning" pills>
               {[
                 { id: "1", nav: "Notes" },
-                { id: "2", nav: "Tasks" },
+                { id: "2", nav: "Activities" },
               ].map((item, index) => (
                 <NavItem key={index}>
                   <NavLink

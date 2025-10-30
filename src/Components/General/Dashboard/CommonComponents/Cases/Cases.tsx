@@ -302,7 +302,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
                     <Col xs="12" sm="6" md="3">
-                      <Label>Select Case Created Employee</Label>
+                      <Label>Select Case Created Adviser</Label>
                       <Input
                         type="select"
                         id="employeeFilter"
@@ -312,7 +312,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           handleFilterChange("created_by", e.target.value)
                         }
                       >
-                        <option value="">All Employee</option>
+                        <option value="">All Advisers</option>
                         {adviserData?.map((adviser: AdviserInfoProps) => (
                           <option key={adviser.alias} value={adviser.user.id}>
                             {adviser.user.title

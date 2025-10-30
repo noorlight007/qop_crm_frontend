@@ -19,6 +19,7 @@ const Menulist: React.FC<MenuListType> = ({
   const { t } = useTranslation("common");
   const [initialLoad, setInitialLoad] = useState(true);
   const { data: session } = useSession();
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   // Get role-specific menu
   const roleBasedMenu = session?.user?.user_type
@@ -80,16 +81,29 @@ const Menulist: React.FC<MenuListType> = ({
     }
   }, [pathname, menuToUse, initialLoad]);
 
-  if (!menu || !Array.isArray(menu)) {
+  // choose which list to render depending on level
+  // Use the passed `menu` prop if available; otherwise fall back to role-based `menuToUse` for level 0.
+  const items =
+    Array.isArray(menu) && menu.length > 0
+      ? menu
+      : level === 0
+      ? menuToUse
+      : menu;
+  if (!items || !Array.isArray(items)) {
     return null;
   }
 
   return (
     <>
-      {menu.map((item, index) => {
+      {items.map((item, index) => {
         const hasChildren = item.children && item.children.length > 0;
         const isCurrentActive =
           initialLoad || isActive(item) || activeMenu[level] === item.title;
+
+        // unique key for collapsed state per item & level
+        const itemKey = `${level}-${index}-${item.title}`;
+        const isHidden = !!collapsed[itemKey];
+        const isExpanded = !isHidden; // default: expanded (visible)
 
         return (
           <li
@@ -100,11 +114,11 @@ const Menulist: React.FC<MenuListType> = ({
           >
             <a
               href={item.path || "#"}
-              className={`nav-link d-flex align-items-center gap-1 ${
+              className={`nav-link d-flex align-items-center gap-1 my-1 w-full ${
                 level === 0 ? "sidebar-link" : ""
               } ${isCurrentActive ? "active" : ""}`}
               onClick={(e) => handleClick(e, item)}
-              style={{ cursor: "pointer" }}
+              style={{ cursor: "pointer", width: "220px" }}
             >
               {item.icon && (
                 <SVG className="stroke-icon me-2" iconId={item.icon} />
@@ -130,14 +144,30 @@ const Menulist: React.FC<MenuListType> = ({
               )}
 
               {hasChildren && (
-                <i
-                  className="fa fa-chevron-right ms-auto"
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setCollapsed((prev) => ({
+                      ...prev,
+                      [itemKey]: !prev[itemKey],
+                    }));
+                  }}
+                  aria-expanded={isExpanded}
+                  title={isExpanded ? t("Collapse") : t("Expand")}
                   style={{
-                    transform: isCurrentActive ? "rotate(90deg)" : "rotate(0)",
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    transform: isExpanded ? "rotate(90deg)" : "rotate(0)",
                     transition: "transform 0.3s ease",
                     marginLeft: "8px",
+                    padding: 0,
                   }}
-                ></i>
+                  className="ms-auto"
+                >
+                  <i className="fa fa-chevron-right"></i>
+                </button>
               )}
             </a>
 
@@ -147,8 +177,8 @@ const Menulist: React.FC<MenuListType> = ({
                   level === 0 ? "sidebar-submenu" : "according-submenu"
                 }`}
                 style={{
-                  display: "block",
-                  // display: isCurrentActive ? "block" : "none",
+                  display: isExpanded ? "block" : "none",
+                  width: "100%",
                 }}
               >
                 <Menulist
