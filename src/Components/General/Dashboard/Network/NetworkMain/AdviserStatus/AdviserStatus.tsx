@@ -36,7 +36,10 @@ const AdviserStatus: React.FC<CommonDashboardProps> = ({
                 General Insurance
               </Badge>
             </div>
-            <Link href="#" className="ms-3 text_decoration_hover">
+            <Link
+              href="/dashboard/network/advisers-status"
+              className="ms-3 text_decoration_hover"
+            >
               <TbEye size={18} className="me-1" />
               View full report
             </Link>
@@ -72,8 +75,9 @@ const AdviserStatus: React.FC<CommonDashboardProps> = ({
                   </tr>
                 ) : (
                   <>
-                    {commonDashboardData?.top_performing_advisers?.map(
-                      (data: any, idx: number) => (
+                    {commonDashboardData?.top_performing_advisers
+                      ?.slice(0, 5)
+                      .map((data: any, idx: number) => (
                         <tr key={idx}>
                           <td>{data?.rank ?? "-"}</td>
                           <td>{data?.advisor_name ?? "-"}</td>
@@ -86,8 +90,7 @@ const AdviserStatus: React.FC<CommonDashboardProps> = ({
                           <td>{data?.protection ?? "-"}</td>
                           <td>{data?.general_insurance ?? "-"}</td>
                         </tr>
-                      )
-                    )}
+                      ))}
                   </>
                 )}
               </tbody>
