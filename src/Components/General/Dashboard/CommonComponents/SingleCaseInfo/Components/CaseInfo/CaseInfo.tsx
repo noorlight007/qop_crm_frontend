@@ -390,6 +390,28 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         <Row className="px-3">
           <Col className="border-2 border-r-light">
             <h4>Property Address:</h4>
+            <p>
+              {(() => {
+                const pd = caseInfo?.property_details;
+                if (!pd) return "N/A";
+                const countryFormatted = pd.country
+                  ? formatChoiceFieldValue(pd.country)
+                  : pd.country;
+                const parts = [
+                  pd.house_name_or_number,
+                  pd.address_line_1,
+                  pd.address_line_2,
+                  pd.city,
+                  pd.county,
+                  pd.postcode,
+                  countryFormatted,
+                ].filter(
+                  (v) =>
+                    v !== null && v !== undefined && String(v).trim() !== ""
+                );
+                return parts.length ? parts.join(", ") : "N/A";
+              })()}
+            </p>
           </Col>
           <Col>
             <h4>Notes:</h4>

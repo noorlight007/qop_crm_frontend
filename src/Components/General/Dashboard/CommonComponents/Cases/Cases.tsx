@@ -411,10 +411,13 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         session?.user?.user_type === "NETWORK_ADVISER"
                           ? "Organisation"
                           : session?.user?.user_type === "ORGANISATION_ADMIN" ||
-                            session?.user?.user_type === "ORGANISATION_ADVISER" ||
-                            session?.user?.user_type === "ORGANISATION_SUPPORT" ||
+                            session?.user?.user_type ===
+                              "ORGANISATION_ADVISER" ||
+                            session?.user?.user_type ===
+                              "ORGANISATION_SUPPORT" ||
                             session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                            session?.user?.user_type === "ORGANIZATION_ADVISER" ||
+                            session?.user?.user_type ===
+                              "ORGANIZATION_ADVISER" ||
                             session?.user?.user_type === "ORGANIZATION_SUPPORT"
                           ? "Network"
                           : "Unknown"}
@@ -523,18 +526,17 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td className="text-truncate">
-                            {userType === "NETWORK_ADMIN" || userType === "NETWORK_ADVISER" ? (
-                              caseItem.organization?.name ?? "-"
-                            ) : userType === "ORGANISATION_ADMIN" ||
-                              userType === "ORGANISATION_ADVISER" ||
-                              userType === "ORGANISATION_SUPPORT" ||
-                              userType === "ORGANIZATION_ADMIN" ||
-                              userType === "ORGANIZATION_ADVISER" ||
-                              userType === "ORGANIZATION_SUPPORT" ? (
-                              caseItem.network?.name ?? "-"
-                            ) : (
-                              "-"
-                            )}
+                            {userType === "NETWORK_ADMIN" ||
+                            userType === "NETWORK_ADVISER"
+                              ? caseItem.organization?.name ?? "Self"
+                              : userType === "ORGANISATION_ADMIN" ||
+                                userType === "ORGANISATION_ADVISER" ||
+                                userType === "ORGANISATION_SUPPORT" ||
+                                userType === "ORGANIZATION_ADMIN" ||
+                                userType === "ORGANIZATION_ADVISER" ||
+                                userType === "ORGANIZATION_SUPPORT"
+                              ? caseItem.network?.name ?? "Self"
+                              : "-"}
                           </td>
                           <td className="text-truncate">
                             <p className="m-0">
