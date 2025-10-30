@@ -528,7 +528,11 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <td className="text-truncate">
                             {userType === "NETWORK_ADMIN" ||
                             userType === "NETWORK_ADVISER"
-                              ? caseItem.organization?.name ?? "Self"
+                              ? caseItem.organization?.name ?? (
+                                  <span className="text-muted">
+                                    Owned by Network
+                                  </span>
+                                )
                               : userType === "ORGANISATION_ADMIN" ||
                                 userType === "ORGANISATION_ADVISER" ||
                                 userType === "ORGANISATION_SUPPORT" ||
