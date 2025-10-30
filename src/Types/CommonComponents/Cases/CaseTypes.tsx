@@ -61,6 +61,17 @@ export interface CaseInfoPrpos {
     id: number;
     name: string;
   };
+  application_type?: string;
+  mortgage_type?: string;
+  property_details: {
+    house_name_or_number?: string;
+    address_line_1?: string;
+    address_line_2?: string;
+    city?: string;
+    county?: string;
+    postcode?: string;
+    country?: string;
+  };
 }
 
 export interface CaseUser {
