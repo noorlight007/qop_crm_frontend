@@ -14,13 +14,16 @@ import {
 import AddJointUserModal from "./Modals/AddJointUserModal";
 import JointUserDeleteModal from "./Modals/JointUserDeleteModal";
 import UpdateJointUserModal from "./Modals/UpdateJointUserModal";
+import ViewJointUserModal from "./Modals/ViewJointUserModal";
 
 const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleAddModal = () => setAddModalOpen(!addModalOpen);
   const toggleUpdateModal = () => setUpdateModalOpen(!updateModalOpen);
   const toggleDeleteModal = () => setDeleteModalOpen(!deleteModalOpen);
@@ -54,7 +57,7 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
               <thead>
                 <tr className="text-center">
                   <th>#</th>
-                  <th>User</th>
+                  <th>Applicant Name</th>
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Relationship</th>
@@ -80,20 +83,23 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                     <tr key={index} className="text-center">
                       <td>{index + 1}</td>
                       <td>
-                        <div className="d-flex align-items-center gap-3">
-                          <div className="flex-grow-1">
-                            <h6>
-                              {userInfo.joint_user_details?.title
-                                ? formatChoiceFieldValue(
-                                    userInfo.joint_user_details?.title
-                                  )
-                                : ""}{" "}
-                              {userInfo.joint_user_details?.first_name}{" "}
-                              {userInfo.joint_user_details?.middle_name}{" "}
-                              {userInfo.joint_user_details?.last_name}
-                            </h6>
-                          </div>
-                        </div>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => {
+                            setSelectedUser(userInfo);
+                            toggleViewModal();
+                          }}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {userInfo.joint_user_details?.title
+                            ? formatChoiceFieldValue(
+                                userInfo.joint_user_details?.title
+                              )
+                            : ""}{" "}
+                          {userInfo.joint_user_details?.first_name}{" "}
+                          {userInfo.joint_user_details?.middle_name}{" "}
+                          {userInfo.joint_user_details?.last_name}
+                        </span>
                       </td>
                       <td className="f-w-600">
                         <p>{userInfo.joint_user_details?.email}</p>
@@ -135,6 +141,11 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
           </div>
         </CardBody>
         <AddJointUserModal isOpen={addModalOpen} toggle={toggleAddModal} />
+        <ViewJointUserModal
+          isOpen={isViewModalOpen}
+          toggle={toggleViewModal}
+          selectedUser={selectedUser}
+        />
         <UpdateJointUserModal
           isOpen={updateModalOpen}
           toggle={toggleUpdateModal}
