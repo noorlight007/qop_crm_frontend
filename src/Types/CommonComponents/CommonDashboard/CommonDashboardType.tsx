@@ -177,11 +177,22 @@ export interface CommonDashboardDataProps {
     total_introducers?: number;
     total_cases?: number;
   };
-  top_performing_advisers?: Adviser[];
   meta?: {
     name?: string;
     network?: string;
   };
+  top_performing_advisers?: {
+    rank?: number;
+    advisor_name?: string;
+    total_cases?: number;
+    residential?: number;
+    buy_to_Let?: number;
+    commercial?: number;
+    second_charge?: number;
+    bridging?: number;
+    protection?: number;
+    general_insurance?: number;
+  }[];
 }
 
 export interface CommonDashboardProps {

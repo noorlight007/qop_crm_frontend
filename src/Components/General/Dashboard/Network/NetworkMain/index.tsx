@@ -46,7 +46,10 @@ const ContainerNetwork = () => {
           commonDashboardData={commonDashboardData}
         />
         <OrganisationList maxItems={8} />
-        <AdviserStatus />
+        <AdviserStatus
+          isLoading={isLoading}
+          commonDashboardData={commonDashboardData}
+        />
         <Row>
           <Col>
             <MyTask />

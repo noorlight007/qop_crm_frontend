@@ -32,3 +32,8 @@ export interface JointUserDeleteModalProps {
   toggle: () => void;
   selectedUser?: any;
 }
+export interface JointUserViewModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedUser?: any;
+}
