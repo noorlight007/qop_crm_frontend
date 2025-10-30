@@ -1,11 +1,49 @@
 import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
-import { Badge, Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+    Badge,
+    Card,
+    CardBody,
+    Col,
+    Input,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
+    Row,
+    Spinner,
+    Table
+} from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
 const NetworkAdvisersStatusContainer: React.FC = () => {
-  //RTK hooks
+  // RTK hooks
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+
+  const advisers: any[] = commonDashboardData?.top_performing_advisers ?? [];
+  const total = advisers.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+  // Ensure current page is valid when data or page size changes
+  useEffect(() => {
+    if (currentPage > totalPages) setCurrentPage(totalPages);
+    if (currentPage < 1) setCurrentPage(1);
+  }, [currentPage, totalPages]);
+
+  const pagedAdvisers = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return advisers.slice(start, start + pageSize);
+  }, [advisers, currentPage, pageSize]);
+
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
   return (
     <>
       <Breadcrumbs
@@ -44,35 +82,43 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
               </div>
             </div>
             <CardBody className="p-1">
+              <div className="d-flex justify-content-between align-items-center mb-2 px-3">
+                <div>
+                  <strong>Total Advisers: </strong>
+                  <span>{isLoading ? "..." : total}</span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <small className="me-2 text-muted">Rows per page:</small>
+                  <Input
+                    type="select"
+                    value={pageSize}
+                    onChange={(e: any) => {
+                      const size = Number(e.target.value) || 10;
+                      setPageSize(size);
+                      setCurrentPage(1); // reset to first page when page size changes
+                    }}
+                    style={{ width: 90 }}
+                  >
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                  </Input>
+                </div>
+              </div>
+
               <Table responsive hover className="rounded-3 overflow-hidden">
                 <thead className="bg-light-primary text-center">
                   <tr>
                     <th className="border-0 small text-uppercase">Rank</th>
-                    <th className="border-0 small text-uppercase">
-                      Advisor Name
-                    </th>
-                    <th className="border-0 small text-uppercase">
-                      Total Cases
-                    </th>
-                    <th className="border-0 small text-uppercase">
-                      Residential
-                    </th>
-                    <th className="border-0 small text-uppercase">
-                      Buy to Let
-                    </th>
-                    <th className="border-0 small text-uppercase">
-                      Commercial
-                    </th>
-                    <th className="border-0 small text-uppercase">
-                      Second Charge
-                    </th>
+                    <th className="border-0 small text-uppercase">Advisor Name</th>
+                    <th className="border-0 small text-uppercase">Total Cases</th>
+                    <th className="border-0 small text-uppercase">Residential</th>
+                    <th className="border-0 small text-uppercase">Buy to Let</th>
+                    <th className="border-0 small text-uppercase">Commercial</th>
+                    <th className="border-0 small text-uppercase">Second Charge</th>
                     <th className="border-0 small text-uppercase">Bridging</th>
-                    <th className="border-0 small text-uppercase">
-                      Protection
-                    </th>
-                    <th className="border-0 small text-uppercase">
-                      General Insurance
-                    </th>
+                    <th className="border-0 small text-uppercase">Protection</th>
+                    <th className="border-0 small text-uppercase">General Insurance</th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -82,30 +128,79 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
                         <Spinner color="primary" />
                       </td>
                     </tr>
+                  ) : pagedAdvisers.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="text-center text-muted">
+                        No advisers found.
+                      </td>
+                    </tr>
                   ) : (
                     <>
-                      {commonDashboardData?.top_performing_advisers?.map(
-                        (data: any, idx: number) => (
-                          <tr key={idx}>
-                            <td>{data?.rank ?? "-"}</td>
-                            <td>{data?.advisor_name ?? "-"}</td>
-                            <td>{data?.total_cases ?? "-"}</td>
-                            <td>{data?.residential ?? "-"}</td>
-                            <td>
-                              {data?.buy_to_Let ?? data.buy_to_let ?? "-"}
-                            </td>
-                            <td>{data?.commercial ?? "-"}</td>
-                            <td>{data?.second_charge ?? "-"}</td>
-                            <td>{data?.bridging ?? "-"}</td>
-                            <td>{data?.protection ?? "-"}</td>
-                            <td>{data?.general_insurance ?? "-"}</td>
-                          </tr>
-                        )
-                      )}
+                      {pagedAdvisers.map((data: any, idx: number) => (
+                        <tr key={idx}>
+                          <td>{data?.rank ?? "-"}</td>
+                          <td>{data?.advisor_name ?? "-"}</td>
+                          <td>{data?.total_cases ?? "-"}</td>
+                          <td>{data?.residential ?? "-"}</td>
+                          <td>{data?.buy_to_Let ?? data.buy_to_let ?? "-"}</td>
+                          <td>{data?.commercial ?? "-"}</td>
+                          <td>{data?.second_charge ?? "-"}</td>
+                          <td>{data?.bridging ?? "-"}</td>
+                          <td>{data?.protection ?? "-"}</td>
+                          <td>{data?.general_insurance ?? "-"}</td>
+                        </tr>
+                      ))}
                     </>
                   )}
                 </tbody>
               </Table>
+
+              {/* Pagination controls */}
+              <div className="d-flex justify-content-between align-items-center px-3">
+                <div className="text-muted small">
+                  Page {currentPage} of {totalPages}
+                </div>
+                <div>
+                  <Pagination aria-label="Advisers pagination" className="mb-0">
+                    <PaginationItem disabled={currentPage === 1}>
+                      <PaginationLink previous onClick={() => handlePageChange(currentPage - 1)} />
+                    </PaginationItem>
+
+                    {Array.from({ length: totalPages }).map((_, i) => {
+                      const page = i + 1;
+                      // show first, last, current, and neighbors
+                      if (
+                        page === 1 ||
+                        page === totalPages ||
+                        Math.abs(page - currentPage) <= 2
+                      ) {
+                        return (
+                          <PaginationItem active={page === currentPage} key={page}>
+                            <PaginationLink onClick={() => handlePageChange(page)}>
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                      // show ellipsis placeholder only once between ranges
+                      const shouldShowEllipsis =
+                        page === currentPage - 3 || page === currentPage + 3;
+                      if (shouldShowEllipsis) {
+                        return (
+                          <PaginationItem key={`ell-${page}`} disabled>
+                            <PaginationLink>…</PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                      return null;
+                    })}
+
+                    <PaginationItem disabled={currentPage === totalPages}>
+                      <PaginationLink next onClick={() => handlePageChange(currentPage + 1)} />
+                    </PaginationItem>
+                  </Pagination>
+                </div>
+              </div>
             </CardBody>
           </Card>
         </Col>
