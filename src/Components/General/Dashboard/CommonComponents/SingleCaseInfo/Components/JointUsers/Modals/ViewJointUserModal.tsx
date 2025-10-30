@@ -20,7 +20,7 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Joint User Information</h3>
+        <h3 className="text-primary">Joint Applicant Information</h3>
       </ModalHeader>
       <ModalBody>
         <Row>
