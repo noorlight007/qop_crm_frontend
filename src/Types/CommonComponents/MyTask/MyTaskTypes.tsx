@@ -7,7 +7,7 @@ export interface TaskProps {
   taskName: string;
   task_priority: string;
   status: string;
-  assignedTo: string;
+  assigned_to: string;
   caseStage: string;
   dueDate: string;
 }

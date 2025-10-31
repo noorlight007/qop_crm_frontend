@@ -1,3 +1,4 @@
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
 import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
 import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
 import { useEffect, useState } from "react";
@@ -26,7 +27,7 @@ const MyTask: React.FC = () => {
 
   // Filters state (all server-side)
   const [filters, setFilters] = useState({
-    assignedTo: "",
+    assigned_to: "",
     case__case_stage: "",
     task_priority: "",
     searchTerm: "",
@@ -45,7 +46,7 @@ const MyTask: React.FC = () => {
       page_size: tasksPerPage,
     };
 
-    if (filters.assignedTo) p.assigned_to = filters.assignedTo;
+    if (filters.assigned_to) p.assigned_to = filters.assigned_to;
     if (filters.case__case_stage) p.case__case_stage = filters.case__case_stage;
     if (filters.task_priority) p.task_priority = filters.task_priority;
     if (filters.status) p.status = filters.status;
@@ -58,11 +59,14 @@ const MyTask: React.FC = () => {
 
   const apiParams = buildApiParams();
 
+  // RTK Hooks
   const {
     data: myTasksData,
     isLoading,
     isError,
   } = useGetMyTasksQuery(apiParams);
+  const { data: usersData, isLoading: isUsersLoading } =
+    useGetUsersQuery(undefined);
 
   const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
   const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
@@ -117,7 +121,7 @@ const MyTask: React.FC = () => {
             company: item.lender || "",
             taskName: item.name || "",
             caseStage: item.case_stage || "",
-            assignedTo: item.assigned_to || "",
+            assigned_to: item.assigned_to || "",
             task_priority: mappedPriority as TaskProps["task_priority"],
             status: (item.status as TaskProps["status"]) || "Unknown",
             dueDate,
@@ -145,7 +149,7 @@ const MyTask: React.FC = () => {
     if (currentPage !== 1) setCurrentPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    filters.assignedTo,
+    filters.assigned_to,
     filters.case__case_stage,
     filters.task_priority,
     filters.dueDateFrom,
@@ -256,19 +260,22 @@ const MyTask: React.FC = () => {
             <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
               <Row className="justify-content-start g-3">
                 <Col xs="12" sm="6" md="3">
-                  <Label>Assigned To</Label>
+                  <Label>Task Assigned To</Label>
                   <Input
                     type="select"
-                    id="assignedTo"
+                    id="assigned_to"
                     className="py-1"
-                    value={filters.assignedTo}
+                    value={filters.assigned_to}
                     onChange={(e) =>
-                      onFilterChange("assignedTo", e.target.value)
+                      onFilterChange("assigned_to", e.target.value)
                     }
                   >
                     <option value="">All Employees</option>
-                    <option value="Mostafizur Rahman">Mostafizur Rahman</option>
-                    <option value="John Doe">John Doe</option>
+                    {isUsersLoading ? "Loading...": usersData?.map((user: any) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))}
                   </Input>
                 </Col>
                 <Col xs="12" sm="6" md="3">
@@ -369,7 +376,7 @@ const MyTask: React.FC = () => {
                     className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
                     onClick={() => {
                       setFilters({
-                        assignedTo: "",
+                        assigned_to: "",
                         case__case_stage: "",
                         task_priority: "",
                         searchTerm: "",
@@ -439,7 +446,7 @@ const MyTask: React.FC = () => {
                         </Badge>
                       </td>
                       <td>
-                        <p className="m-0">{task.assignedTo}</p>
+                        <p className="m-0">{task.assigned_to}</p>
                       </td>
                       <td>
                         <Badge
