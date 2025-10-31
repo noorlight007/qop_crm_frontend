@@ -24,11 +24,45 @@ const MyTask: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(10);
 
+  // Filters state (all server-side)
+  const [filters, setFilters] = useState({
+    assignedTo: "",
+    case__case_stage: "",
+    task_priority: "",
+    searchTerm: "",
+    dueDateFrom: "",
+    dueDateTo: "",
+    status: "",
+  });
+
+  // Local search debouncing to avoid firing API on each keystroke
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Build params for API call, omitting empty strings
+  const buildApiParams = () => {
+    const p: any = {
+      page: currentPage,
+      page_size: tasksPerPage,
+    };
+
+    if (filters.assignedTo) p.assigned_to = filters.assignedTo;
+    if (filters.case__case_stage) p.case__case_stage = filters.case__case_stage;
+    if (filters.task_priority) p.task_priority = filters.task_priority;
+    if (filters.status) p.status = filters.status;
+    if (debouncedSearch) p.search = debouncedSearch;
+    if (filters.dueDateFrom) p.due_date__gte = filters.dueDateFrom;
+    if (filters.dueDateTo) p.due_date__lte = filters.dueDateTo;
+
+    return p;
+  };
+
+  const apiParams = buildApiParams();
+
   const {
     data: myTasksData,
     isLoading,
     isError,
-  } = useGetMyTasksQuery({ page: currentPage, page_size: tasksPerPage });
+  } = useGetMyTasksQuery(apiParams);
 
   const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
   const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
@@ -99,6 +133,27 @@ const MyTask: React.FC = () => {
     }
   }, [myTasksData]);
 
+  // Debounce searchTerm -> debouncedSearch
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(filters.searchTerm), 500);
+    return () => clearTimeout(t);
+  }, [filters.searchTerm]);
+
+  // When filter params (excluding page) change, reset to page 1 so we request from start
+  useEffect(() => {
+    // If currentPage is already 1, no change; otherwise set to 1 to fetch the first page
+    if (currentPage !== 1) setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    filters.assignedTo,
+    filters.case__case_stage,
+    filters.task_priority,
+    filters.dueDateFrom,
+    filters.dueDateTo,
+    filters.status,
+    debouncedSearch,
+  ]);
+
   // No client-side filtering: show all tasks returned by the API (filteredTasks is set from API mapping)
 
   // Pagination (server-side)
@@ -117,7 +172,10 @@ const MyTask: React.FC = () => {
     }
   }, [totalPages, currentPage]);
 
-  // No client-side filter change handler: filtering was removed
+  // Handlers
+  const onFilterChange = (key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const getPriorityBadgeColor = (task_priority: string) => {
     switch (task_priority) {
@@ -166,9 +224,10 @@ const MyTask: React.FC = () => {
               <InputGroup>
                 <Input
                   type="text"
-                  placeholder="Search tasks, clients, or case names..."
+                  placeholder="Search by tasks names..."
                   style={{ padding: "10px 10px" }}
-                  // search is currently not connected to client-side filtering
+                  value={filters.searchTerm}
+                  onChange={(e) => onFilterChange("searchTerm", e.target.value)}
                 />
                 <InputGroupText className="bg-success rounded-start-0 border-start-0">
                   <FaSearch />
@@ -198,7 +257,15 @@ const MyTask: React.FC = () => {
               <Row className="justify-content-start g-3">
                 <Col xs="12" sm="6" md="3">
                   <Label>Assigned To</Label>
-                  <Input type="select" id="assignedTo" className="py-1">
+                  <Input
+                    type="select"
+                    id="assignedTo"
+                    className="py-1"
+                    value={filters.assignedTo}
+                    onChange={(e) =>
+                      onFilterChange("assignedTo", e.target.value)
+                    }
+                  >
                     <option value="">All Employees</option>
                     <option value="Mostafizur Rahman">Mostafizur Rahman</option>
                     <option value="John Doe">John Doe</option>
@@ -206,7 +273,15 @@ const MyTask: React.FC = () => {
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Case Stage</Label>
-                  <Input type="select" id="caseStage" className="py-1">
+                  <Input
+                    type="select"
+                    id="case__case_stage"
+                    className="py-1"
+                    value={filters.case__case_stage}
+                    onChange={(e) =>
+                      onFilterChange("case__case_stage", e.target.value)
+                    }
+                  >
                     <option value="">All Stages</option>
                     <option value="ENQUIRY">Enquiry</option>
                     <option value="FACT_FIND">Fact Find</option>
@@ -230,7 +305,15 @@ const MyTask: React.FC = () => {
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Priority</Label>
-                  <Input type="select" id="task_priority" className="py-1">
+                  <Input
+                    type="select"
+                    id="task_priority"
+                    className="py-1"
+                    value={filters.task_priority}
+                    onChange={(e) =>
+                      onFilterChange("task_priority", e.target.value)
+                    }
+                  >
                     <option value="">All Priorities</option>
                     <option value="LOW">Low</option>
                     <option value="NORMAL">Normal</option>
@@ -240,15 +323,37 @@ const MyTask: React.FC = () => {
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Due Date From</Label>
-                  <Input type="date" id="dueDateFrom" className="py-2" />
+                  <Input
+                    type="date"
+                    id="dueDateFrom"
+                    className="py-2"
+                    value={filters.dueDateFrom}
+                    onChange={(e) =>
+                      onFilterChange("dueDateFrom", e.target.value)
+                    }
+                  />
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Due Date To</Label>
-                  <Input type="date" id="dueDateTo" className="py-2" />
+                  <Input
+                    type="date"
+                    id="dueDateTo"
+                    className="py-2"
+                    value={filters.dueDateTo}
+                    onChange={(e) =>
+                      onFilterChange("dueDateTo", e.target.value)
+                    }
+                  />
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Status</Label>
-                  <Input type="select" id="status" className="py-1">
+                  <Input
+                    type="select"
+                    id="status"
+                    className="py-1"
+                    value={filters.status}
+                    onChange={(e) => onFilterChange("status", e.target.value)}
+                  >
                     <option value="">All Status</option>
                     <option value="PENDING">Pending</option>
                     <option value="IN_PROGRESS">In Progress</option>
@@ -265,13 +370,14 @@ const MyTask: React.FC = () => {
                     onClick={() => {
                       setFilters({
                         assignedTo: "",
-                        caseStage: "",
+                        case__case_stage: "",
                         task_priority: "",
                         searchTerm: "",
                         dueDateFrom: "",
                         dueDateTo: "",
                         status: "",
                       });
+                      setDebouncedSearch("");
                       setCurrentPage(1);
                     }}
                   >
