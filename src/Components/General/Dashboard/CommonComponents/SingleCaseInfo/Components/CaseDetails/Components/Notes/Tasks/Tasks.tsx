@@ -50,15 +50,15 @@ const Tasks: React.FC = () => {
   const getBadgeColor = (priority: string | null | undefined) => {
     switch (priority) {
       case "LOW":
-        return "light-dark";
+        return "dark";
       case "NORMAL":
-        return "light-primary";
+        return "primary";
       case "HIGH":
-        return "light-warning";
+        return "warning";
       case "URGENT":
-        return "light-danger";
+        return "danger";
       default:
-        return "light-info";
+        return "info";
     }
   };
 
@@ -127,11 +127,11 @@ const Tasks: React.FC = () => {
                   </td>
                   <td>
                     {task?.assigned_user
-                      ? `${formatChoiceFieldValue(task?.assigned_user?.title)} ${
-                          task?.assigned_user?.first_name
-                        } ${task?.assigned_user?.middle_name} ${
-                          task?.assigned_user?.last_name
-                        }`
+                      ? `${formatChoiceFieldValue(
+                          task?.assigned_user?.title
+                        )} ${task?.assigned_user?.first_name} ${
+                          task?.assigned_user?.middle_name
+                        } ${task?.assigned_user?.last_name}`
                       : "System"}
                   </td>
                   <td>
