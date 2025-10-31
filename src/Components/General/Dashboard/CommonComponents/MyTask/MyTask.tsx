@@ -1,9 +1,9 @@
+import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
 import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
   Badge,
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -11,7 +11,6 @@ import {
   Input,
   InputGroup,
   InputGroupText,
-  Label,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -20,103 +19,81 @@ import {
 } from "reactstrap";
 
 const MyTask: React.FC = () => {
-  const [tasks, setTasks] = useState<TaskProps[]>([
-    {
-      id: "1",
-      date: "28/07/2019 00:00",
-      caseName: "APP0004972",
-      clientName: "Sundararajan Sunassee",
-      company: "The Mortgage Works",
-      taskName: "Confirm Solicitors have Received Offer",
-      priority: "Low",
-      status: "Overdue",
-      assignedTo: "Mostafizur Rahman",
-      taskType: "Legal",
-      dueDate: "30/07/2019",
-    },
-    {
-      id: "2",
-      date: "31/07/2019 00:00",
-      caseName: "APP0004312",
-      clientName: "Ismail Matin",
-      company: "Barclays",
-      taskName: "Application Completed",
-      priority: "Normal",
-      status: "Overdue",
-      assignedTo: "Mostafizur Rahman",
-      taskType: "Application",
-      dueDate: "02/08/2019",
-    },
-    // Add more sample data as needed
-  ]);
-
-  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>(tasks);
+  const {
+    data: myTasksData,
+    isLoading,
+    isError,
+  } = useGetMyTasksQuery(undefined);
+  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
+  const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(10);
-  const [filters, setFilters] = useState({
-    assignedTo: "All",
-    taskType: "All",
-    priority: "All",
-    searchTerm: "",
-    dueDateFrom: "",
-    dueDateTo: "",
-    status: "All",
-  });
-  const [filterIcon, setFilterIcon] = useState(false);
 
-  const toggleFilterIcon = () => setFilterIcon(!filterIcon);
+  // Map API response to TaskProps shape when data arrives
+  useEffect(() => {
+    if (myTasksData && Array.isArray((myTasksData as any).results)) {
+      const mapped: TaskProps[] = (myTasksData as any).results.map(
+        (item: any) => {
+          // Normalize task_priority into a human friendly label
+          const rawPriority = (item.task_priority || "").toString();
+          let mappedPriority = "Normal";
+          switch (rawPriority.toUpperCase()) {
+            case "LOW":
+              mappedPriority = "Low";
+              break;
+            case "NORMAL":
+            case "MEDIUM":
+              mappedPriority = "Normal";
+              break;
+            case "HIGH":
+              mappedPriority = "High";
+              break;
+            case "URGENT":
+              mappedPriority = "Urgent";
+              break;
+            default:
+              if (rawPriority) mappedPriority = rawPriority;
+              break;
+          }
 
-  // Filter tasks based on current filters
-  React.useEffect(() => {
-    let filtered = tasks.filter((task) => {
-      const matchesAssignedTo =
-        filters.assignedTo === "All" || task.assignedTo === filters.assignedTo;
-      const matchesTaskType =
-        filters.taskType === "All" || task.taskType === filters.taskType;
-      const matchesPriority =
-        filters.priority === "All" || task.priority === filters.priority;
-      const matchesStatus =
-        filters.status === "All" || task.status === filters.status;
-      const matchesSearch =
-        task.taskName
-          .toLowerCase()
-          .includes(filters.searchTerm.toLowerCase()) ||
-        task.clientName
-          .toLowerCase()
-          .includes(filters.searchTerm.toLowerCase()) ||
-        task.caseName.toLowerCase().includes(filters.searchTerm.toLowerCase());
+          // Use created_at as dueDate (format DD/MM/YYYY)
+          const created = item.created_at
+            ? new Date(item.created_at)
+            : new Date();
+          const dueDate = `${String(created.getDate()).padStart(
+            2,
+            "0"
+          )}/${String(created.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}/${created.getFullYear()}`;
 
-      // Date range filtering
-      let matchesDateRange = true;
-      if (filters.dueDateFrom || filters.dueDateTo) {
-        const taskDueDate = new Date(
-          task.dueDate.split("/").reverse().join("-")
-        ); // Convert DD/MM/YYYY to YYYY-MM-DD
-
-        if (filters.dueDateFrom) {
-          const fromDate = new Date(filters.dueDateFrom);
-          matchesDateRange = matchesDateRange && taskDueDate >= fromDate;
+          return {
+            id: item.alias,
+            date: created.toLocaleString(),
+            caseName: item.case_name || "",
+            clientName: item.client_name || "",
+            company: item.lender || "",
+            taskName: item.name || "",
+            caseStage: item.case_stage || "",
+            assignedTo: item.assigned_to || "",
+            task_priority: mappedPriority as TaskProps["task_priority"],
+            status: (item.status as TaskProps["status"]) || "Unknown",
+            dueDate,
+          } as TaskProps;
         }
-
-        if (filters.dueDateTo) {
-          const toDate = new Date(filters.dueDateTo);
-          matchesDateRange = matchesDateRange && taskDueDate <= toDate;
-        }
-      }
-
-      return (
-        matchesAssignedTo &&
-        matchesTaskType &&
-        matchesPriority &&
-        matchesStatus &&
-        matchesSearch &&
-        matchesDateRange
       );
-    });
 
-    setFilteredTasks(filtered);
+      setAllTasks(mapped);
+      setFilteredTasks(mapped);
+    } else {
+      setAllTasks([]);
+      setFilteredTasks([]);
+    }
     setCurrentPage(1);
-  }, [tasks, filters]);
+  }, [myTasksData]);
+
+  // No client-side filtering: show all tasks returned by the API (filteredTasks is set from API mapping)
 
   // Pagination
   const indexOfLastTask = currentPage * tasksPerPage;
@@ -124,17 +101,14 @@ const MyTask: React.FC = () => {
   const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
   const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
 
-  const handleFilterChange = (filterName: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterName]: value,
-    }));
-  };
+  // No client-side filter change handler: filtering was removed
 
-  const getPriorityBadgeColor = (priority: string) => {
-    switch (priority) {
-      case "High":
+  const getPriorityBadgeColor = (task_priority: string) => {
+    switch (task_priority) {
+      case "Urgent":
         return "danger";
+      case "High":
+        return "warning";
       case "Normal":
         return "info";
       case "Low":
@@ -152,6 +126,10 @@ const MyTask: React.FC = () => {
         return "warning";
       case "Overdue":
         return "danger";
+      case "In Progress":
+        return "info";
+      case "Cancelled":
+        return "secondary";
       default:
         return "secondary";
     }
@@ -168,160 +146,26 @@ const MyTask: React.FC = () => {
                 <h5 className="mb-0">My Tasks</h5>
               </div>
             </Col>
-            <Col md={6} xs="12">
+            <Col md="6" xs="12">
               <InputGroup>
                 <Input
                   type="text"
                   placeholder="Search tasks, clients, or case names..."
                   style={{ padding: "10px 10px" }}
-                  value={filters.searchTerm}
-                  onChange={(e) =>
-                    handleFilterChange("searchTerm", e.target.value)
-                  }
+                  // search is currently not connected to client-side filtering
                 />
                 <InputGroupText className="bg-success rounded-start-0 border-start-0">
                   <FaSearch />
                 </InputGroupText>
               </InputGroup>
             </Col>
+            {/* filter button removed */}
           </Row>
         </CardHeader>
 
         <CardBody className="p-2 m-0">
           {/* Conditional Filters Section */}
-          {filterIcon && (
-            <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
-              <Row className="justify-content-center g-3">
-                <Col xs="12" sm="6" md="3">
-                  <Label>Assigned To</Label>
-                  <Input
-                    type="select"
-                    id="assignedTo"
-                    className="py-1"
-                    value={filters.assignedTo}
-                    onChange={(e) =>
-                      handleFilterChange("assignedTo", e.target.value)
-                    }
-                  >
-                    <option value="All">All Employees</option>
-                    <option value="Mostafizur Rahman">Mostafizur Rahman</option>
-                    <option value="John Doe">John Doe</option>
-                  </Input>
-                </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Task Type</Label>
-                  <Input
-                    type="select"
-                    id="taskType"
-                    className="py-1"
-                    value={filters.taskType}
-                    onChange={(e) =>
-                      handleFilterChange("taskType", e.target.value)
-                    }
-                  >
-                    <option value="All">All Types</option>
-                    <option value="Legal">Legal</option>
-                    <option value="Application">Application</option>
-                    <option value="Follow-up">Follow-up</option>
-                  </Input>
-                </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Priority</Label>
-                  <Input
-                    type="select"
-                    id="priority"
-                    className="py-1"
-                    value={filters.priority}
-                    onChange={(e) =>
-                      handleFilterChange("priority", e.target.value)
-                    }
-                  >
-                    <option value="All">All Priorities</option>
-                    <option value="High">High</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Low">Low</option>
-                  </Input>
-                </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Task Name</Label>
-                  <Input
-                    type="text"
-                    id="taskNameFilter"
-                    className="py-2"
-                    placeholder="Search task name..."
-                    value={filters.searchTerm}
-                    onChange={(e) =>
-                      handleFilterChange("searchTerm", e.target.value)
-                    }
-                  />
-                </Col>
-              </Row>
-              <Row className="justify-content-center g-3 mt-2">
-                <Col xs="12" sm="6" md="3">
-                  <Label>Due Date From</Label>
-                  <Input
-                    type="date"
-                    id="dueDateFrom"
-                    className="py-2"
-                    value={filters.dueDateFrom}
-                    onChange={(e) =>
-                      handleFilterChange("dueDateFrom", e.target.value)
-                    }
-                  />
-                </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Due Date To</Label>
-                  <Input
-                    type="date"
-                    id="dueDateTo"
-                    className="py-2"
-                    value={filters.dueDateTo}
-                    onChange={(e) =>
-                      handleFilterChange("dueDateTo", e.target.value)
-                    }
-                  />
-                </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Status</Label>
-                  <Input
-                    type="select"
-                    id="status"
-                    className="py-1"
-                    value={filters.status || "All"}
-                    onChange={(e) =>
-                      handleFilterChange("status", e.target.value)
-                    }
-                  >
-                    <option value="All">All Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Overdue">Overdue</option>
-                  </Input>
-                </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Clear All Filters</Label>
-                  <Button
-                    outline
-                    className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
-                    onClick={() => {
-                      setFilters({
-                        assignedTo: "All",
-                        taskType: "All",
-                        priority: "All",
-                        searchTerm: "",
-                        dueDateFrom: "",
-                        dueDateTo: "",
-                        status: "All",
-                      });
-                      setCurrentPage(1);
-                    }}
-                  >
-                    Clear<i className="fa-solid fa-xmark"></i>
-                  </Button>
-                </Col>
-              </Row>
-            </Card>
-          )}
+          {/* Client-side filtering removed */}
 
           {/* Tasks List */}
           <Row>
@@ -333,7 +177,7 @@ const MyTask: React.FC = () => {
                   <th>Client Name</th>
                   <th>Lender</th>
                   <th>Task Name</th>
-                  <th>Task Type</th>
+                  <th>Case Stage</th>
                   <th>Assigned To</th>
                   <th>Priority</th>
                   <th>Status</th>
@@ -369,8 +213,8 @@ const MyTask: React.FC = () => {
                         </span>
                       </td>
                       <td>
-                        <Badge color="info" className="px-2">
-                          {task.taskType}
+                        <Badge color="light-primary" className="px-2">
+                          {task.caseStage}
                         </Badge>
                       </td>
                       <td>
@@ -378,10 +222,10 @@ const MyTask: React.FC = () => {
                       </td>
                       <td>
                         <Badge
-                          color={getPriorityBadgeColor(task.priority)}
+                          color={getPriorityBadgeColor(task.task_priority)}
                           className="px-2"
                         >
-                          {task.priority}
+                          {task.task_priority}
                         </Badge>
                       </td>
                       <td>

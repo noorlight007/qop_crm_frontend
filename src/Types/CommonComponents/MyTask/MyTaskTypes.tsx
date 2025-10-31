@@ -5,10 +5,10 @@ export interface TaskProps {
   clientName: string;
   company: string;
   taskName: string;
-  priority: "Low" | "Normal" | "High";
-  status: "Pending" | "Completed" | "Overdue";
+  task_priority: string;
+  status: string;
   assignedTo: string;
-  taskType: string;
+  caseStage: string;
   dueDate: string;
 }
 

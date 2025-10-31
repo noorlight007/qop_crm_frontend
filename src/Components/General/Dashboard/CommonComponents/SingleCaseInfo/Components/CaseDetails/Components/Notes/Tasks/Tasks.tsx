@@ -89,6 +89,7 @@ const Tasks: React.FC = () => {
               <th style={{ minWidth: "120px" }}>Due Date</th>
               <th style={{ minWidth: "200px" }}>Stage</th>
               <th style={{ minWidth: "200px" }}>Created By</th>
+              <th style={{ minWidth: "200px" }}>Assigned To</th>
               <th style={{ minWidth: "400px" }}>Information</th>
             </tr>
           </thead>
@@ -121,6 +122,15 @@ const Tasks: React.FC = () => {
                           task?.created_by?.first_name
                         } ${task?.created_by?.middle_name} ${
                           task?.created_by?.last_name
+                        }`
+                      : "System"}
+                  </td>
+                  <td>
+                    {task?.assigned_user
+                      ? `${formatChoiceFieldValue(task?.assigned_user?.title)} ${
+                          task?.assigned_user?.first_name
+                        } ${task?.assigned_user?.middle_name} ${
+                          task?.assigned_user?.last_name
                         }`
                       : "System"}
                   </td>
