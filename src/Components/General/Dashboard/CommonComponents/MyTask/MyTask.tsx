@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
   Badge,
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -11,6 +12,7 @@ import {
   Input,
   InputGroup,
   InputGroupText,
+  Label,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -19,15 +21,20 @@ import {
 } from "reactstrap";
 
 const MyTask: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [tasksPerPage] = useState(10);
+
   const {
     data: myTasksData,
     isLoading,
     isError,
-  } = useGetMyTasksQuery(undefined);
+  } = useGetMyTasksQuery({ page: currentPage, page_size: tasksPerPage });
+
   const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
   const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [tasksPerPage] = useState(10);
+  const [filterIcon, setFilterIcon] = useState(false);
+
+  const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
   // Map API response to TaskProps shape when data arrives
   useEffect(() => {
@@ -83,23 +90,32 @@ const MyTask: React.FC = () => {
           } as TaskProps;
         }
       );
-
+      // For server-side pagination, the API already returns only the current page results
       setAllTasks(mapped);
       setFilteredTasks(mapped);
     } else {
       setAllTasks([]);
       setFilteredTasks([]);
     }
-    setCurrentPage(1);
   }, [myTasksData]);
 
   // No client-side filtering: show all tasks returned by the API (filteredTasks is set from API mapping)
 
-  // Pagination
-  const indexOfLastTask = currentPage * tasksPerPage;
-  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
-  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
-  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
+  // Pagination (server-side)
+  const totalCount =
+    (myTasksData && (myTasksData as any).count) || filteredTasks.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / tasksPerPage));
+  const currentTasks = filteredTasks; // API returns only current page results
+  const indexOfFirstTask =
+    totalCount === 0 ? 0 : (currentPage - 1) * tasksPerPage + 1;
+  const indexOfLastTask = Math.min(currentPage * tasksPerPage, totalCount);
+
+  // If the backend reports fewer pages than the current page (e.g. after deletions), clamp it
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
 
   // No client-side filter change handler: filtering was removed
 
@@ -159,13 +175,112 @@ const MyTask: React.FC = () => {
                 </InputGroupText>
               </InputGroup>
             </Col>
-            {/* filter button removed */}
+            <Col md="2" xs="12" className="d-flex justify-content-end">
+              <Button
+                color="success"
+                onClick={toggleFilterIcon}
+                className="me-2"
+              >
+                {filterIcon ? (
+                  <i className="fa-solid fa-filter-circle-xmark"></i>
+                ) : (
+                  <i className="fa-solid fa-filter"></i>
+                )}
+              </Button>
+            </Col>
           </Row>
         </CardHeader>
 
         <CardBody className="p-2 m-0">
           {/* Conditional Filters Section */}
-          {/* Client-side filtering removed */}
+          {filterIcon && (
+            <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
+              <Row className="justify-content-start g-3">
+                <Col xs="12" sm="6" md="3">
+                  <Label>Assigned To</Label>
+                  <Input type="select" id="assignedTo" className="py-1">
+                    <option value="">All Employees</option>
+                    <option value="Mostafizur Rahman">Mostafizur Rahman</option>
+                    <option value="John Doe">John Doe</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Case Stage</Label>
+                  <Input type="select" id="caseStage" className="py-1">
+                    <option value="">All Stages</option>
+                    <option value="ENQUIRY">Enquiry</option>
+                    <option value="FACT_FIND">Fact Find</option>
+                    <option value="RESEARCH_COMPLIANCE_CHECK">
+                      Research and Compliance Check
+                    </option>
+                    <option value="DECISION_IN_PRINCIPLE">
+                      Decision in Principle
+                    </option>
+                    <option value="FULL_MORTGAGE_APPLICATION">
+                      Full Mortgage Application
+                    </option>
+                    <option value="OFFER_FROM_BANK">Offer From Bank</option>
+                    <option value="LEGAL">Legal</option>
+                    <option value="COMPLETION">Completion</option>
+                    <option value="FUTURE_OPPORTUNITY">
+                      Future Opportunity
+                    </option>
+                    <option value="NOT_PROCEED">Not Proceed</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Priority</Label>
+                  <Input type="select" id="task_priority" className="py-1">
+                    <option value="">All Priorities</option>
+                    <option value="LOW">Low</option>
+                    <option value="NORMAL">Normal</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Due Date From</Label>
+                  <Input type="date" id="dueDateFrom" className="py-2" />
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Due Date To</Label>
+                  <Input type="date" id="dueDateTo" className="py-2" />
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Status</Label>
+                  <Input type="select" id="status" className="py-1">
+                    <option value="">All Status</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="OVERDUE">Overdue</option>
+                    <option value="CANCELLED">Cancelled</option>
+                  </Input>
+                </Col>
+                <Col xs="12" sm="6" md="3">
+                  <Label>Clear All Filters</Label>
+                  <Button
+                    outline
+                    className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
+                    onClick={() => {
+                      setFilters({
+                        assignedTo: "",
+                        caseStage: "",
+                        task_priority: "",
+                        searchTerm: "",
+                        dueDateFrom: "",
+                        dueDateTo: "",
+                        status: "",
+                      });
+                      setCurrentPage(1);
+                    }}
+                  >
+                    Clear<i className="fa-solid fa-xmark"></i>
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          )}
 
           {/* Tasks List */}
           <Row>
@@ -248,9 +363,8 @@ const MyTask: React.FC = () => {
             <div className="d-flex justify-content-between px-4 py-3">
               <div>
                 <p className="text-success">
-                  Showing {indexOfFirstTask + 1} to{" "}
-                  {Math.min(indexOfLastTask, filteredTasks.length)} of{" "}
-                  {filteredTasks.length} tasks
+                  Showing {indexOfFirstTask} to {indexOfLastTask} of{" "}
+                  {totalCount} tasks
                 </p>
               </div>
               <Pagination>
@@ -260,7 +374,7 @@ const MyTask: React.FC = () => {
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink
                     previous
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   />
                 </PaginationItem>
 
@@ -333,7 +447,9 @@ const MyTask: React.FC = () => {
                 <PaginationItem disabled={currentPage === totalPages}>
                   <PaginationLink
                     next
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
                   />
                 </PaginationItem>
                 <PaginationItem disabled={currentPage === totalPages}>
