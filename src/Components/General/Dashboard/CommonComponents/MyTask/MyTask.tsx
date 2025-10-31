@@ -1,9 +1,6 @@
 import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
-import { useSession } from "next-auth/react";
 import React, { useState } from "react";
-import { Edit, Trash2 } from "react-feather";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -21,12 +18,8 @@ import {
   Row,
   Table,
 } from "reactstrap";
-import AddTaskModal from "./Modals/AddTaskModal";
-import DeleteTaskModal from "./Modals/DeleteTaskModal";
-import EditTaskModal from "./Modals/EditTaskModal";
 
 const MyTask: React.FC = () => {
-  const { data: session } = useSession();
   const [tasks, setTasks] = useState<TaskProps[]>([
     {
       id: "1",
@@ -70,20 +63,6 @@ const MyTask: React.FC = () => {
     status: "All",
   });
   const [filterIcon, setFilterIcon] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<TaskProps | null>(null);
-  const [newTask, setNewTask] = useState<Partial<TaskProps>>({
-    clientName: "",
-    company: "",
-    taskName: "",
-    priority: "Normal",
-    status: "Pending",
-    assignedTo: "",
-    taskType: "",
-    dueDate: "",
-  });
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
@@ -152,64 +131,6 @@ const MyTask: React.FC = () => {
     }));
   };
 
-  const handleAddTask = () => {
-    // Basic validation
-    if (
-      !newTask.clientName ||
-      !newTask.taskName ||
-      !newTask.assignedTo ||
-      !newTask.taskType
-    ) {
-      alert(
-        "Please fill in all required fields: Client Name, Task Name, Assigned To, and Task Type"
-      );
-      return;
-    }
-
-    const task: TaskProps = {
-      ...(newTask as TaskProps),
-      id: Date.now().toString(),
-      date: new Date().toLocaleDateString("en-GB") + " 00:00",
-      caseName: `APP${Date.now().toString().slice(-6)}`,
-    };
-    setTasks((prev) => [...prev, task]);
-    setIsAddModalOpen(false);
-    setNewTask({
-      clientName: "",
-      company: "",
-      taskName: "",
-      priority: "Normal",
-      status: "Pending",
-      assignedTo: "",
-      taskType: "",
-      dueDate: "",
-    });
-  };
-
-  const handleEditTask = () => {
-    if (selectedTask) {
-      setTasks((prev) =>
-        prev.map((task) => (task.id === selectedTask.id ? selectedTask : task))
-      );
-      setIsEditModalOpen(false);
-      setSelectedTask(null);
-    }
-  };
-
-  const handleDeleteTask = (taskId: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
-  };
-
-  const openDeleteModal = (task: TaskProps) => {
-    setSelectedTask(task);
-    setIsDeleteModalOpen(true);
-  };
-
-  const openEditModal = (task: TaskProps) => {
-    setSelectedTask(task);
-    setIsEditModalOpen(true);
-  };
-
   const getPriorityBadgeColor = (priority: string) => {
     switch (priority) {
       case "High":
@@ -262,35 +183,6 @@ const MyTask: React.FC = () => {
                   <FaSearch />
                 </InputGroupText>
               </InputGroup>
-            </Col>
-            <Col
-              md="3"
-              xs="12"
-              className="d-flex justify-content-end mt-sm-0 mt-2"
-            >
-              <Button
-                color="success"
-                onClick={toggleFilterIcon}
-                className="me-2"
-              >
-                {filterIcon ? (
-                  <i className="fa-solid fa-filter-circle-xmark"></i>
-                ) : (
-                  <i className="fa-solid fa-filter"></i>
-                )}
-              </Button>
-              {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
-                session?.user?.user_type === "NETWORK_ADMIN") && (
-                <Button
-                  color="primary"
-                  onClick={() => setIsAddModalOpen(true)}
-                  className="d-flex justify-content-center align-items-center gap-1"
-                >
-                  <TbCirclePlus size={18} />
-                  <span>Add New Task</span>
-                </Button>
-              )}
             </Col>
           </Row>
         </CardHeader>
@@ -439,17 +331,12 @@ const MyTask: React.FC = () => {
                   <th>Date & Time</th>
                   <th>Case Name</th>
                   <th>Client Name</th>
-                  <th>Company</th>
+                  <th>Lender</th>
                   <th>Task Name</th>
                   <th>Task Type</th>
                   <th>Assigned To</th>
                   <th>Priority</th>
                   <th>Status</th>
-                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                    session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
-                    session?.user?.user_type === "NETWORK_ADMIN") && (
-                    <th>Actions</th>
-                  )}
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -505,31 +392,6 @@ const MyTask: React.FC = () => {
                           {task.status}
                         </Badge>
                       </td>
-                      {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                        session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
-                        session?.user?.user_type === "NETWORK_ADMIN") && (
-                        <td>
-                          <div className="d-flex justify-content-center align-items-center">
-                            <Button
-                              color="success"
-                              size="sm"
-                              className="me-2"
-                              onClick={() => openEditModal(task)}
-                              title="Edit Task"
-                            >
-                              <Edit size={12} />
-                            </Button>
-                            <Button
-                              color="danger"
-                              size="sm"
-                              onClick={() => openDeleteModal(task)}
-                              title="Delete Task"
-                            >
-                              <Trash2 size={12} />
-                            </Button>
-                          </div>
-                        </td>
-                      )}
                     </tr>
                   ))
                 )}
@@ -641,32 +503,6 @@ const MyTask: React.FC = () => {
           </Row>
         </CardBody>
       </Card>
-
-      {/* Add Task Modal */}
-      <AddTaskModal
-        isAddModalOpen={isAddModalOpen}
-        setIsAddModalOpen={setIsAddModalOpen}
-        newTask={newTask}
-        setNewTask={setNewTask}
-        handleAddTask={handleAddTask}
-      />
-
-      {/* Edit Task Modal */}
-      <EditTaskModal
-        isEditModalOpen={isEditModalOpen}
-        setIsEditModalOpen={setIsEditModalOpen}
-        selectedTask={selectedTask}
-        setSelectedTask={setSelectedTask}
-        handleEditTask={handleEditTask}
-      />
-
-      {/* Delete Task Modal */}
-      <DeleteTaskModal
-        isDeleteModalOpen={isDeleteModalOpen}
-        setIsDeleteModalOpen={setIsDeleteModalOpen}
-        selectedTask={selectedTask}
-        handleDeleteTask={handleDeleteTask}
-      />
     </>
   );
 };

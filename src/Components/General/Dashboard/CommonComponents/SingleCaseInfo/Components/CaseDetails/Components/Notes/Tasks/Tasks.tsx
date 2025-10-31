@@ -79,7 +79,7 @@ const Tasks: React.FC = () => {
       </Row>
 
       <div className="table-responsive">
-        <Table striped hover responsive>
+        <Table hover responsive>
           <thead>
             <tr>
               <th style={{ minWidth: "50px" }}>Type</th>
@@ -88,14 +88,14 @@ const Tasks: React.FC = () => {
               <th style={{ minWidth: "120px" }}>Activity Date</th>
               <th style={{ minWidth: "120px" }}>Due Date</th>
               <th style={{ minWidth: "200px" }}>Stage</th>
-              <th style={{ minWidth: "150px" }}>User</th>
+              <th style={{ minWidth: "200px" }}>Created By</th>
               <th style={{ minWidth: "400px" }}>Information</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={8} className="text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -115,22 +115,32 @@ const Tasks: React.FC = () => {
                   <td>
                     {formatChoiceFieldValue(task?.case?.case_stage || "-")}
                   </td>
-                  <td>{`${formatChoiceFieldValue(task?.created_by?.title)} ${
-                    task?.created_by?.first_name
-                  } ${task?.created_by?.middle_name} ${
-                    task?.created_by?.last_name
-                  }`}</td>
                   <td>
-                    <div
-                      dangerouslySetInnerHTML={{ __html: task.note || "" }}
-                      style={{ wordBreak: "break-word", maxWidth: "400px" }}
-                    />
+                    {task?.created_by
+                      ? `${formatChoiceFieldValue(task?.created_by?.title)} ${
+                          task?.created_by?.first_name
+                        } ${task?.created_by?.middle_name} ${
+                          task?.created_by?.last_name
+                        }`
+                      : "System"}
+                  </td>
+                  <td>
+                    {task.note ? (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: task.note }}
+                        style={{ wordBreak: "break-word", maxWidth: "400px" }}
+                      />
+                    ) : (
+                      <span className="text-muted">
+                        Automatically generated
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={8} className="text-center">
                   No tasks found.
                 </td>
               </tr>
