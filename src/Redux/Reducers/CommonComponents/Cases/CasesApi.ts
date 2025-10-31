@@ -31,7 +31,7 @@ export const CasesApi = baseApi.injectEndpoints({
         method: "PUT",
         body: payload,
       }),
-      invalidatesTags: ["CaseDetails", "LeadDetails"],
+      invalidatesTags: ["CaseDetails", "LeadDetails", "Tasks"],
     }),
     deleteCase: builder.mutation({
       query: ({ caseAlias }) => ({

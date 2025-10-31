@@ -1,9 +1,10 @@
-import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
-import { useSession } from "next-auth/react";
-import React, { useState } from "react";
-import { Edit, Trash2 } from "react-feather";
+import LoadingSpinner from "@/app/loading";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
+import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
+import { MyTaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
+import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -21,199 +22,157 @@ import {
   Row,
   Table,
 } from "reactstrap";
-import AddTaskModal from "./Modals/AddTaskModal";
-import DeleteTaskModal from "./Modals/DeleteTaskModal";
-import EditTaskModal from "./Modals/EditTaskModal";
 
 const MyTask: React.FC = () => {
-  const { data: session } = useSession();
-  const [tasks, setTasks] = useState<TaskProps[]>([
-    {
-      id: "1",
-      date: "28/07/2019 00:00",
-      caseName: "APP0004972",
-      clientName: "Sundararajan Sunassee",
-      company: "The Mortgage Works",
-      taskName: "Confirm Solicitors have Received Offer",
-      priority: "Low",
-      status: "Overdue",
-      assignedTo: "Mostafizur Rahman",
-      taskType: "Legal",
-      dueDate: "30/07/2019",
-    },
-    {
-      id: "2",
-      date: "31/07/2019 00:00",
-      caseName: "APP0004312",
-      clientName: "Ismail Matin",
-      company: "Barclays",
-      taskName: "Application Completed",
-      priority: "Normal",
-      status: "Overdue",
-      assignedTo: "Mostafizur Rahman",
-      taskType: "Application",
-      dueDate: "02/08/2019",
-    },
-    // Add more sample data as needed
-  ]);
-
-  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>(tasks);
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(10);
+
+  // Filters state (all server-side)
   const [filters, setFilters] = useState({
-    assignedTo: "All",
-    taskType: "All",
-    priority: "All",
+    assigned_to: "",
+    case__case_stage: "",
+    task_priority: "",
     searchTerm: "",
     dueDateFrom: "",
     dueDateTo: "",
-    status: "All",
+    status: "",
   });
+
+  // Local search debouncing to avoid firing API on each keystroke
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Build params for API call, omitting empty strings
+  const buildApiParams = () => {
+    const p: any = {
+      page: currentPage,
+      page_size: tasksPerPage,
+    };
+
+    if (filters.assigned_to) p.assigned_to = filters.assigned_to;
+    if (filters.case__case_stage) p.case__case_stage = filters.case__case_stage;
+    if (filters.task_priority) p.task_priority = filters.task_priority;
+    if (filters.status) p.status = filters.status;
+    if (debouncedSearch) p.search = debouncedSearch;
+    if (filters.dueDateFrom) p.due_date__gte = filters.dueDateFrom;
+    if (filters.dueDateTo) p.due_date__lte = filters.dueDateTo;
+
+    return p;
+  };
+
+  const apiParams = buildApiParams();
+
+  // RTK Hooks
+  const { data: myTasksData, isLoading } = useGetMyTasksQuery(apiParams);
+  const { data: usersData, isLoading: isUsersLoading } =
+    useGetUsersQuery(undefined);
+
+  const [filteredTasks, setFilteredTasks] = useState<MyTaskProps[]>([]);
+  const [allTasks, setAllTasks] = useState<MyTaskProps[]>([]);
   const [filterIcon, setFilterIcon] = useState(false);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedTask, setSelectedTask] = useState<TaskProps | null>(null);
-  const [newTask, setNewTask] = useState<Partial<TaskProps>>({
-    clientName: "",
-    company: "",
-    taskName: "",
-    priority: "Normal",
-    status: "Pending",
-    assignedTo: "",
-    taskType: "",
-    dueDate: "",
-  });
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
-  // Filter tasks based on current filters
-  React.useEffect(() => {
-    let filtered = tasks.filter((task) => {
-      const matchesAssignedTo =
-        filters.assignedTo === "All" || task.assignedTo === filters.assignedTo;
-      const matchesTaskType =
-        filters.taskType === "All" || task.taskType === filters.taskType;
-      const matchesPriority =
-        filters.priority === "All" || task.priority === filters.priority;
-      const matchesStatus =
-        filters.status === "All" || task.status === filters.status;
-      const matchesSearch =
-        task.taskName
-          .toLowerCase()
-          .includes(filters.searchTerm.toLowerCase()) ||
-        task.clientName
-          .toLowerCase()
-          .includes(filters.searchTerm.toLowerCase()) ||
-        task.caseName.toLowerCase().includes(filters.searchTerm.toLowerCase());
+  // Map API response to MyTaskProps shape when data arrives
+  useEffect(() => {
+    if (myTasksData && Array.isArray((myTasksData as any).results)) {
+      const mapped: MyTaskProps[] = (myTasksData as any).results.map(
+        (item: any) => {
+          // Normalize task_priority into a human friendly label
+          const rawPriority = (item.task_priority || "").toString();
+          let mappedPriority = "Normal";
+          switch (rawPriority.toUpperCase()) {
+            case "LOW":
+              mappedPriority = "Low";
+              break;
+            case "NORMAL":
+            case "MEDIUM":
+              mappedPriority = "Normal";
+              break;
+            case "HIGH":
+              mappedPriority = "High";
+              break;
+            case "URGENT":
+              mappedPriority = "Urgent";
+              break;
+            default:
+              if (rawPriority) mappedPriority = rawPriority;
+              break;
+          }
 
-      // Date range filtering
-      let matchesDateRange = true;
-      if (filters.dueDateFrom || filters.dueDateTo) {
-        const taskDueDate = new Date(
-          task.dueDate.split("/").reverse().join("-")
-        ); // Convert DD/MM/YYYY to YYYY-MM-DD
-
-        if (filters.dueDateFrom) {
-          const fromDate = new Date(filters.dueDateFrom);
-          matchesDateRange = matchesDateRange && taskDueDate >= fromDate;
+          return {
+            alias: item.alias,
+            created_at: item.created_at,
+            case_name: item.case_name || "",
+            client_name: item.client_name || "",
+            lender: item.lender || "",
+            name: item.name || "",
+            case_stage: item.case_stage || "",
+            assigned_to: item.assigned_to || "",
+            task_priority: mappedPriority as MyTaskProps["task_priority"],
+            status: (item.status as MyTaskProps["status"]) || "Unknown",
+            due_date: item.due_date,
+          } as MyTaskProps;
         }
-
-        if (filters.dueDateTo) {
-          const toDate = new Date(filters.dueDateTo);
-          matchesDateRange = matchesDateRange && taskDueDate <= toDate;
-        }
-      }
-
-      return (
-        matchesAssignedTo &&
-        matchesTaskType &&
-        matchesPriority &&
-        matchesStatus &&
-        matchesSearch &&
-        matchesDateRange
       );
-    });
-
-    setFilteredTasks(filtered);
-    setCurrentPage(1);
-  }, [tasks, filters]);
-
-  // Pagination
-  const indexOfLastTask = currentPage * tasksPerPage;
-  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
-  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
-  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
-
-  const handleFilterChange = (filterName: string, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [filterName]: value,
-    }));
-  };
-
-  const handleAddTask = () => {
-    // Basic validation
-    if (
-      !newTask.clientName ||
-      !newTask.taskName ||
-      !newTask.assignedTo ||
-      !newTask.taskType
-    ) {
-      alert(
-        "Please fill in all required fields: Client Name, Task Name, Assigned To, and Task Type"
-      );
-      return;
+      // For server-side pagination, the API already returns only the current page results
+      setAllTasks(mapped);
+      setFilteredTasks(mapped);
+    } else {
+      setAllTasks([]);
+      setFilteredTasks([]);
     }
+  }, [myTasksData]);
 
-    const task: TaskProps = {
-      ...(newTask as TaskProps),
-      id: Date.now().toString(),
-      date: new Date().toLocaleDateString("en-GB") + " 00:00",
-      caseName: `APP${Date.now().toString().slice(-6)}`,
-    };
-    setTasks((prev) => [...prev, task]);
-    setIsAddModalOpen(false);
-    setNewTask({
-      clientName: "",
-      company: "",
-      taskName: "",
-      priority: "Normal",
-      status: "Pending",
-      assignedTo: "",
-      taskType: "",
-      dueDate: "",
-    });
-  };
+  // Debounce searchTerm -> debouncedSearch
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(filters.searchTerm), 500);
+    return () => clearTimeout(t);
+  }, [filters.searchTerm]);
 
-  const handleEditTask = () => {
-    if (selectedTask) {
-      setTasks((prev) =>
-        prev.map((task) => (task.id === selectedTask.id ? selectedTask : task))
-      );
-      setIsEditModalOpen(false);
-      setSelectedTask(null);
+  // When filter params (excluding page) change, reset to page 1 so we request from start
+  useEffect(() => {
+    // If currentPage is already 1, no change; otherwise set to 1 to fetch the first page
+    if (currentPage !== 1) setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    filters.assigned_to,
+    filters.case__case_stage,
+    filters.task_priority,
+    filters.dueDateFrom,
+    filters.dueDateTo,
+    filters.status,
+    debouncedSearch,
+  ]);
+
+  // No client-side filtering: show all tasks returned by the API (filteredTasks is set from API mapping)
+
+  // Pagination (server-side)
+  const totalCount =
+    (myTasksData && (myTasksData as any).count) || filteredTasks.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / tasksPerPage));
+  const currentTasks = filteredTasks; // API returns only current page results
+  const indexOfFirstTask =
+    totalCount === 0 ? 0 : (currentPage - 1) * tasksPerPage + 1;
+  const indexOfLastTask = Math.min(currentPage * tasksPerPage, totalCount);
+
+  // If the backend reports fewer pages than the current page (e.g. after deletions), clamp it
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(totalPages);
     }
+  }, [totalPages, currentPage]);
+
+  // Handlers
+  const onFilterChange = (key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
-  };
-
-  const openDeleteModal = (task: TaskProps) => {
-    setSelectedTask(task);
-    setIsDeleteModalOpen(true);
-  };
-
-  const openEditModal = (task: TaskProps) => {
-    setSelectedTask(task);
-    setIsEditModalOpen(true);
-  };
-
-  const getPriorityBadgeColor = (priority: string) => {
-    switch (priority) {
-      case "High":
+  const getPriorityBadgeColor = (task_priority: string) => {
+    switch (task_priority) {
+      case "Urgent":
         return "danger";
+      case "High":
+        return "warning";
       case "Normal":
         return "info";
       case "Low":
@@ -231,6 +190,10 @@ const MyTask: React.FC = () => {
         return "warning";
       case "Overdue":
         return "danger";
+      case "In Progress":
+        return "info";
+      case "Cancelled":
+        return "secondary";
       default:
         return "secondary";
     }
@@ -247,27 +210,21 @@ const MyTask: React.FC = () => {
                 <h5 className="mb-0">My Tasks</h5>
               </div>
             </Col>
-            <Col md={6} xs="12">
+            <Col md="6" xs="12">
               <InputGroup>
                 <Input
                   type="text"
-                  placeholder="Search tasks, clients, or case names..."
+                  placeholder="Search by tasks names..."
                   style={{ padding: "10px 10px" }}
                   value={filters.searchTerm}
-                  onChange={(e) =>
-                    handleFilterChange("searchTerm", e.target.value)
-                  }
+                  onChange={(e) => onFilterChange("searchTerm", e.target.value)}
                 />
                 <InputGroupText className="bg-success rounded-start-0 border-start-0">
                   <FaSearch />
                 </InputGroupText>
               </InputGroup>
             </Col>
-            <Col
-              md="3"
-              xs="12"
-              className="d-flex justify-content-end mt-sm-0 mt-2"
-            >
+            <Col md="2" xs="12" className="d-flex justify-content-end">
               <Button
                 color="success"
                 onClick={toggleFilterIcon}
@@ -279,18 +236,6 @@ const MyTask: React.FC = () => {
                   <i className="fa-solid fa-filter"></i>
                 )}
               </Button>
-              {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
-                session?.user?.user_type === "NETWORK_ADMIN") && (
-                <Button
-                  color="primary"
-                  onClick={() => setIsAddModalOpen(true)}
-                  className="d-flex justify-content-center align-items-center gap-1"
-                >
-                  <TbCirclePlus size={18} />
-                  <span>Add New Task</span>
-                </Button>
-              )}
             </Col>
           </Row>
         </CardHeader>
@@ -299,72 +244,78 @@ const MyTask: React.FC = () => {
           {/* Conditional Filters Section */}
           {filterIcon && (
             <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
-              <Row className="justify-content-center g-3">
+              <Row className="justify-content-start g-3">
                 <Col xs="12" sm="6" md="3">
-                  <Label>Assigned To</Label>
+                  <Label>Task Assigned To</Label>
                   <Input
                     type="select"
-                    id="assignedTo"
+                    id="assigned_to"
                     className="py-1"
-                    value={filters.assignedTo}
+                    value={filters.assigned_to}
                     onChange={(e) =>
-                      handleFilterChange("assignedTo", e.target.value)
+                      onFilterChange("assigned_to", e.target.value)
                     }
                   >
-                    <option value="All">All Employees</option>
-                    <option value="Mostafizur Rahman">Mostafizur Rahman</option>
-                    <option value="John Doe">John Doe</option>
+                    <option value="">All Employees</option>
+                    {isUsersLoading
+                      ? "Loading..."
+                      : usersData?.map((user: any) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))}
                   </Input>
                 </Col>
                 <Col xs="12" sm="6" md="3">
-                  <Label>Task Type</Label>
+                  <Label>Case Stage</Label>
                   <Input
                     type="select"
-                    id="taskType"
+                    id="case__case_stage"
                     className="py-1"
-                    value={filters.taskType}
+                    value={filters.case__case_stage}
                     onChange={(e) =>
-                      handleFilterChange("taskType", e.target.value)
+                      onFilterChange("case__case_stage", e.target.value)
                     }
                   >
-                    <option value="All">All Types</option>
-                    <option value="Legal">Legal</option>
-                    <option value="Application">Application</option>
-                    <option value="Follow-up">Follow-up</option>
+                    <option value="">All Stages</option>
+                    <option value="ENQUIRY">Enquiry</option>
+                    <option value="FACT_FIND">Fact Find</option>
+                    <option value="RESEARCH_COMPLIANCE_CHECK">
+                      Research and Compliance Check
+                    </option>
+                    <option value="DECISION_IN_PRINCIPLE">
+                      Decision in Principle
+                    </option>
+                    <option value="FULL_MORTGAGE_APPLICATION">
+                      Full Mortgage Application
+                    </option>
+                    <option value="OFFER_FROM_BANK">Offer From Bank</option>
+                    <option value="LEGAL">Legal</option>
+                    <option value="COMPLETION">Completion</option>
+                    <option value="FUTURE_OPPORTUNITY">
+                      Future Opportunity
+                    </option>
+                    <option value="NOT_PROCEED">Not Proceed</option>
                   </Input>
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Priority</Label>
                   <Input
                     type="select"
-                    id="priority"
+                    id="task_priority"
                     className="py-1"
-                    value={filters.priority}
+                    value={filters.task_priority}
                     onChange={(e) =>
-                      handleFilterChange("priority", e.target.value)
+                      onFilterChange("task_priority", e.target.value)
                     }
                   >
-                    <option value="All">All Priorities</option>
-                    <option value="High">High</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Low">Low</option>
+                    <option value="">All Priorities</option>
+                    <option value="LOW">Low</option>
+                    <option value="NORMAL">Normal</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent</option>
                   </Input>
                 </Col>
-                <Col xs="12" sm="6" md="3">
-                  <Label>Task Name</Label>
-                  <Input
-                    type="text"
-                    id="taskNameFilter"
-                    className="py-2"
-                    placeholder="Search task name..."
-                    value={filters.searchTerm}
-                    onChange={(e) =>
-                      handleFilterChange("searchTerm", e.target.value)
-                    }
-                  />
-                </Col>
-              </Row>
-              <Row className="justify-content-center g-3 mt-2">
                 <Col xs="12" sm="6" md="3">
                   <Label>Due Date From</Label>
                   <Input
@@ -373,7 +324,7 @@ const MyTask: React.FC = () => {
                     className="py-2"
                     value={filters.dueDateFrom}
                     onChange={(e) =>
-                      handleFilterChange("dueDateFrom", e.target.value)
+                      onFilterChange("dueDateFrom", e.target.value)
                     }
                   />
                 </Col>
@@ -385,7 +336,7 @@ const MyTask: React.FC = () => {
                     className="py-2"
                     value={filters.dueDateTo}
                     onChange={(e) =>
-                      handleFilterChange("dueDateTo", e.target.value)
+                      onFilterChange("dueDateTo", e.target.value)
                     }
                   />
                 </Col>
@@ -395,15 +346,15 @@ const MyTask: React.FC = () => {
                     type="select"
                     id="status"
                     className="py-1"
-                    value={filters.status || "All"}
-                    onChange={(e) =>
-                      handleFilterChange("status", e.target.value)
-                    }
+                    value={filters.status}
+                    onChange={(e) => onFilterChange("status", e.target.value)}
                   >
-                    <option value="All">All Status</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Overdue">Overdue</option>
+                    <option value="">All Status</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="OVERDUE">Overdue</option>
+                    <option value="CANCELLED">Cancelled</option>
                   </Input>
                 </Col>
                 <Col xs="12" sm="6" md="3">
@@ -413,14 +364,15 @@ const MyTask: React.FC = () => {
                     className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
                     onClick={() => {
                       setFilters({
-                        assignedTo: "All",
-                        taskType: "All",
-                        priority: "All",
+                        assigned_to: "",
+                        case__case_stage: "",
+                        task_priority: "",
                         searchTerm: "",
                         dueDateFrom: "",
                         dueDateTo: "",
-                        status: "All",
+                        status: "",
                       });
+                      setDebouncedSearch("");
                       setCurrentPage(1);
                     }}
                   >
@@ -439,62 +391,57 @@ const MyTask: React.FC = () => {
                   <th>Date & Time</th>
                   <th>Case Name</th>
                   <th>Client Name</th>
-                  <th>Company</th>
+                  <th>Lender</th>
                   <th>Task Name</th>
-                  <th>Task Type</th>
+                  <th>Case Stage</th>
                   <th>Assigned To</th>
                   <th>Priority</th>
                   <th>Status</th>
-                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                    session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
-                    session?.user?.user_type === "NETWORK_ADMIN") && (
-                    <th>Actions</th>
-                  )}
                 </tr>
               </thead>
               <tbody className="text-center">
-                {currentTasks.length === 0 ? (
+                {isLoading ? (
                   <tr>
-                    <td colSpan={10} className="text-center p-4">
-                      <p className="text-muted mb-0">
-                        No tasks found matching your criteria.
-                      </p>
+                    <td colSpan={9} className="text-center p-4">
+                      <LoadingSpinner />
                     </td>
                   </tr>
-                ) : (
+                ) : currentTasks.length > 0 ? (
                   currentTasks.map((task) => (
-                    <tr key={task.id}>
-                      <td>{task.date}</td>
+                    <tr key={task.alias}>
+                      <td>{formatDateToDMYAndTime(task.created_at)}</td>
                       <td>
                         <span className="text-primary fw-bold">
-                          {task.caseName}
+                          {task.case_name}
                         </span>
                       </td>
                       <td>
-                        <span className="text-dark">{task.clientName}</span>
+                        <span className="text-dark">
+                          {task.client_name || "-"}
+                        </span>
                       </td>
                       <td>
-                        <span className="text-muted">{task.company}</span>
+                        <span className="text-muted">{task.lender || "-"}</span>
                       </td>
                       <td>
                         <span className="fw-bold text-start">
-                          {task.taskName}
+                          {task.name || "-"}
                         </span>
                       </td>
                       <td>
-                        <Badge color="info" className="px-2">
-                          {task.taskType}
+                        <Badge color="light-primary" className="px-2">
+                          {task.case_stage || "-"}
                         </Badge>
                       </td>
                       <td>
-                        <p className="m-0">{task.assignedTo}</p>
+                        <p className="m-0">{task.assigned_to || "-"}</p>
                       </td>
                       <td>
                         <Badge
-                          color={getPriorityBadgeColor(task.priority)}
+                          color={getPriorityBadgeColor(task.task_priority)}
                           className="px-2"
                         >
-                          {task.priority}
+                          {task.task_priority || "-"}
                         </Badge>
                       </td>
                       <td>
@@ -502,36 +449,17 @@ const MyTask: React.FC = () => {
                           color={getStatusBadgeColor(task.status)}
                           className="px-2"
                         >
-                          {task.status}
+                          {task.status || "-"}
                         </Badge>
                       </td>
-                      {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                        session?.user?.user_type === "ORGANIZATION_SUPPORT" ||
-                        session?.user?.user_type === "NETWORK_ADMIN") && (
-                        <td>
-                          <div className="d-flex justify-content-center align-items-center">
-                            <Button
-                              color="success"
-                              size="sm"
-                              className="me-2"
-                              onClick={() => openEditModal(task)}
-                              title="Edit Task"
-                            >
-                              <Edit size={12} />
-                            </Button>
-                            <Button
-                              color="danger"
-                              size="sm"
-                              onClick={() => openDeleteModal(task)}
-                              title="Delete Task"
-                            >
-                              <Trash2 size={12} />
-                            </Button>
-                          </div>
-                        </td>
-                      )}
                     </tr>
                   ))
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="text-center p-4">
+                      No tasks found.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </Table>
@@ -542,9 +470,8 @@ const MyTask: React.FC = () => {
             <div className="d-flex justify-content-between px-4 py-3">
               <div>
                 <p className="text-success">
-                  Showing {indexOfFirstTask + 1} to{" "}
-                  {Math.min(indexOfLastTask, filteredTasks.length)} of{" "}
-                  {filteredTasks.length} tasks
+                  Showing {indexOfFirstTask} to {indexOfLastTask} of{" "}
+                  {totalCount} tasks
                 </p>
               </div>
               <Pagination>
@@ -554,7 +481,7 @@ const MyTask: React.FC = () => {
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink
                     previous
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   />
                 </PaginationItem>
 
@@ -627,7 +554,9 @@ const MyTask: React.FC = () => {
                 <PaginationItem disabled={currentPage === totalPages}>
                   <PaginationLink
                     next
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
                   />
                 </PaginationItem>
                 <PaginationItem disabled={currentPage === totalPages}>
@@ -641,32 +570,6 @@ const MyTask: React.FC = () => {
           </Row>
         </CardBody>
       </Card>
-
-      {/* Add Task Modal */}
-      <AddTaskModal
-        isAddModalOpen={isAddModalOpen}
-        setIsAddModalOpen={setIsAddModalOpen}
-        newTask={newTask}
-        setNewTask={setNewTask}
-        handleAddTask={handleAddTask}
-      />
-
-      {/* Edit Task Modal */}
-      <EditTaskModal
-        isEditModalOpen={isEditModalOpen}
-        setIsEditModalOpen={setIsEditModalOpen}
-        selectedTask={selectedTask}
-        setSelectedTask={setSelectedTask}
-        handleEditTask={handleEditTask}
-      />
-
-      {/* Delete Task Modal */}
-      <DeleteTaskModal
-        isDeleteModalOpen={isDeleteModalOpen}
-        setIsDeleteModalOpen={setIsDeleteModalOpen}
-        selectedTask={selectedTask}
-        handleDeleteTask={handleDeleteTask}
-      />
     </>
   );
 };

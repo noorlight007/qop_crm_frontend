@@ -93,6 +93,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                     <Input
                       type="switch"
                       checked={brokerVisible}
+                      className="border-primary"
                       onChange={(e) => setBrokerVisible(e.target.checked)}
                     />
                   </FormGroup>
@@ -103,6 +104,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                     <Input
                       type="switch"
                       checked={clientVisible}
+                      className="border-primary"
                       onChange={(e) => setClientVisible(e.target.checked)}
                     />
                   </FormGroup>
