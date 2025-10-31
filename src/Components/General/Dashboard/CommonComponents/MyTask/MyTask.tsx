@@ -1,6 +1,8 @@
+import LoadingSpinner from "@/app/loading";
 import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
 import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
-import { TaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
+import { MyTaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
+import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -60,24 +62,20 @@ const MyTask: React.FC = () => {
   const apiParams = buildApiParams();
 
   // RTK Hooks
-  const {
-    data: myTasksData,
-    isLoading,
-    isError,
-  } = useGetMyTasksQuery(apiParams);
+  const { data: myTasksData, isLoading } = useGetMyTasksQuery(apiParams);
   const { data: usersData, isLoading: isUsersLoading } =
     useGetUsersQuery(undefined);
 
-  const [filteredTasks, setFilteredTasks] = useState<TaskProps[]>([]);
-  const [allTasks, setAllTasks] = useState<TaskProps[]>([]);
+  const [filteredTasks, setFilteredTasks] = useState<MyTaskProps[]>([]);
+  const [allTasks, setAllTasks] = useState<MyTaskProps[]>([]);
   const [filterIcon, setFilterIcon] = useState(false);
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
-  // Map API response to TaskProps shape when data arrives
+  // Map API response to MyTaskProps shape when data arrives
   useEffect(() => {
     if (myTasksData && Array.isArray((myTasksData as any).results)) {
-      const mapped: TaskProps[] = (myTasksData as any).results.map(
+      const mapped: MyTaskProps[] = (myTasksData as any).results.map(
         (item: any) => {
           // Normalize task_priority into a human friendly label
           const rawPriority = (item.task_priority || "").toString();
@@ -101,31 +99,19 @@ const MyTask: React.FC = () => {
               break;
           }
 
-          // Use created_at as dueDate (format DD/MM/YYYY)
-          const created = item.created_at
-            ? new Date(item.created_at)
-            : new Date();
-          const dueDate = `${String(created.getDate()).padStart(
-            2,
-            "0"
-          )}/${String(created.getMonth() + 1).padStart(
-            2,
-            "0"
-          )}/${created.getFullYear()}`;
-
           return {
-            id: item.alias,
-            date: created.toLocaleString(),
-            caseName: item.case_name || "",
-            clientName: item.client_name || "",
-            company: item.lender || "",
-            taskName: item.name || "",
-            caseStage: item.case_stage || "",
+            alias: item.alias,
+            created_at: item.created_at,
+            case_name: item.case_name || "",
+            client_name: item.client_name || "",
+            lender: item.lender || "",
+            name: item.name || "",
+            case_stage: item.case_stage || "",
             assigned_to: item.assigned_to || "",
-            task_priority: mappedPriority as TaskProps["task_priority"],
-            status: (item.status as TaskProps["status"]) || "Unknown",
-            dueDate,
-          } as TaskProps;
+            task_priority: mappedPriority as MyTaskProps["task_priority"],
+            status: (item.status as MyTaskProps["status"]) || "Unknown",
+            due_date: item.due_date,
+          } as MyTaskProps;
         }
       );
       // For server-side pagination, the API already returns only the current page results
@@ -414,48 +400,48 @@ const MyTask: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="text-center">
-                {currentTasks.length === 0 ? (
+                {isLoading ? (
                   <tr>
-                    <td colSpan={10} className="text-center p-4">
-                      <p className="text-muted mb-0">
-                        No tasks found matching your criteria.
-                      </p>
+                    <td colSpan={9} className="text-center p-4">
+                      <LoadingSpinner />
                     </td>
                   </tr>
-                ) : (
+                ) : currentTasks.length > 0 ? (
                   currentTasks.map((task) => (
-                    <tr key={task.id}>
-                      <td>{task.date}</td>
+                    <tr key={task.alias}>
+                      <td>{formatDateToDMYAndTime(task.created_at)}</td>
                       <td>
                         <span className="text-primary fw-bold">
-                          {task.caseName}
+                          {task.case_name}
                         </span>
                       </td>
                       <td>
-                        <span className="text-dark">{task.clientName}</span>
+                        <span className="text-dark">
+                          {task.client_name || "-"}
+                        </span>
                       </td>
                       <td>
-                        <span className="text-muted">{task.company}</span>
+                        <span className="text-muted">{task.lender || "-"}</span>
                       </td>
                       <td>
                         <span className="fw-bold text-start">
-                          {task.taskName}
+                          {task.name || "-"}
                         </span>
                       </td>
                       <td>
                         <Badge color="light-primary" className="px-2">
-                          {task.caseStage}
+                          {task.case_stage || "-"}
                         </Badge>
                       </td>
                       <td>
-                        <p className="m-0">{task.assigned_to}</p>
+                        <p className="m-0">{task.assigned_to || "-"}</p>
                       </td>
                       <td>
                         <Badge
                           color={getPriorityBadgeColor(task.task_priority)}
                           className="px-2"
                         >
-                          {task.task_priority}
+                          {task.task_priority || "-"}
                         </Badge>
                       </td>
                       <td>
@@ -463,11 +449,17 @@ const MyTask: React.FC = () => {
                           color={getStatusBadgeColor(task.status)}
                           className="px-2"
                         >
-                          {task.status}
+                          {task.status || "-"}
                         </Badge>
                       </td>
                     </tr>
                   ))
+                ) : (
+                  <tr>
+                    <td colSpan={9} className="text-center p-4">
+                      No tasks found.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </Table>
