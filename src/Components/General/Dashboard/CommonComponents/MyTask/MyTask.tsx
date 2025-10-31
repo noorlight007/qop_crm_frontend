@@ -271,11 +271,13 @@ const MyTask: React.FC = () => {
                     }
                   >
                     <option value="">All Employees</option>
-                    {isUsersLoading ? "Loading...": usersData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
+                    {isUsersLoading
+                      ? "Loading..."
+                      : usersData?.map((user: any) => (
+                          <option key={user.id} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))}
                   </Input>
                 </Col>
                 <Col xs="12" sm="6" md="3">
