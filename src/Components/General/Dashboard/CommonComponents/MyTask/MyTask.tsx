@@ -14,7 +14,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Label,
   Pagination,
   PaginationItem,
@@ -210,18 +209,19 @@ const MyTask: React.FC = () => {
                 <h5 className="mb-0">My Tasks</h5>
               </div>
             </Col>
-            <Col md="6" xs="12">
-              <InputGroup>
+            <Col md="3" xs="12">
+              <InputGroup className="position-relative">
+                <FaSearch
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                  style={{ zIndex: 10, pointerEvents: "none" }}
+                />
                 <Input
                   type="text"
                   placeholder="Search by tasks names..."
-                  style={{ padding: "10px 10px" }}
+                  style={{ padding: "10px 10px 10px 25px" }}
                   value={filters.searchTerm}
                   onChange={(e) => onFilterChange("searchTerm", e.target.value)}
                 />
-                <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                  <FaSearch />
-                </InputGroupText>
               </InputGroup>
             </Col>
             <Col md="2" xs="12" className="d-flex justify-content-end">
