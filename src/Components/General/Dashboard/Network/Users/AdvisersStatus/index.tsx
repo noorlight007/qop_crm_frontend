@@ -53,10 +53,10 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Advisers Status"
-        subTitle="Overview of Advisers Status"
+        title="Adviser Status Overview"
+        subTitle="Overview of Adviser Status"
         parent="Network"
-        child="Advisers Status"
+        child="Adviser Status"
       />
       <Row>
         <Col xs={12}>
@@ -64,25 +64,25 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
             <div className="d-flex justify-content-between align-items-center p-3 bg-white border-bottom rounded-top-5">
               <h4 className="mb-0 fw-bold">Adviser Status</h4>
               <div>
-                <Badge color="success" pill className="me-2">
+                <Badge color="light-success" pill className="me-2">
                   Residential
                 </Badge>
-                <Badge color="info" pill className="me-2">
+                <Badge color="light-info" pill className="me-2">
                   Buy to Let
                 </Badge>
-                <Badge color="warning" pill className="me-2">
+                <Badge color="light-warning" pill className="me-2">
                   Commercial
                 </Badge>
-                <Badge color="dark" pill className="me-2">
+                <Badge color="light-dark" pill className="me-2">
                   Second Charge
                 </Badge>
-                <Badge color="success" pill className="me-2">
+                <Badge color="light-success" pill className="me-2">
                   Bridging
                 </Badge>
-                <Badge color="secondary" pill className="me-2">
+                <Badge color="light-secondary" pill className="me-2">
                   Protection
                 </Badge>
-                <Badge color="primary" pill className="me-2">
+                <Badge color="light-primary" pill className="me-2">
                   General Insurance
                 </Badge>
               </div>
