@@ -6,7 +6,24 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
   commonDashboardData,
 }) => {
   const formatCurrency = (amount: number): string => {
-    return `£${amount.toLocaleString()}`;
+    if (!isFinite(amount)) return "£0";
+    const sign = amount < 0 ? "-" : "";
+    const abs = Math.abs(amount);
+
+    const units = [
+      { value: 1e12, symbol: "T" },
+      { value: 1e9, symbol: "B" },
+      { value: 1e6, symbol: "M" },
+      { value: 1e3, symbol: "K" },
+    ];
+
+    for (const unit of units) {
+      if (abs >= unit.value) {
+        const formatted = (abs / unit.value).toFixed(1).replace(/\.0$/, "");
+        return `£${sign}${formatted}${unit.symbol}`;
+      }
+    }
+    return `£${sign}${abs.toLocaleString()}`;
   };
 
   return (
@@ -66,7 +83,8 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
                     <p className="small">{data?.total_cases} cases</p>
                   </div>
                 </div>
-                <div className="d-flex justify-content-center flex-column">
+                <div className="d-flex justify-content-center align-items-center flex-column">
+                  <small>Loan Amount</small>
                   <h6 className="fw-semibold">
                     {data?.total_loan_amount
                       ? formatCurrency(data?.total_loan_amount)
