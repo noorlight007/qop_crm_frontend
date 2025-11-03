@@ -376,7 +376,7 @@ const MyTask: React.FC = () => {
                       setCurrentPage(1);
                     }}
                   >
-                    Clear<i className="fa-solid fa-xmark"></i>
+                    <i className="fa-solid fa-xmark"></i>Clear
                   </Button>
                 </Col>
               </Row>
