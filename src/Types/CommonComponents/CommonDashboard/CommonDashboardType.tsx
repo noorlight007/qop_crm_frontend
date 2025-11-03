@@ -186,12 +186,13 @@ export interface CommonDashboardDataProps {
     advisor_name?: string;
     total_cases?: number;
     residential?: number;
-    buy_to_Let?: number;
+    buy_to_let?: number;
     commercial?: number;
     second_charge?: number;
     bridging?: number;
     protection?: number;
     general_insurance?: number;
+    total_loan_amount?: number;
   }[];
 }
 

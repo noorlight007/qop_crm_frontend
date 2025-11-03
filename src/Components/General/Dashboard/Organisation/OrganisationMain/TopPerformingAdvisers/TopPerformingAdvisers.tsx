@@ -47,9 +47,9 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
             className="space-y-6 mt-2"
             style={{ height: "350px", overflow: "auto" }}
           >
-            {commonDashboardData.top_performing_advisers.map((adviser) => (
+            {commonDashboardData.top_performing_advisers.map((data) => (
               <div
-                key={adviser?.id || adviser?.rank}
+                key={data?.rank}
                 className="d-flex justify-content-between mt-4 px-3 py-1"
               >
                 <div className="d-flex justify-content-start gap-2">
@@ -58,18 +58,18 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
                       className="d-flex align-items-center justify-content-center rounded-circle text-white bg-primary fw-medium small"
                       style={{ width: "25px", height: "25px" }}
                     >
-                      {adviser?.rank}
+                      {data?.rank}
                     </span>
                   </div>
                   <div>
-                    <h6 className="fw-semibold">{adviser?.full_name}</h6>
-                    <p className="small">{adviser?.cases_completed} cases</p>
+                    <h6 className="fw-semibold">{data?.advisor_name}</h6>
+                    <p className="small">{data?.total_cases} cases</p>
                   </div>
                 </div>
                 <div className="d-flex justify-content-center flex-column">
                   <h6 className="fw-semibold">
-                    {adviser?.total_loan_amount
-                      ? formatCurrency(adviser?.total_loan_amount)
+                    {data?.total_loan_amount
+                      ? formatCurrency(data?.total_loan_amount)
                       : "0"}
                   </h6>
                   <p className="small">
