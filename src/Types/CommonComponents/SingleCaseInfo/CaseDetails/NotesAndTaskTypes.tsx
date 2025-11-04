@@ -46,7 +46,7 @@ export interface TaskProps {
   name: string;
   task_priority: string;
   due_date: Date | null;
-  task_assigned_to: string;
+  task_assigned_to: { id: number; name: string } | null;
   case_assigned_to: string;
   current_case_stage: string;
   note: string | null;
