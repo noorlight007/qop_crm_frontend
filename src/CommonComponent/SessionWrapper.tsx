@@ -15,7 +15,6 @@ const SessionMonitor = ({ children }: { children: ReactNode }) => {
         // Force redirect to login when other tab logs out
         setTimeout(() => {
           router.push("/auth/login");
-          window.location.href = "/auth/login"; // Fallback redirect
         }, 100);
       }
     };
@@ -29,7 +28,6 @@ const SessionMonitor = ({ children }: { children: ReactNode }) => {
           if (msg?.data === "logout") {
             setTimeout(() => {
               router.push("/auth/login");
-              window.location.href = "/auth/login"; // Fallback redirect
             }, 100);
           }
         };
