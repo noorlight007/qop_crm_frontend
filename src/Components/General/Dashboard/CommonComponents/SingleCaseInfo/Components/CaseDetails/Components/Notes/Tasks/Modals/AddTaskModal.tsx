@@ -39,7 +39,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
       name: name || null,
       task_priority: priority || null,
       due_date: dueDate || null,
-      assigned_to: assignedTo || null,
+      task_assigned_to: assignedTo || null,
       note: comments || null,
     };
     const response = await addTask({

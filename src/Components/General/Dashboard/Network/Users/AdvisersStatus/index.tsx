@@ -1,17 +1,18 @@
 import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
+import { CommonDashboardDataProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-    Badge,
-    Card,
-    CardBody,
-    Col,
-    Input,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    Row,
-    Spinner,
-    Table
+  Badge,
+  Card,
+  CardBody,
+  Col,
+  Input,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Row,
+  Spinner,
+  Table,
 } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
@@ -24,7 +25,12 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(10);
 
-  const advisers: any[] = commonDashboardData?.top_performing_advisers ?? [];
+  // derive a typed alias for the top performing adviser entries
+  type TopAdviser = NonNullable<
+    CommonDashboardDataProps["top_performing_advisers"]
+  >[number];
+  const advisers: TopAdviser[] =
+    commonDashboardData?.top_performing_advisers ?? [];
   const total = advisers.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -47,10 +53,10 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Advisers Status"
-        subTitle="Overview of Advisers Status"
+        title="Adviser Status Overview"
+        subTitle="Overview of Adviser Status"
         parent="Network"
-        child="Advisers Status"
+        child="Adviser Status"
       />
       <Row>
         <Col xs={12}>
@@ -58,25 +64,25 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
             <div className="d-flex justify-content-between align-items-center p-3 bg-white border-bottom rounded-top-5">
               <h4 className="mb-0 fw-bold">Adviser Status</h4>
               <div>
-                <Badge color="success" pill className="me-2">
+                <Badge color="light-success" pill className="me-2">
                   Residential
                 </Badge>
-                <Badge color="info" pill className="me-2">
+                <Badge color="light-info" pill className="me-2">
                   Buy to Let
                 </Badge>
-                <Badge color="warning" pill className="me-2">
+                <Badge color="light-warning" pill className="me-2">
                   Commercial
                 </Badge>
-                <Badge color="dark" pill className="me-2">
+                <Badge color="light-dark" pill className="me-2">
                   Second Charge
                 </Badge>
-                <Badge color="success" pill className="me-2">
+                <Badge color="light-success" pill className="me-2">
                   Bridging
                 </Badge>
-                <Badge color="secondary" pill className="me-2">
+                <Badge color="light-secondary" pill className="me-2">
                   Protection
                 </Badge>
-                <Badge color="primary" pill className="me-2">
+                <Badge color="light-primary" pill className="me-2">
                   General Insurance
                 </Badge>
               </div>
@@ -110,15 +116,31 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
                 <thead className="bg-light-primary text-center">
                   <tr>
                     <th className="border-0 small text-uppercase">Rank</th>
-                    <th className="border-0 small text-uppercase">Advisor Name</th>
-                    <th className="border-0 small text-uppercase">Total Cases</th>
-                    <th className="border-0 small text-uppercase">Residential</th>
-                    <th className="border-0 small text-uppercase">Buy to Let</th>
-                    <th className="border-0 small text-uppercase">Commercial</th>
-                    <th className="border-0 small text-uppercase">Second Charge</th>
+                    <th className="border-0 small text-uppercase">
+                      Advisor Name
+                    </th>
+                    <th className="border-0 small text-uppercase">
+                      Total Cases
+                    </th>
+                    <th className="border-0 small text-uppercase">
+                      Residential
+                    </th>
+                    <th className="border-0 small text-uppercase">
+                      Buy to Let
+                    </th>
+                    <th className="border-0 small text-uppercase">
+                      Commercial
+                    </th>
+                    <th className="border-0 small text-uppercase">
+                      Second Charge
+                    </th>
                     <th className="border-0 small text-uppercase">Bridging</th>
-                    <th className="border-0 small text-uppercase">Protection</th>
-                    <th className="border-0 small text-uppercase">General Insurance</th>
+                    <th className="border-0 small text-uppercase">
+                      Protection
+                    </th>
+                    <th className="border-0 small text-uppercase">
+                      General Insurance
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="text-center">
@@ -136,18 +158,18 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
                     </tr>
                   ) : (
                     <>
-                      {pagedAdvisers.map((data: any, idx: number) => (
+                      {pagedAdvisers.map((data, idx: number) => (
                         <tr key={idx}>
-                          <td>{data?.rank ?? "-"}</td>
-                          <td>{data?.advisor_name ?? "-"}</td>
-                          <td>{data?.total_cases ?? "-"}</td>
-                          <td>{data?.residential ?? "-"}</td>
-                          <td>{data?.buy_to_Let ?? data.buy_to_let ?? "-"}</td>
-                          <td>{data?.commercial ?? "-"}</td>
-                          <td>{data?.second_charge ?? "-"}</td>
-                          <td>{data?.bridging ?? "-"}</td>
-                          <td>{data?.protection ?? "-"}</td>
-                          <td>{data?.general_insurance ?? "-"}</td>
+                          <td>{data?.rank ?? "0"}</td>
+                          <td>{data?.advisor_name ?? "0"}</td>
+                          <td>{data?.total_cases ?? "0"}</td>
+                          <td>{data?.residential ?? "0"}</td>
+                          <td>{data?.buy_to_let ?? "0"}</td>
+                          <td>{data?.commercial ?? "0"}</td>
+                          <td>{data?.second_charge ?? "0"}</td>
+                          <td>{data?.bridging ?? "0"}</td>
+                          <td>{data?.protection ?? "0"}</td>
+                          <td>{data?.general_insurance ?? "0"}</td>
                         </tr>
                       ))}
                     </>
@@ -163,7 +185,10 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
                 <div>
                   <Pagination aria-label="Advisers pagination" className="mb-0">
                     <PaginationItem disabled={currentPage === 1}>
-                      <PaginationLink previous onClick={() => handlePageChange(currentPage - 1)} />
+                      <PaginationLink
+                        previous
+                        onClick={() => handlePageChange(currentPage - 1)}
+                      />
                     </PaginationItem>
 
                     {Array.from({ length: totalPages }).map((_, i) => {
@@ -175,8 +200,13 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
                         Math.abs(page - currentPage) <= 2
                       ) {
                         return (
-                          <PaginationItem active={page === currentPage} key={page}>
-                            <PaginationLink onClick={() => handlePageChange(page)}>
+                          <PaginationItem
+                            active={page === currentPage}
+                            key={page}
+                          >
+                            <PaginationLink
+                              onClick={() => handlePageChange(page)}
+                            >
                               {page}
                             </PaginationLink>
                           </PaginationItem>
@@ -196,7 +226,10 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
                     })}
 
                     <PaginationItem disabled={currentPage === totalPages}>
-                      <PaginationLink next onClick={() => handlePageChange(currentPage + 1)} />
+                      <PaginationLink
+                        next
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      />
                     </PaginationItem>
                   </Pagination>
                 </div>

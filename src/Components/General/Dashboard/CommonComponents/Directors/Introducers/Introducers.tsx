@@ -16,7 +16,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -125,17 +124,18 @@ const Introducers: React.FC<IntroducersProps> = ({
             <h2>Introducers</h2>
           </Col>
           <Col md={3}>
-            <InputGroup>
+            <InputGroup className="position-relative">
+              <FaSearch
+                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                style={{ zIndex: 10, pointerEvents: "none" }}
+              />
               <Input
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "10px 10px" }}
+                style={{ padding: "10px 10px 10px 25px" }}
               />
-              <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                <FaSearch />
-              </InputGroupText>
             </InputGroup>
           </Col>
           <Col

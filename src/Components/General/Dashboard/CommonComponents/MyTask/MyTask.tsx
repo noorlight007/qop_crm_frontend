@@ -14,7 +14,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Label,
   Pagination,
   PaginationItem,
@@ -29,8 +28,8 @@ const MyTask: React.FC = () => {
 
   // Filters state (all server-side)
   const [filters, setFilters] = useState({
-    assigned_to: "",
-    case__case_stage: "",
+    task_assigned_to: "",
+    current_case_stage: "",
     task_priority: "",
     searchTerm: "",
     dueDateFrom: "",
@@ -48,8 +47,9 @@ const MyTask: React.FC = () => {
       page_size: tasksPerPage,
     };
 
-    if (filters.assigned_to) p.assigned_to = filters.assigned_to;
-    if (filters.case__case_stage) p.case__case_stage = filters.case__case_stage;
+    if (filters.task_assigned_to) p.task_assigned_to = filters.task_assigned_to;
+    if (filters.current_case_stage)
+      p.current_case_stage = filters.current_case_stage;
     if (filters.task_priority) p.task_priority = filters.task_priority;
     if (filters.status) p.status = filters.status;
     if (debouncedSearch) p.search = debouncedSearch;
@@ -69,6 +69,7 @@ const MyTask: React.FC = () => {
   const [filteredTasks, setFilteredTasks] = useState<MyTaskProps[]>([]);
   const [allTasks, setAllTasks] = useState<MyTaskProps[]>([]);
   const [filterIcon, setFilterIcon] = useState(false);
+  const [dateError, setDateError] = useState<string>("");
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
@@ -81,17 +82,19 @@ const MyTask: React.FC = () => {
           const rawPriority = (item.task_priority || "").toString();
           let mappedPriority = "Normal";
           switch (rawPriority.toUpperCase()) {
-            case "LOW":
+            case "Low":
               mappedPriority = "Low";
               break;
-            case "NORMAL":
-            case "MEDIUM":
+            case "Normal":
               mappedPriority = "Normal";
               break;
-            case "HIGH":
+            case "Medium":
+              mappedPriority = "Medium";
+              break;
+            case "High":
               mappedPriority = "High";
               break;
-            case "URGENT":
+            case "Urgent":
               mappedPriority = "Urgent";
               break;
             default:
@@ -106,11 +109,12 @@ const MyTask: React.FC = () => {
             client_name: item.client_name || "",
             lender: item.lender || "",
             name: item.name || "",
-            case_stage: item.case_stage || "",
-            assigned_to: item.assigned_to || "",
+            current_case_stage: item.current_case_stage || "",
+            case_assigned_to: item.case_assigned_to || "",
+            task_assigned_to: item.task_assigned_to || "",
             task_priority: mappedPriority as MyTaskProps["task_priority"],
             status: (item.status as MyTaskProps["status"]) || "Unknown",
-            due_date: item.due_date,
+            created_by: item.created_by || "",
           } as MyTaskProps;
         }
       );
@@ -135,8 +139,8 @@ const MyTask: React.FC = () => {
     if (currentPage !== 1) setCurrentPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    filters.assigned_to,
-    filters.case__case_stage,
+    filters.task_assigned_to,
+    filters.current_case_stage,
     filters.task_priority,
     filters.dueDateFrom,
     filters.dueDateTo,
@@ -164,6 +168,46 @@ const MyTask: React.FC = () => {
 
   // Handlers
   const onFilterChange = (key: string, value: string) => {
+    // If changing date fields, ensure Due Date From is not after Due Date To
+    if (key === "dueDateFrom") {
+      setFilters((prev) => {
+        const newFrom = value;
+        const existingTo = prev.dueDateTo;
+
+        if (existingTo && new Date(newFrom) > new Date(existingTo)) {
+          // Auto-clamp: set both to newFrom so from <= to
+          setDateError(
+            "Due Date From was after Due Date To — adjusted to match."
+          );
+          return { ...prev, dueDateFrom: newFrom, dueDateTo: newFrom };
+        }
+
+        // No conflict
+        return { ...prev, dueDateFrom: newFrom };
+      });
+      return;
+    }
+
+    if (key === "dueDateTo") {
+      setFilters((prev) => {
+        const newTo = value;
+        const existingFrom = prev.dueDateFrom;
+
+        if (existingFrom && new Date(newTo) < new Date(existingFrom)) {
+          // Auto-clamp: set both to newTo so from <= to
+          setDateError(
+            "Due Date To was before Due Date From — adjusted to match."
+          );
+          return { ...prev, dueDateFrom: newTo, dueDateTo: newTo };
+        }
+
+        // No conflict
+        return { ...prev, dueDateTo: newTo };
+      });
+      return;
+    }
+
+    // Other filters
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -210,18 +254,19 @@ const MyTask: React.FC = () => {
                 <h5 className="mb-0">My Tasks</h5>
               </div>
             </Col>
-            <Col md="6" xs="12">
-              <InputGroup>
+            <Col md="3" xs="12">
+              <InputGroup className="position-relative">
+                <FaSearch
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                  style={{ zIndex: 10, pointerEvents: "none" }}
+                />
                 <Input
                   type="text"
                   placeholder="Search by tasks names..."
-                  style={{ padding: "10px 10px" }}
+                  style={{ padding: "10px 10px 10px 25px" }}
                   value={filters.searchTerm}
                   onChange={(e) => onFilterChange("searchTerm", e.target.value)}
                 />
-                <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                  <FaSearch />
-                </InputGroupText>
               </InputGroup>
             </Col>
             <Col md="2" xs="12" className="d-flex justify-content-end">
@@ -249,11 +294,11 @@ const MyTask: React.FC = () => {
                   <Label>Task Assigned To</Label>
                   <Input
                     type="select"
-                    id="assigned_to"
+                    id="task_assigned_to"
                     className="py-1"
-                    value={filters.assigned_to}
+                    value={filters.task_assigned_to}
                     onChange={(e) =>
-                      onFilterChange("assigned_to", e.target.value)
+                      onFilterChange("task_assigned_to", e.target.value)
                     }
                   >
                     <option value="">All Employees</option>
@@ -270,11 +315,11 @@ const MyTask: React.FC = () => {
                   <Label>Case Stage</Label>
                   <Input
                     type="select"
-                    id="case__case_stage"
+                    id="current_case_stage"
                     className="py-1"
-                    value={filters.case__case_stage}
+                    value={filters.current_case_stage}
                     onChange={(e) =>
-                      onFilterChange("case__case_stage", e.target.value)
+                      onFilterChange("current_case_stage", e.target.value)
                     }
                   >
                     <option value="">All Stages</option>
@@ -326,6 +371,7 @@ const MyTask: React.FC = () => {
                     onChange={(e) =>
                       onFilterChange("dueDateFrom", e.target.value)
                     }
+                    max={filters.dueDateTo || undefined}
                   />
                 </Col>
                 <Col xs="12" sm="6" md="3">
@@ -338,7 +384,13 @@ const MyTask: React.FC = () => {
                     onChange={(e) =>
                       onFilterChange("dueDateTo", e.target.value)
                     }
+                    min={filters.dueDateFrom || undefined}
                   />
+                  {dateError && (
+                    <small className="text-danger d-block mt-1">
+                      {dateError}
+                    </small>
+                  )}
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Status</Label>
@@ -364,8 +416,8 @@ const MyTask: React.FC = () => {
                     className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
                     onClick={() => {
                       setFilters({
-                        assigned_to: "",
-                        case__case_stage: "",
+                        task_assigned_to: "",
+                        current_case_stage: "",
                         task_priority: "",
                         searchTerm: "",
                         dueDateFrom: "",
@@ -374,9 +426,10 @@ const MyTask: React.FC = () => {
                       });
                       setDebouncedSearch("");
                       setCurrentPage(1);
+                      setDateError("");
                     }}
                   >
-                    Clear<i className="fa-solid fa-xmark"></i>
+                    <i className="fa-solid fa-xmark"></i>Clear
                   </Button>
                 </Col>
               </Row>
@@ -394,7 +447,8 @@ const MyTask: React.FC = () => {
                   <th>Lender</th>
                   <th>Task Name</th>
                   <th>Case Stage</th>
-                  <th>Assigned To</th>
+                  <th>Case Assigned User</th>
+                  <th>Task Assigned To</th>
                   <th>Priority</th>
                   <th>Status</th>
                 </tr>
@@ -411,12 +465,12 @@ const MyTask: React.FC = () => {
                     <tr key={task.alias}>
                       <td>{formatDateToDMYAndTime(task.created_at)}</td>
                       <td>
-                        <span className="text-primary fw-bold">
+                        <span className="text-primary fw-bold text-truncate">
                           {task.case_name}
                         </span>
                       </td>
                       <td>
-                        <span className="text-dark">
+                        <span className="text-dark text-truncate">
                           {task.client_name || "-"}
                         </span>
                       </td>
@@ -430,11 +484,14 @@ const MyTask: React.FC = () => {
                       </td>
                       <td>
                         <Badge color="light-primary" className="px-2">
-                          {task.case_stage || "-"}
+                          {task.current_case_stage || "-"}
                         </Badge>
                       </td>
                       <td>
-                        <p className="m-0">{task.assigned_to || "-"}</p>
+                        <p className="m-0">{task.case_assigned_to || "-"}</p>
+                      </td>
+                      <td>
+                        <p className="m-0">{task.task_assigned_to || "-"}</p>
                       </td>
                       <td>
                         <Badge

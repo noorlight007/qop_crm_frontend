@@ -22,7 +22,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Label,
   Pagination,
   PaginationItem,
@@ -251,8 +250,12 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 <Col md="3">
                   <h3>Cases Overview</h3>
                 </Col>
-                <Col>
-                  <InputGroup>
+                <Col md="3" xs="12">
+                  <InputGroup className="position-relative">
+                    <FaSearch
+                      className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                      style={{ zIndex: 10, pointerEvents: "none" }}
+                    />
                     <Input
                       type="text"
                       placeholder="Search Case..."
@@ -261,11 +264,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         setSearchQuery(e.target.value);
                         setCurrentPage(1);
                       }}
-                      style={{ padding: "10px 10px" }}
+                      style={{ padding: "10px 10px 10px 25px" }}
                     />
-                    <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                      <FaSearch />
-                    </InputGroupText>
                   </InputGroup>
                 </Col>
                 <Col
@@ -390,7 +390,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           setCurrentPage(1);
                         }}
                       >
-                        Clear<i className="fa-solid fa-xmark"></i>
+                        <i className="fa-solid fa-xmark"></i>Clear
                       </Button>
                     </Col>
                   </Row>
