@@ -148,9 +148,7 @@ const MyTask: React.FC = () => {
     debouncedSearch,
   ]);
 
-  // No client-side filtering: show all tasks returned by the API (filteredTasks is set from API mapping)
-
-  // Pagination (server-side)
+  // Pagination
   const totalCount =
     (myTasksData && (myTasksData as any).count) || filteredTasks.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / tasksPerPage));
