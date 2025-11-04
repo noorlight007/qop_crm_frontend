@@ -439,6 +439,9 @@ const MyTask: React.FC = () => {
             <Table hover responsive className="mt-3">
               <thead className="thead-light text-center">
                 <tr>
+                  <th>Priority</th>
+                  <th>Created By</th>
+                  <th>Status</th>
                   <th>Date & Time</th>
                   <th>Case Name</th>
                   <th>Client Name</th>
@@ -447,8 +450,6 @@ const MyTask: React.FC = () => {
                   <th>Case Stage</th>
                   <th>Case Assigned User</th>
                   <th>Task Assigned To</th>
-                  <th>Priority</th>
-                  <th>Status</th>
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -461,6 +462,23 @@ const MyTask: React.FC = () => {
                 ) : currentTasks.length > 0 ? (
                   currentTasks.map((task) => (
                     <tr key={task.alias}>
+                      <td>
+                        <Badge
+                          color={getPriorityBadgeColor(task.task_priority)}
+                          className="px-2"
+                        >
+                          {task.task_priority || "-"}
+                        </Badge>
+                      </td>
+                      <td>{task.created_by || "-"}</td>
+                      <td>
+                        <Badge
+                          color={getStatusBadgeColor(task.status)}
+                          className="px-2"
+                        >
+                          {task.status || "-"}
+                        </Badge>
+                      </td>
                       <td>{formatDateToDMYAndTime(task.created_at)}</td>
                       <td>
                         <span className="text-primary fw-bold text-truncate">
@@ -490,22 +508,6 @@ const MyTask: React.FC = () => {
                       </td>
                       <td>
                         <p className="m-0">{task.task_assigned_to || "-"}</p>
-                      </td>
-                      <td>
-                        <Badge
-                          color={getPriorityBadgeColor(task.task_priority)}
-                          className="px-2"
-                        >
-                          {task.task_priority || "-"}
-                        </Badge>
-                      </td>
-                      <td>
-                        <Badge
-                          color={getStatusBadgeColor(task.status)}
-                          className="px-2"
-                        >
-                          {task.status || "-"}
-                        </Badge>
                       </td>
                     </tr>
                   ))
