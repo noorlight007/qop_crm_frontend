@@ -80,17 +80,19 @@ const MyTask: React.FC = () => {
           const rawPriority = (item.task_priority || "").toString();
           let mappedPriority = "Normal";
           switch (rawPriority.toUpperCase()) {
-            case "LOW":
+            case "Low":
               mappedPriority = "Low";
               break;
-            case "NORMAL":
-            case "MEDIUM":
+            case "Normal":
               mappedPriority = "Normal";
               break;
-            case "HIGH":
+            case "Medium":
+              mappedPriority = "Medium";
+              break;
+            case "High":
               mappedPriority = "High";
               break;
-            case "URGENT":
+            case "Urgent":
               mappedPriority = "Urgent";
               break;
             default:
@@ -105,11 +107,12 @@ const MyTask: React.FC = () => {
             client_name: item.client_name || "",
             lender: item.lender || "",
             name: item.name || "",
-            case_stage: item.case_stage || "",
-            assigned_to: item.assigned_to || "",
+            current_case_stage: item.current_case_stage || "",
+            case_assigned_to: item.case_assigned_to || "",
+            task_assigned_to: item.task_assigned_to || "",
             task_priority: mappedPriority as MyTaskProps["task_priority"],
             status: (item.status as MyTaskProps["status"]) || "Unknown",
-            due_date: item.due_date,
+            created_by: item.created_by || "",
           } as MyTaskProps;
         }
       );
@@ -394,7 +397,8 @@ const MyTask: React.FC = () => {
                   <th>Lender</th>
                   <th>Task Name</th>
                   <th>Case Stage</th>
-                  <th>Assigned To</th>
+                  <th>Case Assigned User</th>
+                  <th>Task Assigned To</th>
                   <th>Priority</th>
                   <th>Status</th>
                 </tr>
@@ -411,12 +415,12 @@ const MyTask: React.FC = () => {
                     <tr key={task.alias}>
                       <td>{formatDateToDMYAndTime(task.created_at)}</td>
                       <td>
-                        <span className="text-primary fw-bold">
+                        <span className="text-primary fw-bold text-truncate">
                           {task.case_name}
                         </span>
                       </td>
                       <td>
-                        <span className="text-dark">
+                        <span className="text-dark text-truncate">
                           {task.client_name || "-"}
                         </span>
                       </td>
@@ -430,11 +434,14 @@ const MyTask: React.FC = () => {
                       </td>
                       <td>
                         <Badge color="light-primary" className="px-2">
-                          {task.case_stage || "-"}
+                          {task.current_case_stage || "-"}
                         </Badge>
                       </td>
                       <td>
-                        <p className="m-0">{task.assigned_to || "-"}</p>
+                        <p className="m-0">{task.case_assigned_to || "-"}</p>
+                      </td>
+                      <td>
+                        <p className="m-0">{task.task_assigned_to || "-"}</p>
                       </td>
                       <td>
                         <Badge

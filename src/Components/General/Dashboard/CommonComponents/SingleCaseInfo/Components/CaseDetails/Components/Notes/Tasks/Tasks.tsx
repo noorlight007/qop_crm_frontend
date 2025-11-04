@@ -89,7 +89,7 @@ const Tasks: React.FC = () => {
               <th style={{ minWidth: "120px" }}>Due Date</th>
               <th style={{ minWidth: "200px" }}>Current Case Stage</th>
               <th style={{ minWidth: "200px" }}>Created By</th>
-              <th style={{ minWidth: "200px" }}>Case Assigned To</th>
+              <th style={{ minWidth: "200px" }}>Case Assigned User</th>
               <th style={{ minWidth: "200px" }}>Task Assigned To</th>
               <th style={{ minWidth: "400px" }}>Information</th>
             </tr>
