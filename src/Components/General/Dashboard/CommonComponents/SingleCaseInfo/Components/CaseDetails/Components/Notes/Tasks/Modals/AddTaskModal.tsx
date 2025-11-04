@@ -1,7 +1,6 @@
 import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
 import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
 import { AddTaskModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
-import { formatChoiceFieldValue } from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -148,8 +147,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   {usersData &&
                     usersData.map((user: any) => (
                       <option key={user?.id} value={user?.id}>
-                        {user?.name} (
-                        {formatChoiceFieldValue(user?.user_type || null)})
+                        {user?.name}
                       </option>
                     ))}
                 </Input>
