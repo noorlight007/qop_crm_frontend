@@ -22,7 +22,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Label,
   Pagination,
   PaginationItem,
@@ -251,8 +250,12 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 <Col md="3">
                   <h3>Cases Overview</h3>
                 </Col>
-                <Col>
-                  <InputGroup>
+                <Col md="3" xs="12">
+                  <InputGroup className="position-relative">
+                    <FaSearch
+                      className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                      style={{ zIndex: 10, pointerEvents: "none" }}
+                    />
                     <Input
                       type="text"
                       placeholder="Search Case..."
@@ -261,11 +264,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         setSearchQuery(e.target.value);
                         setCurrentPage(1);
                       }}
-                      style={{ padding: "10px 10px" }}
+                      style={{ padding: "10px 10px 10px 25px" }}
                     />
-                    <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                      <FaSearch />
-                    </InputGroupText>
                   </InputGroup>
                 </Col>
                 <Col
@@ -302,7 +302,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
                     <Col xs="12" sm="6" md="3">
-                      <Label>Select Case Created Employee</Label>
+                      <Label>Select Case Created Adviser</Label>
                       <Input
                         type="select"
                         id="employeeFilter"
@@ -312,7 +312,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           handleFilterChange("created_by", e.target.value)
                         }
                       >
-                        <option value="">All Employee</option>
+                        <option value="">All Advisers</option>
                         {adviserData?.map((adviser: AdviserInfoProps) => (
                           <option key={adviser.alias} value={adviser.user.id}>
                             {adviser.user.title
@@ -390,7 +390,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           setCurrentPage(1);
                         }}
                       >
-                        Clear<i className="fa-solid fa-xmark"></i>
+                        <i className="fa-solid fa-xmark"></i>Clear
                       </Button>
                     </Col>
                   </Row>
@@ -411,10 +411,13 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         session?.user?.user_type === "NETWORK_ADVISER"
                           ? "Organisation"
                           : session?.user?.user_type === "ORGANISATION_ADMIN" ||
-                            session?.user?.user_type === "ORGANISATION_ADVISER" ||
-                            session?.user?.user_type === "ORGANISATION_SUPPORT" ||
+                            session?.user?.user_type ===
+                              "ORGANISATION_ADVISER" ||
+                            session?.user?.user_type ===
+                              "ORGANISATION_SUPPORT" ||
                             session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                            session?.user?.user_type === "ORGANIZATION_ADVISER" ||
+                            session?.user?.user_type ===
+                              "ORGANIZATION_ADVISER" ||
                             session?.user?.user_type === "ORGANIZATION_SUPPORT"
                           ? "Network"
                           : "Unknown"}
@@ -427,7 +430,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <tbody className="text-center">
                     {isLoading ? (
                       <tr>
-                        <td colSpan={9} className="text-center">
+                        <td colSpan={10} className="text-center">
                           <Spinner color="primary" />
                         </td>
                       </tr>
@@ -523,18 +526,21 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td className="text-truncate">
-                            {userType === "NETWORK_ADMIN" || userType === "NETWORK_ADVISER" ? (
-                              caseItem.organization?.name ?? "-"
-                            ) : userType === "ORGANISATION_ADMIN" ||
-                              userType === "ORGANISATION_ADVISER" ||
-                              userType === "ORGANISATION_SUPPORT" ||
-                              userType === "ORGANIZATION_ADMIN" ||
-                              userType === "ORGANIZATION_ADVISER" ||
-                              userType === "ORGANIZATION_SUPPORT" ? (
-                              caseItem.network?.name ?? "-"
-                            ) : (
-                              "-"
-                            )}
+                            {userType === "NETWORK_ADMIN" ||
+                            userType === "NETWORK_ADVISER"
+                              ? caseItem.organization?.name ?? (
+                                  <span className="text-muted">
+                                    Owned by Network
+                                  </span>
+                                )
+                              : userType === "ORGANISATION_ADMIN" ||
+                                userType === "ORGANISATION_ADVISER" ||
+                                userType === "ORGANISATION_SUPPORT" ||
+                                userType === "ORGANIZATION_ADMIN" ||
+                                userType === "ORGANIZATION_ADVISER" ||
+                                userType === "ORGANIZATION_SUPPORT"
+                              ? caseItem.network?.name ?? "Self"
+                              : "-"}
                           </td>
                           <td className="text-truncate">
                             <p className="m-0">

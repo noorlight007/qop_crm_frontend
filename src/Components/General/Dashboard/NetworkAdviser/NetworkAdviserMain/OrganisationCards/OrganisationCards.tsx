@@ -1,6 +1,5 @@
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Network/Organisations/OrganisationListApi";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -9,7 +8,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Row,
   Spinner,
 } from "reactstrap";
@@ -31,19 +29,22 @@ const OrganisationCards = () => {
             <Col md="3">
               <h4 className="mb-4 fw-bold">Organisations</h4>
             </Col>
-            <Col>
-              <InputGroup>
+            <Col md="3" xs="12">
+              <InputGroup className="position-relative">
+                <FaSearch
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                  style={{ zIndex: 10, pointerEvents: "none" }}
+                />
                 <Input
                   type="text"
                   placeholder="Search Organisation..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ padding: "10px 10px 10px 25px" }}
                 />
-                <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                  <FaSearch />
-                </InputGroupText>
               </InputGroup>
             </Col>
+            <Col md="3" xs="12" />
             {/* <Col
               md="3"
               xs="12"
@@ -66,7 +67,7 @@ const OrganisationCards = () => {
                 <Spinner color="primary" />
               </Row>
             ) : organisationList && organisationList.length > 0 ? (
-              organisationList.slice(0, 4).map((item: any) => (
+              organisationList.slice(0, 8).map((item: any) => (
                 <Col
                   sm="6"
                   xxl="3"
@@ -75,8 +76,8 @@ const OrganisationCards = () => {
                   key={item.slug}
                 >
                   <Card className="bg-white border organisation_card opacity-100  p-3 position-relative">
-                    <Link
-                      // href={`/dashboard/network/organisations/${item.slug}`}
+                    {/* <Link
+                      href={`/dashboard/network/organisations/${item.slug}`}
                       href="#"
                       target="_blank"
                       className="text-muted position-absolute top-0 end-0 p-3"
@@ -85,7 +86,7 @@ const OrganisationCards = () => {
                         style={{ fontSize: "10px" }}
                         className="fa-solid fa-up-right-from-square"
                       ></i>
-                    </Link>
+                    </Link> */}
 
                     <CardBody className="p-0 ">
                       <div className="d-flex gap-2">
@@ -93,18 +94,21 @@ const OrganisationCards = () => {
                           <Image
                             width="28"
                             height="28"
-                            className="img-fluid object-fit-cover"
+                            className="object-fit-cover"
                             src={item.logo || "/assets/images/network/logo.jpg"}
                             alt="Organisation"
                           />
                         </div>
                         <h5 className="mb-1">
-                          <Link
+                          <span className="text-black fw-bold">
+                            {item.name}
+                          </span>
+                          {/* <Link
                             className="text-black fw-bold text_decoration_hover"
                             href="#"
                           >
                             {item.name}
-                          </Link>
+                          </Link> */}
                         </h5>
                       </div>
                       <div className="mt-2 mb-4">{item.email}</div>

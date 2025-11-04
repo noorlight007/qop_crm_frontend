@@ -35,14 +35,14 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
     lastName: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    re_password: "",
     phone: "",
     profileImage: null,
   });
 
   const handleSaveUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.re_password) {
       toast.error("Password and Confirm Password do not match.");
       return;
     }
@@ -54,6 +54,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
     formPayload.append("last_name", formData.lastName);
     formPayload.append("email", formData.email);
     formPayload.append("password", formData.password);
+    formPayload.append("re_password", formData.re_password);
     formPayload.append("phone", formData.phone);
     if (formData.profileImage) {
       formPayload.append("profile_image", formData.profileImage);
@@ -72,7 +73,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
           lastName: "",
           email: "",
           password: "",
-          confirmPassword: "",
+          re_password: "",
           phone: "",
           profileImage: null,
         });
@@ -223,15 +224,15 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                   required
                 >
                   <option value="">Select...</option>
-                  <option value="MR">Mr.</option>
-                  <option value="MRS">Mrs.</option>
-                  <option value="MS">Ms.</option>
-                  <option value="DR">Dr.</option>
-                  <option value="MISS">Miss.</option>
-                  <option value="MADAM">Madam.</option>
-                  <option value="MAIDEN">Maiden.</option>
-                  <option value="PROFESSOR">Professor.</option>
-                  <option value="DOCTOR">Doctor.</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
                 </Input>
               </FormGroup>
             </Col>
@@ -314,9 +315,9 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                 </Label>
                 <Input
                   id="confirmPassword"
-                  name="confirmPassword"
+                  name="re_password"
                   type="password"
-                  value={formData.confirmPassword || ""}
+                  value={formData.re_password || ""}
                   onChange={handleInputChange}
                   required
                 />

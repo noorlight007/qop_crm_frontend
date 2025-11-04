@@ -21,7 +21,16 @@ export const TasksApi = baseApi.injectEndpoints({
       },
       providesTags: ["Tasks"],
     }),
+    editTask: builder.mutation({
+      query: ({ case_alias, task_alias, taskPayload }) => ({
+        url: `/cases/${case_alias}/tasks/${task_alias}/`,
+        method: "PATCH",
+        body: taskPayload,
+      }),
+      invalidatesTags: ["Tasks"],
+    }),
   }),
 });
 
-export const { useAddTasksMutation, useGetTasksQuery } = TasksApi;
+export const { useAddTasksMutation, useGetTasksQuery, useEditTaskMutation } =
+  TasksApi;

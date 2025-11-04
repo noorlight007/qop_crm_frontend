@@ -8,7 +8,7 @@ import {
 import { ClientInfoProps } from "@/Types/CommonComponents/Directors/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useEffect, useState } from "react";
-import { FaUserEdit } from "react-icons/fa";
+import { FaArrowRight, FaUserEdit } from "react-icons/fa";
 import { TbCircleArrowUp } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
@@ -244,6 +244,26 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                           {caseInfo?.case_category
                             ? formatChoiceFieldValue(caseInfo.case_category)
                             : "N/A"}
+                          {caseInfo?.case_category === "MORTGAGE" && (
+                            <small>
+                              (
+                              {formatChoiceFieldValue(
+                                caseInfo?.application_type || ""
+                              )}
+                              {caseInfo?.mortgage_type ? (
+                                <>
+                                  {" "}
+                                  <FaArrowRight />{" "}
+                                  {formatChoiceFieldValue(
+                                    caseInfo?.mortgage_type || ""
+                                  )}
+                                </>
+                              ) : (
+                                ""
+                              )}
+                              )
+                            </small>
+                          )}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
@@ -390,6 +410,28 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         <Row className="px-3">
           <Col className="border-2 border-r-light">
             <h4>Property Address:</h4>
+            <p>
+              {(() => {
+                const pd = caseInfo?.property_details;
+                if (!pd) return "N/A";
+                const countryFormatted = pd.country
+                  ? formatChoiceFieldValue(pd.country)
+                  : pd.country;
+                const parts = [
+                  pd.house_name_or_number,
+                  pd.address_line_1,
+                  pd.address_line_2,
+                  pd.city,
+                  pd.county,
+                  pd.postcode,
+                  countryFormatted,
+                ].filter(
+                  (v) =>
+                    v !== null && v !== undefined && String(v).trim() !== ""
+                );
+                return parts.length ? parts.join(", ") : "N/A";
+              })()}
+            </p>
           </Col>
           <Col>
             <h4>Notes:</h4>

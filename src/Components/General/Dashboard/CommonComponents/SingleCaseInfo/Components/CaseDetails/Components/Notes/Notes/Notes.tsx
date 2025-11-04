@@ -42,7 +42,7 @@ const TABLE_COLUMNS = [
     textAlign: "left",
   },
   { key: "case_stage", label: "Stage", width: "200px", textAlign: "left" },
-  { key: "user", label: "User", width: "200px", textAlign: "left" },
+  { key: "created_by", label: "Created By", width: "200px", textAlign: "left" },
   { key: "note", label: "Information", width: "400px", textAlign: "left" },
   {
     key: "introducer",

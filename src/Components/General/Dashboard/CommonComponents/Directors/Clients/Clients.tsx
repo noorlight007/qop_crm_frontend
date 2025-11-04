@@ -15,7 +15,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -125,19 +124,21 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
             <h2>Clients</h2>
           </Col>
           <Col md={3} xs={12}>
-            <InputGroup>
+            <InputGroup className="position-relative">
+              <FaSearch
+                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                style={{ zIndex: 10, pointerEvents: "none" }}
+              />
               <Input
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "10px 10px" }}
+                style={{ padding: "10px 10px 10px 25px" }}
               />
-              <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                <FaSearch />
-              </InputGroupText>
             </InputGroup>
           </Col>
+          <Col md="3" xs="12" />
           {/* <Col
             md="3"
             xs="12"
@@ -380,7 +381,9 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
           toggle={toggleDeleteModal}
           clientAlias={clientToDelete?.alias || ""}
           clientName={`${
-            clientToDelete?.user?.title ? formatChoiceFieldValue(clientToDelete?.user?.title) + " " : ""
+            clientToDelete?.user?.title
+              ? formatChoiceFieldValue(clientToDelete?.user?.title) + " "
+              : ""
           }${clientToDelete?.user?.first_name} ${
             clientToDelete?.user?.middle_name
               ? clientToDelete?.user?.middle_name + " "

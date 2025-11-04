@@ -21,6 +21,7 @@ import {
   Table,
 } from "reactstrap";
 import AddTaskModal from "./Modals/AddTaskModal";
+import EditTaskModal from "./Modals/EditTaskModal";
 
 const Tasks: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,6 +30,13 @@ const Tasks: React.FC = () => {
   const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [selectedTask, setSelectedTask] = useState<TaskProps | null>(null);
+
+  const handleOpenEditTask = (task: TaskProps) => {
+    setSelectedTask(task);
+    setIsEditModalOpen(true);
+  };
 
   //   rtk hook
   const { data: tasksData, isLoading } = useGetTasksQuery({
@@ -50,15 +58,15 @@ const Tasks: React.FC = () => {
   const getBadgeColor = (priority: string | null | undefined) => {
     switch (priority) {
       case "LOW":
-        return "light-dark";
+        return "dark";
       case "NORMAL":
-        return "light-primary";
+        return "primary";
       case "HIGH":
-        return "light-warning";
+        return "warning";
       case "URGENT":
-        return "light-danger";
+        return "danger";
       default:
-        return "light-info";
+        return "info";
     }
   };
 
@@ -79,23 +87,25 @@ const Tasks: React.FC = () => {
       </Row>
 
       <div className="table-responsive">
-        <Table striped hover responsive>
+        <Table hover responsive>
           <thead>
             <tr>
-              <th style={{ minWidth: "50px" }}>Type</th>
-              <th style={{ minWidth: "50px" }}>Priority</th>
-              <th style={{ minWidth: "120px" }}>Task Name</th>
-              <th style={{ minWidth: "120px" }}>Activity Date</th>
-              <th style={{ minWidth: "120px" }}>Due Date</th>
-              <th style={{ minWidth: "200px" }}>Stage</th>
-              <th style={{ minWidth: "150px" }}>User</th>
+              <th>Action</th>
+              <th>Priority</th>
+              <th className="text-truncate">Created By</th>
+              <th style={{ minWidth: "200px" }}>Task Name</th>
+              <th>Activity Date</th>
+              <th>Due Date</th>
+              <th className="text-truncate">Current Case Stage</th>
+              <th className="text-truncate">Case Assigned User</th>
+              <th className="text-truncate">Task Assigned To</th>
               <th style={{ minWidth: "400px" }}>Information</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={10} className="text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -103,34 +113,56 @@ const Tasks: React.FC = () => {
               (tasksData.results?.length ?? (tasksData as any)?.length) > 0 ? (
               (tasksData.results ?? tasksData).map((task: TaskProps) => (
                 <tr key={task?.alias}>
-                  <td>{formatChoiceFieldValue(task?.type || "-")}</td>
+                  <td className="text-truncate">
+                    <Button
+                      size="sm"
+                      color="outline-success"
+                      onClick={() => handleOpenEditTask(task)}
+                    >
+                      <i className="fa-solid fa-pencil-alt me-1"></i>
+                      <span>Edit</span>
+                    </Button>
+                  </td>
                   <td>
                     <Badge color={getBadgeColor(task?.task_priority)}>
                       {formatChoiceFieldValue(task?.task_priority || "-")}
                     </Badge>
                   </td>
+                  <td>{task?.created_by ? task?.created_by : "Unknown"}</td>
                   <td>{task?.name || "-"}</td>
                   <td>{formatDateToDMYAndTime(task?.created_at || "-")}</td>
                   <td>{formatDateToDMY(task?.due_date || "-")}</td>
                   <td>
-                    {formatChoiceFieldValue(task?.case?.case_stage || "-")}
+                    {formatChoiceFieldValue(task?.current_case_stage || "-")}
                   </td>
-                  <td>{`${formatChoiceFieldValue(task?.created_by?.title)} ${
-                    task?.created_by?.first_name
-                  } ${task?.created_by?.middle_name} ${
-                    task?.created_by?.last_name
-                  }`}</td>
                   <td>
-                    <div
-                      dangerouslySetInnerHTML={{ __html: task.note || "" }}
-                      style={{ wordBreak: "break-word", maxWidth: "400px" }}
-                    />
+                    {task?.case_assigned_to
+                      ? task?.case_assigned_to
+                      : "Unknown"}
+                  </td>
+                  <td>
+                    {task?.task_assigned_to
+                      ? task?.task_assigned_to.name
+                      : "Unknown"}
+                  </td>
+                  <td>
+                    {task.note ? (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: task.note }}
+                        style={{ wordBreak: "break-word", maxWidth: "400px" }}
+                      />
+                    ) : (
+                      <span className="text-muted">
+                        No Information Available. Because this task is created
+                        by System.
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center">
+                <td colSpan={10} className="text-center">
                   No tasks found.
                 </td>
               </tr>
@@ -262,10 +294,15 @@ const Tasks: React.FC = () => {
           )}
         </Col>
       </Row>
-
+      {/* modals  */}
       <AddTaskModal
         isOpen={modalOpen}
         toggle={() => setModalOpen(!modalOpen)}
+      />
+      <EditTaskModal
+        isOpen={isEditModalOpen}
+        toggle={() => setIsEditModalOpen(!isEditModalOpen)}
+        selectedTask={selectedTask as TaskProps}
       />
     </Container>
   );

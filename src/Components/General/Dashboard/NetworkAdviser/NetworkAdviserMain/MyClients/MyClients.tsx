@@ -29,10 +29,26 @@ const MyClients: React.FC = () => {
       nextMeeting: "Friday 2:00 PM",
       status: "Decision In Principle",
     },
+    {
+      name: "Michael Chen",
+      value: "£280K",
+      cases: 1,
+      lastContact: "1 week ago",
+      nextMeeting: "Friday 2:00 PM",
+      status: "Decision In Principle",
+    },
+    {
+      name: "Michael Chen",
+      value: "£280K",
+      cases: 1,
+      lastContact: "1 week ago",
+      nextMeeting: "Friday 2:00 PM",
+      status: "Decision In Principle",
+    },
   ];
 
   return (
-    <Card className="border-0 shadow-sm h-100">
+    <Card className="border-0 shadow-sm">
       <CardBody className="p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h4 className="text-xl font-semibold m-0">My Clients</h4>
@@ -41,7 +57,10 @@ const MyClients: React.FC = () => {
           </Link>
         </div>
 
-        <div className="client-list space-y-3">
+        <div
+          className="client-list space-y-3 overflow-auto"
+          style={{ maxHeight: "435px" }}
+        >
           {clients.map((client, index) => (
             <Card
               key={index}
