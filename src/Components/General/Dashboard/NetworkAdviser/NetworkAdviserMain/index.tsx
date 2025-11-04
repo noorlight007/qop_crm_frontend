@@ -1,11 +1,11 @@
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../CommonComponents/MyTask/MyTask";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
-import UpcomingTasks from "./UpcommingTasks/UpCommingTasks";
 import OrganisationCards from "./OrganisationCards/OrganisationCards";
 
 const NetworkAdviserContainer: React.FC = () => {
@@ -26,20 +26,23 @@ const NetworkAdviserContainer: React.FC = () => {
         </Row>
         {/* 3rd row  */}
         <Row>
-          <Col md={6} sm={12}>
-            <MyClients />
-          </Col>
-          <Col md={6} sm={12}>
-            <UpcomingTasks />
+          <Col>
+            <MyTask />
           </Col>
         </Row>
         {/* 4th row  */}
+        <Row>
+          <Col>
+            <OrganisationCards />
+          </Col>
+        </Row>
+        {/* 5th row  */}
         <Row>
           <Col md={6} sm={12}>
             <DocumentStatus />
           </Col>
           <Col md={6} sm={12}>
-            <OrganisationCards />
+            <MyClients />
           </Col>
         </Row>
       </Container>
