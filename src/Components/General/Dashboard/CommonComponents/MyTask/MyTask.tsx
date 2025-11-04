@@ -28,8 +28,8 @@ const MyTask: React.FC = () => {
 
   // Filters state (all server-side)
   const [filters, setFilters] = useState({
-    assigned_to: "",
-    case__case_stage: "",
+    task_assigned_to: "",
+    current_case_stage: "",
     task_priority: "",
     searchTerm: "",
     dueDateFrom: "",
@@ -47,8 +47,9 @@ const MyTask: React.FC = () => {
       page_size: tasksPerPage,
     };
 
-    if (filters.assigned_to) p.assigned_to = filters.assigned_to;
-    if (filters.case__case_stage) p.case__case_stage = filters.case__case_stage;
+    if (filters.task_assigned_to) p.task_assigned_to = filters.task_assigned_to;
+    if (filters.current_case_stage)
+      p.current_case_stage = filters.current_case_stage;
     if (filters.task_priority) p.task_priority = filters.task_priority;
     if (filters.status) p.status = filters.status;
     if (debouncedSearch) p.search = debouncedSearch;
@@ -137,8 +138,8 @@ const MyTask: React.FC = () => {
     if (currentPage !== 1) setCurrentPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    filters.assigned_to,
-    filters.case__case_stage,
+    filters.task_assigned_to,
+    filters.current_case_stage,
     filters.task_priority,
     filters.dueDateFrom,
     filters.dueDateTo,
@@ -252,11 +253,11 @@ const MyTask: React.FC = () => {
                   <Label>Task Assigned To</Label>
                   <Input
                     type="select"
-                    id="assigned_to"
+                    id="task_assigned_to"
                     className="py-1"
-                    value={filters.assigned_to}
+                    value={filters.task_assigned_to}
                     onChange={(e) =>
-                      onFilterChange("assigned_to", e.target.value)
+                      onFilterChange("task_assigned_to", e.target.value)
                     }
                   >
                     <option value="">All Employees</option>
@@ -273,11 +274,11 @@ const MyTask: React.FC = () => {
                   <Label>Case Stage</Label>
                   <Input
                     type="select"
-                    id="case__case_stage"
+                    id="current_case_stage"
                     className="py-1"
-                    value={filters.case__case_stage}
+                    value={filters.current_case_stage}
                     onChange={(e) =>
-                      onFilterChange("case__case_stage", e.target.value)
+                      onFilterChange("current_case_stage", e.target.value)
                     }
                   >
                     <option value="">All Stages</option>
@@ -367,8 +368,8 @@ const MyTask: React.FC = () => {
                     className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
                     onClick={() => {
                       setFilters({
-                        assigned_to: "",
-                        case__case_stage: "",
+                        task_assigned_to: "",
+                        current_case_stage: "",
                         task_priority: "",
                         searchTerm: "",
                         dueDateFrom: "",
