@@ -105,9 +105,10 @@ const MyTask: React.FC = () => {
           return {
             alias: item.alias,
             created_at: item.created_at,
-            case_name: item.case_name || "",
+            current_case_name: item.current_case_name || "",
             client_name: item.client_name || "",
-            lender: item.lender || "",
+            current_case_lender: item.current_case_lender || "",
+            current_case_workflow: item.current_case_workflow || "",
             name: item.name || "",
             current_case_stage: item.current_case_stage || "",
             case_assigned_to: item.case_assigned_to || "",
@@ -446,6 +447,7 @@ const MyTask: React.FC = () => {
                   <th>Case Name</th>
                   <th>Client Name</th>
                   <th>Lender</th>
+                  <th>Workflow</th>
                   <th>Task Name</th>
                   <th>Case Stage</th>
                   <th>Case Assigned User</th>
@@ -482,7 +484,7 @@ const MyTask: React.FC = () => {
                       <td>{formatDateToDMYAndTime(task.created_at)}</td>
                       <td>
                         <span className="text-primary fw-bold text-truncate">
-                          {task.case_name}
+                          {task.current_case_name || "-"}
                         </span>
                       </td>
                       <td>
@@ -491,7 +493,14 @@ const MyTask: React.FC = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="text-muted">{task.lender || "-"}</span>
+                        <span className="text-muted">
+                          {task.current_case_lender || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-muted">
+                          {task.current_case_workflow || "-"}
+                        </span>
                       </td>
                       <td>
                         <span className="fw-bold text-start">
