@@ -1,47 +1,41 @@
 "use client";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 
-const SessionWrapper = ({
-  children,
-  session,
-}: {
-  children: React.ReactNode;
-  session: any;
-}) => {
+// Inner component to handle logout detection
+const SessionMonitor = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    // Listen for other tabs signaling logout via localStorage
+    // Listen for logout signals from other tabs via localStorage
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "qop_logout") {
-        // Redirect to the unauthorized page when other tab logs out
-        try {
-          router.push("/unauthorized");
-        } catch (err) {
-          // ignore
-        }
+        // Force redirect to login when other tab logs out
+        setTimeout(() => {
+          router.push("/auth/login");
+          window.location.href = "/auth/login"; // Fallback redirect
+        }, 100);
       }
     };
 
-    // BroadcastChannel fallback for browsers that support it
+    // BroadcastChannel listener for logout events
     let bc: BroadcastChannel | null = null;
     try {
       if (typeof window !== "undefined" && (window as any).BroadcastChannel) {
         bc = new BroadcastChannel("qop_channel");
         bc.onmessage = (msg) => {
           if (msg?.data === "logout") {
-            try {
-              router.push("/unauthorized");
-            } catch (err) {
-              // ignore
-            }
+            setTimeout(() => {
+              router.push("/auth/login");
+              window.location.href = "/auth/login"; // Fallback redirect
+            }, 100);
           }
         };
       }
     } catch (err) {
-      bc = null;
+      // ignore
     }
 
     window.addEventListener("storage", handleStorage);
@@ -56,7 +50,28 @@ const SessionWrapper = ({
     };
   }, [router]);
 
-  return <SessionProvider session={session}>{children}</SessionProvider>;
+  // Monitor session status changes - detect when session becomes null
+  useEffect(() => {
+    if (status === "unauthenticated" && session === null) {
+      router.push("/auth/login");
+    }
+  }, [status, session, router]);
+
+  return <>{children}</>;
+};
+
+const SessionWrapper = ({
+  children,
+  session,
+}: {
+  children: React.ReactNode;
+  session: any;
+}) => {
+  return (
+    <SessionProvider session={session}>
+      <SessionMonitor>{children}</SessionMonitor>
+    </SessionProvider>
+  );
 };
 
 export default SessionWrapper;
