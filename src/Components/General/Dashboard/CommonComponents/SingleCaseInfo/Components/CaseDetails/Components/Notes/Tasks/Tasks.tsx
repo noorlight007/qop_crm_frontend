@@ -49,13 +49,13 @@ const Tasks: React.FC = () => {
 
   const getBadgeColor = (priority: string | null | undefined) => {
     switch (priority) {
-      case "LOW":
+      case "Low":
         return "dark";
-      case "NORMAL":
+      case "Normal":
         return "primary";
-      case "HIGH":
+      case "High":
         return "warning";
-      case "URGENT":
+      case "Urgent":
         return "danger";
       default:
         return "info";
@@ -87,9 +87,10 @@ const Tasks: React.FC = () => {
               <th style={{ minWidth: "120px" }}>Task Name</th>
               <th style={{ minWidth: "120px" }}>Activity Date</th>
               <th style={{ minWidth: "120px" }}>Due Date</th>
-              <th style={{ minWidth: "200px" }}>Stage</th>
+              <th style={{ minWidth: "200px" }}>Current Case Stage</th>
               <th style={{ minWidth: "200px" }}>Created By</th>
-              <th style={{ minWidth: "200px" }}>Assigned To</th>
+              <th style={{ minWidth: "200px" }}>Case Assigned To</th>
+              <th style={{ minWidth: "200px" }}>Task Assigned To</th>
               <th style={{ minWidth: "400px" }}>Information</th>
             </tr>
           </thead>
@@ -114,25 +115,18 @@ const Tasks: React.FC = () => {
                   <td>{formatDateToDMYAndTime(task?.created_at || "-")}</td>
                   <td>{formatDateToDMY(task?.due_date || "-")}</td>
                   <td>
-                    {formatChoiceFieldValue(task?.case?.case_stage || "-")}
+                    {formatChoiceFieldValue(task?.current_case_stage || "-")}
+                  </td>
+                  <td>{task?.created_by ? task?.created_by : "Unknown"}</td>
+                  <td>
+                    {task?.case_assigned_to
+                      ? task?.case_assigned_to
+                      : "Unknown"}
                   </td>
                   <td>
-                    {task?.created_by
-                      ? `${formatChoiceFieldValue(task?.created_by?.title)} ${
-                          task?.created_by?.first_name
-                        } ${task?.created_by?.middle_name} ${
-                          task?.created_by?.last_name
-                        }`
-                      : "System"}
-                  </td>
-                  <td>
-                    {task?.assigned_user
-                      ? `${formatChoiceFieldValue(
-                          task?.assigned_user?.title
-                        )} ${task?.assigned_user?.first_name} ${
-                          task?.assigned_user?.middle_name
-                        } ${task?.assigned_user?.last_name}`
-                      : "System"}
+                    {task?.task_assigned_to
+                      ? task?.task_assigned_to
+                      : "Unknown"}
                   </td>
                   <td>
                     {task.note ? (

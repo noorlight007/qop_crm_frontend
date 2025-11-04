@@ -42,47 +42,16 @@ export interface NoteProps {
 }
 export interface TaskProps {
   alias: string;
-  case: {
-    alias: string;
-    name: string;
-    case_category: string;
-    applicant_type: string;
-    case_status: string;
-    case_stage: string;
-    created_at: string;
-  };
-  assigned_user: {
-    id: number;
-    alias: string;
-    email: string;
-    phone: string;
-    title: string;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    profile_image: string | null;
-    user_type: string;
-  };
   type: string;
   name: string;
   task_priority: string;
   due_date: Date | null;
-  assigned_to: number | null;
+  task_assigned_to: string;
+  case_assigned_to: string;
+  current_case_stage: string;
   note: string | null;
-  created_by: {
-    id: number;
-    alias: string;
-    email: string;
-    phone: string;
-    title: string;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    profile_image: string | null;
-    user_type: string;
-  };
   created_at: string;
-  updated_at: string;
+  created_by: string;
 }
 
 export interface AddNoteModalProps {
