@@ -69,6 +69,7 @@ const MyTask: React.FC = () => {
   const [filteredTasks, setFilteredTasks] = useState<MyTaskProps[]>([]);
   const [allTasks, setAllTasks] = useState<MyTaskProps[]>([]);
   const [filterIcon, setFilterIcon] = useState(false);
+  const [dateError, setDateError] = useState<string>("");
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
 
@@ -167,6 +168,46 @@ const MyTask: React.FC = () => {
 
   // Handlers
   const onFilterChange = (key: string, value: string) => {
+    // If changing date fields, ensure Due Date From is not after Due Date To
+    if (key === "dueDateFrom") {
+      setFilters((prev) => {
+        const newFrom = value;
+        const existingTo = prev.dueDateTo;
+
+        if (existingTo && new Date(newFrom) > new Date(existingTo)) {
+          // Auto-clamp: set both to newFrom so from <= to
+          setDateError(
+            "Due Date From was after Due Date To — adjusted to match."
+          );
+          return { ...prev, dueDateFrom: newFrom, dueDateTo: newFrom };
+        }
+
+        // No conflict
+        return { ...prev, dueDateFrom: newFrom };
+      });
+      return;
+    }
+
+    if (key === "dueDateTo") {
+      setFilters((prev) => {
+        const newTo = value;
+        const existingFrom = prev.dueDateFrom;
+
+        if (existingFrom && new Date(newTo) < new Date(existingFrom)) {
+          // Auto-clamp: set both to newTo so from <= to
+          setDateError(
+            "Due Date To was before Due Date From — adjusted to match."
+          );
+          return { ...prev, dueDateFrom: newTo, dueDateTo: newTo };
+        }
+
+        // No conflict
+        return { ...prev, dueDateTo: newTo };
+      });
+      return;
+    }
+
+    // Other filters
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -330,6 +371,7 @@ const MyTask: React.FC = () => {
                     onChange={(e) =>
                       onFilterChange("dueDateFrom", e.target.value)
                     }
+                    max={filters.dueDateTo || undefined}
                   />
                 </Col>
                 <Col xs="12" sm="6" md="3">
@@ -342,7 +384,13 @@ const MyTask: React.FC = () => {
                     onChange={(e) =>
                       onFilterChange("dueDateTo", e.target.value)
                     }
+                    min={filters.dueDateFrom || undefined}
                   />
+                  {dateError && (
+                    <small className="text-danger d-block mt-1">
+                      {dateError}
+                    </small>
+                  )}
                 </Col>
                 <Col xs="12" sm="6" md="3">
                   <Label>Status</Label>
@@ -378,6 +426,7 @@ const MyTask: React.FC = () => {
                       });
                       setDebouncedSearch("");
                       setCurrentPage(1);
+                      setDateError("");
                     }}
                   >
                     <i className="fa-solid fa-xmark"></i>Clear

@@ -84,7 +84,7 @@ const Tasks: React.FC = () => {
             <tr>
               <th style={{ minWidth: "50px" }}>Type</th>
               <th style={{ minWidth: "50px" }}>Priority</th>
-              <th style={{ minWidth: "120px" }}>Task Name</th>
+              <th style={{ minWidth: "200px" }}>Task Name</th>
               <th style={{ minWidth: "120px" }}>Activity Date</th>
               <th style={{ minWidth: "120px" }}>Due Date</th>
               <th style={{ minWidth: "200px" }}>Current Case Stage</th>
@@ -136,7 +136,8 @@ const Tasks: React.FC = () => {
                       />
                     ) : (
                       <span className="text-muted">
-                        Automatically generated
+                        No Information Available. Because this task is created
+                        by System.
                       </span>
                     )}
                   </td>
