@@ -1,4 +1,5 @@
 "use client";
+import { useSetNewPasswordMutation } from "@/Redux/Reducers/Auth/SetPasswordApi";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -13,7 +14,9 @@ export default function SetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [show, setShow] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  // RTK Hooks
+  const [setNewPassword, { isLoading }] = useSetNewPasswordMutation();
 
   // Password validation helper
   const getPasswordValidation = (pw: string) => {
@@ -49,13 +52,13 @@ export default function SetPassword() {
       return;
     }
 
-    setIsLoading(true);
     try {
-      const res = await fetch("/api/auth/set-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
+      // Build FormData payload as requested
+      const formData = new FormData();
+      formData.append("password", password);
+      formData.append("confirm_password", confirmPassword);
+
+      const res = await setNewPassword({ payload: formData }).unwrap();
 
       if (res.ok) {
         toast.success("Password updated. Redirecting to login...");
@@ -68,8 +71,6 @@ export default function SetPassword() {
       }
     } catch (err) {
       toast.error("Network error while updating password.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
