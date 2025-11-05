@@ -992,10 +992,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     size="sm"
                     outline
                     onClick={handleCopyAddress}
-                    title="Copy address from previous applicant"
+                    title="Copy address from first applicant"
                   >
                     <i className="fa fa-copy me-2"></i>
-                    Copy Address from Previous Applicant
+                    Copy Address from First Applicant
                   </Button>
                 </Col>
               )}
