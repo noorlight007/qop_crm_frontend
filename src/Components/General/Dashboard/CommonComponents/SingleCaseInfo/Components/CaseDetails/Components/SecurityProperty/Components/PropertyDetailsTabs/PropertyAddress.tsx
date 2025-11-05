@@ -1,6 +1,8 @@
+import { useGetApplicantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
 import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
 import { AddressDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,6 +17,15 @@ import {
 } from "reactstrap";
 
 const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
+  // Get case alias from URL params
+  const params = useParams();
+  const { casealias } = params;
+
+  // Fetch applicants data
+  const { data: applicantsData, isLoading } = useGetApplicantsQuery({
+    case_alias: casealias,
+  });
+
   const dispatch = useDispatch();
   const propertyState = useSelector(
     (state: RootState) => state.propertyForm.Properties
@@ -82,6 +93,33 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     }));
   };
 
+  // Copy main address from first applicant
+  const handleCopyMainAddress = () => {
+    if (applicantsData && applicantsData.length > 0) {
+      const firstApplicant = applicantsData[0];
+
+      dispatch(
+        updateProperty({
+          postcode: firstApplicant.postcode || "",
+          house_name_or_number: firstApplicant.house_number_or_name || "",
+          address_one: firstApplicant.address_line1 || "",
+          city: firstApplicant.city || "",
+          county: firstApplicant.county || "",
+          country: firstApplicant.country || null,
+        })
+      );
+
+      // Clear errors for fields that now have values
+      const newErrors = { ...errors };
+      if (firstApplicant.postcode) delete newErrors.postcode;
+      if (firstApplicant.house_number_or_name)
+        delete newErrors.house_name_or_number;
+      if (firstApplicant.address_line1) delete newErrors.address_one;
+      if (firstApplicant.city) delete newErrors.city;
+      setErrors(newErrors);
+    }
+  };
+
   // Manual validation logic (fallback on submit)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,10 +160,20 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     maxLength={10}
                     required
                   />
-                  <Button color="primary" className="mx-2">
+                  <Button
+                    color="primary"
+                    className="mx-2"
+                    onClick={handleCopyMainAddress}
+                    type="button"
+                    disabled={
+                      !applicantsData ||
+                      applicantsData.length === 0 ||
+                      isLoading
+                    }
+                  >
                     Copy Main Address
                   </Button>
-                  <Button color="primary">Lookup</Button>
+                  <Button color="info">Lookup</Button>
                 </InputGroup>
                 {errors.postcode && (
                   <div className="text-danger">{errors.postcode}</div>
