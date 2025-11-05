@@ -11,8 +11,13 @@ import {
   RCCTabTitleData,
 } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsTabTitleData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import {
+  basicTabIndicator,
+  restoreBasicTab,
+} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import { useEffect } from "react";
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
 import {
   Card,
   CardBody,
@@ -23,8 +28,6 @@ import {
   NavLink,
 } from "reactstrap";
 import { CaseDetailsTabContent } from "./Components/CaseDetailsTabContent";
-import 'react-perfect-scrollbar/dist/css/styles.css';
-import PerfectScrollbar from 'react-perfect-scrollbar'
 
 const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
   const basicTab = useAppSelector((state: any) => state.caseDetails.basicTabId);
@@ -53,10 +56,23 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
   // Get the current tab data based on caseStage
   const currentTabData = tabDataMap[caseStage] || [];
 
-  // Set the first tab as the default when caseStage changes
+  // Restore tab from localStorage or set the first tab as default when caseStage changes
   useEffect(() => {
     if (currentTabData.length > 0) {
-      dispatch(basicTabIndicator(currentTabData[0].nav)); // Set the first tab as default
+      // First, check if there's a saved tab in localStorage
+      if (typeof window !== "undefined") {
+        const savedTab = localStorage.getItem("caseDetailsActiveTab");
+        if (savedTab && currentTabData.some((tab) => tab.nav === savedTab)) {
+          // Use the saved tab if it exists in the current stage's tabs
+          dispatch(restoreBasicTab(savedTab));
+        } else {
+          // Otherwise, use the first tab
+          dispatch(basicTabIndicator(currentTabData[0].nav));
+        }
+      } else {
+        // Server-side fallback
+        dispatch(basicTabIndicator(currentTabData[0].nav));
+      }
     }
   }, [caseStage, dispatch, currentTabData]);
 

@@ -7,6 +7,7 @@ import {
   EmploymentTabContentProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -18,6 +19,7 @@ import {
   FormGroup,
   FormText,
   Input,
+  InputGroupText,
   Label,
   Row,
 } from "reactstrap";
@@ -418,17 +420,24 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
           {formValues?.employment_status === "EMPLOYED" && (
             <>
               <Col md={6}>
-                <FormGroup>
-                  <Label for="employmentCommenced">Employment Commenced*</Label>
+                <Label for="employmentCommenced">Employment Commenced*</Label>
+                <FormGroup className="d-flex justify-content-center align-items-center">
                   <Input
                     type="date"
                     id="employmentCommenced"
                     value={formValues?.employment_commenced || ""}
+                    className="rounded-end-0"
                     onChange={(e) =>
                       handleInputChange("employment_commenced", e.target.value)
                     }
                     required
                   />
+                  <InputGroupText
+                    className="border-start-0 rounded-start-0"
+                    style={{ padding: "11px 20px" }}
+                  >
+                    {calculateMonthsDuration(formValues?.employment_commenced)}
+                  </InputGroupText>
                 </FormGroup>
               </Col>
               <Col md={6}>
