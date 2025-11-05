@@ -34,3 +34,19 @@ export function formatDateToDMY(isoDate: any) {
     })
     .toUpperCase();
 }
+
+export function calculateMonthsDuration(
+  startDate: string | null | undefined
+): string {
+  if (!startDate) return "0m";
+
+  const startDateObj = new Date(startDate);
+  const endDate = new Date();
+
+  if (isNaN(startDateObj.getTime())) return "0m";
+
+  let months = (endDate.getFullYear() - startDateObj.getFullYear()) * 12;
+  months += endDate.getMonth() - startDateObj.getMonth();
+
+  return `${Math.max(0, months)}m`;
+}
