@@ -333,21 +333,19 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="title">Title*</Label>
+                <Label for="title">Title</Label>
                 <Input
                   id="title"
-                  type="select"
+                  type="text"
                   style={{ padding: "11px 11px" }}
-                  value={formValues.title}
+                  value={formValues?.applicant?.title}
                   onChange={(e) => handleInputChange("title", e.target.value)}
-                  required
-                >
-                  <option value="">Select an option</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="MISS">Miss</option>
-                </Input>
+                  readOnly
+                />
+
+                <FormText className="text-warning small">
+                  Read Only Field
+                </FormText>
               </FormGroup>
             </Col>
             <Col md={6}>
