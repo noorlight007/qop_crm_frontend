@@ -457,7 +457,7 @@ const MyTask: React.FC = () => {
               <tbody className="text-center">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={9} className="text-center p-4">
+                    <td colSpan={12} className="text-center p-4">
                       <LoadingSpinner />
                     </td>
                   </tr>
@@ -522,7 +522,7 @@ const MyTask: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={9} className="text-center p-4">
+                    <td colSpan={12} className="text-center p-4">
                       No tasks found.
                     </td>
                   </tr>

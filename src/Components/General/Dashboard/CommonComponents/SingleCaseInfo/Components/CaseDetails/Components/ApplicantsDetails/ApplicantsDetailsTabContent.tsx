@@ -39,6 +39,7 @@ import ViewPreviousAddressModal from "./ApplicantDetailsModals/ViewPreviousAddre
 const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   applicantsData,
   basicTab,
+  onTabChange,
 }) => {
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
@@ -53,7 +54,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     useState(false);
   const [isViewPreviousAddressModalOpen, setIsViewPreviousAddressModalOpen] =
     useState(false);
-  const submitActionRef = useRef<"save" | "next">("save");
+  const submitActionRef = useRef<
+    "save" | "next" | "next-applicant" | "previous-applicant"
+  >("save");
   const formRef = useRef<HTMLFormElement>(null);
 
   const toggleViewModal = () => {
@@ -245,9 +248,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
       if (response.data) {
         toast.success("Applicant details updated successfully!");
-        // Only go to next tab if this was a Save & Next action
+        // Handle different submit actions
         if (submitActionRef.current === "next") {
           handleNextTab();
+        } else if (submitActionRef.current === "next-applicant") {
+          handleNextApplicantTab();
+        } else if (submitActionRef.current === "previous-applicant") {
+          handlePreviousApplicantTab();
         }
       } else if (response.error) {
         // Extract backend error message - prioritize details field
@@ -273,6 +280,77 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       dispatch(basicTabIndicator(nextTabNav));
     } else {
       toast.warning("This is the last tab.");
+    }
+  };
+
+  const handleNextApplicantTab = () => {
+    // Find the current applicant index
+    const currentIndex = applicantsData?.findIndex(
+      (applicant) => applicant.alias === basicTab
+    );
+
+    // Check if there's a next applicant
+    if (
+      currentIndex !== undefined &&
+      currentIndex !== -1 &&
+      applicantsData &&
+      currentIndex < applicantsData.length - 1
+    ) {
+      const nextApplicant = applicantsData[currentIndex + 1];
+      if (onTabChange && nextApplicant.alias) {
+        onTabChange(nextApplicant.alias);
+        toast.success("Moved to next applicant!");
+      }
+      return nextApplicant.alias;
+    } else {
+      toast.warning("This is the last applicant.");
+      return null;
+    }
+  };
+
+  const handlePreviousApplicantTab = () => {
+    // Find the current applicant index
+    const currentIndex = applicantsData?.findIndex(
+      (applicant) => applicant.alias === basicTab
+    );
+
+    // Check if there's a previous applicant
+    if (currentIndex !== undefined && currentIndex > 0 && applicantsData) {
+      const previousApplicant = applicantsData[currentIndex - 1];
+      if (onTabChange && previousApplicant.alias) {
+        onTabChange(previousApplicant.alias);
+        toast.success("Moved to previous applicant!");
+      }
+      return previousApplicant.alias;
+    } else {
+      toast.warning("This is the first applicant.");
+      return null;
+    }
+  };
+
+  const handleCopyAddress = () => {
+    // Find the current applicant index
+    const currentIndex = applicantsData?.findIndex(
+      (applicant) => applicant.alias === basicTab
+    );
+
+    // Check if there's a previous applicant
+    if (currentIndex && currentIndex > 0 && applicantsData) {
+      const previousApplicant = applicantsData[currentIndex - 1];
+
+      // Copy address fields from previous applicant
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        postcode: previousApplicant.postcode || "",
+        house_number_or_name: previousApplicant.house_number_or_name || "",
+        address_line1: previousApplicant.address_line1 || "",
+        city: previousApplicant.city || "",
+        county: previousApplicant.county || "",
+        country: previousApplicant.country || "",
+        residential_status: previousApplicant.residential_status || "",
+      }));
+
+      toast.success("Address copied from previous applicant!");
     }
   };
 
@@ -333,21 +411,19 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="title">Title*</Label>
+                <Label for="title">Title</Label>
                 <Input
                   id="title"
-                  type="select"
+                  type="text"
                   style={{ padding: "11px 11px" }}
-                  value={formValues.title}
+                  value={formValues?.applicant?.title}
                   onChange={(e) => handleInputChange("title", e.target.value)}
-                  required
-                >
-                  <option value="">Select an option</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="MISS">Miss</option>
-                </Input>
+                  readOnly
+                />
+
+                <FormText className="text-warning small">
+                  Read Only Field
+                </FormText>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -902,8 +978,27 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               </Col>
             )}
           </Row>
-          <Row>
-            <h3 className="text-info my-3">Current Address</h3>
+          <Row className="d-flex justify-content-between align-items-center mb-3">
+            <Col xs="auto">
+              <h3 className="text-info my-0">Current Address</h3>
+            </Col>
+            {applicantsData &&
+              applicantsData.findIndex(
+                (applicant) => applicant.alias === basicTab
+              ) > 0 && (
+                <Col xs="auto">
+                  <Button
+                    color="info"
+                    size="sm"
+                    outline
+                    onClick={handleCopyAddress}
+                    title="Copy address from previous applicant"
+                  >
+                    <i className="fa fa-copy me-2"></i>
+                    Copy Address from Previous Applicant
+                  </Button>
+                </Col>
+              )}
           </Row>
           {/* Current Address */}
           <Row>
@@ -2026,6 +2121,47 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Button>
             <Button
               type="submit"
+              color="warning"
+              disabled={
+                isLoading ||
+                (session?.user?.user_type === "CLIENT" &&
+                  selectedApplicant?.updated_by !== null) ||
+                !applicantsData ||
+                applicantsData.findIndex(
+                  (applicant) => applicant.alias === basicTab
+                ) <= 0
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                submitActionRef.current = "previous-applicant";
+                formRef.current?.requestSubmit();
+              }}
+            >
+              Save & Previous Applicant
+            </Button>
+            <Button
+              type="submit"
+              color="info"
+              disabled={
+                isLoading ||
+                (session?.user?.user_type === "CLIENT" &&
+                  selectedApplicant?.updated_by !== null) ||
+                !applicantsData ||
+                applicantsData.findIndex(
+                  (applicant) => applicant.alias === basicTab
+                ) >=
+                  applicantsData.length - 1
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                submitActionRef.current = "next-applicant";
+                formRef.current?.requestSubmit();
+              }}
+            >
+              Save & Next Applicant
+            </Button>
+            <Button
+              type="submit"
               color="secondary"
               onClick={(e) => {
                 e.preventDefault();
@@ -2043,7 +2179,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               {session?.user?.user_type === "CLIENT" &&
               selectedApplicant?.updated_by !== null
                 ? "Go To Next"
-                : "Save & Next"}
+                : "Save & Next Section"}
             </Button>
           </div>
         </form>

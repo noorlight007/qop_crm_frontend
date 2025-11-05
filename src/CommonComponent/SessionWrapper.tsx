@@ -51,7 +51,14 @@ const SessionMonitor = ({ children }: { children: ReactNode }) => {
   // Monitor session status changes - detect when session becomes null
   useEffect(() => {
     if (status === "unauthenticated" && session === null) {
-      router.push("/auth/login");
+      // Check if current path is in the auth routes (public pages)
+      const pathname = window.location.pathname;
+      const isAuthPath = pathname.startsWith("/auth/");
+
+      // Only redirect to login if NOT on an auth page
+      if (!isAuthPath) {
+        router.push("/auth/login");
+      }
     }
   }, [status, session, router]);
 
