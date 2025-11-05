@@ -15,14 +15,33 @@ export default function SetPassword() {
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Password validation helper
+  const getPasswordValidation = (pw: string) => {
+    return {
+      minLength: pw.length >= 8,
+      upper: /[A-Z]/.test(pw),
+      lower: /[a-z]/.test(pw),
+      number: /[0-9]/.test(pw),
+      special: /[^A-Za-z0-9]/.test(pw),
+    };
+  };
+
+  const validation = getPasswordValidation(password);
+  const isPasswordValid =
+    validation.minLength &&
+    validation.upper &&
+    validation.lower &&
+    validation.number &&
+    validation.special;
+
   const formSubmitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!password || !confirmPassword) {
       toast.error("Please fill both password fields.");
       return;
     }
-    if (password.length < 8) {
-      toast.error("Password should be at least 8 characters.");
+    if (!isPasswordValid) {
+      toast.error("Password does not meet all requirements.");
       return;
     }
     if (password !== confirmPassword) {
@@ -106,7 +125,63 @@ export default function SetPassword() {
                         <span className="show fs-4">{show ? "🫣" : "🤫"}</span>
                       </div>
                     </div>
-                    <small className="text-muted">Minimum 8 characters.</small>
+
+                    <div className="mt-2">
+                      <ul className="mb-0 ps-3">
+                        <li
+                          className={
+                            validation.minLength
+                              ? "text-success"
+                              : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.minLength ? "✓" : "✕"}
+                          </span>
+                          Must be at least 8 characters
+                        </li>
+                        <li
+                          className={
+                            validation.upper ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.upper ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 capital letter
+                        </li>
+                        <li
+                          className={
+                            validation.lower ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.lower ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 small letter
+                        </li>
+                        <li
+                          className={
+                            validation.number ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.number ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 number
+                        </li>
+                        <li
+                          className={
+                            validation.special ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.special ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 special character
+                        </li>
+                      </ul>
+                    </div>
                   </FormGroup>
 
                   <FormGroup>
@@ -122,7 +197,15 @@ export default function SetPassword() {
                   </FormGroup>
 
                   <div className="d-grid mt-3">
-                    <Button type="submit" color="primary" disabled={isLoading}>
+                    <Button
+                      type="submit"
+                      color="primary"
+                      disabled={
+                        !isPasswordValid ||
+                        password !== confirmPassword ||
+                        isLoading
+                      }
+                    >
                       {isLoading ? <Spinner size="sm" /> : "Set Password"}
                     </Button>
                   </div>
