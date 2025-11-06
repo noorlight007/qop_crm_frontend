@@ -3,8 +3,8 @@ import { authBaseApi } from "@/Redux/Api/AuthBaseApi";
 export const CaseDetailsApi = authBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     setNewPassword: builder.mutation({
-      query: ({payload}) => ({
-        url: `/set-password/`,
+      query: ({payload, uid, token}) => ({
+        url: `/authentication/set-password/${uid}/${token}/`,
         method: "POST",
         body: payload,
       }),

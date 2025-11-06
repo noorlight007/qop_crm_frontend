@@ -26,7 +26,7 @@ const Store = configureStore({
     compliance: ComplianceReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(baseApi.middleware),
+    getDefaultMiddleware().concat(authBaseApi.middleware, baseApi.middleware),
 });
 
 export default Store;
