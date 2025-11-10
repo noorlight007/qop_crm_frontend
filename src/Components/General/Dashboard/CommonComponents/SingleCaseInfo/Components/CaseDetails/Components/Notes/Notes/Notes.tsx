@@ -208,7 +208,6 @@ const Notes: React.FC = () => {
                       className={`note-content ${
                         expandedNotes.has(note.alias) ? "" : "collapsed"
                       }`}
-                      // style={{ width: "700px" }}
                       dangerouslySetInnerHTML={{
                         __html: note.note || "-",
                       }}
