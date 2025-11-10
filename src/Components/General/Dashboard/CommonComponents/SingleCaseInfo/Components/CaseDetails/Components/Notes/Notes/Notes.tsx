@@ -20,6 +20,7 @@ import {
 } from "reactstrap";
 import AddNoteModal from "./Modals/AddNoteModal";
 import DeleteNoteModal from "./Modals/DeleteNoteModal";
+import "./notes.css";
 
 // Categories constant
 const CATEGORIES = [
@@ -34,26 +35,26 @@ const CATEGORIES = [
 
 // Reusable table column definitions
 const TABLE_COLUMNS = [
-  { key: "category", label: "Category", width: "200px", textAlign: "left" },
+  { key: "category", label: "Category", width: "100px", textAlign: "left" },
   {
     key: "created_at",
     label: "Activity Date",
     width: "150px",
     textAlign: "left",
   },
-  { key: "case_stage", label: "Stage", width: "200px", textAlign: "left" },
-  { key: "created_by", label: "Created By", width: "200px", textAlign: "left" },
-  { key: "note", label: "Information", width: "400px", textAlign: "left" },
+  { key: "case_stage", label: "Stage", width: "100px", textAlign: "left" },
+  { key: "created_by", label: "Created By", width: "100px", textAlign: "left" },
+  { key: "note", label: "Information", width: "600px", textAlign: "left" },
   {
     key: "introducer",
     label: "Introducer Visible",
-    width: "150px",
+    width: "100px",
     textAlign: "center",
   },
   {
     key: "client",
     label: "Client Visible",
-    width: "150px",
+    width: "100px",
     textAlign: "center",
   },
   { key: "actions", label: "Actions", width: "100px", textAlign: "center" },
@@ -69,6 +70,7 @@ const Notes: React.FC = () => {
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const [category, setCategory] = useState<string>("");
   const [appliedCategory, setAppliedCategory] = useState<string>("");
+  const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
   const { data: notesData, isLoading } = useGetNotesQuery({
     case_alias: caseAlias,
@@ -109,6 +111,18 @@ const Notes: React.FC = () => {
     setCategory("");
     setAppliedCategory("");
     setPage(1);
+  };
+
+  const toggleNoteExpansion = (noteAlias: string) => {
+    setExpandedNotes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(noteAlias)) {
+        newSet.delete(noteAlias);
+      } else {
+        newSet.add(noteAlias);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -189,7 +203,29 @@ const Notes: React.FC = () => {
                     {note?.user?.first_name} {note?.user?.middle_name}{" "}
                     {note?.user?.last_name}
                   </td>
-                  <td>{note.note || "-"}</td>
+                  <td>
+                    <div
+                      className={`note-content ${
+                        expandedNotes.has(note.alias) ? "" : "collapsed"
+                      }`}
+                      // style={{ width: "700px" }}
+                      dangerouslySetInnerHTML={{
+                        __html: note.note || "-",
+                      }}
+                    />
+                    {note.note && note.note.length > 200 && (
+                      <Button
+                        color="link"
+                        size="sm"
+                        className="note-show-more-btn p-0"
+                        onClick={() => toggleNoteExpansion(note.alias)}
+                      >
+                        {expandedNotes.has(note.alias)
+                          ? "Show less"
+                          : "Show more"}
+                      </Button>
+                    )}
+                  </td>
                   <td className="text-center">
                     {
                       // support both old and new API boolean fields
