@@ -65,9 +65,20 @@ export const EmploymentTab = () => {
                   },
                   []
                 )
-                .map((employment: EmploymentDetailsProps) => {
+                .map((employment: EmploymentDetailsProps, idx: number) => {
                   const user = employment.user;
-                  return (
+                  // Render an ampersand separator before each user tab except the first
+                  return [
+                    idx > 0 ? (
+                      <span
+                        key={`sep-${user.id}`}
+                        className="align-self-center mx-1 text-muted fw-bolder"
+                        style={{ cursor: "default", userSelect: "none" }}
+                        aria-hidden
+                      >
+                        &
+                      </span>
+                    ) : null,
                     <NavItem key={user.id}>
                       <NavLink
                         className={`${activeUser === user.id ? "active" : ""}`}
@@ -87,8 +98,8 @@ export const EmploymentTab = () => {
                           user.last_name
                         }`}
                       </NavLink>
-                    </NavItem>
-                  );
+                    </NavItem>,
+                  ];
                 })}
             </Nav>
           </CardHeader>
