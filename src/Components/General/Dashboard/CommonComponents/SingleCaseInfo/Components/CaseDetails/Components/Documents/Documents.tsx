@@ -1,7 +1,9 @@
 import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { saveAs } from "file-saver";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
@@ -23,6 +25,7 @@ import DocumentUploadModal from "./Modals/DocumentUploadModal";
 import UpdateInfoModal from "./Modals/UpdateInfoModal";
 
 const Documents: React.FC = () => {
+  const { data: session } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
   const [caseDocuments, setCaseDocuments] = useState<CaseDocumentProps[]>([]);
@@ -315,6 +318,8 @@ const Documents: React.FC = () => {
                       <th>Document Name</th>
                       <th>Owner Name</th>
                       <th>Document Type</th>
+                      <th>Created By</th>
+                      <th>Created At</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -396,6 +401,22 @@ const Documents: React.FC = () => {
                               : "-"}
                           </td>
                           <td>
+                            {fileData?.created_by
+                              ? `${
+                                  fileData.created_by.title
+                                    ? formatChoiceFieldValue(
+                                        fileData.created_by.title
+                                      ) + " "
+                                    : ""
+                                }${fileData.created_by.first_name || ""} ${
+                                  fileData.created_by.middle_name || ""
+                                } ${fileData.created_by.last_name || ""}`
+                              : "-"}
+                          </td>
+                          <td>
+                            {formatDateToDMYAndTime(fileData?.created_at)}
+                          </td>
+                          <td>
                             <div className="d-flex justify-content-center gap-2 align-items-center">
                               <a
                                 href={fileData?.file}
@@ -413,13 +434,18 @@ const Documents: React.FC = () => {
                               >
                                 <i className="fa-solid fa-edit"></i>
                               </button>
-                              <button
-                                className="btn btn-danger btn-sm"
-                                title="Delete"
-                                onClick={() => handleDeleteClick(fileData)}
-                              >
-                                <i className="fa-regular fa-trash-can"></i>
-                              </button>
+                              {(session?.user?.user_type ===
+                                "ORGANIZATION_ADMIN" ||
+                                session?.user?.user_type ===
+                                  "NETWORK_ADMIN") && (
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  title="Delete"
+                                  onClick={() => handleDeleteClick(fileData)}
+                                >
+                                  <i className="fa-regular fa-trash-can"></i>
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
