@@ -3,6 +3,7 @@ import {
   AddEmploymentDetailsModalProps,
   EmploymentDetailsProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +14,7 @@ import {
   FormGroup,
   FormText,
   Input,
+  InputGroupText,
   Label,
   Modal,
   ModalBody,
@@ -376,13 +378,12 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
             {formValues?.employment_status === "EMPLOYED" && (
               <>
                 <Col md={6}>
-                  <FormGroup>
-                    <Label for="employmentCommenced">
-                      Employment Commenced*
-                    </Label>
+                  <Label for="employmentCommenced">Employment Commenced*</Label>
+                  <FormGroup className="d-flex justify-content-center align-items-center">
                     <Input
                       type="date"
                       id="employmentCommenced"
+                      className="rounded-end-0"
                       value={formValues?.employment_commenced || ""}
                       onChange={(e) =>
                         handleInputChange(
@@ -392,6 +393,14 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       }
                       required
                     />
+                    <InputGroupText
+                      className="border-start-0 rounded-start-0"
+                      style={{ padding: "6px 16px" }}
+                    >
+                      {calculateMonthsDuration(
+                        formValues?.employment_commenced
+                      )}
+                    </InputGroupText>
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -781,6 +790,37 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
           <Row>
             {formValues?.employment_status === "SELF_EMPLOYED" && (
               <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_postcode">Business Postcode</Label>
+                    <Input
+                      type="text"
+                      id="business_postcode"
+                      value={formValues?.business_postcode || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_postcode", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_house_name_or_number">
+                      Business House Name/Number
+                    </Label>
+                    <Input
+                      type="text"
+                      id="business_house_name_or_number"
+                      value={formValues?.business_house_name_or_number || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "business_house_name_or_number",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="business_address_line_1">

@@ -825,6 +825,19 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <>
               <Col md={6}>
                 <FormGroup>
+                  <Label for="business_postcode">Business Postcode</Label>
+                  <Input
+                    type="text"
+                    id="business_postcode"
+                    value={formValues?.business_postcode || ""}
+                    onChange={(e) =>
+                      handleInputChange("business_postcode", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
                   <Label for="business_house_name_or_number">
                     Business House Name/Number
                   </Label>
@@ -837,19 +850,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         "business_house_name_or_number",
                         e.target.value
                       )
-                    }
-                  />
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_postcode">Business Postcode</Label>
-                  <Input
-                    type="text"
-                    id="business_postcode"
-                    value={formValues?.business_postcode || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_postcode", e.target.value)
                     }
                   />
                 </FormGroup>
