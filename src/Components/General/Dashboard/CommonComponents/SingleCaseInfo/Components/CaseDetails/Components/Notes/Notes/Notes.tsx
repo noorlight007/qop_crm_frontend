@@ -3,6 +3,7 @@ import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseIn
 import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Trash2, X } from "react-feather";
@@ -33,34 +34,8 @@ const CATEGORIES = [
   { display: "Compliance Correspondence", value: "COMPLIANCE_CORRESPONDENCE" },
 ] as const;
 
-// Reusable table column definitions
-const TABLE_COLUMNS = [
-  { key: "category", label: "Category", width: "100px", textAlign: "left" },
-  {
-    key: "created_at",
-    label: "Activity Date",
-    width: "150px",
-    textAlign: "left",
-  },
-  { key: "case_stage", label: "Stage", width: "100px", textAlign: "left" },
-  { key: "created_by", label: "Created By", width: "100px", textAlign: "left" },
-  { key: "note", label: "Information", width: "600px", textAlign: "left" },
-  {
-    key: "introducer",
-    label: "Introducer Visible",
-    width: "100px",
-    textAlign: "center",
-  },
-  {
-    key: "client",
-    label: "Client Visible",
-    width: "100px",
-    textAlign: "center",
-  },
-  { key: "actions", label: "Actions", width: "100px", textAlign: "center" },
-] as const;
-
 const Notes: React.FC = () => {
+  const { data: session } = useSession();
   const { casealias } = useParams();
   const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [isOpenAddNoteModal, setIsOpenAddNoteModal] = useState(false);
@@ -170,23 +145,35 @@ const Notes: React.FC = () => {
         <Table striped hover>
           <thead>
             <tr>
-              {TABLE_COLUMNS.map((column) => (
-                <th
-                  key={column.key}
-                  style={{
-                    minWidth: column.width,
-                    textAlign: column?.textAlign || "left",
-                  }}
-                >
-                  {column.label}
+              <th style={{ minWidth: "100px", textAlign: "left" }}>Category</th>
+              <th style={{ minWidth: "150px", textAlign: "left" }}>
+                Activity Date
+              </th>
+              <th style={{ minWidth: "100px", textAlign: "left" }}>Stage</th>
+              <th style={{ minWidth: "100px", textAlign: "left" }}>
+                Created By
+              </th>
+              <th style={{ minWidth: "600px", textAlign: "left" }}>
+                Information
+              </th>
+              <th style={{ minWidth: "100px", textAlign: "center" }}>
+                Introducer Visible
+              </th>
+              <th style={{ minWidth: "100px", textAlign: "center" }}>
+                Client Visible
+              </th>
+              {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                session?.user?.user_type === "NETWORK_ADMIN") && (
+                <th style={{ minWidth: "100px", textAlign: "center" }}>
+                  Actions
                 </th>
-              ))}
+              )}
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={TABLE_COLUMNS.length} className="text-center">
+                <td colSpan={8} className="text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -244,20 +231,23 @@ const Notes: React.FC = () => {
                       <FaRegTimesCircle size={20} className="text-danger" />
                     )}
                   </td>
-                  <td className="text-center">
-                    <Button
-                      color="danger"
-                      className="p-1"
-                      onClick={() => handleDeleteClick(note)}
-                    >
-                      <Trash2 size={20} />
-                    </Button>
-                  </td>
+                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                    session?.user?.user_type === "NETWORK_ADMIN") && (
+                    <td className="text-center">
+                      <Button
+                        color="danger"
+                        className="p-1"
+                        onClick={() => handleDeleteClick(note)}
+                      >
+                        <Trash2 size={20} />
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={TABLE_COLUMNS.length} className="text-center">
+                <td colSpan={8} className="text-center">
                   No notes found.
                 </td>
               </tr>
