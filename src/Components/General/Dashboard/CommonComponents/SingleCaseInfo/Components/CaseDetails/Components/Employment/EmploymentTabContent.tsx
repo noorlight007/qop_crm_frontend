@@ -40,6 +40,9 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   const [isAddEmploymentModalOpen, setAddEmploymentModalOpen] = useState(false);
   const submitActionRef = useRef<"save" | "next">("save");
   const formRef = useRef<HTMLFormElement>(null);
+  // Keep in-memory drafts per employment alias so unsaved edits persist when
+  // switching tabs inside this component.
+  const draftsRef = useRef<Record<string, EmploymentDetailsProps>>({});
 
   // RTK Hooks
   const [
@@ -58,7 +61,10 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       const activeEmploymentRecord = userEmploymentRecords?.find(
         (employment) => employment.alias === activeTab
       );
-      setFormValues(activeEmploymentRecord || null);
+      // If there's a draft for this alias use it; otherwise use the record
+      // coming from props. This preserves unsaved input when switching tabs.
+      const draft = draftsRef.current[activeTab as string];
+      setFormValues(draft ?? activeEmploymentRecord ?? null);
     }
   }, [activeTab, activeUser, groupedData]);
 
@@ -83,6 +89,17 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       ...prevValues!,
       [name]: value,
     }));
+    // Save a draft copy for the currently active alias so edits aren't lost
+    // when the user switches tabs. If there's no activeTab yet, skip.
+    if (formValues?.alias) {
+      const alias = formValues.alias as string;
+      const next = {
+        ...(draftsRef.current[alias] ?? formValues),
+        [name]: value,
+        alias,
+      } as EmploymentDetailsProps;
+      draftsRef.current[alias] = next;
+    }
   };
   const handleSaveClick = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
@@ -95,6 +112,8 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
 
     if (res.data) {
       toast.success("Employment details updated successfully.");
+      // Clear saved draft on successful save so we don't reapply stale data.
+      if (formValues?.alias) delete draftsRef.current[formValues.alias];
       // Only go to next tab if this was a Save & Next action
       if (submitActionRef.current === "next") {
         handleNextTab();
