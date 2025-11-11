@@ -140,6 +140,64 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     }
   };
 
+  const handleCopyAddress = () => {
+    // Get the first SELF_EMPLOYED record from the grouped data
+    const firstSelfEmployedRecord = userEmploymentRecords?.find(
+      (employment) => employment.employment_status === "SELF_EMPLOYED"
+    );
+
+    if (!firstSelfEmployedRecord) {
+      toast.warning("No previous self-employed record found to copy from.");
+      return;
+    }
+
+    // Copy address fields from the first SELF_EMPLOYED record
+    const copiedFields = {
+      business_postcode: firstSelfEmployedRecord.business_postcode || "",
+      business_house_name_or_number:
+        firstSelfEmployedRecord.business_house_name_or_number || "",
+      business_address_line_1:
+        firstSelfEmployedRecord.business_address_line_1 || "",
+      business_address_line_2:
+        firstSelfEmployedRecord.business_address_line_2 || "",
+      business_city: firstSelfEmployedRecord.business_city || "",
+      business_county: firstSelfEmployedRecord.business_county || "",
+      business_country: firstSelfEmployedRecord.business_country || "",
+    };
+
+    // Update form values with copied fields
+    setFormValues((prevValues) => ({
+      ...prevValues!,
+      ...copiedFields,
+    }));
+
+    // Update draft for the currently active alias
+    if (formValues?.alias) {
+      const alias = formValues.alias as string;
+      draftsRef.current[alias] = {
+        ...(draftsRef.current[alias] ?? formValues),
+        ...copiedFields,
+        alias,
+      } as EmploymentDetailsProps;
+    }
+
+    toast.success("Address copied successfully.");
+  };
+
+  // Check if we should show the Copy Address button
+  const shouldShowCopyAddressButton =
+    formValues?.employment_status === "SELF_EMPLOYED" &&
+    userEmploymentRecords &&
+    userEmploymentRecords.length > 1 &&
+    userEmploymentRecords.some(
+      (emp) =>
+        emp.employment_status === "SELF_EMPLOYED" &&
+        emp.alias !== activeTab &&
+        (emp.business_postcode ||
+          emp.business_address_line_1 ||
+          emp.business_city)
+    );
+
   return (
     <CardBody className="px-0 pb-0">
       <h4 className="text-primary pb-0 fs-4 mb-4 mt-2">Employment Details</h4>
@@ -878,6 +936,20 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             </>
           )}
         </Row>
+        {shouldShowCopyAddressButton && (
+          <Row className="mb-3">
+            <Col md={12}>
+              <Button
+                color="info"
+                outline
+                onClick={handleCopyAddress}
+                disabled={session?.user?.user_type === "CLIENT"}
+              >
+                Copy Address from Previous
+              </Button>
+            </Col>
+          </Row>
+        )}
         <Row>
           {formValues?.employment_status === "SELF_EMPLOYED" && (
             <>
