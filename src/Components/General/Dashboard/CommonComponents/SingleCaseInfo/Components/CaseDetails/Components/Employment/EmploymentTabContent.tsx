@@ -1486,6 +1486,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         isOpen={isAddEmploymentModalOpen}
         toggle={() => setAddEmploymentModalOpen(!isAddEmploymentModalOpen)}
         employmentData={formValues}
+        groupedData={groupedData}
       />
     </CardBody>
   );

@@ -87,4 +87,5 @@ export interface AddEmploymentDetailsModalProps {
   isOpen: boolean;
   toggle: () => void;
   employmentData: EmploymentDetailsProps | null;
+  groupedData?: Record<number, EmploymentDetailsProps[]>;
 }

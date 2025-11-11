@@ -26,6 +26,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
   isOpen,
   toggle,
   employmentData,
+  groupedData = {},
 }) => {
   const params = useParams();
   const { casealias } = params;
@@ -71,6 +72,65 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
     } else {
       toast.error("Failed to update employment details.");
     }
+  };
+
+  const handleCopyAddress = () => {
+    // Get all employment records from grouped data
+    let allEmploymentRecords: EmploymentDetailsProps[] = [];
+    Object.values(groupedData).forEach((userRecords) => {
+      allEmploymentRecords = allEmploymentRecords.concat(userRecords);
+    });
+
+    // Get the first SELF_EMPLOYED record
+    const firstSelfEmployedRecord = allEmploymentRecords.find(
+      (employment) => employment.employment_status === "SELF_EMPLOYED"
+    );
+
+    if (!firstSelfEmployedRecord) {
+      toast.warning("No previous self-employed record found to copy from.");
+      return;
+    }
+
+    // Copy address fields from the first SELF_EMPLOYED record
+    const copiedFields = {
+      business_postcode: firstSelfEmployedRecord.business_postcode || "",
+      business_house_name_or_number:
+        firstSelfEmployedRecord.business_house_name_or_number || "",
+      business_address_line_1:
+        firstSelfEmployedRecord.business_address_line_1 || "",
+      business_address_line_2:
+        firstSelfEmployedRecord.business_address_line_2 || "",
+      business_city: firstSelfEmployedRecord.business_city || "",
+      business_county: firstSelfEmployedRecord.business_county || "",
+      business_country: firstSelfEmployedRecord.business_country || "",
+    };
+
+    // Update form values with copied fields
+    setFormValues((prevValues) => ({
+      ...prevValues!,
+      ...copiedFields,
+    }));
+
+    toast.success("Address copied successfully.");
+  };
+
+  // Check if we should show the Copy Address button
+  const shouldShowCopyAddressButton = () => {
+    if (formValues?.employment_status !== "SELF_EMPLOYED") return false;
+    
+    let allEmploymentRecords: EmploymentDetailsProps[] = [];
+    Object.values(groupedData).forEach((userRecords) => {
+      allEmploymentRecords = allEmploymentRecords.concat(userRecords);
+    });
+
+    // Check if there's at least one SELF_EMPLOYED record with address data
+    return allEmploymentRecords.some(
+      (emp) =>
+        emp.employment_status === "SELF_EMPLOYED" &&
+        (emp.business_postcode ||
+          emp.business_address_line_1 ||
+          emp.business_city)
+    );
   };
 
   return (
@@ -863,6 +923,19 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               </>
             )}
           </Row>
+          {shouldShowCopyAddressButton() && (
+            <Row className="mb-3">
+              <Col md={12}>
+                <Button
+                  color="info"
+                  outline
+                  onClick={handleCopyAddress}
+                >
+                  Copy Address from Previous
+                </Button>
+              </Col>
+            </Row>
+          )}
           <Row>
             {formValues?.employment_status === "SELF_EMPLOYED" && (
               <>
