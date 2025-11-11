@@ -137,6 +137,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                 <Input
                   id="postcode"
                   name="postcode"
+                  className="border-primary"
                   type="text"
                   placeholder="Enter postcode"
                   required

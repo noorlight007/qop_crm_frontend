@@ -299,6 +299,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   <Input
                     type="text"
                     id="employerPostcode"
+                    className="border-primary"
                     value={formValues?.employer_postcode || ""}
                     onChange={(e) =>
                       handleInputChange("employer_postcode", e.target.value)
@@ -829,6 +830,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   <Input
                     type="text"
                     id="business_postcode"
+                    className="border-primary"
                     value={formValues?.business_postcode || ""}
                     onChange={(e) =>
                       handleInputChange("business_postcode", e.target.value)

@@ -1008,6 +1008,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 <Input
                   id="postcode"
                   type="text"
+                  className="border-primary"
                   value={formValues.postcode || ""}
                   onChange={(e) =>
                     handleInputChange("postcode", e.target.value)
@@ -1800,6 +1801,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     <Label for="landlord_address_postcode">Postcode</Label>
                     <Input
                       id="landlord_address_postcode"
+                      className="border-primary"
                       type="text"
                       value={formValues.landlord_address_postcode || ""}
                       onChange={(e) =>
@@ -2016,6 +2018,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         <Input
                           id="new_address_postcode"
                           type="text"
+                          className="border-primary"
                           readOnly
                           value={formValues.new_address_postcode || ""}
                           onChange={(e) =>

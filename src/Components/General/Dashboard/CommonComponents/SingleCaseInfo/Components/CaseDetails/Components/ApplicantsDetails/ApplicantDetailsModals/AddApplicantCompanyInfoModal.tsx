@@ -216,6 +216,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                 <Input
                   type="text"
                   name="postcode"
+                  className="border-primary"
                   value={formData.postcode}
                   onChange={handleChange}
                 />

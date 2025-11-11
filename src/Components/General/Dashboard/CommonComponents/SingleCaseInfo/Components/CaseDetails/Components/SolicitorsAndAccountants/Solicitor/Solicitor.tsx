@@ -363,6 +363,7 @@ const Solicitor: React.FC = () => {
                     <Input
                       id="postcode"
                       name="postcode"
+                      className="border-primary"
                       type="text"
                       value={formData.postcode || ""}
                       onChange={handleInputChange}
