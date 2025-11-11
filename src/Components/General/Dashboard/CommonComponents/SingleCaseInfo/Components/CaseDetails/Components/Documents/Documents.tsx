@@ -7,7 +7,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { TbCircleArrowUp, TbEye } from "react-icons/tb";
+import { TbCircleArrowUp, TbEye, TbTransfer } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -239,28 +239,6 @@ const Documents: React.FC = () => {
               sm="12"
               className="d-flex flex-md-row flex-xs-column justify-content-end gap-2"
             >
-              {selectedDocuments.size > 0 && (
-                <>
-                  <Button color="danger" onClick={handleBatchDelete}>
-                    <i className="fa-solid fa-trash me-1"></i>
-                    Delete Selected ({selectedDocuments.size})
-                  </Button>
-                  <Button
-                    color="info"
-                    onClick={handleBatchDownload}
-                    disabled={isDownloading}
-                  >
-                    <i className="fa-solid fa-download me-1"></i>
-                    {isDownloading
-                      ? "Preparing…"
-                      : `Download Selected (${selectedDocuments.size})`}
-                  </Button>
-                  <Button color="secondary" outline onClick={clearSelection}>
-                    <i className="fa-solid fa-times me-1"></i>
-                    Clear Selection
-                  </Button>
-                </>
-              )}
               <div className="position-relative" style={{ minWidth: "250px" }}>
                 <Input
                   type="text"
@@ -272,6 +250,32 @@ const Documents: React.FC = () => {
                 />
                 <i className="fa-solid fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
               </div>
+              {selectedDocuments.size > 0 && (
+                <>
+                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                    session?.user?.user_type === "NETWORK_ADMIN") && (
+                    <Button color="danger" onClick={handleBatchDelete}>
+                      <i className="fa-solid fa-trash me-1"></i>
+                      Delete Selected ({selectedDocuments.size})
+                    </Button>
+                  )}
+                  <Button
+                    color="info"
+                    onClick={handleBatchDownload}
+                    disabled={isDownloading}
+                  >
+                    <i className="fa-solid fa-download me-1"></i>
+                    {isDownloading
+                      ? "Preparing…"
+                      : `Download Selected (${selectedDocuments.size})`}
+                  </Button>
+                  <Button color="secondary" outline>
+                    <TbTransfer />
+                    Transfer Documents ({selectedDocuments.size})
+                  </Button>
+                </>
+              )}
+
               <Button color="primary" onClick={toggleModal}>
                 <TbCircleArrowUp size={18} className="me-1" />
                 Upload Document
