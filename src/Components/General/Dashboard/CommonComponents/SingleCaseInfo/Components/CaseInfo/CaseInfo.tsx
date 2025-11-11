@@ -439,7 +439,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 <h5>Property Value:</h5>
                 <p>
                   {caseInfo?.property_valuation ? (
-                    caseInfo.property_valuation
+                    `£${caseInfo.property_valuation}`
                   ) : (
                     <span className="text-muted">Not available</span>
                   )}
@@ -459,7 +459,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 <h5>Lender:</h5>
                 <p>
                   {caseInfo?.lender ? (
-                    caseInfo.lender
+                    formatChoiceFieldValue(caseInfo.lender)
                   ) : (
                     <span className="text-muted">No lender available.</span>
                   )}
