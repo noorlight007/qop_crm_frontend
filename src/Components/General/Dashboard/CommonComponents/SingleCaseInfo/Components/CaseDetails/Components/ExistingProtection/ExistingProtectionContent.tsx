@@ -26,7 +26,14 @@ import AddExistingProtectionModal from "./Modals/AddExistingProtectionModal";
 
 const ExistingProtectionContent: React.FC<
   ExistingProtectionTabContentProps
-> = ({ activeTab, activeUser, groupedData }) => {
+> = ({
+  activeTab,
+  activeUser,
+  groupedData,
+  cachedEdits,
+  onCacheUpdate,
+  clearCachedEdits,
+}) => {
   const params = useParams();
   const { casealias } = params;
   const { data: session } = useSession();
@@ -71,9 +78,14 @@ const ExistingProtectionContent: React.FC<
         userExistingProtectionRecords?.find(
           (existingProtection) => existingProtection.alias === activeTab
         );
-      setFormValues(activeExistingProtectionRecord || null);
+      // Merge any cached unsaved edits for this alias so user input is preserved
+      const merged = {
+        ...(activeExistingProtectionRecord || {}),
+        ...(cachedEdits || {}),
+      } as ExistingProtectionDetailsProps;
+      setFormValues(merged || null);
     }
-  }, [activeTab, activeUser, groupedData]);
+  }, [activeTab, activeUser, groupedData, cachedEdits]);
 
   if (!activeTab || activeUser === null) {
     return <div>No existingProtection data available.</div>;
@@ -96,6 +108,10 @@ const ExistingProtectionContent: React.FC<
       ...prevValues!,
       [name]: value,
     }));
+    // Update parent cache so unsaved input is persisted across tab switches
+    if (onCacheUpdate) {
+      onCacheUpdate(name, value);
+    }
   };
 
   // Add save handler
@@ -108,6 +124,10 @@ const ExistingProtectionContent: React.FC<
     });
     if (res.data) {
       toast.success("Updated Successfully!");
+      // Clear cached edits for this alias since changes are now saved
+      if (clearCachedEdits && formValues?.alias) {
+        clearCachedEdits(formValues.alias);
+      }
     } else if (res.error) {
       const errorMessage =
         (res.error as any)?.data?.detail ||
