@@ -3,6 +3,7 @@ import {
   useGetPortfolioApplicantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { X } from "react-feather";
@@ -270,6 +271,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="propertyValue"
                   name="propertyValue"
                   type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                   required
                 />
               </FormGroup>
@@ -283,6 +287,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="currentMortgageBalance"
                   name="currentMortgageBalance"
                   type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                   required
                 />
               </FormGroup>
@@ -294,6 +301,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="monthlyRental"
                   name="monthlyRental"
                   type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                   required
                 />
               </FormGroup>
@@ -307,6 +317,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="monthlyPayment"
                   name="monthlyPayment"
                   type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                 />
               </FormGroup>
             </Col>
@@ -317,6 +330,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="valueAtPurchase"
                   name="valueAtPurchase"
                   type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                 />
               </FormGroup>
             </Col>
@@ -366,15 +382,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   step="0.01"
                   min="0"
                   inputMode="decimal"
-                  onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                    const target = e.currentTarget;
-                    const val = target.value;
-                    if (!val) return;
-                    const parts = val.split(".");
-                    if (parts[1] && parts[1].length > 2) {
-                      target.value = `${parts[0]}.${parts[1].slice(0, 2)}`;
-                    }
-                  }}
+                  onInput={limitDecimalPlaces}
                 />
               </FormGroup>
             </Col>
@@ -401,7 +409,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="toBeRepaid">To Be Repaid</Label>
-                <Input id="toBeRepaid" name="toBeRepaid" type="number" />
+                <Input
+                  id="toBeRepaid"
+                  name="toBeRepaid"
+                  type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
+                />
               </FormGroup>
             </Col>
           </Row>
@@ -454,6 +469,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="leasehold"
                   name="leasehold"
                   type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                   placeholder="Years"
                 />
               </FormGroup>
@@ -463,7 +481,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="yearBuilt">Year Built</Label>
-                <Input id="yearBuilt" name="yearBuilt" type="number" />
+                <Input id="yearBuilt" name="yearBuilt" type="number" step="1" />
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -473,6 +491,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="numberOfBedrooms"
                   name="numberOfBedrooms"
                   type="number"
+                  step="1"
                   required
                 />
               </FormGroup>
@@ -486,6 +505,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="remainingMortgageTerm"
                   name="remainingMortgageTerm"
                   type="number"
+                  step="1"
                   placeholder="Years"
                 />
               </FormGroup>

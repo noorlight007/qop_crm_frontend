@@ -7,6 +7,7 @@ import {
   useUpdateProductDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ProductDetails/ProductDetailsApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -209,6 +210,8 @@ const ProductContent: React.FC = () => {
               name="initial_rate"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.initial_rate || ""}
               onChange={handleChange}
               required
@@ -294,6 +297,8 @@ const ProductContent: React.FC = () => {
               name="reversion_rate"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.reversion_rate || ""}
               onChange={handleChange}
             />
@@ -310,6 +315,8 @@ const ProductContent: React.FC = () => {
               name="max_ltv"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.max_ltv || ""}
               onChange={handleChange}
             />
@@ -323,6 +330,8 @@ const ProductContent: React.FC = () => {
               name="annual_percentage_rate"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.annual_percentage_rate || ""}
               onChange={handleChange}
             />
@@ -375,6 +384,8 @@ const ProductContent: React.FC = () => {
               name="initial_monthly_payment"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.initial_monthly_payment}
               onChange={handleChange}
             />
@@ -390,6 +401,8 @@ const ProductContent: React.FC = () => {
               name="initial_monthly_payment_including_fees"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.initial_monthly_payment_including_fees || ""}
               onChange={handleChange}
             />
@@ -408,6 +421,8 @@ const ProductContent: React.FC = () => {
               name="monthly_payment_after_initial_period"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.monthly_payment_after_initial_period || ""}
               onChange={handleChange}
             />
@@ -423,6 +438,8 @@ const ProductContent: React.FC = () => {
               name="true_cost_over_initial_period"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.true_cost_over_initial_period || ""}
               onChange={handleChange}
             />
@@ -436,6 +453,8 @@ const ProductContent: React.FC = () => {
               name="true_cost_over_term"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.true_cost_over_term || ""}
               onChange={handleChange}
             />
@@ -451,6 +470,8 @@ const ProductContent: React.FC = () => {
               name="true_cost_without_fees"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.true_cost_without_fees || ""}
               onChange={handleChange}
             />
@@ -466,6 +487,8 @@ const ProductContent: React.FC = () => {
               name="loan_required_including_fees"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.loan_required_including_fees || ""}
               onChange={handleChange}
             />
@@ -479,6 +502,8 @@ const ProductContent: React.FC = () => {
               name="arrangement_fee"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.arrangement_fee || ""}
               onChange={handleChange}
             />
@@ -512,6 +537,8 @@ const ProductContent: React.FC = () => {
               name="valuation_fee"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.valuation_fee || ""}
               onChange={handleChange}
             />
@@ -525,6 +552,8 @@ const ProductContent: React.FC = () => {
               name="booking_fee"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.booking_fee || ""}
               onChange={handleChange}
             />
@@ -557,6 +586,8 @@ const ProductContent: React.FC = () => {
               name="procuration_fee"
               type="number"
               step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
               value={formData.procuration_fee || ""}
               onChange={handleChange}
             />

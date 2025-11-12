@@ -1,5 +1,6 @@
 import { useAddDefaultsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
 import { AddNewDefaultsModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -84,6 +85,8 @@ const AddNewDefaultsModal: React.FC<AddNewDefaultsModalProps> = ({
                     name="amount"
                     type="number"
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                     min="0"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
