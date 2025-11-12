@@ -17,6 +17,10 @@ import ExistingProtectionContent from "./ExistingProtectionContent";
 const ExistingProtectionTab: React.FC = () => {
   const [activeUser, setActiveUser] = useState<number | null>(null); // State for active user
   const [activeTab, setActiveTab] = useState<string | null>(null); // State for active existingProtection tab
+  // Cache for unsaved edits keyed by existingProtection alias
+  const [editsCache, setEditsCache] = useState<
+    Record<string, Partial<ExistingProtectionDetailsProps>>
+  >({});
 
   // Get case alias from URL params
   const params = useParams();
@@ -65,6 +69,32 @@ const ExistingProtectionTab: React.FC = () => {
       setActiveTab(existingProtectionDetails[0]?.alias || null);
     }
   }, [existingProtectionDetails]);
+
+  // Update cache for a particular alias and field
+  const handleCacheUpdate = (
+    alias: string | null,
+    name: keyof ExistingProtectionDetailsProps,
+    value: any
+  ) => {
+    if (!alias) return;
+    setEditsCache((prev) => ({
+      ...prev,
+      [alias]: {
+        ...(prev[alias] || {}),
+        [name]: value,
+      },
+    }));
+  };
+
+  // Clear cache for an alias (e.g., after successful save)
+  const clearCacheForAlias = (alias: string | undefined | null) => {
+    if (!alias) return;
+    setEditsCache((prev) => {
+      const copy = { ...prev };
+      delete copy[alias];
+      return copy;
+    });
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -178,6 +208,15 @@ const ExistingProtectionTab: React.FC = () => {
                   {} as Record<number, ExistingProtectionDetailsProps[]>
                 ) || {}
               }
+              // pass cached edits for the active tab so the inner component can merge unsaved changes
+              cachedEdits={editsCache[activeTab || ""] || null}
+              // handler for inner component to update the cache
+              onCacheUpdate={(
+                name: keyof ExistingProtectionDetailsProps,
+                value: any
+              ) => handleCacheUpdate(activeTab, name, value)}
+              // clear cached edits for alias after save
+              clearCachedEdits={(alias: string) => clearCacheForAlias(alias)}
             />
           )}
         </CardBody>

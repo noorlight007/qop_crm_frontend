@@ -40,6 +40,9 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   const [isAddEmploymentModalOpen, setAddEmploymentModalOpen] = useState(false);
   const submitActionRef = useRef<"save" | "next">("save");
   const formRef = useRef<HTMLFormElement>(null);
+  // Keep in-memory drafts per employment alias so unsaved edits persist when
+  // switching tabs inside this component.
+  const draftsRef = useRef<Record<string, EmploymentDetailsProps>>({});
 
   // RTK Hooks
   const [
@@ -58,7 +61,10 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       const activeEmploymentRecord = userEmploymentRecords?.find(
         (employment) => employment.alias === activeTab
       );
-      setFormValues(activeEmploymentRecord || null);
+      // If there's a draft for this alias use it; otherwise use the record
+      // coming from props. This preserves unsaved input when switching tabs.
+      const draft = draftsRef.current[activeTab as string];
+      setFormValues(draft ?? activeEmploymentRecord ?? null);
     }
   }, [activeTab, activeUser, groupedData]);
 
@@ -83,6 +89,17 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       ...prevValues!,
       [name]: value,
     }));
+    // Save a draft copy for the currently active alias so edits aren't lost
+    // when the user switches tabs. If there's no activeTab yet, skip.
+    if (formValues?.alias) {
+      const alias = formValues.alias as string;
+      const next = {
+        ...(draftsRef.current[alias] ?? formValues),
+        [name]: value,
+        alias,
+      } as EmploymentDetailsProps;
+      draftsRef.current[alias] = next;
+    }
   };
   const handleSaveClick = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
@@ -95,6 +112,8 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
 
     if (res.data) {
       toast.success("Employment details updated successfully.");
+      // Clear saved draft on successful save so we don't reapply stale data.
+      if (formValues?.alias) delete draftsRef.current[formValues.alias];
       // Only go to next tab if this was a Save & Next action
       if (submitActionRef.current === "next") {
         handleNextTab();
@@ -120,6 +139,64 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       toast.warning("This is the last tab.");
     }
   };
+
+  const handleCopyAddress = () => {
+    // Get the first SELF_EMPLOYED record from the grouped data
+    const firstSelfEmployedRecord = userEmploymentRecords?.find(
+      (employment) => employment.employment_status === "SELF_EMPLOYED"
+    );
+
+    if (!firstSelfEmployedRecord) {
+      toast.warning("No previous self-employed record found to copy from.");
+      return;
+    }
+
+    // Copy address fields from the first SELF_EMPLOYED record
+    const copiedFields = {
+      business_postcode: firstSelfEmployedRecord.business_postcode || "",
+      business_house_name_or_number:
+        firstSelfEmployedRecord.business_house_name_or_number || "",
+      business_address_line_1:
+        firstSelfEmployedRecord.business_address_line_1 || "",
+      business_address_line_2:
+        firstSelfEmployedRecord.business_address_line_2 || "",
+      business_city: firstSelfEmployedRecord.business_city || "",
+      business_county: firstSelfEmployedRecord.business_county || "",
+      business_country: firstSelfEmployedRecord.business_country || "",
+    };
+
+    // Update form values with copied fields
+    setFormValues((prevValues) => ({
+      ...prevValues!,
+      ...copiedFields,
+    }));
+
+    // Update draft for the currently active alias
+    if (formValues?.alias) {
+      const alias = formValues.alias as string;
+      draftsRef.current[alias] = {
+        ...(draftsRef.current[alias] ?? formValues),
+        ...copiedFields,
+        alias,
+      } as EmploymentDetailsProps;
+    }
+
+    toast.success("Address copied successfully.");
+  };
+
+  // Check if we should show the Copy Address button
+  const shouldShowCopyAddressButton =
+    formValues?.employment_status === "SELF_EMPLOYED" &&
+    userEmploymentRecords &&
+    userEmploymentRecords.length > 1 &&
+    userEmploymentRecords.some(
+      (emp) =>
+        emp.employment_status === "SELF_EMPLOYED" &&
+        emp.alias !== activeTab &&
+        (emp.business_postcode ||
+          emp.business_address_line_1 ||
+          emp.business_city)
+    );
 
   return (
     <CardBody className="px-0 pb-0">
@@ -299,6 +376,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   <Input
                     type="text"
                     id="employerPostcode"
+                    className="border-primary"
                     value={formValues?.employer_postcode || ""}
                     onChange={(e) =>
                       handleInputChange("employer_postcode", e.target.value)
@@ -825,6 +903,20 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <>
               <Col md={6}>
                 <FormGroup>
+                  <Label for="business_postcode">Business Postcode</Label>
+                  <Input
+                    type="text"
+                    id="business_postcode"
+                    className="border-primary"
+                    value={formValues?.business_postcode || ""}
+                    onChange={(e) =>
+                      handleInputChange("business_postcode", e.target.value)
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
                   <Label for="business_house_name_or_number">
                     Business House Name/Number
                   </Label>
@@ -841,22 +933,23 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   />
                 </FormGroup>
               </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_postcode">Business Postcode</Label>
-                  <Input
-                    type="text"
-                    id="business_postcode"
-                    value={formValues?.business_postcode || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_postcode", e.target.value)
-                    }
-                  />
-                </FormGroup>
-              </Col>
             </>
           )}
         </Row>
+        {shouldShowCopyAddressButton && (
+          <Row className="mb-3">
+            <Col md={12}>
+              <Button
+                color="info"
+                outline
+                onClick={handleCopyAddress}
+                disabled={session?.user?.user_type === "CLIENT"}
+              >
+                Copy Address from Previous
+              </Button>
+            </Col>
+          </Row>
+        )}
         <Row>
           {formValues?.employment_status === "SELF_EMPLOYED" && (
             <>
@@ -1027,24 +1120,133 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         </Row>
         <Row>
           {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    name="is_accounts_available"
-                    checked={formValues?.is_accounts_available || false}
-                    onChange={(e) =>
-                      setFormValues((prevValues) => ({
-                        ...prevValues!,
-                        is_accounts_available: e.target.checked,
-                      }))
-                    }
-                  />
-                  Accounts Available?
-                </Label>
-              </FormGroup>
-            </Col>
+            <>
+              <Col md={12}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      name="is_accounts_available"
+                      checked={formValues?.is_accounts_available || false}
+                      onChange={(e) =>
+                        setFormValues((prevValues) => ({
+                          ...prevValues!,
+                          is_accounts_available: e.target.checked,
+                        }))
+                      }
+                    />
+                    Accounts Available?
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col md={12}>
+                {formValues?.is_accounts_available && (
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year1">Year 1*</Label>
+                        <Input
+                          type="text"
+                          id="year1"
+                          placeholder="e.g. 2014"
+                          value={formValues?.year1 || ""}
+                          onChange={(e) =>
+                            handleInputChange("year1", e.target.value)
+                          }
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year1_net_profit">
+                          Year 1 net profit(£)*
+                        </Label>
+                        <Input
+                          type="number"
+                          id="year1_net_profit"
+                          placeholder="0"
+                          value={formValues?.year1_net_profit || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "year1_net_profit",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year2">Year 2</Label>
+                        <Input
+                          type="text"
+                          id="year2"
+                          placeholder="e.g. 2013"
+                          value={formValues?.year2 || ""}
+                          onChange={(e) =>
+                            handleInputChange("year2", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year2_net_profit">
+                          Year 2 net profit(£)
+                        </Label>
+                        <Input
+                          type="number"
+                          id="year2_net_profit"
+                          placeholder="0"
+                          value={formValues?.year2_net_profit || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "year2_net_profit",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year3">Year 3</Label>
+                        <Input
+                          type="text"
+                          id="year3"
+                          placeholder="e.g. 2012"
+                          value={formValues?.year3 || ""}
+                          onChange={(e) =>
+                            handleInputChange("year3", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year3_net_profit">
+                          Year 3 net profit(£)
+                        </Label>
+                        <Input
+                          type="number"
+                          id="year3_net_profit"
+                          placeholder="0"
+                          value={formValues?.year3_net_profit || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "year3_net_profit",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                )}
+              </Col>
+            </>
           )}
         </Row>
         <Row>
@@ -1393,6 +1595,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         isOpen={isAddEmploymentModalOpen}
         toggle={() => setAddEmploymentModalOpen(!isAddEmploymentModalOpen)}
         employmentData={formValues}
+        groupedData={groupedData}
       />
     </CardBody>
   );

@@ -409,36 +409,72 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         </Row>
         <Row className="px-3">
           <Col className="border-2 border-r-light">
-            <h4>Property Address:</h4>
-            <p>
-              {(() => {
-                const pd = caseInfo?.property_details;
-                if (!pd) return "N/A";
-                const countryFormatted = pd.country
-                  ? formatChoiceFieldValue(pd.country)
-                  : pd.country;
-                const parts = [
-                  pd.house_name_or_number,
-                  pd.address_line_1,
-                  pd.address_line_2,
-                  pd.city,
-                  pd.county,
-                  pd.postcode,
-                  countryFormatted,
-                ].filter(
-                  (v) =>
-                    v !== null && v !== undefined && String(v).trim() !== ""
-                );
-                return parts.length ? parts.join(", ") : "N/A";
-              })()}
-            </p>
+            <div>
+              <h5>Property Address:</h5>
+              <p>
+                {(() => {
+                  const pd = caseInfo?.property_details;
+                  if (!pd) return "N/A";
+                  const countryFormatted = pd.country
+                    ? formatChoiceFieldValue(pd.country)
+                    : pd.country;
+                  const parts = [
+                    pd.house_name_or_number,
+                    pd.address_line_1,
+                    pd.address_line_2,
+                    pd.city,
+                    pd.county,
+                    pd.postcode,
+                    countryFormatted,
+                  ].filter(
+                    (v) =>
+                      v !== null && v !== undefined && String(v).trim() !== ""
+                  );
+                  return parts.length ? parts.join(", ") : "N/A";
+                })()}
+              </p>
+            </div>
+            <div className="d-flex justify-content-between gap-2">
+              <div>
+                <h5>Property Value:</h5>
+                <p>
+                  {caseInfo?.property_valuation ? (
+                    `£${caseInfo.property_valuation}`
+                  ) : (
+                    <span className="text-muted">Not available</span>
+                  )}
+                </p>
+              </div>
+              <div>
+                <h5>Loan Amount :</h5>
+                <p>
+                  {caseInfo?.loan_amount ? (
+                    `£${caseInfo.loan_amount}`
+                  ) : (
+                    <span className="text-muted">Not available</span>
+                  )}
+                </p>
+              </div>
+              <div>
+                <h5>Lender:</h5>
+                <p>
+                  {caseInfo?.lender ? (
+                    formatChoiceFieldValue(caseInfo.lender)
+                  ) : (
+                    <span className="text-muted">No lender available.</span>
+                  )}
+                </p>
+              </div>
+            </div>
           </Col>
           <Col>
-            <h4>Notes:</h4>
-            <p className="text-muted p-1">
-              {caseInfo?.notes
-                ? formatChoiceFieldValue(caseInfo.notes)
-                : "Notes not available"}
+            <h5>Notes:</h5>
+            <p className="p-1">
+              {caseInfo?.notes ? (
+                formatChoiceFieldValue(caseInfo.notes)
+              ) : (
+                <span className="text-muted">No notes available.</span>
+              )}
             </p>
           </Col>
         </Row>

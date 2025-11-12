@@ -3,6 +3,7 @@ import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseIn
 import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Trash2, X } from "react-feather";
@@ -20,6 +21,7 @@ import {
 } from "reactstrap";
 import AddNoteModal from "./Modals/AddNoteModal";
 import DeleteNoteModal from "./Modals/DeleteNoteModal";
+import "./notes.css";
 
 // Categories constant
 const CATEGORIES = [
@@ -32,34 +34,8 @@ const CATEGORIES = [
   { display: "Compliance Correspondence", value: "COMPLIANCE_CORRESPONDENCE" },
 ] as const;
 
-// Reusable table column definitions
-const TABLE_COLUMNS = [
-  { key: "category", label: "Category", width: "200px", textAlign: "left" },
-  {
-    key: "created_at",
-    label: "Activity Date",
-    width: "150px",
-    textAlign: "left",
-  },
-  { key: "case_stage", label: "Stage", width: "200px", textAlign: "left" },
-  { key: "created_by", label: "Created By", width: "200px", textAlign: "left" },
-  { key: "note", label: "Information", width: "400px", textAlign: "left" },
-  {
-    key: "introducer",
-    label: "Introducer Visible",
-    width: "150px",
-    textAlign: "center",
-  },
-  {
-    key: "client",
-    label: "Client Visible",
-    width: "150px",
-    textAlign: "center",
-  },
-  { key: "actions", label: "Actions", width: "100px", textAlign: "center" },
-] as const;
-
 const Notes: React.FC = () => {
+  const { data: session } = useSession();
   const { casealias } = useParams();
   const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
   const [isOpenAddNoteModal, setIsOpenAddNoteModal] = useState(false);
@@ -69,6 +45,7 @@ const Notes: React.FC = () => {
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const [category, setCategory] = useState<string>("");
   const [appliedCategory, setAppliedCategory] = useState<string>("");
+  const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
   const { data: notesData, isLoading } = useGetNotesQuery({
     case_alias: caseAlias,
@@ -109,6 +86,18 @@ const Notes: React.FC = () => {
     setCategory("");
     setAppliedCategory("");
     setPage(1);
+  };
+
+  const toggleNoteExpansion = (noteAlias: string) => {
+    setExpandedNotes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(noteAlias)) {
+        newSet.delete(noteAlias);
+      } else {
+        newSet.add(noteAlias);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -156,23 +145,35 @@ const Notes: React.FC = () => {
         <Table striped hover>
           <thead>
             <tr>
-              {TABLE_COLUMNS.map((column) => (
-                <th
-                  key={column.key}
-                  style={{
-                    minWidth: column.width,
-                    textAlign: column?.textAlign || "left",
-                  }}
-                >
-                  {column.label}
+              <th style={{ minWidth: "100px", textAlign: "left" }}>Category</th>
+              <th style={{ minWidth: "150px", textAlign: "left" }}>
+                Activity Date
+              </th>
+              <th style={{ minWidth: "100px", textAlign: "left" }}>Stage</th>
+              <th style={{ minWidth: "100px", textAlign: "left" }}>
+                Created By
+              </th>
+              <th style={{ minWidth: "600px", textAlign: "left" }}>
+                Information
+              </th>
+              <th style={{ minWidth: "100px", textAlign: "center" }}>
+                Introducer Visible
+              </th>
+              <th style={{ minWidth: "100px", textAlign: "center" }}>
+                Client Visible
+              </th>
+              {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                session?.user?.user_type === "NETWORK_ADMIN") && (
+                <th style={{ minWidth: "100px", textAlign: "center" }}>
+                  Actions
                 </th>
-              ))}
+              )}
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={TABLE_COLUMNS.length} className="text-center">
+                <td colSpan={8} className="text-center">
                   <LoadingSpinner />
                 </td>
               </tr>
@@ -189,7 +190,28 @@ const Notes: React.FC = () => {
                     {note?.user?.first_name} {note?.user?.middle_name}{" "}
                     {note?.user?.last_name}
                   </td>
-                  <td>{note.note || "-"}</td>
+                  <td>
+                    <div
+                      className={`note-content ${
+                        expandedNotes.has(note.alias) ? "" : "collapsed"
+                      }`}
+                      dangerouslySetInnerHTML={{
+                        __html: note.note || "-",
+                      }}
+                    />
+                    {note.note && note.note.length > 200 && (
+                      <Button
+                        color="link"
+                        size="sm"
+                        className="note-show-more-btn p-0"
+                        onClick={() => toggleNoteExpansion(note.alias)}
+                      >
+                        {expandedNotes.has(note.alias)
+                          ? "Show less"
+                          : "Show more"}
+                      </Button>
+                    )}
+                  </td>
                   <td className="text-center">
                     {
                       // support both old and new API boolean fields
@@ -209,20 +231,23 @@ const Notes: React.FC = () => {
                       <FaRegTimesCircle size={20} className="text-danger" />
                     )}
                   </td>
-                  <td className="text-center">
-                    <Button
-                      color="danger"
-                      className="p-1"
-                      onClick={() => handleDeleteClick(note)}
-                    >
-                      <Trash2 size={20} />
-                    </Button>
-                  </td>
+                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                    session?.user?.user_type === "NETWORK_ADMIN") && (
+                    <td className="text-center">
+                      <Button
+                        color="danger"
+                        className="p-1"
+                        onClick={() => handleDeleteClick(note)}
+                      >
+                        <Trash2 size={20} />
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={TABLE_COLUMNS.length} className="text-center">
+                <td colSpan={8} className="text-center">
                   No notes found.
                 </td>
               </tr>

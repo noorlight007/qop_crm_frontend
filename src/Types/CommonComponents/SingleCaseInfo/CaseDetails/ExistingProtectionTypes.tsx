@@ -36,6 +36,15 @@ export interface ExistingProtectionTabContentProps {
   activeTab: string | null;
   activeUser: number | null;
   groupedData: Record<number, ExistingProtectionDetailsProps[]>;
+  // Optional cached edits for a particular alias (used to persist unsaved changes when switching tabs)
+  cachedEdits?: Partial<ExistingProtectionDetailsProps> | null;
+  // Callback to update the cache when an input changes: (fieldName, value)
+  onCacheUpdate?: (
+    name: keyof ExistingProtectionDetailsProps,
+    value: any
+  ) => void;
+  // Callback to clear cached edits for an alias after successful save
+  clearCachedEdits?: (alias: string) => void;
 }
 
 export interface AddExistingProtectionModalProps {

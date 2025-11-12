@@ -1,6 +1,7 @@
 import { useUpdateCreditCommitmentsDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
 import { UpdateCreditCommitmentModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -245,6 +246,8 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.os_balance}
                     onChange={handleInputChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                     required
                   />
                 </FormGroup>
@@ -280,6 +283,8 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.settlement_balance}
                     onChange={handleInputChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </FormGroup>
               </Col>
@@ -312,6 +317,8 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.monthly_repayment}
                     onChange={handleInputChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </FormGroup>
               </Col>
@@ -337,6 +344,8 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.interest_rate}
                     onChange={handleInputChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </FormGroup>
               </Col>
@@ -354,6 +363,8 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.card_limit}
                     onChange={handleInputChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </FormGroup>
               </Col>
@@ -390,6 +401,8 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.balloon_payment}
                     onChange={handleInputChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </FormGroup>
               </Col>
