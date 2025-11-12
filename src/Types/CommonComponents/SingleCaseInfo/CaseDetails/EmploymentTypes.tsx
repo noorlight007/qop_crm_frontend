@@ -75,6 +75,12 @@ export interface EmploymentDetailsProps {
   day_rate: number | null;
   hourly_rate: number | null;
   note: string | null;
+  year1: string | null;
+  year1_net_profit: number | null;
+  year2: string | null;
+  year2_net_profit: number | null;
+  year3: string | null;
+  year3_net_profit: number | null;
 }
 
 export interface EmploymentTabContentProps {

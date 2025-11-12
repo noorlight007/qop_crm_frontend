@@ -1120,24 +1120,133 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         </Row>
         <Row>
           {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    name="is_accounts_available"
-                    checked={formValues?.is_accounts_available || false}
-                    onChange={(e) =>
-                      setFormValues((prevValues) => ({
-                        ...prevValues!,
-                        is_accounts_available: e.target.checked,
-                      }))
-                    }
-                  />
-                  Accounts Available?
-                </Label>
-              </FormGroup>
-            </Col>
+            <>
+              <Col md={12}>
+                <FormGroup check>
+                  <Label check>
+                    <Input
+                      type="checkbox"
+                      name="is_accounts_available"
+                      checked={formValues?.is_accounts_available || false}
+                      onChange={(e) =>
+                        setFormValues((prevValues) => ({
+                          ...prevValues!,
+                          is_accounts_available: e.target.checked,
+                        }))
+                      }
+                    />
+                    Accounts Available?
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col md={12}>
+                {formValues?.is_accounts_available && (
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year1">Year 1*</Label>
+                        <Input
+                          type="text"
+                          id="year1"
+                          placeholder="e.g. 2014"
+                          value={formValues?.year1 || ""}
+                          onChange={(e) =>
+                            handleInputChange("year1", e.target.value)
+                          }
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year1_net_profit">
+                          Year 1 net profit(£)*
+                        </Label>
+                        <Input
+                          type="number"
+                          id="year1_net_profit"
+                          placeholder="0"
+                          value={formValues?.year1_net_profit || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "year1_net_profit",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year2">Year 2</Label>
+                        <Input
+                          type="text"
+                          id="year2"
+                          placeholder="e.g. 2013"
+                          value={formValues?.year2 || ""}
+                          onChange={(e) =>
+                            handleInputChange("year2", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year2_net_profit">
+                          Year 2 net profit(£)
+                        </Label>
+                        <Input
+                          type="number"
+                          id="year2_net_profit"
+                          placeholder="0"
+                          value={formValues?.year2_net_profit || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "year2_net_profit",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year3">Year 3</Label>
+                        <Input
+                          type="text"
+                          id="year3"
+                          placeholder="e.g. 2012"
+                          value={formValues?.year3 || ""}
+                          onChange={(e) =>
+                            handleInputChange("year3", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year3_net_profit">
+                          Year 3 net profit(£)
+                        </Label>
+                        <Input
+                          type="number"
+                          id="year3_net_profit"
+                          placeholder="0"
+                          value={formValues?.year3_net_profit || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "year3_net_profit",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                )}
+              </Col>
+            </>
           )}
         </Row>
         <Row>
