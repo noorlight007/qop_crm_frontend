@@ -78,6 +78,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     "Payment Protection": "payment_protection",
     "Life Insurance": "life_insurance",
     "Dental Insurance": "dental_insurance",
+    "Building Content Insurance": "building_content_insurance",
     "Other Insurance": "other_insurance",
   };
 
