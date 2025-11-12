@@ -1,5 +1,6 @@
 import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
 import { LivingExpensesTabContentsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
@@ -364,6 +365,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                     step="0.01"
                     min={0}
                     inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                     onKeyDown={blockInvalidChar}
                     value={
                       prefix === "CurrentBudgetPlanner"
