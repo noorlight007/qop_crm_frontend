@@ -370,7 +370,7 @@ const ExistingProtectionContent: React.FC<
                   </Row>
 
                   <Row>
-                    <Col md={4}>
+                    <Col md={3}>
                       <FormGroup>
                         <Label for="remaining_policy_term">
                           Remaining Policy Term
@@ -388,7 +388,7 @@ const ExistingProtectionContent: React.FC<
                         />
                       </FormGroup>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                       <FormGroup>
                         <Label for="cancelled_lapsed_date">
                           Cancelled / Lapsed Date
@@ -406,7 +406,20 @@ const ExistingProtectionContent: React.FC<
                         />
                       </FormGroup>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label for="renewal_date">Renewal Date</Label>
+                        <Input
+                          type="date"
+                          id="renewal_date"
+                          value={formValues?.renewal_date || ""}
+                          onChange={(e) =>
+                            handleInputChange("renewal_date", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={3}>
                       <FormGroup>
                         <Label for="date_policy_started">
                           Date Policy Started
