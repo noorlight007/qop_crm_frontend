@@ -23,6 +23,7 @@ import BatchDeleteModal from "./Modals/BatchDeleteModal";
 import DocumentDeleteModal from "./Modals/DocumentDeleteModal";
 import DocumentUploadModal from "./Modals/DocumentUploadModal";
 import UpdateInfoModal from "./Modals/UpdateInfoModal";
+import TransferDocumentsModal from "./Modals/TransferDocumentsModal";
 
 const Documents: React.FC = () => {
   const { data: session } = useSession();
@@ -33,6 +34,8 @@ const Documents: React.FC = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [batchDeleteModalOpen, setBatchDeleteModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [transferDocumentModalOpen, setTransferDocumentModalOpen] =
+    useState(false);
   const [selectedDocument, setSelectedDocument] =
     useState<CaseDocumentProps | null>(null);
   const [selectedDocumentForUpdate, setSelectedDocumentForUpdate] =
@@ -125,6 +128,8 @@ const Documents: React.FC = () => {
       setSelectedDocumentForUpdate(null);
     }
   };
+  const toggleTransferDocumentModal = () =>
+    setTransferDocumentModalOpen(!transferDocumentModalOpen);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
@@ -254,13 +259,14 @@ const Documents: React.FC = () => {
                 <>
                   {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
                     session?.user?.user_type === "NETWORK_ADMIN") && (
-                    <Button color="danger" onClick={handleBatchDelete}>
+                    <Button color="danger" outline onClick={handleBatchDelete}>
                       <i className="fa-solid fa-trash me-1"></i>
                       Delete Selected ({selectedDocuments.size})
                     </Button>
                   )}
                   <Button
                     color="info"
+                    outline
                     onClick={handleBatchDownload}
                     disabled={isDownloading}
                   >
@@ -269,7 +275,7 @@ const Documents: React.FC = () => {
                       ? "Preparing…"
                       : `Download Selected (${selectedDocuments.size})`}
                   </Button>
-                  <Button color="secondary" outline>
+                  <Button color="secondary" outline onClick={toggleTransferDocumentModal}>
                     <TbTransfer />
                     Transfer Documents ({selectedDocuments.size})
                   </Button>
@@ -545,6 +551,11 @@ const Documents: React.FC = () => {
         documentNames={getDocumentNamesMap()}
         case_alias={casealias?.toString() || ""}
         onDeleteComplete={clearSelection}
+      />
+
+      <TransferDocumentsModal
+        isOpen={transferDocumentModalOpen}
+        toggle={toggleTransferDocumentModal}
       />
     </Col>
   );
