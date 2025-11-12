@@ -22,8 +22,8 @@ import {
 import BatchDeleteModal from "./Modals/BatchDeleteModal";
 import DocumentDeleteModal from "./Modals/DocumentDeleteModal";
 import DocumentUploadModal from "./Modals/DocumentUploadModal";
-import UpdateInfoModal from "./Modals/UpdateInfoModal";
 import TransferDocumentsModal from "./Modals/TransferDocumentsModal";
+import UpdateInfoModal from "./Modals/UpdateInfoModal";
 
 const Documents: React.FC = () => {
   const { data: session } = useSession();
@@ -275,7 +275,11 @@ const Documents: React.FC = () => {
                       ? "Preparing…"
                       : `Download Selected (${selectedDocuments.size})`}
                   </Button>
-                  <Button color="secondary" outline onClick={toggleTransferDocumentModal}>
+                  <Button
+                    color="secondary"
+                    outline
+                    onClick={toggleTransferDocumentModal}
+                  >
                     <TbTransfer />
                     Transfer Documents ({selectedDocuments.size})
                   </Button>
@@ -556,6 +560,11 @@ const Documents: React.FC = () => {
       <TransferDocumentsModal
         isOpen={transferDocumentModalOpen}
         toggle={toggleTransferDocumentModal}
+        selectedDocuments={selectedDocuments}
+        documentNames={getDocumentNamesMap()}
+        currentCaseAlias={casealias?.toString() || ""}
+        allDocuments={caseDocuments}
+        onTransferComplete={clearSelection}
       />
     </Col>
   );
