@@ -364,6 +364,17 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="currentRate"
                   type="number"
                   step="0.01"
+                  min="0"
+                  inputMode="decimal"
+                  onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                    const target = e.currentTarget;
+                    const val = target.value;
+                    if (!val) return;
+                    const parts = val.split(".");
+                    if (parts[1] && parts[1].length > 2) {
+                      target.value = `${parts[0]}.${parts[1].slice(0, 2)}`;
+                    }
+                  }}
                 />
               </FormGroup>
             </Col>
