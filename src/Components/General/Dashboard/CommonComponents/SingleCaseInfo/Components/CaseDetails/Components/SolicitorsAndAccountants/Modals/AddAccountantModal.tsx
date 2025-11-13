@@ -130,6 +130,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                 <Input
                   id="postcode"
                   name="postcode"
+                  className="border-primary"
                   type="text"
                   value={formData.postcode}
                   onChange={handleInputChange}

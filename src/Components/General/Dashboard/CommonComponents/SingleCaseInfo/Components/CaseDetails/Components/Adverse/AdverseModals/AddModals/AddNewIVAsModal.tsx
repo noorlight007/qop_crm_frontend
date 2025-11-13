@@ -1,5 +1,6 @@
 import { useAddIVAsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
 import { AddNewIVAsModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -96,6 +97,8 @@ const AddNewIVAsModal: React.FC<AddNewIVAsModalProps> = ({
                     type="number"
                     min="0"
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                     value={outstanding_balance}
                     onChange={(e) => setOutstandingBalance(e.target.value)}
                     className="form-control"

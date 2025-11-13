@@ -12,7 +12,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -74,17 +73,19 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
             <Col md="3">
               <h4 className="mb-4 fw-bold">Organisations</h4>
             </Col>
-            <Col>
-              <InputGroup>
+            <Col md={3} xs="12">
+              <InputGroup className="position-relative">
+                <FaSearch
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                  style={{ zIndex: 10, pointerEvents: "none" }}
+                />
                 <Input
                   type="text"
-                  placeholder="Search Organisation..."
+                  placeholder="Search Organisation... "
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ padding: "10px 10px 10px 25px" }}
                 />
-                <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                  <FaSearch />
-                </InputGroupText>
               </InputGroup>
             </Col>
             <Col

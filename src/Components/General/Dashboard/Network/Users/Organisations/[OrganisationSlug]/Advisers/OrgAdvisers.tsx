@@ -1,4 +1,3 @@
-import AddAdviserModal from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Modals/AddAdviserModal";
 import ViewAdviserModal from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Modals/ViewAdviserModal";
 import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgAdvisersApi";
 import {
@@ -12,13 +11,11 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
-  Button,
   Card,
   CardBody,
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -32,12 +29,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
   const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [adviserToDelete, setAdviserToDelete] =
-    useState<AdviserInfoProps | null>(null);
 
   const { data: adviserData, isLoading } = useGetOrgAdvisersQuery(
     { organisationslug },
@@ -55,6 +47,8 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
       first_name: "",
       middle_name: "",
       last_name: "",
+      email: "",
+      phone: "",
       profile_image: "",
       user_type: "",
     },
@@ -63,15 +57,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
     gender: "",
   });
 
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
-  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
-  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
-
-  const openDeleteModal = (adviser: AdviserInfoProps) => {
-    setAdviserToDelete(adviser);
-    toggleDeleteModal();
-  };
 
   useEffect(() => {
     if (adviserData) {
@@ -81,17 +67,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
       setAdvisers(advisersArray || []);
     }
   }, [adviserData]);
-
-  // openmodals
-  const openAddModal = () => {
-    toggleModal();
-  };
-
-  const openUpdateModal = (adviser: AdviserInfoProps) => {
-    setSelectedAdviser(adviser);
-    toggleUpdateModal();
-  };
-  // openmodals end
 
   const filteredAdvisers = advisers.filter((adviser) => {
     const fullName = `${adviser?.user?.title || ""} ${
@@ -130,34 +105,22 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
           <Col md="3">
             <h2>Advisers</h2>
           </Col>
-          <Col md={3}>
-            <InputGroup>
+          <Col md={3} xs="12">
+            <InputGroup className="position-relative">
+              <FaSearch
+                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                style={{ zIndex: 10, pointerEvents: "none" }}
+              />
               <Input
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "10px 10px" }}
+                style={{ padding: "10px 10px 10px 25px" }}
               />
-              <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                <FaSearch />
-              </InputGroupText>
             </InputGroup>
           </Col>
-          {/* <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
-            <Button
-              color="primary"
-              onClick={openAddModal}
-              className="d-flex justify-content-center align-items-center gap-1"
-            >
-              <TbCirclePlus size={18} />
-              <span>Add adviser</span>
-            </Button>
-          </Col> */}
+          <Col md="3" xs="12" />
         </Row>
         <Row>
           <Table hover responsive>
@@ -169,7 +132,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
                 <th>Role</th>
                 <th>Created By</th>
                 <th>Created At</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -241,26 +203,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
                       </p>
                     </td>
                     <td>{formatDateToDMYAndTime(adviser?.created_at)}</td>
-                    <td>
-                      <div className="d-flex justify-content-center gap-2 align-items-center">
-                        <Button
-                          color="success"
-                          size="sm"
-                          title="Update User"
-                          onClick={() => openUpdateModal(adviser)}
-                        >
-                          <i className="icon-pencil-alt"></i>
-                        </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          title="Delete User"
-                          onClick={() => openDeleteModal(adviser)}
-                        >
-                          <i className="icon-trash"></i>
-                        </Button>
-                      </div>
-                    </td>
                   </tr>
                 ))
               ) : (
@@ -371,27 +313,11 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
         </Row>
 
         {/* modals */}
-        <AddAdviserModal isOpen={isModalOpen} toggle={toggleModal} />
         <ViewAdviserModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedAdviser={selectedAdviser}
         />
-        {/*
-        <UpdateAdviserModal
-          isOpen={isUpdateModalOpen}
-          toggle={toggleUpdateModal}
-          onSave={() => {
-            toggleUpdateModal();
-          }}
-          selectedAdviser={selectedAdviser}
-        />
-        <DeleteAdviserModal
-          isOpen={isDeleteModalOpen}
-          toggle={toggleDeleteModal}
-          adviserAlias={adviserToDelete?.alias || ""}
-          adviserName={`${adviserToDelete?.user?.first_name} ${adviserToDelete?.user?.last_name}`}
-        /> */}
         {/* modals end */}
       </CardBody>
     </Card>

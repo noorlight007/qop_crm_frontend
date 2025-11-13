@@ -1,6 +1,7 @@
 import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
 import { PropertyDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, FormGroup, Input, InputGroup, Label, Row } from "reactstrap";
@@ -352,6 +353,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     value={propertyState.service_charge_per_month || ""}
                     onChange={handleChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </InputGroup>
               </FormGroup>
@@ -370,6 +373,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     value={propertyState.ground_rent_per_annum || ""}
                     onChange={handleChange}
                     step="0.01"
+                    inputMode="decimal"
+                    onInput={limitDecimalPlaces}
                   />
                 </InputGroup>
               </FormGroup>
@@ -391,6 +396,8 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   value={propertyState.estimated_value || ""}
                   onChange={handleChange}
                   step="0.01"
+                  inputMode="decimal"
+                  onInput={limitDecimalPlaces}
                 />
               </InputGroup>
             </FormGroup>

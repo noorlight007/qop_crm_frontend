@@ -154,7 +154,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                 <InputGroup>
                   <Input
                     name="postcode"
-                    className="form-control"
+                    className="form-control border-primary"
                     onChange={handleChange}
                     value={propertyState.postcode}
                     maxLength={10}

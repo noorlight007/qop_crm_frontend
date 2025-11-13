@@ -108,7 +108,13 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="postcode">Postcode*</Label>
-                    <Input id="postcode" name="postcode" type="text" required />
+                    <Input
+                      id="postcode"
+                      name="postcode"
+                      type="text"
+                      className="border-primary"
+                      required
+                    />
                   </FormGroup>
                 </Col>
                 <Col md={6}>

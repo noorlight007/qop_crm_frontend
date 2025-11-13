@@ -2,7 +2,7 @@
 import { useSetNewPasswordMutation } from "@/Redux/Reducers/Auth/SetPasswordApi";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
@@ -11,6 +11,12 @@ import logoLight from "../../../../public/assets/images/logo/logo1.png";
 
 export default function SetPassword() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
+  console.log("UID:", uid);
+  console.log("Token:", token);
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -51,6 +57,10 @@ export default function SetPassword() {
       toast.error("Passwords do not match.");
       return;
     }
+    if (!uid || !token) {
+      toast.error("Invalid or missing credentials. Please try again.");
+      return;
+    }
 
     try {
       // Build FormData payload as requested
@@ -58,19 +68,32 @@ export default function SetPassword() {
       formData.append("password", password);
       formData.append("confirm_password", confirmPassword);
 
-      const res = await setNewPassword({ payload: formData }).unwrap();
+      const res = await setNewPassword({
+        payload: formData,
+        uid: uid,
+        token: token,
+      });
+      console.log("Res:", res.data)
 
-      if (res.ok) {
+      if (res.data) {
         toast.success("Password updated. Redirecting to login...");
         // Small delay so the user can see the toast
         setTimeout(() => router.push("/auth/login"), 900);
+      } else if (res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.error ||
+          (res.error as any)?.message ||
+          "Unable to update password.";
+        toast.error(errorMessage);
       } else {
-        const data = await res.json().catch(() => ({}));
-        const message = data?.message || "Unable to update password.";
-        toast.error(message);
+        toast.error("Unable to update password.");
       }
-    } catch (err) {
-      toast.error("Network error while updating password.");
+    } catch (err: any) {
+      const errorMessage =
+        err?.data?.error ||
+        err?.message ||
+        "Network error while updating password.";
+      toast.error(errorMessage);
     }
   };
 

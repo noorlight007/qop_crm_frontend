@@ -3,6 +3,7 @@ import {
   AddEmploymentDetailsModalProps,
   EmploymentDetailsProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +14,7 @@ import {
   FormGroup,
   FormText,
   Input,
+  InputGroupText,
   Label,
   Modal,
   ModalBody,
@@ -24,6 +26,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
   isOpen,
   toggle,
   employmentData,
+  groupedData = {},
 }) => {
   const params = useParams();
   const { casealias } = params;
@@ -69,6 +72,65 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
     } else {
       toast.error("Failed to update employment details.");
     }
+  };
+
+  const handleCopyAddress = () => {
+    // Get all employment records from grouped data
+    let allEmploymentRecords: EmploymentDetailsProps[] = [];
+    Object.values(groupedData).forEach((userRecords) => {
+      allEmploymentRecords = allEmploymentRecords.concat(userRecords);
+    });
+
+    // Get the first SELF_EMPLOYED record
+    const firstSelfEmployedRecord = allEmploymentRecords.find(
+      (employment) => employment.employment_status === "SELF_EMPLOYED"
+    );
+
+    if (!firstSelfEmployedRecord) {
+      toast.warning("No previous self-employed record found to copy from.");
+      return;
+    }
+
+    // Copy address fields from the first SELF_EMPLOYED record
+    const copiedFields = {
+      business_postcode: firstSelfEmployedRecord.business_postcode || "",
+      business_house_name_or_number:
+        firstSelfEmployedRecord.business_house_name_or_number || "",
+      business_address_line_1:
+        firstSelfEmployedRecord.business_address_line_1 || "",
+      business_address_line_2:
+        firstSelfEmployedRecord.business_address_line_2 || "",
+      business_city: firstSelfEmployedRecord.business_city || "",
+      business_county: firstSelfEmployedRecord.business_county || "",
+      business_country: firstSelfEmployedRecord.business_country || "",
+    };
+
+    // Update form values with copied fields
+    setFormValues((prevValues) => ({
+      ...prevValues!,
+      ...copiedFields,
+    }));
+
+    toast.success("Address copied successfully.");
+  };
+
+  // Check if we should show the Copy Address button
+  const shouldShowCopyAddressButton = () => {
+    if (formValues?.employment_status !== "SELF_EMPLOYED") return false;
+
+    let allEmploymentRecords: EmploymentDetailsProps[] = [];
+    Object.values(groupedData).forEach((userRecords) => {
+      allEmploymentRecords = allEmploymentRecords.concat(userRecords);
+    });
+
+    // Check if there's at least one SELF_EMPLOYED record with address data
+    return allEmploymentRecords.some(
+      (emp) =>
+        emp.employment_status === "SELF_EMPLOYED" &&
+        (emp.business_postcode ||
+          emp.business_address_line_1 ||
+          emp.business_city)
+    );
   };
 
   return (
@@ -255,6 +317,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                     <Input
                       type="text"
                       id="employerPostcode"
+                      className="border-primary"
                       value={formValues?.employer_postcode || ""}
                       onChange={(e) =>
                         handleInputChange("employer_postcode", e.target.value)
@@ -376,13 +439,12 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
             {formValues?.employment_status === "EMPLOYED" && (
               <>
                 <Col md={6}>
-                  <FormGroup>
-                    <Label for="employmentCommenced">
-                      Employment Commenced*
-                    </Label>
+                  <Label for="employmentCommenced">Employment Commenced*</Label>
+                  <FormGroup className="d-flex justify-content-center align-items-center">
                     <Input
                       type="date"
                       id="employmentCommenced"
+                      className="rounded-end-0"
                       value={formValues?.employment_commenced || ""}
                       onChange={(e) =>
                         handleInputChange(
@@ -392,6 +454,14 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       }
                       required
                     />
+                    <InputGroupText
+                      className="border-start-0 rounded-start-0"
+                      style={{ padding: "6px 16px" }}
+                    >
+                      {calculateMonthsDuration(
+                        formValues?.employment_commenced
+                      )}
+                    </InputGroupText>
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -783,6 +853,39 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <>
                 <Col md={6}>
                   <FormGroup>
+                    <Label for="business_postcode">Business Postcode</Label>
+                    <Input
+                      type="text"
+                      id="business_postcode"
+                      placeholder="Enter Business Postcode"
+                      className="border-primary"
+                      value={formValues?.business_postcode || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_postcode", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="business_house_name_or_number">
+                      Business House Name/Number
+                    </Label>
+                    <Input
+                      type="text"
+                      id="business_house_name_or_number"
+                      value={formValues?.business_house_name_or_number || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "business_house_name_or_number",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
                     <Label for="business_address_line_1">
                       Business Address Line 1
                     </Label>
@@ -820,6 +923,15 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               </>
             )}
           </Row>
+          {shouldShowCopyAddressButton() && (
+            <Row className="mb-3">
+              <Col md={12}>
+                <Button color="info" outline onClick={handleCopyAddress}>
+                  Copy Address from Previous
+                </Button>
+              </Col>
+            </Row>
+          )}
           <Row>
             {formValues?.employment_status === "SELF_EMPLOYED" && (
               <>
@@ -949,24 +1061,133 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
           </Row>
           <Row>
             {formValues?.employment_status === "SELF_EMPLOYED" && (
-              <Col md={6}>
-                <FormGroup check>
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name="is_accounts_available"
-                      checked={formValues?.is_accounts_available || false}
-                      onChange={(e) =>
-                        setFormValues((prevValues) => ({
-                          ...prevValues!,
-                          is_accounts_available: e.target.checked,
-                        }))
-                      }
-                    />
-                    Accounts Available?
-                  </Label>
-                </FormGroup>
-              </Col>
+              <>
+                <Col md={12}>
+                  <FormGroup check>
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        name="is_accounts_available"
+                        checked={formValues?.is_accounts_available || false}
+                        onChange={(e) =>
+                          setFormValues((prevValues) => ({
+                            ...prevValues!,
+                            is_accounts_available: e.target.checked,
+                          }))
+                        }
+                      />
+                      Accounts Available?
+                    </Label>
+                  </FormGroup>
+                </Col>
+                <Col md={12}>
+                  {formValues?.is_accounts_available && (
+                    <Row>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label for="year1">Year 1*</Label>
+                          <Input
+                            type="text"
+                            id="year1"
+                            placeholder="e.g. 2014"
+                            value={formValues?.year1 || ""}
+                            onChange={(e) =>
+                              handleInputChange("year1", e.target.value)
+                            }
+                            required
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label for="year1_net_profit">
+                            Year 1 net profit(£)*
+                          </Label>
+                          <Input
+                            type="number"
+                            id="year1_net_profit"
+                            placeholder="0"
+                            value={formValues?.year1_net_profit || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "year1_net_profit",
+                                e.target.value
+                              )
+                            }
+                            required
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label for="year2">Year 2</Label>
+                          <Input
+                            type="text"
+                            id="year2"
+                            placeholder="e.g. 2013"
+                            value={formValues?.year2 || ""}
+                            onChange={(e) =>
+                              handleInputChange("year2", e.target.value)
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label for="year2_net_profit">
+                            Year 2 net profit(£)
+                          </Label>
+                          <Input
+                            type="number"
+                            id="year2_net_profit"
+                            placeholder="0"
+                            value={formValues?.year2_net_profit || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "year2_net_profit",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label for="year3">Year 3</Label>
+                          <Input
+                            type="text"
+                            id="year3"
+                            placeholder="e.g. 2012"
+                            value={formValues?.year3 || ""}
+                            onChange={(e) =>
+                              handleInputChange("year3", e.target.value)
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Label for="year3_net_profit">
+                            Year 3 net profit(£)
+                          </Label>
+                          <Input
+                            type="number"
+                            id="year3_net_profit"
+                            placeholder="0"
+                            value={formValues?.year3_net_profit || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "year3_net_profit",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  )}
+                </Col>
+              </>
             )}
           </Row>
           <Row>

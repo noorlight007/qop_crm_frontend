@@ -1,0 +1,177 @@
+/* Styles for rendering HTML content in notes */
+.note-content {
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+  word-break: break-word;
+  display: block;
+  position: relative;
+  width: 600px;
+}
+
+.note-content.collapsed {
+  max-height: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.note-content.collapsed::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, white);
+}
+
+.note-show-more-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.note-content p {
+  margin-bottom: 8px;
+}
+
+.note-content p:last-child {
+  margin-bottom: 0;
+}
+
+.note-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+}
+
+.note-content a {
+  color: #1155cc;
+  text-decoration: underline;
+}
+
+.note-content a:hover {
+  color: #0d3f8f;
+}
+
+.note-content strong {
+  font-weight: 600;
+}
+
+.note-content em {
+  font-style: italic;
+}
+
+.note-content u {
+  text-decoration: underline;
+}
+
+.note-content ul,
+.note-content ol {
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+
+.note-content li {
+  margin-bottom: 4px;
+}
+
+.note-content blockquote {
+  border-left: 3px solid #ddd;
+  padding-left: 15px;
+  margin: 10px 0;
+  color: #666;
+}
+
+.note-content pre {
+  background: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.note-content code {
+  background: #f5f5f5;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.note-content h1,
+.note-content h2,
+.note-content h3,
+.note-content h4,
+.note-content h5,
+.note-content h6 {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.note-content h1 {
+  font-size: 24px;
+}
+
+.note-content h2 {
+  font-size: 20px;
+}
+
+.note-content h3 {
+  font-size: 18px;
+}
+
+.note-content h4 {
+  font-size: 16px;
+}
+/* Honor explicit left alignment coming from editors (e.g., Quill) */
+.note-content .ql-align-left {
+  text-align: left;
+}
+
+/* Center aligned content */
+.note-content .ql-align-center {
+  text-align: center;
+}
+
+/* Right aligned content */
+.note-content .ql-align-right {
+  text-align: right;
+}
+
+/* Justified content */
+.note-content .ql-align-justify {
+  text-align: justify;
+}
+
+/* Keep embedded tables responsive and inside the cell */
+.note-content table {
+  width: 100% !important;
+  max-width: 100%;
+  border-collapse: collapse;
+}
+.note-content th,
+.note-content td {
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* Custom scrollbar for the note content */
+.note-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.note-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.note-content::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.note-content::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

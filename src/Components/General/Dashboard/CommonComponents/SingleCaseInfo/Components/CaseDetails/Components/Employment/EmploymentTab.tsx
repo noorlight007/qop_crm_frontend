@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
 import { EmploymentDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -48,31 +49,58 @@ export const EmploymentTab = () => {
               className="nav-warning d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
-              {employmentData?.map((employment: EmploymentDetailsProps) => {
-                const user = employment.user;
-                return (
-                  <NavItem key={user.id}>
-                    <NavLink
-                      className={`${activeUser === user.id ? "active" : ""}`}
-                      onClick={() => {
-                        setActiveUser(user.id);
-                        setActiveTab(employment.alias || null);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {`${
-                        user?.title
-                          ? user?.title[0].toUpperCase() +
-                            user?.title.slice(1).toLowerCase() +
-                            ""
-                          : ""
-                      } ${user.first_name} ${user.middle_name} ${
-                        user.last_name
-                      }`}
-                    </NavLink>
-                  </NavItem>
-                );
-              })}
+              {employmentData
+                ?.reduce(
+                  (
+                    uniqueUsers: EmploymentDetailsProps[],
+                    employment: EmploymentDetailsProps
+                  ) => {
+                    const userExists = uniqueUsers.some(
+                      (item) => item.user.id === employment.user.id
+                    );
+                    if (!userExists) {
+                      uniqueUsers.push(employment);
+                    }
+                    return uniqueUsers;
+                  },
+                  []
+                )
+                .map((employment: EmploymentDetailsProps, idx: number) => {
+                  const user = employment.user;
+                  // Render an ampersand separator before each user tab except the first
+                  return [
+                    idx > 0 ? (
+                      <span
+                        key={`sep-${user.id}`}
+                        className="align-self-center mx-1 text-muted fw-bolder"
+                        style={{ cursor: "default", userSelect: "none" }}
+                        aria-hidden
+                      >
+                        &
+                      </span>
+                    ) : null,
+                    <NavItem key={user.id}>
+                      <NavLink
+                        className={`${activeUser === user.id ? "active" : ""}`}
+                        onClick={() => {
+                          setActiveUser(user.id);
+                          setActiveTab(employment.alias || null);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {`${
+                          user?.title
+                            ? user?.title[0].toUpperCase() +
+                              user?.title.slice(1).toLowerCase() +
+                              ""
+                            : ""
+                        } ${user.first_name} ${user.middle_name} ${
+                          user.last_name
+                        }`}
+                      </NavLink>
+                    </NavItem>,
+                  ];
+                })}
             </Nav>
           </CardHeader>
           {/* Inner Navigation Tabs (Employment Records) */}
@@ -82,36 +110,61 @@ export const EmploymentTab = () => {
                 tabs
                 className="border-tab mb-0 d-flex flex-wrap gap-2 justify-content-center"
               >
-                {employmentData
-                  ?.filter(
-                    (emp: EmploymentDetailsProps) => emp.user.id === activeUser
-                  )
-                  .map((employment: EmploymentDetailsProps) => (
-                    <NavItem key={employment.alias}>
-                      <NavLink
-                        className={`nav-border text-info tab-info ${
-                          activeTab === employment.alias ? "active" : ""
-                        }`}
-                        onClick={() => setActiveTab(employment.alias || null)}
-                        style={{ cursor: "pointer", fontSize: "0.7rem" }}
-                      >
-                        {employment?.employment_status
-                          ? (() => {
-                              const label =
-                                employment.employment_status.replace(/_/g, " ");
-                              return label
-                                .toLowerCase()
-                                .split(" ")
-                                .map(
-                                  (word: string) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" ");
-                            })()
-                          : "(N/A)"}
-                      </NavLink>
-                    </NavItem>
-                  ))}
+                {(() => {
+                  const userEmps =
+                    employmentData?.filter(
+                      (emp: EmploymentDetailsProps) =>
+                        emp.user.id === activeUser
+                    ) || [];
+
+                  // Precompute SELF_EMPLOYED and EMPLOYED entries so numbering is contiguous per type
+                  const selfEmps = userEmps.filter(
+                    (e: any) => e.employment_status === "SELF_EMPLOYED"
+                  );
+                  const employedEmps = userEmps.filter(
+                    (e: any) => e.employment_status === "EMPLOYED"
+                  );
+
+                  return userEmps.map((employment: EmploymentDetailsProps) => {
+                    const selfIndex =
+                      employment.employment_status === "SELF_EMPLOYED"
+                        ? selfEmps.findIndex(
+                            (e: any) => e.alias === employment.alias
+                          ) + 1
+                        : null;
+
+                    const employedIndex =
+                      employment.employment_status === "EMPLOYED"
+                        ? employedEmps.findIndex(
+                            (e: any) => e.alias === employment.alias
+                          ) + 1
+                        : null;
+
+                    return (
+                      <NavItem key={employment.alias}>
+                        <NavLink
+                          className={`nav-border text-info tab-info ${
+                            activeTab === employment.alias ? "active" : ""
+                          }`}
+                          onClick={() => setActiveTab(employment.alias || null)}
+                          style={{ cursor: "pointer", fontSize: "0.7rem" }}
+                        >
+                          {employment?.employment_status
+                            ? // Base label from choice formatter
+                              formatChoiceFieldValue(
+                                employment.employment_status
+                              ) +
+                              (employment.employment_status === "SELF_EMPLOYED"
+                                ? ` (Business-${selfIndex})`
+                                : employment.employment_status === "EMPLOYED"
+                                ? ` (Job-${employedIndex})`
+                                : "")
+                            : "(N/A)"}
+                        </NavLink>
+                      </NavItem>
+                    );
+                  });
+                })()}
               </Nav>
             </CardHeader>
           )}

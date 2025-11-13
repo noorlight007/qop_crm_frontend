@@ -1,4 +1,3 @@
-import AddClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/AddClientModal";
 import ViewClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/ViewClientModal";
 import { useGetOrgClientsQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgClientsApi";
 import {
@@ -11,15 +10,12 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
-  Button,
   Card,
   CardBody,
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -33,13 +29,7 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
   const [clients, setClients] = useState<ClientInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [clientToDelete, setClientToDelete] = useState<ClientInfoProps | null>(
-    null
-  );
 
   const { data: clientData, isLoading } = useGetOrgClientsQuery(
     { organisationslug },
@@ -56,6 +46,8 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
       first_name: "",
       middle_name: "",
       last_name: "",
+      email: "",
+      phone: "",
       profile_image: "",
       user_type: "",
     },
@@ -64,14 +56,7 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
     gender: "",
   });
 
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
-  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
-  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
-  const openDeleteModal = (client: ClientInfoProps) => {
-    setClientToDelete(client);
-    toggleDeleteModal();
-  };
 
   useEffect(() => {
     if (clientData) {
@@ -81,17 +66,6 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
       setClients(clientsData || []);
     }
   }, [clientData]);
-
-  // openmodals
-  const openAddModal = () => {
-    toggleModal();
-  };
-
-  const openUpdateModal = (client: ClientInfoProps) => {
-    setSelectedClient(client);
-    toggleUpdateModal();
-  };
-  // openmodals end
 
   const filteredClients = clients.filter((client) => {
     const fullName = `${client?.user?.title || ""} ${
@@ -130,34 +104,22 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
           <Col md="3">
             <h2>Clients</h2>
           </Col>
-          <Col md={6}>
-            <InputGroup>
+          <Col md={3} xs="12">
+            <InputGroup className="position-relative">
+              <FaSearch
+                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                style={{ zIndex: 10, pointerEvents: "none" }}
+              />
               <Input
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "10px 10px" }}
+                style={{ padding: "10px 10px 10px 25px" }}
               />
-              <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                <FaSearch />
-              </InputGroupText>
             </InputGroup>
           </Col>
-          <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
-            <Button
-              color="primary"
-              onClick={openAddModal}
-              className="d-flex justify-content-center align-items-center gap-1"
-            >
-              <TbCirclePlus size={18} />
-              <span>Add Client</span>
-            </Button>
-          </Col>
+          <Col md="3" xs="12" />
         </Row>
         <Row>
           <Table hover responsive>
@@ -169,7 +131,6 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                 <th>Role</th>
                 <th>Created By</th>
                 <th>Created At</th>
-                <th>Action</th>
               </tr>
             </thead>
 
@@ -201,14 +162,14 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                         {client?.user?.last_name}
                       </span>
                     </td>
-                    <td>{client?.official_email || "-"}</td>
+                    <td>{client?.user?.email || "-"}</td>
                     <td>
-                      {client?.official_phone ? (
+                      {client?.user?.phone ? (
                         <a
-                          href={`tel:${client?.official_phone}`}
+                          href={`tel:${client?.user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {client?.official_phone}
+                          {client?.user?.phone}
                         </a>
                       ) : (
                         "-"
@@ -237,26 +198,6 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                       </p>
                     </td>
                     <td>{formatDateToDMYAndTime(client?.created_at)}</td>
-                    <td>
-                      <div className="d-flex justify-content-center gap-2 align-items-center">
-                        <Button
-                          color="success"
-                          size="sm"
-                          title="Update User"
-                          onClick={() => openUpdateModal(client)}
-                        >
-                          <i className="icon-pencil-alt"></i>
-                        </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          title="Delete User"
-                          onClick={() => openDeleteModal(client)}
-                        >
-                          <i className="icon-trash"></i>
-                        </Button>
-                      </div>
-                    </td>
                   </tr>
                 ))
               ) : (
@@ -367,27 +308,11 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
         </Row>
 
         {/* modals */}
-        <AddClientModal isOpen={isModalOpen} toggle={toggleModal} />
         <ViewClientModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedClient={selectedClient}
         />
-        {/*
-        <UpdateClientModal
-          isOpen={isUpdateModalOpen}
-          toggle={toggleUpdateModal}
-          onSave={() => {
-            toggleUpdateModal();
-          }}
-          selectedClient={selectedClient}
-        />
-        <DeleteClientModal
-          isOpen={isDeleteModalOpen}
-          toggle={toggleDeleteModal}
-          clientAlias={clientToDelete?.alias || ""}
-          clientName={`${clientToDelete?.user?.first_name} ${clientToDelete?.user?.last_name}`}
-        /> */}
         {/* modals end */}
       </CardBody>
     </Card>
