@@ -108,23 +108,6 @@ const OrgCases: React.FC = () => {
                 <Col md="3">
                   <h3>Cases Overview</h3>
                 </Col>
-                {/* <Col>
-                  <InputGroup>
-                    <Input
-                      type="text"
-                      placeholder="Search Case..."
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                      style={{ padding: "10px 10px" }}
-                    />
-                    <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                      <FaSearch />
-                    </InputGroupText>
-                  </InputGroup>
-                </Col> */}
                 <Col md={3} xs="12">
                   <InputGroup className="position-relative">
                     <FaSearch
