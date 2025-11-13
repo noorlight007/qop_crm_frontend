@@ -2,7 +2,7 @@ import AddNewCaseModal from "@/Components/General/Dashboard/CommonComponents/Cas
 import DeleteCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/DeleteCaseModal";
 import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
-import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCases";
+import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
@@ -10,9 +10,9 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -21,7 +21,6 @@ import {
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Label,
   Pagination,
   PaginationItem,
@@ -33,6 +32,7 @@ import {
 
 const OrgCases: React.FC = () => {
   const { data: session } = useSession();
+  const { organisationslug } = useParams();
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
@@ -56,6 +56,7 @@ const OrgCases: React.FC = () => {
     useGetAdviserDetailsQuery(undefined);
 
   const { data: caseData, isLoading: isCaseLoading } = useGetOrgCasesQuery({
+    organisationslug: organisationslug as string,
     search: searchQuery,
     ...filters,
     page: currentPage,
@@ -107,7 +108,7 @@ const OrgCases: React.FC = () => {
                 <Col md="3">
                   <h3>Cases Overview</h3>
                 </Col>
-                <Col>
+                {/* <Col>
                   <InputGroup>
                     <Input
                       type="text"
@@ -122,6 +123,21 @@ const OrgCases: React.FC = () => {
                     <InputGroupText className="bg-success rounded-start-0 border-start-0">
                       <FaSearch />
                     </InputGroupText>
+                  </InputGroup>
+                </Col> */}
+                <Col md={3} xs="12">
+                  <InputGroup className="position-relative">
+                    <FaSearch
+                      className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                      style={{ zIndex: 10, pointerEvents: "none" }}
+                    />
+                    <Input
+                      type="text"
+                      placeholder="Search Case... "
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      style={{ padding: "10px 10px 10px 25px" }}
+                    />
                   </InputGroup>
                 </Col>
                 <Col
@@ -140,16 +156,6 @@ const OrgCases: React.FC = () => {
                       <i className="fa-solid fa-filter"></i>
                     )}
                   </Button>
-                  {userType !== "ORGANIZATION_SUPPORT" && (
-                    <Button
-                      color="primary"
-                      onClick={openAddNewCaseModal}
-                      className="d-flex justify-content-center align-items-center gap-1"
-                    >
-                      <TbCirclePlus size={18} />
-                      <span>Add New Case</span>
-                    </Button>
-                  )}
                 </Col>
               </Row>
             </CardHeader>

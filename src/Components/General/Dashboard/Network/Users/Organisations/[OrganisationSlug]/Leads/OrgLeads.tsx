@@ -1,4 +1,3 @@
-import AddLeadModal from "@/Components/General/Dashboard/CommonComponents/Directors/Leads/Modals/AddLeadModal";
 import ViewLeadModal from "@/Components/General/Dashboard/CommonComponents/Directors/Leads/Modals/ViewLeadModal";
 import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgLeadsApi";
 import {
@@ -11,15 +10,12 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
-  Button,
   Card,
   CardBody,
   Col,
   Input,
   InputGroup,
-  InputGroupText,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -33,11 +29,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
   const [leads, setLeads] = useState<LeadsInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [leadToDelete, setLeadToDelete] = useState<LeadsInfo | null>(null);
+
   // rtk hooks
   const { data: leadData, isLoading } = useGetOrgLeadsQuery(
     { organisationslug },
@@ -52,6 +45,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
       first_name: "",
       middle_name: "",
       last_name: "",
+      email: "",
+      phone: "",
       profile_image: "",
       user_type: "",
     },
@@ -60,15 +55,7 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
     gender: "",
   });
 
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
-  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
-  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
-
-  const openDeleteModal = (lead: LeadsInfo) => {
-    setLeadToDelete(lead);
-    toggleDeleteModal();
-  };
 
   useEffect(() => {
     if (leadData) {
@@ -76,17 +63,6 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
       setLeads(leadsData || []);
     }
   }, [leadData]);
-
-  // openmodals
-  const openAddModal = () => {
-    toggleModal();
-  };
-
-  const openUpdateModal = (lead: LeadsInfo) => {
-    setSelectedLead(lead);
-    toggleUpdateModal();
-  };
-  // openmodals end
 
   const filteredLeads = leads.filter((lead) => {
     const fullName = `${lead?.user?.title || ""} ${
@@ -122,34 +98,22 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
           <Col md="3" xs="12">
             <h2>Leads</h2>
           </Col>
-          <Col md={6} xs="12">
-            <InputGroup>
+          <Col md={3} xs="12">
+            <InputGroup className="position-relative">
+              <FaSearch
+                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                style={{ zIndex: 10, pointerEvents: "none" }}
+              />
               <Input
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "10px 10px" }}
+                style={{ padding: "10px 10px 10px 25px" }}
               />
-              <InputGroupText className="bg-success rounded-start-0 border-start-0">
-                <FaSearch />
-              </InputGroupText>
             </InputGroup>
           </Col>
-          <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
-            <Button
-              color="primary"
-              onClick={openAddModal}
-              className="d-flex justify-content-center align-items-center gap-1"
-            >
-              <TbCirclePlus size={18} />
-              <span>Add Lead</span>
-            </Button>
-          </Col>
+          <Col md={3} xs="12" />
         </Row>
         <Row>
           <Table hover responsive>
@@ -161,7 +125,6 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                 <th>Role</th>
                 <th>Created By</th>
                 <th>Created At</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -226,27 +189,6 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                       </p>
                     </td>
                     <td>{formatDateToDMYAndTime(lead?.created_at)}</td>
-
-                    <td>
-                      <div className="d-flex justify-content-center gap-2 align-items-center">
-                        <Button
-                          color="success"
-                          size="sm"
-                          title="Update User"
-                          onClick={() => openUpdateModal(lead)}
-                        >
-                          <i className="icon-pencil-alt"></i>
-                        </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          title="Delete User"
-                          onClick={() => openDeleteModal(lead)}
-                        >
-                          <i className="icon-trash"></i>
-                        </Button>
-                      </div>
-                    </td>
                   </tr>
                 ))
               ) : (
@@ -357,27 +299,11 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
         </Row>
 
         {/* Modals */}
-        <AddLeadModal isOpen={isModalOpen} toggle={toggleModal} />
         <ViewLeadModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedLead={selectedLead}
         />
-        {/*
-      <UpdateLeadModal
-        isOpen={isUpdateModalOpen}
-        toggle={toggleUpdateModal}
-        onSave={() => {
-          toggleUpdateModal();
-        }}
-        selectedLead={selectedLead}
-      />
-      <DeleteLeadModal
-        isOpen={isDeleteModalOpen}
-        toggle={toggleDeleteModal}
-        leadAlias={leadToDelete?.alias}
-        leadName={`${leadToDelete?.user?.first_name} ${leadToDelete?.user?.last_name}`}
-      /> */}
         {/* modals end */}
       </CardBody>
     </Card>
