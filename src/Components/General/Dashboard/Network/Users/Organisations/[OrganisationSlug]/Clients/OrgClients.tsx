@@ -1,3 +1,4 @@
+"use client";
 import ViewClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/ViewClientModal";
 import { useGetOrgClientsQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgClientsApi";
 import {
@@ -24,18 +25,36 @@ import {
   Table,
 } from "reactstrap";
 
-const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
-  const { organisationslug } = useParams();
+const OrgClients: React.FC<ClientsProps> = () => {
+  const params = useParams();
+  const organisationslug = (params?.OrganisationSlug ||
+    (params as any)?.organisationslug) as string;
   const [clients, setClients] = useState<ClientInfoProps[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [stablePageSize, setStablePageSize] = useState<number>(0);
 
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // rtk query - pass params object to match OrgClientsApi
   const { data: clientData, isLoading } = useGetOrgClientsQuery(
-    { organisationslug },
     {
-      skip: !organisationslug,
-    }
+      organisationslug,
+      params: {
+        page: currentPage,
+        search: searchQuery,
+      },
+    },
+    { skip: !organisationslug }
   );
 
   const [selectedClient, setSelectedClient] = useState<
@@ -62,32 +81,39 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
     if (clientData) {
       const clientsData = Array.isArray(clientData)
         ? clientData
-        : clientData.clients;
+        : clientData.results || clientData.clients;
       setClients(clientsData || []);
     }
   }, [clientData]);
 
-  const filteredClients = clients.filter((client) => {
-    const fullName = `${client?.user?.title || ""} ${
-      client?.user?.first_name || ""
-    } ${client?.user?.middle_name || ""} ${
-      client?.user?.last_name || ""
-    }`.toLowerCase();
+  // Server-side pagination: derive totalCount and a stable page size to avoid inflated pages
+  const totalCount =
+    clientData && !Array.isArray(clientData)
+      ? clientData.count
+      : clients.length;
 
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      client?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  // capture a stable page size from pages that are not the last page
+  useEffect(() => {
+    const currentLength = Array.isArray(clientData)
+      ? clientData.length
+      : clientData?.results?.length || 0;
+    const isLastPage =
+      !Array.isArray(clientData) && clientData && clientData.next === null;
+    if (currentLength > 0) {
+      if (stablePageSize === 0) setStablePageSize(currentLength);
+      else if (!isLastPage && currentLength !== stablePageSize)
+        setStablePageSize(currentLength);
+    }
+  }, [clientData, stablePageSize]);
 
-  const indexOfLastClient = currentPage * clientsPerPage;
-  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = filteredClients.slice(
-    indexOfFirstClient,
-    indexOfLastClient
-  );
+  const effectivePageSize = stablePageSize || clients.length || 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
+  const currentClients = clients;
 
-  const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
+  // Keep currentPage within bounds
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) setCurrentPage(totalPages);
+  }, [totalPages]);
 
   if (isLoading) {
     return (
@@ -113,8 +139,8 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
               <Input
                 type="text"
                 placeholder="Search by name or email... "
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
             </InputGroup>
@@ -215,24 +241,30 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredClients.length === 0 ? "0" : indexOfFirstClient + 1} to{" "}
-                {Math.min(indexOfLastClient, filteredClients.length)} of{" "}
-                {filteredClients.length} Clients
+                {totalCount === 0
+                  ? "0"
+                  : (currentPage - 1) * effectivePageSize + 1}{" "}
+                to{" "}
+                {Math.min(
+                  (currentPage - 1) * effectivePageSize + effectivePageSize,
+                  totalCount
+                )}{" "}
+                of {totalCount} Clients
               </p>
             </div>
-            <Pagination className="d-flex justify-content-end p-2">
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink first onClick={() => setCurrentPage(1)} />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink
-                  previous
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                />
-              </PaginationItem>
+            {totalPages > 1 && (
+              <Pagination className="d-flex justify-content-end p-2">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink first onClick={() => setCurrentPage(1)} />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink
+                    previous
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  />
+                </PaginationItem>
 
-              {totalPages <= clientsPerPage ? (
-                Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem
                       key={pageNumber}
@@ -245,65 +277,22 @@ const OrgClients: React.FC<ClientsProps> = ({ clientsPerPage = 5 }) => {
                       </PaginationLink>
                     </PaginationItem>
                   )
-                )
-              ) : (
-                <>
-                  <PaginationItem active={currentPage === 1}>
-                    <PaginationLink onClick={() => setCurrentPage(1)}>
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
+                )}
 
-                  {currentPage > 3 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
-
-                  {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                    .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
-                    )
-                    .map((pageNumber) => (
-                      <PaginationItem
-                        key={pageNumber}
-                        active={pageNumber === currentPage}
-                      >
-                        <PaginationLink
-                          onClick={() => setCurrentPage(pageNumber)}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-
-                  {currentPage < totalPages - 2 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
-
-                  <PaginationItem active={currentPage === totalPages}>
-                    <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>
-                </>
-              )}
-
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  next
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  last
-                  onClick={() => setCurrentPage(totalPages)}
-                />
-              </PaginationItem>
-            </Pagination>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    next
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    last
+                    onClick={() => setCurrentPage(totalPages)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            )}
           </div>
         </Row>
 
