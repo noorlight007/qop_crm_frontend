@@ -1,3 +1,4 @@
+"use client";
 import ViewAdviserModal from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Modals/ViewAdviserModal";
 import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgAdvisersApi";
 import {
@@ -24,18 +25,35 @@ import {
   Table,
 } from "reactstrap";
 
-const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
-  const { organisationslug } = useParams();
+const OrgAdvisers: React.FC<AdvisersProps> = () => {
+  const params = useParams();
+  const organisationslug = (params?.OrganisationSlug ||
+    (params as any)?.organisationslug) as string;
   const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [stablePageSize, setStablePageSize] = useState<number>(0);
+
+  // debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
   const { data: adviserData, isLoading } = useGetOrgAdvisersQuery(
-    { organisationslug },
     {
-      skip: !organisationslug,
-    }
+      organisationslug,
+      params: {
+        page: currentPage,
+        search: searchQuery,
+      },
+    },
+    { skip: !organisationslug }
   );
 
   const [selectedAdviser, setSelectedAdviser] = useState<
@@ -63,32 +81,38 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
     if (adviserData) {
       const advisersArray: AdviserInfoProps[] = Array.isArray(adviserData)
         ? adviserData
-        : adviserData.advisers;
+        : adviserData.results || adviserData.advisers;
       setAdvisers(advisersArray || []);
     }
   }, [adviserData]);
 
-  const filteredAdvisers = advisers.filter((adviser) => {
-    const fullName = `${adviser?.user?.title || ""} ${
-      adviser?.user?.first_name || ""
-    } ${adviser?.user?.middle_name || ""} ${
-      adviser?.user?.last_name || ""
-    }`.toLowerCase();
 
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      adviser?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  // Server-side pagination: use API count and a stable page size
+  const totalCount =
+    adviserData && !Array.isArray(adviserData)
+      ? adviserData.count
+      : advisers.length;
 
-  const indexOfLastAdviser = currentPage * advisersPerPage;
-  const indexOfFirstAdviser = indexOfLastAdviser - advisersPerPage;
-  const currentAdvisers = filteredAdvisers.slice(
-    indexOfFirstAdviser,
-    indexOfLastAdviser
-  );
+  useEffect(() => {
+    const currentLength = Array.isArray(adviserData)
+      ? adviserData.length
+      : adviserData?.results?.length || 0;
+    const isLastPage =
+      !Array.isArray(adviserData) && adviserData && adviserData.next === null;
+    if (currentLength > 0) {
+      if (stablePageSize === 0) setStablePageSize(currentLength);
+      else if (!isLastPage && currentLength !== stablePageSize)
+        setStablePageSize(currentLength);
+    }
+  }, [adviserData, stablePageSize]);
 
-  const totalPages = Math.ceil(filteredAdvisers.length / advisersPerPage);
+  const effectivePageSize = stablePageSize || advisers.length || 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
+  const currentAdvisers = advisers;
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) setCurrentPage(totalPages);
+  }, [totalPages]);
 
   if (isLoading) {
     return (
@@ -114,8 +138,8 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
               <Input
                 type="text"
                 placeholder="Search by name or email... "
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
             </InputGroup>
@@ -220,24 +244,30 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredAdvisers.length === 0 ? "0" : indexOfFirstAdviser + 1}{" "}
-                to {Math.min(indexOfLastAdviser, filteredAdvisers.length)} of{" "}
-                {filteredAdvisers.length} Advisers
+                {totalCount === 0
+                  ? "0"
+                  : (currentPage - 1) * effectivePageSize + 1}{" "}
+                to{" "}
+                {Math.min(
+                  (currentPage - 1) * effectivePageSize + effectivePageSize,
+                  totalCount
+                )}{" "}
+                of {totalCount} Advisers
               </p>
             </div>
-            <Pagination>
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink first onClick={() => setCurrentPage(1)} />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink
-                  previous
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                />
-              </PaginationItem>
+            {totalPages > 1 && (
+              <Pagination className="d-flex">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink first onClick={() => setCurrentPage(1)} />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink
+                    previous
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  />
+                </PaginationItem>
 
-              {totalPages <= advisersPerPage ? (
-                Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem
                       key={pageNumber}
@@ -250,65 +280,24 @@ const OrgAdvisers: React.FC<AdvisersProps> = ({ advisersPerPage = 5 }) => {
                       </PaginationLink>
                     </PaginationItem>
                   )
-                )
-              ) : (
-                <>
-                  <PaginationItem active={currentPage === 1}>
-                    <PaginationLink onClick={() => setCurrentPage(1)}>
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
+                )}
 
-                  {currentPage > 3 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
-
-                  {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                    .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
-                    )
-                    .map((pageNumber) => (
-                      <PaginationItem
-                        key={pageNumber}
-                        active={pageNumber === currentPage}
-                      >
-                        <PaginationLink
-                          onClick={() => setCurrentPage(pageNumber)}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-
-                  {currentPage < totalPages - 2 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
-
-                  <PaginationItem active={currentPage === totalPages}>
-                    <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>
-                </>
-              )}
-
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  next
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  last
-                  onClick={() => setCurrentPage(totalPages)}
-                />
-              </PaginationItem>
-            </Pagination>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    next
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
+                  />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    last
+                    onClick={() => setCurrentPage(totalPages)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            )}
           </div>
         </Row>
 
