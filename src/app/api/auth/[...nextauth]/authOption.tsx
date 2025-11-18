@@ -33,6 +33,7 @@ declare module "next-auth" {
     accessToken?: string;
     user_type?: string;
     profile_image?: string | null;
+    name?: string;
   }
 }
 
@@ -95,9 +96,10 @@ export const authoption: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         const userWithToken = user as UserWithToken;
+        token.name = userWithToken.name;
         if (userWithToken.token) {
           token.accessToken = userWithToken.token;
         }
@@ -108,12 +110,25 @@ export const authoption: NextAuthOptions = {
           token.profile_image = userWithToken.profile_image;
         }
       }
+
+      // Handle session updates (when update() is called)
+      if (trigger === "update" && session) {
+        console.log("Session update triggered:", session);
+        if (session.name) {
+          token.name = session.name;
+        }
+        if (session.profile_image !== undefined) {
+          token.profile_image = session.profile_image;
+        }
+      }
+
       return token;
     },
 
     async session({ session, token }) {
       session.user = {
         ...session.user,
+        name: token.name as string | undefined,
         accessToken: token.accessToken as string | undefined,
         user_type: token.user_type as string | undefined,
         profile_image: token.profile_image as string | null | undefined,
