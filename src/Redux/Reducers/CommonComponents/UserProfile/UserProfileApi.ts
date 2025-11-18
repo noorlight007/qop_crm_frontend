@@ -18,8 +18,19 @@ export const UserProfileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["UserProfileDetails"],
     }),
+    sendResetPasswordEmail: builder.mutation({
+      query: ({ email }) => ({
+        url: `/auth/users/reset_password/`,
+        method: "POST",
+        body: { email },
+      }),
+      invalidatesTags: ["UserProfileDetails"],
+    }),
   }),
 });
 
-export const { useGetUserDetailsQuery, useUpdateUserDetailsMutation } =
-  UserProfileApi;
+export const {
+  useGetUserDetailsQuery,
+  useUpdateUserDetailsMutation,
+  useSendResetPasswordEmailMutation,
+} = UserProfileApi;

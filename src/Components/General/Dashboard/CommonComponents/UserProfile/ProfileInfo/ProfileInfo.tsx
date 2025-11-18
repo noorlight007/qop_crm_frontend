@@ -6,13 +6,20 @@ import { FaUserEdit, FaUserLock } from "react-icons/fa";
 import { TbCalendar, TbMail, TbMapPin, TbPhone, TbUser } from "react-icons/tb";
 import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import EditProfileModal from "./Modals/EditProfileModal";
+import SendEmailForResetPasswordModal from "./Modals/SendEmailForResetPasswordModal";
 
 const ProfileInfo: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
+    useState(false);
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(true);
   };
+  const handleOpenResetPasswordModal = () => {
+    setIsResetPasswordModalOpen(true);
+  };
+
   // RTK Hooks
   const { data: userProfileData, isLoading } =
     useGetUserDetailsQuery(undefined);
@@ -156,6 +163,7 @@ const ProfileInfo: React.FC = () => {
                   size="sm"
                   outline
                   className="d-flex justify-content-center align-items-center gap-1"
+                  onClick={handleOpenResetPasswordModal}
                 >
                   <FaUserLock size={15} />
                   <span>Change Password</span>
@@ -413,6 +421,11 @@ const ProfileInfo: React.FC = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         initialData={userData}
+      />
+      <SendEmailForResetPasswordModal
+        isOpen={isResetPasswordModalOpen}
+        onClose={() => setIsResetPasswordModalOpen(false)}
+         initialData={userData}
       />
     </Row>
   );
