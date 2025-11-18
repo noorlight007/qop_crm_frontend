@@ -1,4 +1,5 @@
 import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
+import { UserProfileModalProps } from "@/Types/CommonComponents/UserProfile/UserProfileType";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -14,25 +15,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-export interface UserProfileModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  initialData?: {
-    email?: string;
-    phone?: string | null;
-    title?: string;
-    first_name?: string;
-    middle_name?: string;
-    last_name?: string;
-    profile_image?: string | null;
-    address?: string | null;
-    city?: string | null;
-    state?: string | null;
-    country?: string | null;
-    zip_code?: string | null;
-  };
-}
 
 const EditProfileModal: React.FC<UserProfileModalProps> = ({
   isOpen,
@@ -50,7 +32,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
     city: "",
     state: "",
     country: "",
-    zip_code: "",
+    post_code: "",
   });
   const [file, setFile] = useState<File | null>(null);
 
@@ -69,7 +51,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         city: initialData.city || "",
         state: initialData.state || "",
         country: initialData.country || "",
-        zip_code: initialData.zip_code || "",
+        post_code: initialData.post_code || "",
       });
     }
   }, [initialData, isOpen]);
@@ -84,13 +66,11 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files && e.target.files[0];
     setFile(f || null);
-    // keep profile_image field for backwards compatibility (url)
     setForm((s) => ({ ...s, profile_image: f ? f.name : "" }));
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    // Build payload. If a file is selected, send FormData so the backend receives a file.
     try {
       if (file) {
         const formData = new FormData();
@@ -104,7 +84,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         formData.append("city", form.city || "");
         formData.append("state", form.state || "");
         formData.append("country", form.country || "");
-        formData.append("zip_code", form.zip_code || "");
+        formData.append("post_code", form.post_code || "");
 
         // send FormData as payload and include empty userAlias for current user
         await editUserData({ payload: formData }).unwrap();
@@ -119,7 +99,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
           city: form.city || null,
           state: form.state || null,
           country: form.country || null,
-          zip_code: form.zip_code || null,
+          post_code: form.post_code || null,
         };
 
         await editUserData({ payload }).unwrap();
@@ -224,11 +204,11 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
             </Col>
             <Col sm="12" md="6">
               <FormGroup>
-                <Label for="zip_code">Postcode</Label>
+                <Label for="post_code">Postcode</Label>
                 <Input
-                  name="zip_code"
-                  id="zip_code"
-                  value={form.zip_code}
+                  name="post_code"
+                  id="post_code"
+                  value={form.post_code}
                   onChange={handleChange}
                 />
               </FormGroup>

@@ -1,26 +1,11 @@
 import { useGetUserDetailsQuery } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
+import { UserProfileData } from "@/Types/CommonComponents/UserProfile/UserProfileType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useState } from "react";
 import { FaUserEdit, FaUserLock } from "react-icons/fa";
 import { TbCalendar, TbMail, TbMapPin, TbPhone, TbUser } from "react-icons/tb";
 import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import EditProfileModal from "./Modals/EditProfileModal";
-
-interface UserProfileData {
-  email: string;
-  phone: string | null;
-  title: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  profile_image: string | null;
-  address: string | null;
-  city: string | null;
-  state: string | null;
-  country: string | null;
-  zip_code: string | null;
-  updated_at: string;
-}
 
 const ProfileInfo: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -55,9 +40,9 @@ const ProfileInfo: React.FC = () => {
   // Get full name
   const getFullName = () => {
     if (!userData) return "";
-    return `${userData.title || ""} ${userData.first_name || ""} ${
-      userData.middle_name || ""
-    } ${userData.last_name || ""}`.trim();
+    return `${formatChoiceFieldValue(userData.title) || ""} ${
+      userData.first_name || ""
+    } ${userData.middle_name || ""} ${userData.last_name || ""}`.trim();
   };
 
   // Get full address
@@ -68,7 +53,7 @@ const ProfileInfo: React.FC = () => {
       userData.city,
       userData.state,
       userData.country,
-      userData.zip_code,
+      userData.post_code,
     ].filter(Boolean);
     return parts.length > 0 ? parts.join(", ") : "Not provided";
   };
@@ -363,8 +348,8 @@ const ProfileInfo: React.FC = () => {
                 </Col>
                 <Col xs="7">
                   <p className="mb-0 text-dark fw-medium">
-                    {userData?.zip_code ? (
-                      userData.zip_code
+                    {userData?.post_code ? (
+                      userData.post_code
                     ) : (
                       <small className="text-muted">Not Set</small>
                     )}
@@ -427,20 +412,7 @@ const ProfileInfo: React.FC = () => {
       <EditProfileModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        initialData={{
-          email: userData?.email,
-          phone: userData?.phone,
-          title: userData?.title,
-          first_name: userData?.first_name,
-          middle_name: userData?.middle_name,
-          last_name: userData?.last_name,
-          profile_image: userData?.profile_image,
-          address: userData?.address,
-          city: userData?.city,
-          state: userData?.state,
-          country: userData?.country,
-          zip_code: userData?.zip_code,
-        }}
+        initialData={userData}
       />
     </Row>
   );
