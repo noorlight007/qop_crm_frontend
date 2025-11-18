@@ -4,7 +4,7 @@ export const UserProfileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserDetails: builder.query({
       query: () => ({
-        url: `/director/user-profile/`,
+        url: `/auth/user-profile/`,
         method: "GET",
       }),
       providesTags: ["UserProfileDetails"],
@@ -12,7 +12,7 @@ export const UserProfileApi = baseApi.injectEndpoints({
 
     updateUserDetails: builder.mutation({
       query: ({ payload }) => ({
-        url: `/director/user-profile/`,
+        url: `/auth/user-profile/`,
         method: "PATCH",
         body: payload,
       }),
