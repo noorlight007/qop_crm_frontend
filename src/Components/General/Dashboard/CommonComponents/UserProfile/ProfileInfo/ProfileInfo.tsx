@@ -1,7 +1,8 @@
 import { useGetUserDetailsQuery } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { FaUserEdit, FaUserLock } from "react-icons/fa";
 import { TbCalendar, TbMail, TbMapPin, TbPhone, TbUser } from "react-icons/tb";
-import { Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 
 interface UserProfileData {
   email: string;
@@ -144,11 +145,28 @@ const ProfileInfo: React.FC = () => {
                   </p>
                 </div>
               </Col>
-              <Col lg="4" className="text-lg-end">
-                <button className="btn btn-primary btn-sm me-2">
-                  <i className="fa fa-edit me-1"></i>
+              <Col
+                lg="4"
+                className="d-flex justify-content-end align-items-center gap-1"
+              >
+                <Button
+                  color="primary"
+                  size="sm"
+                  outline
+                  className="d-flex justify-content-center align-items-center gap-1"
+                >
+                  <FaUserEdit size={15} />
                   Edit Profile
-                </button>
+                </Button>
+                <Button
+                  color="secondary"
+                  size="sm"
+                  outline
+                  className="d-flex justify-content-center align-items-center gap-1"
+                >
+                  <FaUserLock size={15} />
+                  <span>Change Password</span>
+                </Button>
               </Col>
             </Row>
           </CardBody>
