@@ -1,5 +1,6 @@
 import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
 import { UserProfileModalProps } from "@/Types/CommonComponents/UserProfile/UserProfileType";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -37,6 +38,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   const [file, setFile] = useState<File | null>(null);
 
   const [editUserData, { isLoading }] = useUpdateUserDetailsMutation();
+  const { data: session, update: updateSession } = useSession();
 
   useEffect(() => {
     if (initialData) {
@@ -72,6 +74,8 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     try {
+      let updatedUserData;
+
       if (file) {
         const formData = new FormData();
         formData.append("profile_image", file);
@@ -87,7 +91,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         formData.append("post_code", form.post_code || "");
 
         // send FormData as payload and include empty userAlias for current user
-        await editUserData({ payload: formData }).unwrap();
+        updatedUserData = await editUserData({ payload: formData }).unwrap();
       } else {
         const payload: Record<string, any> = {
           phone: form.phone || null,
@@ -102,8 +106,46 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
           post_code: form.post_code || null,
         };
 
-        await editUserData({ payload }).unwrap();
+        updatedUserData = await editUserData({ payload }).unwrap();
       }
+
+      // Update session with new profile data
+      if (updateSession) {
+        const formatChoiceFieldValue = (value: string) => {
+          const mapping: Record<string, string> = {
+            MR: "Mr",
+            MRS: "Mrs",
+            MS: "Ms",
+            DR: "Dr",
+            MISS: "Miss",
+            MADAM: "Madam",
+            MAIDEN: "Maiden",
+            PROFESSOR: "Professor",
+            DOCTOR: "Doctor",
+          };
+          return mapping[value] || value;
+        };
+
+        const updatedName = `${
+          form.title ? formatChoiceFieldValue(form.title) + " " : ""
+        }${form.first_name || ""}${
+          form.middle_name ? " " + form.middle_name : ""
+        }${form.last_name ? " " + form.last_name : ""}`.trim();
+
+        const sessionUpdate = {
+          name: updatedName,
+          profile_image:
+            updatedUserData?.profile_image || session?.user?.profile_image,
+        };
+
+        console.log("Updating session with:", sessionUpdate);
+
+        // Trigger session update - NextAuth will merge this data
+        await updateSession(sessionUpdate);
+
+        console.log("Session updated successfully");
+      }
+
       toast.success("Profile updated successfully");
       onClose();
     } catch (err) {
