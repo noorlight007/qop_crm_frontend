@@ -89,7 +89,7 @@ const Profile = () => {
           }`}
         >
           <ul className="profile-body">
-            <li className="d-flex opacity-50">
+            <li className="d-flex">
               <Link href="/dashboard/user-profile" className="d-flex gap-2">
                 <i className="fa-solid fa-user-gear"></i>
                 Profile

@@ -1,9 +1,22 @@
+import { Col, Row } from "reactstrap";
+import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
+import ProfileInfo from "./ProfileInfo/ProfileInfo";
+
 const UserProfileContainer: React.FC = () => {
   return (
-    <div>
-      {/* JSX here */}
-      this is user profile container
-    </div>
+    <>
+      <Breadcrumbs
+        title="User Profile"
+        subTitle="User profile management"
+        parent="User"
+        child="Profile"
+      />
+      <Row>
+        <Col>
+          <ProfileInfo />
+        </Col>
+      </Row>
+    </>
   );
 };
 
