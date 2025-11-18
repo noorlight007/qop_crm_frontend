@@ -4,7 +4,7 @@ export const SetNewPasswordApi = authBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     setNewPassword: builder.mutation({
       query: ({ payload, uid, token }) => ({
-        url: `/authentication/set-password/${uid}/${token}/`,
+        url: `/set-password/${uid}/${token}/`,
         method: "POST",
         body: payload,
       }),
