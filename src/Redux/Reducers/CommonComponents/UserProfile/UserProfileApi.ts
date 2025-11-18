@@ -11,7 +11,7 @@ export const UserProfileApi = baseApi.injectEndpoints({
     }),
 
     updateUserDetails: builder.mutation({
-      query: ({ userAlias, payload }) => ({
+      query: ({ payload }) => ({
         url: `/director/user-profile/`,
         method: "PATCH",
         body: payload,

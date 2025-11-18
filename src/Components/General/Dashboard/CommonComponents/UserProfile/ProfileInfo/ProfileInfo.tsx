@@ -1,5 +1,5 @@
 import { useGetUserDetailsQuery } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
-import { UserProfileData } from "@/Types/CommonComponents/UserProfile/UserProfileType";
+import { UserProfileDataProps } from "@/Types/CommonComponents/UserProfile/UserProfileType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useState } from "react";
 import { FaUserEdit, FaUserLock } from "react-icons/fa";
@@ -17,7 +17,7 @@ const ProfileInfo: React.FC = () => {
   const { data: userProfileData, isLoading } =
     useGetUserDetailsQuery(undefined);
 
-  const userData = userProfileData as UserProfileData;
+  const userData = userProfileData as UserProfileDataProps;
 
   // Format date
   const formatDate = (dateString: string) => {

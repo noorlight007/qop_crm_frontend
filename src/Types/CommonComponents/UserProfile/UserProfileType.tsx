@@ -1,4 +1,4 @@
-export interface UserProfileData {
+export interface UserProfileDataProps {
   email: string;
   phone: string | null;
   title: string;
@@ -17,5 +17,5 @@ export interface UserProfileData {
 export interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData?: UserProfileData;
+  initialData?: UserProfileDataProps;
 }
