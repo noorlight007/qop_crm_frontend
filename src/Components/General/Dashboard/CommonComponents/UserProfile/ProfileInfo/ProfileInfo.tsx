@@ -1,8 +1,10 @@
 import { useGetUserDetailsQuery } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useState } from "react";
 import { FaUserEdit, FaUserLock } from "react-icons/fa";
 import { TbCalendar, TbMail, TbMapPin, TbPhone, TbUser } from "react-icons/tb";
 import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import EditProfileModal from "./Modals/EditProfileModal";
 
 interface UserProfileData {
   email: string;
@@ -21,6 +23,11 @@ interface UserProfileData {
 }
 
 const ProfileInfo: React.FC = () => {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleOpenEditModal = () => {
+    setIsEditModalOpen(true);
+  };
   // RTK Hooks
   const { data: userProfileData, isLoading } =
     useGetUserDetailsQuery(undefined);
@@ -154,6 +161,7 @@ const ProfileInfo: React.FC = () => {
                   size="sm"
                   outline
                   className="d-flex justify-content-center align-items-center gap-1"
+                  onClick={handleOpenEditModal}
                 >
                   <FaUserEdit size={15} />
                   Edit Profile
@@ -415,6 +423,25 @@ const ProfileInfo: React.FC = () => {
           </CardBody>
         </Card>
       </Col>
+      {/* Modals  */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        initialData={{
+          email: userData?.email,
+          phone: userData?.phone,
+          title: userData?.title,
+          first_name: userData?.first_name,
+          middle_name: userData?.middle_name,
+          last_name: userData?.last_name,
+          profile_image: userData?.profile_image,
+          address: userData?.address,
+          city: userData?.city,
+          state: userData?.state,
+          country: userData?.country,
+          zip_code: userData?.zip_code,
+        }}
+      />
     </Row>
   );
 };
