@@ -1,5 +1,6 @@
 "use client";
-import { useSetNewPasswordMutation } from "@/Redux/Reducers/Auth/SetPasswordApi";
+import { useResetUserPasswordMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/ResetUserPasswordApi";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +9,6 @@ import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
 import logoDark from "../../../../public/assets/images/logo/logo-dark.png";
 import logoLight from "../../../../public/assets/images/logo/logo1.png";
-import { useSendResetPasswordEmailMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
 
 export default function ResetPassword() {
   const router = useRouter();
@@ -18,12 +18,13 @@ export default function ResetPassword() {
   console.log("UID:", uid);
   console.log("Token:", token);
 
-  const [password, setPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [show, setShow] = useState(false);
 
   // RTK Hooks
-  const [resetPassword, { isLoading }] = useSendResetPasswordEmailMutation();
+  const [resetPassword, { isLoading }] = useResetUserPasswordMutation();
 
   // Password validation helper
   const getPasswordValidation = (pw: string) => {
@@ -36,7 +37,7 @@ export default function ResetPassword() {
     };
   };
 
-  const validation = getPasswordValidation(password);
+  const validation = getPasswordValidation(newPassword);
   const isPasswordValid =
     validation.minLength &&
     validation.upper &&
@@ -46,15 +47,15 @@ export default function ResetPassword() {
 
   const formSubmitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!password || !confirmPassword) {
-      toast.error("Please fill both password fields.");
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill both new and confirm password fields.");
       return;
     }
     if (!isPasswordValid) {
       toast.error("Password does not meet all requirements.");
       return;
     }
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
@@ -66,7 +67,8 @@ export default function ResetPassword() {
     try {
       // Build FormData payload as requested
       const formData = new FormData();
-      formData.append("password", password);
+      formData.append("current_password", currentPassword);
+      formData.append("new_password", newPassword);
       formData.append("confirm_password", confirmPassword);
 
       const res = await resetPassword({
@@ -77,6 +79,27 @@ export default function ResetPassword() {
       console.log("Res:", res.data);
 
       if (res.data) {
+        // Notify other tabs and force sign-out
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("qop_logout", Date.now().toString());
+          } catch (err) {
+            // ignore
+            console.error("LocalStorage error:", err);
+          }
+          try {
+            if ((window as any).BroadcastChannel) {
+              const bc = new BroadcastChannel("qop_channel");
+              bc.postMessage("logout");
+              bc.close();
+            }
+          } catch (err) {
+            // ignore
+            console.error("BroadcastChannel error:", err);
+          }
+        }
+
+        await signOut({ redirect: false });
         toast.success("Password updated. Redirecting to login...");
         // Small delay so the user can see the toast
         setTimeout(() => router.push("/auth/login"), 900);
@@ -124,7 +147,7 @@ export default function ResetPassword() {
                   </Link>
                 </div>
 
-                <h3 className="text-center mb-2">Set a new password</h3>
+                <h3 className="text-center mb-2">Reset new password</h3>
                 <p className="text-center text-muted mb-4">
                   Choose a strong password and confirm it to secure your
                   account.
@@ -132,12 +155,22 @@ export default function ResetPassword() {
 
                 <Form onSubmit={formSubmitHandle}>
                   <FormGroup>
+                    <Label className="col-form-label">Current Password</Label>
+                    <Input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      required
+                    />
+                  </FormGroup>
+                  <FormGroup>
                     <Label className="col-form-label">New Password</Label>
                     <div className="position-relative">
                       <Input
                         type={show ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="Enter new password"
                         minLength={8}
                         required
@@ -227,11 +260,12 @@ export default function ResetPassword() {
                       color="primary"
                       disabled={
                         !isPasswordValid ||
-                        password !== confirmPassword ||
+                        newPassword !== confirmPassword ||
+                        !currentPassword ||
                         isLoading
                       }
                     >
-                      {isLoading ? <Spinner size="sm" /> : "Set Password"}
+                      {isLoading ? <Spinner size="sm" /> : "Reset Password"}
                     </Button>
                   </div>
                 </Form>
@@ -249,4 +283,3 @@ export default function ResetPassword() {
     </div>
   );
 }
-

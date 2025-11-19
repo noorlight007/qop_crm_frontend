@@ -3,9 +3,11 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const ClientDetailsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getClientDetails: builder.query({
-      query: () => ({
+      // Accept optional params: { page, page_size, search, ... }
+      query: (params) => ({
         url: `/director/clients/`,
         method: "GET",
+        params: params || {},
       }),
       providesTags: ["ClientDetails"],
     }),
@@ -18,7 +20,7 @@ export const ClientDetailsApi = baseApi.injectEndpoints({
       invalidatesTags: ["ClientDetails"],
     }),
     updateClientDetails: builder.mutation({
-      query: ({clientAlias, payload}) => ({
+      query: ({ clientAlias, payload }) => ({
         url: `/director/clients/${clientAlias}/`,
         method: "PUT",
         body: payload,

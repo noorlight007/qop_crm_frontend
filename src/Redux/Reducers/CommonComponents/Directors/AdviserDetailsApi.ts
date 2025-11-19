@@ -3,9 +3,11 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const AdviserDetailsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAdviserDetails: builder.query({
-      query: () => ({
+      // Accept optional params: { page, page_size, search, ... }
+      query: (params) => ({
         url: `/director/advisors/`,
         method: "GET",
+        params: params || {},
       }),
       providesTags: ["AdviserDetails"],
     }),

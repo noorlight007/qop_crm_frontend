@@ -33,11 +33,14 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 }) => {
   const [leads, setLeads] = useState<LeadsInfo[]>([]);
   const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
-  // Rtk query
-  const { data: leadData, refetch: refetchLeads } =
-    useGetLeadDetailsQuery(undefined);
+  // Rtk query - request a large page_size so the select can show many leads
+  const { data: leadData, refetch: refetchLeads } = useGetLeadDetailsQuery({
+    page: 1,
+    page_size: 1000,
+  });
+  // Request a large page_size so the select can show many advisers
   const { data: adviserData, refetch: refetchAdvisers } =
-    useGetAdviserDetailsQuery(undefined);
+    useGetAdviserDetailsQuery({ page: 1, page_size: 1000 });
   const [addCaseDetails, { isLoading: addCaseLoading }] = useAddCaseMutation();
 
   const [formData, setFormData] = useState({
@@ -79,27 +82,39 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   };
 
   // Update formData.lead if leadId changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (leadId) {
       setFormData((prev) => ({ ...prev, lead: leadId }));
     }
   }, [leadId]);
 
-  // Fetch leads data from backend
+  // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {
     if (leadData) {
-      const leadsData = Array.isArray(leadData) ? leadData : leadData.leads;
-      setLeads(leadsData || []);
+      if (Array.isArray(leadData)) {
+        setLeads(leadData || []);
+      } else if ((leadData as any).results) {
+        setLeads((leadData as any).results || []);
+      } else if ((leadData as any).leads) {
+        setLeads((leadData as any).leads || []);
+      } else {
+        setLeads([]);
+      }
     }
   }, [leadData]);
 
   // Fetch adviser data from backend
   useEffect(() => {
     if (adviserData) {
-      const advisersList = Array.isArray(adviserData)
-        ? adviserData
-        : adviserData.advisers;
-      setAdvisers(advisersList || []);
+      if (Array.isArray(adviserData)) {
+        setAdvisers(adviserData || []);
+      } else if ((adviserData as any).results) {
+        setAdvisers((adviserData as any).results || []);
+      } else if ((adviserData as any).advisers) {
+        setAdvisers((adviserData as any).advisers || []);
+      } else {
+        setAdvisers([]);
+      }
     }
   }, [adviserData]);
 
