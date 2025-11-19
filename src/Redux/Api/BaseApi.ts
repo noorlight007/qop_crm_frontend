@@ -28,6 +28,8 @@ export const baseApi = createApi({
     "AdviserDetails",
     "IntroducerDetails",
     "Users",
+    "UserProfileDetails",
+    "ResetPassword",
     // Common components end
 
     // Single case info start

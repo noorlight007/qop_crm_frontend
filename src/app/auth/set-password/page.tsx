@@ -73,7 +73,7 @@ export default function SetPassword() {
         uid: uid,
         token: token,
       });
-      console.log("Res:", res.data)
+      console.log("Res:", res.data);
 
       if (res.data) {
         toast.success("Password updated. Redirecting to login...");
@@ -237,8 +237,7 @@ export default function SetPassword() {
 
                 <div className="text-center mt-4">
                   <p className="mb-0">
-                    Remembered your password?{" "}
-                    <Link href="/auth/login">Sign in</Link>
+                    Sign in again? <Link href="/auth/login">Sign in</Link>
                   </p>
                 </div>
               </div>

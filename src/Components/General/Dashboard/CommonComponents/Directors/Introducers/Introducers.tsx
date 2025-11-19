@@ -34,14 +34,20 @@ const Introducers: React.FC<IntroducersProps> = ({
   const [introducers, setIntroducers] = useState<IntroducerInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [introducerToDelete, setIntroducerToDelete] =
     useState<IntroducerInfoProps | null>(null);
-  const { data: introduceData, isLoading } =
-    useGetIntroducerDetailsQuery(undefined);
+  // Query with server-side pagination and search (debounced)
+  const { data: introduceData, isLoading } = useGetIntroducerDetailsQuery({
+    page: currentPage,
+    page_size: introducersPerPage,
+    search: debouncedSearch || undefined,
+  });
   const [selectedIntroducer, setSelectedIntroducer] = useState<
     Partial<IntroducerInfoProps>
   >({
@@ -70,12 +76,27 @@ const Introducers: React.FC<IntroducersProps> = ({
 
   useEffect(() => {
     if (introduceData) {
-      const introducerData = Array.isArray(introduceData)
-        ? introduceData
-        : [introduceData];
-      setIntroducers(introducerData);
+      if (Array.isArray(introduceData)) {
+        setIntroducers(introduceData || []);
+        setTotalCount(introduceData.length || 0);
+      } else if ((introduceData as any).results) {
+        setIntroducers((introduceData as any).results || []);
+        setTotalCount((introduceData as any).count || 0);
+      } else if ((introduceData as any).introducers) {
+        setIntroducers((introduceData as any).introducers || []);
+        setTotalCount(((introduceData as any).introducers || []).length || 0);
+      } else {
+        setIntroducers([]);
+        setTotalCount(0);
+      }
     }
   }, [introduceData]);
+
+  // Debounce search input to avoid excessive requests
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   // openaddmodals
   const openAddModal = () => {
@@ -88,32 +109,16 @@ const Introducers: React.FC<IntroducersProps> = ({
   };
   // openaddmodals end
 
-  const filteredIntroducers = introducers.filter((introducer) => {
-    const fullName = `${introducer?.user?.title || ""} ${
-      introducer?.user?.first_name || ""
-    } ${introducer?.user?.middle_name || ""} ${
-      introducer?.user?.last_name || ""
-    }`.toLowerCase();
-
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      introducer?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const indexOfLastIntroducer = currentPage * introducersPerPage;
-  const indexOfFirstIntroducer = indexOfLastIntroducer - introducersPerPage;
-  const currentIntroducers = filteredIntroducers.slice(
-    indexOfFirstIntroducer,
-    indexOfLastIntroducer
-  );
-
-  const totalPages = Math.ceil(filteredIntroducers.length / introducersPerPage);
+  // Server-side pagination: `introducers` contains current page results
+  const currentIntroducers = introducers;
+  const totalPages = Math.ceil(totalCount / introducersPerPage) || 1;
 
   if (isLoading) {
-    <div className="p-4">
-      <LoadingSpinner />
-    </div>;
+    return (
+      <div className="p-4">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
@@ -133,7 +138,10 @@ const Introducers: React.FC<IntroducersProps> = ({
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
             </InputGroup>
@@ -277,11 +285,15 @@ const Introducers: React.FC<IntroducersProps> = ({
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredIntroducers.length === 0
+                {totalCount === 0
                   ? "0"
-                  : indexOfFirstIntroducer + 1}{" "}
-                to {Math.min(indexOfLastIntroducer, filteredIntroducers.length)}{" "}
-                of {filteredIntroducers.length} Introducers
+                  : (currentPage - 1) * introducersPerPage + 1}{" "}
+                to{" "}
+                {currentIntroducers.length === 0
+                  ? 0
+                  : (currentPage - 1) * introducersPerPage +
+                    currentIntroducers.length}{" "}
+                of {totalCount} Introducers
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -295,7 +307,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                 />
               </PaginationItem>
 
-              {totalPages <= introducersPerPage ? (
+              {totalPages <= 7 ? (
                 Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem

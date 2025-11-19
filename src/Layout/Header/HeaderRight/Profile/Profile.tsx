@@ -3,18 +3,44 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddUserModal from "./Modals/AddUserModal";
 
 const Profile = () => {
   const [show, setShow] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
+  const wrapperRef = useRef<HTMLLIElement | null>(null);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
 
   const handleAddUser = () => {
     setShowAddUserModal(true);
   };
+
+  // close dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        show &&
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
+        setShow(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && show) setShow(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [show]);
 
   const handleLogout = async () => {
     // notify other tabs about logout
@@ -40,7 +66,7 @@ const Profile = () => {
   };
 
   return (
-    <li className="profile-nav custom-dropdown">
+    <li className="profile-nav custom-dropdown" ref={wrapperRef}>
       <div className="user-wrap">
         <div className="user-img">
           <Image
@@ -63,12 +89,11 @@ const Profile = () => {
           }`}
         >
           <ul className="profile-body">
-            <li
-              className="d-flex gap-2 text-muted opacity-50"
-              style={{ cursor: "not-allowed" }}
-            >
-              <i className="fa-solid fa-user-gear"></i>
-              Profile
+            <li className="d-flex">
+              <Link href="/dashboard/user-profile" className="d-flex gap-2">
+                <i className="fa-solid fa-user-gear"></i>
+                Profile
+              </Link>
             </li>
             {session?.user?.user_type === "NETWORK_ADMIN" ||
             session?.user?.user_type === "ORGANIZATION_ADMIN" ? (

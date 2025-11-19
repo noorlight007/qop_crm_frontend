@@ -31,6 +31,8 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
   const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -38,7 +40,11 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
   const [adviserToDelete, setAdviserToDelete] =
     useState<AdviserInfoProps | null>(null);
 
-  const { data: adviserData, isLoading } = useGetAdviserDetailsQuery(undefined);
+  const { data: adviserData, isLoading } = useGetAdviserDetailsQuery({
+    page: currentPage,
+    page_size: advisersPerPage,
+    search: debouncedSearch || undefined,
+  });
 
   const [selectedAdviser, setSelectedAdviser] = useState<
     Partial<AdviserInfoProps>
@@ -69,10 +75,19 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
 
   useEffect(() => {
     if (adviserData) {
-      const advisersArray: AdviserInfoProps[] = Array.isArray(adviserData)
-        ? adviserData
-        : adviserData.advisers;
-      setAdvisers(advisersArray || []);
+      if (Array.isArray(adviserData)) {
+        setAdvisers(adviserData || []);
+        setTotalCount(adviserData.length || 0);
+      } else if ((adviserData as any).results) {
+        setAdvisers((adviserData as any).results || []);
+        setTotalCount((adviserData as any).count || 0);
+      } else if ((adviserData as any).advisers) {
+        setAdvisers((adviserData as any).advisers || []);
+        setTotalCount(((adviserData as any).advisers || []).length || 0);
+      } else {
+        setAdvisers([]);
+        setTotalCount(0);
+      }
     }
   }, [adviserData]);
 
@@ -87,27 +102,15 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
   };
   // openmodals end
 
-  const filteredAdvisers = advisers.filter((adviser) => {
-    const fullName = `${adviser?.user?.title || ""} ${
-      adviser?.user?.first_name || ""
-    } ${adviser?.user?.middle_name || ""} ${
-      adviser?.user?.last_name || ""
-    }`.toLowerCase();
+  // Server-side search/pagination. `advisers` already contains current page results.
+  const currentAdvisers = advisers;
+  const totalPages = Math.ceil(totalCount / advisersPerPage) || 1;
 
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      adviser?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const indexOfLastAdviser = currentPage * advisersPerPage;
-  const indexOfFirstAdviser = indexOfLastAdviser - advisersPerPage;
-  const currentAdvisers = filteredAdvisers.slice(
-    indexOfFirstAdviser,
-    indexOfLastAdviser
-  );
-
-  const totalPages = Math.ceil(filteredAdvisers.length / advisersPerPage);
+  // Debounce search input so we don't fire API on every keystroke
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
 
   if (isLoading) {
     return (
@@ -134,7 +137,10 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
             </InputGroup>
@@ -281,9 +287,15 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredAdvisers.length === 0 ? "0" : indexOfFirstAdviser + 1}{" "}
-                to {Math.min(indexOfLastAdviser, filteredAdvisers.length)} of{" "}
-                {filteredAdvisers.length} Advisers
+                {totalCount === 0
+                  ? "0"
+                  : (currentPage - 1) * advisersPerPage + 1}{" "}
+                to{" "}
+                {currentAdvisers.length === 0
+                  ? 0
+                  : (currentPage - 1) * advisersPerPage +
+                    currentAdvisers.length}{" "}
+                of {totalCount} Advisers
               </p>
             </div>
             <Pagination>
@@ -297,7 +309,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 />
               </PaginationItem>
 
-              {totalPages <= advisersPerPage ? (
+              {totalPages <= 7 ? (
                 Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem

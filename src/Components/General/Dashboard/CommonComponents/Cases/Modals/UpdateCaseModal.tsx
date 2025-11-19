@@ -43,7 +43,10 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
   const [updateCaseDetails, { isLoading: isUpdating }] =
     useUpdateCaseMutation();
-  const { data: adviserData } = useGetAdviserDetailsQuery(undefined);
+  const { data: adviserData } = useGetAdviserDetailsQuery({
+    page: 1,
+    page_size: 1000,
+  });
 
   // Compare current data with the original data
   const hasChanges =
@@ -61,10 +64,15 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   // Fetch adviser data from backend
   useEffect(() => {
     if (adviserData) {
-      const advisersList = Array.isArray(adviserData)
-        ? adviserData
-        : adviserData.advisers;
-      setAdvisers(advisersList || []);
+      if (Array.isArray(adviserData)) {
+        setAdvisers(adviserData || []);
+      } else if ((adviserData as any).results) {
+        setAdvisers((adviserData as any).results || []);
+      } else if ((adviserData as any).advisers) {
+        setAdvisers((adviserData as any).advisers || []);
+      } else {
+        setAdvisers([]);
+      }
     }
   }, [adviserData]);
 

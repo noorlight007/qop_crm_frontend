@@ -1,3 +1,4 @@
+"use client";
 import ViewLeadModal from "@/Components/General/Dashboard/CommonComponents/Directors/Leads/Modals/ViewLeadModal";
 import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgLeadsApi";
 import {
@@ -24,19 +25,37 @@ import {
   Table,
 } from "reactstrap";
 
-const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
-  const { organisationslug } = useParams();
-  const [leads, setLeads] = useState<LeadsInfo[]>([]);
+const OrgLeads: React.FC<LeadsProps> = () => {
+  // Correctly extract dynamic route param (folder is [OrganisationSlug])
+  const params = useParams();
+  const organisationslug = (params?.OrganisationSlug ||
+    (params as any)?.organisationslug) as string;
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(0);
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(searchInput);
+      setCurrentPage(1); // Reset to first page on search
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // rtk hooks
   const { data: leadData, isLoading } = useGetOrgLeadsQuery(
-    { organisationslug },
     {
-      skip: !organisationslug,
-    }
+      organisationslug,
+      params: {
+        page: currentPage,
+        search: searchQuery,
+      },
+    },
+    { skip: !organisationslug }
   );
 
   const [selectedLead, setSelectedLead] = useState<Partial<LeadsInfo>>({
@@ -57,31 +76,25 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
 
+  // Extract leads and pagination info from API response
+  const leads = Array.isArray(leadData) ? leadData : leadData?.results || [];
+  const totalCount = leadData?.count || 0; // from API e.g. 12
+  // Capture stable page size from a non-last page to avoid last-page short length
   useEffect(() => {
-    if (leadData) {
-      const leadsData = Array.isArray(leadData) ? leadData : leadData.leads;
-      setLeads(leadsData || []);
+    const currentLength = Array.isArray(leadData)
+      ? leadData.length
+      : leadData?.results?.length || 0;
+    const isLastPage =
+      !Array.isArray(leadData) && leadData && leadData.next === null;
+    if (currentLength > 0) {
+      if (pageSize === 0) setPageSize(currentLength);
+      else if (!isLastPage && currentLength !== pageSize)
+        setPageSize(currentLength);
     }
-  }, [leadData]);
+  }, [leadData, pageSize]);
 
-  const filteredLeads = leads.filter((lead) => {
-    const fullName = `${lead?.user?.title || ""} ${
-      lead?.user?.first_name || ""
-    } ${lead?.user?.middle_name || ""} ${
-      lead?.user?.last_name || ""
-    }`.toLowerCase();
-
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      lead?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const indexOfLastLead = currentPage * leadsPerPage;
-  const indexOfFirstLead = indexOfLastLead - leadsPerPage;
-  const currentLeads = filteredLeads.slice(indexOfFirstLead, indexOfLastLead);
-
-  const totalPages = Math.ceil(filteredLeads.length / leadsPerPage);
+  const effectivePageSize = pageSize || leads.length || 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
 
   if (isLoading) {
     return (
@@ -107,8 +120,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
               <Input
                 type="text"
                 placeholder="Search by name or email... "
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
             </InputGroup>
@@ -136,8 +149,8 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                     </div>
                   </td>
                 </tr>
-              ) : currentLeads.length > 0 ? (
-                currentLeads.map((lead) => (
+              ) : leads.length > 0 ? (
+                leads.map((lead: LeadsInfo) => (
                   <tr key={lead.alias} className="text-center">
                     <td>
                       <span
@@ -206,24 +219,30 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredLeads.length === 0 ? "0" : indexOfFirstLead + 1} to{" "}
-                {Math.min(indexOfLastLead, filteredLeads.length)} of{" "}
-                {filteredLeads.length} Leads
+                {totalCount === 0 || effectivePageSize === 0
+                  ? "0"
+                  : (currentPage - 1) * effectivePageSize + 1}{" "}
+                to{" "}
+                {Math.min(
+                  (currentPage - 1) * effectivePageSize + effectivePageSize,
+                  totalCount
+                )}{" "}
+                of {totalCount} Leads
               </p>
             </div>{" "}
-            <Pagination className="d-flex justify-content-end p-2">
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink first onClick={() => setCurrentPage(1)} />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink
-                  previous
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                />
-              </PaginationItem>
+            {totalPages > 1 && (
+              <Pagination className="d-flex justify-content-end p-2">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink first onClick={() => setCurrentPage(1)} />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink
+                    previous
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  />
+                </PaginationItem>
 
-              {totalPages <= leadsPerPage ? (
-                Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem
                       key={pageNumber}
@@ -236,65 +255,22 @@ const OrgLeads: React.FC<LeadsProps> = ({ leadsPerPage = 5 }) => {
                       </PaginationLink>
                     </PaginationItem>
                   )
-                )
-              ) : (
-                <>
-                  <PaginationItem active={currentPage === 1}>
-                    <PaginationLink onClick={() => setCurrentPage(1)}>
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
+                )}
 
-                  {currentPage > 3 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
-
-                  {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                    .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
-                    )
-                    .map((pageNumber) => (
-                      <PaginationItem
-                        key={pageNumber}
-                        active={pageNumber === currentPage}
-                      >
-                        <PaginationLink
-                          onClick={() => setCurrentPage(pageNumber)}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-
-                  {currentPage < totalPages - 2 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
-
-                  <PaginationItem active={currentPage === totalPages}>
-                    <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>
-                </>
-              )}
-
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  next
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  last
-                  onClick={() => setCurrentPage(totalPages)}
-                />
-              </PaginationItem>
-            </Pagination>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    next
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    last
+                    onClick={() => setCurrentPage(totalPages)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            )}
           </div>
         </Row>
 

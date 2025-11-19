@@ -1,7 +1,285 @@
-import React from 'react'
+"use client";
+import { useResetUserPasswordMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/ResetUserPasswordApi";
+import { signOut } from "next-auth/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
+import logoDark from "../../../../public/assets/images/logo/logo-dark.png";
+import logoLight from "../../../../public/assets/images/logo/logo1.png";
 
 export default function ResetPassword() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
+  console.log("UID:", uid);
+  console.log("Token:", token);
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [show, setShow] = useState(false);
+
+  // RTK Hooks
+  const [resetPassword, { isLoading }] = useResetUserPasswordMutation();
+
+  // Password validation helper
+  const getPasswordValidation = (pw: string) => {
+    return {
+      minLength: pw.length >= 8,
+      upper: /[A-Z]/.test(pw),
+      lower: /[a-z]/.test(pw),
+      number: /[0-9]/.test(pw),
+      special: /[^A-Za-z0-9]/.test(pw),
+    };
+  };
+
+  const validation = getPasswordValidation(newPassword);
+  const isPasswordValid =
+    validation.minLength &&
+    validation.upper &&
+    validation.lower &&
+    validation.number &&
+    validation.special;
+
+  const formSubmitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill both new and confirm password fields.");
+      return;
+    }
+    if (!isPasswordValid) {
+      toast.error("Password does not meet all requirements.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+    if (!uid || !token) {
+      toast.error("Invalid or missing credentials. Please try again.");
+      return;
+    }
+
+    try {
+      // Build FormData payload as requested
+      const formData = new FormData();
+      formData.append("current_password", currentPassword);
+      formData.append("new_password", newPassword);
+      formData.append("confirm_password", confirmPassword);
+
+      const res = await resetPassword({
+        payload: formData,
+        uid: uid,
+        token: token,
+      });
+      console.log("Res:", res.data);
+
+      if (res.data) {
+        // Notify other tabs and force sign-out
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("qop_logout", Date.now().toString());
+          } catch (err) {
+            // ignore
+            console.error("LocalStorage error:", err);
+          }
+          try {
+            if ((window as any).BroadcastChannel) {
+              const bc = new BroadcastChannel("qop_channel");
+              bc.postMessage("logout");
+              bc.close();
+            }
+          } catch (err) {
+            // ignore
+            console.error("BroadcastChannel error:", err);
+          }
+        }
+
+        await signOut({ redirect: false });
+        toast.success("Password updated. Redirecting to login...");
+        // Small delay so the user can see the toast
+        setTimeout(() => router.push("/auth/login"), 900);
+      } else if (res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.error ||
+          (res.error as any)?.message ||
+          "Unable to update password.";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Unable to update password.");
+      }
+    } catch (err: any) {
+      const errorMessage =
+        err?.data?.error ||
+        err?.message ||
+        "Network error while updating password.";
+      toast.error(errorMessage);
+    }
+  };
+
   return (
-    <div>Reset Password Page</div>
-  )
+    <div className="d-flex align-items-center login-card login-dark">
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-11 col-md-8 col-lg-5">
+            <div className="card shadow-sm">
+              <div className="card-body p-4">
+                <div className="text-center mb-3">
+                  <Link href="/" className="logo mb-2">
+                    <Image
+                      src={logoLight}
+                      alt="logo"
+                      width={120}
+                      height={36}
+                      className="img-fluid for-light"
+                    />
+                    <Image
+                      src={logoDark}
+                      alt="logo-dark"
+                      width={120}
+                      height={36}
+                      className="img-fluid for-dark"
+                    />
+                  </Link>
+                </div>
+
+                <h3 className="text-center mb-2">Reset new password</h3>
+                <p className="text-center text-muted mb-4">
+                  Choose a strong password and confirm it to secure your
+                  account.
+                </p>
+
+                <Form onSubmit={formSubmitHandle}>
+                  <FormGroup>
+                    <Label className="col-form-label">Current Password</Label>
+                    <Input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter current password"
+                      required
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label className="col-form-label">New Password</Label>
+                    <div className="position-relative">
+                      <Input
+                        type={show ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        minLength={8}
+                        required
+                      />
+                      <div
+                        className="show-hide top-50"
+                        onClick={() => setShow(!show)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <span className="show fs-4">{show ? "🫣" : "🤫"}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-2">
+                      <ul className="mb-0 ps-3">
+                        <li
+                          className={
+                            validation.minLength
+                              ? "text-success"
+                              : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.minLength ? "✓" : "✕"}
+                          </span>
+                          Must be at least 8 characters
+                        </li>
+                        <li
+                          className={
+                            validation.upper ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.upper ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 capital letter
+                        </li>
+                        <li
+                          className={
+                            validation.lower ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.lower ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 small letter
+                        </li>
+                        <li
+                          className={
+                            validation.number ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.number ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 number
+                        </li>
+                        <li
+                          className={
+                            validation.special ? "text-success" : "text-danger"
+                          }
+                        >
+                          <span className="me-2">
+                            {validation.special ? "✓" : "✕"}
+                          </span>
+                          Must contain at least 1 special character
+                        </li>
+                      </ul>
+                    </div>
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Label className="col-form-label">Confirm Password</Label>
+                    <Input
+                      type={show ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Repeat new password"
+                      minLength={8}
+                      required
+                    />
+                  </FormGroup>
+
+                  <div className="d-grid mt-3">
+                    <Button
+                      type="submit"
+                      color="primary"
+                      disabled={
+                        !isPasswordValid ||
+                        newPassword !== confirmPassword ||
+                        !currentPassword ||
+                        isLoading
+                      }
+                    >
+                      {isLoading ? <Spinner size="sm" /> : "Reset Password"}
+                    </Button>
+                  </div>
+                </Form>
+
+                <div className="text-center mt-4">
+                  <p className="mb-0">
+                    Sign in again? <Link href="/auth/login">Sign in</Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

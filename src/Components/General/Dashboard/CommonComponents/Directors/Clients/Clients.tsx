@@ -6,7 +6,7 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
   Button,
@@ -31,6 +31,8 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   const [clients, setClients] = useState<ClientInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -39,7 +41,11 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
     null
   );
 
-  const { data: clientData, isLoading } = useGetClientDetailsQuery(undefined);
+  const { data: clientData, isLoading } = useGetClientDetailsQuery({
+    page: currentPage,
+    page_size: clientsPerPage,
+    search: debouncedSearch || undefined,
+  });
 
   const [selectedClient, setSelectedClient] = useState<
     Partial<ClientInfoProps>
@@ -68,10 +74,19 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
 
   useEffect(() => {
     if (clientData) {
-      const clientsData = Array.isArray(clientData)
-        ? clientData
-        : clientData.clients;
-      setClients(clientsData || []);
+      if (Array.isArray(clientData)) {
+        setClients(clientData || []);
+        setTotalCount(clientData.length || 0);
+      } else if ((clientData as any).results) {
+        setClients((clientData as any).results || []);
+        setTotalCount((clientData as any).count || 0);
+      } else if ((clientData as any).clients) {
+        setClients((clientData as any).clients || []);
+        setTotalCount(((clientData as any).clients || []).length || 0);
+      } else {
+        setClients([]);
+        setTotalCount(0);
+      }
     }
   }, [clientData]);
 
@@ -86,27 +101,28 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   };
   // openmodals end
 
-  const filteredClients = clients.filter((client) => {
-    const fullName = `${client?.user?.title || ""} ${
-      client?.user?.first_name || ""
-    } ${client?.user?.middle_name || ""} ${
-      client?.user?.last_name || ""
-    }`.toLowerCase();
+  // Server-side search/pagination is used. `clients` contains current page results.
+  const currentClients = clients;
+  const totalPages = Math.ceil(totalCount / clientsPerPage) || 1;
 
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      client?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  // debounce search input to avoid firing on every keystroke
+  const searchTimeout = useRef<number | null>(null);
+  useEffect(() => {
+    if (searchTimeout.current) {
+      window.clearTimeout(searchTimeout.current);
+    }
+    // set a 300ms debounce
+    searchTimeout.current = window.setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1);
+    }, 300) as unknown as number;
 
-  const indexOfLastClient = currentPage * clientsPerPage;
-  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = filteredClients.slice(
-    indexOfFirstClient,
-    indexOfLastClient
-  );
-
-  const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
+    return () => {
+      if (searchTimeout.current) {
+        window.clearTimeout(searchTimeout.current);
+      }
+    };
+  }, [searchQuery]);
 
   if (isLoading) {
     return (
@@ -269,9 +285,15 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredClients.length === 0 ? "0" : indexOfFirstClient + 1} to{" "}
-                {Math.min(indexOfLastClient, filteredClients.length)} of{" "}
-                {filteredClients.length} Clients
+                {totalCount === 0
+                  ? "0"
+                  : (currentPage - 1) * clientsPerPage + 1}{" "}
+                to{" "}
+                {currentClients.length === 0
+                  ? 0
+                  : (currentPage - 1) * clientsPerPage +
+                    currentClients.length}{" "}
+                of {totalCount} Clients
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
