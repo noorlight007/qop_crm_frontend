@@ -1,5 +1,6 @@
 "use client";
 import { useResetUserPasswordMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/ResetUserPasswordApi";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -78,6 +79,27 @@ export default function ResetPassword() {
       console.log("Res:", res.data);
 
       if (res.data) {
+        // Notify other tabs and force sign-out
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem("qop_logout", Date.now().toString());
+          } catch (err) {
+            // ignore
+            console.error("LocalStorage error:", err);
+          }
+          try {
+            if ((window as any).BroadcastChannel) {
+              const bc = new BroadcastChannel("qop_channel");
+              bc.postMessage("logout");
+              bc.close();
+            }
+          } catch (err) {
+            // ignore
+            console.error("BroadcastChannel error:", err);
+          }
+        }
+
+        await signOut({ redirect: false });
         toast.success("Password updated. Redirecting to login...");
         // Small delay so the user can see the toast
         setTimeout(() => router.push("/auth/login"), 900);
