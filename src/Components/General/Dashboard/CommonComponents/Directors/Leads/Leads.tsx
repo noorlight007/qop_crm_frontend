@@ -32,13 +32,19 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
   const [leads, setLeads] = useState<LeadsInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState<LeadsInfo | null>(null);
-  // rtk hooks
-  const { data: leadData, isLoading } = useGetLeadDetailsQuery(undefined);
+  // rtk hooks - pass pagination and debounced search params to the query
+  const { data: leadData, isLoading } = useGetLeadDetailsQuery({
+    page: currentPage,
+    page_size: leadsPerPage,
+    search: debouncedSearch || undefined,
+  });
 
   const [selectedLead, setSelectedLead] = useState<Partial<LeadsInfo>>({
     user: {
@@ -66,8 +72,20 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
 
   useEffect(() => {
     if (leadData) {
-      const leadsData = Array.isArray(leadData) ? leadData : leadData.leads;
-      setLeads(leadsData || []);
+      // API may return paginated response like { count, next, previous, results }
+      if (Array.isArray(leadData)) {
+        setLeads(leadData || []);
+        setTotalCount(leadData.length || 0);
+      } else if (leadData.results) {
+        setLeads(leadData.results || []);
+        setTotalCount(leadData.count || 0);
+      } else if (leadData.leads) {
+        setLeads(leadData.leads || []);
+        setTotalCount((leadData.leads || []).length || 0);
+      } else {
+        setLeads([]);
+        setTotalCount(0);
+      }
     }
   }, [leadData]);
 
@@ -76,30 +94,21 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
     toggleModal();
   };
 
+  // Debounce search input to avoid firing API on every keystroke
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   const openUpdateModal = (lead: LeadsInfo) => {
     setSelectedLead(lead);
     toggleUpdateModal();
   };
   // openmodals end
 
-  const filteredLeads = leads.filter((lead) => {
-    const fullName = `${lead?.user?.title || ""} ${
-      lead?.user?.first_name || ""
-    } ${lead?.user?.middle_name || ""} ${
-      lead?.user?.last_name || ""
-    }`.toLowerCase();
-
-    return (
-      fullName.includes(searchQuery.toLowerCase()) ||
-      lead?.user.email?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const indexOfLastLead = currentPage * leadsPerPage;
-  const indexOfFirstLead = indexOfLastLead - leadsPerPage;
-  const currentLeads = filteredLeads.slice(indexOfFirstLead, indexOfLastLead);
-
-  const totalPages = Math.ceil(filteredLeads.length / leadsPerPage);
+  // Server-side search/pagination is used. `leads` already contains current page results.
+  const currentLeads = leads;
+  const totalPages = Math.ceil(totalCount / leadsPerPage) || 1;
 
   if (isLoading) {
     return (
@@ -126,7 +135,10 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 type="text"
                 placeholder="Search by name or email... "
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
             </InputGroup>
@@ -259,11 +271,14 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {filteredLeads.length === 0 ? "0" : indexOfFirstLead + 1} to{" "}
-                {Math.min(indexOfLastLead, filteredLeads.length)} of{" "}
-                {filteredLeads.length} Leads
+                {totalCount === 0 ? "0" : (currentPage - 1) * leadsPerPage + 1}{" "}
+                to{" "}
+                {currentLeads.length === 0
+                  ? 0
+                  : (currentPage - 1) * leadsPerPage + currentLeads.length}{" "}
+                of {totalCount} Leads
               </p>
-            </div>{" "}
+            </div>
             <Pagination className="d-flex justify-content-end p-2">
               <PaginationItem disabled={currentPage === 1}>
                 <PaginationLink first onClick={() => setCurrentPage(1)} />
@@ -275,7 +290,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 />
               </PaginationItem>
 
-              {totalPages <= leadsPerPage ? (
+              {totalPages <= 7 ? (
                 Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem

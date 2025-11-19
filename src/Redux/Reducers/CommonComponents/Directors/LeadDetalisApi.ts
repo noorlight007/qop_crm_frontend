@@ -3,9 +3,11 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const LeadDetailsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getLeadDetails: builder.query({
-      query: () => ({
+      // Accepts an optional params object: { page, page_size, search, ... }
+      query: (params) => ({
         url: `/director/leads/`,
         method: "GET",
+        params: params || {},
       }),
       providesTags: ["LeadDetails"],
     }),
