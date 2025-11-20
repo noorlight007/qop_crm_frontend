@@ -75,8 +75,7 @@
     height: 38px;
     border: 1px solid var(--shape-border);
     border-radius: 50%;
-    background-color: var(--theme-secondary);
-    padding: 3px 3px 0px 3px;
+    border-color: var(--theme-primary);
     @include media-breakpoint-down(md) {
       width: 35px;
       height: 35px;
