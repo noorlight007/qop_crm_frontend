@@ -1,6 +1,9 @@
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import {
+  formatDateToDMY,
+  formatDateToDMYAndTime,
+} from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { useSession } from "next-auth/react";
@@ -8,6 +11,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { TbArrowsRightLeft } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -42,10 +46,12 @@ const OrgCases: React.FC = () => {
 
   const { data: caseData, isLoading } = useGetOrgCasesQuery({
     organisationslug: organisationslug as string,
-    search: searchQuery,
-    ...filters,
-    page: currentPage,
-    limit: casesPerPage,
+    params: {
+      search: searchQuery,
+      ...filters,
+      page: currentPage,
+      limit: casesPerPage,
+    },
   });
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
@@ -85,7 +91,10 @@ const OrgCases: React.FC = () => {
                       type="text"
                       placeholder="Search Case... "
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                      }}
                       style={{ padding: "10px 10px 10px 25px" }}
                     />
                   </InputGroup>
@@ -113,7 +122,7 @@ const OrgCases: React.FC = () => {
               {filterIcon && (
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
-                    <Col xs="12" sm="6" md="3">
+                    <Col xs="12" sm="6" md="4">
                       <Label>Select Category</Label>
                       <Input
                         type="select"
@@ -132,7 +141,7 @@ const OrgCases: React.FC = () => {
                         </option>
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col xs="12" sm="6" md="4">
                       <Label>Select Stage</Label>
                       <Input
                         type="select"
@@ -164,7 +173,7 @@ const OrgCases: React.FC = () => {
                         <option value="NOT_PROCEED">Not Proceed</option>
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col xs="12" sm="6" md="4">
                       <Label>Clear All Filters</Label>
                       <Button
                         outline
@@ -188,7 +197,10 @@ const OrgCases: React.FC = () => {
                       <th>Lead User</th>
                       <th>Phone</th>
                       <th>Case Category</th>
+                      <th>Lender</th>
+                      <th>Security property</th>
                       <th>Case Stage</th>
+                      <th>Review Date</th>
                       <th>Created At</th>
                       <th>Created By</th>
                       <th>Assigned To</th>
@@ -250,14 +262,90 @@ const OrgCases: React.FC = () => {
                             )}
                           </td>
                           <td>
-                            {caseItem.case_category
-                              ? formatChoiceFieldValue(caseItem.case_category)
+                            {caseItem.case_category ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_category)}
+                                {caseItem.case_category === "MORTGAGE" && (
+                                  <p className="small">
+                                    (
+                                    {formatChoiceFieldValue(
+                                      caseItem.application_type || ""
+                                    )}
+                                    {caseItem.mortgage_type ? (
+                                      <>
+                                        {" "}
+                                        <TbArrowsRightLeft />{" "}
+                                        {formatChoiceFieldValue(
+                                          caseItem.mortgage_type || ""
+                                        )}
+                                      </>
+                                    ) : (
+                                      <TbArrowsRightLeft />
+                                    )}
+                                    )
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td className="text-truncate">
+                            {caseItem.lender
+                              ? formatChoiceFieldValue(caseItem.lender)
                               : "-"}
                           </td>
+                          <td className="text-start ">
+                            {(() => {
+                              const pd = caseItem?.property_details;
+                              if (!pd) return "N/A";
+                              const countryFormatted = pd.country
+                                ? formatChoiceFieldValue(pd.country)
+                                : pd.country;
+                              const parts = [
+                                pd.house_name_or_number,
+                                pd.address_line_1,
+                                pd.address_line_2,
+                                pd.city,
+                                pd.county,
+                                pd.postcode,
+                                countryFormatted,
+                              ].filter(
+                                (v) =>
+                                  v !== null &&
+                                  v !== undefined &&
+                                  String(v).trim() !== ""
+                              );
+                              return parts.length ? (
+                                parts.join(", ")
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              );
+                            })()}
+                          </td>
+                          <td className="text-truncate">
+                            {caseItem.case_stage ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_stage)}
+                                {caseItem.case_stage === "COMPLETION" &&
+                                caseItem.completion_date ? (
+                                  <p
+                                    className="ms-2 m-0 opacity-75"
+                                    style={{ fontSize: "10px" }}
+                                  >
+                                    ({formatDateToDMY(caseItem.completion_date)}
+                                    )
+                                  </p>
+                                ) : null}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
                           <td>
-                            {caseItem.case_stage
-                              ? formatChoiceFieldValue(caseItem.case_stage)
-                              : "-"}
+                            {formatDateToDMY(caseItem?.review_date) || "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td>
