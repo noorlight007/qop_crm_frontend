@@ -15,7 +15,11 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus, TbFileDescription } from "react-icons/tb";
+import {
+  TbArrowsRightLeft,
+  TbCirclePlus,
+  TbFileDescription,
+} from "react-icons/tb";
 import {
   Button,
   Card,
@@ -521,9 +525,33 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             )}
                           </td>
                           <td>
-                            {caseItem.case_category
-                              ? formatChoiceFieldValue(caseItem.case_category)
-                              : "-"}
+                            {caseItem.case_category ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_category)}
+                                {caseItem.case_category === "MORTGAGE" && (
+                                  <p className="small">
+                                    (
+                                    {formatChoiceFieldValue(
+                                      caseItem.application_type || ""
+                                    )}
+                                    {caseItem.mortgage_type ? (
+                                      <>
+                                        {" "}
+                                        <TbArrowsRightLeft />{" "}
+                                        {formatChoiceFieldValue(
+                                          caseItem.mortgage_type || ""
+                                        )}
+                                      </>
+                                    ) : (
+                                      <TbArrowsRightLeft />
+                                    )}
+                                    )
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              "-"
+                            )}
                           </td>
                           <td className="text-truncate">
                             {caseItem.lender
