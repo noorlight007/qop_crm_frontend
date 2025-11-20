@@ -10,24 +10,13 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import {
-  Alert,
-  Button,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-  Spinner,
-} from "reactstrap";
+import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
 
 const InsuranceHealthContent: React.FC = () => {
   const { casealias } = useParams();
   const { data: session } = useSession();
-  const {
-    data: InsuranceHealthData,
-    isLoading,
-    isError,
-  } = useGetInsuranceHealthDetailsQuery({ case_alias: casealias });
+  const { data: InsuranceHealthData, isLoading } =
+    useGetInsuranceHealthDetailsQuery({ case_alias: casealias });
 
   const [
     updateInsuranceHealthDetails,
@@ -36,10 +25,6 @@ const InsuranceHealthContent: React.FC = () => {
 
   const [healthConditions, setHealthConditions] = useState<boolean>(false);
   const [note, setNote] = useState<string>("");
-  const [feedback, setFeedback] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
@@ -53,40 +38,40 @@ const InsuranceHealthContent: React.FC = () => {
 
   // Initialize local form state when data is fetched
   useEffect(() => {
-    if (InsuranceHealthData) {
-      setHealthConditions(Boolean(InsuranceHealthData.health_conditions));
-      setNote(InsuranceHealthData.note ?? "");
+    // API may return an array or a single object. Use the first item if array.
+    const insuranceRecord = Array.isArray(InsuranceHealthData)
+      ? InsuranceHealthData[0]
+      : InsuranceHealthData;
+
+    if (insuranceRecord) {
+      setHealthConditions(Boolean(insuranceRecord.health_conditions));
+      setNote(insuranceRecord.note ?? "");
     }
   }, [InsuranceHealthData]);
 
-  useEffect(() => {
-    if (isSuccess) {
-      setFeedback({
-        type: "success",
-        message: "Insurance health details updated successfully.",
-      });
-    } else if (isUpdateError) {
-      setFeedback({
-        type: "error",
-        message: "Failed to update insurance health details.",
-      });
-    }
-  }, [isSuccess, isUpdateError]);
-
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    setFeedback(null);
 
     try {
-      const res = await updateInsuranceHealthDetails({
-        case_alias: casealias,
-        alias: InsuranceHealthData?.alias,
+      const insuranceRecord = Array.isArray(InsuranceHealthData)
+        ? InsuranceHealthData[0]
+        : InsuranceHealthData;
+
+      const payload = {
+        alias: insuranceRecord?.alias,
         health_conditions: healthConditions,
         note: note,
+      };
+
+      const res = await updateInsuranceHealthDetails({
+        case_alias: casealias,
+        payload,
       }).unwrap();
+      toast.success("Insurance health details updated successfully.");
       return res;
     } catch (err) {
       console.error("Update failed", err);
+      toast.error("Failed to update insurance health details.");
       throw err;
     }
   };
@@ -117,22 +102,8 @@ const InsuranceHealthContent: React.FC = () => {
     );
   }
 
-  if (isError) {
-    return (
-      <div className="py-3">
-        <Alert color="danger">Failed to load insurance health details.</Alert>
-      </div>
-    );
-  }
-
   return (
     <div>
-      {feedback ? (
-        <Alert color={feedback.type === "success" ? "success" : "danger"}>
-          {feedback.message}
-        </Alert>
-      ) : null}
-
       <Form onSubmit={handleSubmit}>
         <FormGroup check className="mt-2 text-center">
           <Label check>
@@ -146,17 +117,19 @@ const InsuranceHealthContent: React.FC = () => {
           </Label>
         </FormGroup>
 
-        <FormGroup className="mt-1">
-          <Label for="insuranceNote">Note</Label>
-          <Input
-            id="insuranceNote"
-            type="textarea"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Add note..."
-            rows={4}
-          />
-        </FormGroup>
+        {healthConditions && (
+          <FormGroup className="mt-1">
+            <Label for="insuranceNote">Note</Label>
+            <Input
+              id="insuranceNote"
+              type="textarea"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Add note..."
+              rows={4}
+            />
+          </FormGroup>
+        )}
 
         <div className="d-flex justify-content-end gap-2">
           <Button color="primary" disabled={isUpdating} onClick={handleSubmit}>
