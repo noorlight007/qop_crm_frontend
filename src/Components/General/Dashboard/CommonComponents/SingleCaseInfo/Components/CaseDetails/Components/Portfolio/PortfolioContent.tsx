@@ -8,6 +8,7 @@ import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { FaFileExport } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -28,11 +29,10 @@ const PortfolioContent: React.FC = () => {
   const { casealias } = prams;
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
-  const {
-    data: caseData,
-    isLoading: isCaseFetching,
-    isError,
-  } = useGetSingleCaseQuery({ case_alias: casealias }, { skip: !casealias });
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias }
+  );
   const { data, isLoading } = useGetPortfolioDetailsQuery({
     case_alias: casealias,
   });
@@ -79,17 +79,23 @@ const PortfolioContent: React.FC = () => {
                   <h5 className="mb-0 fs-3 text-primary">
                     Additional Properties
                   </h5>
-                  <Button
-                    color="success"
-                    className="border-success"
-                    onClick={toggleModal}
-                    disabled={
-                      session?.user?.user_type === "CLIENT" &&
-                      data.map((item: any) => item?.alias).length > 0
-                    }
-                  >
-                    Add Portfolio
-                  </Button>
+                  <div className="d-flex justify-content-end gap-2">
+                    <Button outline color="primary" className="d-flex gap-1">
+                      <FaFileExport />
+                      Export to CSV
+                    </Button>
+                    <Button
+                      color="success"
+                      className="border-success"
+                      onClick={toggleModal}
+                      disabled={
+                        session?.user?.user_type === "CLIENT" &&
+                        data.map((item: any) => item?.alias).length > 0
+                      }
+                    >
+                      Add Portfolio
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardBody>
@@ -101,12 +107,7 @@ const PortfolioContent: React.FC = () => {
                     >
                       <thead className="table-light">
                         <tr>
-                          <th
-                            className="text-center"
-                            style={{ width: "100px" }}
-                          >
-                            Actions
-                          </th>
+                          <th className="text-center">Action</th>
                           <th>Applicant/s</th>
                           <th>Full Address</th>
                           <th>Property Value</th>
@@ -142,21 +143,22 @@ const PortfolioContent: React.FC = () => {
                           <tr key={item?.alias}>
                             <td>
                               <div className="text-center d-flex justify-content-center align-items-center">
-                                <Button
+                                {/* <Button
                                   color="primary"
                                   size="sm"
                                   className="me-1"
                                   disabled
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
-                                </Button>
+                                </Button> */}
                                 <Button
                                   color="danger"
                                   size="sm"
-                                  disabled
+                                  outline
                                   onClick={() => alert("Clicked")}
+                                  className="text-truncate d-flex gap-1"
                                 >
-                                  <i className="fa-solid fa-trash"></i>
+                                  <i className="fa-solid fa-trash"></i>Delete
                                 </Button>
                               </div>
                             </td>
