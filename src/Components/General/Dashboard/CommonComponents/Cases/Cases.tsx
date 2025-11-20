@@ -6,7 +6,10 @@ import {
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import {
+  formatDateToDMY,
+  formatDateToDMYAndTime,
+} from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -404,7 +407,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <th>Applicants</th>
                       <th>Phone</th>
                       <th>Case Category</th>
+                      <th>Lender</th>
+                      <th>Security property</th>
                       <th>Case Stage</th>
+                      <th>Review Date</th>
                       <th>Created At</th>
                       <th>
                         {session?.user?.user_type === "NETWORK_ADMIN" ||
@@ -520,9 +526,61 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               : "-"}
                           </td>
                           <td className="text-truncate">
-                            {caseItem.case_stage
-                              ? formatChoiceFieldValue(caseItem.case_stage)
+                            {caseItem.lender
+                              ? formatChoiceFieldValue(caseItem.lender)
                               : "-"}
+                          </td>
+                          <td className="text-start ">
+                            {(() => {
+                              const pd = caseItem?.property_details;
+                              if (!pd) return "N/A";
+                              const countryFormatted = pd.country
+                                ? formatChoiceFieldValue(pd.country)
+                                : pd.country;
+                              const parts = [
+                                pd.house_name_or_number,
+                                pd.address_line_1,
+                                pd.address_line_2,
+                                pd.city,
+                                pd.county,
+                                pd.postcode,
+                                countryFormatted,
+                              ].filter(
+                                (v) =>
+                                  v !== null &&
+                                  v !== undefined &&
+                                  String(v).trim() !== ""
+                              );
+                              return parts.length ? (
+                                parts.join(", ")
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              );
+                            })()}
+                          </td>
+                          <td className="text-truncate ">
+                            {caseItem.case_stage ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_stage)}
+                                {caseItem.case_stage === "COMPLETION" &&
+                                caseItem.completion_date ? (
+                                  <p
+                                    className="ms-2 m-0 opacity-75"
+                                    style={{ fontSize: "10px" }}
+                                  >
+                                    ({formatDateToDMY(caseItem.completion_date)}
+                                    )
+                                  </p>
+                                ) : null}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td>
+                            {formatDateToDMY(caseItem?.review_date) || "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td className="text-truncate">
