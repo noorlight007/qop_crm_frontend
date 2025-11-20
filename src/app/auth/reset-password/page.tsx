@@ -15,8 +15,8 @@ export default function ResetPassword() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
-  console.log("UID:", uid);
-  console.log("Token:", token);
+  // console.log("UID:", uid);
+  // console.log("Token:", token);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
