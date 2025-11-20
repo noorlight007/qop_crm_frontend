@@ -22,6 +22,7 @@ import {
 import BatchDeleteModal from "./Modals/BatchDeleteModal";
 import DocumentDeleteModal from "./Modals/DocumentDeleteModal";
 import DocumentUploadModal from "./Modals/DocumentUploadModal";
+import TransferDocumentsModal from "./Modals/TransferDocumentsModal";
 import UpdateInfoModal from "./Modals/UpdateInfoModal";
 
 const Documents: React.FC = () => {
@@ -36,6 +37,8 @@ const Documents: React.FC = () => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] =
     useState<CaseDocumentProps | null>(null);
+  const [transferDocumentModalOpen, setTransferDocumentModalOpen] =
+    useState(false);
   const [selectedDocumentForUpdate, setSelectedDocumentForUpdate] =
     useState<CaseDocumentProps | null>(null);
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
@@ -184,6 +187,9 @@ const Documents: React.FC = () => {
     toggleUpdateModal();
   };
 
+  const toggleTransferDocumentModal = () =>
+    setTransferDocumentModalOpen(!transferDocumentModalOpen);
+
   // Batch selection functions
   const handleSelectDocument = (documentAlias: string) => {
     const newSelected = new Set(selectedDocuments);
@@ -313,7 +319,11 @@ const Documents: React.FC = () => {
                       ? "Preparing…"
                       : `Download Selected (${selectedDocuments.size})`}
                   </Button>
-                  <Button color="secondary" outline>
+                  <Button
+                    color="secondary"
+                    outline
+                    onClick={toggleTransferDocumentModal}
+                  >
                     <TbTransfer />
                     Transfer Documents ({selectedDocuments.size})
                   </Button>
@@ -624,6 +634,16 @@ const Documents: React.FC = () => {
         documentNames={getDocumentNamesMap()}
         case_alias={casealias?.toString() || ""}
         onDeleteComplete={clearSelection}
+      />
+
+      <TransferDocumentsModal
+        isOpen={transferDocumentModalOpen}
+        toggle={toggleTransferDocumentModal}
+        selectedDocuments={selectedDocuments}
+        documentNames={getDocumentNamesMap()}
+        currentCaseAlias={casealias?.toString() || ""}
+        allDocuments={caseDocuments}
+        onTransferComplete={clearSelection}
       />
     </Col>
   );
