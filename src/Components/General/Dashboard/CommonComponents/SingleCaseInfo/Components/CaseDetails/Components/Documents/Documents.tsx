@@ -346,7 +346,7 @@ const Documents: React.FC = () => {
         <CardBody>
           <Row className="mb-3">
             <Col>
-              <div className="d-flex flex-wrap gap-2">
+              <div className="d-flex flex-wrap justify-content-center gap-2">
                 <Button
                   color={activeTab === "" ? "primary" : "outline-primary"}
                   size="sm"
