@@ -134,7 +134,7 @@ const InsuranceHealthContent: React.FC = () => {
       ) : null}
 
       <Form onSubmit={handleSubmit}>
-        <FormGroup check className="mt-1 text-center">
+        <FormGroup check className="mt-2 text-center">
           <Label check>
             <Input
               type="checkbox"
@@ -146,7 +146,7 @@ const InsuranceHealthContent: React.FC = () => {
           </Label>
         </FormGroup>
 
-        <FormGroup className="mt-3">
+        <FormGroup className="mt-1">
           <Label for="insuranceNote">Note</Label>
           <Input
             id="insuranceNote"
@@ -174,20 +174,6 @@ const InsuranceHealthContent: React.FC = () => {
             ) : (
               "Save & Next"
             )}
-          </Button>
-          <Button
-            color="secondary"
-            outline
-            onClick={() => {
-              // reset to fetched values
-              setHealthConditions(
-                Boolean(InsuranceHealthData?.health_conditions)
-              );
-              setNote(InsuranceHealthData?.note ?? "");
-              setFeedback(null);
-            }}
-          >
-            Reset
           </Button>
         </div>
       </Form>
