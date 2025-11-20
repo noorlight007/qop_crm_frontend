@@ -63,6 +63,7 @@ export const baseApi = createApi({
     "ProductDetails",
     "DIPHistoryDetails",
     "Suitability",
+    "InsuranceHealthDetails",
     "Fees",
     "Compliance",
     "ClientSurvey",
