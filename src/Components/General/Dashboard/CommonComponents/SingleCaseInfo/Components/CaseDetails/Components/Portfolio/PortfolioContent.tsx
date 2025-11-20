@@ -21,10 +21,14 @@ import {
   Table,
 } from "reactstrap";
 import AddPropertyModal from "./Modals/AddPropertyModal";
+import DeletePropertyModal from "./Modals/DeletePropertyModal";
 import PortfolioSummary from "./PortfolioSummary";
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Delete modal state (moved up to avoid conditional hook rendering)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
   const prams = useParams();
   const { casealias } = prams;
   const dispatch = useAppDispatch();
@@ -56,6 +60,13 @@ const PortfolioContent: React.FC = () => {
     );
   }
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const toggleDeleteModal = () => setDeleteModalOpen((s) => !s);
+
+  const handleDeleteClick = (property: any) => {
+    setSelectedProperty(property);
+    setDeleteModalOpen(true);
+  };
 
   return (
     <>
@@ -155,7 +166,7 @@ const PortfolioContent: React.FC = () => {
                                   color="danger"
                                   size="sm"
                                   outline
-                                  onClick={() => alert("Clicked")}
+                                  onClick={() => handleDeleteClick(item)}
                                   className="text-truncate d-flex gap-1"
                                 >
                                   <i className="fa-solid fa-trash"></i>Delete
@@ -163,12 +174,27 @@ const PortfolioContent: React.FC = () => {
                               </div>
                             </td>
                             <td>
-                              {item?.applicant
-                                .map(
-                                  (app: any) =>
-                                    `${app?.first_name} ${app?.last_name}`
-                                )
-                                .join(", ")}
+                              {item?.applicant && item.applicant.length > 0 ? (
+                                <ul
+                                  className="mb-0 text-truncate"
+                                  style={{
+                                    listStyleType: "disc",
+                                    paddingLeft: "40px",
+                                  }}
+                                >
+                                  {item.applicant.map(
+                                    (app: any, idx: number) => (
+                                      <li key={app?.id ?? idx}>
+                                        {`${app?.first_name || ""} ${
+                                          app?.last_name || ""
+                                        }`.trim() || "-"}
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              ) : (
+                                "-"
+                              )}
                             </td>
                             <td>{`${item?.house_name_or_number}, ${item?.address_1}, ${item?.city}, ${item?.postcode}`}</td>
                             <td>
@@ -318,6 +344,22 @@ const PortfolioContent: React.FC = () => {
       </Container>
 
       <AddPropertyModal isOpen={isModalOpen} toggle={toggleModal} />
+      <DeletePropertyModal
+        isOpen={deleteModalOpen}
+        toggle={toggleDeleteModal}
+        propertyAlias={selectedProperty?.alias}
+        propertyLabel={
+          selectedProperty
+            ? `${selectedProperty?.house_name_or_number || ""} ${
+                selectedProperty?.address_1 || ""
+              }`
+            : undefined
+        }
+        onDeleteComplete={() => {
+          // close modal handled in modal, but also clear selected
+          setSelectedProperty(null);
+        }}
+      />
     </>
   );
 };
