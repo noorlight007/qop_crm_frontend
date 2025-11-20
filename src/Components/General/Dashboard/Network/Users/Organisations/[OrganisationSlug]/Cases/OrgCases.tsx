@@ -1,10 +1,5 @@
-import AddNewCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/AddNewCaseModal";
-import DeleteCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/DeleteCaseModal";
-import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
@@ -33,29 +28,19 @@ import {
 const OrgCases: React.FC = () => {
   const { data: session } = useSession();
   const { organisationslug } = useParams();
-  const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
-  const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
-  const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [casesPerPage] = useState(10);
   const [filterIcon, setFilterIcon] = useState(false);
-  const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
 
   const defaultFilters = {
-    created_by: "",
     case_category: "",
-    applicant_type: "",
-    case_status: "",
     case_stage: "",
     is_removed: "",
   };
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetAdviserDetailsQuery(undefined);
-
-  const { data: caseData, isLoading: isCaseLoading } = useGetOrgCasesQuery({
+  const { data: caseData, isLoading } = useGetOrgCasesQuery({
     organisationslug: organisationslug as string,
     search: searchQuery,
     ...filters,
@@ -63,25 +48,7 @@ const OrgCases: React.FC = () => {
     limit: casesPerPage,
   });
 
-  const isLoading = isAdviserLoading || isCaseLoading;
-
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
-  const toggleAddNewCaseModal = () =>
-    setIsAddNewCaseModalOpen(!isAddNewCaseModalOpen);
-  const toggleUpdateCaseModal = () =>
-    setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
-  const toggleDeleteCaseModal = () =>
-    setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
-
-  const openAddNewCaseModal = () => toggleAddNewCaseModal();
-  const openUpdateCaseModal = (caseItem: CaseInfoPrpos) => {
-    setCurrentCase(caseItem);
-    toggleUpdateCaseModal();
-  };
-  const openDeleteCaseModal = (caseItem: CaseInfoPrpos) => {
-    setCurrentCase(caseItem);
-    toggleDeleteCaseModal();
-  };
 
   const handleFilterChange = (filterKey: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -146,25 +113,6 @@ const OrgCases: React.FC = () => {
               {filterIcon && (
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
-                    <Col xs="12" sm="6" md="3">
-                      <Label>Select Employee</Label>
-                      <Input
-                        type="select"
-                        id="employeeFilter"
-                        className="py-1"
-                        value={filters.created_by}
-                        onChange={(e) =>
-                          handleFilterChange("created_by", e.target.value)
-                        }
-                      >
-                        <option value="">All Employee</option>
-                        {adviserData?.map((adviser: AdviserInfoProps) => (
-                          <option key={adviser.alias} value={adviser.user.id}>
-                            {adviser.user.first_name} {adviser.user.last_name}
-                          </option>
-                        ))}
-                      </Input>
-                    </Col>
                     <Col xs="12" sm="6" md="3">
                       <Label>Select Category</Label>
                       <Input
@@ -244,7 +192,6 @@ const OrgCases: React.FC = () => {
                       <th>Created At</th>
                       <th>Created By</th>
                       <th>Assigned To</th>
-                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody className="text-center">
@@ -368,32 +315,6 @@ const OrgCases: React.FC = () => {
                             ) : (
                               <span className="text-muted">Not Assigned</span>
                             )}
-                          </td>
-                          <td>
-                            <div className="d-flex justify-content-center align-items-center">
-                              <Button
-                                size="sm"
-                                color="success"
-                                className="me-2"
-                                title="Update Case"
-                                onClick={() => openUpdateCaseModal(caseItem)}
-                              >
-                                <i className="icon-pencil-alt"></i>
-                              </Button>
-                              {userType !== "ORGANIZATION_SUPPORT" &&
-                                userType !== "ORGANIZATION_ADVISER" && (
-                                  <Button
-                                    size="sm"
-                                    color="danger"
-                                    title="Delete Case"
-                                    onClick={() =>
-                                      openDeleteCaseModal(caseItem)
-                                    }
-                                  >
-                                    <i className="icon-trash"></i>
-                                  </Button>
-                                )}
-                            </div>
                           </td>
                         </tr>
                       ))
@@ -522,21 +443,6 @@ const OrgCases: React.FC = () => {
                 </div>
               </Row>
             </CardBody>
-            <AddNewCaseModal
-              isOpen={isAddNewCaseModalOpen}
-              toggle={toggleAddNewCaseModal}
-            />
-            <UpdateCaseModal
-              isOpen={isUpdateCaseModalOpen}
-              toggle={toggleUpdateCaseModal}
-              caseData={currentCase as CaseInfoPrpos}
-            />
-            <DeleteCaseModal
-              isOpen={isDeleteCaseModalOpen}
-              toggle={toggleDeleteCaseModal}
-              caseData={currentCase}
-              onDelete={toggleDeleteCaseModal}
-            />
           </Card>
         </Row>
       </CardBody>

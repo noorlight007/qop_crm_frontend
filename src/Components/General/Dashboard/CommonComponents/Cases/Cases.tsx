@@ -63,8 +63,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const defaultFilters = {
     created_by: "",
     case_category: "",
-    applicant_type: "",
-    case_status: "",
     case_stage: "",
     // allow parent components to set initial is_removed filter
     is_removed: initialIsRemoved ?? "",
@@ -320,20 +318,22 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         }
                       >
                         <option value="">All Advisers</option>
-                        {adviserData?.map((adviser: AdviserInfoProps) => (
-                          <option key={adviser.alias} value={adviser.user.id}>
-                            {adviser.user.title
-                              ? adviser.user.title[0].toUpperCase() +
-                                adviser.user.title.slice(1).toLowerCase() +
-                                " "
-                              : ""}
-                            {adviser.user.first_name}{" "}
-                            {adviser.user.middle_name
-                              ? adviser.user.middle_name + " "
-                              : ""}
-                            {adviser.user.last_name}
-                          </option>
-                        ))}
+                        {adviserData?.results.map(
+                          (adviser: AdviserInfoProps) => (
+                            <option key={adviser.alias} value={adviser.user.id}>
+                              {adviser.user.title
+                                ? adviser.user.title[0].toUpperCase() +
+                                  adviser.user.title.slice(1).toLowerCase() +
+                                  " "
+                                : ""}
+                              {adviser.user.first_name}{" "}
+                              {adviser.user.middle_name
+                                ? adviser.user.middle_name + " "
+                                : ""}
+                              {adviser.user.last_name}
+                            </option>
+                          )
+                        )}
                       </Input>
                     </Col>
                     <Col xs="12" sm="6" md="3">
