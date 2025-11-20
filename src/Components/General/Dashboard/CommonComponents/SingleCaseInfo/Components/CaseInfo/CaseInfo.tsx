@@ -430,7 +430,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                     (v) =>
                       v !== null && v !== undefined && String(v).trim() !== ""
                   );
-                  return parts.length ? parts.join(", ") : "N/A";
+                  return parts.length ? (
+                    parts.join(", ")
+                  ) : (
+                    <span className="text-muted">Not available</span>
+                  );
                 })()}
               </p>
             </div>
@@ -440,6 +444,16 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 <p>
                   {caseInfo?.property_valuation ? (
                     `£${caseInfo.property_valuation}`
+                  ) : (
+                    <span className="text-muted">Not available</span>
+                  )}
+                </p>
+              </div>
+              <div>
+                <h5>Purchase Price:</h5>
+                <p>
+                  {caseInfo?.purchase_price ? (
+                    `£${caseInfo.purchase_price}`
                   ) : (
                     <span className="text-muted">Not available</span>
                   )}

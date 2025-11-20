@@ -8,6 +8,7 @@ import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { FaFileExport } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -20,19 +21,22 @@ import {
   Table,
 } from "reactstrap";
 import AddPropertyModal from "./Modals/AddPropertyModal";
+import DeletePropertyModal from "./Modals/DeletePropertyModal";
 import PortfolioSummary from "./PortfolioSummary";
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Delete modal state (moved up to avoid conditional hook rendering)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
   const prams = useParams();
   const { casealias } = prams;
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
-  const {
-    data: caseData,
-    isLoading: isCaseFetching,
-    isError,
-  } = useGetSingleCaseQuery({ case_alias: casealias }, { skip: !casealias });
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias }
+  );
   const { data, isLoading } = useGetPortfolioDetailsQuery({
     case_alias: casealias,
   });
@@ -57,6 +61,13 @@ const PortfolioContent: React.FC = () => {
   }
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  const toggleDeleteModal = () => setDeleteModalOpen((s) => !s);
+
+  const handleDeleteClick = (property: any) => {
+    setSelectedProperty(property);
+    setDeleteModalOpen(true);
+  };
+
   return (
     <>
       <Container fluid className="p-4">
@@ -79,17 +90,23 @@ const PortfolioContent: React.FC = () => {
                   <h5 className="mb-0 fs-3 text-primary">
                     Additional Properties
                   </h5>
-                  <Button
-                    color="success"
-                    className="border-success"
-                    onClick={toggleModal}
-                    disabled={
-                      session?.user?.user_type === "CLIENT" &&
-                      data.map((item: any) => item?.alias).length > 0
-                    }
-                  >
-                    Add Portfolio
-                  </Button>
+                  <div className="d-flex justify-content-end gap-2">
+                    <Button outline color="primary" className="d-flex gap-1">
+                      <FaFileExport />
+                      Export to CSV
+                    </Button>
+                    <Button
+                      color="success"
+                      className="border-success"
+                      onClick={toggleModal}
+                      disabled={
+                        session?.user?.user_type === "CLIENT" &&
+                        data.map((item: any) => item?.alias).length > 0
+                      }
+                    >
+                      Add Portfolio
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardBody>
@@ -101,12 +118,7 @@ const PortfolioContent: React.FC = () => {
                     >
                       <thead className="table-light">
                         <tr>
-                          <th
-                            className="text-center"
-                            style={{ width: "100px" }}
-                          >
-                            Actions
-                          </th>
+                          <th className="text-center">Action</th>
                           <th>Applicant/s</th>
                           <th>Full Address</th>
                           <th>Property Value</th>
@@ -142,31 +154,47 @@ const PortfolioContent: React.FC = () => {
                           <tr key={item?.alias}>
                             <td>
                               <div className="text-center d-flex justify-content-center align-items-center">
-                                <Button
+                                {/* <Button
                                   color="primary"
                                   size="sm"
                                   className="me-1"
                                   disabled
                                 >
                                   <i className="fa-solid fa-pen-to-square"></i>
-                                </Button>
+                                </Button> */}
                                 <Button
                                   color="danger"
                                   size="sm"
-                                  disabled
-                                  onClick={() => alert("Clicked")}
+                                  outline
+                                  onClick={() => handleDeleteClick(item)}
+                                  className="text-truncate d-flex gap-1"
                                 >
-                                  <i className="fa-solid fa-trash"></i>
+                                  <i className="fa-solid fa-trash"></i>Delete
                                 </Button>
                               </div>
                             </td>
                             <td>
-                              {item?.applicant
-                                .map(
-                                  (app: any) =>
-                                    `${app?.first_name} ${app?.last_name}`
-                                )
-                                .join(", ")}
+                              {item?.applicant && item.applicant.length > 0 ? (
+                                <ul
+                                  className="mb-0 text-truncate"
+                                  style={{
+                                    listStyleType: "disc",
+                                    paddingLeft: "40px",
+                                  }}
+                                >
+                                  {item.applicant.map(
+                                    (app: any, idx: number) => (
+                                      <li key={app?.id ?? idx}>
+                                        {`${app?.first_name || ""} ${
+                                          app?.last_name || ""
+                                        }`.trim() || "-"}
+                                      </li>
+                                    )
+                                  )}
+                                </ul>
+                              ) : (
+                                "-"
+                              )}
                             </td>
                             <td>{`${item?.house_name_or_number}, ${item?.address_1}, ${item?.city}, ${item?.postcode}`}</td>
                             <td>
@@ -316,6 +344,22 @@ const PortfolioContent: React.FC = () => {
       </Container>
 
       <AddPropertyModal isOpen={isModalOpen} toggle={toggleModal} />
+      <DeletePropertyModal
+        isOpen={deleteModalOpen}
+        toggle={toggleDeleteModal}
+        propertyAlias={selectedProperty?.alias}
+        propertyLabel={
+          selectedProperty
+            ? `${selectedProperty?.house_name_or_number || ""} ${
+                selectedProperty?.address_1 || ""
+              }`
+            : undefined
+        }
+        onDeleteComplete={() => {
+          // close modal handled in modal, but also clear selected
+          setSelectedProperty(null);
+        }}
+      />
     </>
   );
 };

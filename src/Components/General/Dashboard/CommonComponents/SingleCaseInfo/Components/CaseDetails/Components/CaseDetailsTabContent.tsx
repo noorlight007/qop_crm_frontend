@@ -11,6 +11,7 @@ import Documents from "./Documents/Documents";
 import { EmploymentTab } from "./Employment/EmploymentTab";
 import ExistingProtectionTab from "./ExistingProtection/ExistingProtectionTab";
 import FeesTab from "./Fees/FeesTab";
+import InsuranceHealthContent from "./InsuranceHealth/InsuranceHealthContent";
 import { LoanDetailsTab } from "./LoanDetails/LoanDetailsTab";
 import MortgageYourNeedsContent from "./MortgageYourNeeds/MortgageYourNeedsContent";
 import { NotesTab } from "./Notes/NotesTab";
@@ -38,6 +39,7 @@ const tabComponents: Record<string, React.FC> = {
   Product: ProductContent,
   "DIP History": DIPHistoryTab,
   Suitability: SuitabilityContent,
+  "Insurance Health": InsuranceHealthContent,
   Fees: FeesTab,
   Compliance: ComplianceTab,
   "Client Survey": ClientSurveyContent,

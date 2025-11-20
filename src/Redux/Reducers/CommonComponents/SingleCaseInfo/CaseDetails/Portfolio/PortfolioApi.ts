@@ -24,6 +24,13 @@ export const PortfolioApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["PortfolioDetails"],
     }),
+    deletePropertyDetails: builder.mutation({
+      query: ({ case_alias, property_alias }) => ({
+        url: `/cases/${case_alias}/properties/${property_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["PortfolioDetails"],
+    }),
   }),
 });
 
@@ -31,4 +38,5 @@ export const {
   useGetPortfolioDetailsQuery,
   useGetPortfolioApplicantsQuery,
   useAddPropertyDetailsMutation,
+  useDeletePropertyDetailsMutation,
 } = PortfolioApi;
