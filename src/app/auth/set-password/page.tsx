@@ -14,8 +14,8 @@ export default function SetPassword() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
-  console.log("UID:", uid);
-  console.log("Token:", token);
+  // console.log("UID:", uid);
+  // console.log("Token:", token);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
