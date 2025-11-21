@@ -129,7 +129,9 @@ const LoanDetailsFormTab1: React.FC<LoanDetailsFormTab1Props> = ({
           <FormGroup>
             <Label>
               Interest Rate{" "}
-              <small className="text-muted">(This Field is Read-Only)</small>{" "}
+              <small className="text-muted text-warning">
+                (This is Read-Only Field)
+              </small>{" "}
             </Label>
             <Input
               type="text"

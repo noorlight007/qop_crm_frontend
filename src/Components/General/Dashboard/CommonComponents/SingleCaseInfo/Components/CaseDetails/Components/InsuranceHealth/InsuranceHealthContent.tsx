@@ -105,7 +105,7 @@ const InsuranceHealthContent: React.FC = () => {
   return (
     <div>
       <Form onSubmit={handleSubmit}>
-        <FormGroup check className="mt-2 text-center">
+        <FormGroup check className="mt-2">
           <Label check>
             <Input
               type="checkbox"

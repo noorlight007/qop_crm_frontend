@@ -7,27 +7,37 @@ import {
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { ClientInfoProps } from "@/Types/CommonComponents/Directors/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { FaArrowRight, FaUserEdit } from "react-icons/fa";
-import { TbCircleArrowUp } from "react-icons/tb";
+import { FaArrowRight, FaTrash, FaUserEdit } from "react-icons/fa";
+import { TbCircleArrowUp, TbCopy, TbSettings } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Button,
+  ButtonGroup,
   Card,
   CardBody,
   CardHeader,
   Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Row,
   Spinner,
 } from "reactstrap";
+import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
+  const { data: session } = useSession();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [isUpdateClientModalOpen, setIsUpdateClientModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInfoProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
+  const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
@@ -45,6 +55,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
     setCurrentCase(caseInfo);
     toggleUpdateCaseModal();
   };
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const openDeleteCaseModal = (caseItem: CaseInfoPrpos) => {
+    setCurrentCase(caseItem);
+    toggleDeleteCaseModal();
+  };
+  const toggleDeleteCaseModal = () =>
+    setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
 
   const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
     if (clientData?.user) {
@@ -75,15 +92,46 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               ({caseInfo?.name})
             </span>
           </h3>
-          <Button
-            color="primary"
-            onClick={() => openUpdateCaseModal(caseInfo!)}
-            disabled={!caseInfo} // Disable if caseInfo is null
-            className="d-flex justify-content-center align-items-center gap-1"
-          >
-            <TbCircleArrowUp size={18} />
-            <span>Update Info</span>
-          </Button>
+          <ButtonGroup>
+            <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+              <DropdownToggle color="primary" caret className="me-1">
+                <TbSettings className="me-1" />
+                Actions
+              </DropdownToggle>
+              <DropdownMenu
+                style={{
+                  width: "200px",
+                }}
+              >
+                <DropdownItem
+                  onClick={() => openUpdateCaseModal(caseInfo!)}
+                  disabled={!caseInfo}
+                  className="opacity-100 py-3"
+                >
+                  <TbCircleArrowUp size="16" className="me-1" />
+                  <span>Update Info</span>
+                </DropdownItem>
+                <DropdownItem className="opacity-100 py-3">
+                  <TbCopy size="16" className="me-1" />
+                  Copy Case
+                </DropdownItem>
+                {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                  session?.user?.user_type === "NETWORK_ADMIN") && (
+                  <>
+                    <DropdownItem divider />
+                    <DropdownItem
+                      onClick={() => openDeleteCaseModal(caseInfo!)}
+                      disabled={!caseInfo}
+                      className="text-danger opacity-100 py-3"
+                    >
+                      <FaTrash size="16" className="me-1" />
+                      Delete Case
+                    </DropdownItem>
+                  </>
+                )}
+              </DropdownMenu>
+            </Dropdown>
+          </ButtonGroup>
         </CardHeader>
 
         <Row className="px-3 mt-3">
@@ -505,6 +553,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         isOpen={isUpdateCaseModalOpen}
         toggle={toggleUpdateCaseModal}
         caseData={currentCase as CaseInfoPrpos}
+      />
+      <DeleteCaseModal
+        isOpen={isDeleteCaseModalOpen}
+        toggle={toggleDeleteCaseModal}
+        caseData={currentCase}
+        onDelete={toggleDeleteCaseModal}
       />
     </Col>
   );
