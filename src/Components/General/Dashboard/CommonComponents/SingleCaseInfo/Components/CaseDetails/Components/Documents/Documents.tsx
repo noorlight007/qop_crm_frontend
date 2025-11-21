@@ -545,7 +545,7 @@ const Documents: React.FC = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={6} className="text-center">
+                        <td colSpan={8} className="text-center">
                           No Documents Available
                         </td>
                       </tr>

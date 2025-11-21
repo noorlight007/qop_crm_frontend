@@ -2,6 +2,7 @@
 import { useGetNetworkReportsMutation } from "@/Redux/Reducers/Network/Reports/NetworkReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaShoppingBag } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -30,6 +31,7 @@ const NetworkReportsContainer: React.FC = () => {
     case_category: "",
     case_stage: "",
     report_type: "",
+    report_category: "",
   });
 
   const [dateRange, setDateRange] = useState({
@@ -76,6 +78,11 @@ const NetworkReportsContainer: React.FC = () => {
       { value: "standard", label: "Standard" },
       { value: "submitted", label: "Submitted" },
       { value: "completed", label: "Completed" },
+    ],
+    reportCategories: [
+      { value: "", label: "All Categories" },
+      { value: "network", label: "Network" },
+      { value: "organisation", label: "Organisation" },
     ],
   };
 
@@ -141,6 +148,7 @@ const NetworkReportsContainer: React.FC = () => {
       case_category: "",
       case_stage: "",
       report_type: "",
+      report_category: "",
     };
     const resetDate = { from_date: "", to_date: "" };
     setFilters(resetFilters);
@@ -450,6 +458,31 @@ const NetworkReportsContainer: React.FC = () => {
                           className="form-select"
                         >
                           {filterOptions.reportTypes.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col md={6} lg={3} className="mb-3">
+                      <FormGroup>
+                        <Label className="fw-semibold text-dark">
+                          <FaShoppingBag className="me-2 text-primary" />
+                          Report Category
+                        </Label>
+                        <Input
+                          type="select"
+                          value={filters.report_category}
+                          onChange={(e) =>
+                            handleFilterChange(
+                              "report_category",
+                              e.target.value
+                            )
+                          }
+                          className="form-select"
+                        >
+                          {filterOptions.reportCategories.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
