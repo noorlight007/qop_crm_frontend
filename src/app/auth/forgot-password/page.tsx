@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
 import logoDark from "../../../../public/assets/images/logo/logo-dark.png";
 import logoLight from "../../../../public/assets/images/logo/logo1.png";
+import { useForgotPasswordMutation } from "@/Redux/Reducers/Auth/ForgotPasswordApi";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function ForgotPassword() {
   const [show, setShow] = useState(false);
 
   // RTK Hooks
-  const [forgotPassword, { isLoading }] = useSetNewPasswordMutation();
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   // Password validation helper
   const getPasswordValidation = (pw: string) => {
