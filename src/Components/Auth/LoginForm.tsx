@@ -14,7 +14,7 @@ import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
 import imageTwo from "../../../public/assets/images/logo/logo-dark.png";
 import imageOne from "../../../public/assets/images/logo/logo1.png";
 
-export const UserForm = () => {
+export const LoginForm = () => {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -87,7 +87,7 @@ export const UserForm = () => {
           </div>
         </FormGroup>
         <FormGroup className="mb-0 checkbox-checked">
-          <Link className="link" href={`/others/authentication/forgetpassword`}>
+          <Link className="link" href={`/auth/forgot-password/send-email`}>
             {ForgotPassword}
           </Link>
           <div className="text-end mt-3">
