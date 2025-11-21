@@ -1,11 +1,9 @@
-import AddNewCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/AddNewCaseModal";
-import DeleteCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/DeleteCaseModal";
-import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import {
+  formatDateToDMY,
+  formatDateToDMYAndTime,
+} from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
 import { useSession } from "next-auth/react";
@@ -13,6 +11,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { TbArrowsRightLeft } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -33,55 +32,29 @@ import {
 const OrgCases: React.FC = () => {
   const { data: session } = useSession();
   const { organisationslug } = useParams();
-  const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
-  const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
-  const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [casesPerPage] = useState(10);
   const [filterIcon, setFilterIcon] = useState(false);
-  const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
 
   const defaultFilters = {
-    created_by: "",
     case_category: "",
-    applicant_type: "",
-    case_status: "",
     case_stage: "",
     is_removed: "",
   };
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetAdviserDetailsQuery(undefined);
-
-  const { data: caseData, isLoading: isCaseLoading } = useGetOrgCasesQuery({
+  const { data: caseData, isLoading } = useGetOrgCasesQuery({
     organisationslug: organisationslug as string,
-    search: searchQuery,
-    ...filters,
-    page: currentPage,
-    limit: casesPerPage,
+    params: {
+      search: searchQuery,
+      ...filters,
+      page: currentPage,
+      limit: casesPerPage,
+    },
   });
 
-  const isLoading = isAdviserLoading || isCaseLoading;
-
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
-  const toggleAddNewCaseModal = () =>
-    setIsAddNewCaseModalOpen(!isAddNewCaseModalOpen);
-  const toggleUpdateCaseModal = () =>
-    setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
-  const toggleDeleteCaseModal = () =>
-    setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
-
-  const openAddNewCaseModal = () => toggleAddNewCaseModal();
-  const openUpdateCaseModal = (caseItem: CaseInfoPrpos) => {
-    setCurrentCase(caseItem);
-    toggleUpdateCaseModal();
-  };
-  const openDeleteCaseModal = (caseItem: CaseInfoPrpos) => {
-    setCurrentCase(caseItem);
-    toggleDeleteCaseModal();
-  };
 
   const handleFilterChange = (filterKey: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -118,7 +91,10 @@ const OrgCases: React.FC = () => {
                       type="text"
                       placeholder="Search Case... "
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                      }}
                       style={{ padding: "10px 10px 10px 25px" }}
                     />
                   </InputGroup>
@@ -146,26 +122,7 @@ const OrgCases: React.FC = () => {
               {filterIcon && (
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
-                    <Col xs="12" sm="6" md="3">
-                      <Label>Select Employee</Label>
-                      <Input
-                        type="select"
-                        id="employeeFilter"
-                        className="py-1"
-                        value={filters.created_by}
-                        onChange={(e) =>
-                          handleFilterChange("created_by", e.target.value)
-                        }
-                      >
-                        <option value="">All Employee</option>
-                        {adviserData?.map((adviser: AdviserInfoProps) => (
-                          <option key={adviser.alias} value={adviser.user.id}>
-                            {adviser.user.first_name} {adviser.user.last_name}
-                          </option>
-                        ))}
-                      </Input>
-                    </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col xs="12" sm="6" md="4">
                       <Label>Select Category</Label>
                       <Input
                         type="select"
@@ -184,7 +141,7 @@ const OrgCases: React.FC = () => {
                         </option>
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col xs="12" sm="6" md="4">
                       <Label>Select Stage</Label>
                       <Input
                         type="select"
@@ -216,7 +173,7 @@ const OrgCases: React.FC = () => {
                         <option value="NOT_PROCEED">Not Proceed</option>
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col xs="12" sm="6" md="4">
                       <Label>Clear All Filters</Label>
                       <Button
                         outline
@@ -240,17 +197,19 @@ const OrgCases: React.FC = () => {
                       <th>Lead User</th>
                       <th>Phone</th>
                       <th>Case Category</th>
+                      <th>Lender</th>
+                      <th>Security property</th>
                       <th>Case Stage</th>
+                      <th>Review Date</th>
                       <th>Created At</th>
                       <th>Created By</th>
                       <th>Assigned To</th>
-                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody className="text-center">
                     {isLoading ? (
                       <tr>
-                        <td colSpan={8} className="text-center">
+                        <td colSpan={11} className="text-center">
                           <Spinner color="primary" />
                         </td>
                       </tr>
@@ -303,14 +262,90 @@ const OrgCases: React.FC = () => {
                             )}
                           </td>
                           <td>
-                            {caseItem.case_category
-                              ? formatChoiceFieldValue(caseItem.case_category)
+                            {caseItem.case_category ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_category)}
+                                {caseItem.case_category === "MORTGAGE" && (
+                                  <p className="small">
+                                    (
+                                    {formatChoiceFieldValue(
+                                      caseItem.application_type || ""
+                                    )}
+                                    {caseItem.mortgage_type ? (
+                                      <>
+                                        {" "}
+                                        <TbArrowsRightLeft />{" "}
+                                        {formatChoiceFieldValue(
+                                          caseItem.mortgage_type || ""
+                                        )}
+                                      </>
+                                    ) : (
+                                      <TbArrowsRightLeft />
+                                    )}
+                                    )
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td className="text-truncate">
+                            {caseItem.lender
+                              ? formatChoiceFieldValue(caseItem.lender)
                               : "-"}
                           </td>
+                          <td className="text-start ">
+                            {(() => {
+                              const pd = caseItem?.property_details;
+                              if (!pd) return "N/A";
+                              const countryFormatted = pd.country
+                                ? formatChoiceFieldValue(pd.country)
+                                : pd.country;
+                              const parts = [
+                                pd.house_name_or_number,
+                                pd.address_line_1,
+                                pd.address_line_2,
+                                pd.city,
+                                pd.county,
+                                pd.postcode,
+                                countryFormatted,
+                              ].filter(
+                                (v) =>
+                                  v !== null &&
+                                  v !== undefined &&
+                                  String(v).trim() !== ""
+                              );
+                              return parts.length ? (
+                                parts.join(", ")
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              );
+                            })()}
+                          </td>
+                          <td className="text-truncate">
+                            {caseItem.case_stage ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_stage)}
+                                {caseItem.case_stage === "COMPLETION" &&
+                                caseItem.completion_date ? (
+                                  <p
+                                    className="ms-2 m-0 opacity-75"
+                                    style={{ fontSize: "10px" }}
+                                  >
+                                    ({formatDateToDMY(caseItem.completion_date)}
+                                    )
+                                  </p>
+                                ) : null}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
                           <td>
-                            {caseItem.case_stage
-                              ? formatChoiceFieldValue(caseItem.case_stage)
-                              : "-"}
+                            {formatDateToDMY(caseItem?.review_date) || "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td>
@@ -369,37 +404,11 @@ const OrgCases: React.FC = () => {
                               <span className="text-muted">Not Assigned</span>
                             )}
                           </td>
-                          <td>
-                            <div className="d-flex justify-content-center align-items-center">
-                              <Button
-                                size="sm"
-                                color="success"
-                                className="me-2"
-                                title="Update Case"
-                                onClick={() => openUpdateCaseModal(caseItem)}
-                              >
-                                <i className="icon-pencil-alt"></i>
-                              </Button>
-                              {userType !== "ORGANIZATION_SUPPORT" &&
-                                userType !== "ORGANIZATION_ADVISER" && (
-                                  <Button
-                                    size="sm"
-                                    color="danger"
-                                    title="Delete Case"
-                                    onClick={() =>
-                                      openDeleteCaseModal(caseItem)
-                                    }
-                                  >
-                                    <i className="icon-trash"></i>
-                                  </Button>
-                                )}
-                            </div>
-                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={8} className="text-center">
+                        <td colSpan={11} className="text-center">
                           No cases found.
                         </td>
                       </tr>
@@ -522,21 +531,6 @@ const OrgCases: React.FC = () => {
                 </div>
               </Row>
             </CardBody>
-            <AddNewCaseModal
-              isOpen={isAddNewCaseModalOpen}
-              toggle={toggleAddNewCaseModal}
-            />
-            <UpdateCaseModal
-              isOpen={isUpdateCaseModalOpen}
-              toggle={toggleUpdateCaseModal}
-              caseData={currentCase as CaseInfoPrpos}
-            />
-            <DeleteCaseModal
-              isOpen={isDeleteCaseModalOpen}
-              toggle={toggleDeleteCaseModal}
-              caseData={currentCase}
-              onDelete={toggleDeleteCaseModal}
-            />
           </Card>
         </Row>
       </CardBody>

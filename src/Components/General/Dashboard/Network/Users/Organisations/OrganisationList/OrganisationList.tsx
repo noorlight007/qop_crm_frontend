@@ -150,19 +150,19 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                       <div className="d-flex justify-content-between mt-3 pt-2 border-top">
                         <Col className="border-end">
                           <div className="text-center ">
-                            <h5 className="mb-0">15</h5>
+                            <h5 className="mb-0">{item.total_cases}</h5>
                             <span className="text-primary small">Cases</span>
                           </div>
                         </Col>
                         <Col className="border-end">
                           <div className="text-center ">
-                            <h5 className="mb-0">10</h5>
+                            <h5 className="mb-0">{item.total_advisers}</h5>
                             <span className="text-primary small">Advisers</span>
                           </div>
                         </Col>
                         <Col className="">
                           <div className="text-center">
-                            <h5 className="mb-0">14</h5>
+                            <h5 className="mb-0">{item.total_introducers}</h5>
                             <span className="text-primary small">
                               Introducers
                             </span>

@@ -64,6 +64,9 @@ export interface CaseInfoPrpos {
   application_type?: string;
   mortgage_type?: string;
   property_valuation?: number;
+  purchase_price?: number;
+  completion_date?: string;
+  review_date?: string;
   lender?: string;
   loan_amount?: number;
   property_details: {

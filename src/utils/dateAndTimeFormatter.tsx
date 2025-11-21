@@ -24,8 +24,10 @@ export function formatDateToDMYAndTime(isoDate: any) {
     .toUpperCase();
 }
 
-export function formatDateToDMY(isoDate: any) {
+export function formatDateToDMY(isoDate: any): string {
+  if (isoDate == null) return "";
   const date = new Date(isoDate);
+  if (isNaN(date.getTime())) return "";
   return date
     .toLocaleString("en-GB", {
       day: "2-digit",

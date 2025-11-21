@@ -6,19 +6,21 @@ import {
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/GetCaseUrl";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import {
+  formatDateToDMY,
+  formatDateToDMYAndTime,
+} from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus, TbFileDescription } from "react-icons/tb";
+import { TbArrowsRightLeft, TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
   CardBody,
   CardHeader,
-  CardTitle,
   Col,
   Input,
   InputGroup,
@@ -30,6 +32,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import CaesSummary from "./CaesSummary/CaesSummary";
 import AddNewCaseModal from "./Modals/AddNewCaseModal";
 import DeleteCaseModal from "./Modals/DeleteCaseModal";
 import UpdateCaseModal from "./Modals/UpdateCaseModal";
@@ -56,8 +59,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const defaultFilters = {
     created_by: "",
     case_category: "",
-    applicant_type: "",
-    case_status: "",
     case_stage: "",
     // allow parent components to set initial is_removed filter
     is_removed: initialIsRemoved ?? "",
@@ -111,137 +112,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
 
   return (
     <>
-      <Row>
-        {/* // Skeleton Loading State */}
-        {isLoading ? (
-          <>
-            {[...Array(4)].map((_, index) => (
-              <Col md className="mb-2" key={index}>
-                <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
-                  <CardBody className="p-2">
-                    <div className="d-flex justify-content-between">
-                      <div style={{ width: "70%" }}>
-                        <div
-                          className="skeleton-loading mb-2"
-                          style={{ width: "80%", height: "16px" }}
-                        />
-                        <div
-                          className="skeleton-loading"
-                          style={{ width: "50%", height: "24px" }}
-                        />
-                      </div>
-                      <div
-                        className="skeleton-loading rounded-3"
-                        style={{ width: "30px", height: "30px" }}
-                      />
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </>
-        ) : (
-          // Actual Content
-          <>
-            {/* All Cases  */}
-            <Col md>
-              <Card className="p-2 shadow">
-                <CardBody className="p-2">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <CardTitle className="small text-muted">
-                        All Cases
-                      </CardTitle>
-                      <h4 className="mb-1 text-dark">{caseData?.count || 0}</h4>
-                    </div>
-                    <div>
-                      <span
-                        className="d-flex justify-content-center align-items-center bg-light-primary rounded-3"
-                        style={{ width: "30px", height: "30px" }}
-                      >
-                        <TbFileDescription className="fs-6" />
-                      </span>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            {/* Active Cases  */}
-            <Col md>
-              <Card className="p-2 shadow">
-                <CardBody className="p-2">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <CardTitle className="small text-muted">
-                        Active Cases
-                      </CardTitle>
-                      <h4 className="mb-1 text-dark">
-                        {caseData?.results?.filter(
-                          (item: any) => !item.is_removed
-                        ).length || 0}
-                      </h4>
-                    </div>
-                    <div>
-                      <span
-                        className="d-flex justify-content-center align-items-center bg-light-success rounded-3"
-                        style={{ width: "30px", height: "30px" }}
-                      >
-                        <TbFileDescription className="fs-6" />
-                      </span>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            {/* Pending Cases  */}
-            <Col md>
-              <Card className="p-2 shadow">
-                <CardBody className="p-2">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <CardTitle className="small text-muted">
-                        Pending Cases
-                      </CardTitle>
-                      <h4 className="mb-1 text-dark">10</h4>
-                    </div>
-                    <div>
-                      <span
-                        className="d-flex justify-content-center align-items-center bg-light-warning rounded-3"
-                        style={{ width: "30px", height: "30px" }}
-                      >
-                        <TbFileDescription className="fs-6" />
-                      </span>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            {/* Completed Cases  */}
-            <Col md>
-              <Card className="p-2 shadow">
-                <CardBody className="p-2">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <CardTitle className="small text-muted">
-                        Completed Cases
-                      </CardTitle>
-                      <h4 className="mb-1 text-dark">10</h4>
-                    </div>
-                    <div>
-                      <span
-                        className="d-flex justify-content-center align-items-center bg-light-info rounded-3"
-                        style={{ width: "30px", height: "30px" }}
-                      >
-                        <TbFileDescription className="fs-6" />
-                      </span>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </>
-        )}
-      </Row>
+      <CaesSummary />
       <Row>
         <Col>
           <Card>
@@ -313,20 +184,22 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         }
                       >
                         <option value="">All Advisers</option>
-                        {adviserData?.map((adviser: AdviserInfoProps) => (
-                          <option key={adviser.alias} value={adviser.user.id}>
-                            {adviser.user.title
-                              ? adviser.user.title[0].toUpperCase() +
-                                adviser.user.title.slice(1).toLowerCase() +
-                                " "
-                              : ""}
-                            {adviser.user.first_name}{" "}
-                            {adviser.user.middle_name
-                              ? adviser.user.middle_name + " "
-                              : ""}
-                            {adviser.user.last_name}
-                          </option>
-                        ))}
+                        {adviserData?.results.map(
+                          (adviser: AdviserInfoProps) => (
+                            <option key={adviser.alias} value={adviser.user.id}>
+                              {adviser.user.title
+                                ? adviser.user.title[0].toUpperCase() +
+                                  adviser.user.title.slice(1).toLowerCase() +
+                                  " "
+                                : ""}
+                              {adviser.user.first_name}{" "}
+                              {adviser.user.middle_name
+                                ? adviser.user.middle_name + " "
+                                : ""}
+                              {adviser.user.last_name}
+                            </option>
+                          )
+                        )}
                       </Input>
                     </Col>
                     <Col xs="12" sm="6" md="3">
@@ -404,7 +277,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <th>Applicants</th>
                       <th>Phone</th>
                       <th>Case Category</th>
+                      <th>Lender</th>
+                      <th>Security property</th>
                       <th>Case Stage</th>
+                      <th>Review Date</th>
                       <th>Created At</th>
                       <th>
                         {session?.user?.user_type === "NETWORK_ADMIN" ||
@@ -430,7 +306,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <tbody className="text-center">
                     {isLoading ? (
                       <tr>
-                        <td colSpan={10} className="text-center">
+                        <td colSpan={13} className="text-center">
                           <Spinner color="primary" />
                         </td>
                       </tr>
@@ -515,14 +391,90 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             )}
                           </td>
                           <td>
-                            {caseItem.case_category
-                              ? formatChoiceFieldValue(caseItem.case_category)
-                              : "-"}
+                            {caseItem.case_category ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_category)}
+                                {caseItem.case_category === "MORTGAGE" && (
+                                  <p className="small">
+                                    (
+                                    {formatChoiceFieldValue(
+                                      caseItem.application_type || ""
+                                    )}
+                                    {caseItem.mortgage_type ? (
+                                      <>
+                                        {" "}
+                                        <TbArrowsRightLeft />{" "}
+                                        {formatChoiceFieldValue(
+                                          caseItem.mortgage_type || ""
+                                        )}
+                                      </>
+                                    ) : (
+                                      <TbArrowsRightLeft />
+                                    )}
+                                    )
+                                  </p>
+                                )}
+                              </>
+                            ) : (
+                              "-"
+                            )}
                           </td>
                           <td className="text-truncate">
-                            {caseItem.case_stage
-                              ? formatChoiceFieldValue(caseItem.case_stage)
+                            {caseItem.lender
+                              ? formatChoiceFieldValue(caseItem.lender)
                               : "-"}
+                          </td>
+                          <td className="text-start ">
+                            {(() => {
+                              const pd = caseItem?.property_details;
+                              if (!pd) return "N/A";
+                              const countryFormatted = pd.country
+                                ? formatChoiceFieldValue(pd.country)
+                                : pd.country;
+                              const parts = [
+                                pd.house_name_or_number,
+                                pd.address_line_1,
+                                pd.address_line_2,
+                                pd.city,
+                                pd.county,
+                                pd.postcode,
+                                countryFormatted,
+                              ].filter(
+                                (v) =>
+                                  v !== null &&
+                                  v !== undefined &&
+                                  String(v).trim() !== ""
+                              );
+                              return parts.length ? (
+                                parts.join(", ")
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              );
+                            })()}
+                          </td>
+                          <td className="text-truncate ">
+                            {caseItem.case_stage ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_stage)}
+                                {caseItem.case_stage === "COMPLETION" &&
+                                caseItem.completion_date ? (
+                                  <p
+                                    className="ms-2 m-0 opacity-75"
+                                    style={{ fontSize: "10px" }}
+                                  >
+                                    ({formatDateToDMY(caseItem.completion_date)}
+                                    )
+                                  </p>
+                                ) : null}
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td>
+                            {formatDateToDMY(caseItem?.review_date) || "-"}
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td className="text-truncate">
@@ -630,7 +582,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={9} className="text-center">
+                        <td colSpan={13} className="text-center">
                           No cases found.
                         </td>
                       </tr>

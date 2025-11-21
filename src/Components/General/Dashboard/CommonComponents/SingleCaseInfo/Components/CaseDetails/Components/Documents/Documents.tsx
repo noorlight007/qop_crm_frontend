@@ -22,10 +22,12 @@ import {
 import BatchDeleteModal from "./Modals/BatchDeleteModal";
 import DocumentDeleteModal from "./Modals/DocumentDeleteModal";
 import DocumentUploadModal from "./Modals/DocumentUploadModal";
+import TransferDocumentsModal from "./Modals/TransferDocumentsModal";
 import UpdateInfoModal from "./Modals/UpdateInfoModal";
 
 const Documents: React.FC = () => {
   const { data: session } = useSession();
+  const [activeTab, setActiveTab] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const filesPerPage = 10;
   const [caseDocuments, setCaseDocuments] = useState<CaseDocumentProps[]>([]);
@@ -35,6 +37,8 @@ const Documents: React.FC = () => {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] =
     useState<CaseDocumentProps | null>(null);
+  const [transferDocumentModalOpen, setTransferDocumentModalOpen] =
+    useState(false);
   const [selectedDocumentForUpdate, setSelectedDocumentForUpdate] =
     useState<CaseDocumentProps | null>(null);
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
@@ -46,13 +50,50 @@ const Documents: React.FC = () => {
   const params = useParams();
   const { casealias } = params;
 
+  // File type tabs - keep labels in sync with the upload modal select options
+  const FILE_TYPES: { value: string; label: string }[] = [
+    { value: "COMPLIANCE_DOCUMENTS", label: "Compliance Documents" },
+    { value: "FACT_FINDS", label: "Fact Finds" },
+    { value: "IDS", label: "IDs" },
+    { value: "PROOF_OF_ADDRESS", label: "Proof of Address" },
+    { value: "INCOME_DOCUMENTS", label: "Income Documents" },
+    { value: "BANK_STATEMENTS", label: "Bank Statements" },
+    {
+      value: "PROOF_OF_DEPOSIT_BANK_STATEMENTS",
+      label: "Proof of Deposit - Bank Statements",
+    },
+    { value: "DONOR_DOCUMENTS", label: "Donor Documents" },
+    { value: "CREDIT_REPORT", label: "Credit Report" },
+    { value: "RESEARCH_DOCUMENTS", label: "Research Documents" },
+    { value: "LENDERS_KFI", label: "Lender's KFI" },
+    { value: "LENDERS_DIP", label: "Lender's DIP" },
+    {
+      value: "LENDERS_FULL_MORTGAGE_APPLICATION",
+      label: "Lender's Full Mortgage Application",
+    },
+    { value: "LENDERS_OFFER", label: "Lender's Offer" },
+    { value: "SUITABILITY_LETTER", label: "Suitability Letter" },
+    {
+      value: "GENERAL_INSURANCE_DOCUMENTS",
+      label: "General Insurance Documents",
+    },
+    { value: "PROTECTION_DOCUMENTS", label: "Protection Documents" },
+    { value: "AML_AND_SANCTIONS_SEARCH", label: "AML and Sanctions Search" },
+    { value: "OTHERS", label: "Others" },
+  ];
+
   // RTK hooks
   const { data: caseDocumentsData, isLoading } = useGetCaseDocumentsQuery({
     case_alias: casealias,
   });
 
-  // Filter documents based on search term
-  const filteredDocuments = caseDocuments.filter((doc) => {
+  // First filter by active tab (file_type), then by search term
+  const tabFilteredDocuments = caseDocuments.filter((doc) => {
+    if (!activeTab) return true; // all
+    return doc.file_type === activeTab;
+  });
+
+  const filteredDocuments = tabFilteredDocuments.filter((doc) => {
     if (!searchTerm) return true;
 
     const searchLower = searchTerm.toLowerCase();
@@ -104,6 +145,12 @@ const Documents: React.FC = () => {
     }
   }, [caseDocumentsData]);
 
+  // Clear selection and reset page when active tab changes
+  useEffect(() => {
+    clearSelection();
+    setCurrentPage(1);
+  }, [activeTab]);
+
   // Clear selection when changing pages
   useEffect(() => {
     clearSelection();
@@ -139,6 +186,9 @@ const Documents: React.FC = () => {
     setSelectedDocumentForUpdate(fileData);
     toggleUpdateModal();
   };
+
+  const toggleTransferDocumentModal = () =>
+    setTransferDocumentModalOpen(!transferDocumentModalOpen);
 
   // Batch selection functions
   const handleSelectDocument = (documentAlias: string) => {
@@ -269,7 +319,11 @@ const Documents: React.FC = () => {
                       ? "Preparing…"
                       : `Download Selected (${selectedDocuments.size})`}
                   </Button>
-                  <Button color="secondary" outline>
+                  <Button
+                    color="secondary"
+                    outline
+                    onClick={toggleTransferDocumentModal}
+                  >
                     <TbTransfer />
                     Transfer Documents ({selectedDocuments.size})
                   </Button>
@@ -287,6 +341,41 @@ const Documents: React.FC = () => {
             </Col>
           </Row>
         </CardHeader>
+
+        {/* Tabs for file types */}
+        <CardBody>
+          <Row className="mb-3">
+            <Col>
+              <div className="d-flex flex-wrap justify-content-center gap-2">
+                <Button
+                  color={activeTab === "" ? "primary" : "outline-primary"}
+                  size="sm"
+                  onClick={() => setActiveTab("")}
+                >
+                  All ({caseDocuments.length})
+                </Button>
+                {FILE_TYPES.map((ft) => (
+                  <Button
+                    key={ft.value}
+                    color={
+                      activeTab === ft.value ? "primary" : "outline-primary"
+                    }
+                    size="sm"
+                    onClick={() => setActiveTab(ft.value)}
+                    title={ft.label}
+                  >
+                    {ft.label} (
+                    {
+                      caseDocuments.filter((d) => d.file_type === ft.value)
+                        .length
+                    }
+                    )
+                  </Button>
+                ))}
+              </div>
+            </Col>
+          </Row>
+        </CardBody>
 
         <CardBody>
           <Row>
@@ -456,7 +545,7 @@ const Documents: React.FC = () => {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={6} className="text-center">
+                        <td colSpan={8} className="text-center">
                           No Documents Available
                         </td>
                       </tr>
@@ -545,6 +634,16 @@ const Documents: React.FC = () => {
         documentNames={getDocumentNamesMap()}
         case_alias={casealias?.toString() || ""}
         onDeleteComplete={clearSelection}
+      />
+
+      <TransferDocumentsModal
+        isOpen={transferDocumentModalOpen}
+        toggle={toggleTransferDocumentModal}
+        selectedDocuments={selectedDocuments}
+        documentNames={getDocumentNamesMap()}
+        currentCaseAlias={casealias?.toString() || ""}
+        allDocuments={caseDocuments}
+        onTransferComplete={clearSelection}
       />
     </Col>
   );
