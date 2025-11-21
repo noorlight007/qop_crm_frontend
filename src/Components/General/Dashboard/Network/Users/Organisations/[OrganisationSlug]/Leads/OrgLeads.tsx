@@ -119,7 +119,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
               />
               <Input
                 type="text"
-                placeholder="Search by name or email... "
+                placeholder="Search... "
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 style={{ padding: "10px 10px 10px 25px" }}

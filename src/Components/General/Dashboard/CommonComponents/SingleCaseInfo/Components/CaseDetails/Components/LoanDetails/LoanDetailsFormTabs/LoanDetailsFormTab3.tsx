@@ -176,19 +176,6 @@ const LoanDetailsFormTab3: React.FC<LoanDetailsFormTab3Props> = ({
                   />
                 </FormGroup>
               </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="case_completed_date">Case Completed Date</Label>
-                  <Input
-                    type="date"
-                    name="case_completed_date"
-                    value={formData.case_completed_date || ""}
-                    onChange={(e) =>
-                      handleFormChange(e.target.name, e.target.value)
-                    }
-                  />
-                </FormGroup>
-              </Col>
             </>
           )}
         <Col md={4}>
@@ -204,6 +191,24 @@ const LoanDetailsFormTab3: React.FC<LoanDetailsFormTab3Props> = ({
             />
           </FormGroup>
         </Col>
+        {caseStage !== "ENQUIRY" &&
+          caseStage !== "FACT_FIND" &&
+          caseStage !== "RESEARCH_COMPLIANCE_CHECK" &&
+          caseStage !== "DECISION_IN_PRINCIPLE" && (
+            <Col md={4}>
+              <FormGroup>
+                <Label for="case_completed_date">Case Completed Date</Label>
+                <Input
+                  type="date"
+                  name="case_completed_date"
+                  value={formData.case_completed_date || ""}
+                  onChange={(e) =>
+                    handleFormChange(e.target.name, e.target.value)
+                  }
+                />
+              </FormGroup>
+            </Col>
+          )}
         <Col md={4}>
           <FormGroup>
             <Label for="product_expiry_date">Product Expiry Date</Label>

@@ -133,7 +133,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
               />
               <Input
                 type="text"
-                placeholder="Search by name or email... "
+                placeholder="Search... "
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
