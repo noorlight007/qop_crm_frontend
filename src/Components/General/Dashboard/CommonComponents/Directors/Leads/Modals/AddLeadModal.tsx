@@ -35,6 +35,9 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
     reason_for_enquiry: "",
   });
 
+  // Hold per-field validation errors returned from API
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+
   // Add state for AddNewCaseModal
   const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
   const toggleCaseModal = () => setIsCaseModalOpen((prev) => !prev);
@@ -77,6 +80,75 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
       ...prevData,
       [name]: value,
     }));
+
+    // Clear any existing error for this specific field when user edits it
+    setErrors((prev) => {
+      if (!prev) return prev;
+      const copy = { ...prev };
+      // input `name` uses camelCase for some fields and snake_case for others
+      // remove both possible keys to be safe
+      delete copy[name];
+      // also try mapping snake_case to camelCase and vice-versa
+      if (name === "firstName") delete copy["first_name"];
+      if (name === "middleName") delete copy["middle_name"];
+      if (name === "lastName") delete copy["last_name"];
+      if (name === "reason_for_enquiry") delete copy["reason_for_enquiry"];
+      return copy;
+    });
+  };
+
+  const normalizeApiErrors = (err: any): Record<string, string[]> => {
+    const newErrors: Record<string, string[]> = {};
+    const data =
+      (err?.error && (err.error as any).data) ||
+      err?.response?.data ||
+      err?.data ||
+      err;
+
+    // If nested user errors exist (e.g., data.user.email -> ["..."])
+    if (data?.user && typeof data.user === "object") {
+      const user = data.user as Record<string, any>;
+      if (user.first_name)
+        newErrors.firstName = Array.isArray(user.first_name)
+          ? user.first_name
+          : [String(user.first_name)];
+      if (user.middle_name)
+        newErrors.middleName = Array.isArray(user.middle_name)
+          ? user.middle_name
+          : [String(user.middle_name)];
+      if (user.last_name)
+        newErrors.lastName = Array.isArray(user.last_name)
+          ? user.last_name
+          : [String(user.last_name)];
+      if (user.email)
+        newErrors.email = Array.isArray(user.email)
+          ? user.email
+          : [String(user.email)];
+      if (user.phone)
+        newErrors.phone = Array.isArray(user.phone)
+          ? user.phone
+          : [String(user.phone)];
+    }
+
+    // Top-level field errors
+    if (data?.gender)
+      newErrors.gender = Array.isArray(data.gender)
+        ? data.gender
+        : [String(data.gender)];
+    if (data?.reason_for_enquiry)
+      newErrors.reason_for_enquiry = Array.isArray(data.reason_for_enquiry)
+        ? data.reason_for_enquiry
+        : [String(data.reason_for_enquiry)];
+    if (data?.title)
+      newErrors.title = Array.isArray(data.title)
+        ? data.title
+        : [String(data.title)];
+
+    // If API returns a detail/message, attach it as a general error under _general
+    if (data?.detail && typeof data.detail === "string")
+      newErrors._general = [data.detail];
+
+    return newErrors;
   };
 
   const handleSaveAndCreateCase = async (e: React.FormEvent) => {
@@ -101,23 +173,27 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         const leadId = result.data.user?.id;
         setCreatedLeadId(leadId);
         setIsCaseModalOpen(true);
+        // Clear any existing errors on success
+        setErrors({});
       } else if ("error" in result) {
-        const errorMessage =
-          (result.error as any)?.data?.user?.email?.[0] ||
-          (result.error as any)?.data?.detail ||
+        const normalized = normalizeApiErrors(result);
+        setErrors(normalized);
+        const firstMsg =
+          Object.values(normalized).flat()[0] ||
           extractErrorDetail(result) ||
           "Invalid Request...";
-        toast.error(errorMessage);
+        toast.error(firstMsg);
       } else {
         toast.error("Invalid Request...");
       }
     } catch (error: any) {
-      const errorMessage =
-        (error?.response?.data?.user?.email?.[0] as string) ||
-        (error?.response?.data?.detail as string) ||
+      const normalized = normalizeApiErrors(error);
+      setErrors(normalized);
+      const firstMsg =
+        Object.values(normalized).flat()[0] ||
         extractErrorDetail(error) ||
         "An error occurred. Please try again.";
-      toast.error(errorMessage);
+      toast.error(firstMsg);
       console.error("Error creating lead:", error);
     }
   };
@@ -158,24 +234,29 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
           gender: "",
           reason_for_enquiry: "",
         });
+        // Clear any existing errors on success
+        setErrors({});
         toggle(); // Close the modal
       } else if ("error" in result) {
-        const errorMessage =
-          (result.error as any)?.data?.user?.email?.[0] ||
-          (result.error as any)?.data?.detail ||
+        const normalized = normalizeApiErrors(result);
+        setErrors(normalized);
+        const firstMsg =
+          Object.values(normalized).flat()[0] ||
           extractErrorDetail(result) ||
           "Invalid Request...";
-        toast.error(errorMessage);
+        toast.error(firstMsg);
+        // toast.error((result.error as any)?.data);
       } else {
         toast.error("Invalid Request...");
       }
     } catch (error: any) {
-      const errorMessage =
-        (error?.response?.data?.user?.email?.[0] as string) ||
-        (error?.response?.data?.detail as string) ||
+      const normalized = normalizeApiErrors(error);
+      setErrors(normalized);
+      const firstMsg =
+        Object.values(normalized).flat()[0] ||
         extractErrorDetail(error) ||
         "An error occurred. Please try again.";
-      toast.error(errorMessage);
+      toast.error(firstMsg);
       console.error("Error creating lead:", error);
     }
   };
@@ -220,6 +301,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
+                {errors.title && (
+                  <div className="text-danger small mt-1">
+                    {errors.title.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -235,6 +321,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   onChange={handleInputChange}
                   required
                 />
+                {errors.firstName && (
+                  <div className="text-danger small mt-1">
+                    {errors.firstName.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -247,6 +338,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   value={formData.middleName || ""}
                   onChange={handleInputChange}
                 />
+                {errors.middleName && (
+                  <div className="text-danger small mt-1">
+                    {errors.middleName.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -262,6 +358,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   onChange={handleInputChange}
                   required
                 />
+                {errors.lastName && (
+                  <div className="text-danger small mt-1">
+                    {errors.lastName.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -277,6 +378,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   onChange={handleInputChange}
                   required
                 />
+                {errors.email && (
+                  <div className="text-danger small mt-1">
+                    {errors.email.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -292,6 +398,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   onChange={handleInputChange}
                   required
                 />
+                {errors.phone && (
+                  <div className="text-danger small mt-1">
+                    {errors.phone.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -312,6 +423,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   <option value="FEMALE">Female</option>
                   <option value="OTHER">Other</option>
                 </Input>
+                {errors.gender && (
+                  <div className="text-danger small mt-1">
+                    {errors.gender.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -325,6 +441,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   value={formData.reason_for_enquiry}
                   onChange={handleInputChange}
                 />
+                {errors.reason_for_enquiry && (
+                  <div className="text-danger small mt-1">
+                    {errors.reason_for_enquiry.join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>

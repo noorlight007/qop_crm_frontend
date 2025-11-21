@@ -27,6 +27,7 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
 }) => {
   const [leadData, setLeadData] = useState<Partial<LeadsInfo>>(selectedLead);
   const [isModified, setIsModified] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   const [updateLeadDetails, { isLoading }] = useUpdateLeadDetailsMutation();
 
@@ -39,6 +40,13 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    // Clear any existing error for this specific field when user edits it
+    setErrors((prev) => {
+      if (!prev) return prev;
+      const copy = { ...prev };
+      delete copy[name];
+      return copy;
+    });
     const keys = name.split(".");
     setLeadData((prev: any) => {
       const updatedData = JSON.parse(JSON.stringify(prev));
@@ -51,6 +59,56 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
       return updatedData as Partial<LeadsInfo>;
     });
     setIsModified(true); // Set the form as modified
+  };
+
+  const normalizeApiErrors = (err: any): Record<string, string[]> => {
+    const newErrors: Record<string, string[]> = {};
+    const data =
+      (err?.error && (err.error as any).data) ||
+      err?.response?.data ||
+      err?.data ||
+      err;
+
+    if (data?.user && typeof data.user === "object") {
+      const user = data.user as Record<string, any>;
+      if (user.title)
+        newErrors["user.title"] = Array.isArray(user.title)
+          ? user.title
+          : [String(user.title)];
+      if (user.first_name)
+        newErrors["user.first_name"] = Array.isArray(user.first_name)
+          ? user.first_name
+          : [String(user.first_name)];
+      if (user.middle_name)
+        newErrors["user.middle_name"] = Array.isArray(user.middle_name)
+          ? user.middle_name
+          : [String(user.middle_name)];
+      if (user.last_name)
+        newErrors["user.last_name"] = Array.isArray(user.last_name)
+          ? user.last_name
+          : [String(user.last_name)];
+      if (user.email)
+        newErrors["user.email"] = Array.isArray(user.email)
+          ? user.email
+          : [String(user.email)];
+      if (user.phone)
+        newErrors["user.phone"] = Array.isArray(user.phone)
+          ? user.phone
+          : [String(user.phone)];
+      if (user.nid)
+        newErrors["user.nid"] = Array.isArray(user.nid)
+          ? user.nid
+          : [String(user.nid)];
+    }
+
+    if (data?.reason_for_enquiry)
+      newErrors["reason_for_enquiry"] = Array.isArray(data.reason_for_enquiry)
+        ? data.reason_for_enquiry
+        : [String(data.reason_for_enquiry)];
+    if (data?.detail && typeof data.detail === "string")
+      newErrors._general = [data.detail];
+
+    return newErrors;
   };
 
   const handleUpdateLead = async (leadData: Partial<LeadsInfo>) => {
@@ -74,27 +132,32 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
 
         if (result.data) {
           toast.success("Lead update successfully.");
+          // Clear errors on success
+          setErrors({});
         } else if ("error" in result) {
-          const errorMessage =
-            (result.error as any)?.data?.user?.email?.[0] ||
-            (result.error as any)?.data?.user?.nid?.[0] ||
-            (result.error as any)?.data?.detail ||
-            "Invalid Request...";
-          // Custom error for duplicate email
+          const normalized = normalizeApiErrors(result);
+          setErrors(normalized);
+          const firstMsg =
+            Object.values(normalized).flat()[0] || "Invalid Request...";
           if (
-            typeof errorMessage === "string" &&
-            errorMessage.toLowerCase().includes("email") &&
-            errorMessage.toLowerCase().includes("exist")
+            typeof firstMsg === "string" &&
+            firstMsg.toLowerCase().includes("email") &&
+            firstMsg.toLowerCase().includes("exist")
           ) {
             toast.error("User with this email already exists.");
           } else {
-            toast.error(errorMessage);
+            toast.error(firstMsg as string);
           }
         } else {
           toast.error("Invalid Request...");
         }
       }
     } catch (error) {
+      const normalized = normalizeApiErrors(error);
+      setErrors(normalized);
+      const firstMsg =
+        Object.values(normalized).flat()[0] || "An error occurred";
+      toast.error(firstMsg as string);
       console.error("Error saving lead:", error);
     }
   };
@@ -136,6 +199,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
+                {errors["user.title"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.title"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -151,6 +219,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   className="mb-2"
                   required
                 />
+                {errors["user.first_name"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.first_name"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -165,6 +238,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["user.middle_name"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.middle_name"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -180,6 +258,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   className="mb-2"
                   required
                 />
+                {errors["user.last_name"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.last_name"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -195,6 +278,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["user.email"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.email"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -209,6 +297,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["user.phone"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.phone"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col sm="12">
@@ -223,6 +316,11 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["reason_for_enquiry"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["reason_for_enquiry"].join(" ")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
