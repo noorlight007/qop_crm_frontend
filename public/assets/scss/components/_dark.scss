@@ -1566,11 +1566,11 @@
   .theme-form textarea {
     background-color: var(--body-color);
   }
-  .form-control {
-    &::placeholder {
-      color: var(--font-color);
-    }
-  }
+  // .form-control {
+  //   &::placeholder {
+  //     color: var(--font-color);
+  //   }
+  // }
   // ===============chart-start==================
   .apexcharts-yaxistooltip {
     color: var(--body-font-color);
