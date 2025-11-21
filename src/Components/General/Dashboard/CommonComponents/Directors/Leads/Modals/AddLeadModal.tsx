@@ -342,7 +342,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
             color="success"
             onClick={() => setSubmitType("case")}
           >
-            Save & Create Case
+            {isLoading ? "Saving..." : "Save & Create Case"}
           </Button>
           <Button color="secondary" onClick={toggle}>
             Cancel

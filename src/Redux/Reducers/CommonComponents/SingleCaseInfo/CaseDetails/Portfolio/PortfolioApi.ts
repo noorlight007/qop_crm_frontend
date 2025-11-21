@@ -31,6 +31,14 @@ export const PortfolioApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["PortfolioDetails"],
     }),
+    exportPropertiesCSV: builder.mutation({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/export-properties/`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
+      invalidatesTags: ["PortfolioDetails"],
+    }),
   }),
 });
 
@@ -39,4 +47,5 @@ export const {
   useGetPortfolioApplicantsQuery,
   useAddPropertyDetailsMutation,
   useDeletePropertyDetailsMutation,
+  useExportPropertiesCSVMutation,
 } = PortfolioApi;
