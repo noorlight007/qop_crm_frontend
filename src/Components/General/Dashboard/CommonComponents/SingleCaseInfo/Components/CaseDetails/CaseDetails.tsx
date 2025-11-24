@@ -16,7 +16,6 @@ import {
   restoreBasicTab,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import { useEffect } from "react";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import {
   Card,
@@ -117,13 +116,10 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
           </CardHeader>
           {/* Case Details Tab Content */}
           <CardBody className="px-0 pb-0">
-            <div className="scroll-bar-wrap">
-              <PerfectScrollbar
-                className="scrollbar-margins large-margin scroll-demo pe-0"
-                style={{ width: "100%", maxHeight: "900px" }}
-              >
+            <div>
+              <div className="custom-casedetails-scroll">
                 <CaseDetailsTabContent />
-              </PerfectScrollbar>
+              </div>
             </div>
           </CardBody>
         </CardBody>
