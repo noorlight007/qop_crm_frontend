@@ -34,6 +34,7 @@ const ProductContent: React.FC = () => {
     annual_percentage_rate: "",
     product_class: "",
     early_repayment_charge: 0.0,
+    early_repayment_charge_end_date: null,
     initial_monthly_payment: "",
     initial_monthly_payment_including_fees: "",
     monthly_payment_after_initial_period: "",
@@ -73,17 +74,19 @@ const ProductContent: React.FC = () => {
         initial_rate_type: details.initial_rate_type || "",
         initial_rate_period_type: details.initial_rate_period_type || "",
         initial_rate_period: details.initial_rate_period || null,
-        initial_rate_date_period: details.initial_rate_date_period || "",
+        initial_rate_date_period: details.initial_rate_date_period || null,
         reversion_rate: details.reversion_rate || null,
         max_ltv: details.max_ltv || null,
         annual_percentage_rate: details.annual_percentage_rate || null,
         product_class: details.product_class || "",
         early_repayment_charge: details.early_repayment_charge || null,
+        early_repayment_charge_end_date:
+          details.early_repayment_charge_end_date || null,
         initial_monthly_payment: details.initial_monthly_payment || null,
         initial_monthly_payment_including_fees:
           details.initial_monthly_payment_including_fees || null,
         monthly_payment_after_initial_period:
-          details.monthly_payment_after_initial_Period || null,
+          details.monthly_payment_after_initial_period || null,
         true_cost_over_initial_period:
           details.true_cost_over_initial_period || null,
         true_cost_over_term: details.true_cost_over_term || null,
@@ -113,8 +116,17 @@ const ProductContent: React.FC = () => {
         const cleanedFormData = { ...formData };
 
         // Ensure date fields are properly formatted or null
-        if (cleanedFormData.initial_rate_date_period === "") {
+        if (
+          cleanedFormData.initial_rate_date_period === "" ||
+          cleanedFormData.initial_rate_date_period === null
+        ) {
           cleanedFormData.initial_rate_date_period = null;
+        }
+        if (
+          cleanedFormData.early_repayment_charge_end_date === "" ||
+          cleanedFormData.early_repayment_charge_end_date === null
+        ) {
+          cleanedFormData.early_repayment_charge_end_date = null;
         }
 
         const response = await updateProductDetails({
@@ -152,7 +164,7 @@ const ProductContent: React.FC = () => {
 
     // Handle date fields - ensure empty dates are null instead of empty string
     if (type === "date" && value === "") {
-      processedValue = "";
+      processedValue = null as any;
     }
 
     setFormData((prev) => ({
@@ -360,7 +372,7 @@ const ProductContent: React.FC = () => {
       </Row>
 
       <Row>
-        <Col md={4}>
+        <Col md={3}>
           <FormGroup>
             <Label for="earlyRepaymentCharge">Early Repayment Charge</Label>
             <Input
@@ -374,7 +386,21 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-        <Col md={4}>
+        <Col md={3}>
+          <FormGroup>
+            <Label for="earlyRepaymentChargeEndDate">
+              Early Repayment Charge End Date
+            </Label>
+            <Input
+              id="earlyRepaymentChargeEndDate"
+              name="early_repayment_charge_end_date"
+              type="date"
+              value={formData.early_repayment_charge_end_date || ""}
+              onChange={handleChange}
+            />
+          </FormGroup>
+        </Col>
+        <Col md={3}>
           <FormGroup>
             <Label for="initialMonthlyPayment">
               Initial Monthly Payment (£)
@@ -391,7 +417,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-        <Col md={4}>
+        <Col md={3}>
           <FormGroup>
             <Label for="initialMonthlyPaymentIncludingFees">
               Initial Monthly Payment Including Fees (£)

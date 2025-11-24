@@ -233,6 +233,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   };
 
   const handleNext = () => setTabId((parseInt(tabId) + 1).toString());
+  const handleBack = () => setTabId((parseInt(tabId) - 1).toString());
 
   const handleSave = async () => {
     const updatedLoanDetailsData = {
@@ -302,14 +303,19 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
             formData={formDataTab2}
             handleFormChange={(name, value) => handleFormChange(2, name, value)}
           />
-          <Button
-            color="primary"
-            onClick={handleNext}
-            className="float-end"
-            disabled={!isTab2Valid()}
-          >
-            Next
-          </Button>
+          <div className="d-flex justify-content-between">
+            <Button color="secondary" onClick={handleBack}>
+              Back
+            </Button>
+            <Button
+              color="primary"
+              onClick={handleNext}
+              className="ms-2"
+              disabled={!isTab2Valid()}
+            >
+              Next
+            </Button>
+          </div>
         </TabPane>
         <TabPane tabId="3">
           <LoanDetailsFormTab3
@@ -317,56 +323,66 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
             caseStage={caseData?.case_stage}
             handleFormChange={(name, value) => handleFormChange(3, name, value)}
           />
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
+          <div className="d-flex justify-content-between">
+            <Button color="secondary" onClick={handleBack}>
+              Back
+            </Button>
+            <Button color="primary" onClick={handleNext} className="ms-2">
+              Next
+            </Button>
+          </div>
         </TabPane>
         <TabPane tabId="4">
           <LoanDetailsFormTab4
             formData={formDataTab4}
             handleFormChange={(name, value) => handleFormChange(4, name, value)}
           />
-          <div className=" d-flex justify-content-end gap-3 mt-2">
-            <Button
-              type="submit"
-              color="primary"
-              onClick={handleSave}
-              className="float-end"
-              disabled={
-                isLoading ||
-                isUpdating ||
-                (session?.user?.user_type === "CLIENT" &&
-                  loandetailsData?.updated_by !== null)
-              }
-            >
-              {isUpdating ? "Saving..." : "Save Details"}
+          <div className=" d-flex justify-content-between gap-3 mt-2">
+            <Button color="secondary" onClick={handleBack}>
+              Back
             </Button>
-            <Button
-              type="submit"
-              color="secondary"
-              onClick={async () => {
-                if (
-                  session?.user?.user_type === "CLIENT" &&
-                  loandetailsData?.updated_by !== null
-                ) {
-                  handleNextTab();
-                } else {
-                  try {
-                    await handleSave();
-                    handleNextTab();
-                  } catch (error) {
-                    // Error is already handled in handleSave, just prevent navigation
-                    console.error("Save failed, not navigating to next tab");
-                  }
+            <div className="d-flex gap-3">
+              <Button
+                type="submit"
+                color="primary"
+                onClick={handleSave}
+                className=""
+                disabled={
+                  isLoading ||
+                  isUpdating ||
+                  (session?.user?.user_type === "CLIENT" &&
+                    loandetailsData?.updated_by !== null)
                 }
-              }}
-              disabled={isLoading || isUpdating}
-            >
-              {session?.user?.user_type === "CLIENT" &&
-              loandetailsData?.updated_by !== null
-                ? "Go To Next"
-                : "Save & Next"}
-            </Button>
+              >
+                {isUpdating ? "Saving..." : "Save Details"}
+              </Button>
+              <Button
+                type="submit"
+                color="secondary"
+                onClick={async () => {
+                  if (
+                    session?.user?.user_type === "CLIENT" &&
+                    loandetailsData?.updated_by !== null
+                  ) {
+                    handleNextTab();
+                  } else {
+                    try {
+                      await handleSave();
+                      handleNextTab();
+                    } catch (error) {
+                      // Error is already handled in handleSave, just prevent navigation
+                      console.error("Save failed, not navigating to next tab");
+                    }
+                  }
+                }}
+                disabled={isLoading || isUpdating}
+              >
+                {session?.user?.user_type === "CLIENT" &&
+                loandetailsData?.updated_by !== null
+                  ? "Go To Next"
+                  : "Save & Next"}
+              </Button>
+            </div>
           </div>
         </TabPane>
       </TabContent>
