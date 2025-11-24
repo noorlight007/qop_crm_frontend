@@ -136,7 +136,7 @@ const Introducers: React.FC<IntroducersProps> = ({
               />
               <Input
                 type="text"
-                placeholder="Search by name or email... "
+                placeholder="Search... "
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);

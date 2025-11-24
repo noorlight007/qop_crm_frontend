@@ -23,9 +23,11 @@ export const LoanDetailsTab = () => {
               {LoanDetailsFormTabTitleData.map((item, index) => (
                 <NavItem key={index}>
                   <NavLink
-                    className={`${basicTab === item.id ? "active" : ""}`}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setBasicTab(item.id)}
+                    className={`${
+                      basicTab === item.id ? "active" : ""
+                    } disabled`}
+                    style={{ cursor: "default", pointerEvents: "none" }}
+                    aria-disabled={true}
                   >
                     {item.nav}
                   </NavLink>

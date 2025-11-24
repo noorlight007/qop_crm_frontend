@@ -147,7 +147,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               />
               <Input
                 type="text"
-                placeholder="Search by name or email... "
+                placeholder="Search... "
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ padding: "10px 10px 10px 25px" }}
