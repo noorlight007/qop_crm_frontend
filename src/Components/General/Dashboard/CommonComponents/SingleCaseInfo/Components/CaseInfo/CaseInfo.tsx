@@ -109,7 +109,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                   className="opacity-100 py-3"
                 >
                   <TbCircleArrowUp size="16" className="me-1" />
-                  <span>Update Info</span>
+                  <span>Update Case</span>
                 </DropdownItem>
                 <DropdownItem className="opacity-100 py-3">
                   <TbCopy size="16" className="me-1" />
