@@ -34,6 +34,7 @@ export const baseApi = createApi({
 
     // Single case info start
     "CaseDetails",
+    "SectionCompleteStatus",
     "CasesSummary",
     "JointUserDetails",
     "CaseDocuments",
