@@ -292,26 +292,32 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                           {caseInfo?.case_category
                             ? formatChoiceFieldValue(caseInfo.case_category)
                             : "N/A"}
-                          {caseInfo?.case_category === "MORTGAGE" && (
-                            <small>
-                              (
-                              {formatChoiceFieldValue(
-                                caseInfo?.application_type || ""
-                              )}
-                              {caseInfo?.mortgage_type ? (
-                                <>
-                                  {" "}
-                                  <FaArrowRight />{" "}
-                                  {formatChoiceFieldValue(
-                                    caseInfo?.mortgage_type || ""
-                                  )}
-                                </>
-                              ) : (
-                                ""
-                              )}
-                              )
-                            </small>
-                          )}
+                          {caseInfo?.case_category === "MORTGAGE" &&
+                            ((caseInfo?.application_type &&
+                              String(caseInfo.application_type).trim() !==
+                                "") ||
+                              (caseInfo?.mortgage_type &&
+                                String(caseInfo.mortgage_type).trim() !==
+                                  "")) && (
+                              <small>
+                                (
+                                {caseInfo?.application_type
+                                  ? formatChoiceFieldValue(
+                                      caseInfo.application_type
+                                    )
+                                  : null}
+                                {caseInfo?.mortgage_type ? (
+                                  <>
+                                    {" "}
+                                    <FaArrowRight />{" "}
+                                    {formatChoiceFieldValue(
+                                      caseInfo.mortgage_type
+                                    )}
+                                  </>
+                                ) : null}
+                                )
+                              </small>
+                            )}
                         </strong>
                       </h6>
                       <h6 className="pt-1">

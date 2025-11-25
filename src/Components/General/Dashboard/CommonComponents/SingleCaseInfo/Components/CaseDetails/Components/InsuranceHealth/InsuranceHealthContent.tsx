@@ -5,6 +5,7 @@ import {
   useGetInsuranceHealthDetailsQuery,
   useUpdateInsuranceHealthDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceHealth/InsuranceHealthApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -22,6 +23,9 @@ const InsuranceHealthContent: React.FC = () => {
     updateInsuranceHealthDetails,
     { isLoading: isUpdating, isSuccess, isError: isUpdateError },
   ] = useUpdateInsuranceHealthDetailsMutation();
+
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [healthConditions, setHealthConditions] = useState<boolean>(false);
   const [note, setNote] = useState<string>("");
@@ -68,6 +72,14 @@ const InsuranceHealthContent: React.FC = () => {
         payload,
       }).unwrap();
       toast.success("Insurance health details updated successfully.");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_health_insurance: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       return res;
     } catch (err) {
       console.error("Update failed", err);

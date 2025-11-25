@@ -6,6 +6,7 @@ import {
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -46,6 +47,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   });
   const [uploadCaseDocument, { isLoading: isUploading }] =
     useUploadCaseDocumentMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [formData, setFormData] = useState({
     file: "",
@@ -256,12 +259,28 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       if (successCount === documents.length) {
         toast.success(`All ${successCount} document(s) uploaded successfully!`);
         toggle();
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_documents: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
       } else if (successCount > 0) {
         toast.warning(
           `${successCount} documents uploaded successfully. Failed: ${failedFiles.join(
             ", "
           )}`
         );
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_documents: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
         toggle();
       } else {
         toast.error(

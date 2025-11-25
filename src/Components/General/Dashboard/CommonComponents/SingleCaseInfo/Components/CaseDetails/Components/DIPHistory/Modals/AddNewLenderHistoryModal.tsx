@@ -1,5 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useAddDIPHistoryDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/DIPHistoryDetails/DIPHistoryDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { AddNewLenderHistoryModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DIPHistoryTypes";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -25,6 +26,8 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
   //Rtk hooks
   const [addDIPHistoryDetails, { isLoading }] =
     useAddDIPHistoryDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [formData, setFormData] = useState({
     is_this_application_had_a_decision_in_principle: true,
@@ -63,6 +66,15 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
       });
       if (res.data) {
         toast.success("DIP History added successfully");
+        toggle();
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_dip_history: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
       } else if (res.error) {
         const errorMessage =
           (res.error as any)?.data?.detail || "Failed to add DIP History";
@@ -73,7 +85,6 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
     } catch (error) {
       toast.error("Failed to add DIP History");
     }
-    toggle();
   };
 
   if (isLoading) {

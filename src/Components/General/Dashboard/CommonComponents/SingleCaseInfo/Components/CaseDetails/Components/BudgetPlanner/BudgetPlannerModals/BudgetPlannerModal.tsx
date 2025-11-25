@@ -4,6 +4,7 @@ import {
   initializeBudgetPlannerForm,
   updateBudgetPlannerSection,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerFormSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { BudgetPlannerModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -43,6 +44,8 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
   const [basicTab, setBasicTab] = useState<number>(1);
   const budgetPlannerData = useSelector((state: any) => state.budgetPlanner);
   const [updateBudgetPlanner, { isLoading }] = useUpdateBudgetPlannerMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   // Local state to track only the changes
   const [updatedFields, setUpdatedFields] = useState<Record<string, any>>({});
 
@@ -66,6 +69,14 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     });
     if (res.data) {
       toast.success("Budget Planner Updated Successfully");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_budget_planner: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       toggle();
     } else if (res.error) {
       const errorMessage =

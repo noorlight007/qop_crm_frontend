@@ -1,4 +1,5 @@
 import { useAddFeesInDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import {
   AddFeeInModalProps,
   FeeDataProps,
@@ -30,6 +31,8 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
   caseAlias,
 }) => {
   const [addFeesInDetails, { isLoading }] = useAddFeesInDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const initialState = {
     fee: "",
     feeType: "",
@@ -63,6 +66,14 @@ const AddFeeInModal: FC<AddFeeInModalProps> = ({
       feesInDetails: data,
     });
     if (res.data) {
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: caseAlias,
+          section_data: { is_fees: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       onSubmit(feeData);
       setFeeData(initialState); // Reset form
       toggle();
