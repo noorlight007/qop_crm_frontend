@@ -394,26 +394,32 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             {caseItem.case_category ? (
                               <>
                                 {formatChoiceFieldValue(caseItem.case_category)}
-                                {caseItem.case_category === "MORTGAGE" && (
-                                  <p className="small">
-                                    (
-                                    {formatChoiceFieldValue(
-                                      caseItem.application_type || ""
-                                    )}
-                                    {caseItem.mortgage_type ? (
-                                      <>
-                                        {" "}
-                                        <TbArrowsRightLeft />{" "}
-                                        {formatChoiceFieldValue(
-                                          caseItem.mortgage_type || ""
-                                        )}
-                                      </>
-                                    ) : (
-                                      <TbArrowsRightLeft />
-                                    )}
-                                    )
-                                  </p>
-                                )}
+                                {caseItem.case_category === "MORTGAGE" &&
+                                  ((caseItem.application_type &&
+                                    String(caseItem.application_type).trim() !==
+                                      "") ||
+                                    (caseItem.mortgage_type &&
+                                      String(caseItem.mortgage_type).trim() !==
+                                        "")) && (
+                                    <p className="small">
+                                      (
+                                      {caseItem.application_type
+                                        ? formatChoiceFieldValue(
+                                            caseItem.application_type
+                                          )
+                                        : null}
+                                      {caseItem.mortgage_type ? (
+                                        <>
+                                          {" "}
+                                          <TbArrowsRightLeft />{" "}
+                                          {formatChoiceFieldValue(
+                                            caseItem.mortgage_type
+                                          )}
+                                        </>
+                                      ) : null}
+                                      )
+                                    </p>
+                                  )}
                               </>
                             ) : (
                               "-"

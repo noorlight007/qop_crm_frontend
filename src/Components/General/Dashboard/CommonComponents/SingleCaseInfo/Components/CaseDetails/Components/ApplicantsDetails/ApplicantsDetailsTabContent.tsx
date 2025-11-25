@@ -8,6 +8,7 @@ import {
   useGetCaseLoanDetailsQuery,
   useGetLoanDetailsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetails/LoanDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { ApplicantProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsUserTypes";
 import LoadingSpinner from "@/app/loading";
@@ -70,6 +71,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   );
   const [updateApplicantDetails, { isLoading: isUpdatingApplicant }] =
     useUpdateApplicantDetailsMutation();
+  const [updateSectionCompleteStatus] = useUpdateSectionCompleteStatusMutation();
   const { data } = useGetCaseLoanDetailsQuery(casealias);
 
   // Ensure data exists and has elements before accessing [0]
@@ -248,6 +250,14 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
       if (response.data) {
         toast.success("Applicant details updated successfully!");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias as string,
+            section_data: { is_applicants_details: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
         // Handle different submit actions
         if (submitActionRef.current === "next") {
           handleNextTab();

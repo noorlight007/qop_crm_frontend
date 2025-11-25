@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { useUpdatePropertyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyApi";
 import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
@@ -34,6 +35,8 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
 
   // RTK Hooks
   const [updateSingleProperty, { isLoading }] = useUpdatePropertyMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     dispatch(updateProperty({ notes: e.target.value }));
@@ -52,6 +55,14 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
     });
 
     if (response.data) {
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_security_property: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       toast.success("Property Details Updated Successfully");
     } else if (response.error) {
       const errorMessage =

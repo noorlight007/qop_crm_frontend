@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import { useUpdateExistingProtectionDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtection/ExistingProtectionDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import {
   ExistingProtectionDetailsProps,
   ExistingProtectionTabContentProps,
@@ -66,6 +67,8 @@ const ExistingProtectionContent: React.FC<
   //fetch api
   const [updatePropertyDetails, { isLoading: isUpdateLoading }] =
     useUpdateExistingProtectionDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   // Add toggle function
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -124,6 +127,14 @@ const ExistingProtectionContent: React.FC<
     });
     if (res.data) {
       toast.success("Updated Successfully!");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_existing_protection: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       // Clear cached edits for this alias since changes are now saved
       if (clearCachedEdits && formValues?.alias) {
         clearCachedEdits(formValues.alias);

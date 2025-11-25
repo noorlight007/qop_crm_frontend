@@ -7,6 +7,7 @@ import {
   useGetLoanDetailsQuery,
   useUpdateLoanDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetails/LoanDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { LoanDetailsTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetailsTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -41,6 +42,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     );
   const [updateLoanDetails, { isLoading: isUpdating }] =
     useUpdateLoanDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias }
@@ -251,6 +254,14 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
 
       if (response.data) {
         toast.success("Loan details updated successfully");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_loan_details: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
       } else if (response.error) {
         // Extract backend error message - prioritize details field
         const errorMessage =

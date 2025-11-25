@@ -1,5 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useAddCreditCommitmentsDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
 import { AddCreditCommitmentModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
@@ -50,6 +51,8 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
   });
   const [addCreditCommitmentsDetails, { isLoading: isAdding }] =
     useAddCreditCommitmentsDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -71,6 +74,14 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
       if (res.data) {
         toast.success("Credit Commitment added successfully");
         toggle();
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_credit_commitments: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
         setFormData({
           applicant: "",
           joint: "",

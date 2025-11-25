@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import {
   useAssignCaseSolicitorMutation,
   useGetCaseSolicitorDetailsQuery,
@@ -53,6 +54,8 @@ const Solicitor: React.FC = () => {
     useAssignCaseSolicitorMutation();
   const [updateSolicitorDetails, { isLoading: isUpdateLoading }] =
     useUpdateSolicitorDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSolicitor, setSelectedSolicitor] = useState<any>(null);
@@ -128,6 +131,14 @@ const Solicitor: React.FC = () => {
 
       setSelectedSolicitor(null);
       Swal.fire("Success", "Solicitor assigned successfully!", "success");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_solicitors_accountants: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
     } catch (error) {
       console.error("Failed to assign solicitor:", error);
       toast.error("Failed to assign solicitor. Please try again.");
@@ -162,6 +173,14 @@ const Solicitor: React.FC = () => {
 
       setSelectedCaseSolicitor(updatedSolicitor);
       toast.success("Solicitor details updated successfully!");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_solicitors_accountants: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       // Only go to next tab if this was a Save & Next action
       if (submitActionRef.current === "next") {
         handleNextTab();

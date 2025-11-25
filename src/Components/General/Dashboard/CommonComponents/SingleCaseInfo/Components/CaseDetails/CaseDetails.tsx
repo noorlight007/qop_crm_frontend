@@ -15,7 +15,10 @@ import {
   basicTabIndicator,
   restoreBasicTab,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { useGetSectionCompleteStatusQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { useParams } from "next/navigation";
 import { useEffect } from "react";
+import { FaCheckCircle } from "react-icons/fa";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import {
   Card,
@@ -29,14 +32,20 @@ import {
 import { CaseDetailsTabContent } from "./Components/CaseDetailsTabContent";
 
 const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
+  const { casealias } = useParams();
   const basicTab = useAppSelector((state: any) => state.caseDetails.basicTabId);
-  const isRequired = useAppSelector(
-    (state: any) => state.caseDetails.isRequired
-  );
-  const requiredFilledTabId = useAppSelector(
-    (state: any) => state.caseDetails.requiredFilledTabId
-  );
+  // const isRequired = useAppSelector(
+  //   (state: any) => state.caseDetails.isRequired
+  // );
+  // const requiredFilledTabId = useAppSelector(
+  //   (state: any) => state.caseDetails.requiredFilledTabId
+  // );
   const dispatch = useAppDispatch();
+
+  const { data: SectionCompleteStatusData, isLoading } =
+    useGetSectionCompleteStatusQuery({
+      case_alias: casealias,
+    });
 
   // Map case stages to corresponding tab title data
   const tabDataMap: Record<string, any[]> = {
@@ -75,6 +84,61 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
     }
   }, [caseStage, dispatch, currentTabData]);
 
+  // Map a tab display name to the SectionCompleteStatusData key (e.g. "Loan Details" -> "is_loan_details")
+  const navToStatusKey = (nav: string) => {
+    if (!nav) return "";
+
+    // Explicit mapping for tab labels that don't map cleanly via simple normalization
+    const explicitMap: Record<string, string> = {
+      "Loan Details": "is_loan_details",
+      "Application Overview": "is_loan_details",
+      "Applicant(s) Details": "is_applicants_details",
+      "Employment/Income": "is_employment_income",
+      "Credit Commitments": "is_credit_commitments",
+      Adverse: "is_adverse",
+      Portfolio: "is_portfolio",
+      "Security Property": "is_security_property",
+      "Solicitors & Accountants": "is_solicitors_accountants",
+      "Budget Planner": "is_budget_planner",
+      "Existing Protection": "is_existing_protection",
+      "Mortgage Your Needs": "is_mortgage_your_needs",
+      Notes: "is_notes",
+      Product: "is_product",
+      "DIP History": "is_dip_history",
+      Suitability: "is_suitability",
+      "Insurance Health": "is_health_insurance",
+      Fees: "is_fees",
+      Compliance: "is_compliance",
+      "Client Survey": "is_client_survey",
+      Documents: "is_documents",
+    };
+
+    if (explicitMap[nav]) return explicitMap[nav];
+
+    // Fallback normalization: remove problematic characters, lowercase, split, join with underscores
+    const words = nav
+      .replace(/[\/:&(),.-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase()
+      .split(" ")
+      .filter(Boolean);
+    return `is_${words.join("_")}`;
+  };
+
+  const isSectionComplete = (nav: string) => {
+    try {
+      const key = navToStatusKey(nav);
+      return !!(
+        SectionCompleteStatusData &&
+        key &&
+        SectionCompleteStatusData[key]
+      );
+    } catch (err) {
+      return false;
+    }
+  };
+
   return (
     <Col sm="12" className="box-col-12">
       <Card>
@@ -108,7 +172,12 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
                       dispatch(basicTabIndicator(item.nav));
                     }}
                   >
-                    {item.nav}
+                    <span className="d-flex align-items-center gap-2">
+                      <span>{item.nav}</span>
+                      {isSectionComplete(item.nav) && (
+                        <FaCheckCircle size={16} className="ms-2" />
+                      )}
+                    </span>
                   </NavLink>
                 </NavItem>
               ))}
