@@ -1,4 +1,5 @@
 import { useAddNotesMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { AddNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import DOMPurify from "isomorphic-dompurify";
 import { useParams } from "next/navigation";
@@ -26,6 +27,8 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
   const [category, setCategory] = useState("");
   const [comments, setComments] = useState("");
   const [addNotes, { isLoading }] = useAddNotesMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const editorRef = useRef<HTMLDivElement | null>(null);
 
   const resetForm = () => {
@@ -228,6 +231,14 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
       note: apiPayload,
     });
     if (response.data) {
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: caseAlias,
+          section_data: { is_notes: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       toast.success("Note added successfully");
       // reset form then close modal
       resetForm();

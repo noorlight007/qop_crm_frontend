@@ -7,6 +7,7 @@ import {
   useUpdateAdverseDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsUserTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -53,6 +54,9 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
   });
   const [updateAdverseDetails, { isLoading: isAdverseUpdating }] =
     useUpdateAdverseDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
+
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -214,6 +218,7 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
       is_direct_debit_returned_in_the_last_three_months:
         formData.is_direct_debit_returned_in_the_last_three_months,
       why_did_the_adverse_occur: formData.why_did_the_adverse_occur,
+      is_adverse: true,
     };
     console.log("Updated Fields:", updatedFields);
     const res = await updateAdverseDetails({
@@ -224,6 +229,14 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
     console.log("Response:", res);
     if (res.data) {
       toast.success("Adverse updated successfully");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_adverse: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
     } else if (res.error) {
       const errorMessage =
         (res.error as any)?.data?.detail || "Failed to update adverse details!";

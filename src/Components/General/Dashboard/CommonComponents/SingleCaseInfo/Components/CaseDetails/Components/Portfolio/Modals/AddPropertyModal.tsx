@@ -2,6 +2,7 @@ import {
   useAddPropertyDetailsMutation,
   useGetPortfolioApplicantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
@@ -37,6 +38,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [addPropertyDetails, { isLoading: isAddPropertiesLoading }] =
     useAddPropertyDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const { data, isLoading: isGetApplicantsLoading } =
     useGetPortfolioApplicantsQuery({
       case_alias: casealias,
@@ -95,6 +98,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
       if (response.data) {
         toast.success("Property added successfully!");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_portfolio: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
         toggle();
       } else if (response.error) {
         const errorMessage =

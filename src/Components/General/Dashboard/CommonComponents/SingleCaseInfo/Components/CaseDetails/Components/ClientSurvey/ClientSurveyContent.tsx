@@ -6,6 +6,7 @@ import {
   useGetClientSurveyQuery,
   useUpdateClientSurveyMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ClientSurvey/ClientSurveyApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -53,6 +54,8 @@ const ClientSurveyContent: React.FC = () => {
 
   const [updateClientSurvey, { isLoading: isUpdating }] =
     useUpdateClientSurveyMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   // Local form state
   const [clientSurvey, setClientSurvey] = React.useState<boolean>(false);
@@ -464,6 +467,14 @@ const ClientSurveyContent: React.FC = () => {
 
         if (response.data) {
           toast.success("Saved successfully!");
+          try {
+            await updateSectionCompleteStatus({
+              case_alias: casealias,
+              section_data: { is_client_survey: true },
+            });
+          } catch (err) {
+            console.error("Failed to update section complete status:", err);
+          }
         } else if (response.error) {
           // Extract backend error message - prioritize details field
           const errorMessage =

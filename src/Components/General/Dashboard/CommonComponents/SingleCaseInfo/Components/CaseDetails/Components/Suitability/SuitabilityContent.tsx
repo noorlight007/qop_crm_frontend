@@ -2,6 +2,7 @@ import { defaultAnswersData } from "@/Data/CommonComponentsData/SingleCaseInfo/C
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import {
   useGetExtraAnswerQuery,
   useGetSuitabilityQuery,
@@ -170,6 +171,8 @@ const SuitabilityContent: React.FC = () => {
   });
   const [updateSuitability, { isLoading: isUpdating }] =
     useUpdateSuitabilityMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const { data: extraAnswersData, isLoading: isExtraAnswerLoading } =
     useGetExtraAnswerQuery({
       case_alias: casealias,
@@ -558,6 +561,14 @@ const SuitabilityContent: React.FC = () => {
       });
       if (res.data) {
         toast.success("Changes saved successfully!");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_suitability: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
       } else if (res.error) {
         const errorMessage =
           (res.error as any)?.data?.detail || "Failed to save changes";

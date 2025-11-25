@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import { useUpdateComplianceMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { RootState } from "@/Redux/Store";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -35,6 +36,8 @@ export const ComplianceTab = () => {
   );
   const [updateCompliance, { isLoading: isUpdating }] =
     useUpdateComplianceMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   // Update this to use the Redux state
   const handleUpdateAll = async () => {
@@ -56,9 +59,18 @@ export const ComplianceTab = () => {
         });
         if (res.data) {
           toast.success("Compliance data updated successfully");
+          try {
+            await updateSectionCompleteStatus({
+              case_alias: casealias,
+              section_data: { is_compliance: true },
+            });
+          } catch (err) {
+            console.error("Failed to update section complete status:", err);
+          }
         } else if (res.error) {
           const errorMessage =
-            (res.error as any)?.data?.detail || "Failed to update compliance data!";
+            (res.error as any)?.data?.detail ||
+            "Failed to update compliance data!";
           toast.error(errorMessage);
         } else {
           toast.error("Failed to update compliance data");

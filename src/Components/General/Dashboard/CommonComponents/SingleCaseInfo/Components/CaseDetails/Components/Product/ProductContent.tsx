@@ -6,6 +6,7 @@ import {
   useGetProductDetailsQuery,
   useUpdateProductDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ProductDetails/ProductDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useSession } from "next-auth/react";
@@ -62,6 +63,8 @@ const ProductContent: React.FC = () => {
   });
   const [updateProductDetails, { isLoading: isUpdating }] =
     useUpdateProductDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const dispatch = useAppDispatch();
   // Update form data when API data is received
   // Update useEffect to properly map the API response
@@ -138,6 +141,14 @@ const ProductContent: React.FC = () => {
         if (response.data) {
           toast.success("Product details updated successfully!");
           // Only go to next tab if this was a Save & Next action
+          try {
+            await updateSectionCompleteStatus({
+              case_alias: casealias,
+              section_data: { is_product: true },
+            });
+          } catch (err) {
+            console.error("Failed to update section complete status:", err);
+          }
           if (submitActionRef.current === "next") {
             handleNextTab();
           }

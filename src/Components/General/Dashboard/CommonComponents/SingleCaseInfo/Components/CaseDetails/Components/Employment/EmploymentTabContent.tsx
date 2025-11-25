@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import { useUpdateEmploymentDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import {
   EmploymentDetailsProps,
   EmploymentTabContentProps,
@@ -49,6 +50,8 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     updateEmploymentDetails,
     { isLoading: isUpdateEmploymentDetailsLoading },
   ] = useUpdateEmploymentDetailsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -112,6 +115,14 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
 
     if (res.data) {
       toast.success("Employment details updated successfully.");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_employment_income: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       // Clear saved draft on successful save so we don't reapply stale data.
       if (formValues?.alias) delete draftsRef.current[formValues.alias];
       // Only go to next tab if this was a Save & Next action

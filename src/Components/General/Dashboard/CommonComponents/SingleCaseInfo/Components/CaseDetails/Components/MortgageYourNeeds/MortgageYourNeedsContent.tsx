@@ -6,6 +6,7 @@ import {
   useGetMortgageYourNeedsQuery,
   useUpdateMortgageYourNeedsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/MortgageYourNeeds/MortgageYourNeedsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -39,6 +40,8 @@ const MortgageYourNeedsContent: React.FC = () => {
   });
   const [updateMortgageYourNeeds, { isLoading: isUpdating }] =
     useUpdateMortgageYourNeedsMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [formData, setFormData] = useState(mortgageData || {});
   useEffect(() => {
@@ -123,6 +126,14 @@ const MortgageYourNeedsContent: React.FC = () => {
       });
       if (res.data) {
         toast.success("Mortgage needs updated successfully!");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_mortgage_your_needs: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
       } else if (res.error) {
         const errorMessage =
           (res.error as any)?.data?.detail ||

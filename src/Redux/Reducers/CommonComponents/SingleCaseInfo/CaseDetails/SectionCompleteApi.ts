@@ -13,7 +13,7 @@ export const SectionCompleteApi = baseApi.injectEndpoints({
     UpdateSectionCompleteStatus: builder.mutation({
       query: ({ case_alias, section_data }) => ({
         url: `/cases/${case_alias}/sections-complete/`,
-        method: "PUT",
+        method: "PATCH",
         body: section_data,
       }),
       invalidatesTags: ["SectionCompleteStatus"],
