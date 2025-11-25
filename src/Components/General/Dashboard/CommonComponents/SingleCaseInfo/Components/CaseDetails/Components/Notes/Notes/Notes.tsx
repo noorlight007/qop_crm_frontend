@@ -181,7 +181,7 @@ const Notes: React.FC = () => {
               (notesData.results?.length ?? (notesData as any)?.length) > 0 ? (
               // support old non-paginated array response and new paginated response
               (notesData.results ?? notesData).map((note: NoteProps) => (
-                <tr key={note.alias}>
+                <tr key={note.alias} className="small">
                   <td>{formatChoiceFieldValue(note.category || "-")}</td>
                   <td>{formatDateToDMYAndTime(note.created_at || "-")}</td>
                   <td>{formatChoiceFieldValue(note.case.case_stage || "-")}</td>
@@ -217,18 +217,18 @@ const Notes: React.FC = () => {
                       // support both old and new API boolean fields
                       (note as any).note_visible_to_introducer ??
                       (note as any).is_visible_to_introducer ? (
-                        <FaRegCheckCircle size={20} className="text-primary" />
+                        <FaRegCheckCircle size={16} className="text-primary" />
                       ) : (
-                        <FaRegTimesCircle size={20} className="text-danger" />
+                        <FaRegTimesCircle size={16} className="text-danger" />
                       )
                     }
                   </td>
                   <td className="text-center">
                     {(note as any).note_visible_to_client ??
                     (note as any).is_visible_to_client ? (
-                      <FaRegCheckCircle size={20} className="text-primary" />
+                      <FaRegCheckCircle size={16} className="text-primary" />
                     ) : (
-                      <FaRegTimesCircle size={20} className="text-danger" />
+                      <FaRegTimesCircle size={16} className="text-danger" />
                     )}
                   </td>
                   {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
