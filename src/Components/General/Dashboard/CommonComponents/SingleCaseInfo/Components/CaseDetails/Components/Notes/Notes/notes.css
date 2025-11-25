@@ -22,7 +22,29 @@
   left: 0;
   right: 0;
   height: 40px;
-  background: linear-gradient(to bottom, transparent, white);
+  /* Subtle tinted fade to indicate more content — uses semi-transparent highlight */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 229, 100, 0.35)
+  );
+}
+
+/* Highlight color (semi-transparent) for inline emphasis */
+:root {
+  --note-highlight: rgba(255, 229, 100, 0.25);
+}
+
+.note-content .highlight {
+  background-color: var(--note-highlight);
+  padding: 0 3px;
+  border-radius: 2px;
+}
+
+/* Improve text selection visibility within notes */
+.note-content ::selection {
+  background: rgba(255, 229, 100, 0.35);
+  color: #111;
 }
 
 .note-show-more-btn {
