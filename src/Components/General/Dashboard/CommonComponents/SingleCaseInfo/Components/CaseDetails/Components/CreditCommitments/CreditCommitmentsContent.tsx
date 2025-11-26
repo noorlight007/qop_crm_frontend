@@ -2,12 +2,15 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import { useGetCreditCommitmentsDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
+import { useExportCreditCommitmentsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/ExportCreditCommitmentsApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { FaFileExport } from "react-icons/fa";
+import { TbCircleCheck, TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -42,6 +45,8 @@ const CreditCommitmentsContent: React.FC = () => {
     { case_alias: casealias },
     { skip: !casealias }
   );
+  const [exportCreditCommitmentsCSV, { isLoading: isExporting }] =
+    useExportCreditCommitmentsMutation();
   // rtk hooks end
 
   const currentTab: string | null = useAppSelector(
@@ -117,6 +122,25 @@ const CreditCommitmentsContent: React.FC = () => {
   };
 
   const totals = calculateTotals();
+
+  const handleExportToCSV = async () => {
+    try {
+      const blob = await exportCreditCommitmentsCSV({
+        case_alias: casealias,
+      }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "credit-commitments-report.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error("Failed to export properties to CSV.");
+      console.error("Export error:", error);
+    }
+  };
 
   return (
     <Container>
@@ -249,14 +273,20 @@ const CreditCommitmentsContent: React.FC = () => {
       </Row>
       {/* Cards Rows end  */}
       <Row>
-        <Col className="d-flex justify-content-between">
+        <Col className="d-flex justify-content-end gap-2">
           <Button
             color="secondary"
             type="submit"
             className="d-flex justify-content-center align-items-center gap-1"
+            onClick={handleExportToCSV}
+            disabled={
+              isExporting ||
+              !creditCommitments ||
+              creditCommitments.length === 0
+            }
           >
-            <span>View Summary</span>
-            <i className="fa-solid fa-eye"></i>
+            <FaFileExport />
+            <span>Export CSV</span>
           </Button>
           <Button
             color="primary"
@@ -265,8 +295,8 @@ const CreditCommitmentsContent: React.FC = () => {
             onClick={() => setModalIsOpen(!modalIsOpen)}
             disabled={session?.user?.user_type === "CLIENT"}
           >
+            <TbCirclePlus />
             <span>Add Credit Item</span>
-            <i className="fa-solid fa-circle-plus"></i>
           </Button>
         </Col>
       </Row>
@@ -344,9 +374,9 @@ const CreditCommitmentsContent: React.FC = () => {
                     <td>
                       <div className="d-flex justify-content-center align-items-center fs-4">
                         {item.joint?.toLowerCase() === "yes" ? (
-                          <i className="fa-solid fa-circle-check text-success"></i>
+                          <TbCircleCheck className="text-primary" />
                         ) : item.joint?.toLowerCase() === "no" ? (
-                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                          <TbCircleCheck className="text-danger" />
                         ) : (
                           "-"
                         )}
