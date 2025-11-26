@@ -50,10 +50,17 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     city: "",
     county: "",
     country: "",
+    directors_shareholders: [],
   });
 
   useEffect(() => {
     if (data && data[0]) {
+      const loadedDirectors = Array.isArray(data[0].directors_shareholders)
+        ? data[0].directors_shareholders.map((d: any) => ({
+            ...d,
+            role: d && d.role ? String(d.role).toUpperCase() : "DIRECTOR",
+          }))
+        : [];
       setFormData({
         company_name: data[0].company_name || "",
         company_registration_number: data[0].company_registration_number || "",
@@ -68,9 +75,48 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         city: data[0].city || "",
         county: data[0].county || "",
         country: data[0].country || "",
+        directors_shareholders: loadedDirectors,
+        number_of_directors_shareholders: loadedDirectors.length,
       });
+      setNumberOfDirectors(String(loadedDirectors.length));
     }
   }, [data]);
+
+  const [numberOfDirectors, setNumberOfDirectors] = useState<string>("0");
+
+  useEffect(() => {
+    // if existing data has directors_shareholders, reflect that count
+    if (data && data[0] && Array.isArray(data[0].directors_shareholders)) {
+      setNumberOfDirectors(String(data[0].directors_shareholders.length));
+    }
+  }, [data]);
+
+  useEffect(() => {
+    // ensure directors_shareholders array length matches numberOfDirectors (parsed)
+    const count = parseInt(numberOfDirectors, 10);
+    const target = isNaN(count) || count < 0 ? 0 : count;
+    setFormData((prev) => {
+      const directors_shareholders = prev.directors_shareholders
+        ? [...prev.directors_shareholders]
+        : [];
+      if (target > directors_shareholders.length) {
+        for (let i = directors_shareholders.length; i < target; i++) {
+          directors_shareholders.push({
+            full_name: "",
+            percentage_share: "",
+            role: "DIRECTOR",
+          });
+        }
+      } else if (target < directors_shareholders.length) {
+        directors_shareholders.splice(target);
+      }
+      return {
+        ...prev,
+        directors_shareholders,
+        number_of_directors_shareholders: target,
+      };
+    });
+  }, [numberOfDirectors]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -80,6 +126,28 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     setFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // keep the raw string so the user can clear the field
+    setNumberOfDirectors(e.target.value);
+  };
+
+  const handleDirectorChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target as HTMLInputElement;
+    setFormData((prev) => {
+      const directors_shareholders = prev.directors_shareholders
+        ? [...prev.directors_shareholders]
+        : [];
+      directors_shareholders[index] = {
+        ...directors_shareholders[index],
+        [name]: value,
+      } as any;
+      return { ...prev, directors_shareholders };
     });
   };
 
@@ -107,7 +175,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   if (isError) return <div>Error fetching data</div>;
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="xl">
+    <Modal isOpen={isOpen} toggle={toggle} size="xl" centered>
       <ModalHeader toggle={toggle}>
         <h2 className="text-primary fw-bold">Company Applicant</h2>
       </ModalHeader>
@@ -205,6 +273,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                 name="is_spv"
                 checked={formData.is_spv}
                 onChange={handleChange}
+                className="border-primary"
               />
               Is SPV
             </Label>
@@ -284,18 +353,90 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
               </Row>
             </Col>
           </Row>
+          <hr />
           <Row>
-            <Col md={6}></Col>
-            <Col md={6}></Col>
+            <Col md={4}>
+              <FormGroup>
+                <Label className="small">
+                  Number of Directors/Shareholders
+                </Label>
+                <Input
+                  type="number"
+                  min={0}
+                  placeholder="0"
+                  name="numberOfDirectors"
+                  value={numberOfDirectors}
+                  onChange={handleNumberChange}
+                />
+              </FormGroup>
+            </Col>
           </Row>
+          {formData.directors_shareholders &&
+            formData.directors_shareholders.length > 0 && (
+              <div className="mt-2">
+                {formData.directors_shareholders.map((d, i) => (
+                  <Row key={i} className="align-items-end mb-2">
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label className="small">Full Name</Label>
+                        <Input
+                          type="text"
+                          name="full_name"
+                          value={d.full_name}
+                          onChange={(e) => handleDirectorChange(i, e)}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label className="small">Percentage Share</Label>
+                        <div className="d-flex">
+                          <Input
+                            type="number"
+                            name="percentage_share"
+                            value={d.percentage_share as any}
+                            onChange={(e) => handleDirectorChange(i, e)}
+                            step="any"
+                          />
+                          <div className="input-group-append ms-1 align-self-center">
+                            %
+                          </div>
+                        </div>
+                      </FormGroup>
+                    </Col>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label className="small">Role</Label>
+                        <Input
+                          type="select"
+                          name="role"
+                          value={d.role}
+                          onChange={(e) => handleDirectorChange(i, e)}
+                        >
+                          <option value="DIRECTOR">Director</option>
+                          <option value="SHAREHOLDER">Shareholder</option>
+                          <option value="OTHER">Other</option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                ))}
+              </div>
+            )}
           <div className="d-flex justify-content-end mt-4 gap-2">
             <div title={data?.[0] ? "Data already added" : ""}>
               <Button color="warning" onClick={toggle} className="me-2">
                 Cancel
               </Button>
-              <Button color="primary" type="submit" disabled={!!data?.[0]}>
-                {isCompanyDetailsAdding ? "Adding..." : "Submit"}
-              </Button>
+              {data?.[0] ? (
+                <Button color="primary">
+                  Update
+                </Button>
+              ) : (
+                <Button color="primary" type="submit">
+                  {isCompanyDetailsAdding ? "Adding..." : "Submit"}
+                </Button>
+              )}
             </div>
           </div>
         </Form>

@@ -45,7 +45,7 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
       <Card className="mb-2">
         <CardHeader className="py-3">
           <Row className="align-items-center">
-            <Col lg={9}>
+            <Col lg={12}>
               <div className="d-flex align-items-center">
                 <Label
                   className="mb-0 fw-semibold me-4"

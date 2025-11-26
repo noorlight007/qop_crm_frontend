@@ -127,6 +127,14 @@ export interface ApplicantCompanyProps {
   city: string;
   county: string;
   country: string;
+  directors_shareholders?: DirectorShareholder[];
+  number_of_directors_shareholders?: number;
+}
+
+export interface DirectorShareholder {
+  full_name: string;
+  percentage_share: string | number;
+  role: string;
 }
 
 // Previous address types
