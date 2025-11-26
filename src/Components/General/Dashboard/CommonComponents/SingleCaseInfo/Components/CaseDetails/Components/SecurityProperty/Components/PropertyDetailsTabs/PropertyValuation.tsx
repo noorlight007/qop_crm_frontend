@@ -1,25 +1,36 @@
 import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
 import { RootState } from "@/Redux/Store";
 import { ValuationInfoProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
-import React, { useEffect } from "react";
+import formatChoiceFieldValue from "@/utils/formatters";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, FormGroup, Input, Label, Row } from "reactstrap";
 
 const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
+  const { casealias } = useParams();
   const dispatch = useDispatch();
   const propertyState = useSelector(
     (state: RootState) => state.propertyForm.Properties
   );
 
+  const [autoFilled, setAutoFilled] = useState<boolean>(false);
+
+  // Sample applicants - these would typically come from props or API
+  const { data: caseUsers } = useGetCaseUsersQuery({
+    case_alias: casealias,
+  });
+
   useEffect(() => {
     const initialData = {
       valuation_type: null,
-      select_applicant_list: "SELECT",
-      contact_for_access: null,
-      contacts_name: null,
-      contacts_daytime_telephone: null,
-      contacts_mobile_telephone: null,
-      contacts_email_address: null,
+      select_applicant_list: "",
+      contact_for_access: "",
+      contacts_name: "",
+      contacts_daytime_telephone: "",
+      contacts_mobile_telephone: "",
+      contacts_email_address: "",
     };
 
     dispatch(updateProperty({ ...initialData, ...propertyData }));
@@ -29,12 +40,61 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-    let updatedValue: any = value;
 
+    // Special handling for applicant selection: autofill contact fields
+    if (name === "select_applicant_list") {
+      const selectedId = value;
+
+      // Clear selection -> clear contact fields and unlock
+      if (!selectedId || selectedId === "") {
+        dispatch(
+          updateProperty({
+            select_applicant_list: "",
+            contacts_name: "",
+            contacts_mobile_telephone: "",
+            contacts_email_address: "",
+          })
+        );
+        setAutoFilled(false);
+        return;
+      }
+
+      // Find user and autofill
+      const user = caseUsers
+        ? caseUsers.find((u: any) => String(u.id) === String(selectedId))
+        : null;
+      if (user) {
+        const contacts_name = `${formatChoiceFieldValue(user.title) || ""} ${
+          user.middle_name || ""
+        } ${user.first_name || ""} ${user.last_name || ""}`
+          .trim()
+          .replace(/\s+/g, " ");
+        const contacts_mobile_telephone = user.phone ?? user.mobile ?? "";
+        const contacts_email_address = user.email ?? "";
+
+        dispatch(
+          updateProperty({
+            select_applicant_list: selectedId,
+            contacts_name,
+            contacts_mobile_telephone,
+            contacts_email_address,
+          })
+        );
+        setAutoFilled(true);
+        return;
+      }
+
+      // If no user found, just set the selection
+      dispatch(updateProperty({ select_applicant_list: selectedId }));
+      setAutoFilled(false);
+      return;
+    }
+
+    let updatedValue: any = value;
     if (type === "radio") {
       updatedValue = value === "" ? null : Number(value);
     } else if (value === "" || value === "SELECT") {
-      updatedValue = null;
+      updatedValue = "";
     }
 
     dispatch(updateProperty({ [name]: updatedValue }));
@@ -47,9 +107,6 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
     { value: "avm", label: "AVM" },
     { value: "drive_by", label: "Drive By" },
   ];
-
-  // Sample applicants - these would typically come from props or API
-  const applicants = [{ value: "demo_x", label: "Demo X" }];
 
   return (
     <div className="valuation-info p-4">
@@ -164,7 +221,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                           className="mb-0 fw-medium"
                           for="select_applicant_list"
                         >
-                          Select Applicant List
+                          Select an applicant if they are the contact
                         </Label>
                       </Col>
                       <Col sm={5}>
@@ -172,22 +229,18 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                           type="select"
                           name="select_applicant_list"
                           id="select_applicant_list"
-                          value={
-                            propertyState.select_applicant_list || "SELECT"
-                          }
+                          value={propertyState.select_applicant_list || ""}
                           onChange={handleChange}
                         >
-                          <option value="SELECT">
-                            Select an applicant if they are the contact...
-                          </option>
-                          {applicants.map((applicant) => (
-                            <option
-                              key={applicant.value}
-                              value={applicant.value}
-                            >
-                              {applicant.label}
-                            </option>
-                          ))}
+                          <option value="">Select...</option>
+                          {caseUsers &&
+                            caseUsers.map((user: any) => (
+                              <option key={user.id} value={user.id}>
+                                {formatChoiceFieldValue(user.title)}{" "}
+                                {user.middle_name} {user.first_name}{" "}
+                                {user.last_name}
+                              </option>
+                            ))}
                         </Input>
                       </Col>
                     </Row>
@@ -232,6 +285,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                           id="contacts_name"
                           value={propertyState.contacts_name || ""}
                           onChange={handleChange}
+                          disabled={autoFilled}
                           maxLength={256}
                         />
                       </Col>
@@ -280,6 +334,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                           id="contacts_mobile_telephone"
                           value={propertyState.contacts_mobile_telephone || ""}
                           onChange={handleChange}
+                          disabled={autoFilled}
                           maxLength={20}
                         />
                       </Col>
@@ -304,6 +359,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                           id="contacts_email_address"
                           value={propertyState.contacts_email_address || ""}
                           onChange={handleChange}
+                          disabled={autoFilled}
                           maxLength={320}
                         />
                       </Col>
