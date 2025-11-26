@@ -1,8 +1,8 @@
 import { initializeForm } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { PropertyData } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { Button, TabContent, TabPane } from "reactstrap";
+import { Button, Form, TabContent, TabPane } from "reactstrap";
 import AdditionalInfo from "./Components/PropertyDetailsTabs/PropertyAdditionalInfo";
 import AddressDetails from "./Components/PropertyDetailsTabs/PropertyAddress";
 import PropertyDetails from "./Components/PropertyDetailsTabs/PropertyType";
@@ -20,7 +20,31 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
   propertyData,
 }) => {
   const dispatch = useDispatch();
-  const handleNext = () => setTabId((parseInt(tabId) + 1).toString());
+  // form refs for each tab so we can run HTML5 validation before navigating
+  const formRef1 = useRef<HTMLFormElement | null>(null);
+  const formRef2 = useRef<HTMLFormElement | null>(null);
+  const formRef3 = useRef<HTMLFormElement | null>(null);
+  const formRef4 = useRef<HTMLFormElement | null>(null);
+
+  const handleNext = () => {
+    const current =
+      tabId === "1"
+        ? formRef1.current
+        : tabId === "2"
+        ? formRef2.current
+        : tabId === "3"
+        ? formRef3.current
+        : formRef4.current;
+    if (current) {
+      try {
+        const ok = current.reportValidity();
+        if (!ok) return;
+      } catch (err) {
+        console.warn("reportValidity failed", err);
+      }
+    }
+    setTabId((parseInt(tabId) + 1).toString());
+  };
 
   useEffect(() => {
     if (propertyData) {
@@ -37,25 +61,33 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
     <div>
       <TabContent activeTab={tabId} className="w-full">
         <TabPane tabId="1">
-          <AddressDetails />
+          <Form innerRef={formRef1}>
+            <AddressDetails />
+          </Form>
           <Button color="primary" onClick={handleNext} className="float-end">
             Next
           </Button>
         </TabPane>
         <TabPane tabId="2">
-          <PropertyDetails />
+          <Form innerRef={formRef2}>
+            <PropertyDetails />
+          </Form>
           <Button color="primary" onClick={handleNext} className="float-end">
             Next
           </Button>
         </TabPane>
         <TabPane tabId="3">
-          <AdditionalInfo />
+          <Form innerRef={formRef3}>
+            <AdditionalInfo />
+          </Form>
           <Button color="primary" onClick={handleNext} className="float-end">
             Next
           </Button>
         </TabPane>
         <TabPane tabId="4">
-          <ValuationInfo />
+          <Form innerRef={formRef4}>
+            <ValuationInfo />
+          </Form>
         </TabPane>
       </TabContent>
     </div>

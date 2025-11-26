@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   Col,
-  Form,
   FormGroup,
   Input,
   InputGroup,
@@ -120,9 +119,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     }
   };
 
-  // Manual validation logic (fallback on submit)
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Manual validation logic (fallback if needed)
+  const handleSubmit = () => {
     const newErrors: { [key: string]: string } = {};
 
     if (!propertyState.postcode) newErrors.postcode = "Postcode is required";
@@ -134,15 +132,16 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      return;
+      return false;
     }
 
     // dispatch(saveAction(propertyState)); // Uncomment and use your actual save action
     console.log("Form submitted:", propertyState);
+    return true;
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <div>
       <Row>
         <Col sm={12}>
           <Row>
@@ -173,7 +172,9 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   >
                     Copy Main Address
                   </Button>
-                  <Button color="info">Lookup</Button>
+                  <Button color="info" type="button">
+                    Lookup
+                  </Button>
                 </InputGroup>
                 {errors.postcode && (
                   <div className="text-danger">{errors.postcode}</div>
@@ -328,7 +329,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           </Row>
         </Col>
       </Row>
-    </Form>
+    </div>
   );
 };
 
