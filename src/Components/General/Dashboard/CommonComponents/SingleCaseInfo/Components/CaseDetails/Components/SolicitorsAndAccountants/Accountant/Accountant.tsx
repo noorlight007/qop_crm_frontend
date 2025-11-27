@@ -182,7 +182,11 @@ const Accountant: React.FC = () => {
   );
 
   const handleNextTab = () => {
-    const nextTabNav = getNextTabNav(caseData?.case_stage, currentTab!);
+    const nextTabNav = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!
+    );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
     } else {
