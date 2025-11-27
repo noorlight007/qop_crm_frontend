@@ -68,7 +68,7 @@ const initialState: SecurityPropertyFormStateProps = {
     do_you_own_the_solar_panels: false,
     is_the_property_used_purely_for_residential_purposes: false,
     valuation_type: "",
-    select_applicant_list: "SELECT",
+    applicant: "",
     contact_for_access: "",
     contacts_name: "",
     contacts_daytime_telephone: "",
