@@ -1,6 +1,10 @@
 import {
+  InsuranceAASDTabTitleData,
+  InsuranceAORTabTitleData,
   InsuranceEnquiryTabTitleData,
   InsuranceFFDTabTitleData,
+  InsuranceNPWTabTitleData,
+  InsuranceSubmissionTabTitleData,
   MortgageCompletionTabTitleData,
   MortgageDIPTabTitleData,
   MortgageEnquiryTabTitleData,
@@ -61,6 +65,11 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
   const insuranceTabDataMap: Record<string, any[]> = {
     ENQUIRY: InsuranceEnquiryTabTitleData,
     FACT_FIND: InsuranceFFDTabTitleData,
+    SUBMISSION: InsuranceSubmissionTabTitleData,
+    ACCEPT_WAITING_START_DATE: InsuranceAASDTabTitleData,
+    ACCEPTED_ON_RISK: InsuranceAORTabTitleData,
+    FURTHER_MEDICAL_REQUIRED: InsuranceFFDTabTitleData,
+    NOT_PROCEED_WITH: InsuranceNPWTabTitleData,
   };
 
   // Get the current tab data based on caseStage and caseCategory

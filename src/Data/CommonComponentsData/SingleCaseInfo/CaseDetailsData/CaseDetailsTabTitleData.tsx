@@ -29,49 +29,9 @@ export const MortgageFFDTabTitleData = [
   { id: "19", nav: "Documents" },
 ];
 
-export const MortgageRCCTabTitleData = [
-  { id: "1", nav: "Loan Details" },
-  { id: "2", nav: "Applicant(s) Details" },
-  { id: "3", nav: "Employment/Income" },
-  { id: "4", nav: "Credit Commitments" },
-  { id: "5", nav: "Adverse" },
-  { id: "6", nav: "Portfolio" },
-  { id: "7", nav: "Security Property" },
-  { id: "8", nav: "Solicitors & Accountants" },
-  { id: "9", nav: "Budget Planner" },
-  { id: "10", nav: "Existing Protection" },
-  { id: "11", nav: "Mortgage Your Needs" },
-  { id: "12", nav: "Notes" },
-  { id: "13", nav: "Product" },
-  { id: "14", nav: "DIP History" },
-  { id: "15", nav: "Suitability" },
-  { id: "16", nav: "Insurance Health" },
-  { id: "17", nav: "Fees" },
-  { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Documents" },
-];
+export const MortgageRCCTabTitleData = [...MortgageFFDTabTitleData];
 
-export const MortgageDIPTabTitleData = [
-  { id: "1", nav: "Loan Details" },
-  { id: "2", nav: "Applicant(s) Details" },
-  { id: "3", nav: "Employment/Income" },
-  { id: "4", nav: "Credit Commitments" },
-  { id: "5", nav: "Adverse" },
-  { id: "6", nav: "Portfolio" },
-  { id: "7", nav: "Security Property" },
-  { id: "8", nav: "Solicitors & Accountants" },
-  { id: "9", nav: "Budget Planner" },
-  { id: "10", nav: "Existing Protection" },
-  { id: "11", nav: "Mortgage Your Needs" },
-  { id: "12", nav: "Notes" },
-  { id: "13", nav: "Product" },
-  { id: "14", nav: "DIP History" },
-  { id: "15", nav: "Suitability" },
-  { id: "16", nav: "Insurance Health" },
-  { id: "17", nav: "Fees" },
-  { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Documents" },
-];
+export const MortgageDIPTabTitleData = [...MortgageFFDTabTitleData];
 
 export const MortgageFMATabTitleData = [
   { id: "1", nav: "Application Overview" },
@@ -119,97 +79,13 @@ export const MortgageOFBTabTitleData = [
   { id: "20", nav: "Documents" },
 ];
 
-export const MortgageLegalTabTitleData = [
-  { id: "1", nav: "Loan Details" },
-  { id: "2", nav: "Applicant(s) Details" },
-  { id: "3", nav: "Employment/Income" },
-  { id: "4", nav: "Credit Commitments" },
-  { id: "5", nav: "Adverse" },
-  { id: "6", nav: "Portfolio" },
-  { id: "7", nav: "Security Property" },
-  { id: "8", nav: "Solicitors & Accountants" },
-  { id: "9", nav: "Budget Planner" },
-  { id: "10", nav: "Existing Protection" },
-  { id: "11", nav: "Mortgage Your Needs" },
-  { id: "12", nav: "Notes" },
-  { id: "13", nav: "Product" },
-  { id: "14", nav: "DIP History" },
-  { id: "15", nav: "Suitability" },
-  { id: "16", nav: "Insurance Health" },
-  { id: "17", nav: "Fees" },
-  { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Client Survey" },
-  { id: "20", nav: "Documents" },
-];
+export const MortgageLegalTabTitleData = [...MortgageOFBTabTitleData];
 
-export const MortgageCompletionTabTitleData = [
-  { id: "1", nav: "Loan Details" },
-  { id: "2", nav: "Applicant(s) Details" },
-  { id: "3", nav: "Employment/Income" },
-  { id: "4", nav: "Credit Commitments" },
-  { id: "5", nav: "Adverse" },
-  { id: "6", nav: "Portfolio" },
-  { id: "7", nav: "Security Property" },
-  { id: "8", nav: "Solicitors & Accountants" },
-  { id: "9", nav: "Budget Planner" },
-  { id: "10", nav: "Existing Protection" },
-  { id: "11", nav: "Mortgage Your Needs" },
-  { id: "12", nav: "Notes" },
-  { id: "13", nav: "Product" },
-  { id: "14", nav: "DIP History" },
-  { id: "15", nav: "Suitability" },
-  { id: "16", nav: "Insurance Health" },
-  { id: "17", nav: "Fees" },
-  { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Client Survey" },
-  { id: "20", nav: "Documents" },
-];
+export const MortgageCompletionTabTitleData = [...MortgageOFBTabTitleData];
 
-export const MortgageFOPTabTitleData = [
-  { id: "1", nav: "Loan Details" },
-  { id: "2", nav: "Applicant(s) Details" },
-  { id: "3", nav: "Employment/Income" },
-  { id: "4", nav: "Credit Commitments" },
-  { id: "5", nav: "Adverse" },
-  { id: "6", nav: "Portfolio" },
-  { id: "7", nav: "Security Property" },
-  { id: "8", nav: "Solicitors & Accountants" },
-  { id: "9", nav: "Budget Planner" },
-  { id: "10", nav: "Existing Protection" },
-  { id: "11", nav: "Mortgage Your Needs" },
-  { id: "12", nav: "Notes" },
-  { id: "13", nav: "Product" },
-  { id: "14", nav: "DIP History" },
-  { id: "15", nav: "Suitability" },
-  { id: "16", nav: "Insurance Health" },
-  { id: "17", nav: "Fees" },
-  { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Client Survey" },
-  { id: "20", nav: "Documents" },
-];
+export const MortgageFOPTabTitleData = [...MortgageOFBTabTitleData];
 
-export const MortgageNPDTabTitleData = [
-  { id: "1", nav: "Loan Details" },
-  { id: "2", nav: "Applicant(s) Details" },
-  { id: "3", nav: "Employment/Income" },
-  { id: "4", nav: "Credit Commitments" },
-  { id: "5", nav: "Adverse" },
-  { id: "6", nav: "Portfolio" },
-  { id: "7", nav: "Security Property" },
-  { id: "8", nav: "Solicitors & Accountants" },
-  { id: "9", nav: "Budget Planner" },
-  { id: "10", nav: "Existing Protection" },
-  { id: "11", nav: "Mortgage Your Needs" },
-  { id: "12", nav: "Notes" },
-  { id: "13", nav: "Product" },
-  { id: "14", nav: "DIP History" },
-  { id: "15", nav: "Suitability" },
-  { id: "16", nav: "Insurance Health" },
-  { id: "17", nav: "Fees" },
-  { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Client Survey" },
-  { id: "20", nav: "Documents" },
-];
+export const MortgageNPDTabTitleData = [...MortgageOFBTabTitleData];
 
 // Insurance case details tab titles
 export const InsuranceEnquiryTabTitleData = [
@@ -236,3 +112,9 @@ export const InsuranceFFDTabTitleData = [
   { id: "14", nav: "Compliance" },
   { id: "15", nav: "Documents" },
 ];
+
+export const InsuranceSubmissionTabTitleData = [...InsuranceFFDTabTitleData];
+export const InsuranceAASDTabTitleData = [...InsuranceFFDTabTitleData];
+export const InsuranceAORTabTitleData = [...InsuranceFFDTabTitleData];
+export const InsuranceFMRTabTitleData = [...InsuranceFFDTabTitleData];
+export const InsuranceNPWTabTitleData = [...InsuranceFFDTabTitleData];
