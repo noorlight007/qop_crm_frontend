@@ -1,10 +1,10 @@
 import { useAppSelector } from "@/Redux/Hooks";
 import { TabContent } from "reactstrap";
-import CommissionContent from "../Commission/CommissionContent";
 import { AdverseTab } from "./Adverse/AdverseTab";
 import { ApplicantsDetailsTab } from "./ApplicantsDetails/ApplicantsDetailsTab";
 import BudgetPlanner from "./BudgetPlanner/BudgetPlanner";
 import ClientSurveyContent from "./ClientSurvey/ClientSurveyContent";
+import CommissionContent from "./Commission/CommissionContent";
 import { ComplianceTab } from "./Compliance/ComplianceTab";
 import CreditCommitmentsContent from "./CreditCommitments/CreditCommitmentsContent";
 import DIPHistoryTab from "./DIPHistory/DIPHistoryTab";

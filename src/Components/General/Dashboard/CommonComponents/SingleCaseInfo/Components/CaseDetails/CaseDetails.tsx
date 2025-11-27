@@ -133,6 +133,11 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
       Compliance: "is_compliance",
       "Client Survey": "is_client_survey",
       Documents: "is_documents",
+
+      // Additional tabs for Insurance case
+      "Insurance Overview": "is_insurance_overview",
+      "Health Check": "is_health_check",
+      Commission: "is_commission",
     };
 
     if (explicitMap[nav]) return explicitMap[nav];
