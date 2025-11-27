@@ -17,7 +17,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
 
   const [autoFilled, setAutoFilled] = useState<boolean>(false);
 
-  // Sample applicants - these would typically come from props or API
+  //applicants 
   const { data: caseUsers } = useGetCaseUsersQuery({
     case_alias: casealias,
   });
@@ -25,7 +25,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
   useEffect(() => {
     const initialData = {
       valuation_type: null,
-      select_applicant_list: "",
+      applicant: "",
       contact_for_access: "",
       contacts_name: "",
       contacts_daytime_telephone: "",
@@ -42,14 +42,14 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
     const { name, value, type } = e.target;
 
     // Special handling for applicant selection: autofill contact fields
-    if (name === "select_applicant_list") {
+    if (name === "applicant") {
       const selectedId = value;
 
       // Clear selection -> clear contact fields and unlock
       if (!selectedId || selectedId === "") {
         dispatch(
           updateProperty({
-            select_applicant_list: "",
+            applicant: "",
             contacts_name: "",
             contacts_mobile_telephone: "",
             contacts_email_address: "",
@@ -74,7 +74,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
 
         dispatch(
           updateProperty({
-            select_applicant_list: selectedId,
+            applicant: selectedId,
             contacts_name,
             contacts_mobile_telephone,
             contacts_email_address,
@@ -85,7 +85,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
       }
 
       // If no user found, just set the selection
-      dispatch(updateProperty({ select_applicant_list: selectedId }));
+      dispatch(updateProperty({ applicant: selectedId }));
       setAutoFilled(false);
       return;
     }
@@ -177,7 +177,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                       <Col sm={7}>
                         <Label
                           className="mb-0 fw-medium"
-                          for="select_applicant_list"
+                          for="applicant"
                         >
                           Select an applicant if they are the contact
                         </Label>
@@ -185,9 +185,9 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                       <Col sm={5}>
                         <Input
                           type="select"
-                          name="select_applicant_list"
-                          id="select_applicant_list"
-                          value={propertyState.select_applicant_list || ""}
+                          name="applicant"
+                          id="applicant"
+                          value={propertyState.applicant || ""}
                           onChange={handleChange}
                         >
                           <option value="">Select...</option>
