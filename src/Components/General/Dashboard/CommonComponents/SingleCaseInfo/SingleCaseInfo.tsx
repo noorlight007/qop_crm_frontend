@@ -90,7 +90,10 @@ const SingleCaseInfo: React.FC = () => {
           <CaseInfo caseInfo={caseInfo} isLoading={isLoading} />
         </Row>
         <Row>
-          <CaseDetails caseStage={caseInfo?.case_stage || ""} />
+          <CaseDetails
+            caseCategory={caseInfo?.case_category || ""}
+            caseStage={caseInfo?.case_stage || ""}
+          />
         </Row>
         <Row>
           <JointUsers
