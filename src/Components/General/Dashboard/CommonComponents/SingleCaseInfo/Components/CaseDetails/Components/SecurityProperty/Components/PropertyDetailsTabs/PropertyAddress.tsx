@@ -104,7 +104,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           address_one: firstApplicant.address_line1 || "",
           city: firstApplicant.city || "",
           county: firstApplicant.county || "",
-          country: firstApplicant.country || null,
+          // country: firstApplicant.country || null,
         })
       );
 

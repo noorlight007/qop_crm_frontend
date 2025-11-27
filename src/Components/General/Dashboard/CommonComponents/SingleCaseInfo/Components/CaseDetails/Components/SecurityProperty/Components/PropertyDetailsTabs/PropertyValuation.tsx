@@ -17,7 +17,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
 
   const [autoFilled, setAutoFilled] = useState<boolean>(false);
 
-  //applicants 
+  //applicants
   const { data: caseUsers } = useGetCaseUsersQuery({
     case_alias: casealias,
   });
@@ -175,10 +175,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                   <FormGroup className="mb-4 border-bottom pb-3">
                     <Row className="align-items-center">
                       <Col sm={7}>
-                        <Label
-                          className="mb-0 fw-medium"
-                          for="applicant"
-                        >
+                        <Label className="mb-0 fw-medium" for="applicant">
                           Select an applicant if they are the contact
                         </Label>
                       </Col>

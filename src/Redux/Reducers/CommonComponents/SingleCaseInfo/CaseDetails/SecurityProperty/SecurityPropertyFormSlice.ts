@@ -18,7 +18,7 @@ const initialState: SecurityPropertyFormStateProps = {
     country: null,
 
     property_type: "",
-    house_type: "SELECT",
+    house_type: "",
     flat_type: "",
     construction_of_walls: "",
     construction_of_roof: "",
@@ -49,7 +49,7 @@ const initialState: SecurityPropertyFormStateProps = {
     is_the_property_part_of_a_help_to_buy_shared_ownership_scheme: false,
     is_the_property_above_or_near_commercial_premises: false,
     is_the_property_a_new_build: false,
-    new_build_warranty_provider: "SELECT_WARRANTY_PROVIDER",
+    new_build_warranty_provider: "",
     other_new_build_warranty_rovider: "",
     is_the_property_a_right_to_buy: false,
     date_of_purchase: null,
