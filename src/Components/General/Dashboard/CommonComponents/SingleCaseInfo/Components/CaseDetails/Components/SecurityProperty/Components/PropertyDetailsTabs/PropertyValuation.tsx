@@ -93,7 +93,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
     let updatedValue: any = value;
     if (type === "radio") {
       updatedValue = value === "" ? null : Number(value);
-    } else if (value === "" || value === "SELECT") {
+    } else if (value === "") {
       updatedValue = "";
     }
 
@@ -109,7 +109,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
   ];
 
   return (
-    <div className="valuation-info p-4">
+    <div className=" p-4">
       <Row className="d-flex justify-content-center">
         <Col sm={12} lg={8}>
           <div className="bg-white rounded-lg p-4">
@@ -151,10 +151,10 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                               checked={
                                 propertyState.valuation_type === type.value
                               }
-                              className="position-absolute opacity-0"
+                              className="position-absolute border-primary"
                             />
                             <Label
-                              className="d-flex align-items-center gap-2 m-0 py-2 px-3 rounded-3"
+                              className="d-flex align-items-center gap-2 px-3 rounded-3"
                               htmlFor={`valuation_type_${type.value}`}
                             >
                               <span className="radio-circle"></span>
@@ -163,48 +163,6 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                           </div>
                         ))}
                       </Col>
-                      <style jsx>{`
-                        .valuation-option {
-                          position: relative;
-                          cursor: pointer;
-                          transition: all 0.2s ease;
-                        }
-                        .valuation-option Label {
-                          background: #f8f9fa;
-                          border: 1px solid #dee2e6;
-                          transition: all 0.2s ease;
-                        }
-                        .valuation-option:hover Label {
-                          background: #e9ecef;
-                          border-color: #ced4da;
-                        }
-                        .valuation-option.active Label {
-                          background: #e7f1ff;
-                          border-color: #0d6efd;
-                          color: #0d6efd;
-                        }
-                        .radio-circle {
-                          width: 16px;
-                          height: 16px;
-                          border: 2px solid #6c757d;
-                          border-radius: 50%;
-                          position: relative;
-                        }
-                        .active .radio-circle {
-                          border-color: #0d6efd;
-                        }
-                        .active .radio-circle:after {
-                          content: "";
-                          position: absolute;
-                          width: 8px;
-                          height: 8px;
-                          background: #0d6efd;
-                          border-radius: 50%;
-                          top: 50%;
-                          left: 50%;
-                          transform: translate(-50%, -50%);
-                        }
-                      `}</style>
                     </Row>
                   </FormGroup>
                 </Col>
@@ -371,39 +329,6 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
           </div>
         </Col>
       </Row>
-
-      <style>
-        {`
-          .valuation-info .form-group {
-            margin-bottom: 1.5rem;
-          }
-          .valuation-info .form-check {
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            transition: background-color 0.2s;
-          }
-          .valuation-info .form-check:hover {
-            background-color: #f8f9fa;
-          }
-          .valuation-info .text-primary {
-            color: #0d6efd;
-          }
-          .valuation-info .border-bottom {
-            border-color: #e9ecef !important;
-          }
-          .valuation-info .form-check-input {
-            margin-right: 0.5rem;
-            margin-left: 0.5rem;
-          }
-          .valuation-info .input-group {
-            border-radius: 0.25rem;
-            overflow: hidden;
-          }
-          .valuation-info textarea {
-            min-height: 100px;
-          }
-        `}
-      </style>
     </div>
   );
 };
