@@ -56,7 +56,7 @@ export const MortgageFMATabTitleData = [
   { id: "20", nav: "Documents" },
 ];
 
-export const MortgageOFBTabTitleData = [
+export const MortgageSubmissionTabTitleData = [
   { id: "1", nav: "Loan Details" },
   { id: "2", nav: "Applicant(s) Details" },
   { id: "3", nav: "Employment/Income" },
@@ -79,13 +79,17 @@ export const MortgageOFBTabTitleData = [
   { id: "20", nav: "Documents" },
 ];
 
-export const MortgageLegalTabTitleData = [...MortgageOFBTabTitleData];
+export const MortgageOFBTabTitleData = [...MortgageSubmissionTabTitleData];
 
-export const MortgageCompletionTabTitleData = [...MortgageOFBTabTitleData];
+export const MortgageLegalTabTitleData = [...MortgageSubmissionTabTitleData];
 
-export const MortgageFOPTabTitleData = [...MortgageOFBTabTitleData];
+export const MortgageCompletionTabTitleData = [
+  ...MortgageSubmissionTabTitleData,
+];
 
-export const MortgageNPDTabTitleData = [...MortgageOFBTabTitleData];
+export const MortgageFOPTabTitleData = [...MortgageSubmissionTabTitleData];
+
+export const MortgageNPDTabTitleData = [...MortgageSubmissionTabTitleData];
 
 // Insurance case details tab titles
 export const InsuranceEnquiryTabTitleData = [
@@ -117,4 +121,4 @@ export const InsuranceSubmissionTabTitleData = [...InsuranceFFDTabTitleData];
 export const InsuranceAASDTabTitleData = [...InsuranceFFDTabTitleData];
 export const InsuranceAORTabTitleData = [...InsuranceFFDTabTitleData];
 export const InsuranceFMRTabTitleData = [...InsuranceFFDTabTitleData];
-export const InsuranceNPWTabTitleData = [...InsuranceFFDTabTitleData];
+export const InsuranceNPDTabTitleData = [...InsuranceFFDTabTitleData];

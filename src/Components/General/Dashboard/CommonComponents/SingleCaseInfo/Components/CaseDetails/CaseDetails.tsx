@@ -3,7 +3,7 @@ import {
   InsuranceAORTabTitleData,
   InsuranceEnquiryTabTitleData,
   InsuranceFFDTabTitleData,
-  InsuranceNPWTabTitleData,
+  InsuranceNPDTabTitleData,
   InsuranceSubmissionTabTitleData,
   MortgageCompletionTabTitleData,
   MortgageDIPTabTitleData,
@@ -15,6 +15,7 @@ import {
   MortgageNPDTabTitleData,
   MortgageOFBTabTitleData,
   MortgageRCCTabTitleData,
+  MortgageSubmissionTabTitleData,
 } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsTabTitleData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
@@ -56,6 +57,7 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
     RESEARCH_COMPLIANCE_CHECK: MortgageRCCTabTitleData,
     DECISION_IN_PRINCIPLE: MortgageDIPTabTitleData,
     FULL_MORTGAGE_APPLICATION: MortgageFMATabTitleData,
+    SUBMISSION: MortgageSubmissionTabTitleData,
     OFFER_FROM_BANK: MortgageOFBTabTitleData,
     LEGAL: MortgageLegalTabTitleData,
     COMPLETION: MortgageCompletionTabTitleData,
@@ -69,7 +71,7 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
     ACCEPT_WAITING_START_DATE: InsuranceAASDTabTitleData,
     ACCEPTED_ON_RISK: InsuranceAORTabTitleData,
     FURTHER_MEDICAL_REQUIRED: InsuranceFFDTabTitleData,
-    NOT_PROCEED_WITH: InsuranceNPWTabTitleData,
+    NOT_PROCEED: InsuranceNPDTabTitleData,
   };
 
   // Get the current tab data based on caseStage and caseCategory
