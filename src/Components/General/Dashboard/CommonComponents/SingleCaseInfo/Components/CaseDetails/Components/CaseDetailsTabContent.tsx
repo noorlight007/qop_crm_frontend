@@ -1,5 +1,6 @@
 import { useAppSelector } from "@/Redux/Hooks";
 import { TabContent } from "reactstrap";
+import CommissionContent from "../Commission/CommissionContent";
 import { AdverseTab } from "./Adverse/AdverseTab";
 import { ApplicantsDetailsTab } from "./ApplicantsDetails/ApplicantsDetailsTab";
 import BudgetPlanner from "./BudgetPlanner/BudgetPlanner";
@@ -11,7 +12,9 @@ import Documents from "./Documents/Documents";
 import { EmploymentTab } from "./Employment/EmploymentTab";
 import ExistingProtectionTab from "./ExistingProtection/ExistingProtectionTab";
 import FeesTab from "./Fees/FeesTab";
+import HealthCheckContent from "./HealthCheck/HealthCheckContent";
 import InsuranceHealthContent from "./InsuranceHealth/InsuranceHealthContent";
+import InsuranceOverviewContent from "./InsuranceOverview/InsuranceOverviewContent";
 import { LoanDetailsTab } from "./LoanDetails/LoanDetailsTab";
 import MortgageYourNeedsContent from "./MortgageYourNeeds/MortgageYourNeedsContent";
 import { NotesTab } from "./Notes/NotesTab";
@@ -44,6 +47,11 @@ const tabComponents: Record<string, React.FC> = {
   Compliance: ComplianceTab,
   "Client Survey": ClientSurveyContent,
   Documents: Documents,
+
+  // Additional tabs for Insurance case
+  "Insurance Overview": InsuranceOverviewContent,
+  "Health Check": HealthCheckContent,
+  Commission: CommissionContent,
 };
 
 export const CaseDetailsTabContent: React.FC = () => {

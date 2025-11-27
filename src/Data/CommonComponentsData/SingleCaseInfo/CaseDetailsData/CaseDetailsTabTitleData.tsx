@@ -109,12 +109,11 @@ export const InsuranceFFDTabTitleData = [
   { id: "7", nav: "Budget Planner" },
   { id: "8", nav: "Existing Protection" },
   { id: "9", nav: "Notes" },
-  { id: "10", nav: "Disclaimer" },
-  { id: "11", nav: "Insurance Health" },
-  { id: "12", nav: "Commission" },
-  { id: "13", nav: "Fees" },
-  { id: "14", nav: "Compliance" },
-  { id: "15", nav: "Documents" },
+  { id: "10", nav: "Insurance Health" },
+  { id: "11", nav: "Commission" },
+  { id: "12", nav: "Fees" },
+  { id: "13", nav: "Compliance" },
+  { id: "14", nav: "Documents" },
 ];
 
 export const InsuranceSubmissionTabTitleData = [...InsuranceFFDTabTitleData];
