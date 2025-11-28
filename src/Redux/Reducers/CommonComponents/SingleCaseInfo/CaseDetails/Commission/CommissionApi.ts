@@ -24,10 +24,19 @@ export const CommissionApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Commission"],
     }),
+    addLumpSumCommission: builder.mutation({
+      query: ({ case_alias, commission_alias, lumpSumData }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/lump-sum-commissions/`,
+        method: "POST",
+        body: lumpSumData,
+      }),
+      invalidatesTags: ["Commission"],
+    }),
   }),
 });
 export const {
   useGetCommissionQuery,
   useAddCommissionMutation,
   useGetLumpSumCommissionQuery,
+    useAddLumpSumCommissionMutation,
 } = CommissionApi;

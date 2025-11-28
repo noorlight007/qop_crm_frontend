@@ -13,22 +13,15 @@ type Lump = {
   reconciledAmount: string;
 };
 
-const emptyLump = (id = ""): Lump => ({
-  id,
-  policy: "",
-  commissionAmount: "0",
-  dateReceived: "",
-  clawbackAmount: "0",
-  clawbackDate: "",
-  reconciledAmount: "0.00",
-});
-
 interface Props {
   caseAlias?: string | string[];
   commissionAlias?: string | null;
 }
 
 const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
+  const [isAddLumpSumCommissionModalOpen, setIsAddLumpSumCommissionModalOpen] =
+    useState(false);
+
   const [lumps, setLumps] = useState<Lump[]>([]);
 
   const case_alias = Array.isArray(caseAlias) ? caseAlias[0] : caseAlias;
@@ -71,19 +64,6 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
     }
   }, [isError]);
 
-  const addLump = () => {
-    const id = String(Date.now());
-    setLumps((s) => [...s, emptyLump(id)]);
-  };
-
-  const removeLump = (id: string) => {
-    setLumps((s) => s.filter((l) => l.id !== id));
-  };
-
-  const updateField = (id: string, field: keyof Lump, value: string) => {
-    setLumps((s) => s.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
-  };
-
   if (isLoading) {
     return (
       <div className="p-2">
@@ -99,7 +79,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
           Lump Sum Commission
         </div>
         <div className="d-flex justify-content-center">
-          <button type="button" className="btn btn-primary" onClick={addLump}>
+          <button type="button" className="btn btn-primary">
             <TbCirclePlus className="me-1" size={18} />
             Add New Lump Sum
           </button>
@@ -117,11 +97,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
           <div className="row g-3 align-items-center">
             <div className="col-md-4">
               <label className="form-label">Policy</label>
-              <select
-                className="form-select"
-                value={lump.policy}
-                onChange={(e) => updateField(lump.id, "policy", e.target.value)}
-              >
+              <select className="form-select" value={lump.policy}>
                 <option value="">Select...</option>
                 <option value="policy-1">Policy 1</option>
                 <option value="policy-2">Policy 2</option>
@@ -136,9 +112,6 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                   type="number"
                   className="form-control"
                   value={lump.commissionAmount}
-                  onChange={(e) =>
-                    updateField(lump.id, "commissionAmount", e.target.value)
-                  }
                   min={0}
                 />
               </div>
@@ -151,9 +124,6 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                   type="date"
                   className="form-control"
                   value={lump.dateReceived}
-                  onChange={(e) =>
-                    updateField(lump.id, "dateReceived", e.target.value)
-                  }
                 />
               </div>
             </div>
@@ -168,9 +138,6 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                   type="number"
                   className="form-control"
                   value={lump.clawbackAmount}
-                  onChange={(e) =>
-                    updateField(lump.id, "clawbackAmount", e.target.value)
-                  }
                   min={0}
                 />
               </div>
@@ -182,9 +149,6 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                 type="date"
                 className="form-control"
                 value={lump.clawbackDate}
-                onChange={(e) =>
-                  updateField(lump.id, "clawbackDate", e.target.value)
-                }
               />
             </div>
 
@@ -205,7 +169,6 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
               <button
                 type="button"
                 className="btn btn-link text-danger"
-                onClick={() => removeLump(lump.id)}
                 title="Remove row"
               >
                 <i className="fa fa-times" />
@@ -216,7 +179,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
       ))}
 
       <div>
-        <button type="button" className="btn btn-primary" onClick={addLump}>
+        <button type="button" className="btn btn-primary">
           <TbCirclePlus className="me-1" size={18} />
           Add New Lump Sum
         </button>
