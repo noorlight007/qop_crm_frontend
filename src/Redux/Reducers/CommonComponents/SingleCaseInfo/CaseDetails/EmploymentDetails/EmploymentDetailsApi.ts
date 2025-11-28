@@ -25,6 +25,13 @@ export const EmploymentDetailsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["EmploymentDetails"],
     }),
+    deleteEmploymentDetails: builder.mutation({
+      query: ({ case_alias, employmentDetails_alias }) => ({
+        url: `/cases/${case_alias}/employment/details/${employmentDetails_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["EmploymentDetails"],
+    }),
   }),
 });
 
@@ -32,4 +39,5 @@ export const {
   useGetEmploymentDetailsQuery,
   useAddEmploymentDetailsMutation,
   useUpdateEmploymentDetailsMutation,
+  useDeleteEmploymentDetailsMutation,
 } = EmploymentDetailsApi;

@@ -77,7 +77,11 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
   );
 
   const handleNextTab = () => {
-    const nextTabNav = getNextTabNav(caseData?.case_stage, currentTab!);
+    const nextTabNav = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!
+    );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
     } else {

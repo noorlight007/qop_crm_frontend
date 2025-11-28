@@ -53,7 +53,10 @@ const ClientSingleCaseContainer: React.FC = () => {
         activePage="Client"
       />
       <Container fluid>
-        <CaseDetails caseStage={caseData?.case_stage || ""} />
+        <CaseDetails
+          caseCategory={caseData?.case_category || ""}
+          caseStage={caseData?.case_stage || ""}
+        />
       </Container>
     </>
   );

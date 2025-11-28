@@ -464,8 +464,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         <Row className="px-3">
           <Col className="border-2 border-r-light">
             <div>
-              <h5>Property Address:</h5>
-              <p>
+              <h6>Property Address:</h6>
+              <p className="p-1 small">
                 {(() => {
                   const pd = caseInfo?.property_details;
                   if (!pd) return "N/A";
@@ -494,8 +494,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
             </div>
             <div className="d-flex justify-content-between gap-2">
               <div>
-                <h5>Property Value:</h5>
-                <p>
+                <h6>Property Value:</h6>
+                <p className="p-1 small">
                   {caseInfo?.property_valuation ? (
                     `£${caseInfo.property_valuation}`
                   ) : (
@@ -504,8 +504,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 </p>
               </div>
               <div>
-                <h5>Purchase Price:</h5>
-                <p>
+                <h6>Purchase Price:</h6>
+                <p className="p-1 small">
                   {caseInfo?.purchase_price ? (
                     `£${caseInfo.purchase_price}`
                   ) : (
@@ -514,8 +514,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 </p>
               </div>
               <div>
-                <h5>Loan Amount :</h5>
-                <p>
+                <h6>Loan Amount :</h6>
+                <p className="p-1 small">
                   {caseInfo?.loan_amount ? (
                     `£${caseInfo.loan_amount}`
                   ) : (
@@ -524,8 +524,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 </p>
               </div>
               <div>
-                <h5>Lender:</h5>
-                <p>
+                <h6>Lender:</h6>
+                <p className="p-1 small">
                   {caseInfo?.lender ? (
                     formatChoiceFieldValue(caseInfo.lender)
                   ) : (
@@ -536,8 +536,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
             </div>
           </Col>
           <Col>
-            <h5>Notes:</h5>
-            <p className="p-1">
+            <h6>Notes:</h6>
+            <p className="p-1 small">
               {caseInfo?.notes ? (
                 formatChoiceFieldValue(caseInfo.notes)
               ) : (

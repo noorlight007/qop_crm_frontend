@@ -199,6 +199,62 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
     }
   };
 
+  const changeSelectionFontSize = (delta: number) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) {
+      // No selection — change editor base font size
+      const current = parseInt(window.getComputedStyle(editor).fontSize) || 14;
+      editor.style.fontSize = `${Math.max(8, current + delta)}px`;
+      editor.focus();
+      handleEditorInput();
+      return;
+    }
+
+    const range = sel.getRangeAt(0);
+    if (!editor.contains(range.commonAncestorContainer)) {
+      // Selection outside editor — do nothing
+      return;
+    }
+
+    // Determine current font size from start container
+    let startEl: HTMLElement | null = null;
+    if (range.startContainer.nodeType === Node.TEXT_NODE) {
+      startEl = (range.startContainer as Text).parentElement as HTMLElement;
+    } else if (range.startContainer instanceof HTMLElement) {
+      startEl = range.startContainer as HTMLElement;
+    }
+
+    const base = startEl
+      ? parseInt(window.getComputedStyle(startEl).fontSize) || 14
+      : parseInt(window.getComputedStyle(editor).fontSize) || 14;
+
+    const newSize = Math.max(8, base + delta);
+
+    const span = document.createElement("span");
+    span.style.fontSize = `${newSize}px`;
+
+    try {
+      range.surroundContents(span);
+    } catch (err) {
+      // Surround may fail on partial node selections — use extract/insert fallback
+      const frag = range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
+    }
+
+    // Move selection to the newly inserted span
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    sel.addRange(newRange);
+
+    editor.focus();
+    handleEditorInput();
+  };
+
   const applyFormat = (command: string, value?: string) => {
     document.execCommand(command, false, value);
     editorRef.current?.focus();
@@ -325,6 +381,24 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                 onClick={() => applyFormat("bold")}
               >
                 B
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                title="Increase font size"
+                onClick={() => changeSelectionFontSize(2)}
+              >
+                A+
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                title="Decrease font size"
+                onClick={() => changeSelectionFontSize(-2)}
+              >
+                A-
               </Button>
               <Button
                 outline

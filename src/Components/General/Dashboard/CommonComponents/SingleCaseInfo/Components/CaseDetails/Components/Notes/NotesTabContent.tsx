@@ -29,7 +29,11 @@ export const NotesTabContent: React.FC<NotesTabContentProps> = ({
     (state) => state.caseDetails.basicTabId
   );
   const handleNextTab = () => {
-    const nextTabNav = getNextTabNav(caseData?.case_stage, currentTab!);
+    const nextTabNav = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!
+    );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
     } else {

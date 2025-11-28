@@ -2,7 +2,7 @@ import { useUpdatePropertyMutation } from "@/Redux/Reducers/CommonComponents/Sin
 import { FoundPropertyProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -25,8 +25,12 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
   const [updateSingleProperty, { isLoading }] = useUpdatePropertyMutation();
 
   const [foundProperty, setFoundProperty] = useState<boolean>(
-    property.have_you_found_a_property_yet
+    Boolean(property.have_you_found_a_property_yet)
   );
+
+  useEffect(() => {
+    setFoundProperty(Boolean(property.have_you_found_a_property_yet));
+  }, [property.have_you_found_a_property_yet]);
 
   const handlePropertyFound = async (value: boolean) => {
     setFoundProperty(value);
@@ -45,7 +49,7 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
       <Card className="mb-2">
         <CardHeader className="py-3">
           <Row className="align-items-center">
-            <Col lg={9}>
+            <Col lg={12}>
               <div className="d-flex align-items-center">
                 <Label
                   className="mb-0 fw-semibold me-4"
@@ -68,10 +72,7 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
                       id="FoundPrimaryPropertyYes"
                       name="have_you_found_a_property_yet"
                       value="true"
-                      checked={
-                        foundProperty === true ||
-                        property.have_you_found_a_property_yet === true
-                      }
+                      checked={foundProperty === true}
                       onChange={() => handlePropertyFound(true)}
                       className="cursor-pointer me-2"
                       disabled={session?.user?.user_type === "CLIENT"}
@@ -90,10 +91,7 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
                       id="FoundPrimaryPropertyNo"
                       name="have_you_found_a_property_yet"
                       value="false"
-                      checked={
-                        foundProperty === false ||
-                        property.have_you_found_a_property_yet === false
-                      }
+                      checked={foundProperty === false}
                       onChange={() => handlePropertyFound(false)}
                       className="cursor-pointer me-2"
                       disabled={session?.user?.user_type === "CLIENT"}

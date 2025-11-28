@@ -3,8 +3,10 @@ import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/CommonComponents/
 import { EmploymentDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -13,22 +15,68 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
+import DeleteEmploymentModal from "./EmploymentModals/DeleteEmploymentModal";
 import { EmploymentTabContent } from "./EmploymentTabContent";
 
 export const EmploymentTab = () => {
-  // State for active user, active tab, and employment data
   const [activeUser, setActiveUser] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  // UseParams with type assertion
   const params = useParams();
-  const { casealias } = params;
+  const { casealias } = params as { casealias?: string | string[] };
 
-  // Fetch employment details
+  // Normalize `casealias` which can be `string | string[] | undefined` from next/navigation
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
+
   const { data: employmentData, isLoading: isEmploymentDetailLoading } =
-    useGetEmploymentDetailsQuery({ case_alias: casealias });
+    useGetEmploymentDetailsQuery({ case_alias: caseAlias });
 
-  // Set the first user and their first employment record as default when data is fetched
+  // Delete modal state (the modal performs the mutation)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [modalEmploymentAlias, setModalEmploymentAlias] = useState<
+    string | undefined
+  >(undefined);
+  const [modalUserId, setModalUserId] = useState<number | null>(null);
+
+  const openDeleteModal = (
+    e: React.MouseEvent,
+    employmentAlias: string | undefined,
+    userId: number
+  ) => {
+    e.stopPropagation();
+    setModalEmploymentAlias(employmentAlias);
+    setModalUserId(userId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteSuccess = () => {
+    const employmentAlias = modalEmploymentAlias;
+    const userId = modalUserId as number;
+
+    const remainingForUser = (employmentData || []).filter(
+      (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias
+    );
+
+    if (remainingForUser.length > 0) {
+      setActiveTab(remainingForUser[0].alias || null);
+    } else {
+      const remainingAny = (employmentData || []).filter(
+        (emp: any) => emp.alias !== employmentAlias
+      );
+      if (remainingAny.length > 0) {
+        setActiveUser(remainingAny[0].user.id);
+        setActiveTab(remainingAny[0].alias || null);
+      } else {
+        setActiveTab(null);
+        setActiveUser(null);
+      }
+    }
+
+    setDeleteModalOpen(false);
+    setModalEmploymentAlias(undefined);
+    setModalUserId(null);
+  };
+
   useEffect(() => {
     if (employmentData && employmentData.length > 0) {
       const firstUserId = employmentData[0]?.user.id;
@@ -67,7 +115,6 @@ export const EmploymentTab = () => {
                 )
                 .map((employment: EmploymentDetailsProps, idx: number) => {
                   const user = employment.user;
-                  // Render an ampersand separator before each user tab except the first
                   return [
                     idx > 0 ? (
                       <span
@@ -103,6 +150,7 @@ export const EmploymentTab = () => {
                 })}
             </Nav>
           </CardHeader>
+
           {/* Inner Navigation Tabs (Employment Records) */}
           {activeUser && (
             <CardHeader className=" d-flex justify-content-center align-items-center flex-wrap gap-3 pt-3 pb-0">
@@ -117,7 +165,6 @@ export const EmploymentTab = () => {
                         emp.user.id === activeUser
                     ) || [];
 
-                  // Precompute SELF_EMPLOYED and EMPLOYED entries so numbering is contiguous per type
                   const selfEmps = userEmps.filter(
                     (e: any) => e.employment_status === "SELF_EMPLOYED"
                   );
@@ -149,17 +196,38 @@ export const EmploymentTab = () => {
                           onClick={() => setActiveTab(employment.alias || null)}
                           style={{ cursor: "pointer", fontSize: "0.7rem" }}
                         >
-                          {employment?.employment_status
-                            ? // Base label from choice formatter
-                              formatChoiceFieldValue(
-                                employment.employment_status
-                              ) +
-                              (employment.employment_status === "SELF_EMPLOYED"
-                                ? ` (Business-${selfIndex})`
-                                : employment.employment_status === "EMPLOYED"
-                                ? ` (Job-${employedIndex})`
-                                : "")
-                            : "(N/A)"}
+                          <span>
+                            {employment?.employment_status
+                              ? formatChoiceFieldValue(
+                                  employment.employment_status
+                                ) +
+                                (employment.employment_status ===
+                                "SELF_EMPLOYED"
+                                  ? ` (Business-${selfIndex})`
+                                  : employment.employment_status === "EMPLOYED"
+                                  ? ` (Job-${employedIndex})`
+                                  : "")
+                              : "(N/A)"}
+                          </span>
+
+                          <Button
+                            type="button"
+                            size="sm"
+                            outline
+                            color="danger"
+                            className="ms-1"
+                            onClick={(e) =>
+                              openDeleteModal(
+                                e,
+                                employment.alias,
+                                employment.user.id
+                              )
+                            }
+                            aria-label="Delete employment"
+                            title="Delete"
+                          >
+                            <FaTrash />
+                          </Button>
                         </NavLink>
                       </NavItem>
                     );
@@ -168,6 +236,14 @@ export const EmploymentTab = () => {
               </Nav>
             </CardHeader>
           )}
+
+          <DeleteEmploymentModal
+            isOpen={deleteModalOpen}
+            toggle={() => setDeleteModalOpen((s) => !s)}
+            caseAlias={caseAlias}
+            employmentAlias={modalEmploymentAlias}
+            onSuccess={handleDeleteSuccess}
+          />
 
           {/* Tab Content */}
           {activeTab && activeUser && (
@@ -196,3 +272,5 @@ export const EmploymentTab = () => {
     </Col>
   );
 };
+
+export default EmploymentTab;

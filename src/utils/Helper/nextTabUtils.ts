@@ -1,51 +1,82 @@
 import {
-  CompletionTabTitleData,
-  DIPTabTitleData,
-  EnqueryTabTitleData,
-  FFDTabTitleData,
-  FMATabTitleData,
-  FOPTabTitleData,
-  LegalTabTitleData,
-  NPDTabTitleData,
-  OFBTabTitleData,
-  RCCTabTitleData,
+  InsuranceAASDTabTitleData,
+  InsuranceAORTabTitleData,
+  InsuranceEnquiryTabTitleData,
+  InsuranceFFDTabTitleData,
+  InsuranceNPDTabTitleData,
+  InsuranceSubmissionTabTitleData,
+  MortgageCompletionTabTitleData,
+  MortgageDIPTabTitleData,
+  MortgageEnquiryTabTitleData,
+  MortgageFFDTabTitleData,
+  MortgageFMATabTitleData,
+  MortgageFOPTabTitleData,
+  MortgageLegalTabTitleData,
+  MortgageNPDTabTitleData,
+  MortgageOFBTabTitleData,
+  MortgageRCCTabTitleData,
+  MortgageSubmissionTabTitleData,
 } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsTabTitleData";
 
 export const getNextTabNav = (
   caseStage: string,
+  caseCategory: string,
   currentTabNav: string
 ): string | null => {
   console.log(caseStage);
   // Map case stages to corresponding tab title data
-  const tabDataMap: Record<string, any[]> = {
-    ENQUIRY: EnqueryTabTitleData,
-    FACT_FIND: FFDTabTitleData,
-    RESEARCH_COMPLIANCE_CHECK: RCCTabTitleData,
-    DECISION_IN_PRINCIPLE: DIPTabTitleData,
-    FULL_MORTGAGE_APPLICATION: FMATabTitleData,
-    OFFER_FROM_BANK: OFBTabTitleData,
-    LEGAL: LegalTabTitleData,
-    COMPLETION: CompletionTabTitleData,
-    FUTURE_OPPORTUNITY: FOPTabTitleData,
-    NOT_PROCEED: NPDTabTitleData,
+  const mortgageTabDataMap: Record<string, any[]> = {
+    ENQUIRY: MortgageEnquiryTabTitleData,
+    FACT_FIND: MortgageFFDTabTitleData,
+    RESEARCH_COMPLIANCE_CHECK: MortgageRCCTabTitleData,
+    DECISION_IN_PRINCIPLE: MortgageDIPTabTitleData,
+    FULL_MORTGAGE_APPLICATION: MortgageFMATabTitleData,
+    SUBMISSION: MortgageSubmissionTabTitleData,
+    OFFER_FROM_BANK: MortgageOFBTabTitleData,
+    LEGAL: MortgageLegalTabTitleData,
+    COMPLETION: MortgageCompletionTabTitleData,
+    FUTURE_OPPORTUNITY: MortgageFOPTabTitleData,
+    NOT_PROCEED: MortgageNPDTabTitleData,
+  };
+  const insuranceTabDataMap: Record<string, any[]> = {
+    ENQUIRY: InsuranceEnquiryTabTitleData,
+    FACT_FIND: InsuranceFFDTabTitleData,
+    SUBMISSION: InsuranceSubmissionTabTitleData,
+    ACCEPT_WAITING_START_DATE: InsuranceAASDTabTitleData,
+    ACCEPTED_ON_RISK: InsuranceAORTabTitleData,
+    FURTHER_MEDICAL_REQUIRED: InsuranceFFDTabTitleData,
+    NOT_PROCEED: InsuranceNPDTabTitleData,
   };
 
-  // Get the tab data for the provided caseStage
-  const tabData = tabDataMap[caseStage];
+  // Get the current tab data based on caseStage and caseCategory
+  let currentTabData: any[] = [];
 
-  // If caseStage is invalid or tabData is empty, return null
-  if (!tabData || tabData.length === 0) {
+  if (caseCategory === "MORTGAGE") {
+    currentTabData = mortgageTabDataMap[caseStage] || [];
+  } else if (
+    caseCategory === "PROTECTION" ||
+    caseCategory === "GENERAL_INSURANCE"
+  ) {
+    currentTabData = insuranceTabDataMap[caseStage] || [];
+  } else {
+    currentTabData = mortgageTabDataMap[caseStage] || [];
+  }
+
+  // If caseStage is invalid or currentTabData is empty, return null
+  if (!currentTabData || currentTabData.length === 0) {
     return null;
   }
 
   // Find the index of the current tab by its nav name
-  const currentIndex = tabData.findIndex((tab) => tab.nav === currentTabNav);
+  const currentIndex = currentTabData.findIndex(
+    (tab) => tab.nav === currentTabNav
+  );
 
   // If current tab is not found or it's the last tab, return null
-  if (currentIndex === -1 || currentIndex === tabData.length - 1) {
+  if (currentIndex === -1 || currentIndex === currentTabData.length - 1) {
     return null;
   }
 
   // Return the nav name of the next tab
-  return tabData[currentIndex + 1].nav;
+  return currentTabData[currentIndex + 1].nav;
 };

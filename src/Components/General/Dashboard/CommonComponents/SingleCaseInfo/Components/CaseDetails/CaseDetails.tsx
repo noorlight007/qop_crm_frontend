@@ -1,14 +1,21 @@
 import {
-  CompletionTabTitleData,
-  DIPTabTitleData,
-  EnqueryTabTitleData,
-  FFDTabTitleData,
-  FMATabTitleData,
-  FOPTabTitleData,
-  LegalTabTitleData,
-  NPDTabTitleData,
-  OFBTabTitleData,
-  RCCTabTitleData,
+  InsuranceAASDTabTitleData,
+  InsuranceAORTabTitleData,
+  InsuranceEnquiryTabTitleData,
+  InsuranceFFDTabTitleData,
+  InsuranceNPDTabTitleData,
+  InsuranceSubmissionTabTitleData,
+  MortgageCompletionTabTitleData,
+  MortgageDIPTabTitleData,
+  MortgageEnquiryTabTitleData,
+  MortgageFFDTabTitleData,
+  MortgageFMATabTitleData,
+  MortgageFOPTabTitleData,
+  MortgageLegalTabTitleData,
+  MortgageNPDTabTitleData,
+  MortgageOFBTabTitleData,
+  MortgageRCCTabTitleData,
+  MortgageSubmissionTabTitleData,
 } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsTabTitleData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
@@ -31,38 +38,55 @@ import {
 } from "reactstrap";
 import { CaseDetailsTabContent } from "./Components/CaseDetailsTabContent";
 
-const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
+const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
+  caseStage,
+  caseCategory,
+}) => {
   const { casealias } = useParams();
   const basicTab = useAppSelector((state: any) => state.caseDetails.basicTabId);
-  // const isRequired = useAppSelector(
-  //   (state: any) => state.caseDetails.isRequired
-  // );
-  // const requiredFilledTabId = useAppSelector(
-  //   (state: any) => state.caseDetails.requiredFilledTabId
-  // );
   const dispatch = useAppDispatch();
 
-  const { data: SectionCompleteStatusData, isLoading } =
-    useGetSectionCompleteStatusQuery({
-      case_alias: casealias,
-    });
+  const { data: SectionCompleteStatusData } = useGetSectionCompleteStatusQuery({
+    case_alias: casealias,
+  });
 
   // Map case stages to corresponding tab title data
-  const tabDataMap: Record<string, any[]> = {
-    ENQUIRY: EnqueryTabTitleData,
-    FACT_FIND: FFDTabTitleData,
-    RESEARCH_COMPLIANCE_CHECK: RCCTabTitleData,
-    DECISION_IN_PRINCIPLE: DIPTabTitleData,
-    FULL_MORTGAGE_APPLICATION: FMATabTitleData,
-    OFFER_FROM_BANK: OFBTabTitleData,
-    LEGAL: LegalTabTitleData,
-    COMPLETION: CompletionTabTitleData,
-    FUTURE_OPPORTUNITY: FOPTabTitleData,
-    NOT_PROCEED: NPDTabTitleData,
+  const mortgageTabDataMap: Record<string, any[]> = {
+    ENQUIRY: MortgageEnquiryTabTitleData,
+    FACT_FIND: MortgageFFDTabTitleData,
+    RESEARCH_COMPLIANCE_CHECK: MortgageRCCTabTitleData,
+    DECISION_IN_PRINCIPLE: MortgageDIPTabTitleData,
+    FULL_MORTGAGE_APPLICATION: MortgageFMATabTitleData,
+    SUBMISSION: MortgageSubmissionTabTitleData,
+    OFFER_FROM_BANK: MortgageOFBTabTitleData,
+    LEGAL: MortgageLegalTabTitleData,
+    COMPLETION: MortgageCompletionTabTitleData,
+    FUTURE_OPPORTUNITY: MortgageFOPTabTitleData,
+    NOT_PROCEED: MortgageNPDTabTitleData,
+  };
+  const insuranceTabDataMap: Record<string, any[]> = {
+    ENQUIRY: InsuranceEnquiryTabTitleData,
+    FACT_FIND: InsuranceFFDTabTitleData,
+    SUBMISSION: InsuranceSubmissionTabTitleData,
+    ACCEPT_WAITING_START_DATE: InsuranceAASDTabTitleData,
+    ACCEPTED_ON_RISK: InsuranceAORTabTitleData,
+    FURTHER_MEDICAL_REQUIRED: InsuranceFFDTabTitleData,
+    NOT_PROCEED: InsuranceNPDTabTitleData,
   };
 
-  // Get the current tab data based on caseStage
-  const currentTabData = tabDataMap[caseStage] || [];
+  // Get the current tab data based on caseStage and caseCategory
+  let currentTabData: any[] = [];
+
+  if (caseCategory === "MORTGAGE") {
+    currentTabData = mortgageTabDataMap[caseStage] || [];
+  } else if (
+    caseCategory === "PROTECTION" ||
+    caseCategory === "GENERAL_INSURANCE"
+  ) {
+    currentTabData = insuranceTabDataMap[caseStage] || [];
+  } else {
+    currentTabData = mortgageTabDataMap[caseStage] || [];
+  }
 
   // Restore tab from localStorage or set the first tab as default when caseStage changes
   useEffect(() => {
@@ -71,7 +95,6 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
       if (typeof window !== "undefined") {
         const savedTab = localStorage.getItem("caseDetailsActiveTab");
         if (savedTab && currentTabData.some((tab) => tab.nav === savedTab)) {
-          // Use the saved tab if it exists in the current stage's tabs
           dispatch(restoreBasicTab(savedTab));
         } else {
           // Otherwise, use the first tab
@@ -82,9 +105,8 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
         dispatch(basicTabIndicator(currentTabData[0].nav));
       }
     }
-  }, [caseStage, dispatch, currentTabData]);
+  }, [caseStage, dispatch, caseCategory]);
 
-  // Map a tab display name to the SectionCompleteStatusData key (e.g. "Loan Details" -> "is_loan_details")
   const navToStatusKey = (nav: string) => {
     if (!nav) return "";
 
@@ -111,6 +133,11 @@ const CaseDetails: React.FC<{ caseStage: string }> = ({ caseStage }) => {
       Compliance: "is_compliance",
       "Client Survey": "is_client_survey",
       Documents: "is_documents",
+
+      // Additional tabs for Insurance case
+      "Insurance Overview": "is_insurance_overview",
+      "Health Check": "is_health_check",
+      Commission: "is_commission",
     };
 
     if (explicitMap[nav]) return explicitMap[nav];

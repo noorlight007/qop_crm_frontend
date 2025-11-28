@@ -1,5 +1,6 @@
 import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
 import { LivingExpensesTabContentsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
@@ -78,6 +79,10 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     "Life Insurance": "life_insurance",
     "Dental Insurance": "dental_insurance",
     "Other Insurance": "other_insurance",
+    "Buildings Insurance": "buildings_insurance",
+    "Contents Insurance": "contents_insurance",
+    "Buildings & Contents Insurance": "building_content_insurance",
+    "Total Insurance Expenses": "total_insurance_expenses",
   };
 
   // Enforce positive numeric input
@@ -365,6 +370,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                     min={0}
                     inputMode="decimal"
                     onKeyDown={blockInvalidChar}
+                    onInput={limitDecimalPlaces}
                     value={
                       prefix === "CurrentBudgetPlanner"
                         ? currentValues[fieldName] || ""

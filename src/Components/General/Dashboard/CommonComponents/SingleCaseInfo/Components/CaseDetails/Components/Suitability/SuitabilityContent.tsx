@@ -589,6 +589,7 @@ const SuitabilityContent: React.FC = () => {
   const handleNextTab = () => {
     const nextTabNav: string | null = getNextTabNav(
       caseData?.case_stage,
+      caseData?.case_category,
       currentTab!
     );
     if (nextTabNav) {

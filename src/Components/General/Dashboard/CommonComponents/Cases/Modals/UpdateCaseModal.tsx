@@ -119,21 +119,6 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
         {formData ? (
           <Form>
             <FormGroup>
-              <Label for="case_category">Case Category</Label>
-              <Input
-                type="select"
-                name="case_category"
-                id="case_category"
-                value={formData?.case_category || ""}
-                onChange={handleInputChange}
-              >
-                <option value="">Select...</option>
-                <option value="MORTGAGE">Mortgage</option>
-                <option value="PROTECTION">Protection</option>
-                <option value="GENERAL_INSURANCE">General Insurance</option>
-              </Input>
-            </FormGroup>
-            <FormGroup>
               <Label for="case_stage">Case Stage</Label>
               <Input
                 type="select"
@@ -142,23 +127,45 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                 value={formData?.case_stage || ""}
                 onChange={handleInputChange}
               >
-                <option value="">Select...</option>
-                <option value="ENQUIRY">Enquiry</option>
-                <option value="FACT_FIND">Fact Find</option>
-                <option value="RESEARCH_COMPLIANCE_CHECK">
-                  Research and Compliance Check
-                </option>
-                <option value="DECISION_IN_PRINCIPLE">
-                  Decision in Principle
-                </option>
-                <option value="FULL_MORTGAGE_APPLICATION">
-                  Full Mortgage Application
-                </option>
-                <option value="OFFER_FROM_BANK">Offer From Bank</option>
-                <option value="LEGAL">Legal</option>
-                <option value="COMPLETION">Completion</option>
-                <option value="FUTURE_OPPORTUNITY">Future Opportunity</option>
-                <option value="NOT_PROCEED">Not Proceed</option>
+                {formData?.case_category === "MORTGAGE" ? (
+                  <>
+                    <option value="">Select...</option>
+                    <option value="ENQUIRY">Enquiry</option>
+                    <option value="FACT_FIND">Fact Find</option>
+                    <option value="RESEARCH_COMPLIANCE_CHECK">
+                      Research and Compliance Check
+                    </option>
+                    <option value="DECISION_IN_PRINCIPLE">
+                      Decision in Principle
+                    </option>
+                    <option value="FULL_MORTGAGE_APPLICATION">
+                      Full Mortgage Application
+                    </option>
+                    <option value="SUBMISSION">Submission</option>
+                    <option value="OFFER_FROM_BANK">Offer From Bank</option>
+                    <option value="LEGAL">Legal</option>
+                    <option value="COMPLETION">Completion</option>
+                    <option value="FUTURE_OPPORTUNITY">
+                      Future Opportunity
+                    </option>
+                    <option value="NOT_PROCEED">Not Proceed</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="">Select...</option>
+                    <option value="ENQUIRY">Enquiry</option>
+                    <option value="FACT_FIND">Fact Find</option>
+                    <option value="SUBMISSION">Submission</option>
+                    <option value="ACCEPT_WAITING_START_DATE">
+                      Accept Awaiting Start Date
+                    </option>
+                    <option value="ACCEPTED_ON_RISK">Accepted on Risk</option>
+                    <option value="FURTHER_MEDICAL_REQUIRED">
+                      Further Medical Required
+                    </option>
+                    <option value="NOT_PROCEED">Not Proceed</option>
+                  </>
+                )}
               </Input>
             </FormGroup>
             {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||

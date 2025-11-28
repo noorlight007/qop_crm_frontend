@@ -144,6 +144,9 @@ const initialState: BudgetPlanner = {
     life_insurance: 0,
     dental_insurance: 0,
     other_insurance: 0,
+    buildings_insurance: 0,
+    contents_insurance: 0,
+    building_content_insurance: 0,
     total_insurance_expenses: 0,
   },
   post_insurance: {
@@ -153,6 +156,9 @@ const initialState: BudgetPlanner = {
     life_insurance: 0,
     dental_insurance: 0,
     other_insurance: 0,
+    buildings_insurance: 0,
+    contents_insurance: 0,
+    building_content_insurance: 0,
     total_insurance_expenses: 0,
   },
   current_sub_total: {
