@@ -18,6 +18,14 @@ export const SolicitorAndAccountantApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["SolicitorDetails"],
     }),
+    updateSolicitorDetails: builder.mutation({
+      query: ({ solicitor_alias, updatedSolicitorDetails }) => ({
+        url: `/cases/solicitors/${solicitor_alias}/`,
+        method: "PUT",
+        body: updatedSolicitorDetails,
+      }),
+      invalidatesTags: ["SolicitorDetails"],
+    }),
     getCaseSolicitorDetails: builder.query({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/case/solicitors/`,
@@ -33,14 +41,14 @@ export const SolicitorAndAccountantApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["SolicitorDetails"],
     }),
-    updateSolicitorDetails: builder.mutation({
-      query: ({ solicitor_alias, updatedSolicitorDetails }) => ({
-        url: `/cases/solicitors/${solicitor_alias}/`,
-        method: "PUT",
-        body: updatedSolicitorDetails,
+    unassignSolicitor: builder.mutation({
+      query: ({ case_alias, solicitor_alias }) => ({
+        url: `/cases/${case_alias}/case/solicitors/${solicitor_alias}/`,
+        method: "DELETE",
       }),
       invalidatesTags: ["SolicitorDetails"],
     }),
+
     // Accountant
     getAccountantDetails: builder.query({
       query: () => ({
@@ -58,7 +66,7 @@ export const SolicitorAndAccountantApi = baseApi.injectEndpoints({
       invalidatesTags: ["AccountantDetails"],
     }),
     updateAccountantDetails: builder.mutation({
-      query: ({alias, data }) => ({
+      query: ({ alias, data }) => ({
         url: `/cases/accountants/${alias}/`,
         method: "PUT",
         body: data,
@@ -80,18 +88,27 @@ export const SolicitorAndAccountantApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AccountantDetails"],
     }),
+    unassignAccountant: builder.mutation({
+      query: ({ case_alias, accountant_alias }) => ({
+        url: `/cases/${case_alias}/case/accountants/${accountant_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AccountantDetails"],
+    }),
   }),
 });
 
 export const {
   useGetSolicitorDetailsQuery,
   useAddSolicitorDetailsMutation,
+  useUpdateSolicitorDetailsMutation,
   useGetCaseSolicitorDetailsQuery,
   useAssignCaseSolicitorMutation,
-  useUpdateSolicitorDetailsMutation,
+  useUnassignSolicitorMutation,
   useGetAccountantDetailsQuery,
-  useUpdateAccountantDetailsMutation,
   useAddAccountantDetailsMutation,
+  useUpdateAccountantDetailsMutation,
   useGetCaseAccountantDetailsQuery,
   useAssignCaseAccountantMutation,
+  useUnassignAccountantMutation,
 } = SolicitorAndAccountantApi;

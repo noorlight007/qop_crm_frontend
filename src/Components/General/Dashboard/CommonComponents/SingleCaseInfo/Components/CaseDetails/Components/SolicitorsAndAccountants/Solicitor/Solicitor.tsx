@@ -6,13 +6,16 @@ import {
   useAssignCaseSolicitorMutation,
   useGetCaseSolicitorDetailsQuery,
   useGetSolicitorDetailsQuery,
+  useUnassignSolicitorMutation,
   useUpdateSolicitorDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { BiSolidErrorCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -34,7 +37,8 @@ import AddSolicitorModal from "../Modals/AddSolicitorModal";
 
 const Solicitor: React.FC = () => {
   const params = useParams();
-  const { casealias } = params;
+  const { casealias } = params as { casealias?: string | string[] };
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
   const submitActionRef = useRef<"save" | "next">("save");
@@ -44,14 +48,16 @@ const Solicitor: React.FC = () => {
   const { data: solicitorName, isLoading } =
     useGetSolicitorDetailsQuery(undefined);
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
-    { case_alias: casealias },
-    { skip: !casealias }
+    { case_alias: caseAlias },
+    { skip: !caseAlias }
   );
   const { data: caseSolicitors, isLoading: isCaseSolicitorLoading } =
-    useGetCaseSolicitorDetailsQuery({ case_alias: casealias });
+    useGetCaseSolicitorDetailsQuery({ case_alias: caseAlias });
   console.log("caseSolicitors length:", caseSolicitors?.length);
   const [assignCaseSolicitor, { isLoading: isAssignedLoading }] =
     useAssignCaseSolicitorMutation();
+  const [unassignSolicitor, { isLoading: isUnassigning }] =
+    useUnassignSolicitorMutation();
   const [updateSolicitorDetails, { isLoading: isUpdateLoading }] =
     useUpdateSolicitorDetailsMutation();
   const [updateSectionCompleteStatus] =
@@ -125,7 +131,7 @@ const Solicitor: React.FC = () => {
 
     try {
       await assignCaseSolicitor({
-        case_alias: casealias,
+        case_alias: caseAlias,
         solicitor: { solicitor: selectedSolicitor.id },
       }).unwrap();
 
@@ -133,7 +139,7 @@ const Solicitor: React.FC = () => {
       Swal.fire("Success", "Solicitor assigned successfully!", "success");
       try {
         await updateSectionCompleteStatus({
-          case_alias: casealias,
+          case_alias: caseAlias,
           section_data: { is_solicitors_accountants: true },
         });
       } catch (err) {
@@ -175,7 +181,7 @@ const Solicitor: React.FC = () => {
       toast.success("Solicitor details updated successfully!");
       try {
         await updateSectionCompleteStatus({
-          case_alias: casealias,
+          case_alias: caseAlias,
           section_data: { is_solicitors_accountants: true },
         });
       } catch (err) {
@@ -328,8 +334,60 @@ const Solicitor: React.FC = () => {
                           </div>
                           <div>
                             <strong>Type: </strong>
-                            {selectedCaseSolicitor.solicitor_details
-                              .user_type || "N/A"}
+                            {formatChoiceFieldValue(
+                              selectedCaseSolicitor.solicitor_details.user_type
+                            ) || "N/A"}
+                          </div>
+                          <div>
+                            <Button
+                              outline
+                              size="sm"
+                              color="danger"
+                              className="ms-1"
+                              title="Unassign"
+                              disabled={isUnassigning}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                const result = await Swal.fire({
+                                  title: "Are you sure?",
+                                  text: "This will unassign the solicitor from the case.",
+                                  icon: "warning",
+                                  showCancelButton: true,
+                                  confirmButtonText: "Yes, unassign",
+                                  cancelButtonText: "Cancel",
+                                });
+                                if (result.isConfirmed) {
+                                  try {
+                                    await unassignSolicitor({
+                                      case_alias: caseAlias,
+                                      solicitor_alias:
+                                        selectedCaseSolicitor?.alias,
+                                    }).unwrap();
+                                    Swal.fire(
+                                      "Unassigned!",
+                                      "Solicitor has been unassigned.",
+                                      "success"
+                                    );
+                                    // Clear selection and reset active tab
+                                    setSelectedCaseSolicitor(null);
+                                    setActiveTab("0");
+                                  } catch (err) {
+                                    console.error(
+                                      "Failed to unassign solicitor:",
+                                      err
+                                    );
+                                    Swal.fire(
+                                      "Error",
+                                      "Failed to unassign solicitor. Please try again.",
+                                      "error"
+                                    );
+                                  }
+                                }
+                              }}
+                            >
+                              <BiSolidErrorCircle size={15} />
+                              Unassign
+                            </Button>
                           </div>
                         </>
                       ) : (
