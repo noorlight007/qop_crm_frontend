@@ -1,5 +1,6 @@
 import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
 import { DebtRepaymentTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import {
@@ -397,6 +398,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
                   min={0}
                   inputMode="decimal"
                   onKeyDown={blockInvalidChar}
+                  onInput={limitDecimalPlaces}
                   value={
                     prefix === "CurrentBudgetPlanner"
                       ? currentValues[fieldName] || ""

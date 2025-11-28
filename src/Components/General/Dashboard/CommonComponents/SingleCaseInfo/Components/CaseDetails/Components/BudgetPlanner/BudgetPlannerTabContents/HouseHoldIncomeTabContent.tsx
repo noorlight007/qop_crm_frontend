@@ -1,5 +1,6 @@
 import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
 import { HouseHoldIncomeTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import {
@@ -203,6 +204,7 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
                   min={0}
                   inputMode="decimal"
                   onKeyDown={blockInvalidChar}
+                  onInput={limitDecimalPlaces}
                   value={
                     prefix === "CurrentBudgetPlanner"
                       ? currentValues[fieldName] || ""
