@@ -32,6 +32,13 @@ export const FeesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Fees"],
     }),
+    calculateFees: builder.query({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/fees/`,
+        method: "GET",
+      }),
+      providesTags: ["Fees"],
+    }),
   }),
 });
 
@@ -40,4 +47,5 @@ export const {
   useGetFeesOutDetailsQuery,
   useAddFeesInDetailsMutation,
   useAddFeesOutDetailsMutation,
+  useCalculateFeesQuery,
 } = FeesApi;
