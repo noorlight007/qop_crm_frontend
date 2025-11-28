@@ -1,14 +1,10 @@
 import LoadingSpinner from "@/app/loading";
-import {
-  useDeleteEmploymentDetailsMutation,
-  useGetEmploymentDetailsQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
 import { EmploymentDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
-import { toast } from "react-toastify";
 import {
   Button,
   Card,
@@ -19,70 +15,68 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
+import DeleteEmploymentModal from "./EmploymentModals/DeleteEmploymentModal";
 import { EmploymentTabContent } from "./EmploymentTabContent";
 
 export const EmploymentTab = () => {
-  // State for active user, active tab, and employment data
   const [activeUser, setActiveUser] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  // UseParams with type assertion
   const params = useParams();
-  const { casealias } = params;
+  const { casealias } = params as { casealias?: string | string[] };
 
-  // Fetch employment details
+  // Normalize `casealias` which can be `string | string[] | undefined` from next/navigation
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
+
   const { data: employmentData, isLoading: isEmploymentDetailLoading } =
-    useGetEmploymentDetailsQuery({ case_alias: casealias });
+    useGetEmploymentDetailsQuery({ case_alias: caseAlias });
 
-  // Delete mutation hook
-  const [deleteEmployment, { isLoading: isDeleting }] =
-    useDeleteEmploymentDetailsMutation();
+  // Delete modal state (the modal performs the mutation)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [modalEmploymentAlias, setModalEmploymentAlias] = useState<
+    string | undefined
+  >(undefined);
+  const [modalUserId, setModalUserId] = useState<number | null>(null);
 
-  const handleDelete = async (
+  const openDeleteModal = (
     e: React.MouseEvent,
     employmentAlias: string | undefined,
     userId: number
   ) => {
     e.stopPropagation();
-    if (!employmentAlias) return;
-    const ok = window.confirm(
-      "Are you sure you want to delete this employment record?"
-    );
-    if (!ok) return;
-
-    try {
-      await deleteEmployment({
-        case_alias: casealias,
-        employmentDetails_alias: employmentAlias,
-      }).unwrap?.();
-      toast.success("Deleted successfully.");
-      // Optimistically pick a new active tab for this user if possible
-      const remainingForUser = (employmentData || []).filter(
-        (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias
-      );
-
-      if (remainingForUser.length > 0) {
-        setActiveTab(remainingForUser[0].alias || null);
-      } else {
-        // If no remaining for this user, pick any other employment record if available
-        const remainingAny = (employmentData || []).filter(
-          (emp: any) => emp.alias !== employmentAlias
-        );
-        if (remainingAny.length > 0) {
-          setActiveUser(remainingAny[0].user.id);
-          setActiveTab(remainingAny[0].alias || null);
-        } else {
-          setActiveTab(null);
-          setActiveUser(null);
-        }
-      }
-    } catch (error) {
-      console.error("Delete failed", error);
-      toast.error("Failed to delete employment record.");
-    }
+    setModalEmploymentAlias(employmentAlias);
+    setModalUserId(userId);
+    setDeleteModalOpen(true);
   };
 
-  // Set the first user and their first employment record as default when data is fetched
+  const handleDeleteSuccess = () => {
+    const employmentAlias = modalEmploymentAlias;
+    const userId = modalUserId as number;
+
+    const remainingForUser = (employmentData || []).filter(
+      (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias
+    );
+
+    if (remainingForUser.length > 0) {
+      setActiveTab(remainingForUser[0].alias || null);
+    } else {
+      const remainingAny = (employmentData || []).filter(
+        (emp: any) => emp.alias !== employmentAlias
+      );
+      if (remainingAny.length > 0) {
+        setActiveUser(remainingAny[0].user.id);
+        setActiveTab(remainingAny[0].alias || null);
+      } else {
+        setActiveTab(null);
+        setActiveUser(null);
+      }
+    }
+
+    setDeleteModalOpen(false);
+    setModalEmploymentAlias(undefined);
+    setModalUserId(null);
+  };
+
   useEffect(() => {
     if (employmentData && employmentData.length > 0) {
       const firstUserId = employmentData[0]?.user.id;
@@ -121,7 +115,6 @@ export const EmploymentTab = () => {
                 )
                 .map((employment: EmploymentDetailsProps, idx: number) => {
                   const user = employment.user;
-                  // Render an ampersand separator before each user tab except the first
                   return [
                     idx > 0 ? (
                       <span
@@ -157,6 +150,7 @@ export const EmploymentTab = () => {
                 })}
             </Nav>
           </CardHeader>
+
           {/* Inner Navigation Tabs (Employment Records) */}
           {activeUser && (
             <CardHeader className=" d-flex justify-content-center align-items-center flex-wrap gap-3 pt-3 pb-0">
@@ -171,7 +165,6 @@ export const EmploymentTab = () => {
                         emp.user.id === activeUser
                     ) || [];
 
-                  // Precompute SELF_EMPLOYED and EMPLOYED entries so numbering is contiguous per type
                   const selfEmps = userEmps.filter(
                     (e: any) => e.employment_status === "SELF_EMPLOYED"
                   );
@@ -205,8 +198,7 @@ export const EmploymentTab = () => {
                         >
                           <span>
                             {employment?.employment_status
-                              ? // Base label from choice formatter
-                                formatChoiceFieldValue(
+                              ? formatChoiceFieldValue(
                                   employment.employment_status
                                 ) +
                                 (employment.employment_status ===
@@ -218,7 +210,6 @@ export const EmploymentTab = () => {
                               : "(N/A)"}
                           </span>
 
-                          {/* Delete button next to the tab label */}
                           <Button
                             type="button"
                             size="sm"
@@ -226,7 +217,7 @@ export const EmploymentTab = () => {
                             color="danger"
                             className="ms-1"
                             onClick={(e) =>
-                              handleDelete(
+                              openDeleteModal(
                                 e,
                                 employment.alias,
                                 employment.user.id
@@ -245,6 +236,14 @@ export const EmploymentTab = () => {
               </Nav>
             </CardHeader>
           )}
+
+          <DeleteEmploymentModal
+            isOpen={deleteModalOpen}
+            toggle={() => setDeleteModalOpen((s) => !s)}
+            caseAlias={caseAlias}
+            employmentAlias={modalEmploymentAlias}
+            onSuccess={handleDeleteSuccess}
+          />
 
           {/* Tab Content */}
           {activeTab && activeUser && (
@@ -273,3 +272,5 @@ export const EmploymentTab = () => {
     </Col>
   );
 };
+
+export default EmploymentTab;
