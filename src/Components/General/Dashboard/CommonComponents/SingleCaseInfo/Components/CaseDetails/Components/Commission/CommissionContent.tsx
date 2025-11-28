@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import LumpSumCommission from "./LumpSumCommission/LumpSumCommission";
 
 const CommissionContent: React.FC = () => {
   const { casealias } = useParams();
@@ -57,6 +58,15 @@ const CommissionContent: React.FC = () => {
 
   return (
     <div className="p-2">
+      <Row>
+        <Col>
+          <LumpSumCommission
+            caseAlias={casealias}
+            commissionAlias={commission?.alias}
+          />
+        </Col>
+      </Row>
+
       <hr />
       <Row>
         <Col>

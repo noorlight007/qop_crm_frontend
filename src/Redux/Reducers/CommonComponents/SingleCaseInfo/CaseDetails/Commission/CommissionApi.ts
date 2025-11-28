@@ -17,7 +17,17 @@ export const CommissionApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Commission"],
     }),
+    getLumpSumCommission: builder.query({
+      query: ({ case_alias, commission_alias }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/lump-sum-commissions/`,
+        method: "GET",
+      }),
+      providesTags: ["Commission"],
+    }),
   }),
 });
-export const { useGetCommissionQuery, useAddCommissionMutation } =
-  CommissionApi;
+export const {
+  useGetCommissionQuery,
+  useAddCommissionMutation,
+  useGetLumpSumCommissionQuery,
+} = CommissionApi;
