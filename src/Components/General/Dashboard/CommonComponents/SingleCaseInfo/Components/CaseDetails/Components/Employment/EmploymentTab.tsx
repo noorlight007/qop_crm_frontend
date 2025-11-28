@@ -1,10 +1,16 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import {
+  useDeleteEmploymentDetailsMutation,
+  useGetEmploymentDetailsQuery,
+} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
 import { EmploymentDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -27,6 +33,54 @@ export const EmploymentTab = () => {
   // Fetch employment details
   const { data: employmentData, isLoading: isEmploymentDetailLoading } =
     useGetEmploymentDetailsQuery({ case_alias: casealias });
+
+  // Delete mutation hook
+  const [deleteEmployment, { isLoading: isDeleting }] =
+    useDeleteEmploymentDetailsMutation();
+
+  const handleDelete = async (
+    e: React.MouseEvent,
+    employmentAlias: string | undefined,
+    userId: number
+  ) => {
+    e.stopPropagation();
+    if (!employmentAlias) return;
+    const ok = window.confirm(
+      "Are you sure you want to delete this employment record?"
+    );
+    if (!ok) return;
+
+    try {
+      await deleteEmployment({
+        case_alias: casealias,
+        employmentDetails_alias: employmentAlias,
+      }).unwrap?.();
+      toast.success("Deleted successfully.");
+      // Optimistically pick a new active tab for this user if possible
+      const remainingForUser = (employmentData || []).filter(
+        (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias
+      );
+
+      if (remainingForUser.length > 0) {
+        setActiveTab(remainingForUser[0].alias || null);
+      } else {
+        // If no remaining for this user, pick any other employment record if available
+        const remainingAny = (employmentData || []).filter(
+          (emp: any) => emp.alias !== employmentAlias
+        );
+        if (remainingAny.length > 0) {
+          setActiveUser(remainingAny[0].user.id);
+          setActiveTab(remainingAny[0].alias || null);
+        } else {
+          setActiveTab(null);
+          setActiveUser(null);
+        }
+      }
+    } catch (error) {
+      console.error("Delete failed", error);
+      toast.error("Failed to delete employment record.");
+    }
+  };
 
   // Set the first user and their first employment record as default when data is fetched
   useEffect(() => {
@@ -149,17 +203,40 @@ export const EmploymentTab = () => {
                           onClick={() => setActiveTab(employment.alias || null)}
                           style={{ cursor: "pointer", fontSize: "0.7rem" }}
                         >
-                          {employment?.employment_status
-                            ? // Base label from choice formatter
-                              formatChoiceFieldValue(
-                                employment.employment_status
-                              ) +
-                              (employment.employment_status === "SELF_EMPLOYED"
-                                ? ` (Business-${selfIndex})`
-                                : employment.employment_status === "EMPLOYED"
-                                ? ` (Job-${employedIndex})`
-                                : "")
-                            : "(N/A)"}
+                          <span>
+                            {employment?.employment_status
+                              ? // Base label from choice formatter
+                                formatChoiceFieldValue(
+                                  employment.employment_status
+                                ) +
+                                (employment.employment_status ===
+                                "SELF_EMPLOYED"
+                                  ? ` (Business-${selfIndex})`
+                                  : employment.employment_status === "EMPLOYED"
+                                  ? ` (Job-${employedIndex})`
+                                  : "")
+                              : "(N/A)"}
+                          </span>
+
+                          {/* Delete button next to the tab label */}
+                          <Button
+                            type="button"
+                            size="sm"
+                            outline
+                            color="danger"
+                            className="ms-1"
+                            onClick={(e) =>
+                              handleDelete(
+                                e,
+                                employment.alias,
+                                employment.user.id
+                              )
+                            }
+                            aria-label="Delete employment"
+                            title="Delete"
+                          >
+                            <FaTrash />
+                          </Button>
                         </NavLink>
                       </NavItem>
                     );
