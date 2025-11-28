@@ -2,6 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import {
   useAddCompanyDetailsMutation,
   useGetCompanyDetailsQuery,
+  useUpdateCompanyDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
 import {
   AddCompanyDetailsFormModalProps,
@@ -35,6 +36,8 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   });
   const [addCompanyDetails, { isLoading: isCompanyDetailsAdding }] =
     useAddCompanyDetailsMutation();
+  const [updateCompanyDetails, { isLoading: isCompanyDetailsUpdating }] =
+    useUpdateCompanyDetailsMutation();
 
   const [formData, setFormData] = useState<ApplicantCompanyProps>({
     company_name: "",
@@ -157,12 +160,43 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
       const response = await addCompanyDetails({
         case_alias,
         applicantDetails_alias,
+        company_name: formData.company_name,
         CompanyDetails: formData,
       }).unwrap();
+      // If the API returned the saved company name/alias, make sure formData reflects it
+      const returnedName =
+        response?.company_name ||
+        response?.data?.company_name ||
+        (data && data[0] && data[0].company_name) ||
+        formData.company_name;
+      if (returnedName) {
+        setFormData((prev) => ({ ...prev, company_name: returnedName }));
+      }
       toast.success("Company details added successfully");
       toggle();
     } catch (error) {
       toast.error("Failed to add company details");
+    }
+  };
+
+  const handleUpdate = async () => {
+    // Guard: company_name is required for the update endpoint path
+    const targetName = data && data[0] && data[0].company_name;
+    if (!targetName) {
+      toast.error("Company name is missing — cannot perform update");
+      return;
+    }
+    try {
+      await updateCompanyDetails({
+        case_alias,
+        applicantDetails_alias,
+        company_name: targetName,
+        CompanyDetails: formData,
+      }).unwrap();
+      toast.success("Company details updated successfully");
+      toggle();
+    } catch (error) {
+      toast.error("Failed to update company details");
     }
   };
 
@@ -429,8 +463,13 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                 Cancel
               </Button>
               {data?.[0] ? (
-                <Button color="primary">
-                  Update
+                <Button
+                  color="primary"
+                  type="button"
+                  onClick={handleUpdate}
+                  disabled={isCompanyDetailsUpdating}
+                >
+                  {isCompanyDetailsUpdating ? "Updating..." : "Update"}
                 </Button>
               ) : (
                 <Button color="primary" type="submit">
