@@ -23,16 +23,20 @@ import {
   useAssignCaseAccountantMutation,
   useGetAccountantDetailsQuery,
   useGetCaseAccountantDetailsQuery,
+  useUnassignAccountantMutation,
   useUpdateAccountantDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
+import { BiSolidErrorCircle } from "react-icons/bi";
 import Swal from "sweetalert2";
 import AddAccountantModal from "../Modals/AddAccountantModal";
 
 const Accountant: React.FC = () => {
   const params = useParams();
-  const { casealias } = params;
+  const { casealias } = params as { casealias?: string | string[] };
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
   const { data: session } = useSession();
   const submitActionRef = useRef<"save" | "next">("save");
   const formRef = useRef<HTMLFormElement>(null);
@@ -47,18 +51,20 @@ const Accountant: React.FC = () => {
 
   // RTK Hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
-    { case_alias: casealias },
-    { skip: !casealias }
+    { case_alias: caseAlias },
+    { skip: !caseAlias }
   );
 
   const { data: accountantName, isLoading: isAccountantLoading } =
     useGetAccountantDetailsQuery(undefined);
   const { data: caseAccountants, isLoading: isCaseAccountantLoading } =
-    useGetCaseAccountantDetailsQuery({ case_alias: casealias });
+    useGetCaseAccountantDetailsQuery({ case_alias: caseAlias });
   const [assignCaseAccountant, { isLoading: isAssigningLoading }] =
     useAssignCaseAccountantMutation();
   const [updateAccountant, { isLoading: isUpdatingLoading }] =
     useUpdateAccountantDetailsMutation();
+  const [unassignAccountant, { isLoading: isUnassigning }] =
+    useUnassignAccountantMutation();
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -80,7 +86,7 @@ const Accountant: React.FC = () => {
 
     try {
       await assignCaseAccountant({
-        case_alias: casealias,
+        case_alias: caseAlias,
         accountant: { accountant: selectedAccountant?.id },
       }).unwrap();
 
@@ -281,8 +287,56 @@ const Accountant: React.FC = () => {
                   </div>
                   <div>
                     <strong>Type: </strong>
-                    {selectedCaseAccountant.accountant_details.user_type ||
-                      "N/A"}
+                    {formatChoiceFieldValue(
+                      selectedCaseAccountant.accountant_details.user_type
+                    ) || "N/A"}
+                  </div>
+                  <div className="mt-2">
+                    <Button
+                      color="danger"
+                      outline
+                      size="sm"
+                      disabled={isUnassigning}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const result = await Swal.fire({
+                          title: "Are you sure?",
+                          text: "This will unassign the accountant from the case.",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Yes, unassign",
+                          cancelButtonText: "Cancel",
+                        });
+                        if (result.isConfirmed) {
+                          try {
+                            await unassignAccountant({
+                              case_alias: caseAlias,
+                              accountant_alias: selectedCaseAccountant.alias,
+                            }).unwrap();
+                            Swal.fire(
+                              "Unassigned!",
+                              "Accountant has been unassigned.",
+                              "success"
+                            );
+                            // Clear selection; RTK invalidation will refetch data
+                            setSelectedCaseAccountant(null);
+                          } catch (err) {
+                            console.error(
+                              "Failed to unassign accountant:",
+                              err
+                            );
+                            Swal.fire(
+                              "Error",
+                              "Failed to unassign accountant. Please try again.",
+                              "error"
+                            );
+                          }
+                        }
+                      }}
+                    >
+                      <BiSolidErrorCircle size={15} />
+                      Unassign
+                    </Button>
                   </div>
                 </>
               ) : (

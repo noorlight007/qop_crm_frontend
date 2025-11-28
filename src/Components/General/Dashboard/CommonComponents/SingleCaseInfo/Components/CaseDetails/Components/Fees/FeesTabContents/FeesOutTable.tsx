@@ -5,10 +5,14 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeOutModal from "./FeesModals/AddFeeOutModal";
+import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
 
 const FeeOutTable = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedFee, setSelectedFee] = useState<any | null>(null);
+
   const { data: feesOutDetails, isLoading } = useGetFeesOutDetailsQuery({
     case_alias: casealias,
   });
@@ -16,7 +20,7 @@ const FeeOutTable = () => {
   useEffect(() => {
     if (feesOutDetails?.length > 0) {
       const formattedFees = feesOutDetails.map((fee: any, index: number) => ({
-        id: fee.alias || "",
+        alias: fee.alias || "",
         index: index,
         isDeleted: false,
         feeInFeeOutId: fee.case?.alias || "",
@@ -35,7 +39,7 @@ const FeeOutTable = () => {
 
   const [fees, setFees] = useState([
     {
-      id: "",
+      alias: "",
       index: 0,
       isDeleted: false,
       feeInFeeOutId: "",
@@ -73,6 +77,10 @@ const FeeOutTable = () => {
   const handleAddFee = (newFee: any) => {
     setFees([...fees, { ...newFee, index: fees.length }]);
     toggleModal();
+  };
+  const handleFeeDelete = (fee: any) => {
+    setSelectedFee(fee);
+    setIsDeleteModalOpen(true);
   };
 
   if (isLoading)
@@ -146,7 +154,7 @@ const FeeOutTable = () => {
                     (fee, index) =>
                       !fee.isDeleted && (
                         <tr
-                          key={fee.id || index}
+                          key={fee.alias || index}
                           className="feeTableRow feeRowOut"
                         >
                           <td className="text-center align-middle">
@@ -176,6 +184,7 @@ const FeeOutTable = () => {
                               size="sm"
                               outline
                               className="removeFee"
+                              onClick={() => handleFeeDelete(fee)}
                             >
                               <i className="fa fa-trash"></i>
                             </Button>
@@ -189,6 +198,12 @@ const FeeOutTable = () => {
           </div>
         </Col>
       </Row>
+      {/* Delete Fee Modal can be added here */}
+      <DeleteFeeModal
+        isOpen={isDeleteModalOpen}
+        toggle={() => setIsDeleteModalOpen(!isDeleteModalOpen)}
+        feeData={selectedFee}
+      />
     </>
   );
 };

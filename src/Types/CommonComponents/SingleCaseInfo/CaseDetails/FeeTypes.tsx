@@ -36,3 +36,16 @@ export interface AddFeeOutModalProps {
   methods: { title: string; value: string }[];
   caseAlias: string | string[];
 }
+
+export interface FeeDataDeleteProps {
+  alias?: string;
+  fee?: number | string;
+  amount?: number | string;
+  [key: string]: any;
+}
+
+export interface DeleteFeeModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  feeData: FeeDataDeleteProps | null;
+}

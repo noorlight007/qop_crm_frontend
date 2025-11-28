@@ -141,6 +141,9 @@ export interface BudgetPlanner {
     life_insurance: number | null;
     dental_insurance: number | null;
     other_insurance: number | null;
+    buildings_insurance: number | null;
+    contents_insurance: number | null;
+    building_content_insurance: number | null;
     total_insurance_expenses: number | null;
   };
   post_insurance: {
@@ -150,6 +153,9 @@ export interface BudgetPlanner {
     life_insurance: number | null;
     dental_insurance: number | null;
     other_insurance: number | null;
+    buildings_insurance: number | null;
+    contents_insurance: number | null;
+    building_content_insurance: number | null;
     total_insurance_expenses: number | null;
   };
   current_sub_total: {

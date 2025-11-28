@@ -32,6 +32,20 @@ export const FeesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Fees"],
     }),
+    deleteFeesInOut: builder.mutation({
+      query: ({ case_alias, fee_alias }) => ({
+        url: `/cases/${case_alias}/fees/${fee_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Fees"],
+    }),
+    calculateFees: builder.query({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/fees/`,
+        method: "GET",
+      }),
+      providesTags: ["Fees"],
+    }),
   }),
 });
 
@@ -40,4 +54,6 @@ export const {
   useGetFeesOutDetailsQuery,
   useAddFeesInDetailsMutation,
   useAddFeesOutDetailsMutation,
+  useDeleteFeesInOutMutation,
+  useCalculateFeesQuery,
 } = FeesApi;
