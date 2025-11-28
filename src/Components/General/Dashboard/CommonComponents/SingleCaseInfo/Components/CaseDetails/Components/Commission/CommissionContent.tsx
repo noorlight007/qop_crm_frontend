@@ -8,19 +8,12 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
 
-export interface CommissionContentProps {
-  alias?: string;
-  total_commission?: number;
-  note?: string;
-}
-
 const CommissionContent: React.FC = () => {
   const { casealias } = useParams();
   // RTK hooks
   const { data: commissionData, isLoading } = useGetCommissionQuery({
     case_alias: casealias,
   });
-  console.log("DDD:::", commissionData);
 
   // API may return an array (e.g. [{...}]) — normalize to single object
   const commission = Array.isArray(commissionData)
@@ -68,7 +61,7 @@ const CommissionContent: React.FC = () => {
       <Row>
         <Col>
           <div className="d-flex justify-content-center align-items-center mb-3 bg-light-success p-3">
-            <h6>Total Commission:</h6>
+            <h6>Total Commission: </h6>
             <h5>
               {new Intl.NumberFormat("en-GB", {
                 style: "currency",
