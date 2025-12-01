@@ -3,6 +3,10 @@ import {
   useGetLumpSumCommissionQuery,
   useUpdateLumpSumCommissionMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import {
+  useGetInsuranceOverviewQuery,
+  useGetInsurancePoliciesQuery,
+} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
@@ -44,6 +48,37 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
 
   const [updateLumpSumCommission, { isLoading: isUpdatingLump }] =
     useUpdateLumpSumCommissionMutation();
+
+  const { data: insuranceOverviewData, isLoading: isLoadingOverview } =
+    useGetInsuranceOverviewQuery({ case_alias }, { skip: !case_alias });
+
+  // Handle both array and single object responses from API
+  const overview = Array.isArray(insuranceOverviewData)
+    ? insuranceOverviewData[0]
+    : insuranceOverviewData;
+
+  console.log("Overview Data:", overview);
+  console.log("Overview Alias:", overview?.alias);
+
+  const { data: insurancePoliciesData, isLoading: isPoliciesLoading } =
+    useGetInsurancePoliciesQuery(
+      {
+        case_alias,
+        insurance_overview_alias: overview?.alias,
+      },
+      { skip: !case_alias || !overview?.alias }
+    );
+  console.log("IPData::", insurancePoliciesData);
+
+  const [policies, setPolicies] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!insurancePoliciesData) return;
+    const policyList = Array.isArray(insurancePoliciesData)
+      ? insurancePoliciesData
+      : [insurancePoliciesData];
+    setPolicies(policyList);
+  }, [insurancePoliciesData]);
 
   useEffect(() => {
     if (!lumpSumCommissionData) return;
@@ -114,7 +149,10 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                 >
                   Lump Sum {idx + 1}{" "}
                   {lump.policy
-                    ? `- ${formatChoiceFieldValue(lump.policy)}`
+                    ? `- ${formatChoiceFieldValue(
+                        policies.find((p: any) => p.alias === lump.policy)
+                          ?.policy_type || "Policy"
+                      )}`
                     : ""}
                 </NavLink>
               </NavItem>
@@ -141,8 +179,12 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                         }}
                       >
                         <option value="">Select...</option>
-                        <option value="policy-1">Policy 1</option>
-                        <option value="policy-2">Policy 2</option>
+                        {policies.map((policy: any) => (
+                          <option key={policy.alias} value={policy.alias}>
+                            {formatChoiceFieldValue(policy.policy_type) ||
+                              "Policy"}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -287,164 +329,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
             ))}
           </TabContent>
         </>
-      ) : (
-        lumps.map((lump) => (
-          <div key={lump.id} className="border border-primary p-3 mb-3">
-            <div className="row g-3 align-items-center">
-              <div className="col-md-4">
-                <label className="form-label">Policy</label>
-                <select
-                  className="form-select"
-                  value={lump.policy}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setLumps((prev) =>
-                      prev.map((p) =>
-                        p.id === lump.id ? { ...p, policy: val } : p
-                      )
-                    );
-                  }}
-                >
-                  <option value="">Select...</option>
-                  <option value="policy-1">Policy 1</option>
-                  <option value="policy-2">Policy 2</option>
-                </select>
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label">Commission Amount</label>
-                <div className="input-group">
-                  <span className="input-group-text">£</span>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={lump.commissionAmount}
-                    min={0}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setLumps((prev) =>
-                        prev.map((p) =>
-                          p.id === lump.id ? { ...p, commissionAmount: val } : p
-                        )
-                      );
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label">Date Received</label>
-                <div className="d-flex">
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={lump.dateReceived}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setLumps((prev) =>
-                        prev.map((p) =>
-                          p.id === lump.id ? { ...p, dateReceived: val } : p
-                        )
-                      );
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="row g-3 align-items-center mt-3">
-              <div className="col-md-4">
-                <label className="form-label">Clawback Amount</label>
-                <div className="input-group">
-                  <span className="input-group-text">£</span>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={lump.clawbackAmount}
-                    min={0}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setLumps((prev) =>
-                        prev.map((p) =>
-                          p.id === lump.id ? { ...p, clawbackAmount: val } : p
-                        )
-                      );
-                    }}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-4">
-                <label className="form-label">Clawback Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={lump.clawbackDate}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setLumps((prev) =>
-                      prev.map((p) =>
-                        p.id === lump.id ? { ...p, clawbackDate: val } : p
-                      )
-                    );
-                  }}
-                />
-              </div>
-
-              <div className="col-md-3">
-                <label className="form-label">Reconciled Amount</label>
-                <div className="input-group">
-                  <span className="input-group-text">£</span>
-                  <input
-                    type="text"
-                    readOnly
-                    className="form-control bg-light-dark"
-                    value={Number(lump.reconciledAmount).toFixed(2)}
-                  />
-                </div>
-              </div>
-
-              <div className="col-md-1 d-flex align-items-center justify-content-center">
-                <button
-                  type="button"
-                  className="btn btn-link text-danger"
-                  title="Remove row"
-                >
-                  <i className="fa fa-times" />
-                </button>
-              </div>
-            </div>
-            <div className="d-flex justify-content-end mt-3">
-              <button
-                type="button"
-                className="btn btn-primary"
-                disabled={isUpdatingLump}
-                onClick={async () => {
-                  try {
-                    const payload = {
-                      policy: lump.policy || null,
-                      commission_amount: parseFloat(lump.commissionAmount) || 0,
-                      date_received: lump.dateReceived || null,
-                      clawback_amount: parseFloat(lump.clawbackAmount) || 0,
-                      clawback_date: lump.clawbackDate || null,
-                    };
-                    await updateLumpSumCommission({
-                      case_alias: case_alias!,
-                      commission_alias: commission_alias!,
-                      lump_sum_alias: lump.id,
-                      lumpSumData: payload,
-                    }).unwrap();
-                  } catch (err) {
-                    console.error("Failed to update lump sum", err);
-                  }
-                }}
-              >
-                {isUpdatingLump ? "Updating..." : "Update"}
-              </button>
-            </div>
-          </div>
-        ))
-      )}
+      ) : null}
 
       <div>
         <button type="button" className="btn btn-primary">
