@@ -30,7 +30,7 @@ export const InsuranceOverviewApi = baseApi.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["InsurancePolicies"],
+      invalidatesTags: ["InsurancePolicies", "InsuranceOverview"],
     }),
     updateInsurancePolicy: builder.mutation({
       query: ({
@@ -43,7 +43,7 @@ export const InsuranceOverviewApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload,
       }),
-      invalidatesTags: ["InsurancePolicies"],
+      invalidatesTags: ["InsurancePolicies", "InsuranceOverview"],
     }),
   }),
 });

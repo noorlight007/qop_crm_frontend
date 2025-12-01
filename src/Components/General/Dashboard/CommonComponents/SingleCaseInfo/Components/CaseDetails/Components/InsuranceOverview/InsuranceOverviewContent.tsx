@@ -32,10 +32,13 @@ const InsuranceOverviewContent: React.FC = () => {
   const [updateInsuranceOverview, { isLoading: isUpdating }] =
     useUpdateInsuranceOverviewMutation();
   const { data: insurancePoliciesData, isLoading: isLoadingPolicies } =
-    useGetInsurancePoliciesQuery({
-      case_alias: casealias,
-      insurance_overview_alias: insuranceOverviewData?.alias,
-    });
+    useGetInsurancePoliciesQuery(
+      {
+        case_alias: casealias,
+        insurance_overview_alias: insuranceOverviewData?.alias,
+      },
+      { skip: !insuranceOverviewData?.alias }
+    );
 
   // API may return an array; prefer the first item when that is the case.
   const overview = Array.isArray(insuranceOverviewData)
