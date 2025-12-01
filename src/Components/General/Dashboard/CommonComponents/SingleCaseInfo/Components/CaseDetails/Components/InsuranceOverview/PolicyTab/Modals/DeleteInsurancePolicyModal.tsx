@@ -1,16 +1,8 @@
 import { useDeleteInsurancePolicyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import { DeleteInsurancePolicyModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
-interface DeleteInsurancePolicyModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  caseAlias: string | string[];
-  insuranceOverviewAlias: string | undefined;
-  policyAlias: string | undefined;
-  policyType?: string;
-}
 
 const DeleteInsurancePolicyModal: React.FC<DeleteInsurancePolicyModalProps> = ({
   isOpen,

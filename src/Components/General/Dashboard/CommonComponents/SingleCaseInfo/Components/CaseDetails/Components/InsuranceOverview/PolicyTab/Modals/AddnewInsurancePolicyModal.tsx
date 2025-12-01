@@ -1,5 +1,6 @@
 import { useAddNewInsurancePolicyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { AddNewInsurancePolicyModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -15,13 +16,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-interface AddNewInsurancePolicyModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  caseAlias: string | string[];
-  insuranceOverviewAlias: string | undefined;
-}
 
 const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
   isOpen,
