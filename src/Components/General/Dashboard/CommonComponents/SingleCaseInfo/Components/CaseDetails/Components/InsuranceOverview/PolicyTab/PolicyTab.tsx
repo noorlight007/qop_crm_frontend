@@ -6,6 +6,7 @@ import {
   useGetInsurancePoliciesQuery,
   useUpdateInsurancePolicyMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import { PolicyTabProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -29,10 +30,6 @@ import {
 } from "reactstrap";
 import AddnewInsurancePolicyModal from "./Modals/AddnewInsurancePolicyModal";
 import DeleteInsurancePolicyModal from "./Modals/DeleteInsurancePolicyModal";
-
-interface PolicyTabProps {
-  insuranceOverviewAlias: string | undefined;
-}
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
