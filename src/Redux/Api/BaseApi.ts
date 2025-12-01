@@ -71,6 +71,7 @@ export const baseApi = createApi({
     "ClientSurvey",
     "Commission",
     "InsuranceOverview",
+    "InsurancePolicies",
     // Case details end
     //Common components end
 

@@ -1,20 +1,41 @@
 import LoadingSpinner from "@/app/loading";
 import {
   useGetInsuranceOverviewQuery,
+  useGetInsurancePoliciesQuery,
   useUpdateInsuranceOverviewMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Button, Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import {
+  Button,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  TabContent,
+  TabPane,
+} from "reactstrap";
+import PolicyTab from "./PolicyTab/PolicyTab";
 
 const InsuranceOverviewContent: React.FC = () => {
   const { casealias } = useParams();
+  const [activeMainTab, setActiveMainTab] = useState<string>("overview");
+
   const { data: insuranceOverviewData, isLoading } =
     useGetInsuranceOverviewQuery({ case_alias: casealias });
-
   const [updateInsuranceOverview, { isLoading: isUpdating }] =
     useUpdateInsuranceOverviewMutation();
+  const { data: insurancePoliciesData, isLoading: isLoadingPolicies } =
+    useGetInsurancePoliciesQuery({
+      case_alias: casealias,
+      insurance_overview_alias: insuranceOverviewData?.alias,
+    });
 
   // API may return an array; prefer the first item when that is the case.
   const overview = Array.isArray(insuranceOverviewData)
@@ -79,144 +100,181 @@ const InsuranceOverviewContent: React.FC = () => {
 
   return (
     <div className="p-2">
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Applicant</Label>
-              <Input
-                value={formState?.applicant ?? ""}
-                className="bg-light-dark"
-                readOnly
-              />
-            </FormGroup>
-          </Col>
+      <Nav pills className="justify-content-center nav-primary">
+        <NavItem>
+          <NavLink
+            className={activeMainTab === "overview" ? "active" : ""}
+            onClick={() => setActiveMainTab("overview")}
+            style={{ cursor: "pointer" }}
+          >
+            Overview
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            className={activeMainTab === "policies" ? "active" : ""}
+            onClick={() => setActiveMainTab("policies")}
+            style={{ cursor: "pointer" }}
+          >
+            Policies
+          </NavLink>
+        </NavItem>
+      </Nav>
 
-          {/* Render each joint user in its own column */}
-          {formState?.joint_users && formState.joint_users.length > 0 ? (
-            formState.joint_users.map((ju: string, idx: number) => (
-              <Col sm={12} md={4} key={`joint-${idx}`}>
+      <TabContent activeTab={activeMainTab}>
+        <TabPane tabId="overview">
+          <Form onSubmit={handleSubmit} className="mt-3">
+            <Row>
+              <Col sm={12} md={4}>
                 <FormGroup>
-                  <Label>{`Joint Applicant ${idx + 1}`}</Label>
-                  <Input value={ju ?? ""} className="bg-light-dark" readOnly />
+                  <Label>Applicant</Label>
+                  <Input
+                    value={formState?.applicant ?? ""}
+                    className="bg-light-dark"
+                    readOnly
+                  />
                 </FormGroup>
               </Col>
-            ))
-          ) : (
-            <Col sm={12} md={4}>
-              <FormGroup>
-                <Label>Joint Applicants</Label>
-                <Input value={formState?.joint_users[0] ?? ""} readOnly />
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
 
-        <Row className="mt-2">
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Introduction Type</Label>
-              <Input
-                value={formState?.introduction_type ?? ""}
-                type="select"
-                onChange={(e) =>
-                  handleChange("introduction_type", e.target.value)
-                }
-              >
-                <option value="">Select...</option>
-                <option value="DIRECT">Direct</option>
-                <option value="RDI">RDI</option>
-              </Input>
-            </FormGroup>
-          </Col>
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Advise Level</Label>
-              <Input
-                value={formState?.advise_level ?? ""}
-                type="select"
-                onChange={(e) => handleChange("advise_level", e.target.value)}
-              >
-                <option value="">Select...</option>
-                <option value="ADVISING">Advising</option>
-                <option value="EXECUTION_ONLY">Execution Only</option>
-              </Input>
-            </FormGroup>
-          </Col>
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Lead Source</Label>
-              <Input
-                value={formState?.lead_source ?? ""}
-                type="select"
-                onChange={(e) => handleChange("lead_source", e.target.value)}
-              >
-                <option value="">Select...</option>
-                <option value="INTERNAL">Internal</option>
-                <option value="EXTERNAL">External</option>
-                <option value="FACEBOOK">Facebook</option>
-                <option value="WEBSITE">Website</option>
-                <option value="ESTATE_AGENTS">Estate Agents</option>
-                <option value="TV3">TV3</option>
-                <option value="FAMILY">Family</option>
-                <option value="FRIENDS">Friends</option>
-                <option value="REFERRALS">Referrals</option>
-              </Input>
-            </FormGroup>
-          </Col>
-        </Row>
+              {/* Render each joint user in its own column */}
+              {formState?.joint_users && formState.joint_users.length > 0 ? (
+                formState.joint_users.map((ju: string, idx: number) => (
+                  <Col sm={12} md={4} key={`joint-${idx}`}>
+                    <FormGroup>
+                      <Label>{`Joint Applicant ${idx + 1}`}</Label>
+                      <Input
+                        value={ju ?? ""}
+                        className="bg-light-dark"
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                ))
+              ) : (
+                <Col sm={12} md={4}>
+                  <FormGroup>
+                    <Label>Joint Applicants</Label>
+                    <Input value={formState?.joint_users[0] ?? ""} readOnly />
+                  </FormGroup>
+                </Col>
+              )}
+            </Row>
 
-        <Row className="mt-2">
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Total Final Premium</Label>
-              <Input
-                value={formState?.total_final_premium ?? 0}
-                className="bg-light-dark"
-                readOnly
-              />
-            </FormGroup>
-          </Col>
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Total Premium Quoted</Label>
-              <Input
-                value={formState?.total_premium_quoted ?? 0}
-                className="bg-light-dark"
-                readOnly
-              />
-            </FormGroup>
-          </Col>
-          <Col sm={12} md={4}>
-            <FormGroup>
-              <Label>Net Case Value</Label>
-              <Input
-                value={formState?.net_case_value ?? 0}
-                className="bg-light-dark"
-                readOnly
-              />
-            </FormGroup>
-          </Col>
-        </Row>
+            <Row className="mt-2">
+              <Col sm={12} md={4}>
+                <FormGroup>
+                  <Label>Introduction Type</Label>
+                  <Input
+                    value={formState?.introduction_type ?? ""}
+                    type="select"
+                    onChange={(e) =>
+                      handleChange("introduction_type", e.target.value)
+                    }
+                  >
+                    <option value="">Select...</option>
+                    <option value="DIRECT">Direct</option>
+                    <option value="RDI">RDI</option>
+                  </Input>
+                </FormGroup>
+              </Col>
+              <Col sm={12} md={4}>
+                <FormGroup>
+                  <Label>Advise Level</Label>
+                  <Input
+                    value={formState?.advise_level ?? ""}
+                    type="select"
+                    onChange={(e) =>
+                      handleChange("advise_level", e.target.value)
+                    }
+                  >
+                    <option value="">Select...</option>
+                    <option value="ADVISING">Advising</option>
+                    <option value="EXECUTION_ONLY">Execution Only</option>
+                  </Input>
+                </FormGroup>
+              </Col>
+              <Col sm={12} md={4}>
+                <FormGroup>
+                  <Label>Lead Source</Label>
+                  <Input
+                    value={formState?.lead_source ?? ""}
+                    type="select"
+                    onChange={(e) =>
+                      handleChange("lead_source", e.target.value)
+                    }
+                  >
+                    <option value="">Select...</option>
+                    <option value="INTERNAL">Internal</option>
+                    <option value="EXTERNAL">External</option>
+                    <option value="FACEBOOK">Facebook</option>
+                    <option value="WEBSITE">Website</option>
+                    <option value="ESTATE_AGENTS">Estate Agents</option>
+                    <option value="TV3">TV3</option>
+                    <option value="FAMILY">Family</option>
+                    <option value="FRIENDS">Friends</option>
+                    <option value="REFERRALS">Referrals</option>
+                  </Input>
+                </FormGroup>
+              </Col>
+            </Row>
 
-        <Row className="mt-2">
-          <Col sm={12}>
-            <FormGroup>
-              <Label>Summary</Label>
-              <Input
-                type="textarea"
-                value={formState?.summary ?? ""}
-                onChange={(e) => handleChange("summary", e.target.value)}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <div className="d-flex justify-content-end mt-3">
-          <Button color="primary" type="submit" disabled={isUpdating}>
-            {isUpdating ? "Saving..." : "Save Changes"}
-          </Button>
-        </div>
-      </Form>
+            <Row className="mt-2">
+              <Col sm={12} md={4}>
+                <FormGroup>
+                  <Label>Total Final Premium</Label>
+                  <Input
+                    value={formState?.total_final_premium ?? 0}
+                    className="bg-light-dark"
+                    readOnly
+                  />
+                </FormGroup>
+              </Col>
+              <Col sm={12} md={4}>
+                <FormGroup>
+                  <Label>Total Premium Quoted</Label>
+                  <Input
+                    value={formState?.total_premium_quoted ?? 0}
+                    className="bg-light-dark"
+                    readOnly
+                  />
+                </FormGroup>
+              </Col>
+              <Col sm={12} md={4}>
+                <FormGroup>
+                  <Label>Net Case Value</Label>
+                  <Input
+                    value={formState?.net_case_value ?? 0}
+                    className="bg-light-dark"
+                    readOnly
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <Row className="mt-2">
+              <Col sm={12}>
+                <FormGroup>
+                  <Label>Summary</Label>
+                  <Input
+                    type="textarea"
+                    value={formState?.summary ?? ""}
+                    onChange={(e) => handleChange("summary", e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <div className="d-flex justify-content-end mt-3">
+              <Button color="primary" type="submit" disabled={isUpdating}>
+                {isUpdating ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </Form>
+        </TabPane>
+
+        <TabPane tabId="policies">
+          <PolicyTab insuranceOverviewAlias={overview?.alias} />
+        </TabPane>
+      </TabContent>
     </div>
   );
 };
