@@ -1,9 +1,14 @@
 import LoadingSpinner from "@/app/loading";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
+import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
   useUpdateInsuranceOverviewMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -39,6 +44,16 @@ const InsuranceOverviewContent: React.FC = () => {
       },
       { skip: !insuranceOverviewData?.alias }
     );
+
+  const dispatch = useAppDispatch();
+  const currentTab: string | null = useAppSelector(
+    (state: any) => state.caseDetails.basicTabId
+  );
+  const { data: session } = useSession();
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias }
+  );
 
   // API may return an array; prefer the first item when that is the case.
   const overview = Array.isArray(insuranceOverviewData)
@@ -90,6 +105,61 @@ const InsuranceOverviewContent: React.FC = () => {
     } catch (err) {
       console.error("Failed to update insurance overview", err);
       toast.error("Failed to update insurance overview");
+    }
+  };
+
+  const handleNextTab = () => {
+    const nextTabNav: string | null = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!
+    );
+    if (nextTabNav) {
+      dispatch(basicTabIndicator(nextTabNav));
+    } else {
+      toast.warning("This is the last tab.");
+    }
+  };
+
+  const handleSaveAndNext = async () => {
+    if (!formState) return;
+
+    // Reuse alias resolution from handleSubmit
+    const insurance_overview_alias =
+      formState?.insurance_overview_alias ||
+      formState?.insurance_overview_id ||
+      formState?.alias ||
+      formState?.id;
+
+    if (!insurance_overview_alias) {
+      toast.error("Unable to determine insurance overview identifier");
+      return;
+    }
+
+    const editablePayload = {
+      introduction_type: formState.introduction_type,
+      advise_level: formState.advise_level,
+      lead_source: formState.lead_source,
+      summary: formState.summary,
+    };
+
+    if (session?.user?.user_type !== "CLIENT") {
+      try {
+        const res = await updateInsuranceOverview({
+          case_alias: casealias,
+          insurance_overview_alias,
+          payload: editablePayload,
+        }).unwrap();
+        if (res) {
+          toast.success("Insurance overview updated successfully");
+        }
+        handleNextTab();
+      } catch (err) {
+        console.error("Failed to update insurance overview", err);
+        toast.error("Failed to update insurance overview");
+      }
+    } else {
+      handleNextTab();
     }
   };
 
@@ -266,9 +336,17 @@ const InsuranceOverviewContent: React.FC = () => {
                 </FormGroup>
               </Col>
             </Row>
-            <div className="d-flex justify-content-end mt-3">
+            <div className="d-flex justify-content-end mt-3 gap-2">
               <Button color="primary" type="submit" disabled={isUpdating}>
                 {isUpdating ? "Saving..." : "Save Changes"}
+              </Button>
+              <Button
+                color="secondary"
+                className="me-2"
+                onClick={handleSaveAndNext}
+                disabled={isUpdating}
+              >
+                {isUpdating ? "Saving..." : "Save & Next"}
               </Button>
             </div>
           </Form>

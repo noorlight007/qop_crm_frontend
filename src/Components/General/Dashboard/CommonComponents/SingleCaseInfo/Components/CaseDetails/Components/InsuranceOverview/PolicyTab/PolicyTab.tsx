@@ -1,9 +1,14 @@
 import LoadingSpinner from "@/app/loading";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
+import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsurancePoliciesQuery,
   useUpdateInsurancePolicyMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { TbTrash } from "react-icons/tb";
@@ -31,11 +36,17 @@ interface PolicyTabProps {
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
+  const [basicTab, setBasicTab] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("0");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [selectedPolicyForDelete, setSelectedPolicyForDelete] =
     useState<any>(null);
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias }
+  );
 
   const { data: insurancePoliciesData, isLoading } =
     useGetInsurancePoliciesQuery(
@@ -50,6 +61,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     useUpdateInsurancePolicyMutation();
 
   const [formStates, setFormStates] = useState<any[]>([]);
+
+  const dispatch = useAppDispatch();
+  const currentTab: string | null = useAppSelector(
+    (state: any) => state.caseDetails.basicTabId
+  );
+  const { data: session } = useSession();
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -90,6 +107,43 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     } catch (err) {
       console.error("Failed to update insurance policy", err);
       toast.error("Failed to update insurance policy");
+    }
+  };
+
+  const handleNextTab = () => {
+    const nextTabNav: string | null = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!
+    );
+    if (nextTabNav) {
+      dispatch(basicTabIndicator(nextTabNav));
+    } else {
+      toast.warning("This is the last tab.");
+    }
+  };
+
+  const handleSaveAndNext = async () => {
+    const index = Number(activeTab);
+    const policy = formStates[index];
+    if (!policy) return;
+
+    if (session?.user?.user_type !== "CLIENT") {
+      try {
+        await updateInsurancePolicy({
+          case_alias: casealias,
+          insurance_overview_alias: insuranceOverviewAlias,
+          policy_alias: policy.alias,
+          payload: policy,
+        }).unwrap();
+        toast.success("Insurance policy updated successfully");
+        handleNextTab();
+      } catch (err) {
+        console.error("Failed to update insurance policy", err);
+        toast.error("Failed to update insurance policy");
+      }
+    } else {
+      handleNextTab();
     }
   };
 
@@ -1066,13 +1120,23 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                 </Col>
               </Row>
 
-              <div className="d-flex justify-content-between mt-3">
+              <div className="d-flex justify-content-between mt-3 ">
                 <Button color="success" onClick={toggleModal}>
                   Add New Policy
                 </Button>
-                <Button color="primary" type="submit" disabled={isUpdating}>
-                  {isUpdating ? "Saving..." : "Save Changes"}
-                </Button>
+                <div className="d-flex gap-2">
+                  <Button color="primary" type="submit" disabled={isUpdating}>
+                    {isUpdating ? "Saving..." : "Save Changes"}
+                  </Button>
+                  <Button
+                    color="secondary"
+                    className="me-2"
+                    onClick={handleSaveAndNext}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? "Saving..." : "Save & Next"}
+                  </Button>
+                </div>
               </div>
             </Form>
           </TabPane>
