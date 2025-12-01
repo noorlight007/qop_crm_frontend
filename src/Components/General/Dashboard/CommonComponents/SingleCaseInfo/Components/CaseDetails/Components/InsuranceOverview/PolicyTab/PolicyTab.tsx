@@ -10,7 +10,7 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TbTrash } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
@@ -36,7 +36,6 @@ interface PolicyTabProps {
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
-  const [basicTab, setBasicTab] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("0");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
@@ -67,6 +66,9 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     (state: any) => state.caseDetails.basicTabId
   );
   const { data: session } = useSession();
+
+  const submitActionRef = useRef<string | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -104,6 +106,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
         payload: policy,
       }).unwrap();
       toast.success("Insurance policy updated successfully");
+      // If the submit was triggered by a 'next' action, navigate to next tab
+      if (submitActionRef.current === "next") {
+        submitActionRef.current = null;
+        handleNextTab();
+      }
     } catch (err) {
       console.error("Failed to update insurance policy", err);
       toast.error("Failed to update insurance policy");
@@ -120,30 +127,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
       dispatch(basicTabIndicator(nextTabNav));
     } else {
       toast.warning("This is the last tab.");
-    }
-  };
-
-  const handleSaveAndNext = async () => {
-    const index = Number(activeTab);
-    const policy = formStates[index];
-    if (!policy) return;
-
-    if (session?.user?.user_type !== "CLIENT") {
-      try {
-        await updateInsurancePolicy({
-          case_alias: casealias,
-          insurance_overview_alias: insuranceOverviewAlias,
-          policy_alias: policy.alias,
-          payload: policy,
-        }).unwrap();
-        toast.success("Insurance policy updated successfully");
-        handleNextTab();
-      } catch (err) {
-        console.error("Failed to update insurance policy", err);
-        toast.error("Failed to update insurance policy");
-      }
-    } else {
-      handleNextTab();
     }
   };
 
@@ -205,7 +188,14 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
       <TabContent activeTab={activeTab}>
         {formStates.map((policy, index) => (
           <TabPane tabId={String(index)} key={policy.alias}>
-            <Form onSubmit={(e) => handleSubmit(e, index)} className="mt-3">
+            <Form
+              innerRef={(el: any) => {
+                if (activeTab === String(index))
+                  formRef.current = el as HTMLFormElement;
+              }}
+              onSubmit={(e) => handleSubmit(e, index)}
+              className="mt-3"
+            >
               {/* Basic Information */}
               <h5 className="mb-3">Basic Information</h5>
               <Row>
@@ -1129,12 +1119,28 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     {isUpdating ? "Saving..." : "Save Changes"}
                   </Button>
                   <Button
+                    type="submit"
                     color="secondary"
-                    className="me-2"
-                    onClick={handleSaveAndNext}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // active policy in this pane
+                      if (
+                        session?.user?.user_type === "CLIENT" &&
+                        policy?.updated_by !== null
+                      ) {
+                        handleNextTab();
+                      } else {
+                        submitActionRef.current = "next";
+                        // ensure the formRef points to the active form
+                        formRef.current?.requestSubmit();
+                      }
+                    }}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Saving..." : "Save & Next"}
+                    {session?.user?.user_type === "CLIENT" &&
+                    policy?.updated_by !== null
+                      ? "Go To Next"
+                      : "Save & Next Section"}
                   </Button>
                 </div>
               </div>
