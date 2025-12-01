@@ -45,6 +45,13 @@ export const InsuranceOverviewApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["InsurancePolicies", "InsuranceOverview"],
     }),
+    deleteInsurancePolicy: builder.mutation({
+      query: ({ case_alias, insurance_overview_alias, policy_alias }) => ({
+        url: `/cases/${case_alias}/insurance-loan-details/${insurance_overview_alias}/insurance-policy/${policy_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["InsurancePolicies", "InsuranceOverview"],
+    }),
   }),
 });
 
@@ -54,4 +61,5 @@ export const {
   useGetInsurancePoliciesQuery,
   useAddNewInsurancePolicyMutation,
   useUpdateInsurancePolicyMutation,
+  useDeleteInsurancePolicyMutation,
 } = InsuranceOverviewApi;

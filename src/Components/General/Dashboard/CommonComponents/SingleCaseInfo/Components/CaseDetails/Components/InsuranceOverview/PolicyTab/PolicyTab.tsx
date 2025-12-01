@@ -6,6 +6,7 @@ import {
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { TbTrash } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -22,6 +23,7 @@ import {
   TabPane,
 } from "reactstrap";
 import AddnewInsurancePolicyModal from "./Modals/AddnewInsurancePolicyModal";
+import DeleteInsurancePolicyModal from "./Modals/DeleteInsurancePolicyModal";
 
 interface PolicyTabProps {
   insuranceOverviewAlias: string | undefined;
@@ -31,6 +33,9 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
   const [activeTab, setActiveTab] = useState<string>("0");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [selectedPolicyForDelete, setSelectedPolicyForDelete] =
+    useState<any>(null);
 
   const { data: insurancePoliciesData, isLoading } =
     useGetInsurancePoliciesQuery(
@@ -47,6 +52,13 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const [formStates, setFormStates] = useState<any[]>([]);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
+
+  const handleDeleteClick = (e: React.MouseEvent, policy: any) => {
+    e.stopPropagation();
+    setSelectedPolicyForDelete(policy);
+    setIsDeleteModalOpen(true);
+  };
 
   useEffect(() => {
     if (insurancePoliciesData && Array.isArray(insurancePoliciesData)) {
@@ -91,9 +103,21 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
   if (!formStates || formStates.length === 0) {
     return (
-      <div className="p-2">
-        <p>No insurance policies found.</p>
-      </div>
+      <>
+        <div className="p-2 mt-3 text-center">
+          <p className="mb-3">No insurance policies found.</p>
+          <Button color="success" onClick={toggleModal}>
+            Add New Policy
+          </Button>
+        </div>
+
+        <AddnewInsurancePolicyModal
+          isOpen={isModalOpen}
+          toggle={toggleModal}
+          caseAlias={casealias}
+          insuranceOverviewAlias={insuranceOverviewAlias}
+        />
+      </>
     );
   }
 
@@ -110,6 +134,15 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               style={{ cursor: "pointer" }}
             >
               Policy {index + 1} - {formatChoiceFieldValue(policy.policy_type)}
+              <Button
+                outline
+                color="danger"
+                size="sm"
+                className="ms-2"
+                onClick={(e) => handleDeleteClick(e, policy)}
+              >
+                <TbTrash size={16} />
+              </Button>
             </NavLink>
           </NavItem>
         ))}
@@ -384,20 +417,22 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
-                <FormGroup>
+                  <FormGroup>
                     <Label>Pays Out</Label>
                     <Input
-                        type="select"
-                        value={policy.pays_out ?? ""}
-                        onChange={(e) => handleChange(index, "pays_out", e.target.value)}
+                      type="select"
+                      value={policy.pays_out ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "pays_out", e.target.value)
+                      }
                     >
-                        <option value="">Select...</option>
-                        <option value="ONE_YEAR">1 Year</option>
-                        <option value="TWO_YEARS">2 Years</option>
-                        <option value="FIVE_YEARS">5 Years</option>
-                        <option value="FULL_TERM">Full Term</option>
+                      <option value="">Select...</option>
+                      <option value="ONE_YEAR">1 Year</option>
+                      <option value="TWO_YEARS">2 Years</option>
+                      <option value="FIVE_YEARS">5 Years</option>
+                      <option value="FULL_TERM">Full Term</option>
                     </Input>
-                </FormGroup>
+                  </FormGroup>
                 </Col>
               </Row>
 
@@ -1049,6 +1084,17 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
         toggle={toggleModal}
         caseAlias={casealias}
         insuranceOverviewAlias={insuranceOverviewAlias}
+      />
+
+      <DeleteInsurancePolicyModal
+        isOpen={isDeleteModalOpen}
+        toggle={toggleDeleteModal}
+        caseAlias={casealias}
+        insuranceOverviewAlias={insuranceOverviewAlias}
+        policyAlias={selectedPolicyForDelete?.alias}
+        policyType={formatChoiceFieldValue(
+          selectedPolicyForDelete?.policy_type
+        )}
       />
     </div>
   );

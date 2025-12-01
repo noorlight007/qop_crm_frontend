@@ -85,6 +85,14 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const form = e.currentTarget;
+
+    if (!form.checkValidity()) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
     e.preventDefault();
 
     try {
@@ -152,8 +160,10 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
-      <ModalHeader toggle={toggle}>Add New Insurance Policy</ModalHeader>{" "}
-      <Form onSubmit={handleSubmit}>
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-primary">Add New Insurance Policy</h3>
+      </ModalHeader>
+      <Form onSubmit={handleSubmit} id="add-policy-form">
         <ModalBody>
           {/* Basic Information */}
           <h5 className="mb-3">Basic Information</h5>
@@ -955,10 +965,15 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
           <Button color="secondary" onClick={toggle} disabled={isLoading}>
             Cancel
           </Button>
-          <Button type="submit" color="primary" disabled={isLoading}>
+          <Button
+            type="submit"
+            color="primary"
+            disabled={isLoading}
+            form="add-policy-form"
+          >
             {isLoading ? "Adding..." : "Add Policy"}
           </Button>
-        </ModalFooter>{" "}
+        </ModalFooter>
       </Form>
     </Modal>
   );
