@@ -84,18 +84,8 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!formData.policy_type) {
-      toast.error("Please select a policy type");
-      return;
-    }
-
-    if (!formData.provider) {
-      toast.error("Please select a provider");
-      return;
-    }
 
     try {
       await addNewInsurancePolicy({
@@ -162,9 +152,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
-      <ModalHeader toggle={toggle}>Add New Insurance Policy</ModalHeader>
-      <ModalBody>
-        <Form onSubmit={handleSubmit}>
+      <ModalHeader toggle={toggle}>Add New Insurance Policy</ModalHeader>{" "}
+      <Form onSubmit={handleSubmit}>
+        <ModalBody>
           {/* Basic Information */}
           <h5 className="mb-3">Basic Information</h5>
           <Row>
@@ -960,16 +950,16 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
               </FormGroup>
             </Col>
           </Row>
-        </Form>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={toggle} disabled={isLoading}>
-          Cancel
-        </Button>
-        <Button color="primary" onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "Adding..." : "Add Policy"}
-        </Button>
-      </ModalFooter>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggle} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button type="submit" color="primary" disabled={isLoading}>
+            {isLoading ? "Adding..." : "Add Policy"}
+          </Button>
+        </ModalFooter>{" "}
+      </Form>
     </Modal>
   );
 };
