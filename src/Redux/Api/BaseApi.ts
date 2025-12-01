@@ -70,6 +70,7 @@ export const baseApi = createApi({
     "Compliance",
     "ClientSurvey",
     "Commission",
+    "InsuranceOverview",
     // Case details end
     //Common components end
 
