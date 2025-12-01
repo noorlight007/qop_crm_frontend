@@ -1,4 +1,5 @@
 import { useAddNewInsurancePolicyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -30,6 +31,8 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 }) => {
   const [addNewInsurancePolicy, { isLoading }] =
     useAddNewInsurancePolicyMutation();
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [formData, setFormData] = useState({
     policy_type: "",
@@ -102,6 +105,14 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
         payload: formData,
       }).unwrap();
       toast.success("Insurance policy added successfully");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: caseAlias,
+          section_data: { is_insurance_loan_details: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
+      }
       toggle();
       // Reset form
       setFormData({
