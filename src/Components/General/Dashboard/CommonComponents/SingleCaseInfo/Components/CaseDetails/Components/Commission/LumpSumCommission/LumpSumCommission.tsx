@@ -1,7 +1,17 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetLumpSumCommissionQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import {
+  useGetLumpSumCommissionQuery,
+  useUpdateLumpSumCommissionMutation,
+} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import {
+  useGetInsuranceOverviewQuery,
+  useGetInsurancePoliciesQuery,
+} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
+import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 
 type Lump = {
   id: string;
@@ -23,6 +33,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
     useState(false);
 
   const [lumps, setLumps] = useState<Lump[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("0");
 
   const case_alias = Array.isArray(caseAlias) ? caseAlias[0] : caseAlias;
   const commission_alias = commissionAlias ?? undefined;
@@ -35,6 +46,62 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
     { case_alias, commission_alias },
     { skip: !case_alias || !commission_alias }
   );
+
+  const [updateLumpSumCommission, { isLoading: isUpdatingLump }] =
+    useUpdateLumpSumCommissionMutation();
+
+  const { data: insuranceOverviewData, isLoading: isLoadingOverview } =
+    useGetInsuranceOverviewQuery({ case_alias }, { skip: !case_alias });
+
+  // Handle both array and single object responses from API
+  const overview = Array.isArray(insuranceOverviewData)
+    ? insuranceOverviewData[0]
+    : insuranceOverviewData;
+
+  console.log("Overview Data:", overview);
+  console.log("Overview Alias:", overview?.alias);
+
+  const { data: insurancePoliciesData, isLoading: isPoliciesLoading } =
+    useGetInsurancePoliciesQuery(
+      {
+        case_alias,
+        insurance_overview_alias: overview?.alias,
+      },
+      { skip: !case_alias || !overview?.alias }
+    );
+  console.log("IPData::", insurancePoliciesData);
+
+  const [policies, setPolicies] = useState<any[]>([]);
+
+  // Move update logic out of JSX: re-usable handler
+  const handleUpdateLump = async (lump: Lump) => {
+    try {
+      const payload = {
+        policy: lump.policy || null,
+        commission_amount: parseFloat(lump.commissionAmount) || 0,
+        date_received: lump.dateReceived || null,
+        clawback_amount: parseFloat(lump.clawbackAmount) || 0,
+        clawback_date: lump.clawbackDate || null,
+      };
+
+      await updateLumpSumCommission({
+        case_alias: case_alias!,
+        commission_alias: commission_alias!,
+        lump_sum_alias: lump.id,
+        lumpSumData: payload,
+      }).unwrap();
+    } catch (err) {
+      console.error("Failed to update lump sum", err);
+    }
+  };
+
+  useEffect(() => {
+    if (!insurancePoliciesData) return;
+    const policyList = Array.isArray(insurancePoliciesData)
+      ? insurancePoliciesData
+      : [insurancePoliciesData];
+    setPolicies(policyList);
+  }, [insurancePoliciesData]);
 
   useEffect(() => {
     if (!lumpSumCommissionData) return;
@@ -91,92 +158,179 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
   return (
     <div className="mb-4">
       <div className="bg-primary text-white p-2 mb-3">Lump Sum Commission</div>
+      {lumps.length > 1 ? (
+        <>
+          <Nav tabs className="mb-3 justify-content-center">
+            {lumps.map((lump, idx) => (
+              <NavItem key={lump.id}>
+                <NavLink
+                  className={
+                    activeTab === String(idx) ? "active text-secondary" : ""
+                  }
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setActiveTab(String(idx))}
+                >
+                  Lump Sum {idx + 1}{" "}
+                  {lump.policy
+                    ? `- ${formatChoiceFieldValue(
+                        policies.find((p: any) => p.alias === lump.policy)
+                          ?.policy_type || "Policy"
+                      )}`
+                    : ""}
+                </NavLink>
+              </NavItem>
+            ))}
+          </Nav>
 
-      {lumps.map((lump) => (
-        <div key={lump.id} className="border border-primary p-3 mb-3">
-          <div className="row g-3 align-items-center">
-            <div className="col-md-4">
-              <label className="form-label">Policy</label>
-              <select className="form-select" value={lump.policy}>
-                <option value="">Select...</option>
-                <option value="policy-1">Policy 1</option>
-                <option value="policy-2">Policy 2</option>
-              </select>
-            </div>
+          <TabContent activeTab={activeTab}>
+            {lumps.map((lump, idx) => (
+              <TabPane tabId={String(idx)} key={lump.id}>
+                <div className="border border-primary p-3 mb-3">
+                  <div className="row g-3 align-items-center">
+                    <div className="col-md-4">
+                      <label className="form-label">Policy</label>
+                      <select
+                        className="form-select"
+                        value={lump.policy}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setLumps((prev) => {
+                            const copy = [...prev];
+                            copy[idx] = { ...copy[idx], policy: val };
+                            return copy;
+                          });
+                        }}
+                      >
+                        <option value="">Select...</option>
+                        {policies.map((policy: any) => (
+                          <option key={policy.alias} value={policy.alias}>
+                            {formatChoiceFieldValue(policy.policy_type) ||
+                              "Policy"}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-            <div className="col-md-4">
-              <label className="form-label">Commission Amount</label>
-              <div className="input-group">
-                <span className="input-group-text">£</span>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={lump.commissionAmount}
-                  min={0}
-                />
-              </div>
-            </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Commission Amount</label>
+                      <div className="input-group">
+                        <span className="input-group-text">£</span>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={lump.commissionAmount}
+                          min={0}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setLumps((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = {
+                                ...copy[idx],
+                                commissionAmount: val,
+                              };
+                              return copy;
+                            });
+                          }}
+                        />
+                      </div>
+                    </div>
 
-            <div className="col-md-4">
-              <label className="form-label">Date Received</label>
-              <div className="d-flex">
-                <input
-                  type="date"
-                  className="form-control"
-                  value={lump.dateReceived}
-                />
-              </div>
-            </div>
-          </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Date Received</label>
+                      <div className="d-flex">
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={lump.dateReceived}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setLumps((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = { ...copy[idx], dateReceived: val };
+                              return copy;
+                            });
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-          <div className="row g-3 align-items-center mt-3">
-            <div className="col-md-4">
-              <label className="form-label">Clawback Amount</label>
-              <div className="input-group">
-                <span className="input-group-text">£</span>
-                <input
-                  type="number"
-                  className="form-control"
-                  value={lump.clawbackAmount}
-                  min={0}
-                />
-              </div>
-            </div>
+                  <div className="row g-3 align-items-center mt-3">
+                    <div className="col-md-4">
+                      <label className="form-label">Clawback Amount</label>
+                      <div className="input-group">
+                        <span className="input-group-text">£</span>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={lump.clawbackAmount}
+                          min={0}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setLumps((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = { ...copy[idx], clawbackAmount: val };
+                              return copy;
+                            });
+                          }}
+                        />
+                      </div>
+                    </div>
 
-            <div className="col-md-4">
-              <label className="form-label">Clawback Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={lump.clawbackDate}
-              />
-            </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Clawback Date</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={lump.clawbackDate}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setLumps((prev) => {
+                            const copy = [...prev];
+                            copy[idx] = { ...copy[idx], clawbackDate: val };
+                            return copy;
+                          });
+                        }}
+                      />
+                    </div>
 
-            <div className="col-md-3">
-              <label className="form-label">Reconciled Amount</label>
-              <div className="input-group">
-                <span className="input-group-text">£</span>
-                <input
-                  type="text"
-                  readOnly
-                  className="form-control bg-light"
-                  value={Number(lump.reconciledAmount).toFixed(2)}
-                />
-              </div>
-            </div>
-
-            <div className="col-md-1 d-flex align-items-center justify-content-center">
-              <button
-                type="button"
-                className="btn btn-link text-danger"
-                title="Remove row"
-              >
-                <i className="fa fa-times" />
-              </button>
-            </div>
-          </div>
-        </div>
-      ))}
+                    <div className="col-md-3">
+                      <label className="form-label">Reconciled Amount</label>
+                      <div className="input-group">
+                        <span className="input-group-text">£</span>
+                        <input
+                          type="text"
+                          readOnly
+                          className="form-control bg-light-dark"
+                          value={Number(lump.reconciledAmount).toFixed(2)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2 mt-2">
+                    <Button
+                      outline
+                      type="button"
+                      color="danger"
+                      title="Remove row"
+                    >
+                      <FaTrash /> Delete
+                    </Button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      disabled={isUpdatingLump}
+                      onClick={() => handleUpdateLump(lump)}
+                    >
+                      {isUpdatingLump ? "Updating..." : "Update"}
+                    </button>
+                  </div>
+                </div>
+              </TabPane>
+            ))}
+          </TabContent>
+        </>
+      ) : null}
 
       <div>
         <button type="button" className="btn btn-primary">
