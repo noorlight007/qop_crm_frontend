@@ -32,11 +32,33 @@ export const CommissionApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Commission"],
     }),
+    updateLumpSumCommission: builder.mutation({
+      query: ({
+        case_alias,
+        commission_alias,
+        lump_sum_alias,
+        lumpSumData,
+      }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/lump-sum-commissions/${lump_sum_alias}/`,
+        method: "PATCH",
+        body: lumpSumData,
+      }),
+      invalidatesTags: ["Commission"],
+    }),
+    deleteLumpSumCommission: builder.mutation({
+      query: ({ case_alias, commission_alias, lump_sum_alias }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/lump-sum-commissions/${lump_sum_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Commission"],
+    }),
   }),
 });
 export const {
   useGetCommissionQuery,
   useAddCommissionMutation,
   useGetLumpSumCommissionQuery,
-    useAddLumpSumCommissionMutation,
+  useAddLumpSumCommissionMutation,
+  useUpdateLumpSumCommissionMutation,
+  useDeleteLumpSumCommissionMutation,
 } = CommissionApi;
