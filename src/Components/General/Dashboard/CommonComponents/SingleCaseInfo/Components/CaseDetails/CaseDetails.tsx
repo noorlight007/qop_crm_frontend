@@ -135,7 +135,7 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
       Documents: "is_documents",
 
       // Additional tabs for Insurance case
-      "Insurance Overview": "is_insurance_overview",
+      "Insurance Overview": "is_insurance_loan_details",
       "Health Check": "is_health_check",
       Commission: "is_commission",
     };
