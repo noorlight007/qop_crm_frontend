@@ -9,8 +9,9 @@ import {
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
-import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 
 type Lump = {
   id: string;
@@ -71,6 +72,28 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
   console.log("IPData::", insurancePoliciesData);
 
   const [policies, setPolicies] = useState<any[]>([]);
+
+  // Move update logic out of JSX: re-usable handler
+  const handleUpdateLump = async (lump: Lump) => {
+    try {
+      const payload = {
+        policy: lump.policy || null,
+        commission_amount: parseFloat(lump.commissionAmount) || 0,
+        date_received: lump.dateReceived || null,
+        clawback_amount: parseFloat(lump.clawbackAmount) || 0,
+        clawback_date: lump.clawbackDate || null,
+      };
+
+      await updateLumpSumCommission({
+        case_alias: case_alias!,
+        commission_alias: commission_alias!,
+        lump_sum_alias: lump.id,
+        lumpSumData: payload,
+      }).unwrap();
+    } catch (err) {
+      console.error("Failed to update lump sum", err);
+    }
+  };
 
   useEffect(() => {
     if (!insurancePoliciesData) return;
@@ -283,43 +306,21 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                         />
                       </div>
                     </div>
-
-                    <div className="col-md-1 d-flex align-items-center justify-content-center">
-                      <button
-                        type="button"
-                        className="btn btn-link text-danger"
-                        title="Remove row"
-                      >
-                        <i className="fa fa-times" />
-                      </button>
-                    </div>
                   </div>
-                  <div className="d-flex justify-content-end">
+                  <div className="d-flex justify-content-end gap-2 mt-2">
+                    <Button
+                      outline
+                      type="button"
+                      color="danger"
+                      title="Remove row"
+                    >
+                      <FaTrash /> Delete
+                    </Button>
                     <button
                       type="button"
                       className="btn btn-primary"
                       disabled={isUpdatingLump}
-                      onClick={async () => {
-                        try {
-                          const payload = {
-                            policy: lump.policy || null,
-                            commission_amount:
-                              parseFloat(lump.commissionAmount) || 0,
-                            date_received: lump.dateReceived || null,
-                            clawback_amount:
-                              parseFloat(lump.clawbackAmount) || 0,
-                            clawback_date: lump.clawbackDate || null,
-                          };
-                          await updateLumpSumCommission({
-                            case_alias: case_alias!,
-                            commission_alias: commission_alias!,
-                            lump_sum_alias: lump.id,
-                            lumpSumData: payload,
-                          }).unwrap();
-                        } catch (err) {
-                          console.error("Failed to update lump sum", err);
-                        }
-                      }}
+                      onClick={() => handleUpdateLump(lump)}
                     >
                       {isUpdatingLump ? "Updating..." : "Update"}
                     </button>
