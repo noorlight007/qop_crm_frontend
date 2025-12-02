@@ -12,7 +12,10 @@ const UserLogin = () => {
   useEffect(() => {
     if (session?.user?.user_type === "ADMIN") {
       router.push("/dashboard/admin");
-    } else if (session?.user?.user_type === "NETWORK_ADMIN") {
+    } else if (
+      session?.user?.user_type === "NETWORK_ADMIN" ||
+      session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
+    ) {
       router.push("/dashboard/network");
     } else if (session?.user?.user_type === "NETWORK_ADVISER") {
       router.push("/dashboard/netadviser");

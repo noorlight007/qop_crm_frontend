@@ -5,6 +5,8 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
       return `/dashboard/admin/cases/${caseAlias}`;
     case "NETWORK_ADMIN":
       return `/dashboard/network/cases/${caseAlias}`;
+    case "NETWORK_COMPLIANCE_ASSISTANT":
+      return `/dashboard/network/cases/${caseAlias}`;
     case "NETWORK_ADVISER":
       return `/dashboard/netadviser/cases/${caseAlias}`;
     case "ORGANIZATION_ADMIN":

@@ -424,6 +424,8 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
     case "NETWORK_ADMIN":
       return NetworkOwnerMenu;
+    case "NETWORK_COMPLIANCE_ASSISTANT":
+      return NetworkOwnerMenu;
     case "ORGANIZATION_ADMIN":
       return OrganisationOwnerMenu;
     case "NETWORK_ADVISER":

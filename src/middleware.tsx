@@ -23,7 +23,9 @@ export default withAuth(
 
     if (
       path.startsWith("/dashboard/network") &&
-      token.user_type !== "NETWORK_ADMIN"
+      !["NETWORK_ADMIN", "NETWORK_COMPLIANCE_ASSISTANT"].includes(
+        token.user_type as string
+      )
     ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
