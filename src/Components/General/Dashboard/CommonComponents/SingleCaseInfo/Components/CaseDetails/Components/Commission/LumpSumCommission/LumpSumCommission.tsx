@@ -12,6 +12,7 @@ import {
   LumpSumProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { ArrowUpCircle } from "react-feather";
 import { FaTrash } from "react-icons/fa";
@@ -25,6 +26,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
   caseAlias,
   commissionAlias,
 }) => {
+  const { data: session } = useSession();
   const [isAddLumpSumCommissionModalOpen, setIsAddLumpSumCommissionModalOpen] =
     useState(false);
 
@@ -54,9 +56,6 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
     ? insuranceOverviewData[0]
     : insuranceOverviewData;
 
-  console.log("Overview Data:", overview);
-  console.log("Overview Alias:", overview?.alias);
-
   const { data: insurancePoliciesData, isLoading: isPoliciesLoading } =
     useGetInsurancePoliciesQuery(
       {
@@ -65,7 +64,6 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
       },
       { skip: !case_alias || !overview?.alias }
     );
-  console.log("IPData::", insurancePoliciesData);
 
   const [policies, setPolicies] = useState<any[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -111,8 +109,6 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
     setIsDeleteModalOpen(false);
   };
 
-  // deletion will be handled inside DeleteLumpSumCommissionModal
-
   useEffect(() => {
     if (!insurancePoliciesData) return;
     const policyList = Array.isArray(insurancePoliciesData)
@@ -145,7 +141,8 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
 
   useEffect(() => {
     if (isError) {
-      // keep existing UI; optionally we could surface toast here
+      console.error("Failed to load lump sum commission data");
+      toast.error("Failed to load lump sum commission data");
     }
   }, [isError]);
 
@@ -167,6 +164,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
           <button
             type="button"
             className="btn btn-primary"
+            disabled={session?.user?.user_type === "CLIENT"}
             onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
           >
             <TbCirclePlus className="me-1" size={18} />
@@ -360,13 +358,16 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       color="danger"
                       title="Remove row"
                       onClick={() => openDeleteModal(lump.id)}
+                      disabled={session?.user?.user_type === "CLIENT"}
                     >
                       <FaTrash /> Delete
                     </Button>
                     <button
                       type="button"
                       className="btn btn-primary"
-                      disabled={isUpdatingLump}
+                      disabled={
+                        isUpdatingLump || session?.user?.user_type === "CLIENT"
+                      }
                       onClick={() => handleUpdateLump(lump)}
                     >
                       <ArrowUpCircle size={16} />{" "}
@@ -384,6 +385,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
+            disabled={session?.user?.user_type === "CLIENT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Lump Sum

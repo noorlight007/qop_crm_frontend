@@ -1,9 +1,14 @@
 import LoadingSpinner from "@/app/loading";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
+import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import {
   useAddCommissionMutation,
   useGetCommissionQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -12,6 +17,7 @@ import LumpSumCommission from "./LumpSumCommission/LumpSumCommission";
 import TrailCommission from "./TrailCommission/TrailCommission";
 
 const CommissionContent: React.FC = () => {
+  const { data: session } = useSession();
   const { casealias } = useParams();
   // RTK hooks
   const { data: commissionData, isLoading } = useGetCommissionQuery({
@@ -19,6 +25,10 @@ const CommissionContent: React.FC = () => {
   });
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias }
+  );
 
   // API may return an array (e.g. [{...}]) — normalize to single object
   const commission = Array.isArray(commissionData)
@@ -27,6 +37,11 @@ const CommissionContent: React.FC = () => {
   const [addCommission, { isLoading: isAdding }] = useAddCommissionMutation();
 
   const [note, setNote] = useState<string>("");
+
+  const dispatch = useAppDispatch();
+  const currentTab: string | null = useAppSelector(
+    (state) => state.caseDetails.basicTabId
+  );
 
   useEffect(() => {
     if (commission) {
@@ -43,10 +58,9 @@ const CommissionContent: React.FC = () => {
   }
 
   const totalCommission = commission?.total_commission ?? 0;
-  console.log("Total Commission:", totalCommission);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent): Promise<boolean> => {
+    e?.preventDefault();
     try {
       const res = await addCommission({
         case_alias: casealias,
@@ -63,10 +77,26 @@ const CommissionContent: React.FC = () => {
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
+        return true;
       }
+      return false;
     } catch (err) {
       console.error(err);
       toast.error("Failed to update commission notes");
+      return false;
+    }
+  };
+
+  const handleNextTab = () => {
+    const nextTabNav = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!
+    );
+    if (nextTabNav) {
+      dispatch(basicTabIndicator(nextTabNav));
+    } else {
+      toast.warning("This is the last tab.");
     }
   };
 
@@ -119,8 +149,32 @@ const CommissionContent: React.FC = () => {
               />
             </FormGroup>
             <div className="d-flex justify-content-end gap-2">
-              <Button color="primary" type="submit" disabled={isAdding}>
+              <Button
+                color="primary"
+                type="submit"
+                disabled={isAdding || session?.user?.user_type === "CLIENT"}
+              >
                 {isAdding ? "Saving..." : "Save Changes"}
+              </Button>
+              <Button
+                color="secondary"
+                disabled={isAdding}
+                onClick={async () => {
+                  if (session?.user?.user_type === "CLIENT") {
+                    handleNextTab();
+                  } else {
+                    const success = await handleSubmit();
+                    if (success) {
+                      handleNextTab();
+                    }
+                  }
+                }}
+              >
+                {isAdding
+                  ? "Saving..."
+                  : session?.user?.user_type === "CLIENT"
+                  ? "Go To Next"
+                  : "Save & Next"}
               </Button>
             </div>
           </Form>

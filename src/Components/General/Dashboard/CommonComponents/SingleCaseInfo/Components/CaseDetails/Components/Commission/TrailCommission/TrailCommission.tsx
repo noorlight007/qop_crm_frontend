@@ -9,6 +9,7 @@ import {
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
 import { CommissionProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { ArrowUpCircle } from "react-feather";
 import { FaTrash } from "react-icons/fa";
@@ -32,6 +33,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
   caseAlias,
   commissionAlias,
 }) => {
+  const { data: session } = useSession();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [trails, setTrails] = useState<Trail[]>([]);
@@ -164,6 +166,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddModalOpen(true)}
+            disabled={session?.user?.user_type === "CLIENT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Trail Commission
@@ -346,13 +349,16 @@ const TrailCommission: React.FC<CommissionProps> = ({
                       color="danger"
                       title="Remove row"
                       onClick={() => openDeleteModal(trail.id)}
+                      disabled={session?.user?.user_type === "CLIENT"}
                     >
                       <FaTrash /> Delete
                     </Button>
                     <button
                       type="button"
                       className="btn btn-primary"
-                      disabled={isUpdating}
+                      disabled={
+                        isUpdating || session?.user?.user_type === "CLIENT"
+                      }
                       onClick={() => handleUpdateTrail(trail)}
                     >
                       <ArrowUpCircle size={16} />{" "}
@@ -370,6 +376,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddModalOpen(true)}
+            disabled={session?.user?.user_type === "CLIENT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Trail Commission
