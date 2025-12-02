@@ -1,4 +1,5 @@
 import { useAddTrailCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import { AddLumpSumAndTrailModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -15,21 +16,7 @@ import {
   Row,
 } from "reactstrap";
 
-interface Policy {
-  alias: string;
-  policy_type?: string;
-}
-
-interface Props {
-  isOpen: boolean;
-  toggle: () => void;
-  caseAlias?: string | null | undefined;
-  commissionAlias?: string | null | undefined;
-  policies?: Policy[];
-  onAdded?: () => void;
-}
-
-const AddTrailCommissionModal: React.FC<Props> = ({
+const AddTrailCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
   isOpen,
   toggle,
   caseAlias,

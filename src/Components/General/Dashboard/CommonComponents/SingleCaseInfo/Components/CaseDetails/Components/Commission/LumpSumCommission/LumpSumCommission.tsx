@@ -7,36 +7,28 @@ import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import {
+  CommissionProps,
+  LumpSumProps,
+} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { ArrowUpCircle } from "react-feather";
 import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
+import { toast } from "react-toastify";
 import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import AddLumpSumCommissionModal from "./Modals/AddLumpSumCommissionModal";
 import DeleteLumpSumCommissionModal from "./Modals/DeleteLumpSumCommissionModal";
-import { toast } from "react-toastify";
 
-type Lump = {
-  id: string;
-  policy: string;
-  commissionAmount: string;
-  dateReceived: string;
-  clawbackAmount: string;
-  clawbackDate: string;
-  reconciledAmount: string;
-};
-
-interface Props {
-  caseAlias?: string | string[];
-  commissionAlias?: string | null;
-}
-
-const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
+const LumpSumCommission: React.FC<CommissionProps> = ({
+  caseAlias,
+  commissionAlias,
+}) => {
   const [isAddLumpSumCommissionModalOpen, setIsAddLumpSumCommissionModalOpen] =
     useState(false);
 
-  const [lumps, setLumps] = useState<Lump[]>([]);
+  const [lumps, setLumps] = useState<LumpSumProps[]>([]);
   const [activeTab, setActiveTab] = useState<string>("0");
 
   const case_alias = Array.isArray(caseAlias) ? caseAlias[0] : caseAlias;
@@ -83,7 +75,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
   );
 
   // Move update logic out of JSX: re-usable handler
-  const handleUpdateLump = async (lump: Lump) => {
+  const handleUpdateLump = async (lump: LumpSumProps) => {
     try {
       const payload = {
         policy: lump.policy || null,
@@ -135,7 +127,7 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
     const items: any[] = Array.isArray(lumpSumCommissionData)
       ? lumpSumCommissionData
       : [lumpSumCommissionData];
-    const mapped: Lump[] = items.map((it: any) => ({
+    const mapped: LumpSumProps[] = items.map((it: any) => ({
       id: it.alias ?? String(Date.now()),
       policy: it.policy ?? "",
       commissionAmount: (it.commission_amount ?? 0).toString(),

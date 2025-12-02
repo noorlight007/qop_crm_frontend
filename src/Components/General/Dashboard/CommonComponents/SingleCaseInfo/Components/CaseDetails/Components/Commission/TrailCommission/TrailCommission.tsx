@@ -7,6 +7,7 @@ import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+import { CommissionProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { ArrowUpCircle } from "react-feather";
@@ -27,12 +28,10 @@ type Trail = {
   totalTrailCommission: string;
 };
 
-interface Props {
-  caseAlias?: string | string[];
-  commissionAlias?: string | null;
-}
-
-const TrailCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
+const TrailCommission: React.FC<CommissionProps> = ({
+  caseAlias,
+  commissionAlias,
+}) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const [trails, setTrails] = useState<Trail[]>([]);

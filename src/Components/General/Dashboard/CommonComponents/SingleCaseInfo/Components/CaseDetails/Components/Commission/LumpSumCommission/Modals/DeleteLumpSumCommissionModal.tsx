@@ -1,20 +1,13 @@
 import { useDeleteLumpSumCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import { DeleteLumpSumAndTrailModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-interface Props {
-  isOpen: boolean;
-  toggle: () => void;
-  caseAlias: string | undefined | null;
-  commissionAlias: string | undefined | null;
-  lumpSumAlias?: string | null;
-  onDeleted?: () => void;
-  policyType?: string | null;
-}
-
-const DeleteLumpSumCommissionModal: React.FC<Props> = ({
+const DeleteLumpSumCommissionModal: React.FC<
+  DeleteLumpSumAndTrailModalProps
+> = ({
   isOpen,
   toggle,
   caseAlias,
