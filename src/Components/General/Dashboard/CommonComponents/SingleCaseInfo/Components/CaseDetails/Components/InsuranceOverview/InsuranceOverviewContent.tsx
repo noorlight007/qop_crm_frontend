@@ -121,48 +121,6 @@ const InsuranceOverviewContent: React.FC = () => {
     }
   };
 
-  const handleSaveAndNext = async () => {
-    if (!formState) return;
-
-    // Reuse alias resolution from handleSubmit
-    const insurance_overview_alias =
-      formState?.insurance_overview_alias ||
-      formState?.insurance_overview_id ||
-      formState?.alias ||
-      formState?.id;
-
-    if (!insurance_overview_alias) {
-      toast.error("Unable to determine insurance overview identifier");
-      return;
-    }
-
-    const editablePayload = {
-      introduction_type: formState.introduction_type,
-      advise_level: formState.advise_level,
-      lead_source: formState.lead_source,
-      summary: formState.summary,
-    };
-
-    if (session?.user?.user_type !== "CLIENT") {
-      try {
-        const res = await updateInsuranceOverview({
-          case_alias: casealias,
-          insurance_overview_alias,
-          payload: editablePayload,
-        }).unwrap();
-        if (res) {
-          toast.success("Insurance overview updated successfully");
-        }
-        handleNextTab();
-      } catch (err) {
-        console.error("Failed to update insurance overview", err);
-        toast.error("Failed to update insurance overview");
-      }
-    } else {
-      handleNextTab();
-    }
-  };
-
   if (isLoading || !formState) {
     return (
       <div className="p-2">
@@ -337,16 +295,45 @@ const InsuranceOverviewContent: React.FC = () => {
               </Col>
             </Row>
             <div className="d-flex justify-content-end mt-3 gap-2">
-              <Button color="primary" type="submit" disabled={isUpdating}>
+              <Button
+                color="primary"
+                type="submit"
+                disabled={
+                  isUpdating ||
+                  (session?.user?.user_type === "CLIENT" &&
+                    overview?.updated_by !== null)
+                }
+              >
                 {isUpdating ? "Saving..." : "Save Changes"}
               </Button>
               <Button
+                type="submit"
                 color="secondary"
-                className="me-2"
-                onClick={handleSaveAndNext}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (
+                    session?.user?.user_type === "CLIENT" &&
+                    overview?.updated_by !== null
+                  ) {
+                    handleNextTab();
+                  } else {
+                    try {
+                      await handleSubmit(e);
+                      handleNextTab();
+                    } catch (err) {
+                      console.error(
+                        "Failed to save and navigate to next tab:",
+                        err
+                      );
+                    }
+                  }
+                }}
                 disabled={isUpdating}
               >
-                {isUpdating ? "Saving..." : "Save & Next"}
+                {session?.user?.user_type === "CLIENT" &&
+                overview?.updated_by !== null
+                  ? "Go To Next"
+                  : "Save & Next"}
               </Button>
             </div>
           </Form>

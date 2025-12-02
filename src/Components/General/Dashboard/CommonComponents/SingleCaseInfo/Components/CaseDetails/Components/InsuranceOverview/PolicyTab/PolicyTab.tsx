@@ -1108,11 +1108,23 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               </Row>
 
               <div className="d-flex justify-content-between mt-3 ">
-                <Button color="success" onClick={toggleModal}>
+                <Button
+                  color="success"
+                  onClick={toggleModal}
+                  disabled={isUpdating || session?.user?.user_type === "CLIENT"}
+                >
                   Add New Policy
                 </Button>
                 <div className="d-flex gap-2">
-                  <Button color="primary" type="submit" disabled={isUpdating}>
+                  <Button
+                    color="primary"
+                    type="submit"
+                    disabled={
+                      isUpdating ||
+                      (session?.user?.user_type === "CLIENT" &&
+                        policy?.updated_by !== null)
+                    }
+                  >
                     {isUpdating ? "Saving..." : "Save Changes"}
                   </Button>
                   <Button
@@ -1137,7 +1149,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     {session?.user?.user_type === "CLIENT" &&
                     policy?.updated_by !== null
                       ? "Go To Next"
-                      : "Save & Next Section"}
+                      : "Save & Next"}
                   </Button>
                 </div>
               </div>
