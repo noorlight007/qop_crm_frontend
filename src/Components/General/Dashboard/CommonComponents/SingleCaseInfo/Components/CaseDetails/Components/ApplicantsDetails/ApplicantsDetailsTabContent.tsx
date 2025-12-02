@@ -22,7 +22,6 @@ import { toast } from "react-toastify";
 import {
   Button,
   Col,
-  Container,
   FormGroup,
   FormText,
   Input,
@@ -374,7 +373,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   }
 
   return (
-    <Container>
+    <>
       <Row>
         <form ref={formRef} id="applicant-form" onSubmit={handleSubmit}>
           {applicationType === "RESIDENTIAL_MORTGAGE" ||
@@ -2222,6 +2221,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         case_alias={casealias as string}
         applicantDetails_alias={formValues.alias as string}
       />
+
       {/* Modal Component */}
       {formValues?.has_dependants === true ? (
         <ApplicantDependantsViewModal
@@ -2232,6 +2232,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       ) : (
         ""
       )}
+
       <AddPreviousAddressModal
         isOpen={isAddPreviousAddressModalOpen}
         toggle={() =>
@@ -2240,6 +2241,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         applicantAlias={formValues.alias}
         effectiveFromDate={formValues.effective_from}
       />
+
       <ViewPreviousAddressModal
         isOpen={isViewPreviousAddressModalOpen}
         toggle={() =>
@@ -2247,7 +2249,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         }
         applicantAlias={formValues.alias}
       />
-    </Container>
+    </>
   );
 };
 
