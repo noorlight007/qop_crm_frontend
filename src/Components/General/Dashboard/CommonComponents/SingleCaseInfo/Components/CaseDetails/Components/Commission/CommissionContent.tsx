@@ -66,7 +66,6 @@ const CommissionContent: React.FC = () => {
           />
         </Col>
       </Row>
-
       <hr />
       <Row>
         <Col>

@@ -77,6 +77,9 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
   const [policies, setPolicies] = useState<any[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedLumpId, setSelectedLumpId] = useState<string | null>(null);
+  const [selectedLumpIndex, setSelectedLumpIndex] = useState<number | null>(
+    null
+  );
 
   // Move update logic out of JSX: re-usable handler
   const handleUpdateLump = async (lump: Lump) => {
@@ -101,12 +104,15 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
   };
 
   const openDeleteModal = (lumpId: string) => {
+    const idx = lumps.findIndex((l) => l.id === lumpId);
     setSelectedLumpId(lumpId);
+    setSelectedLumpIndex(idx !== -1 ? idx : null);
     setIsDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
     setSelectedLumpId(null);
+    setSelectedLumpIndex(null);
     setIsDeleteModalOpen(false);
   };
 
@@ -395,7 +401,40 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
         caseAlias={case_alias}
         commissionAlias={commission_alias}
         lumpSumAlias={selectedLumpId}
-        onDeleted={closeDeleteModal}
+        onDeleted={() => {
+          if (!selectedLumpId) {
+            closeDeleteModal();
+            return;
+          }
+
+          setLumps((prev) => {
+            const newList = prev.filter((l) => l.id !== selectedLumpId);
+            const newLen = newList.length;
+            const removedIndex = selectedLumpIndex ?? -1;
+            const currActive = Number(activeTab) || 0;
+
+            let newActive = 0;
+            if (newLen === 0) {
+              newActive = 0;
+            } else {
+              if (currActive > removedIndex) {
+                newActive = currActive - 1;
+              } else if (currActive === removedIndex) {
+                newActive = removedIndex >= newLen ? newLen - 1 : removedIndex;
+              } else {
+                newActive = currActive;
+              }
+            }
+
+            setActiveTab(String(newActive));
+            return newList;
+          });
+
+          // reset selection and close modal
+          setSelectedLumpId(null);
+          setSelectedLumpIndex(null);
+          setIsDeleteModalOpen(false);
+        }}
         policyType={selectedPolicyType}
       />
       <AddLumpSumCommissionModal
