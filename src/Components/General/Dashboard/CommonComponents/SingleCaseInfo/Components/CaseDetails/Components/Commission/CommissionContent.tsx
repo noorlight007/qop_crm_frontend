@@ -3,6 +3,7 @@ import {
   useAddCommissionMutation,
   useGetCommissionQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -16,6 +17,8 @@ const CommissionContent: React.FC = () => {
   const { data: commissionData, isLoading } = useGetCommissionQuery({
     case_alias: casealias,
   });
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   // API may return an array (e.g. [{...}]) — normalize to single object
   const commission = Array.isArray(commissionData)
@@ -50,7 +53,17 @@ const CommissionContent: React.FC = () => {
         commission_alias: commission?.alias,
         commissionData: { note },
       });
-      toast.success("Commission notes updated successfully");
+      if (res.data) {
+        toast.success("Commission notes updated successfully");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_commission: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+      }
     } catch (err) {
       console.error(err);
       toast.error("Failed to update commission notes");
