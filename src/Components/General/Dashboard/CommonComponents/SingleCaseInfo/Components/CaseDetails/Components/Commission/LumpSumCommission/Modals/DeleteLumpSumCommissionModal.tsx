@@ -50,7 +50,7 @@ const DeleteLumpSumCommissionModal: React.FC<Props> = ({
           Are you sure you want to delete{" "}
           <b className="text-danger">
             {policyType ? `${formatChoiceFieldValue(policyType)} ` : "this"}
-          </b>
+          </b>{" "}
           lump sum commission?
         </div>
       </ModalBody>
