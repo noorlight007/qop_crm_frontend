@@ -1,7 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import {
-  useGetLumpSumCommissionQuery,
-  useUpdateLumpSumCommissionMutation,
+  useGetTrailCommissionQuery,
+  useUpdateTrailCommissionMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
 import {
   useGetInsuranceOverviewQuery,
@@ -12,19 +12,19 @@ import React, { useEffect, useState } from "react";
 import { ArrowUpCircle } from "react-feather";
 import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
-import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import AddLumpSumCommissionModal from "./Modals/AddLumpSumCommissionModal";
-import DeleteLumpSumCommissionModal from "./Modals/DeleteLumpSumCommissionModal";
 import { toast } from "react-toastify";
+import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import AddTrailCommissionModal from "./Modals/AddTrailCommissionModal";
+import DeleteTrailCommissionModal from "./Modals/DeleteTrailCommissionModal";
 
-type Lump = {
+type Trail = {
   id: string;
   policy: string;
-  commissionAmount: string;
-  dateReceived: string;
-  clawbackAmount: string;
-  clawbackDate: string;
-  reconciledAmount: string;
+  monthlyPayment: string;
+  numberOfPayments: string;
+  startDate: string;
+  endDate: string;
+  totalTrailCommission: string;
 };
 
 interface Props {
@@ -32,94 +32,87 @@ interface Props {
   commissionAlias?: string | null;
 }
 
-const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
-  const [isAddLumpSumCommissionModalOpen, setIsAddLumpSumCommissionModalOpen] =
-    useState(false);
+const TrailCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  const [lumps, setLumps] = useState<Lump[]>([]);
+  const [trails, setTrails] = useState<Trail[]>([]);
   const [activeTab, setActiveTab] = useState<string>("0");
 
   const case_alias = Array.isArray(caseAlias) ? caseAlias[0] : caseAlias;
   const commission_alias = commissionAlias ?? undefined;
 
-  const {
-    data: lumpSumCommissionData,
-    isLoading,
-    isError,
-  } = useGetLumpSumCommissionQuery(
+  const { data: trailCommissionData, isLoading } = useGetTrailCommissionQuery(
     { case_alias, commission_alias },
     { skip: !case_alias || !commission_alias }
   );
 
-  const [updateLumpSumCommission, { isLoading: isUpdatingLump }] =
-    useUpdateLumpSumCommissionMutation();
+  const [updateTrailCommission, { isLoading: isUpdating }] =
+    useUpdateTrailCommissionMutation();
 
-  const { data: insuranceOverviewData, isLoading: isLoadingOverview } =
-    useGetInsuranceOverviewQuery({ case_alias }, { skip: !case_alias });
+  const { data: insuranceOverviewData } = useGetInsuranceOverviewQuery(
+    { case_alias },
+    { skip: !case_alias }
+  );
 
-  // Handle both array and single object responses from API
   const overview = Array.isArray(insuranceOverviewData)
     ? insuranceOverviewData[0]
     : insuranceOverviewData;
 
-  console.log("Overview Data:", overview);
-  console.log("Overview Alias:", overview?.alias);
-
-  const { data: insurancePoliciesData, isLoading: isPoliciesLoading } =
-    useGetInsurancePoliciesQuery(
-      {
-        case_alias,
-        insurance_overview_alias: overview?.alias,
-      },
-      { skip: !case_alias || !overview?.alias }
-    );
-  console.log("IPData::", insurancePoliciesData);
+  const { data: insurancePoliciesData } = useGetInsurancePoliciesQuery(
+    { case_alias, insurance_overview_alias: overview?.alias },
+    { skip: !case_alias || !overview?.alias }
+  );
 
   const [policies, setPolicies] = useState<any[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedLumpId, setSelectedLumpId] = useState<string | null>(null);
-  const [selectedLumpIndex, setSelectedLumpIndex] = useState<number | null>(
+  const [selectedTrailId, setSelectedTrailId] = useState<string | null>(null);
+  const [selectedTrailIndex, setSelectedTrailIndex] = useState<number | null>(
     null
   );
 
-  // Move update logic out of JSX: re-usable handler
-  const handleUpdateLump = async (lump: Lump) => {
+  const handleUpdateTrail = async (trail: Trail) => {
     try {
       const payload = {
-        policy: lump.policy || null,
-        commission_amount: parseFloat(lump.commissionAmount) || 0,
-        date_received: lump.dateReceived || null,
-        clawback_amount: parseFloat(lump.clawbackAmount) || 0,
-        clawback_date: lump.clawbackDate || null,
+        policy: trail.policy || null,
+        monthly_payment:
+          trail.monthlyPayment === "" ? null : parseFloat(trail.monthlyPayment),
+        number_of_payments:
+          trail.numberOfPayments === ""
+            ? null
+            : parseInt(trail.numberOfPayments, 10),
+        start_date: trail.startDate || null,
+        end_date: trail.endDate || null,
+        total_trail_commission:
+          trail.totalTrailCommission === ""
+            ? 0.0
+            : parseFloat(trail.totalTrailCommission),
       };
 
-      await updateLumpSumCommission({
+      await updateTrailCommission({
         case_alias: case_alias!,
         commission_alias: commission_alias!,
-        lump_sum_alias: lump.id,
-        lumpSumData: payload,
+        trail_commission_alias: trail.id,
+        trailCommissionData: payload,
       }).unwrap();
-      toast.success("Lump sum commission updated successfully");
+      toast.success("Trail commission updated successfully");
     } catch (err) {
-      console.error("Failed to update lump sum", err);
-      toast.error("Failed to update lump sum commission");
+      console.error("Failed to update trail commission", err);
+      toast.error("Failed to update trail commission");
     }
   };
 
-  const openDeleteModal = (lumpId: string) => {
-    const idx = lumps.findIndex((l) => l.id === lumpId);
-    setSelectedLumpId(lumpId);
-    setSelectedLumpIndex(idx !== -1 ? idx : null);
+  const openDeleteModal = (trailId: string) => {
+    const idx = trails.findIndex((t) => t.id === trailId);
+    setSelectedTrailId(trailId);
+    setSelectedTrailIndex(idx !== -1 ? idx : null);
     setIsDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
-    setSelectedLumpId(null);
-    setSelectedLumpIndex(null);
+    setSelectedTrailId(null);
+    setSelectedTrailIndex(null);
     setIsDeleteModalOpen(false);
   };
-
-  // deletion will be handled inside DeleteLumpSumCommissionModal
 
   useEffect(() => {
     if (!insurancePoliciesData) return;
@@ -130,32 +123,30 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
   }, [insurancePoliciesData]);
 
   useEffect(() => {
-    if (!lumpSumCommissionData) return;
-    // API may return array of lump-sum objects
-    const items: any[] = Array.isArray(lumpSumCommissionData)
-      ? lumpSumCommissionData
-      : [lumpSumCommissionData];
-    const mapped: Lump[] = items.map((it: any) => ({
+    if (!trailCommissionData) return;
+    const items: any[] = Array.isArray(trailCommissionData)
+      ? trailCommissionData
+      : [trailCommissionData];
+    const mapped: Trail[] = items.map((it: any) => ({
       id: it.alias ?? String(Date.now()),
       policy: it.policy ?? "",
-      commissionAmount: (it.commission_amount ?? 0).toString(),
-      dateReceived: it.date_received ?? "",
-      clawbackAmount: (it.clawback_amount ?? 0).toString(),
-      clawbackDate: it.clawback_date ?? "",
-      reconciledAmount:
-        typeof it.reconciled_amount === "number"
-          ? it.reconciled_amount.toFixed(2)
-          : String(it.reconciled_amount ?? "0.00"),
+      monthlyPayment:
+        typeof it.monthly_payment === "number"
+          ? it.monthly_payment.toString()
+          : String(it.monthly_payment ?? ""),
+      numberOfPayments:
+        typeof it.number_of_payments === "number"
+          ? String(it.number_of_payments)
+          : String(it.number_of_payments ?? ""),
+      startDate: it.start_date ?? "",
+      endDate: it.end_date ?? "",
+      totalTrailCommission:
+        typeof it.total_trail_commission === "number"
+          ? it.total_trail_commission.toFixed(2)
+          : String(it.total_trail_commission ?? "0.00"),
     }));
-    // If API returned no items, keep lumps empty so UI shows only Add button
-    setLumps(mapped);
-  }, [lumpSumCommissionData]);
-
-  useEffect(() => {
-    if (isError) {
-      // keep existing UI; optionally we could surface toast here
-    }
-  }, [isError]);
+    setTrails(mapped);
+  }, [trailCommissionData]);
 
   if (isLoading) {
     return (
@@ -164,41 +155,38 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
       </div>
     );
   }
-  // If there are no lump rows (API returned empty) show only the Add button
-  if (!isLoading && lumps.length === 0) {
+
+  if (!isLoading && trails.length === 0) {
     return (
       <div className="mb-4">
-        <div className="bg-primary text-white p-2 mb-3 rounded-1 fs-6">
-          Lump Sum Commission
-        </div>
+        <div className="bg-primary text-white p-2 mb-3">Trail Commission</div>
         <div className="d-flex justify-content-center">
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
+            onClick={() => setIsAddModalOpen(true)}
           >
             <TbCirclePlus className="me-1" size={18} />
-            Add New Lump Sum
+            Add New Trail Commission
           </button>
         </div>
-        <AddLumpSumCommissionModal
-          isOpen={isAddLumpSumCommissionModalOpen}
-          toggle={() => setIsAddLumpSumCommissionModalOpen(false)}
+        <AddTrailCommissionModal
+          isOpen={isAddModalOpen}
+          toggle={() => setIsAddModalOpen(false)}
           caseAlias={case_alias}
           commissionAlias={commission_alias}
           policies={policies}
-          onAdded={() => setIsAddLumpSumCommissionModalOpen(false)}
+          onAdded={() => setIsAddModalOpen(false)}
         />
       </div>
     );
   }
 
-  // compute selected policy type to show in modal
   const selectedPolicyType = (() => {
-    if (!selectedLumpId) return null;
-    const lump = lumps.find((l) => l.id === selectedLumpId);
-    if (!lump) return null;
-    const policyAlias = lump.policy;
+    if (!selectedTrailId) return null;
+    const trail = trails.find((t) => t.id === selectedTrailId);
+    if (!trail) return null;
+    const policyAlias = trail.policy;
     if (!policyAlias) return null;
     const found = policies.find((p: any) => p.alias === policyAlias);
     return found?.policy_type ?? null;
@@ -208,12 +196,12 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
     <>
       <div className="mb-4">
         <div className="bg-primary fs-6 p-2 mb-3 rounded-1">
-          Lump Sum Commission
+          Trail Commission
         </div>
         <div>
           <Nav tabs className="mb-3 justify-content-center">
-            {lumps.map((lump, idx) => (
-              <NavItem key={lump.id}>
+            {trails.map((trail, idx) => (
+              <NavItem key={trail.id}>
                 <NavLink
                   className={
                     activeTab === String(idx) ? "active text-secondary" : ""
@@ -221,10 +209,10 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                   style={{ cursor: "pointer" }}
                   onClick={() => setActiveTab(String(idx))}
                 >
-                  Lump Sum {idx + 1}{" "}
-                  {lump.policy
+                  Trail {idx + 1}{" "}
+                  {trail.policy
                     ? `- ${formatChoiceFieldValue(
-                        policies.find((p: any) => p.alias === lump.policy)
+                        policies.find((p: any) => p.alias === trail.policy)
                           ?.policy_type || "Policy"
                       )}`
                     : ""}
@@ -234,18 +222,18 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
           </Nav>
 
           <TabContent activeTab={activeTab}>
-            {lumps.map((lump, idx) => (
-              <TabPane tabId={String(idx)} key={lump.id}>
+            {trails.map((trail, idx) => (
+              <TabPane tabId={String(idx)} key={trail.id}>
                 <div className="border border-primary p-3 mb-3 rounded-1">
                   <div className="row g-3 align-items-center">
                     <div className="col-md-4">
                       <label className="form-label">Policy</label>
                       <select
                         className="form-select"
-                        value={lump.policy}
+                        value={trail.policy}
                         onChange={(e) => {
                           const val = e.target.value;
-                          setLumps((prev) => {
+                          setTrails((prev) => {
                             const copy = [...prev];
                             copy[idx] = { ...copy[idx], policy: val };
                             return copy;
@@ -263,22 +251,19 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                     </div>
 
                     <div className="col-md-4">
-                      <label className="form-label">Commission Amount</label>
+                      <label className="form-label">Monthly Payment</label>
                       <div className="input-group">
                         <span className="input-group-text">£</span>
                         <input
                           type="number"
                           className="form-control"
-                          value={lump.commissionAmount}
+                          value={trail.monthlyPayment}
                           min={0}
                           onChange={(e) => {
                             const val = e.target.value;
-                            setLumps((prev) => {
+                            setTrails((prev) => {
                               const copy = [...prev];
-                              copy[idx] = {
-                                ...copy[idx],
-                                commissionAmount: val,
-                              };
+                              copy[idx] = { ...copy[idx], monthlyPayment: val };
                               return copy;
                             });
                           }}
@@ -287,61 +272,53 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                     </div>
 
                     <div className="col-md-4">
-                      <label className="form-label">Date Received</label>
-                      <div className="d-flex">
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={lump.dateReceived}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setLumps((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], dateReceived: val };
-                              return copy;
-                            });
-                          }}
-                        />
-                      </div>
+                      <label className="form-label">Number Of Payments</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={trail.numberOfPayments}
+                        min={0}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTrails((prev) => {
+                            const copy = [...prev];
+                            copy[idx] = { ...copy[idx], numberOfPayments: val };
+                            return copy;
+                          });
+                        }}
+                      />
                     </div>
                   </div>
 
                   <div className="row g-3 align-items-center mt-3">
                     <div className="col-md-4">
-                      <label className="form-label">Clawback Amount</label>
-                      <div className="input-group">
-                        <span className="input-group-text">£</span>
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={lump.clawbackAmount}
-                          min={0}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setLumps((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = {
-                                ...copy[idx],
-                                clawbackAmount: val,
-                              };
-                              return copy;
-                            });
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-md-4">
-                      <label className="form-label">Clawback Date</label>
+                      <label className="form-label">Start Date</label>
                       <input
                         type="date"
                         className="form-control"
-                        value={lump.clawbackDate}
+                        value={trail.startDate}
                         onChange={(e) => {
                           const val = e.target.value;
-                          setLumps((prev) => {
+                          setTrails((prev) => {
                             const copy = [...prev];
-                            copy[idx] = { ...copy[idx], clawbackDate: val };
+                            copy[idx] = { ...copy[idx], startDate: val };
+                            return copy;
+                          });
+                        }}
+                      />
+                    </div>
+
+                    <div className="col-md-4">
+                      <label className="form-label">End Date</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={trail.endDate}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setTrails((prev) => {
+                            const copy = [...prev];
+                            copy[idx] = { ...copy[idx], endDate: val };
                             return copy;
                           });
                         }}
@@ -349,14 +326,16 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                     </div>
 
                     <div className="col-md-3">
-                      <label className="form-label">Reconciled Amount</label>
+                      <label className="form-label">
+                        Total Trail Commission
+                      </label>
                       <div className="input-group">
                         <span className="input-group-text">£</span>
                         <input
                           type="text"
                           readOnly
                           className="form-control bg-light-dark"
-                          value={Number(lump.reconciledAmount).toFixed(2)}
+                          value={Number(trail.totalTrailCommission).toFixed(2)}
                         />
                       </div>
                     </div>
@@ -367,18 +346,18 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
                       type="button"
                       color="danger"
                       title="Remove row"
-                      onClick={() => openDeleteModal(lump.id)}
+                      onClick={() => openDeleteModal(trail.id)}
                     >
                       <FaTrash /> Delete
                     </Button>
                     <button
                       type="button"
                       className="btn btn-primary"
-                      disabled={isUpdatingLump}
-                      onClick={() => handleUpdateLump(lump)}
+                      disabled={isUpdating}
+                      onClick={() => handleUpdateTrail(trail)}
                     >
                       <ArrowUpCircle size={16} />{" "}
-                      {isUpdatingLump ? "Updating..." : "Update"}
+                      {isUpdating ? "Updating..." : "Update"}
                     </button>
                   </div>
                 </div>
@@ -391,29 +370,29 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
+            onClick={() => setIsAddModalOpen(true)}
           >
             <TbCirclePlus className="me-1" size={18} />
-            Add New Lump Sum
+            Add New Trail Commission
           </button>
         </div>
       </div>
-      <DeleteLumpSumCommissionModal
+      <DeleteTrailCommissionModal
         isOpen={isDeleteModalOpen}
         toggle={closeDeleteModal}
         caseAlias={case_alias}
         commissionAlias={commission_alias}
-        lumpSumAlias={selectedLumpId}
+        trailCommissionAlias={selectedTrailId}
         onDeleted={() => {
-          if (!selectedLumpId) {
+          if (!selectedTrailId) {
             closeDeleteModal();
             return;
           }
 
-          setLumps((prev) => {
-            const newList = prev.filter((l) => l.id !== selectedLumpId);
+          setTrails((prev) => {
+            const newList = prev.filter((l) => l.id !== selectedTrailId);
             const newLen = newList.length;
-            const removedIndex = selectedLumpIndex ?? -1;
+            const removedIndex = selectedTrailIndex ?? -1;
             const currActive = Number(activeTab) || 0;
 
             let newActive = 0;
@@ -433,23 +412,22 @@ const LumpSumCommission: React.FC<Props> = ({ caseAlias, commissionAlias }) => {
             return newList;
           });
 
-          // reset selection and close modal
-          setSelectedLumpId(null);
-          setSelectedLumpIndex(null);
+          setSelectedTrailId(null);
+          setSelectedTrailIndex(null);
           setIsDeleteModalOpen(false);
         }}
         policyType={selectedPolicyType}
       />
-      <AddLumpSumCommissionModal
-        isOpen={isAddLumpSumCommissionModalOpen}
-        toggle={() => setIsAddLumpSumCommissionModalOpen(false)}
+      <AddTrailCommissionModal
+        isOpen={isAddModalOpen}
+        toggle={() => setIsAddModalOpen(false)}
         caseAlias={case_alias}
         commissionAlias={commission_alias}
         policies={policies}
-        onAdded={() => setIsAddLumpSumCommissionModalOpen(false)}
+        onAdded={() => setIsAddModalOpen(false)}
       />
     </>
   );
 };
 
-export default LumpSumCommission;
+export default TrailCommission;

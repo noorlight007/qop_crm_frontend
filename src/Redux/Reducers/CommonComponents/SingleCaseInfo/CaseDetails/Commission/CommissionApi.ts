@@ -17,6 +17,7 @@ export const CommissionApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Commission"],
     }),
+    // Lump Sum Commissions APIs
     getLumpSumCommission: builder.query({
       query: ({ case_alias, commission_alias }) => ({
         url: `/cases/${case_alias}/commission/${commission_alias}/lump-sum-commissions/`,
@@ -52,6 +53,42 @@ export const CommissionApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Commission"],
     }),
+    // TrailCommission Apis
+    getTrailCommission: builder.query({
+      query: ({ case_alias, commission_alias }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/trail-commissions/`,
+        method: "GET",
+      }),
+      providesTags: ["Commission"],
+    }),
+    addTrailCommission: builder.mutation({
+      query: ({ case_alias, commission_alias, trailCommissionData }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/trail-commissions/`,
+        method: "POST",
+        body: trailCommissionData,
+      }),
+      invalidatesTags: ["Commission"],
+    }),
+    updateTrailCommission: builder.mutation({
+      query: ({
+        case_alias,
+        commission_alias,
+        trail_commission_alias,
+        trailCommissionData,
+      }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/trail-commissions/${trail_commission_alias}/`,
+        method: "PATCH",
+        body: trailCommissionData,
+      }),
+      invalidatesTags: ["Commission"],
+    }),
+    deleteTrailCommission: builder.mutation({
+      query: ({ case_alias, commission_alias, trail_commission_alias }) => ({
+        url: `/cases/${case_alias}/commission/${commission_alias}/trail-commissions/${trail_commission_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Commission"],
+    }),
   }),
 });
 export const {
@@ -61,4 +98,8 @@ export const {
   useAddLumpSumCommissionMutation,
   useUpdateLumpSumCommissionMutation,
   useDeleteLumpSumCommissionMutation,
+  useGetTrailCommissionQuery,
+  useAddTrailCommissionMutation,
+  useUpdateTrailCommissionMutation,
+  useDeleteTrailCommissionMutation,
 } = CommissionApi;

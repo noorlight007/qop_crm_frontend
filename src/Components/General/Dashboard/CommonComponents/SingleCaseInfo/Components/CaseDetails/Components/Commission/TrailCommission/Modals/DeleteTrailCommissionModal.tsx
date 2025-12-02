@@ -1,4 +1,4 @@
-import { useDeleteLumpSumCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import { useDeleteTrailCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { toast } from "react-toastify";
@@ -9,44 +9,44 @@ interface Props {
   toggle: () => void;
   caseAlias: string | undefined | null;
   commissionAlias: string | undefined | null;
-  lumpSumAlias?: string | null;
+  trailCommissionAlias?: string | null;
   onDeleted?: () => void;
   policyType?: string | null;
 }
 
-const DeleteLumpSumCommissionModal: React.FC<Props> = ({
+const DeleteTrailCommissionModal: React.FC<Props> = ({
   isOpen,
   toggle,
   caseAlias,
   commissionAlias,
-  lumpSumAlias,
+  trailCommissionAlias,
   onDeleted,
   policyType,
 }) => {
-  const [deleteLumpSumCommission, { isLoading: isDeleting }] =
-    useDeleteLumpSumCommissionMutation();
+  const [deleteTrailCommission, { isLoading: isDeleting }] =
+    useDeleteTrailCommissionMutation();
 
   const handleConfirm = async () => {
-    if (!lumpSumAlias || !caseAlias || !commissionAlias) return;
+    if (!trailCommissionAlias || !caseAlias || !commissionAlias) return;
     try {
-      await deleteLumpSumCommission({
+      await deleteTrailCommission({
         case_alias: caseAlias,
         commission_alias: commissionAlias,
-        lump_sum_alias: lumpSumAlias,
+        trail_commission_alias: trailCommissionAlias,
       }).unwrap();
       if (onDeleted) onDeleted();
       toggle();
-      toast.success("Lump sum commission deleted successfully");
+      toast.success("Trail commission deleted successfully");
     } catch (err) {
-      console.error("Failed to delete lump sum", err);
-      toast.error("Failed to delete lump sum commission");
+      console.error("Failed to delete trail commission", err);
+      toast.error("Failed to delete trail commission");
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-danger">Delete Lump Sum Commission</h3>
+        <h3 className="text-danger">Delete Trail Commission</h3>
       </ModalHeader>
       <ModalBody>
         <div>
@@ -54,7 +54,7 @@ const DeleteLumpSumCommissionModal: React.FC<Props> = ({
           <b className="text-danger">
             {policyType ? `${formatChoiceFieldValue(policyType)} ` : "this"}
           </b>{" "}
-          lump sum commission?
+          trail commission?
         </div>
       </ModalBody>
       <ModalFooter>
@@ -69,4 +69,4 @@ const DeleteLumpSumCommissionModal: React.FC<Props> = ({
   );
 };
 
-export default DeleteLumpSumCommissionModal;
+export default DeleteTrailCommissionModal;

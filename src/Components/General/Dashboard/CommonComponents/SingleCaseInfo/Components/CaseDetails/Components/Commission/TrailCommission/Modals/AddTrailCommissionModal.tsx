@@ -1,4 +1,4 @@
-import { useAddLumpSumCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+import { useAddTrailCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -29,7 +29,7 @@ interface Props {
   onAdded?: () => void;
 }
 
-const AddLumpSumCommissionModal: React.FC<Props> = ({
+const AddTrailCommissionModal: React.FC<Props> = ({
   isOpen,
   toggle,
   caseAlias,
@@ -37,23 +37,21 @@ const AddLumpSumCommissionModal: React.FC<Props> = ({
   policies = [],
   onAdded,
 }) => {
-  const [addLumpSumCommission, { isLoading }] =
-    useAddLumpSumCommissionMutation();
+  const [addTrailCommission, { isLoading }] = useAddTrailCommissionMutation();
 
   const [policy, setPolicy] = useState<string | null>(null);
-  const [commissionAmount, setCommissionAmount] = useState<string>("");
-  const [dateReceived, setDateReceived] = useState<string>("");
-  const [clawbackAmount, setClawbackAmount] = useState<string>("");
-  const [clawbackDate, setClawbackDate] = useState<string>("");
+  const [monthlyPayment, setMonthlyPayment] = useState<string>("");
+  const [numberOfPayments, setNumberOfPayments] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
   useEffect(() => {
     if (!isOpen) {
-      // reset form when modal closed
       setPolicy(null);
-      setCommissionAmount("");
-      setDateReceived("");
-      setClawbackAmount("");
-      setClawbackDate("");
+      setMonthlyPayment("");
+      setNumberOfPayments("");
+      setStartDate("");
+      setEndDate("");
     }
   }, [isOpen]);
 
@@ -63,33 +61,34 @@ const AddLumpSumCommissionModal: React.FC<Props> = ({
 
     const payload = {
       policy: policy || null,
-      commission_amount:
-        commissionAmount === "" ? null : parseFloat(commissionAmount),
-      date_received: dateReceived === "" ? null : dateReceived,
-      clawback_amount:
-        clawbackAmount === "" ? null : parseFloat(clawbackAmount),
-      clawback_date: clawbackDate === "" ? null : clawbackDate,
+      monthly_payment:
+        monthlyPayment === "" ? null : parseFloat(monthlyPayment),
+      number_of_payments:
+        numberOfPayments === "" ? null : parseInt(numberOfPayments, 10),
+      start_date: startDate === "" ? null : startDate,
+      end_date: endDate === "" ? null : endDate,
+      total_trail_commission: 0.0,
     };
 
     try {
-      await addLumpSumCommission({
+      await addTrailCommission({
         case_alias: caseAlias,
         commission_alias: commissionAlias,
-        lumpSumData: payload,
+        trailCommissionData: payload,
       }).unwrap();
       if (onAdded) onAdded();
       toggle();
-      toast.success("Lump sum commission added successfully");
+      toast.success("Trail commission added successfully");
     } catch (err) {
-      console.error("Failed to add lump sum", err);
-      toast.error("Failed to add lump sum commission");
+      console.error("Failed to add trail commission", err);
+      toast.error("Failed to add trail commission");
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="lg">
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Add New Lump Sum</h3>
+        <h3 className="text-primary">Add New Trail Commission</h3>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
@@ -110,43 +109,44 @@ const AddLumpSumCommissionModal: React.FC<Props> = ({
                 ))}
               </Input>
             </Col>
+
             <Col md={6}>
-              <Label>Commission Amount(£)</Label>
+              <Label>Monthly Payment(£)</Label>
               <Input
                 type="number"
                 min={0}
-                value={commissionAmount}
-                onChange={(e) => setCommissionAmount(e.target.value)}
-                placeholder="e.g. 1000"
+                value={monthlyPayment}
+                onChange={(e) => setMonthlyPayment(e.target.value)}
+                placeholder="e.g. 50"
               />
             </Col>
 
             <Col md={6}>
-              <Label>Date Received</Label>
-              <Input
-                type="date"
-                value={dateReceived}
-                onChange={(e) => setDateReceived(e.target.value)}
-              />
-            </Col>
-
-            <Col md={6}>
-              <Label>Clawback Amount(£)</Label>
+              <Label>Number Of Payments</Label>
               <Input
                 type="number"
                 min={0}
-                value={clawbackAmount}
-                onChange={(e) => setClawbackAmount(e.target.value)}
-                placeholder="e.g. 500"
+                value={numberOfPayments}
+                onChange={(e) => setNumberOfPayments(e.target.value)}
+                placeholder="e.g. 12"
               />
             </Col>
 
             <Col md={6}>
-              <Label>Clawback Date</Label>
+              <Label>Start Date</Label>
               <Input
                 type="date"
-                value={clawbackDate}
-                onChange={(e) => setClawbackDate(e.target.value)}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </Col>
+
+            <Col md={6}>
+              <Label>End Date</Label>
+              <Input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
               />
             </Col>
           </Row>
@@ -157,7 +157,7 @@ const AddLumpSumCommissionModal: React.FC<Props> = ({
             Cancel
           </Button>
           <Button color="primary" type="submit" disabled={isLoading}>
-            {isLoading ? "Adding..." : "Add Lump Sum"}
+            {isLoading ? "Adding..." : "Add Trail Commission"}
           </Button>
         </ModalFooter>
       </Form>
@@ -165,4 +165,4 @@ const AddLumpSumCommissionModal: React.FC<Props> = ({
   );
 };
 
-export default AddLumpSumCommissionModal;
+export default AddTrailCommissionModal;
