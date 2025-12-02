@@ -529,8 +529,9 @@ const Documents: React.FC = () => {
                               </button>
                               {(session?.user?.user_type ===
                                 "ORGANIZATION_ADMIN" ||
-                                session?.user?.user_type ===
-                                  "NETWORK_ADMIN") && (
+                                session?.user?.user_type === "NETWORK_ADMIN" ||
+                                session?.user?.user_type !==
+                                  "NETWORK_COMPLIANCE_ASSISTANT") && (
                                 <button
                                   className="btn btn-danger btn-sm"
                                   title="Delete"
