@@ -6,6 +6,7 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
@@ -29,6 +30,7 @@ import UpdateLeadModal from "./Modals/UpdateLeadModal";
 import ViewLeadModal from "./Modals/ViewLeadModal";
 
 const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
+  const { data: session } = useSession();
   const [leads, setLeads] = useState<LeadsInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -148,14 +150,16 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            <Button
-              color="primary"
-              onClick={openAddModal}
-              className="d-flex justify-content-center align-items-center gap-1"
-            >
-              <TbCirclePlus size={18} />
-              <span>Add Lead</span>
-            </Button>
+            {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
+              <Button
+                color="primary"
+                onClick={openAddModal}
+                className="d-flex justify-content-center align-items-center gap-1"
+              >
+                <TbCirclePlus size={18} />
+                <span>Add Lead</span>
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -244,14 +248,17 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          title="Delete User"
-                          onClick={() => openDeleteModal(lead)}
-                        >
-                          <i className="icon-trash"></i>
-                        </Button>
+                        {session?.user?.user_type !==
+                          "NETWORK_COMPLIANCE_ASSISTANT" && (
+                          <Button
+                            color="danger"
+                            size="sm"
+                            title="Delete User"
+                            onClick={() => openDeleteModal(lead)}
+                          >
+                            <i className="icon-trash"></i>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

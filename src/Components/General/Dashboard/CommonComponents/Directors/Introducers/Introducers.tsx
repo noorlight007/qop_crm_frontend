@@ -6,6 +6,7 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
@@ -31,6 +32,7 @@ import ViewIntroducerModal from "./Modals/ViewIntroducerModal";
 const Introducers: React.FC<IntroducersProps> = ({
   introducersPerPage = 10,
 }) => {
+  const { data: session } = useSession();
   const [introducers, setIntroducers] = useState<IntroducerInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -151,14 +153,16 @@ const Introducers: React.FC<IntroducersProps> = ({
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            <Button
-              color="primary"
-              onClick={openAddModal}
-              className="d-flex justify-content-center align-items-center gap-1"
-            >
-              <TbCirclePlus size={18} />
-              <span>Add Introducer</span>
-            </Button>
+            {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
+              <Button
+                color="primary"
+                onClick={openAddModal}
+                className="d-flex justify-content-center align-items-center gap-1"
+              >
+                <TbCirclePlus size={18} />
+                <span>Add Introducer</span>
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -258,14 +262,17 @@ const Introducers: React.FC<IntroducersProps> = ({
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          title="Delete User"
-                          onClick={() => openDeleteModal(introducer)}
-                        >
-                          <i className="icon-trash"></i>
-                        </Button>
+                        {session?.user?.user_type !==
+                          "NETWORK_COMPLIANCE_ASSISTANT" && (
+                          <Button
+                            color="danger"
+                            size="sm"
+                            title="Delete User"
+                            onClick={() => openDeleteModal(introducer)}
+                          >
+                            <i className="icon-trash"></i>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

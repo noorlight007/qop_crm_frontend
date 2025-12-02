@@ -6,6 +6,7 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -28,6 +29,7 @@ import UpdateClientModal from "./Modals/UpdateClientModal";
 import ViewClientModal from "./Modals/ViewClientModal";
 
 const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
+  const { data: session } = useSession();
   const [clients, setClients] = useState<ClientInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -154,21 +156,22 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               />
             </InputGroup>
           </Col>
-          <Col md="3" xs="12" />
-          {/* <Col
+          <Col
             md="3"
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            <Button
-              color="primary"
-              onClick={openAddModal}
-              className="d-flex justify-content-center align-items-center gap-1"
-            >
-              <TbCirclePlus size={18} />
-              <span>Add Client</span>
-            </Button>
-          </Col> */}
+            {/* {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
+              <Button
+                color="primary"
+                onClick={openAddModal}
+                className="d-flex justify-content-center align-items-center gap-1"
+              >
+                <TbCirclePlus size={18} />
+                <span>Add Client</span>
+              </Button>
+            )} */}
+          </Col>
         </Row>
         <Row>
           <Table hover responsive>
