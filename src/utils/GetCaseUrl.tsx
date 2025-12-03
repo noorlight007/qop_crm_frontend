@@ -5,6 +5,8 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
       return `/dashboard/admin/cases/${caseAlias}`;
     case "NETWORK_ADMIN":
       return `/dashboard/network/cases/${caseAlias}`;
+    case "NETWORK_COMPLIANCE_ASSISTANT":
+      return `/dashboard/network/cases/${caseAlias}`;
     case "NETWORK_ADVISER":
       return `/dashboard/netadviser/cases/${caseAlias}`;
     case "ORGANIZATION_ADMIN":
@@ -12,7 +14,7 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
     case "ORGANIZATION_ADVISER":
       return `/dashboard/orgadviser/cases/${caseAlias}`;
     case "ORGANIZATION_SUPPORT":
-      return `/dashboard/orgstaff/caseupdates/${caseAlias}`;
+      return `/dashboard/orgstaff/cases/${caseAlias}`;
     case "CLIENT":
       return `/dashboard/client/cases/${caseAlias}`;
     default:

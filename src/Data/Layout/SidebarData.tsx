@@ -328,7 +328,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
 //Or Organisation staff Menu
 const OrganisationStaffMenu: MenuItem[] = [
   {
-    title: "Org. Admin & Support Staff",
+    title: "Org. Admin",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -340,11 +340,11 @@ const OrganisationStaffMenu: MenuItem[] = [
         path: "/dashboard/orgstaff",
       },
       {
-        title: "Case Updates",
+        title: "Cases",
         icon: "Activity",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/orgstaff/caseupdates",
+        path: "/dashboard/orgstaff/cases",
       },
       {
         title: "Reports",
@@ -423,6 +423,8 @@ export {
 export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
     case "NETWORK_ADMIN":
+      return NetworkOwnerMenu;
+    case "NETWORK_COMPLIANCE_ASSISTANT":
       return NetworkOwnerMenu;
     case "ORGANIZATION_ADMIN":
       return OrganisationOwnerMenu;

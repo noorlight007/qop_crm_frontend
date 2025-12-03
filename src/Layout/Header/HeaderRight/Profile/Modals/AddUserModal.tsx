@@ -1,6 +1,7 @@
 import { useAddUserMutation } from "@/Redux/Reducers/AddUser/AddUserApi";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { Eye, EyeOff } from "react-feather";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -39,6 +40,8 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
     phone: "",
     profileImage: null,
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSaveUser = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -298,14 +301,30 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                 <Label for="password">
                   Password<span className="text-danger">*</span>
                 </Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  value={formData.password || ""}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className="d-flex align-items-center position-relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password || ""}
+                    onChange={handleInputChange}
+                    required
+                    style={{ paddingRight: "40px" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-link position-absolute end-0 border-0"
+                    style={{ zIndex: 10, padding: "5px 10px" }}
+                    onClick={() => setShowPassword(!showPassword)}
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff size={18} className="text-muted" />
+                    ) : (
+                      <Eye size={18} className="text-muted" />
+                    )}
+                  </button>
+                </div>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -313,14 +332,32 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                 <Label for="confirmPassword">
                   Confirm Password<span className="text-danger">*</span>
                 </Label>
-                <Input
-                  id="confirmPassword"
-                  name="re_password"
-                  type="password"
-                  value={formData.re_password || ""}
-                  onChange={handleInputChange}
-                  required
-                />
+                <div className="d-flex align-items-center position-relative">
+                  <Input
+                    id="confirmPassword"
+                    name="re_password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.re_password || ""}
+                    onChange={handleInputChange}
+                    required
+                    style={{ paddingRight: "40px" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-link position-absolute end-0 border-0"
+                    style={{ zIndex: 10, padding: "5px 10px" }}
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    title={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} className="text-muted" />
+                    ) : (
+                      <Eye size={18} className="text-muted" />
+                    )}
+                  </button>
+                </div>
               </FormGroup>
             </Col>
             <Col md={6}>

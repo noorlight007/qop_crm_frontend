@@ -1,5 +1,6 @@
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Network/Organisations/OrganisationListApi";
 import { SingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ type OrganisationListProps = {
 };
 
 const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
+  const { data: session } = useSession();
   const [organisations, setOrganisations] = useState<SingleOrganisationProps[]>(
     []
   );
@@ -93,10 +95,12 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
               xs="12"
               className="text-md-end text-center mt-2 mt-md-0"
             >
-              <Button color="primary" onClick={toggleModal}>
-                <TbCirclePlus size={18} className="me-1" />
-                Add Organisation
-              </Button>
+              {session?.user.user_type === "NETWORK_ADMIN" && (
+                <Button color="primary" onClick={toggleModal}>
+                  <TbCirclePlus size={18} className="me-1" />
+                  Add Organisation
+                </Button>
+              )}
             </Col>
           </Row>
           <Row>

@@ -88,15 +88,6 @@ const InsuranceHealthContent: React.FC = () => {
     }
   };
 
-  const handleSaveAndNext = async () => {
-    try {
-      await handleSubmit();
-      handleNextTab();
-    } catch (err) {
-      // if save failed, don't navigate; the feedback state will show error
-    }
-  };
-
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
@@ -148,13 +139,28 @@ const InsuranceHealthContent: React.FC = () => {
         )}
 
         <div className="d-flex justify-content-end gap-2">
-          <Button color="primary" disabled={isUpdating} onClick={handleSubmit}>
+          <Button
+            color="primary"
+            disabled={
+              isUpdating || session?.user?.user_type === "CLIENT"
+            }
+            onClick={handleSubmit}
+          >
             {isUpdating ? <Spinner size="sm" /> : "Save changes"}
           </Button>
           <Button
-            color="success"
+            color="secondary"
             disabled={isUpdating}
-            onClick={handleSaveAndNext}
+            onClick={async () => {
+              if (session?.user?.user_type === "CLIENT") {
+                handleNextTab();
+              } else {
+                const success = await handleSubmit(new Event("click") as any);
+                if (success) {
+                  handleNextTab();
+                }
+              }
+            }}
           >
             {isUpdating ? (
               <Spinner size="sm" />

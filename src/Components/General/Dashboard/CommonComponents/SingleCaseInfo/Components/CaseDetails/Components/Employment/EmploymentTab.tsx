@@ -2,6 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
 import { EmploymentDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
@@ -19,6 +20,7 @@ import DeleteEmploymentModal from "./EmploymentModals/DeleteEmploymentModal";
 import { EmploymentTabContent } from "./EmploymentTabContent";
 
 export const EmploymentTab = () => {
+  const { data: session } = useSession();
   const [activeUser, setActiveUser] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
@@ -94,7 +96,7 @@ export const EmploymentTab = () => {
           {/* Outer Navigation Tabs (Users) */}
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">
             <Nav
-              className="nav-warning d-flex flex-wrap gap-2 justify-content-center"
+              className="nav-primary d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
               {employmentData
@@ -209,25 +211,36 @@ export const EmploymentTab = () => {
                                   : "")
                               : "(N/A)"}
                           </span>
+                          {(() => {
+                            const indexForUser = userEmps.findIndex(
+                              (e: any) => e.alias === employment.alias
+                            );
 
-                          <Button
-                            type="button"
-                            size="sm"
-                            outline
-                            color="danger"
-                            className="ms-1"
-                            onClick={(e) =>
-                              openDeleteModal(
-                                e,
-                                employment.alias,
-                                employment.user.id
-                              )
+                            if (indexForUser === 0) {
+                              return null;
                             }
-                            aria-label="Delete employment"
-                            title="Delete"
-                          >
-                            <FaTrash />
-                          </Button>
+
+                            return (
+                              <Button
+                                type="button"
+                                size="sm"
+                                outline
+                                color="danger"
+                                className="ms-1"
+                                onClick={(e) =>
+                                  openDeleteModal(
+                                    e,
+                                    employment.alias,
+                                    employment.user.id
+                                  )
+                                }
+                                aria-label="Delete employment"
+                                title="Delete"
+                              >
+                                <FaTrash />
+                              </Button>
+                            );
+                          })()}
                         </NavLink>
                       </NavItem>
                     );

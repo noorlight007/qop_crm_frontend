@@ -155,16 +155,17 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <i className="fa-solid fa-filter"></i>
                     )}
                   </Button>
-                  {userType !== "ORGANIZATION_SUPPORT" && (
-                    <Button
-                      color="primary"
-                      onClick={openAddNewCaseModal}
-                      className="d-flex justify-content-center align-items-center gap-1"
-                    >
-                      <TbCirclePlus size={18} />
-                      <span>Add New Case</span>
-                    </Button>
-                  )}
+                  {userType !== "ORGANIZATION_SUPPORT" &&
+                    userType !== "NETWORK_COMPLIANCE_ASSISTANT" && (
+                      <Button
+                        color="primary"
+                        onClick={openAddNewCaseModal}
+                        className="d-flex justify-content-center align-items-center gap-1"
+                      >
+                        <TbCirclePlus size={18} />
+                        <span>Add New Case</span>
+                      </Button>
+                    )}
                 </Col>
               </Row>
             </CardHeader>
@@ -570,7 +571,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 <i className="icon-pencil-alt"></i>
                               </Button>
                               {userType !== "ORGANIZATION_SUPPORT" &&
-                                userType !== "ORGANIZATION_ADVISER" && (
+                                userType !== "ORGANIZATION_ADVISER" &&
+                                userType !== "NETWORK_COMPLIANCE_ASSISTANT" && (
                                   <Button
                                     size="sm"
                                     color="danger"

@@ -19,7 +19,7 @@ export const LoanDetailsTab = () => {
       <Card>
         <CardBody>
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">
-            <Nav className="nav-warning" pills>
+            <Nav className="nav-primary" pills>
               {LoanDetailsFormTabTitleData.map((item, index) => (
                 <NavItem key={index}>
                   <NavLink

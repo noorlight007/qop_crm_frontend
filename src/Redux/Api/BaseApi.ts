@@ -52,8 +52,9 @@ export const baseApi = createApi({
     "PreviousAddress",
     "EmploymentDetails",
     "CreditCommitmentsDetails",
+    "CreditCommitmentsSummary",
     "AdverseDetails",
-    "PortfolioDetails",
+    "Portfolio",
     "SecurityProperty",
     "SolicitorDetails",
     "AccountantDetails",
@@ -69,6 +70,9 @@ export const baseApi = createApi({
     "Fees",
     "Compliance",
     "ClientSurvey",
+    "Commission",
+    "InsuranceOverview",
+    "InsurancePolicies",
     // Case details end
     //Common components end
 

@@ -64,7 +64,7 @@ export const ApplicantsDetailsTab = () => {
     );
   }
   return (
-    <Col xxl="12" className="px-5">
+    <Col xxl="12" className="px-1">
       <Card>
         <CardBody>
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">

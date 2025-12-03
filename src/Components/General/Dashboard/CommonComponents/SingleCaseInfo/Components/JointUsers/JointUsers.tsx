@@ -1,5 +1,6 @@
 import { JointUserProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import {
@@ -17,6 +18,7 @@ import UpdateJointUserModal from "./Modals/UpdateJointUserModal";
 import ViewJointUserModal from "./Modals/ViewJointUserModal";
 
 const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
+  const { data: session } = useSession();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -123,14 +125,17 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                           >
                             <i className="icon-pencil-alt"></i>
                           </Button>
-                          <Button
-                            color="danger"
-                            size="sm"
-                            title="Delete User"
-                            onClick={() => handleDeleteClick(userInfo)}
-                          >
-                            <i className="icon-trash"></i>
-                          </Button>
+                          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                            session?.user?.user_type === "NETWORK_ADMIN") && (
+                            <Button
+                              color="danger"
+                              size="sm"
+                              title="Delete User"
+                              onClick={() => handleDeleteClick(userInfo)}
+                            >
+                              <i className="icon-trash"></i>
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>

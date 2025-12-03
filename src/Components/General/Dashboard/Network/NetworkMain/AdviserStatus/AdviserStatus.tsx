@@ -75,22 +75,33 @@ const AdviserStatus: React.FC<CommonDashboardProps> = ({
                   </tr>
                 ) : (
                   <>
-                    {commonDashboardData?.top_performing_advisers
-                      ?.slice(0, 5)
-                      .map((data, idx: number) => (
-                        <tr key={idx}>
-                          <td>{data?.rank ?? "0"}</td>
-                          <td>{data?.advisor_name ?? "0"}</td>
-                          <td>{data?.total_cases ?? "0"}</td>
-                          <td>{data?.residential ?? "0"}</td>
-                          <td>{data?.buy_to_let ?? "0"}</td>
-                          <td>{data?.commercial ?? "0"}</td>
-                          <td>{data?.second_charge ?? "0"}</td>
-                          <td>{data?.bridging ?? "0"}</td>
-                          <td>{data?.protection ?? "0"}</td>
-                          <td>{data?.general_insurance ?? "0"}</td>
-                        </tr>
-                      ))}
+                    {Array.isArray(
+                      commonDashboardData?.top_performing_advisers
+                    ) &&
+                    commonDashboardData.top_performing_advisers.length > 0 ? (
+                      commonDashboardData.top_performing_advisers
+                        .slice(0, 5)
+                        .map((data, idx: number) => (
+                          <tr key={idx}>
+                            <td>{data?.rank ?? "0"}</td>
+                            <td>{data?.advisor_name ?? "0"}</td>
+                            <td>{data?.total_cases ?? "0"}</td>
+                            <td>{data?.residential ?? "0"}</td>
+                            <td>{data?.buy_to_let ?? "0"}</td>
+                            <td>{data?.commercial ?? "0"}</td>
+                            <td>{data?.second_charge ?? "0"}</td>
+                            <td>{data?.bridging ?? "0"}</td>
+                            <td>{data?.protection ?? "0"}</td>
+                            <td>{data?.general_insurance ?? "0"}</td>
+                          </tr>
+                        ))
+                    ) : (
+                      <tr>
+                        <td colSpan={10} className="text-center text-muted">
+                          No data found
+                        </td>
+                      </tr>
+                    )}
                   </>
                 )}
               </tbody>
