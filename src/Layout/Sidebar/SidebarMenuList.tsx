@@ -40,11 +40,13 @@ const SidebarMenuList = () => {
             >
               <div>
                 <h5
-                  className={`f-w-700 sidebar-title text-success ${
+                  className={`f-w-700 sidebar-title  ${
                     mainMenu.lanClass || ""
                   }`}
                 >
-                  {formatChoiceFieldValue(session?.user?.user_type || "")}
+                  <span className="bg-light-secondary px-2 py-1 rounded-5">
+                    {formatChoiceFieldValue(session?.user?.user_type || "")}
+                  </span>
                 </h5>
               </div>
             </li>

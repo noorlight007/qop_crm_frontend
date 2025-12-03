@@ -211,8 +211,8 @@ export const EmploymentTab = () => {
                                   : "")
                               : "(N/A)"}
                           </span>
-                          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                            session?.user?.user_type === "NETWORK_ADMIN") && (
+                          {/* {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
+                            session?.user?.user_type === "NETWORK_ADMIN") && ( */}
                             <Button
                               type="button"
                               size="sm"
@@ -231,7 +231,7 @@ export const EmploymentTab = () => {
                             >
                               <FaTrash />
                             </Button>
-                          )}
+                          {/* )} */}
                         </NavLink>
                       </NavItem>
                     );
