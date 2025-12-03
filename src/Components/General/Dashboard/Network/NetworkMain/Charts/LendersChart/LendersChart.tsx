@@ -639,7 +639,7 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
               className="skeleton-loading"
               style={{
                 width: "280px",
-                height: "270px",
+                height: "280px",
                 borderRadius: "50%",
                 backgroundColor: "#e0e0e0",
               }}
@@ -655,7 +655,7 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
           </div>
         ) : allValuesZero ? (
           <div
-            style={{ height: "340px", width: "100%" }}
+            style={{ height: "280px", width: "100%" }}
             className="d-flex justify-content-center align-items-center py-5 text-muted"
           >
             No data available yet
