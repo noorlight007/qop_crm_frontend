@@ -107,6 +107,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
+        // Portfolio summary will be refreshed via RTK Query tag invalidation.
         toggle();
       } else if (response.error) {
         const errorMessage =

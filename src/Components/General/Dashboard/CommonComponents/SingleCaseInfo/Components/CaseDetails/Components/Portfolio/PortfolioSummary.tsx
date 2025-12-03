@@ -1,35 +1,12 @@
-import { PropertiesTypeProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/PortfilioTypes";
-import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import { useGetPortfolioSummaryQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioSummaryApi";
+import { useParams } from "next/navigation";
+import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
-const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
-  data,
-}) => {
-  // Calculate totals
-  const totalPropertyValue = data?.reduce((sum, item) => {
-    return sum + Number(item.property_value);
-  }, 0);
-  const totalMortgageBalance = data?.reduce(
-    (sum, item) => sum + Number(item.current_mortgage_balance),
-    0
-  );
-  const totalMonthlyRental = data?.reduce(
-    (sum, item) => sum + Number(item.monthly_rental_income),
-    0
-  );
-  const totalMonthlyPayment = data?.reduce(
-    (sum, item) => sum + (Number(item.monthly_mortgage_payment) || 0),
-    0
-  );
-
-  // Calculate averages
-  const averageLTV =
-    totalMortgageBalance && totalPropertyValue
-      ? (totalMortgageBalance / totalPropertyValue) * 100
-      : 0;
-
-  const averageICR = totalMonthlyPayment
-    ? (totalMonthlyRental / totalMonthlyPayment) * 100
-    : 0;
+const PortfolioSummary: React.FC = () => {
+  const { casealias } = useParams();
+  const { data: portfolioSummary } = useGetPortfolioSummaryQuery({
+    case_alias: casealias,
+  });
 
   return (
     <>
@@ -45,7 +22,7 @@ const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
                   <i className="fa-solid fa-building"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{totalPropertyValue?.toLocaleString()}
+                  £{portfolioSummary?.total_property_value || "0"}
                 </span>
               </div>
             </CardBody>
@@ -62,7 +39,7 @@ const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
                   <i className="fa-solid fa-circle-info"></i>
                 </span>
                 <span className="h2 text-secondary font-weight-bold">
-                  £{totalMortgageBalance?.toLocaleString()}
+                  £{portfolioSummary?.total_current_mortgage_balance || "0"}
                 </span>
               </div>
             </CardBody>
@@ -79,7 +56,7 @@ const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
                   <i className="fa-solid fa-chart-line"></i>
                 </span>
                 <span className="h2 text-success font-weight-bold">
-                  {averageLTV?.toFixed(2)}%
+                  {portfolioSummary?.ltv || "0"}%
                 </span>
               </div>
             </CardBody>
@@ -99,7 +76,7 @@ const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
                   <i className="fa-solid fa-users"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{totalMonthlyRental?.toLocaleString()}
+                  £{portfolioSummary?.total_monthly_rental_income || "0"}
                 </span>
               </div>
             </CardBody>
@@ -116,7 +93,7 @@ const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
                   <i className="fa-solid fa-arrow-right"></i>
                 </span>
                 <span className="h2 text-secondary font-weight-bold">
-                  £{totalMonthlyPayment?.toLocaleString()}
+                  £{portfolioSummary?.total_monthly_mortgage_payment || "0"}
                 </span>
               </div>
             </CardBody>
@@ -133,7 +110,7 @@ const PortfolioSummary: React.FC<{ data: PropertiesTypeProps[] }> = ({
                   <i className="fa-solid fa-arrow-right-arrow-left"></i>
                 </span>
                 <span className="h2 text-success font-weight-bold">
-                  {averageICR?.toFixed(2)}%
+                  {portfolioSummary?.icr || "0"}%
                 </span>
               </div>
             </CardBody>

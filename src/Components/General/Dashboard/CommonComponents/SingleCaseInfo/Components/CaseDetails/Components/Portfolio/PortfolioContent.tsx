@@ -103,11 +103,11 @@ const PortfolioContent: React.FC = () => {
       <Container fluid className="p-4">
         <Row>
           <Card>
-            <CardHeader className="bg-primary">
+            <CardHeader className="bg-light-info">
               <span className="fs-5">Summary of client declared values</span>
             </CardHeader>
             <CardBody className="p-0 mt-5">
-              <PortfolioSummary data={data} />
+              <PortfolioSummary />
             </CardBody>
           </Card>
         </Row>
@@ -290,7 +290,7 @@ const PortfolioContent: React.FC = () => {
                                   ).toFixed(2)}
                                 </td>
                                 <td>
-                                  <div className="d-flex justify-content-center fs-4">
+                                  <div className="d-flex justify-content-center fs-6">
                                     {item?.is_hmo ? (
                                       <i className="fa-solid fa-circle-check text-success"></i>
                                     ) : (
@@ -299,7 +299,7 @@ const PortfolioContent: React.FC = () => {
                                   </div>
                                 </td>
                                 <td>
-                                  <div className="d-flex justify-content-center fs-4">
+                                  <div className="d-flex justify-content-center fs-6">
                                     {item?.is_mufb ? (
                                       <i className="fa-solid fa-circle-check text-success"></i>
                                     ) : (
@@ -327,7 +327,7 @@ const PortfolioContent: React.FC = () => {
                                 <td>{item?.account_number || "-"}</td>
                                 <td>{item?.ownership || "-"}</td>
                                 <td>
-                                  <div className="d-flex justify-content-center fs-4">
+                                  <div className="d-flex justify-content-center fs-6">
                                     {item?.is_limited_company ? (
                                       <i className="fa-solid fa-circle-check text-success"></i>
                                     ) : (
