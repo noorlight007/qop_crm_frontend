@@ -8,7 +8,6 @@ const CaseupdatesContainer: React.FC = () => {
       <Breadcrumbs
         title="Case Status"
         subTitle="View and manage all client cases"
-        parent="Case Updates"
         child="Cases"
       />
       <Container fluid>

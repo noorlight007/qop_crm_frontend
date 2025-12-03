@@ -96,7 +96,7 @@ export const EmploymentTab = () => {
           {/* Outer Navigation Tabs (Users) */}
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">
             <Nav
-              className="nav-warning d-flex flex-wrap gap-2 justify-content-center"
+              className="nav-primary d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
               {employmentData
@@ -211,27 +211,36 @@ export const EmploymentTab = () => {
                                   : "")
                               : "(N/A)"}
                           </span>
-                          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                            session?.user?.user_type === "NETWORK_ADMIN") && (
-                            <Button
-                              type="button"
-                              size="sm"
-                              outline
-                              color="danger"
-                              className="ms-1"
-                              onClick={(e) =>
-                                openDeleteModal(
-                                  e,
-                                  employment.alias,
-                                  employment.user.id
-                                )
-                              }
-                              aria-label="Delete employment"
-                              title="Delete"
-                            >
-                              <FaTrash />
-                            </Button>
-                          )}
+                          {(() => {
+                            const indexForUser = userEmps.findIndex(
+                              (e: any) => e.alias === employment.alias
+                            );
+
+                            if (indexForUser === 0) {
+                              return null;
+                            }
+
+                            return (
+                              <Button
+                                type="button"
+                                size="sm"
+                                outline
+                                color="danger"
+                                className="ms-1"
+                                onClick={(e) =>
+                                  openDeleteModal(
+                                    e,
+                                    employment.alias,
+                                    employment.user.id
+                                  )
+                                }
+                                aria-label="Delete employment"
+                                title="Delete"
+                              >
+                                <FaTrash />
+                              </Button>
+                            );
+                          })()}
                         </NavLink>
                       </NavItem>
                     );

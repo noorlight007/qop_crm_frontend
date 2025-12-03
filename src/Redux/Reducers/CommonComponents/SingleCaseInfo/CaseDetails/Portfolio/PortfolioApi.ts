@@ -7,14 +7,14 @@ export const PortfolioApi = baseApi.injectEndpoints({
         url: `/cases/${case_alias}/properties/`,
         method: "GET",
       }),
-      providesTags: ["PortfolioDetails"],
+      providesTags: ["Portfolio"],
     }),
     getPortfolioApplicants: builder.query({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/user/list/`,
         method: "GET",
       }),
-      providesTags: ["PortfolioDetails"],
+      providesTags: ["Portfolio"],
     }),
     addPropertyDetails: builder.mutation({
       query: ({ case_alias, propertyDetails }) => ({
@@ -22,14 +22,14 @@ export const PortfolioApi = baseApi.injectEndpoints({
         method: "POST",
         body: propertyDetails,
       }),
-      invalidatesTags: ["PortfolioDetails"],
+      invalidatesTags: ["Portfolio"],
     }),
     deletePropertyDetails: builder.mutation({
       query: ({ case_alias, property_alias }) => ({
         url: `/cases/${case_alias}/properties/${property_alias}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["PortfolioDetails"],
+      invalidatesTags: ["Portfolio"],
     }),
     exportPropertiesCSV: builder.mutation({
       query: ({ case_alias }) => ({
@@ -37,7 +37,7 @@ export const PortfolioApi = baseApi.injectEndpoints({
         method: "GET",
         responseHandler: (response) => response.blob(),
       }),
-      invalidatesTags: ["PortfolioDetails"],
+      invalidatesTags: ["Portfolio"],
     }),
   }),
 });
