@@ -6,7 +6,7 @@ import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonC
 import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X } from "react-feather";
 import { toast } from "react-toastify";
 import {
@@ -36,6 +36,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const { casealias } = params;
   const [selectedApplicants, setSelectedApplicants] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   const [addPropertyDetails, { isLoading: isAddPropertiesLoading }] =
     useAddPropertyDetailsMutation();
   const [updateSectionCompleteStatus] =
@@ -130,6 +131,39 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     setSelectedApplicants(selectedApplicants.filter((appId) => appId !== id));
   };
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsDropdownOpen(false);
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDropdownOpen]);
+
   // Filter out selected applicants from the dropdown options
   const filteredData = data?.filter(
     (applicant: any) => !selectedApplicants.includes(applicant.id.toString())
@@ -146,7 +180,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="applicants">Applicant/s*</Label>
-                <div className="position-relative">
+                <div className="position-relative" ref={dropdownRef}>
                   {/* Custom Input Field */}
                   <div
                     className="form-control d-flex flex-wrap align-items-center position-relative custom_input_field"
@@ -358,13 +392,21 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup check>
                 <Label check>
-                  <Input type="checkbox" name="isHMO" />
+                  <Input
+                    type="checkbox"
+                    name="isHMO"
+                    className="border-primary"
+                  />
                   Is the property an HMO
                 </Label>
               </FormGroup>
               <FormGroup check>
                 <Label check>
-                  <Input type="checkbox" name="isMUFB" />
+                  <Input
+                    type="checkbox"
+                    name="isMUFB"
+                    className="border-primary"
+                  />
                   Is the property a MUFB
                 </Label>
               </FormGroup>
@@ -526,7 +568,11 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup check>
                 <Label check>
-                  <Input type="checkbox" name="isLimitedCompany" />
+                  <Input
+                    type="checkbox"
+                    name="isLimitedCompany"
+                    className="border-primary"
+                  />
                   Is Limited Company
                 </Label>
               </FormGroup>
