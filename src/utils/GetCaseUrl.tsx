@@ -14,7 +14,7 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
     case "ORGANIZATION_ADVISER":
       return `/dashboard/orgadviser/cases/${caseAlias}`;
     case "ORGANIZATION_SUPPORT":
-      return `/dashboard/orgstaff/caseupdates/${caseAlias}`;
+      return `/dashboard/orgstaff/cases/${caseAlias}`;
     case "CLIENT":
       return `/dashboard/client/cases/${caseAlias}`;
     default:

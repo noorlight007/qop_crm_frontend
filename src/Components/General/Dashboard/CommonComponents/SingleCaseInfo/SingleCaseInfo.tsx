@@ -37,7 +37,7 @@ const SingleCaseInfo: React.FC = () => {
       case "ORGANIZATION_ADVISER":
         return `/dashboard/orgadviser/cases`;
       case "ORGANIZATION_SUPPORT":
-        return `/dashboard/orgstaff/caseupdates`;
+        return `/dashboard/orgstaff/cases`;
       case "CLIENT":
         return `/dashboard/client/cases`;
       default:
