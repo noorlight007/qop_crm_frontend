@@ -29,58 +29,43 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
   const params = useParams();
   const { casealias } = params;
   const [timeAtAddress, setTimeAtAddress] = useState({ years: 0, months: 0 });
+  const [effectiveFrom, setEffectiveFrom] = useState("");
+  const [effectiveTo, setEffectiveTo] = useState(
+    effectiveFromDate || lastEffectiveFromDate || ""
+  );
 
   // RTK Hooks
   const [addPreviousAddress, { isLoading: isSaving }] =
     useAddPreviousAddressMutation();
 
   useEffect(() => {
-    const effectiveFromInput = document.getElementById(
-      "pre_effective_from"
-    ) as HTMLInputElement;
-    const effectiveToInput = document.getElementById(
-      "pre_effective_to"
-    ) as HTMLInputElement;
+    setEffectiveTo(effectiveFromDate || lastEffectiveFromDate || "");
+  }, [effectiveFromDate, lastEffectiveFromDate]);
 
-    const calculateTimeAtAddress = () => {
-      const effectiveFrom = effectiveFromInput?.value;
-      const effectiveTo = effectiveToInput?.value;
+  useEffect(() => {
+    if (effectiveFrom && effectiveTo) {
+      const fromDate = new Date(effectiveFrom);
+      const toDate = new Date(effectiveTo);
 
-      if (effectiveFrom && effectiveTo) {
-        const fromDate = new Date(effectiveFrom);
-        const toDate = new Date(effectiveTo);
+      if (fromDate <= toDate) {
+        const totalMonths =
+          (toDate.getFullYear() - fromDate.getFullYear()) * 12 +
+          (toDate.getMonth() - fromDate.getMonth());
 
-        if (fromDate <= toDate) {
-          const totalMonths =
-            (toDate.getFullYear() - fromDate.getFullYear()) * 12 +
-            (toDate.getMonth() - fromDate.getMonth());
+        const years = Math.floor(totalMonths / 12);
+        const months = totalMonths % 12;
 
-          const years = Math.floor(totalMonths / 12);
-          const months = totalMonths % 12;
-
-          setTimeAtAddress({ years, months });
-        } else {
-          setTimeAtAddress({ years: 0, months: 0 });
-          toast.error(
-            "Effective From date cannot be later than Effective To date."
-          );
-        }
+        setTimeAtAddress({ years, months });
       } else {
         setTimeAtAddress({ years: 0, months: 0 });
+        toast.error(
+          "Effective From date cannot be later than Effective To date."
+        );
       }
-    };
-
-    effectiveFromInput?.addEventListener("change", calculateTimeAtAddress);
-    effectiveToInput?.addEventListener("change", calculateTimeAtAddress);
-
-    // Trigger calculation on initial render
-    calculateTimeAtAddress();
-
-    return () => {
-      effectiveFromInput?.removeEventListener("change", calculateTimeAtAddress);
-      effectiveToInput?.removeEventListener("change", calculateTimeAtAddress);
-    };
-  }, [timeAtAddress]);
+    } else {
+      setTimeAtAddress({ years: 0, months: 0 });
+    }
+  }, [effectiveFrom, effectiveTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -210,6 +195,8 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   id="pre_effective_from"
                   name="pre_effective_from"
                   type="date"
+                  value={effectiveFrom}
+                  onChange={(e) => setEffectiveFrom(e.target.value)}
                   max={
                     effectiveFromDate
                       ? new Date(
@@ -239,7 +226,8 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   name="pre_effective_to"
                   type="date"
                   readOnly={!!effectiveFromDate}
-                  value={effectiveFromDate || lastEffectiveFromDate || ""}
+                  value={effectiveTo}
+                  onChange={(e) => setEffectiveTo(e.target.value)}
                   required
                 />
               </FormGroup>
