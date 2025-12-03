@@ -275,20 +275,8 @@ const PortfolioContent: React.FC = () => {
                                     item?.monthly_mortgage_payment
                                   ).toLocaleString()}
                                 </td>
-                                <td>
-                                  {(
-                                    (Number(item?.current_mortgage_balance) /
-                                      Number(item?.property_value)) *
-                                    100
-                                  ).toFixed(2)}
-                                  %
-                                </td>
-                                <td>
-                                  {(
-                                    Number(item?.monthly_rental_income) /
-                                    Number(item?.monthly_mortgage_payment)
-                                  ).toFixed(2)}
-                                </td>
+                                <td>{item?.ltv}%</td>
+                                <td>{item?.icr}%</td>
                                 <td>
                                   <div className="d-flex justify-content-center fs-6">
                                     {item?.is_hmo ? (
