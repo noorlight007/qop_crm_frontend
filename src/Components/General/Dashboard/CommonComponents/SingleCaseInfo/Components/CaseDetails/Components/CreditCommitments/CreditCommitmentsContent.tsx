@@ -12,19 +12,11 @@ import { useState } from "react";
 import { FaFileExport } from "react-icons/fa";
 import { TbCircleCheck, TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Container,
-  Row,
-  Table,
-} from "reactstrap";
+import { Button, Col, Row, Table } from "reactstrap";
 import AddCreditCommitmentModal from "./CreditCommitmentsModals/AddCreditCommitmentModal";
 import DeleteCreditCommitmentModal from "./CreditCommitmentsModals/DeleteCreditCommitmentModal";
 import UpdateCreditCommitmentModal from "./CreditCommitmentsModals/UpdateCreditCommitmentModal";
+import CreditCommitmentsSummary from "./CreditCommitmentsSummary";
 
 const CreditCommitmentsContent: React.FC = () => {
   const { casealias } = useParams();
@@ -75,58 +67,6 @@ const CreditCommitmentsContent: React.FC = () => {
 
   if (creditCommitments?.data?.length === 0) return <div>No data found</div>;
 
-  // Add calculation function
-  const calculateTotals = () => {
-    if (!creditCommitments)
-      return {
-        totalBalance: 0,
-        totalBalanceToBeRepaid: 0,
-        totalBalanceToRemain: 0,
-        totalMonthlyPayment: 0,
-        totalMonthlyPaymentToBeRepaid: 0,
-        totalMonthlyPaymentToRemain: 0,
-        totalSettlementBalance: 0,
-      };
-
-    return creditCommitments.reduce(
-      (acc: any, item: any) => {
-        const osBalance = Number(item.os_balance) || 0;
-        const monthlyPayment = Number(item.monthly_repayment) || 0;
-        const settlementBalance = Number(item.settlement_balance) || 0;
-        const isPaidOnCompletion =
-          item.paid_on_completion?.toLowerCase() === "yes";
-
-        return {
-          totalBalance: acc.totalBalance + osBalance,
-          totalBalanceToBeRepaid:
-            acc.totalBalanceToBeRepaid + (isPaidOnCompletion ? osBalance : 0),
-          totalBalanceToRemain:
-            acc.totalBalanceToRemain + (isPaidOnCompletion ? 0 : osBalance),
-          totalMonthlyPayment: acc.totalMonthlyPayment + monthlyPayment,
-          totalMonthlyPaymentToBeRepaid:
-            acc.totalMonthlyPaymentToBeRepaid +
-            (isPaidOnCompletion ? monthlyPayment : 0),
-          totalMonthlyPaymentToRemain:
-            acc.totalMonthlyPaymentToRemain +
-            (isPaidOnCompletion ? 0 : monthlyPayment),
-          totalSettlementBalance:
-            acc.totalSettlementBalance + settlementBalance,
-        };
-      },
-      {
-        totalBalance: 0,
-        totalBalanceToBeRepaid: 0,
-        totalBalanceToRemain: 0,
-        totalMonthlyPayment: 0,
-        totalMonthlyPaymentToBeRepaid: 0,
-        totalMonthlyPaymentToRemain: 0,
-        totalSettlementBalance: 0,
-      }
-    );
-  };
-
-  const totals = calculateTotals();
-
   const handleExportToCSV = async () => {
     try {
       const blob = await exportCreditCommitmentsCSV({
@@ -147,135 +87,8 @@ const CreditCommitmentsContent: React.FC = () => {
   };
 
   return (
-    <Container>
-      <Row>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-primary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold fs-6">Total Balance</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-primary h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-primary font-weight-bold">
-                  £{totals.totalBalance.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-secondary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Balance To Be Repaid</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-secondary h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-secondary font-weight-bold">
-                  £{totals.totalBalanceToBeRepaid.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-success">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Balance To Remain</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-success h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-success font-weight-bold">
-                  £{totals.totalBalanceToRemain.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      {/* 2nd row  */}
-      <Row>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-primary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Monthly Payment</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-primary h1">
-                  <i className="fa-solid fa-calendar-days"></i>
-                </span>
-                <span className="h2 text-primary font-weight-bold">
-                  £{totals.totalMonthlyPayment.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-secondary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Monthly Payment To Be Repaid</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-secondary h1">
-                  <i className="fa-solid fa-calendar-days"></i>
-                </span>
-                <span className="h2 text-secondary font-weight-bold">
-                  £{totals.totalMonthlyPaymentToBeRepaid.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-success">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Monthly Payment To Remain</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-success h1">
-                  <i className="fa-solid fa-calendar-days"></i>
-                </span>
-                <span className="h2 text-success font-weight-bold">
-                  £{totals.totalMonthlyPaymentToRemain.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      {/* 3r row  */}
-      <Row>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-primary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Settlement Balance</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-primary h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-primary font-weight-bold">
-                  £{totals.totalSettlementBalance.toFixed(2)}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      {/* Cards Rows end  */}
+    <div className="p-2">
+      <CreditCommitmentsSummary />
       <Row>
         <Col className="d-flex justify-content-end gap-2">
           <Button
@@ -376,7 +189,7 @@ const CreditCommitmentsContent: React.FC = () => {
                       }` || "-"}
                     </td>
                     <td>
-                      <div className="d-flex justify-content-center align-items-center fs-4">
+                      <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.joint?.toLowerCase() === "yes" ? (
                           <TbCircleCheck className="text-primary" />
                         ) : item.joint?.toLowerCase() === "no" ? (
@@ -405,7 +218,7 @@ const CreditCommitmentsContent: React.FC = () => {
                     <td>{item.term_remaining || "0"}</td>
                     <td>£{item.balloon_payment?.toFixed(2) || "0.00"}</td>
                     <td>
-                      <div className="d-flex justify-content-center align-items-center fs-4">
+                      <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.court_ordered?.toLowerCase() === "yes" ? (
                           <i className="fa-solid fa-circle-check text-success"></i>
                         ) : item.court_ordered?.toLowerCase() === "no" ? (
@@ -417,7 +230,7 @@ const CreditCommitmentsContent: React.FC = () => {
                     </td>
                     <td>£{item.cost_of_credit?.toFixed(2) || "0.00"}</td>
                     <td>
-                      <div className="d-flex justify-content-center align-items-center fs-4">
+                      <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.paid_on_completion?.toLowerCase() === "yes" ? (
                           <i className="fa-solid fa-circle-check text-success"></i>
                         ) : item.paid_on_completion?.toLowerCase() === "no" ? (
@@ -473,7 +286,7 @@ const CreditCommitmentsContent: React.FC = () => {
         creditCommitmentName={selectedItemName}
       />
       {/* modals end */}
-    </Container>
+    </div>
   );
 };
 
