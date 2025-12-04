@@ -329,9 +329,10 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Insurer Reference</Label>
+                    <Label>Insurer's Reference</Label>
                     <Input
                       type="text"
                       value={policy.insurer_reference ?? ""}
@@ -341,6 +342,22 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
+
+                {policy.policy_type === "LIFE_LEVEL" && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>Sum Assured</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={policy.sum_assured ?? ""}
+                        onChange={(e) =>
+                          handleChange(index, "sum_assured", e.target.value)
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
@@ -386,6 +403,47 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Premium</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={policy.premium ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "premium", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Premium Payment Type</Label>
+                    <Input
+                      type="select"
+                      value={policy.premium_payment_type ?? ""}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "premium_payment_type",
+                          e.target.value
+                        )
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="SINGLE_PREMIUM">Single Premium</option>
+                      <option value="QUATERLY">Quarterly</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="FOUR_WEEKLY">4 Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="BI_ANNUALLY">Bi Annually</option>
+                      <option value="ANNUALLY">Annually</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Applicant</Label>
@@ -422,10 +480,24 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
+                {policy.in_trust === "YES" && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>In Trust Date</Label>
+                      <Input
+                        type="date"
+                        value={policy.in_trust_date ?? ""}
+                        onChange={(e) =>
+                          handleChange(index, "in_trust_date", e.target.value)
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Guaranteed</Label>
+                    <Label>Guaranteed/Reviewable</Label>
                     <Input
                       type="select"
                       value={policy.guaranteed ?? ""}
@@ -441,18 +513,93 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>In Trust Date</Label>
+                    <Label>Policy Term*</Label>
                     <Input
-                      type="date"
-                      value={policy.in_trust_date ?? ""}
+                      type="number"
+                      value={policy.policy_term ?? ""}
                       onChange={(e) =>
-                        handleChange(index, "in_trust_date", e.target.value)
+                        handleChange(index, "policy_term", e.target.value)
+                      }
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Policy Term Validity</Label>
+                    <Input
+                      type="select"
+                      value={policy.policy_term_validity ?? ""}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "policy_term_validity",
+                          e.target.value
+                        )
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="MONTHS">Months</option>
+                      <option value="YEARS">Years</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Final Premium</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={policy.final_premium ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "final_premium", e.target.value)
                       }
                     />
                   </FormGroup>
                 </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Premium Quoted</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={policy.premium_quoted ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "premium_quoted", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      className="border-primary"
+                      checked={policy.part_of_menu_plan ?? false}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "part_of_menu_plan",
+                          e.target.checked
+                        )
+                      }
+                    />
+                    <Label check>Part of a Menu Plan</Label>
+                  </FormGroup>
+                </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Pays Out</Label>
@@ -474,19 +621,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Sum Assured</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.sum_assured ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "sum_assured", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
                     <Label>Monthly Sum Assured</Label>
                     <Input
                       type="number"
@@ -500,71 +634,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         )
                       }
                     />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Premium</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.premium ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "premium", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Final Premium</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.final_premium ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "final_premium", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Premium Quoted</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.premium_quoted ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "premium_quoted", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Premium Payment Type</Label>
-                    <Input
-                      type="select"
-                      value={policy.premium_payment_type ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "premium_payment_type",
-                          e.target.value
-                        )
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="SINGLE_PREMIUM">Single Premium</option>
-                      <option value="QUATERLY">Quarterly</option>
-                      <option value="WEEKLY">Weekly</option>
-                      <option value="FOUR_WEEKLY">4 Weekly</option>
-                      <option value="MONTHLY">Monthly</option>
-                      <option value="BI_ANNUALLY">Bi Annually</option>
-                      <option value="ANNUALLY">Annually</option>
-                    </Input>
                   </FormGroup>
                 </Col>
 
@@ -615,38 +684,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Policy Term</Label>
-                    <Input
-                      type="number"
-                      value={policy.policy_term ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "policy_term", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Policy Term Validity</Label>
-                    <Input
-                      type="select"
-                      value={policy.policy_term_validity ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "policy_term_validity",
-                          e.target.value
-                        )
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="MONTHS">Months</option>
-                      <option value="YEARS">Years</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Cover Period</Label>
@@ -1015,23 +1052,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Non-Standard Terms Issued</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.part_of_menu_plan ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "part_of_menu_plan",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Part of Menu Plan</Label>
-                  </FormGroup>
-                </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
                     <Input
