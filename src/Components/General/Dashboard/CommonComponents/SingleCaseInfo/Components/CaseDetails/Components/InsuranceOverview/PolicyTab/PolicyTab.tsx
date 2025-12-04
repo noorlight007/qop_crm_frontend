@@ -359,6 +359,39 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </Col>
                 )}
 
+                {policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" && (
+                  <>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Cover Period</Label>
+                        <Input
+                          type="number"
+                          value={policy.cover_period ?? ""}
+                          onChange={(e) =>
+                            handleChange(index, "cover_period", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Deferred Period</Label>
+                        <Input
+                          type="number"
+                          value={policy.deferred_period ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "deferred_period",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Status</Label>
@@ -496,6 +529,228 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           }
                         />
                         <Label check>Sick Pay Provision</Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+
+                {(policy.policy_type === "BUILDINGS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={
+                            policy.buildings_insured_accidental_damage ?? false
+                          }
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "buildings_insured_accidental_damage",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>
+                          Is it important to you that your buildings are insured
+                          against accidental damage?
+                        </Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={
+                          policy.valuables_outside_home_protection ?? false
+                        }
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "valuables_outside_home_protection",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>
+                        Is it important that your valuables are protected
+                        against all risks when they are outside the home?
+                      </Label>
+                    </FormGroup>
+                  </Col>
+                )}
+
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={
+                            policy.contents_insured_accidental_damage ?? false
+                          }
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "contents_insured_accidental_damage",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>
+                          Is it important to you that your contents are insured
+                          against accidental damage?
+                        </Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type === "BUILDINGS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.accidental_damage ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "accidental_damage",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Accidental Damage</Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "BUILDINGS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>Full Rebuild Value of your Home</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={policy.full_rebuild_value_of_home ?? ""}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "full_rebuild_value_of_home",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
+
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.high_value_items_over_1500 ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "high_value_items_over_1500",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>
+                          Do you have any specific item of contents worth more
+                          than £1500 to replace?
+                        </Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.personal_possessions ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "personal_possessions",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Personal Possessions</Label>
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Contents</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={policy.contents ?? ""}
+                          onChange={(e) =>
+                            handleChange(index, "contents", e.target.value)
+                          }
+                        />
                       </FormGroup>
                     </Col>
                   </>
@@ -884,7 +1139,10 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Indexation</Label>
                   </FormGroup>
                 </Col>
-                {policy.policy_type === "LIFE_LEVEL" && (
+                {(policy.policy_type === "LIFE_LEVEL" ||
+                  policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "RELEVANT_LIFE") && (
                   <Col
                     sm={12}
                     md={6}
@@ -906,7 +1164,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           )
                         }
                       />
-                      <Label check>Total Permanent Disability Cover</Label>
+                      <Label check>Total & Permanent Disability Cover</Label>
                     </FormGroup>
                   </Col>
                 )}
@@ -957,7 +1215,10 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                {policy.policy_type === "LIFE_LEVEL" && (
+                {(policy.policy_type === "LIFE_LEVEL" ||
+                  policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "RELEVANT_LIFE") && (
                   <Col
                     sm={12}
                     md={6}
@@ -981,191 +1242,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </FormGroup>
                   </Col>
                 )}
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Contents</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.contents ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "contents", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Full Rebuild Value of Home</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.full_rebuild_value_of_home ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "full_rebuild_value_of_home",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Cover Period</Label>
-                    <Input
-                      type="number"
-                      value={policy.cover_period ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "cover_period", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.accidental_damage ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "accidental_damage",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Accidental Damage</Label>
-                  </FormGroup>
-                </Col>
-
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.personal_possessions ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "personal_possessions",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Personal Possessions</Label>
-                  </FormGroup>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={
-                        policy.valuables_outside_home_protection ?? false
-                      }
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "valuables_outside_home_protection",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Valuables Outside Home Protection</Label>
-                  </FormGroup>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={
-                        policy.contents_insured_accidental_damage ?? false
-                      }
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "contents_insured_accidental_damage",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Contents Insured Accidental Damage</Label>
-                  </FormGroup>
-                </Col>
-
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={
-                        policy.buildings_insured_accidental_damage ?? false
-                      }
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "buildings_insured_accidental_damage",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Buildings Insured Accidental Damage</Label>
-                  </FormGroup>
-                </Col>
-                <Col
-                  sm={12}
-                  md={6}
-                  lg={4}
-                  className="d-flex justify-content-center align-items-center"
-                >
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.high_value_items_over_1500 ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "high_value_items_over_1500",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>High Value Items Over £1500</Label>
-                  </FormGroup>
-                </Col>
               </Row>
 
               <Row>
