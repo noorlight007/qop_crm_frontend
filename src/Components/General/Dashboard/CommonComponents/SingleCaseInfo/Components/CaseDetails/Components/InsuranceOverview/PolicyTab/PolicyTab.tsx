@@ -9,6 +9,7 @@ import {
 import { PolicyTabProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -351,6 +352,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         type="number"
                         step="0.01"
                         value={policy.sum_assured ?? ""}
+                        onInput={limitDecimalPlaces}
                         onChange={(e) =>
                           handleChange(index, "sum_assured", e.target.value)
                         }
@@ -363,10 +365,19 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   <>
                     <Col sm={12} md={6} lg={4}>
                       <FormGroup>
-                        <Label>Cover Period</Label>
+                        <Label>Cover Period(Months)</Label>
                         <Input
                           type="number"
+                          step="1"
+                          min="0"
                           value={policy.cover_period ?? ""}
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
                           onChange={(e) =>
                             handleChange(index, "cover_period", e.target.value)
                           }
@@ -375,10 +386,19 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Col>
                     <Col sm={12} md={6} lg={4}>
                       <FormGroup>
-                        <Label>Deferred Period</Label>
+                        <Label>Deferred Period(Months)</Label>
                         <Input
                           type="number"
+                          step="1"
+                          min="0"
                           value={policy.deferred_period ?? ""}
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
                           onChange={(e) =>
                             handleChange(
                               index,
@@ -444,6 +464,15 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         <Label>Deferred Period</Label>
                         <Input
                           type="number"
+                          step="1"
+                          min="0"
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
                           value={policy.deferred_period ?? ""}
                           onChange={(e) =>
                             handleChange(
@@ -478,10 +507,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                     <Col sm={12} md={6} lg={4}>
                       <FormGroup>
-                        <Label>Monthly Sum Assured</Label>
+                        <Label>Monthly Sum Assured(£)</Label>
                         <Input
                           type="number"
                           step="0.01"
+                          onInput={limitDecimalPlaces}
                           value={policy.monthly_sum_assured ?? ""}
                           onChange={(e) =>
                             handleChange(
@@ -498,6 +528,15 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         <Label>Number of Dependents</Label>
                         <Input
                           type="number"
+                          step="1"
+                          min="0"
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
                           value={policy.number_of_dependents ?? ""}
                           onChange={(e) =>
                             handleChange(
@@ -666,10 +705,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     "BUILDINGS_AND_CONTENTS_INSURANCE") && (
                   <Col sm={12} md={6} lg={4}>
                     <FormGroup>
-                      <Label>Full Rebuild Value of your Home</Label>
+                      <Label>Full Rebuild Value of your Home(£)</Label>
                       <Input
                         type="number"
                         step="0.01"
+                        onInput={limitDecimalPlaces}
                         value={policy.full_rebuild_value_of_home ?? ""}
                         onChange={(e) =>
                           handleChange(
@@ -742,10 +782,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Col>
                     <Col sm={12} md={6} lg={4}>
                       <FormGroup>
-                        <Label>Contents</Label>
+                        <Label>Contents(£)</Label>
                         <Input
                           type="number"
                           step="0.01"
+                          onInput={limitDecimalPlaces}
                           value={policy.contents ?? ""}
                           onChange={(e) =>
                             handleChange(index, "contents", e.target.value)
@@ -758,10 +799,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Premium</Label>
+                    <Label>Premium(£)</Label>
                     <Input
                       type="number"
                       step="0.01"
+                      onInput={limitDecimalPlaces}
                       value={policy.premium ?? ""}
                       onChange={(e) =>
                         handleChange(index, "premium", e.target.value)
@@ -871,9 +913,22 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label>Policy Term*</Label>
                     <Input
                       type="number"
+                      step="1"
+                      min="0"
                       value={policy.policy_term ?? ""}
+                      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        if (e.key === "." || e.key === ",") {
+                          e.preventDefault();
+                        }
+                      }}
                       onChange={(e) =>
-                        handleChange(index, "policy_term", e.target.value)
+                        handleChange(
+                          index,
+                          "policy_term",
+                          e.target.value === ""
+                            ? ""
+                            : String(Math.trunc(Number(e.target.value)))
+                        )
                       }
                       required
                     />
@@ -924,10 +979,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Final Premium</Label>
+                    <Label>Final Premium(£)</Label>
                     <Input
                       type="number"
                       step="0.01"
+                      onInput={limitDecimalPlaces}
                       value={policy.final_premium ?? ""}
                       onChange={(e) =>
                         handleChange(index, "final_premium", e.target.value)
@@ -938,10 +994,11 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Premium Quoted</Label>
+                    <Label>Premium Quoted(£)</Label>
                     <Input
                       type="number"
                       step="0.01"
+                      onInput={limitDecimalPlaces}
                       value={policy.premium_quoted ?? ""}
                       onChange={(e) =>
                         handleChange(index, "premium_quoted", e.target.value)
@@ -1150,7 +1207,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     "LIFE_AND_CRITICAL_ILLNESS_DECREASING" ||
                   policy.policy_type ===
                     "LIFE_AND_CRITICAL_ILLNESS_INCREASING" ||
-                    "WHOLE_OF_LIFE" ||
+                  "WHOLE_OF_LIFE" ||
                   policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
                   policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
                   policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
