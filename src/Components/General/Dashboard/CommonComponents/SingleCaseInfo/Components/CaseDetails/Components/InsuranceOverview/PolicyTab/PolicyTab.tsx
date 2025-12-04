@@ -9,6 +9,7 @@ import {
 import { PolicyTabProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -39,7 +40,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const [selectedPolicyForDelete, setSelectedPolicyForDelete] =
     useState<any>(null);
 
-  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+  const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias }
   );
@@ -329,9 +330,10 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Insurer Reference</Label>
+                    <Label>Insurer's Reference</Label>
                     <Input
                       type="text"
                       value={policy.insurer_reference ?? ""}
@@ -341,9 +343,75 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
+                {policy.policy_type === "LIFE_LEVEL" && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>Sum Assured</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={policy.sum_assured ?? ""}
+                        onInput={limitDecimalPlaces}
+                        onChange={(e) =>
+                          handleChange(index, "sum_assured", e.target.value)
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
+
+                {policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" && (
+                  <>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Cover Period(Months)</Label>
+                        <Input
+                          type="number"
+                          step="1"
+                          min="0"
+                          value={policy.cover_period ?? ""}
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
+                          onChange={(e) =>
+                            handleChange(index, "cover_period", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Deferred Period(Months)</Label>
+                        <Input
+                          type="number"
+                          step="1"
+                          min="0"
+                          value={policy.deferred_period ?? ""}
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "deferred_period",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Status</Label>
@@ -388,6 +456,388 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
+
+                {policy.policy_type === "INCOME_PROTECTION" && (
+                  <>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Deferred Period</Label>
+                        <Input
+                          type="number"
+                          step="1"
+                          min="0"
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
+                          value={policy.deferred_period ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "deferred_period",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Deferred Period Type</Label>
+                        <Input
+                          type="select"
+                          value={policy.deferred_period_type ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "deferred_period_type",
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="">Select...</option>
+                          <option value="WEEKS">Weeks</option>
+                          <option value="MONTHS">Months</option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Monthly Sum Assured(£)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          onInput={limitDecimalPlaces}
+                          value={policy.monthly_sum_assured ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "monthly_sum_assured",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Number of Dependents</Label>
+                        <Input
+                          type="number"
+                          step="1"
+                          min="0"
+                          onKeyDown={(
+                            e: React.KeyboardEvent<HTMLInputElement>
+                          ) => {
+                            if (e.key === "." || e.key === ",") {
+                              e.preventDefault();
+                            }
+                          }}
+                          value={policy.number_of_dependents ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "number_of_dependents",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.sick_pay_provision ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "sick_pay_provision",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Sick Pay Provision</Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+
+                {(policy.policy_type === "BUILDINGS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={
+                            policy.buildings_insured_accidental_damage ?? false
+                          }
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "buildings_insured_accidental_damage",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>
+                          Is it important to you that your buildings are insured
+                          against accidental damage?
+                        </Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={
+                          policy.valuables_outside_home_protection ?? false
+                        }
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "valuables_outside_home_protection",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>
+                        Is it important that your valuables are protected
+                        against all risks when they are outside the home?
+                      </Label>
+                    </FormGroup>
+                  </Col>
+                )}
+
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={
+                            policy.contents_insured_accidental_damage ?? false
+                          }
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "contents_insured_accidental_damage",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>
+                          Is it important to you that your contents are insured
+                          against accidental damage?
+                        </Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type === "BUILDINGS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.accidental_damage ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "accidental_damage",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Accidental Damage</Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "BUILDINGS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>Full Rebuild Value of your Home(£)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        onInput={limitDecimalPlaces}
+                        value={policy.full_rebuild_value_of_home ?? ""}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "full_rebuild_value_of_home",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
+
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.high_value_items_over_1500 ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "high_value_items_over_1500",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>
+                          Do you have any specific item of contents worth more
+                          than £1500 to replace?
+                        </Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+                {(policy.policy_type === "CONTENTS_INSURANCE" ||
+                  policy.policy_type ===
+                    "BUILDINGS_AND_CONTENTS_INSURANCE") && (
+                  <>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.personal_possessions ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "personal_possessions",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Personal Possessions</Label>
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Contents(£)</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          onInput={limitDecimalPlaces}
+                          value={policy.contents ?? ""}
+                          onChange={(e) =>
+                            handleChange(index, "contents", e.target.value)
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Premium(£)</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      onInput={limitDecimalPlaces}
+                      value={policy.premium ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "premium", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Premium Payment Type</Label>
+                    <Input
+                      type="select"
+                      value={policy.premium_payment_type ?? ""}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "premium_payment_type",
+                          e.target.value
+                        )
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="SINGLE_PREMIUM">Single Premium</option>
+                      <option value="QUATERLY">Quarterly</option>
+                      <option value="WEEKLY">Weekly</option>
+                      <option value="FOUR_WEEKLY">4 Weekly</option>
+                      <option value="MONTHLY">Monthly</option>
+                      <option value="BI_ANNUALLY">Bi Annually</option>
+                      <option value="ANNUALLY">Annually</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Applicant</Label>
@@ -424,12 +874,24 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-              </Row>
+                {policy.in_trust === "YES" && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>In Trust Date</Label>
+                      <Input
+                        type="date"
+                        value={policy.in_trust_date ?? ""}
+                        onChange={(e) =>
+                          handleChange(index, "in_trust_date", e.target.value)
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Guaranteed</Label>
+                    <Label>Guaranteed/Reviewable</Label>
                     <Input
                       type="select"
                       value={policy.guaranteed ?? ""}
@@ -445,204 +907,34 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>In Trust Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.in_trust_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "in_trust_date", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Pays Out</Label>
-                    <Input
-                      type="select"
-                      value={policy.pays_out ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "pays_out", e.target.value)
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="ONE_YEAR">1 Year</option>
-                      <option value="TWO_YEARS">2 Years</option>
-                      <option value="FIVE_YEARS">5 Years</option>
-                      <option value="FULL_TERM">Full Term</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-              </Row>
 
-              {/* Financial Information */}
-              <h5 className="mb-3 mt-4">Financial Information</h5>
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Sum Assured</Label>
+                    <Label>Policy Term*</Label>
                     <Input
                       type="number"
-                      step="0.01"
-                      value={policy.sum_assured ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "sum_assured", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Monthly Sum Assured</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.monthly_sum_assured ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "monthly_sum_assured",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Premium</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.premium ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "premium", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Final Premium</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.final_premium ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "final_premium", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Premium Quoted</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.premium_quoted ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "premium_quoted", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Premium Payment Type</Label>
-                    <Input
-                      type="select"
-                      value={policy.premium_payment_type ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "premium_payment_type",
-                          e.target.value
-                        )
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="SINGLE_PREMIUM">Single Premium</option>
-                      <option value="QUATERLY">Quarterly</option>
-                      <option value="WEEKLY">Weekly</option>
-                      <option value="FOUR_WEEKLY">4 Weekly</option>
-                      <option value="MONTHLY">Monthly</option>
-                      <option value="BI_ANNUALLY">Bi Annually</option>
-                      <option value="ANNUALLY">Annually</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Contents</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.contents ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "contents", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Full Rebuild Value of Home</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.full_rebuild_value_of_home ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "full_rebuild_value_of_home",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Number of Dependents</Label>
-                    <Input
-                      type="number"
-                      value={policy.number_of_dependents ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "number_of_dependents",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              {/* Policy Terms */}
-              <h5 className="mb-3 mt-4">Policy Terms</h5>
-              <Row>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Policy Term</Label>
-                    <Input
-                      type="number"
+                      step="1"
+                      min="0"
                       value={policy.policy_term ?? ""}
+                      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        if (e.key === "." || e.key === ",") {
+                          e.preventDefault();
+                        }
+                      }}
                       onChange={(e) =>
-                        handleChange(index, "policy_term", e.target.value)
+                        handleChange(
+                          index,
+                          "policy_term",
+                          e.target.value === ""
+                            ? ""
+                            : String(Math.trunc(Number(e.target.value)))
+                        )
                       }
+                      required
                     />
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Policy Term Validity</Label>
@@ -663,58 +955,106 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Cover Period</Label>
-                    <Input
-                      type="number"
-                      value={policy.cover_period ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "cover_period", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
 
-              <Row>
+                {policy.policy_type === "INCOME_PROTECTION" && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>Pays Out</Label>
+                      <Input
+                        type="select"
+                        value={policy.pays_out ?? ""}
+                        onChange={(e) =>
+                          handleChange(index, "pays_out", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="ONE_YEAR">1 Year</option>
+                        <option value="TWO_YEARS">2 Years</option>
+                        <option value="FIVE_YEARS">5 Years</option>
+                        <option value="FULL_TERM">Full Term</option>
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                )}
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Deferred Period</Label>
+                    <Label>Final Premium(£)</Label>
                     <Input
                       type="number"
-                      value={policy.deferred_period ?? ""}
+                      step="0.01"
+                      onInput={limitDecimalPlaces}
+                      value={policy.final_premium ?? ""}
                       onChange={(e) =>
-                        handleChange(index, "deferred_period", e.target.value)
+                        handleChange(index, "final_premium", e.target.value)
                       }
                     />
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Deferred Period Type</Label>
+                    <Label>Premium Quoted(£)</Label>
                     <Input
-                      type="select"
-                      value={policy.deferred_period_type ?? ""}
+                      type="number"
+                      step="0.01"
+                      onInput={limitDecimalPlaces}
+                      value={policy.premium_quoted ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "premium_quoted", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      className="border-primary"
+                      checked={policy.part_of_menu_plan ?? false}
                       onChange={(e) =>
                         handleChange(
                           index,
-                          "deferred_period_type",
-                          e.target.value
+                          "part_of_menu_plan",
+                          e.target.checked
                         )
                       }
-                    >
-                      <option value="">Select...</option>
-                      <option value="WEEKS">Weeks</option>
-                      <option value="MONTHS">Months</option>
-                    </Input>
+                    />
+                    <Label check>Part of a Menu Plan</Label>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              {/* Important Dates */}
-              <h5 className="mb-3 mt-4">Important Dates</h5>
-              <Row>
+                {policy.policy_type === "INCOME_PROTECTION" && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={policy.budget_plan_sold ?? false}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "budget_plan_sold",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>Budget Plan Sold</Label>
+                    </FormGroup>
+                  </Col>
+                )}
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Case Submitted Date</Label>
@@ -731,6 +1071,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Case Underwritten Date</Label>
@@ -747,6 +1088,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Terms Expiry Date</Label>
@@ -759,9 +1101,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>On Risk Date</Label>
@@ -798,9 +1138,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Not Proceeding Date</Label>
@@ -817,12 +1155,13 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              {/* Boolean Flags */}
-              <h5 className="mb-3 mt-4">Policy Features</h5>
-              <Row>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -839,7 +1178,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Waiver of Premium</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -852,171 +1196,55 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Indexation</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.total_permanent_disability_cover ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "total_permanent_disability_cover",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Total Permanent Disability Cover</Label>
-                  </FormGroup>
-                </Col>
-              </Row>
+                {(policy.policy_type === "LIFE_LEVEL" ||
+                  policy.policy_type === "LIFE_DECREASING" ||
+                  policy.policy_type === "LIFE_INCREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_INCREASING" ||
+                  policy.policy_type === "LIFE_AND_CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_INCREASING" ||
+                  "WHOLE_OF_LIFE" ||
+                  policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "RELEVANT_LIFE") && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={
+                          policy.total_permanent_disability_cover ?? false
+                        }
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "total_permanent_disability_cover",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>Total & Permanent Disability Cover</Label>
+                    </FormGroup>
+                  </Col>
+                )}
 
-              <Row className="mt-2">
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.fracture_cover ?? false}
-                      onChange={(e) =>
-                        handleChange(index, "fracture_cover", e.target.checked)
-                      }
-                    />
-                    <Label check>Fracture Cover</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.sick_pay_provision ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "sick_pay_provision",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Sick Pay Provision</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.accidental_damage ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "accidental_damage",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Accidental Damage</Label>
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row className="mt-2">
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.personal_possessions ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "personal_possessions",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Personal Possessions</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={
-                        policy.valuables_outside_home_protection ?? false
-                      }
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "valuables_outside_home_protection",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Valuables Outside Home Protection</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={
-                        policy.contents_insured_accidental_damage ?? false
-                      }
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "contents_insured_accidental_damage",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Contents Insured Accidental Damage</Label>
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              <Row className="mt-2">
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={
-                        policy.buildings_insured_accidental_damage ?? false
-                      }
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "buildings_insured_accidental_damage",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Buildings Insured Accidental Damage</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.high_value_items_over_1500 ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "high_value_items_over_1500",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>High Value Items Over £1500</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -1033,10 +1261,13 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Client Accepted Recommendation</Label>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row className="mt-2">
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -1053,44 +1284,50 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Non-Standard Terms Issued</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.part_of_menu_plan ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "part_of_menu_plan",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Part of Menu Plan</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.budget_plan_sold ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "budget_plan_sold",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Budget Plan Sold</Label>
-                  </FormGroup>
-                </Col>
+
+                {(policy.policy_type === "LIFE_LEVEL" ||
+                  policy.policy_type === "LIFE_DECREASING" ||
+                  policy.policy_type === "LIFE_INCREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_INCREASING" ||
+                  policy.policy_type === "LIFE_AND_CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_INCREASING" ||
+                  policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "WHOLE_OF_LIFE" ||
+                  policy.policy_type === "PRIVATE_MEDICAL_COVER" ||
+                  policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "RELEVANT_LIFE") && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={policy.fracture_cover ?? false}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "fracture_cover",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>Fracture Cover</Label>
+                    </FormGroup>
+                  </Col>
+                )}
               </Row>
 
-              {/* Notes */}
-              <h5 className="mb-3 mt-4">Additional Information</h5>
               <Row>
                 <Col sm={12}>
                   <FormGroup>
