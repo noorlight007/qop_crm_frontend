@@ -1140,6 +1140,19 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
                 {(policy.policy_type === "LIFE_LEVEL" ||
+                  policy.policy_type === "LIFE_DECREASING" ||
+                  policy.policy_type === "LIFE_INCREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_INCREASING" ||
+                  policy.policy_type === "LIFE_AND_CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_INCREASING" ||
+                    "WHOLE_OF_LIFE" ||
+                  policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
                   policy.policy_type === "FAMILY_INCOME_BENEFIT" ||
                   policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
                   policy.policy_type === "RELEVANT_LIFE") && (
@@ -1216,6 +1229,20 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                 </Col>
 
                 {(policy.policy_type === "LIFE_LEVEL" ||
+                  policy.policy_type === "LIFE_DECREASING" ||
+                  policy.policy_type === "LIFE_INCREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type === "CRITICAL_ILLNESS_INCREASING" ||
+                  policy.policy_type === "LIFE_AND_CRITICAL_ILLNESS_LEVEL" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_DECREASING" ||
+                  policy.policy_type ===
+                    "LIFE_AND_CRITICAL_ILLNESS_INCREASING" ||
+                  policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" ||
+                  policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
+                  policy.policy_type === "WHOLE_OF_LIFE" ||
+                  policy.policy_type === "PRIVATE_MEDICAL_COVER" ||
                   policy.policy_type === "ACCIDENT_SICKNESS_UNEMPLOYMENT" ||
                   policy.policy_type === "PRIVATE_HEALTH_INSURANCE" ||
                   policy.policy_type === "RELEVANT_LIFE") && (
