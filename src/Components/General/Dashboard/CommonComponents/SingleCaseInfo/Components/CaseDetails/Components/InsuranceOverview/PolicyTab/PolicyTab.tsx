@@ -39,7 +39,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const [selectedPolicyForDelete, setSelectedPolicyForDelete] =
     useState<any>(null);
 
-  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+  const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias }
   );
@@ -341,9 +341,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Status</Label>
@@ -424,9 +422,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Guaranteed</Label>
@@ -475,11 +471,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              {/* Financial Information */}
-              <h5 className="mb-3 mt-4">Financial Information</h5>
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Sum Assured</Label>
@@ -523,9 +515,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Final Premium</Label>
@@ -577,9 +567,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Contents</Label>
@@ -626,11 +614,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              {/* Policy Terms */}
-              <h5 className="mb-3 mt-4">Policy Terms</h5>
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Policy Term</Label>
@@ -675,9 +659,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Deferred Period</Label>
@@ -710,11 +692,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Input>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              {/* Important Dates */}
-              <h5 className="mb-3 mt-4">Important Dates</h5>
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Case Submitted Date</Label>
@@ -759,9 +737,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>On Risk Date</Label>
@@ -798,9 +774,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Not Proceeding Date</Label>
@@ -817,11 +791,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-              </Row>
 
-              {/* Boolean Flags */}
-              <h5 className="mb-3 mt-4">Policy Features</h5>
-              <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
                     <Input
@@ -869,9 +839,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Total Permanent Disability Cover</Label>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row className="mt-2">
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
                     <Input
@@ -919,9 +887,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Accidental Damage</Label>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row className="mt-2">
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
                     <Input
@@ -977,9 +943,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Contents Insured Accidental Damage</Label>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row className="mt-2">
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
                     <Input
@@ -1033,9 +997,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Client Accepted Recommendation</Label>
                   </FormGroup>
                 </Col>
-              </Row>
 
-              <Row className="mt-2">
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
                     <Input
@@ -1089,8 +1051,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                 </Col>
               </Row>
 
-              {/* Notes */}
-              <h5 className="mb-3 mt-4">Additional Information</h5>
               <Row>
                 <Col sm={12}>
                   <FormGroup>
