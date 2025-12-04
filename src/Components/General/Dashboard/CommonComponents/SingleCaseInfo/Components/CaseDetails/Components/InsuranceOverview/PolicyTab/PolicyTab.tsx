@@ -404,6 +404,103 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
+                {policy.policy_type === "INCOME_PROTECTION" && (
+                  <>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Deferred Period</Label>
+                        <Input
+                          type="number"
+                          value={policy.deferred_period ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "deferred_period",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Deferred Period Type</Label>
+                        <Input
+                          type="select"
+                          value={policy.deferred_period_type ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "deferred_period_type",
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="">Select...</option>
+                          <option value="WEEKS">Weeks</option>
+                          <option value="MONTHS">Months</option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Monthly Sum Assured</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={policy.monthly_sum_assured ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "monthly_sum_assured",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6} lg={4}>
+                      <FormGroup>
+                        <Label>Number of Dependents</Label>
+                        <Input
+                          type="number"
+                          value={policy.number_of_dependents ?? ""}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "number_of_dependents",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.sick_pay_provision ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "sick_pay_provision",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Sick Pay Provision</Label>
+                      </FormGroup>
+                    </Col>
+                  </>
+                )}
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Premium</Label>
@@ -549,6 +646,27 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
+                {policy.policy_type === "INCOME_PROTECTION" && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>Pays Out</Label>
+                      <Input
+                        type="select"
+                        value={policy.pays_out ?? ""}
+                        onChange={(e) =>
+                          handleChange(index, "pays_out", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="ONE_YEAR">1 Year</option>
+                        <option value="TWO_YEARS">2 Years</option>
+                        <option value="FIVE_YEARS">5 Years</option>
+                        <option value="FULL_TERM">Full Term</option>
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                )}
+
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
                     <Label>Final Premium</Label>
@@ -599,6 +717,31 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Part of a Menu Plan</Label>
                   </FormGroup>
                 </Col>
+
+                {policy.policy_type === "INCOME_PROTECTION" && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={policy.budget_plan_sold ?? false}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "budget_plan_sold",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>Budget Plan Sold</Label>
+                    </FormGroup>
+                  </Col>
+                )}
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
@@ -701,7 +844,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -718,7 +866,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Waiver of Premium</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -731,60 +884,103 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Indexation</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
+                {policy.policy_type === "LIFE_LEVEL" && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={
+                          policy.total_permanent_disability_cover ?? false
+                        }
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "total_permanent_disability_cover",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>Total Permanent Disability Cover</Label>
+                    </FormGroup>
+                  </Col>
+                )}
+
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
                       className="border-primary"
-                      checked={policy.total_permanent_disability_cover ?? false}
+                      checked={policy.client_accepted_recommendation ?? false}
                       onChange={(e) =>
                         handleChange(
                           index,
-                          "total_permanent_disability_cover",
+                          "client_accepted_recommendation",
                           e.target.checked
                         )
                       }
                     />
-                    <Label check>Total Permanent Disability Cover</Label>
+                    <Label check>Client Accepted Recommendation</Label>
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Pays Out</Label>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
+                  <FormGroup check>
                     <Input
-                      type="select"
-                      value={policy.pays_out ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "pays_out", e.target.value)
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="ONE_YEAR">1 Year</option>
-                      <option value="TWO_YEARS">2 Years</option>
-                      <option value="FIVE_YEARS">5 Years</option>
-                      <option value="FULL_TERM">Full Term</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Monthly Sum Assured</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={policy.monthly_sum_assured ?? ""}
+                      type="checkbox"
+                      className="border-primary"
+                      checked={policy.non_standard_terms_issued ?? false}
                       onChange={(e) =>
                         handleChange(
                           index,
-                          "monthly_sum_assured",
-                          e.target.value
+                          "non_standard_terms_issued",
+                          e.target.checked
                         )
                       }
                     />
+                    <Label check>Non-Standard Terms Issued</Label>
                   </FormGroup>
                 </Col>
+
+                {policy.policy_type === "LIFE_LEVEL" && (
+                  <Col
+                    sm={12}
+                    md={6}
+                    lg={4}
+                    className="d-flex justify-content-center align-items-center"
+                  >
+                    <FormGroup check>
+                      <Input
+                        type="checkbox"
+                        className="border-primary"
+                        checked={policy.fracture_cover ?? false}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "fracture_cover",
+                            e.target.checked
+                          )
+                        }
+                      />
+                      <Label check>Fracture Cover</Label>
+                    </FormGroup>
+                  </Col>
+                )}
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
@@ -816,22 +1012,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     />
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Number of Dependents</Label>
-                    <Input
-                      type="number"
-                      value={policy.number_of_dependents ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "number_of_dependents",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
@@ -846,72 +1026,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Deferred Period</Label>
-                    <Input
-                      type="number"
-                      value={policy.deferred_period ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "deferred_period", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Deferred Period Type</Label>
-                    <Input
-                      type="select"
-                      value={policy.deferred_period_type ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "deferred_period_type",
-                          e.target.value
-                        )
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="WEEKS">Weeks</option>
-                      <option value="MONTHS">Months</option>
-                    </Input>
-                  </FormGroup>
-                </Col>
-
-                
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.fracture_cover ?? false}
-                      onChange={(e) =>
-                        handleChange(index, "fracture_cover", e.target.checked)
-                      }
-                    />
-                    <Label check>Fracture Cover</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.sick_pay_provision ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "sick_pay_provision",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Sick Pay Provision</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -929,7 +1049,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -946,7 +1071,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Personal Possessions</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -965,7 +1095,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Valuables Outside Home Protection</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -985,7 +1120,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -1004,7 +1144,12 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     <Label check>Buildings Insured Accidental Damage</Label>
                   </FormGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4}>
+                <Col
+                  sm={12}
+                  md={6}
+                  lg={4}
+                  className="d-flex justify-content-center align-items-center"
+                >
                   <FormGroup check>
                     <Input
                       type="checkbox"
@@ -1019,59 +1164,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       }
                     />
                     <Label check>High Value Items Over £1500</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.client_accepted_recommendation ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "client_accepted_recommendation",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Client Accepted Recommendation</Label>
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.non_standard_terms_issued ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "non_standard_terms_issued",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Non-Standard Terms Issued</Label>
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.budget_plan_sold ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "budget_plan_sold",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Budget Plan Sold</Label>
                   </FormGroup>
                 </Col>
               </Row>
