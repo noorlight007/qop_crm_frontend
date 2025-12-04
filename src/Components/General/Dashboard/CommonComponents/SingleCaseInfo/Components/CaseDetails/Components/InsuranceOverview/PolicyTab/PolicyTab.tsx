@@ -602,6 +602,155 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
+                    <Label>Case Submitted Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.case_submitted_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "case_submitted_date",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Case Underwritten Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.case_underwritten_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "case_underwritten_date",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Terms Expiry Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.terms_expiry_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "terms_expiry_date", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>On Risk Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.on_risk_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "on_risk_date", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Cancelled Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.cancelled_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "cancelled_date", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Renewal Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.renewal_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(index, "renewal_date", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
+                    <Label>Not Proceeding Date</Label>
+                    <Input
+                      type="date"
+                      value={policy.not_proceeding_date ?? ""}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "not_proceeding_date",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      className="border-primary"
+                      checked={policy.waiver_of_premium ?? false}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "waiver_of_premium",
+                          e.target.checked
+                        )
+                      }
+                    />
+                    <Label check>Waiver of Premium</Label>
+                  </FormGroup>
+                </Col>
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      className="border-primary"
+                      checked={policy.indexation ?? false}
+                      onChange={(e) =>
+                        handleChange(index, "indexation", e.target.checked)
+                      }
+                    />
+                    <Label check>Indexation</Label>
+                  </FormGroup>
+                </Col>
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      className="border-primary"
+                      checked={policy.total_permanent_disability_cover ?? false}
+                      onChange={(e) =>
+                        handleChange(
+                          index,
+                          "total_permanent_disability_cover",
+                          e.target.checked
+                        )
+                      }
+                    />
+                    <Label check>Total Permanent Disability Cover</Label>
+                  </FormGroup>
+                </Col>
+
+                <Col sm={12} md={6} lg={4}>
+                  <FormGroup>
                     <Label>Pays Out</Label>
                     <Input
                       type="select"
@@ -730,152 +879,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                   </FormGroup>
                 </Col>
 
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Case Submitted Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.case_submitted_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "case_submitted_date",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Case Underwritten Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.case_underwritten_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "case_underwritten_date",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Terms Expiry Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.terms_expiry_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "terms_expiry_date", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>On Risk Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.on_risk_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "on_risk_date", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Cancelled Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.cancelled_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "cancelled_date", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Renewal Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.renewal_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "renewal_date", e.target.value)
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup>
-                    <Label>Not Proceeding Date</Label>
-                    <Input
-                      type="date"
-                      value={policy.not_proceeding_date ?? ""}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "not_proceeding_date",
-                          e.target.value
-                        )
-                      }
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.waiver_of_premium ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "waiver_of_premium",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Waiver of Premium</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.indexation ?? false}
-                      onChange={(e) =>
-                        handleChange(index, "indexation", e.target.checked)
-                      }
-                    />
-                    <Label check>Indexation</Label>
-                  </FormGroup>
-                </Col>
-                <Col sm={12} md={6} lg={4}>
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      className="border-primary"
-                      checked={policy.total_permanent_disability_cover ?? false}
-                      onChange={(e) =>
-                        handleChange(
-                          index,
-                          "total_permanent_disability_cover",
-                          e.target.checked
-                        )
-                      }
-                    />
-                    <Label check>Total Permanent Disability Cover</Label>
-                  </FormGroup>
-                </Col>
+                
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup check>
