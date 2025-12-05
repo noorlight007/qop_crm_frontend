@@ -17,7 +17,9 @@ const ClientInvitationModal: React.FC<ClientInvitationModalProps> = ({
 
   const handleInvitationClick = async () => {
     try {
-      await clientInvitation({ clientAlias: selectedClient?.alias }).unwrap();
+      await clientInvitation({
+        userAlias: selectedClient?.user?.alias || selectedClient?.alias,
+      }).unwrap();
       toggle();
       toast.success("Invitation sent successfully!");
     } catch (error) {
