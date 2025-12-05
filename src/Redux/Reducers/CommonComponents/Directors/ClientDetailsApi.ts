@@ -34,6 +34,13 @@ export const ClientDetailsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["ClientDetails"],
     }),
+    clientInvitation: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/director/users/${userAlias}/invitation/`,
+        method: "GET",
+      }),
+      invalidatesTags: ["ClientDetails"],
+    }),
   }),
 });
 
@@ -42,4 +49,5 @@ export const {
   useAddClientDetailsMutation,
   useUpdateClientDetailsMutation,
   useDeleteClientDetailsMutation,
+  useClientInvitationMutation,
 } = ClientDetailsApi;

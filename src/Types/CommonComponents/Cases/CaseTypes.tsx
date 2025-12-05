@@ -3,6 +3,7 @@ export interface CaseInfoPrpos {
   lead: number;
   name: string;
   lead_user: {
+    alias: string;
     title: string;
     email: string;
     phone: string;
