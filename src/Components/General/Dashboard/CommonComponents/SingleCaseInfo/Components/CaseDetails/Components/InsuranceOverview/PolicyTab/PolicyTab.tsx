@@ -570,6 +570,24 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         <Label check>Sick Pay Provision</Label>
                       </FormGroup>
                     </Col>
+                    {policy.sick_pay_provision && (
+                      <Col sm={12} md={6} lg={4}>
+                        <FormGroup>
+                          <Label>Sick Pay Provision Notes</Label>
+                          <Input
+                            type="textarea"
+                            value={policy.sick_pay_provision_notes ?? ""}
+                            onChange={(e) =>
+                              handleChange(
+                                index,
+                                "sick_pay_provision_notes",
+                                e.target.value
+                              )
+                            }
+                          />
+                        </FormGroup>
+                      </Col>
+                    )}
                   </>
                 )}
 
@@ -1031,28 +1049,82 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                 </Col>
 
                 {policy.policy_type === "INCOME_PROTECTION" && (
-                  <Col
-                    sm={12}
-                    md={6}
-                    lg={4}
-                    className="d-flex justify-content-center align-items-center"
-                  >
-                    <FormGroup check>
-                      <Input
-                        type="checkbox"
-                        className="border-primary"
-                        checked={policy.budget_plan_sold ?? false}
-                        onChange={(e) =>
-                          handleChange(
-                            index,
-                            "budget_plan_sold",
-                            e.target.checked
-                          )
-                        }
-                      />
-                      <Label check>Budget Plan Sold</Label>
-                    </FormGroup>
-                  </Col>
+                  <>
+                    {" "}
+                    <Col
+                      sm={12}
+                      md={6}
+                      lg={4}
+                      className="d-flex justify-content-center align-items-center"
+                    >
+                      <FormGroup check>
+                        <Input
+                          type="checkbox"
+                          className="border-primary"
+                          checked={policy.budget_plan_sold ?? false}
+                          onChange={(e) =>
+                            handleChange(
+                              index,
+                              "budget_plan_sold",
+                              e.target.checked
+                            )
+                          }
+                        />
+                        <Label check>Budget Plan Sold</Label>
+                      </FormGroup>
+                    </Col>
+                    {policy.budget_plan_sold && (
+                      <>
+                        <Col sm={12} md={6} lg={4}>
+                          <FormGroup>
+                            <Label>Budget Plan Benefit Period</Label>
+                            <Input
+                              type="number"
+                              step="1"
+                              min="0"
+                              onKeyDown={(
+                                e: React.KeyboardEvent<HTMLInputElement>
+                              ) => {
+                                if (e.key === "." || e.key === ",") {
+                                  e.preventDefault();
+                                }
+                              }}
+                              value={policy.budget_plan_benefit_period ?? ""}
+                              onChange={(e) =>
+                                handleChange(
+                                  index,
+                                  "budget_plan_benefit_period",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col sm={12} md={6} lg={4}>
+                          <FormGroup>
+                            <Label>Budget Plan Payment Type</Label>
+                            <Input
+                              type="select"
+                              value={
+                                policy.budget_plan_benefit_period_type ?? ""
+                              }
+                              onChange={(e) =>
+                                handleChange(
+                                  index,
+                                  "budget_plan_benefit_period_type",
+                                  e.target.value
+                                )
+                              }
+                            >
+                              <option value="">Select...</option>
+                              <option value="MONTHS">Months</option>
+                              <option value="YEARS">Years</option>
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                      </>
+                    )}
+                  </>
                 )}
 
                 <Col sm={12} md={6} lg={4}>
@@ -1258,7 +1330,9 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         )
                       }
                     />
-                    <Label check>Client Accepted Recommendation</Label>
+                    <Label check>
+                      Have clients accepted this recommendation?
+                    </Label>
                   </FormGroup>
                 </Col>
 
@@ -1281,9 +1355,30 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         )
                       }
                     />
-                    <Label check>Non-Standard Terms Issued</Label>
+                    <Label check>Have non-standard terms been issued?</Label>
                   </FormGroup>
                 </Col>
+
+                {policy.non_standard_terms_issued && (
+                  <Col sm={12} md={6} lg={4}>
+                    <FormGroup>
+                      <Label>
+                        Copy and paste Non-standard terms from lender
+                      </Label>
+                      <Input
+                        type="textarea"
+                        value={policy.non_standard_terms_from_lender ?? ""}
+                        onChange={(e) =>
+                          handleChange(
+                            index,
+                            "non_standard_terms_from_lender",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
 
                 {(policy.policy_type === "LIFE_LEVEL" ||
                   policy.policy_type === "LIFE_DECREASING" ||
