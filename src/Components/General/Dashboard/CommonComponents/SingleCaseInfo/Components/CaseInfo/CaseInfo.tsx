@@ -33,6 +33,7 @@ import {
   Spinner,
 } from "reactstrap";
 import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
+import CopyCaseModal from "./Modals/CopyCaseModal";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   const { data: session } = useSession();
@@ -40,6 +41,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [isUpdateClientModalOpen, setIsUpdateClientModalOpen] = useState(false);
+  const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInfoProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
@@ -56,6 +58,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
   const toggleUpdateClientModal = () =>
     setIsUpdateClientModalOpen((prev) => !prev);
+
+  const toggleCopyCaseModal = () => setIsCopyCaseModalOpen((prev) => !prev);
 
   const { data: dirClientsData } = useGetClientDetailsQuery(undefined);
 
@@ -152,7 +156,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                   <TbMailShare size="16" className="me-1" />
                   Client Invitation
                 </DropdownItem>
-                <DropdownItem className="opacity-100 py-3">
+                <DropdownItem
+                  className="opacity-100 py-3"
+                  onClick={toggleCopyCaseModal}
+                >
                   <TbCopy size="16" className="me-1" />
                   Copy Case
                 </DropdownItem>
@@ -613,6 +620,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         toggle={toggleDeleteCaseModal}
         caseData={currentCase}
         onDelete={toggleDeleteCaseModal}
+      />
+      {/* Copy Case Modal - To be implemented */}
+      <CopyCaseModal
+        isOpen={isCopyCaseModalOpen}
+        toggle={toggleCopyCaseModal}
+        caseData={caseInfo as CaseInfoPrpos}
       />
     </Col>
   );
