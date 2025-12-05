@@ -64,7 +64,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
     part_of_menu_plan: false,
     budget_plan_sold: false,
     budget_plan_benefit_period: null,
-    budget_plan_benefit_period_type: "",
+    budget_plan_benefit_period_type: "MONTHS",
     case_submitted_date: null,
     case_underwritten_date: null,
     terms_expiry_date: null,
@@ -149,7 +149,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
         part_of_menu_plan: false,
         budget_plan_sold: false,
         budget_plan_benefit_period: null,
-        budget_plan_benefit_period_type: "",
+        budget_plan_benefit_period_type: "MONTHS",
         case_submitted_date: null,
         case_underwritten_date: null,
         terms_expiry_date: null,
@@ -182,11 +182,12 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
           <Row>
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Policy Type</Label>
+                <Label>Policy Type*</Label>
                 <Input
                   type="select"
                   value={formData.policy_type ?? ""}
                   onChange={(e) => handleChange("policy_type", e.target.value)}
+                  required
                 >
                   <option value="LIFE_LEVEL">Life Level</option>
                   <option value="LIFE_DECREASING">Life Decreasing</option>
@@ -259,11 +260,12 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
             </Col>
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Provider</Label>
+                <Label>Provider*</Label>
                 <Input
                   type="select"
                   value={formData.provider ?? ""}
                   onChange={(e) => handleChange("provider", e.target.value)}
+                  required
                 >
                   <option value="">Select...</option>
                   <option value="AEGON">Aegon</option>
@@ -989,7 +991,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                             )
                           }
                         >
-                          <option value="">Select...</option>
                           <option value="MONTHS">Months</option>
                           <option value="YEARS">Years</option>
                         </Input>
