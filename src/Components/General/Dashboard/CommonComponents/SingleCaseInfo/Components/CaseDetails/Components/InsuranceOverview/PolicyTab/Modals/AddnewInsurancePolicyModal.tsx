@@ -186,9 +186,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="select"
                   value={formData.policy_type ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "policy_type", e.target.value)
-                  }
+                  onChange={(e) => handleChange("policy_type", e.target.value)}
                 >
                   <option value="LIFE_LEVEL">Life Level</option>
                   <option value="LIFE_DECREASING">Life Decreasing</option>
@@ -265,9 +263,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="select"
                   value={formData.provider ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "provider", e.target.value)
-                  }
+                  onChange={(e) => handleChange("provider", e.target.value)}
                 >
                   <option value="">Select...</option>
                   <option value="AEGON">Aegon</option>
@@ -308,7 +304,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="text"
                   value={formData.insurer_reference ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "insurer_reference", e.target.value)
+                    handleChange("insurer_reference", e.target.value)
                   }
                 />
               </FormGroup>
@@ -324,7 +320,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     value={formData.sum_assured ?? ""}
                     onInput={limitDecimalPlaces}
                     onChange={(e) =>
-                      handleChange(index, "sum_assured", e.target.value)
+                      handleChange("sum_assured", e.target.value)
                     }
                   />
                 </FormGroup>
@@ -347,7 +343,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         }
                       }}
                       onChange={(e) =>
-                        handleChange(index, "cover_period", e.target.value)
+                        handleChange("cover_period", e.target.value)
                       }
                     />
                   </FormGroup>
@@ -366,7 +362,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         }
                       }}
                       onChange={(e) =>
-                        handleChange(index, "deferred_period", e.target.value)
+                        handleChange("deferred_period", e.target.value)
                       }
                     />
                   </FormGroup>
@@ -380,9 +376,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="select"
                   value={formData.status ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "status", e.target.value)
-                  }
+                  onChange={(e) => handleChange("status", e.target.value)}
                 >
                   <option value="">Select...</option>
                   <option value="DISCLOSURE_AND_INITIALS_DOCUMENTS">
@@ -433,7 +427,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }}
                       value={formData.deferred_period ?? ""}
                       onChange={(e) =>
-                        handleChange(index, "deferred_period", e.target.value)
+                        handleChange("deferred_period", e.target.value)
                       }
                     />
                   </FormGroup>
@@ -445,11 +439,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       type="select"
                       value={formData.deferred_period_type ?? ""}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "deferred_period_type",
-                          e.target.value
-                        )
+                        handleChange("deferred_period_type", e.target.value)
                       }
                     >
                       <option value="">Select...</option>
@@ -468,11 +458,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       onInput={limitDecimalPlaces}
                       value={formData.monthly_sum_assured ?? ""}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "monthly_sum_assured",
-                          e.target.value
-                        )
+                        handleChange("monthly_sum_assured", e.target.value)
                       }
                     />
                   </FormGroup>
@@ -491,11 +477,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }}
                       value={formData.number_of_dependents ?? ""}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "number_of_dependents",
-                          e.target.value
-                        )
+                        handleChange("number_of_dependents", e.target.value)
                       }
                     />
                   </FormGroup>
@@ -512,11 +494,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       className="border-primary"
                       checked={formData.sick_pay_provision ?? false}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "sick_pay_provision",
-                          e.target.checked
-                        )
+                        handleChange("sick_pay_provision", e.target.checked)
                       }
                     />
                     <Label check>Sick Pay Provision</Label>
@@ -531,7 +509,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         value={formData.sick_pay_provision_notes ?? ""}
                         onChange={(e) =>
                           handleChange(
-                            index,
                             "sick_pay_provision_notes",
                             e.target.value
                           )
@@ -561,7 +538,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }
                       onChange={(e) =>
                         handleChange(
-                          index,
                           "buildings_insured_accidental_damage",
                           e.target.checked
                         )
@@ -592,7 +568,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     }
                     onChange={(e) =>
                       handleChange(
-                        index,
                         "valuables_outside_home_protection",
                         e.target.checked
                       )
@@ -624,7 +599,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }
                       onChange={(e) =>
                         handleChange(
-                          index,
                           "contents_insured_accidental_damage",
                           e.target.checked
                         )
@@ -654,11 +628,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       className="border-primary"
                       checked={formData.accidental_damage ?? false}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "accidental_damage",
-                          e.target.checked
-                        )
+                        handleChange("accidental_damage", e.target.checked)
                       }
                     />
                     <Label check>Accidental Damage</Label>
@@ -677,11 +647,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     onInput={limitDecimalPlaces}
                     value={formData.full_rebuild_value_of_home ?? ""}
                     onChange={(e) =>
-                      handleChange(
-                        index,
-                        "full_rebuild_value_of_home",
-                        e.target.value
-                      )
+                      handleChange("full_rebuild_value_of_home", e.target.value)
                     }
                   />
                 </FormGroup>
@@ -704,7 +670,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       checked={formData.high_value_items_over_1500 ?? false}
                       onChange={(e) =>
                         handleChange(
-                          index,
                           "high_value_items_over_1500",
                           e.target.checked
                         )
@@ -733,11 +698,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       className="border-primary"
                       checked={formData.personal_possessions ?? false}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "personal_possessions",
-                          e.target.checked
-                        )
+                        handleChange("personal_possessions", e.target.checked)
                       }
                     />
                     <Label check>Personal Possessions</Label>
@@ -751,9 +712,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       step="0.01"
                       onInput={limitDecimalPlaces}
                       value={formData.contents ?? ""}
-                      onChange={(e) =>
-                        handleChange(index, "contents", e.target.value)
-                      }
+                      onChange={(e) => handleChange("contents", e.target.value)}
                     />
                   </FormGroup>
                 </Col>
@@ -768,9 +727,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   step="0.01"
                   onInput={limitDecimalPlaces}
                   value={formData.premium ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "premium", e.target.value)
-                  }
+                  onChange={(e) => handleChange("premium", e.target.value)}
                 />
               </FormGroup>
             </Col>
@@ -782,7 +739,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="select"
                   value={formData.premium_payment_type ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "premium_payment_type", e.target.value)
+                    handleChange("premium_payment_type", e.target.value)
                   }
                 >
                   <option value="">Select...</option>
@@ -803,9 +760,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="select"
                   value={formData.applicant ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "applicant", e.target.value)
-                  }
+                  onChange={(e) => handleChange("applicant", e.target.value)}
                 >
                   <option value="">Select...</option>
                   <option value="APPLICANT_1">Applicant 1</option>
@@ -822,9 +777,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="select"
                   value={formData.in_trust ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "in_trust", e.target.value)
-                  }
+                  onChange={(e) => handleChange("in_trust", e.target.value)}
                 >
                   <option value="">Select...</option>
                   <option value="N/A">N/A</option>
@@ -841,7 +794,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     type="date"
                     value={formData.in_trust_date ?? ""}
                     onChange={(e) =>
-                      handleChange(index, "in_trust_date", e.target.value)
+                      handleChange("in_trust_date", e.target.value)
                     }
                   />
                 </FormGroup>
@@ -854,9 +807,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="select"
                   value={formData.guaranteed ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "guaranteed", e.target.value)
-                  }
+                  onChange={(e) => handleChange("guaranteed", e.target.value)}
                 >
                   <option value="">Select...</option>
                   <option value="N/A">N/A</option>
@@ -882,7 +833,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   }}
                   onChange={(e) =>
                     handleChange(
-                      index,
                       "policy_term",
                       e.target.value === ""
                         ? ""
@@ -901,7 +851,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="select"
                   value={formData.policy_term_validity ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "policy_term_validity", e.target.value)
+                    handleChange("policy_term_validity", e.target.value)
                   }
                 >
                   <option value="">Select...</option>
@@ -918,9 +868,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <Input
                     type="select"
                     value={formData.pays_out ?? ""}
-                    onChange={(e) =>
-                      handleChange(index, "pays_out", e.target.value)
-                    }
+                    onChange={(e) => handleChange("pays_out", e.target.value)}
                   >
                     <option value="">Select...</option>
                     <option value="ONE_YEAR">1 Year</option>
@@ -941,7 +889,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={formData.final_premium ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "final_premium", e.target.value)
+                    handleChange("final_premium", e.target.value)
                   }
                 />
               </FormGroup>
@@ -956,7 +904,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={formData.premium_quoted ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "premium_quoted", e.target.value)
+                    handleChange("premium_quoted", e.target.value)
                   }
                 />
               </FormGroup>
@@ -974,7 +922,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   className="border-primary"
                   checked={formData.part_of_menu_plan ?? false}
                   onChange={(e) =>
-                    handleChange(index, "part_of_menu_plan", e.target.checked)
+                    handleChange("part_of_menu_plan", e.target.checked)
                   }
                 />
                 <Label check>Part of a Menu Plan</Label>
@@ -996,11 +944,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       className="border-primary"
                       checked={formData.budget_plan_sold ?? false}
                       onChange={(e) =>
-                        handleChange(
-                          index,
-                          "budget_plan_sold",
-                          e.target.checked
-                        )
+                        handleChange("budget_plan_sold", e.target.checked)
                       }
                     />
                     <Label check>Budget Plan Sold</Label>
@@ -1025,7 +969,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           value={formData.budget_plan_benefit_period ?? ""}
                           onChange={(e) =>
                             handleChange(
-                              index,
                               "budget_plan_benefit_period",
                               e.target.value
                             )
@@ -1041,7 +984,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           value={formData.budget_plan_benefit_period_type ?? ""}
                           onChange={(e) =>
                             handleChange(
-                              index,
                               "budget_plan_benefit_period_type",
                               e.target.value
                             )
@@ -1065,7 +1007,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="date"
                   value={formData.case_submitted_date ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "case_submitted_date", e.target.value)
+                    handleChange("case_submitted_date", e.target.value)
                   }
                 />
               </FormGroup>
@@ -1078,11 +1020,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="date"
                   value={formData.case_underwritten_date ?? ""}
                   onChange={(e) =>
-                    handleChange(
-                      index,
-                      "case_underwritten_date",
-                      e.target.value
-                    )
+                    handleChange("case_underwritten_date", e.target.value)
                   }
                 />
               </FormGroup>
@@ -1095,7 +1033,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="date"
                   value={formData.terms_expiry_date ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "terms_expiry_date", e.target.value)
+                    handleChange("terms_expiry_date", e.target.value)
                   }
                 />
               </FormGroup>
@@ -1107,9 +1045,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="date"
                   value={formData.on_risk_date ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "on_risk_date", e.target.value)
-                  }
+                  onChange={(e) => handleChange("on_risk_date", e.target.value)}
                 />
               </FormGroup>
             </Col>
@@ -1120,7 +1056,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="date"
                   value={formData.cancelled_date ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "cancelled_date", e.target.value)
+                    handleChange("cancelled_date", e.target.value)
                   }
                 />
               </FormGroup>
@@ -1131,9 +1067,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 <Input
                   type="date"
                   value={formData.renewal_date ?? ""}
-                  onChange={(e) =>
-                    handleChange(index, "renewal_date", e.target.value)
-                  }
+                  onChange={(e) => handleChange("renewal_date", e.target.value)}
                 />
               </FormGroup>
             </Col>
@@ -1145,7 +1079,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="date"
                   value={formData.not_proceeding_date ?? ""}
                   onChange={(e) =>
-                    handleChange(index, "not_proceeding_date", e.target.value)
+                    handleChange("not_proceeding_date", e.target.value)
                   }
                 />
               </FormGroup>
@@ -1163,7 +1097,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   className="border-primary"
                   checked={formData.waiver_of_premium ?? false}
                   onChange={(e) =>
-                    handleChange(index, "waiver_of_premium", e.target.checked)
+                    handleChange("waiver_of_premium", e.target.checked)
                   }
                 />
                 <Label check>Waiver of Premium</Label>
@@ -1180,9 +1114,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   type="checkbox"
                   className="border-primary"
                   checked={formData.indexation ?? false}
-                  onChange={(e) =>
-                    handleChange(index, "indexation", e.target.checked)
-                  }
+                  onChange={(e) => handleChange("indexation", e.target.checked)}
                 />
                 <Label check>Indexation</Label>
               </FormGroup>
@@ -1215,7 +1147,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     checked={formData.total_permanent_disability_cover ?? false}
                     onChange={(e) =>
                       handleChange(
-                        index,
                         "total_permanent_disability_cover",
                         e.target.checked
                       )
@@ -1239,7 +1170,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   checked={formData.client_accepted_recommendation ?? false}
                   onChange={(e) =>
                     handleChange(
-                      index,
                       "client_accepted_recommendation",
                       e.target.checked
                     )
@@ -1261,11 +1191,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   className="border-primary"
                   checked={formData.non_standard_terms_issued ?? false}
                   onChange={(e) =>
-                    handleChange(
-                      index,
-                      "non_standard_terms_issued",
-                      e.target.checked
-                    )
+                    handleChange("non_standard_terms_issued", e.target.checked)
                   }
                 />
                 <Label check>Have non-standard terms been issued?</Label>
@@ -1281,7 +1207,6 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     value={formData.non_standard_terms_from_lender ?? ""}
                     onChange={(e) =>
                       handleChange(
-                        index,
                         "non_standard_terms_from_lender",
                         e.target.value
                       )
@@ -1319,7 +1244,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     className="border-primary"
                     checked={formData.fracture_cover ?? false}
                     onChange={(e) =>
-                      handleChange(index, "fracture_cover", e.target.checked)
+                      handleChange("fracture_cover", e.target.checked)
                     }
                   />
                   <Label check>Fracture Cover</Label>
