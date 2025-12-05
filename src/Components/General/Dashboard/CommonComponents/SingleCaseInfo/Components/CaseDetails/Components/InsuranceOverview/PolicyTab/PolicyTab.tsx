@@ -194,8 +194,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               onSubmit={(e) => handleSubmit(e, index)}
               className="mt-3"
             >
-              {/* Basic Information */}
-              <h5 className="mb-3">Basic Information</h5>
               <Row>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
@@ -207,7 +205,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(index, "policy_type", e.target.value)
                       }
                     >
-                      <option value="">Select...</option>
                       <option value="LIFE_LEVEL">Life Level</option>
                       <option value="LIFE_DECREASING">Life Decreasing</option>
                       <option value="LIFE_INCREASING">Life Increasing</option>
