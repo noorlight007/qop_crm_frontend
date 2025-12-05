@@ -625,7 +625,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
       <CopyCaseModal
         isOpen={isCopyCaseModalOpen}
         toggle={toggleCopyCaseModal}
-        caseData={currentCase as CaseInfoPrpos}
+        caseData={caseInfo as CaseInfoPrpos}
       />
     </Col>
   );

@@ -1,5 +1,5 @@
 import { useCopyCaseMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseCopy/CaseCopyApi";
-import { useParams } from "next/navigation";
+import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -18,7 +18,7 @@ import {
 interface CopyCaseModalProps {
   isOpen: boolean;
   toggle: () => void;
-  caseData: any;
+  caseData: CaseInfoPrpos;
 }
 
 const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
@@ -26,7 +26,6 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
   toggle,
   caseData,
 }) => {
-  const { casealias } = useParams();
   const [copyCase, { isLoading }] = useCopyCaseMutation();
   const [formData, setFormData] = useState({
     case_stage: "",
@@ -102,7 +101,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
         is_link_cases_together: formData.is_link_cases_together,
       };
 
-      await copyCase({ case_alias: casealias, payload }).unwrap();
+      await copyCase({ case_alias: caseData.alias, payload }).unwrap();
       toggle();
       toast.success("Case copied successfully!");
     } catch (error: any) {
@@ -119,7 +118,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} centered size="lg">
+    <Modal isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle}>
         <h3 className="text-primary">Copy Case</h3>
       </ModalHeader>
@@ -133,8 +132,9 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
               type="select"
               name="case_stage"
               id="case_stage"
-              value={formData?.case_stage || ""}
+              value={formData?.case_stage || caseData?.case_stage || ""}
               onChange={handleInputChange}
+              className="border-primary"
               required
             >
               {caseData?.case_category === "MORTGAGE" ? (
@@ -176,49 +176,61 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
               )}
             </Input>
           </FormGroup>
+
           <Row>
-            <Col sm="12" md="6">
-              <FormGroup check>
-                <Input
-                  type="checkbox"
-                  name="is_loan_details"
-                  id="is_loan_details"
-                  checked={formData.is_loan_details}
-                  onChange={handleInputChange}
-                />
-                <Label for="is_loan_details" check>
-                  Loan Details
-                </Label>
-              </FormGroup>
-            </Col>
-            <Col sm="12" md="6">
-              <FormGroup check>
-                <Input
-                  type="checkbox"
-                  name="is_insurance_loan_details"
-                  id="is_insurance_loan_details"
-                  checked={formData.is_insurance_loan_details}
-                  onChange={handleInputChange}
-                />
-                <Label for="is_insurance_loan_details" check>
-                  Insurance Loan Details
-                </Label>
-              </FormGroup>
-            </Col>
-            <Col sm="12" md="6">
-              <FormGroup check>
-                <Input
-                  type="checkbox"
-                  name="is_commission"
-                  id="is_commission"
-                  checked={formData.is_commission}
-                  onChange={handleInputChange}
-                />
-                <Label for="is_commission" check>
-                  Commission
-                </Label>
-              </FormGroup>
-            </Col>
+            {caseData?.case_category === "MORTGAGE" && (
+              <Col sm="12" md="6">
+                <FormGroup check>
+                  <Input
+                    type="checkbox"
+                    name="is_loan_details"
+                    id="is_loan_details"
+                    checked={formData.is_loan_details}
+                    onChange={handleInputChange}
+                    className="border-primary"
+                  />
+                  <Label for="is_loan_details" check>
+                    Loan Details
+                  </Label>
+                </FormGroup>
+              </Col>
+            )}
+            {(caseData?.case_category === "PROTECTION" ||
+              caseData?.case_category === "GENERAL_INSURANCE") && (
+              <>
+                <Col sm="12" md="6">
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      name="is_insurance_loan_details"
+                      id="is_insurance_loan_details"
+                      checked={formData.is_insurance_loan_details}
+                      onChange={handleInputChange}
+                      className="border-primary"
+                    />
+                    <Label for="is_insurance_loan_details" check>
+                      Insurance Overview
+                    </Label>
+                  </FormGroup>
+                </Col>
+                <Col sm="12" md="6">
+                  <FormGroup check>
+                    <Input
+                      type="checkbox"
+                      name="is_commission"
+                      id="is_commission"
+                      checked={formData.is_commission}
+                      onChange={handleInputChange}
+                      className="border-primary"
+                    />
+                    <Label for="is_commission" check>
+                      Commission
+                    </Label>
+                  </FormGroup>
+                </Col>
+              </>
+            )}
+
             <Col sm="12" md="6">
               <FormGroup check>
                 <Input
@@ -227,6 +239,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_applicants_details"
                   checked={formData.is_applicants_details}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_applicants_details" check>
                   Applicants Details
@@ -241,6 +254,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_employment_income"
                   checked={formData.is_employment_income}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_employment_income" check>
                   Employment Income
@@ -255,6 +269,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_credit_commitments"
                   checked={formData.is_credit_commitments}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_credit_commitments" check>
                   Credit Commitments
@@ -269,6 +284,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_adverse"
                   checked={formData.is_adverse}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_adverse" check>
                   Adverse
@@ -283,6 +299,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_portfolio"
                   checked={formData.is_portfolio}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_portfolio" check>
                   Portfolio
@@ -297,6 +314,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_security_property"
                   checked={formData.is_security_property}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_security_property" check>
                   Security Property
@@ -311,6 +329,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_solicitors_accountants"
                   checked={formData.is_solicitors_accountants}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_solicitors_accountants" check>
                   Solicitors & Accountants
@@ -325,6 +344,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_budget_planner"
                   checked={formData.is_budget_planner}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_budget_planner" check>
                   Budget Planner
@@ -339,6 +359,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_existing_protection"
                   checked={formData.is_existing_protection}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_existing_protection" check>
                   Existing Protection
@@ -353,6 +374,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_mortgage_your_needs"
                   checked={formData.is_mortgage_your_needs}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_mortgage_your_needs" check>
                   Mortgage Your Needs
@@ -367,6 +389,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_notes"
                   checked={formData.is_notes}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_notes" check>
                   Notes
@@ -381,6 +404,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_product"
                   checked={formData.is_product}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_product" check>
                   Product
@@ -395,6 +419,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_dip_history"
                   checked={formData.is_dip_history}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_dip_history" check>
                   DIP History
@@ -409,6 +434,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_suitability"
                   checked={formData.is_suitability}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_suitability" check>
                   Suitability
@@ -423,6 +449,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_fees"
                   checked={formData.is_fees}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_fees" check>
                   Fees
@@ -437,6 +464,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_compliance"
                   checked={formData.is_compliance}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_compliance" check>
                   Compliance
@@ -451,6 +479,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_client_survey"
                   checked={formData.is_client_survey}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_client_survey" check>
                   Client Survey
@@ -465,6 +494,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_documents"
                   checked={formData.is_documents}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_documents" check>
                   Documents
@@ -479,6 +509,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_health_insurance"
                   checked={formData.is_health_insurance}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_health_insurance" check>
                   Health Insurance
@@ -493,6 +524,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                   id="is_link_cases_together"
                   checked={formData.is_link_cases_together}
                   onChange={handleInputChange}
+                  className="border-primary"
                 />
                 <Label for="is_link_cases_together" check>
                   Link Cases Together
@@ -505,7 +537,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
             <Button
               color="primary"
               type="submit"
-              disabled={isLoading || !formData.case_stage}
+              disabled={isLoading || !caseData.case_stage}
             >
               {isLoading ? "Copying..." : "Copy Case"}
             </Button>
