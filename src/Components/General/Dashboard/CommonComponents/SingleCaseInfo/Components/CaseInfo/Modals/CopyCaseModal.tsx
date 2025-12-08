@@ -316,62 +316,58 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
           </FormGroup>
 
           <Row>
-            {caseData?.case_category === "MORTGAGE" &&
-              isFieldVisible("Loan Details") && (
-                <Col sm="12" md="6">
-                  <FormGroup check>
-                    <Input
-                      type="checkbox"
-                      name="is_loan_details"
-                      id="is_loan_details"
-                      checked={formData.is_loan_details}
-                      onChange={handleInputChange}
-                      className="border-primary"
-                    />
-                    <Label for="is_loan_details" check>
-                      Loan Details
-                    </Label>
-                  </FormGroup>
-                </Col>
-              )}
-            {(caseData?.case_category === "PROTECTION" ||
-              caseData?.case_category === "GENERAL_INSURANCE") &&
-              isFieldVisible("Insurance Overview") && (
-                <>
-                  <Col sm="12" md="6">
-                    <FormGroup check>
-                      <Input
-                        type="checkbox"
-                        name="is_insurance_loan_details"
-                        id="is_insurance_loan_details"
-                        checked={formData.is_insurance_loan_details}
-                        onChange={handleInputChange}
-                        className="border-primary"
-                      />
-                      <Label for="is_insurance_loan_details" check>
-                        Insurance Overview
-                      </Label>
-                    </FormGroup>
-                  </Col>
-                  {isFieldVisible("Commission") && (
-                    <Col sm="12" md="6">
-                      <FormGroup check>
-                        <Input
-                          type="checkbox"
-                          name="is_commission"
-                          id="is_commission"
-                          checked={formData.is_commission}
-                          onChange={handleInputChange}
-                          className="border-primary"
-                        />
-                        <Label for="is_commission" check>
-                          Commission
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                  )}
-                </>
-              )}
+            {isFieldVisible("Loan Details") && (
+              <Col sm="12" md="6">
+                <FormGroup check>
+                  <Input
+                    type="checkbox"
+                    name="is_loan_details"
+                    id="is_loan_details"
+                    checked={formData.is_loan_details}
+                    onChange={handleInputChange}
+                    className="border-primary"
+                  />
+                  <Label for="is_loan_details" check>
+                    Loan Details
+                  </Label>
+                </FormGroup>
+              </Col>
+            )}
+
+            {isFieldVisible("Insurance Overview") && (
+              <Col sm="12" md="6">
+                <FormGroup check>
+                  <Input
+                    type="checkbox"
+                    name="is_insurance_loan_details"
+                    id="is_insurance_loan_details"
+                    checked={formData.is_insurance_loan_details}
+                    onChange={handleInputChange}
+                    className="border-primary"
+                  />
+                  <Label for="is_insurance_loan_details" check>
+                    Insurance Overview
+                  </Label>
+                </FormGroup>
+              </Col>
+            )}
+            {isFieldVisible("Commission") && (
+              <Col sm="12" md="6">
+                <FormGroup check>
+                  <Input
+                    type="checkbox"
+                    name="is_commission"
+                    id="is_commission"
+                    checked={formData.is_commission}
+                    onChange={handleInputChange}
+                    className="border-primary"
+                  />
+                  <Label for="is_commission" check>
+                    Commission
+                  </Label>
+                </FormGroup>
+              </Col>
+            )}
 
             {isFieldVisible("Applicant(s) Details") && (
               <Col sm="12" md="6">
