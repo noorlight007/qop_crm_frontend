@@ -95,7 +95,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
               xs="12"
               className="text-md-end text-center mt-2 mt-md-0"
             >
-              {session?.user.user_type === "NETWORK_ADMIN" && (
+              {session?.user.user_type === "NETWORK_DIRECTOR" && (
                 <Button color="primary" onClick={toggleModal}>
                   <TbCirclePlus size={18} className="me-1" />
                   Add Organisation

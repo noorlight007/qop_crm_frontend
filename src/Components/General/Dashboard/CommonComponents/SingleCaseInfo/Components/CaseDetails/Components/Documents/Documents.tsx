@@ -302,8 +302,8 @@ const Documents: React.FC = () => {
               </div>
               {selectedDocuments.size > 0 && (
                 <>
-                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                    session?.user?.user_type === "NETWORK_ADMIN") && (
+                  {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                    session?.user?.user_type === "NETWORK_DIRECTOR") && (
                     <Button color="danger" onClick={handleBatchDelete}>
                       <i className="fa-solid fa-trash me-1"></i>
                       Delete Selected ({selectedDocuments.size})
@@ -528,8 +528,9 @@ const Documents: React.FC = () => {
                                 <i className="fa-solid fa-edit"></i>
                               </button>
                               {(session?.user?.user_type ===
-                                "ORGANIZATION_ADMIN" ||
-                                session?.user?.user_type === "NETWORK_ADMIN" ||
+                                "ORGANISATION_DIRECTOR" ||
+                                session?.user?.user_type ===
+                                  "NETWORK_DIRECTOR" ||
                                 session?.user?.user_type !==
                                   "NETWORK_COMPLIANCE_ASSISTANT") && (
                                 <button

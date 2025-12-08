@@ -13,20 +13,20 @@ const UserLogin = () => {
     if (session?.user?.user_type === "ADMIN") {
       router.push("/dashboard/admin");
     } else if (
-      session?.user?.user_type === "NETWORK_ADMIN" ||
+      session?.user?.user_type === "NETWORK_DIRECTOR" ||
       session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
     ) {
       router.push("/dashboard/network/director");
     } else if (session?.user?.user_type === "NETWORK_ADVISER") {
       router.push("/dashboard/network/adviser");
+    } else if (session?.user?.user_type === "ORGANISATION_DIRECTOR") {
+      router.push("/dashboard/organisation/director");
+    } else if (session?.user?.user_type === "ORGANISATION_ADVISER") {
+      router.push("/dashboard/organisation/adviser");
+    } else if (session?.user?.user_type === "ORGANISATION_ADMIN") {
+      router.push("/dashboard/organisation/admin");
     } else if (session?.user?.user_type === "CLIENT") {
       router.push("/dashboard/client");
-    } else if (session?.user?.user_type === "ORGANIZATION_ADMIN") {
-      router.push("/dashboard/organisation");
-    } else if (session?.user?.user_type === "ORGANIZATION_ADVISER") {
-      router.push("/dashboard/orgadviser");
-    } else if (session?.user?.user_type === "ORGANIZATION_SUPPORT") {
-      router.push("/dashboard/orgstaff");
     } else {
       if (session?.user?.accessToken) {
         router.push("/logout");

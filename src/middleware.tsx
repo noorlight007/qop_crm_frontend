@@ -23,7 +23,7 @@ export default withAuth(
 
     if (
       path.startsWith("/dashboard/network/director") &&
-      !["NETWORK_ADMIN", "NETWORK_COMPLIANCE_ASSISTANT"].includes(
+      !["NETWORK_DIRECTOR", "NETWORK_COMPLIANCE_ASSISTANT"].includes(
         token.user_type as string
       )
     ) {
@@ -41,33 +41,33 @@ export default withAuth(
       return NextResponse.redirect(loginUrl);
     }
 
+    if (
+      path.startsWith("/dashboard/organisation/director") &&
+      token.user_type !== "ORGANISATION_DIRECTOR"
+    ) {
+      const loginUrl = new URL("/auth/login", req.url);
+      loginUrl.searchParams.set("error", "unauthorized");
+      return NextResponse.redirect(loginUrl);
+    }
+
+    if (
+      path.startsWith("/dashboard/organisation/adviser") &&
+      token.user_type !== "ORGANISATION_ADVISER"
+    ) {
+      const loginUrl = new URL("/auth/login", req.url);
+      loginUrl.searchParams.set("error", "unauthorized");
+      return NextResponse.redirect(loginUrl);
+    }
+    if (
+      path.startsWith("/dashboard/organisation/admin") &&
+      token.user_type !== "ORGANISATION_ADMIN"
+    ) {
+      const loginUrl = new URL("/auth/login", req.url);
+      loginUrl.searchParams.set("error", "unauthorized");
+      return NextResponse.redirect(loginUrl);
+    }
+
     if (path.startsWith("/dashboard/client") && token.user_type !== "CLIENT") {
-      const loginUrl = new URL("/auth/login", req.url);
-      loginUrl.searchParams.set("error", "unauthorized");
-      return NextResponse.redirect(loginUrl);
-    }
-
-    if (
-      path.startsWith("/dashboard/organisation") &&
-      token.user_type !== "ORGANIZATION_ADMIN"
-    ) {
-      const loginUrl = new URL("/auth/login", req.url);
-      loginUrl.searchParams.set("error", "unauthorized");
-      return NextResponse.redirect(loginUrl);
-    }
-
-    if (
-      path.startsWith("/dashboard/orgadviser") &&
-      token.user_type !== "ORGANIZATION_ADVISER"
-    ) {
-      const loginUrl = new URL("/auth/login", req.url);
-      loginUrl.searchParams.set("error", "unauthorized");
-      return NextResponse.redirect(loginUrl);
-    }
-    if (
-      path.startsWith("/dashboard/orgstaff") &&
-      token.user_type !== "ORGANIZATION_SUPPORT"
-    ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -86,10 +86,10 @@ export const config = {
   matcher: [
     "/dashboard/:path*",
     "/dashboard/network/director/:path*",
-    "/dashboard/netadviser/:path*",
-    "/dashboard/organisation/:path*",
-    "/dashboard/orgadviser/:path*",
-    "/dashboard/orgstaff/:path*",
+    "/dashboard/network/adviser/:path*",
+    "/dashboard/organisation/director/:path*",
+    "/dashboard/organisation/adviser/:path*",
+    "/dashboard/organisation/admin/:path*",
     "/dashboard/client/:path*",
   ],
 };

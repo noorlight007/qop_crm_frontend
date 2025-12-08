@@ -162,8 +162,8 @@ const Notes: React.FC = () => {
               <th style={{ minWidth: "100px", textAlign: "center" }}>
                 Client Visible
               </th>
-              {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                session?.user?.user_type === "NETWORK_ADMIN") && (
+              {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                session?.user?.user_type === "NETWORK_DIRECTOR") && (
                 <th style={{ minWidth: "100px", textAlign: "center" }}>
                   Actions
                 </th>
@@ -231,8 +231,8 @@ const Notes: React.FC = () => {
                       <FaRegTimesCircle size={16} className="text-danger" />
                     )}
                   </td>
-                  {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                    session?.user?.user_type === "NETWORK_ADMIN") && (
+                  {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                    session?.user?.user_type === "NETWORK_DIRECTOR") && (
                     <td className="text-center">
                       <Button
                         color="danger"

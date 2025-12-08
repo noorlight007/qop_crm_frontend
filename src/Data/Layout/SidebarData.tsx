@@ -1,9 +1,9 @@
 import { MenuItem } from "@/Types/LayoutTypes";
 
-//NetworkOwnerMenu
-const NetworkOwnerMenu: MenuItem[] = [
+//NetworkDirectorMenu
+const NetworkDirectorMenu: MenuItem[] = [
   {
-    title: "Network Owner",
+    title: "Director",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -108,7 +108,7 @@ const NetworkOwnerMenu: MenuItem[] = [
 // Network Adviser Menu
 const NetworkAdviserMenu: MenuItem[] = [
   {
-    title: "Network Adviser",
+    title: "Adviser",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -167,10 +167,10 @@ const NetworkAdviserMenu: MenuItem[] = [
   },
 ];
 
-// OrganisationOwnerMenu
-const OrganisationOwnerMenu: MenuItem[] = [
+// OrganisationDirectorMenu
+const OrganisationDirectorMenu: MenuItem[] = [
   {
-    title: "Organisation Owner",
+    title: "Director",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -265,7 +265,7 @@ const OrganisationOwnerMenu: MenuItem[] = [
 //Or Organisation adviser Menu
 const OrganisationAdviserMenu: MenuItem[] = [
   {
-    title: "Organisation Adviser",
+    title: "Adviser",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -326,9 +326,9 @@ const OrganisationAdviserMenu: MenuItem[] = [
   },
 ];
 //Or Organisation staff Menu
-const OrganisationStaffMenu: MenuItem[] = [
+const OrganisationAdminMenu: MenuItem[] = [
   {
-    title: "Org. Admin",
+    title: "Admin",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -414,26 +414,26 @@ const ClientMenu: MenuItem[] = [
 export {
   ClientMenu,
   NetworkAdviserMenu,
-  NetworkOwnerMenu,
+  NetworkDirectorMenu,
+  OrganisationAdminMenu,
   OrganisationAdviserMenu,
-  OrganisationOwnerMenu,
-  OrganisationStaffMenu,
+  OrganisationDirectorMenu,
 };
 
 export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
-    case "NETWORK_ADMIN":
-      return NetworkOwnerMenu;
+    case "NETWORK_DIRECTOR":
+      return NetworkDirectorMenu;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return NetworkOwnerMenu;
-    case "ORGANIZATION_ADMIN":
-      return OrganisationOwnerMenu;
+      return NetworkDirectorMenu;
     case "NETWORK_ADVISER":
       return NetworkAdviserMenu;
-    case "ORGANIZATION_ADVISER":
+    case "ORGANISATION_DIRECTOR":
+      return OrganisationDirectorMenu;
+    case "ORGANISATION_ADVISER":
       return OrganisationAdviserMenu;
-    case "ORGANIZATION_SUPPORT":
-      return OrganisationStaffMenu;
+    case "ORGANISATION_ADMIN":
+      return OrganisationAdminMenu;
     case "CLIENT":
       return ClientMenu;
     default:

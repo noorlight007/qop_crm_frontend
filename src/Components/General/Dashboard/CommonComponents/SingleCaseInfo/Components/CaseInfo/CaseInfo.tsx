@@ -163,8 +163,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                   <TbCopy size="16" className="me-1" />
                   Copy Case
                 </DropdownItem>
-                {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                  session?.user?.user_type === "NETWORK_ADMIN") && (
+                {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                  session?.user?.user_type === "NETWORK_DIRECTOR") && (
                   <>
                     <DropdownItem divider />
                     <DropdownItem

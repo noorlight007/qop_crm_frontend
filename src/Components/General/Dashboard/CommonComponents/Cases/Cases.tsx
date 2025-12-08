@@ -155,7 +155,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <i className="fa-solid fa-filter"></i>
                     )}
                   </Button>
-                  {userType !== "ORGANIZATION_SUPPORT" &&
+                  {userType !== "ORGANISATION_ADMIN" &&
                     userType !== "NETWORK_COMPLIANCE_ASSISTANT" && (
                       <Button
                         color="primary"
@@ -284,7 +284,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <th>Review Date</th>
                       <th>Created At</th>
                       <th>
-                        {session?.user?.user_type === "NETWORK_ADMIN" ||
+                        {session?.user?.user_type === "NETWORK_DIRECTOR" ||
                         session?.user?.user_type === "NETWORK_ADVISER"
                           ? "Organisation"
                           : session?.user?.user_type === "ORGANISATION_ADMIN" ||
@@ -292,10 +292,11 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               "ORGANISATION_ADVISER" ||
                             session?.user?.user_type ===
                               "ORGANISATION_SUPPORT" ||
-                            session?.user?.user_type === "ORGANIZATION_ADMIN" ||
                             session?.user?.user_type ===
-                              "ORGANIZATION_ADVISER" ||
-                            session?.user?.user_type === "ORGANIZATION_SUPPORT"
+                              "ORGANISATION_DIRECTOR" ||
+                            session?.user?.user_type ===
+                              "ORGANISATION_ADVISER" ||
+                            session?.user?.user_type === "ORGANISATION_ADMIN"
                           ? "Network"
                           : "Unknown"}
                       </th>
@@ -485,7 +486,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           </td>
                           <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
                           <td className="text-truncate">
-                            {userType === "NETWORK_ADMIN" ||
+                            {userType === "NETWORK_DIRECTOR" ||
                             userType === "NETWORK_ADVISER"
                               ? caseItem.organization?.name ?? (
                                   <span className="text-muted">
@@ -495,9 +496,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               : userType === "ORGANISATION_ADMIN" ||
                                 userType === "ORGANISATION_ADVISER" ||
                                 userType === "ORGANISATION_SUPPORT" ||
-                                userType === "ORGANIZATION_ADMIN" ||
-                                userType === "ORGANIZATION_ADVISER" ||
-                                userType === "ORGANIZATION_SUPPORT"
+                                userType === "ORGANISATION_DIRECTOR" ||
+                                userType === "ORGANISATION_ADVISER" ||
+                                userType === "ORGANISATION_ADMIN"
                               ? caseItem.network?.name ?? "Self"
                               : "-"}
                           </td>
@@ -570,8 +571,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               >
                                 <i className="icon-pencil-alt"></i>
                               </Button>
-                              {userType !== "ORGANIZATION_SUPPORT" &&
-                                userType !== "ORGANIZATION_ADVISER" &&
+                              {userType !== "ORGANISATION_ADMIN" &&
+                                userType !== "ORGANISATION_ADVISER" &&
                                 userType !== "NETWORK_COMPLIANCE_ASSISTANT" && (
                                   <Button
                                     size="sm"

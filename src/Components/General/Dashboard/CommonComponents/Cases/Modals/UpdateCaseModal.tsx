@@ -168,8 +168,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                 )}
               </Input>
             </FormGroup>
-            {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-              session?.user?.user_type === "NETWORK_ADMIN") && (
+            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+              session?.user?.user_type === "NETWORK_DIRECTOR") && (
               <FormGroup>
                 <Label for="adviser">Assign Adviser</Label>
                 <Input

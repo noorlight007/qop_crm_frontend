@@ -47,7 +47,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
           <hr />
 
           {/** Delete organisation Section **/}
-          {session?.user.user_type === "NETWORK_ADMIN" && (
+          {session?.user.user_type === "NETWORK_DIRECTOR" && (
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <h5 className="fw-bold">Delete this organisation</h5>
