@@ -1,5 +1,5 @@
 import { useUpdateCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
@@ -168,8 +168,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                 )}
               </Input>
             </FormGroup>
-            {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-              session?.user?.user_type === "NETWORK_ADMIN") && (
+            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+              session?.user?.user_type === "NETWORK_DIRECTOR") && (
               <FormGroup>
                 <Label for="adviser">Assign Adviser</Label>
                 <Input

@@ -1,6 +1,6 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/LeadDetalisApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { LeadsInfo } from "@/Types/CommonComponents/Directors/LeadTypes";
@@ -241,8 +241,8 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               <option value="GENERAL_INSURANCE">General Insurance</option>
             </Input>
           </FormGroup>
-          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-            session?.user?.user_type === "NETWORK_ADMIN") && (
+          {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+            session?.user?.user_type === "NETWORK_DIRECTOR") && (
             <FormGroup>
               <Label for="adviser">Assign Adviser</Label>
               <Input

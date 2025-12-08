@@ -1,7 +1,7 @@
 import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/UpdateClientModal";
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/ClientDetailsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
 import {
   CaseInfoPrpos,
   SingleCaseProps,
@@ -163,8 +163,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                   <TbCopy size="16" className="me-1" />
                   Copy Case
                 </DropdownItem>
-                {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                  session?.user?.user_type === "NETWORK_ADMIN") && (
+                {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                  session?.user?.user_type === "NETWORK_DIRECTOR") && (
                   <>
                     <DropdownItem divider />
                     <DropdownItem

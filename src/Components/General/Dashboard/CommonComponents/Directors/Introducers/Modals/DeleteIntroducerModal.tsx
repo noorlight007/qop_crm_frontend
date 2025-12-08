@@ -1,4 +1,4 @@
-import { useDeleteIntroducerDetailsMutation } from "@/Redux/Reducers/CommonComponents/Directors/IntroducerDetailsApi";
+import { useDeleteIntroducerDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/IntroducerDetailsApi";
 import { DeleteIntroducerModalProps } from "@/Types/CommonComponents/Directors/IntroducerTypes";
 import React from "react";
 import { toast } from "react-toastify";

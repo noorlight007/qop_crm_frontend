@@ -1,4 +1,4 @@
-import { useAddAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
+import { useAddAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
 import { AddAdviserModalProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
