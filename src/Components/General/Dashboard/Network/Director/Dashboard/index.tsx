@@ -2,13 +2,13 @@ import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/Co
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
+import OrganisationList from "../Users/Organisations/OrganisationList/OrganisationList";
 import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
 import PerformanceOverview from "./PerformanceOverview/PerformanceOverview";
 import RecentActivity from "./RecentActivity/RecentActivity";
-import OrganisationList from "../Users/Organisations/OrganisationList/OrganisationList";
 
-const ContainerNetwork = () => {
+const ContainerNetworkDirector = () => {
   //RTK hooks
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
@@ -63,4 +63,4 @@ const ContainerNetwork = () => {
   );
 };
 
-export default ContainerNetwork;
+export default ContainerNetworkDirector;

@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import Cases from "@/Components/General/Dashboard/CommonComponents/Cases/Cases";
 import { Container, Row } from "reactstrap";
 
-const NetworkCaseContainer: React.FC = () => {
+const NetworkDirectorCasesContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -20,4 +20,4 @@ const NetworkCaseContainer: React.FC = () => {
   );
 };
 
-export default NetworkCaseContainer;
+export default NetworkDirectorCasesContainer;

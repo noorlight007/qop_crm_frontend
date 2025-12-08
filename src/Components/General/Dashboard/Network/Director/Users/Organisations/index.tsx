@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import OrganisationList from "./OrganisationList/OrganisationList";
 import "./Organisations.css";
 
-const OrganisationsContainer = () => {
+const NetworkDirectorOrganisationsContainer = () => {
   return (
     <>
       <Breadcrumbs
@@ -16,4 +16,4 @@ const OrganisationsContainer = () => {
   );
 };
 
-export default OrganisationsContainer;
+export default NetworkDirectorOrganisationsContainer;

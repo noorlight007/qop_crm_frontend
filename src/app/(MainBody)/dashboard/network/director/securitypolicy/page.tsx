@@ -1,7 +1,7 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const NetworkSecurityPolicy = () => {
+const NetworkDirectorSecurityPolicy = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
@@ -18,4 +18,4 @@ const NetworkSecurityPolicy = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default NetworkSecurityPolicy;
+export default NetworkDirectorSecurityPolicy;

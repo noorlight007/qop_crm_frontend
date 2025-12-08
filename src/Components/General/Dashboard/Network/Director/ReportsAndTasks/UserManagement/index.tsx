@@ -8,7 +8,7 @@ import RecentSystemActivity from "./RecentSystemActivity/RecentSystemActivity";
 import SystemAlerts from "./SystemAlerts/SystemAlerts";
 import WeeklyActivity from "./WeeklyActivity/WeeklyActivity";
 
-const UserManagementContainer: React.FC = () => {
+const NetworkDirectorUserManagementContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -32,4 +32,4 @@ const UserManagementContainer: React.FC = () => {
   );
 };
 
-export default UserManagementContainer;
+export default NetworkDirectorUserManagementContainer;

@@ -1,7 +1,7 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const NetworkAdvisersStatus = () => {
+const NetworkDirectorAdvisersStatus = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
@@ -18,4 +18,4 @@ const NetworkAdvisersStatus = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default NetworkAdvisersStatus;
+export default NetworkDirectorAdvisersStatus;

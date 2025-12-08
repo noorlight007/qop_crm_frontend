@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import { Container } from "reactstrap";
 import SecurityPoliciesManagement from "./SecurityPoliciesManagement/SecurityPoliciesManagement";
 
-const SecurityPolicyContainer: React.FC = () => {
+const NetworkDirectorSecurityPolicyContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const SecurityPolicyContainer: React.FC = () => {
   );
 };
 
-export default SecurityPolicyContainer;
+export default NetworkDirectorSecurityPolicyContainer;

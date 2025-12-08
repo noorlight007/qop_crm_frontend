@@ -16,7 +16,7 @@ import {
   Table,
 } from "reactstrap";
 
-const NetworkAdvisersStatusContainer: React.FC = () => {
+const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
   // RTK hooks
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
@@ -242,4 +242,4 @@ const NetworkAdvisersStatusContainer: React.FC = () => {
   );
 };
 
-export default NetworkAdvisersStatusContainer;
+export default NetworkDirectorAdvisersStatusContainer;

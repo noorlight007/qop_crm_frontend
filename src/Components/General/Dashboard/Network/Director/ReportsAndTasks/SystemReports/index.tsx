@@ -1,11 +1,11 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { Container, Row } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import CaseAdviserActivityTrends from "./CaseAdviserActivityTrends/CaseAdviserActivityTrends";
 import ComplianceStatusDistribution from "./ComplianceStatusDistribution/ComplianceStatusDistribution";
 import KeyPerformanceMetrics from "./KeyPerformanceMetrics/KeyPerformanceMetrics";
 import SystemReportsAnalytics from "./SystemReportsAnalytics/SystemReportsAnalytics";
 
-const SystemReportsContainer: React.FC = () => {
+const NetworkDirectorSystemReportsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -26,4 +26,4 @@ const SystemReportsContainer: React.FC = () => {
   );
 };
 
-export default SystemReportsContainer;
+export default NetworkDirectorSystemReportsContainer;

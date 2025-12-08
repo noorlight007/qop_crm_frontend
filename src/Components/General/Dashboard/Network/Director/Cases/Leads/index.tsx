@@ -1,8 +1,8 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
+import Leads from "@/Components/General/Dashboard/CommonComponents/Directors/Leads/Leads";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import Leads from "../../../CommonComponents/Directors/Leads/Leads";
 
-const NetworkLeadsContainer: React.FC = () => {
+const NetworkDirectorLeadsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const NetworkLeadsContainer: React.FC = () => {
   );
 };
 
-export default NetworkLeadsContainer;
+export default NetworkDirectorLeadsContainer;

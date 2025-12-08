@@ -19,7 +19,7 @@ import OrgLeads from "./Leads/OrgLeads";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
 
-const SingleOrganisationContainer: React.FC = () => {
+const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
   const { organisationslug } = useParams();
   const router = useRouter();
@@ -129,4 +129,4 @@ const SingleOrganisationContainer: React.FC = () => {
   );
 };
 
-export default SingleOrganisationContainer;
+export default NetworkDirectorSingleOrganisationContainer;

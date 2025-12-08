@@ -1,7 +1,7 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const SingleCaseAlias = () => {
+const NetworkDirectorSingleCaseAlias = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
@@ -18,4 +18,4 @@ const SingleCaseAlias = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default SingleCaseAlias;
+export default NetworkDirectorSingleCaseAlias;

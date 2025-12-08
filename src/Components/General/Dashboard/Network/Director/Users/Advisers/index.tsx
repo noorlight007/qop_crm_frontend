@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import Advisers from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Advisers";
 import { Container } from "reactstrap";
 
-const AdvisersContainer: React.FC = () => {
+const NetworkDirectorAdvisersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const AdvisersContainer: React.FC = () => {
   );
 };
 
-export default AdvisersContainer;
+export default NetworkDirectorAdvisersContainer;

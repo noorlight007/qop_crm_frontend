@@ -1,8 +1,8 @@
-import { Container } from "reactstrap";
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
+import { Container } from "reactstrap";
 import AuditLogsAndActivityTracking from "./AuditLogsAndActivityTracking/AuditLogsAndActivityTracking";
 
-const AuditLogContainer: React.FC = () => {
+const NetworkDirectorAuditLogContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const AuditLogContainer: React.FC = () => {
   );
 };
 
-export default AuditLogContainer;
+export default NetworkDirectorAuditLogContainer;
