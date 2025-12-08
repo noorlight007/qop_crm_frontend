@@ -1,5 +1,6 @@
 "use client";
-import { useGetOrganisationReportsMutation } from "@/Redux/Reducers/Organisation/Reports/OrganisationReportsApi";
+
+import { useGetOrganisationDirectorReportsMutation } from "@/Redux/Reducers/Organisation/Director/Reports/OrganisationDirectorReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -19,12 +20,12 @@ import {
 } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
-const OrganisationReportsContainer: React.FC = () => {
+const OrganisationDirectorReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [getOrganisationReports, { isLoading }] =
-    useGetOrganisationReportsMutation();
+    useGetOrganisationDirectorReportsMutation();
 
   const [filters, setFilters] = useState({
     date_filter: "",
@@ -469,4 +470,4 @@ const OrganisationReportsContainer: React.FC = () => {
   );
 };
 
-export default OrganisationReportsContainer;
+export default OrganisationDirectorReportsContainer;

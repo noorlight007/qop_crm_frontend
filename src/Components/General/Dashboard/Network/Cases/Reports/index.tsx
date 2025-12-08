@@ -20,7 +20,7 @@ import {
 } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
-const NetworkReportsContainer: React.FC = () => {
+const NetworkDirectorReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -501,4 +501,4 @@ const NetworkReportsContainer: React.FC = () => {
   );
 };
 
-export default NetworkReportsContainer;
+export default NetworkDirectorReportsContainer;

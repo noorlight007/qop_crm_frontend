@@ -1,8 +1,8 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const OrganisationReportsApi = baseApi.injectEndpoints({
+export const OrganisationDirectorReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getOrganisationReports: builder.mutation({
+    getOrganisationDirectorReports: builder.mutation({
       query: (params) => ({
         url: "reports/organization/",
         method: "GET",
@@ -15,4 +15,5 @@ export const OrganisationReportsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetOrganisationReportsMutation } = OrganisationReportsApi;
+export const { useGetOrganisationDirectorReportsMutation } =
+  OrganisationDirectorReportsApi;
