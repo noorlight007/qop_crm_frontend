@@ -1,7 +1,7 @@
 import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
 import { Col, Container, Row } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import MyTask from "../../CommonComponents/MyTask/MyTask";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
 import ClientGrowth from "./ClientGrowth/ClientGrowth";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";

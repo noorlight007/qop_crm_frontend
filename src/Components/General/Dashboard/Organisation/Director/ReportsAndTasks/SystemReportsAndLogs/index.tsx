@@ -1,5 +1,5 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import SystemReportsAndLogsOverview from "./SystemReportsAndLogsOverview/SystemReportsAndLogsOverview";
 import SystemReportsAndLogsTabs from "./SystemReportsAndLogsTabs/SystemReportsAndLogsTabs";
 

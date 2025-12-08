@@ -1,6 +1,6 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
+import Clients from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Clients";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import Clients from "../../../CommonComponents/Directors/Clients/Clients";
 
 const OrganisationClientsContainer: React.FC = () => {
   return (
