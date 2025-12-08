@@ -1,5 +1,5 @@
 "use client";
-import { useGetNetworkReportsMutation } from "@/Redux/Reducers/Network/Reports/NetworkReportsApi";
+import { useGetNetworkDirectorReportsMutation } from "@/Redux/Reducers/Network/Director/Reports/NetworkDirectorReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaShoppingBag } from "react-icons/fa";
@@ -24,7 +24,8 @@ const NetworkReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [getNetworkReports, { isLoading }] = useGetNetworkReportsMutation();
+  const [getNetworkReports, { isLoading }] =
+    useGetNetworkDirectorReportsMutation();
 
   const [filters, setFilters] = useState({
     date_filter: "",

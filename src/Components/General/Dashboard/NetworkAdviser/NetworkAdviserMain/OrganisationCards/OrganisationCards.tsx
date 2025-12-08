@@ -1,4 +1,4 @@
-import { useGetOrganisationListQuery } from "@/Redux/Reducers/Network/Organisations/OrganisationListApi";
+import { useGetOrganisationListQuery } from "@/Redux/Reducers/Network/Director/Organisations/OrganisationListApi";
 import Image from "next/image";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";

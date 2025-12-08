@@ -1,6 +1,6 @@
 "use client";
 import ViewLeadModal from "@/Components/General/Dashboard/CommonComponents/Directors/Leads/Modals/ViewLeadModal";
-import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgLeadsApi";
+import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgLeadsApi";
 import {
   LeadsInfo,
   LeadsProps,

@@ -1,5 +1,5 @@
 "use client";
-import { useGetNetworkAdviserReportsMutation } from "@/Redux/Reducers/NetworkAdviser/Reports/NetworkAdviserReportsApi";
+import { useGetNetworkAdviserReportsMutation } from "@/Redux/Reducers/Network/Adviser/Reports/NetworkAdviserReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

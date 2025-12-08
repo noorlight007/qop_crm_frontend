@@ -2,7 +2,8 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
-} from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/SingleOrganisationApi";
+} from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
+import { SingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
 import LoadingSpinner from "@/app/loading";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,11 +18,9 @@ import DangerZone from "./DangerZone/DangerZone";
 import OrgLeads from "./Leads/OrgLeads";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
-import { SingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
 
 const SingleOrganisationContainer: React.FC = () => {
-  const [singleOrgInfo, setSingleOrgInfo] =
-    useState<SingleOrganisationProps>();
+  const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
   const { organisationslug } = useParams();
   const router = useRouter();
 

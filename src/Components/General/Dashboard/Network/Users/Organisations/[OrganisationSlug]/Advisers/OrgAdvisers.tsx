@@ -1,6 +1,6 @@
 "use client";
 import ViewAdviserModal from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Modals/ViewAdviserModal";
-import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgAdvisersApi";
+import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgAdvisersApi";
 import {
   AdviserInfoProps,
   AdvisersProps,

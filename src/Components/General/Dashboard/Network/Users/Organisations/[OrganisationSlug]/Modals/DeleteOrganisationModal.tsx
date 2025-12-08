@@ -1,4 +1,4 @@
-import { useDeleteOrganisationMutation } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/SingleOrganisationApi";
+import { useDeleteOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { DeleteOrganisationModalProps } from "@/Types/Network/OrganisationsTypes";
 import { useRouter } from "next/navigation";
 

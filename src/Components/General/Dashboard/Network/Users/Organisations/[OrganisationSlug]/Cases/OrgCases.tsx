@@ -1,4 +1,4 @@
-import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/OrgCasesApi";
+import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import {
   formatDateToDMY,

@@ -1,4 +1,4 @@
-import { useAddOrganisationMutation } from "@/Redux/Reducers/Network/Organisations/OrganisationListApi";
+import { useAddOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/OrganisationListApi";
 import {
   AddOrganisationModalProps,
   AddOrganisationProps,

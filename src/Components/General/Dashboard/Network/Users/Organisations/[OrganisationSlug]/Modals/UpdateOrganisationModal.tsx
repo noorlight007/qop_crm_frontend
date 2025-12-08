@@ -1,4 +1,4 @@
-import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Organisations/SingleOrganisation/SingleOrganisationApi";
+import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { UpdateOrganisationModalProps } from "@/Types/Network/OrganisationsTypes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
