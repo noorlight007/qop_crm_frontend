@@ -1,9 +1,9 @@
 import { Container, Row } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import AdviserClientFilterBar from "./AdviserClientFilterBar/AdviserClientFilterBar";
 import ClientLists from "./ClientLists/ClientLists";
 
-const OrgStaffAdviserClientContainer: React.FC = () => {
+const OrganisationAdminAdviserClientContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -21,4 +21,4 @@ const OrgStaffAdviserClientContainer: React.FC = () => {
   );
 };
 
-export default OrgStaffAdviserClientContainer;
+export default OrganisationAdminAdviserClientContainer;
