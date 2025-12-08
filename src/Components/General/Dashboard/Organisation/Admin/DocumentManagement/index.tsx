@@ -1,6 +1,6 @@
 import { TbUpload } from "react-icons/tb";
 import { Button, Container } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import DocumentManagementFilterBar from "./DocumentManagementFilterBar/DocumentManagementFilterBar";
 import DocumentsLists from "./DocumentsLists/DocumentsLists";
 

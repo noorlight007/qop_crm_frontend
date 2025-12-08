@@ -1,8 +1,8 @@
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import Cases from "../../CommonComponents/Cases/Cases";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Cases from "../../../CommonComponents/Cases/Cases";
 
-const CaseupdatesContainer: React.FC = () => {
+const OrganisationAdminCaseupdatesContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -17,4 +17,4 @@ const CaseupdatesContainer: React.FC = () => {
   );
 };
 
-export default CaseupdatesContainer;
+export default OrganisationAdminCaseupdatesContainer;

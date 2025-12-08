@@ -17,7 +17,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
 const OrganisationAdminReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();

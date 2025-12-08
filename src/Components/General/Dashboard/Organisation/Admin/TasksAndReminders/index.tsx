@@ -1,9 +1,9 @@
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import TasksAndCalendarTabs from "./TasksAndCalendarTabs/TasksAndCalendarTabs";
 import TasksAndRemindersOverview from "./TasksAndRemindersOverview/TasksAndRemindersOverview";
 
-const OrgStaffTasksAndRemindersContainer: React.FC = () => {
+const OrganisationAdminTasksAndRemindersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -19,4 +19,4 @@ const OrgStaffTasksAndRemindersContainer: React.FC = () => {
   );
 };
 
-export default OrgStaffTasksAndRemindersContainer;
+export default OrganisationAdminTasksAndRemindersContainer;

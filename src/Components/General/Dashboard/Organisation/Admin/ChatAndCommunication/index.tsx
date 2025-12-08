@@ -1,8 +1,8 @@
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import ChatBoard from "./ChatBoard/ChatBoard";
 
-const OrgStaffChatAndCommunicationContainer: React.FC = () => {
+const OrganisationAdminChatAndCommunicationContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -17,4 +17,4 @@ const OrgStaffChatAndCommunicationContainer: React.FC = () => {
   );
 };
 
-export default OrgStaffChatAndCommunicationContainer;
+export default OrganisationAdminChatAndCommunicationContainer;

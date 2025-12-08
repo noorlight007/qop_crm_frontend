@@ -1,7 +1,7 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import SingleCaseInfo from "@/Components/General/Dashboard/CommonComponents/SingleCaseInfo/SingleCaseInfo";
 
-const OrgStaffCaseContainer: React.FC = () => {
+const OrganisationAdminCaseDetailsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -15,4 +15,4 @@ const OrgStaffCaseContainer: React.FC = () => {
   );
 };
 
-export default OrgStaffCaseContainer;
+export default OrganisationAdminCaseDetailsContainer;

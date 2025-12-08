@@ -1,6 +1,7 @@
 import { Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import AdviserClientFilterBar from "./AdviserClientFilterBar/AdviserClientFilterBar";
+
+import AdviserClientFilterBar from "./ClientLists/AdviserClientFilterBar/AdviserClientFilterBar";
 import ClientLists from "./ClientLists/ClientLists";
 
 const OrganisationAdminAdviserClientContainer: React.FC = () => {

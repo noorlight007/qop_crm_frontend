@@ -1,11 +1,11 @@
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import AddNewComment from "./AddNewComment/AddNewComment";
 import CommentCards from "./CommentCards/CommentCards";
 import InternalComments from "./InternalComments/InternalComments";
 import SearchAndFilters from "./SearchAndFilters/SearchAndFilters";
 
-const CommentsContainer: React.FC = () => {
+const OrganisationAdminCommentsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -23,4 +23,4 @@ const CommentsContainer: React.FC = () => {
   );
 };
 
-export default CommentsContainer;
+export default OrganisationAdminCommentsContainer;

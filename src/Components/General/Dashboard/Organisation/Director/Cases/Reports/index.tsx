@@ -229,7 +229,7 @@ const OrganisationDirectorReportsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Organisation Director Reports"
+        title="Organisation Reports"
         subTitle="Generate and analyze comprehensive organisation reports"
         parent="Cases"
         child="Reports"

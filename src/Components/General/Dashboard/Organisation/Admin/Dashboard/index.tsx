@@ -1,12 +1,13 @@
 import { Col, Container, Row } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import MyTask from "../../CommonComponents/MyTask/MyTask";
+
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import AdviserTaskOverview from "./AdviserTaskOverview/AdviserTaskOverview";
 import CaseProgress from "./CaseProgress/CaseProgress";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 
-const OrganisationStaffContainer: React.FC = () => {
+const OrganisationAdminDashboardContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
@@ -39,4 +40,4 @@ const OrganisationStaffContainer: React.FC = () => {
   );
 };
 
-export default OrganisationStaffContainer;
+export default OrganisationAdminDashboardContainer;
