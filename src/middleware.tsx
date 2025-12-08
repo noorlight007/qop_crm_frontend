@@ -33,7 +33,7 @@ export default withAuth(
     }
 
     if (
-      path.startsWith("/dashboard/netadviser") &&
+      path.startsWith("/dashboard/network/adviser") &&
       token.user_type !== "NETWORK_ADVISER"
     ) {
       const loginUrl = new URL("/auth/login", req.url);

@@ -11,11 +11,11 @@ export const getRedirectPaths = () => {
     case "ADMIN":
       return "/dashboard/admin";
     case "NETWORK_ADMIN":
-      return "/dashboard/network";
+      return "/dashboard/network/director";
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return "/dashboard/network";
+      return "/dashboard/network/director";
     case "NETWORK_ADVISER":
-      return "/dashboard/netadviser";
+      return "/dashboard/network/adviser";
     case "ORGANIZATION_ADMIN":
       return "/dashboard/organisation";
     case "ORGANIZATION_ADVISER":

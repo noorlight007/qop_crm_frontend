@@ -12,7 +12,7 @@ const NetworkOwnerMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/network",
+        path: "/dashboard/network/director",
       },
       {
         title: "Cases",
@@ -20,27 +20,27 @@ const NetworkOwnerMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/network/leads",
+            path: "/dashboard/network/director/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/network/cases",
+            path: "/dashboard/network/director/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/network/activecases",
+            path: "/dashboard/network/director/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
-            path: "/dashboard/network/clients",
+            path: "/dashboard/network/director/clients",
             title: "Clients",
             type: "link",
           },
           {
-            path: "/dashboard/network/reports",
+            path: "/dashboard/network/director/reports",
             title: "Reports",
             type: "link",
           },
@@ -52,22 +52,22 @@ const NetworkOwnerMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/network/organisations",
+            path: "/dashboard/network/director/organisations",
             title: "Organisations",
             type: "link",
           },
           {
-            path: "/dashboard/network/advisers",
+            path: "/dashboard/network/director/advisers",
             title: "Registered Advisers",
             type: "link",
           },
           {
-            path: "/dashboard/network/advisers-status",
+            path: "/dashboard/network/director/advisers-status",
             title: "Advisers Status",
             type: "link",
           },
           {
-            path: "/dashboard/network/introducers",
+            path: "/dashboard/network/director/introducers",
             title: "Introducers",
             type: "link",
           },
@@ -80,22 +80,22 @@ const NetworkOwnerMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/dashboard/network/usermanagement",
+      //       path: "/dashboard/network/director/usermanagement",
       //       title: "User Management",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/systemreports",
+      //       path: "/dashboard/network/director/systemreports",
       //       title: "System Reports",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/auditlog",
+      //       path: "/dashboard/network/director/auditlog",
       //       title: "Audit Log",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/securitypolicy",
+      //       path: "/dashboard/network/director/securitypolicy",
       //       title: "Security Policy",
       //       type: "link",
       //     },
@@ -117,7 +117,7 @@ const NetworkAdviserMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/netadviser",
+        path: "/dashboard/network/adviser",
       },
       {
         title: "Cases",
@@ -125,22 +125,22 @@ const NetworkAdviserMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/netadviser/leads",
+            path: "/dashboard/network/adviser/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/netadviser/cases",
+            path: "/dashboard/network/adviser/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/netadviser/activecases",
+            path: "/dashboard/network/adviser/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
-            path: "/dashboard/netadviser/reports",
+            path: "/dashboard/network/adviser/reports",
             title: "Reports",
             type: "link",
           },
@@ -152,12 +152,12 @@ const NetworkAdviserMenu: MenuItem[] = [
       //   type: "sub",
       //   children: [
       //     {
-      //       path: "/dashboard/netadviser/marketinghub",
+      //       path: "/dashboard/network/adviser/marketinghub",
       //       title: "Marketing Hub",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/netadviser/tasksandreminders",
+      //       path: "/dashboard/network/adviser/tasksandreminders",
       //       title: "Tasks & Reminders",
       //       type: "link",
       //     },

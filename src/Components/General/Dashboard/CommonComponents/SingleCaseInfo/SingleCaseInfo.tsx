@@ -27,11 +27,11 @@ const SingleCaseInfo: React.FC = () => {
       case "ADMIN":
         return `/dashboard/admin`;
       case "NETWORK_ADMIN":
-        return `/dashboard/network/cases`;
+        return `/dashboard/network/director/cases`;
       case "NETWORK_COMPLIANCE_ASSISTANT":
-        return `/dashboard/network/cases`;
+        return `/dashboard/network/director/cases`;
       case "NETWORK_ADVISER":
-        return `/dashboard/netadviser/cases`;
+        return `/dashboard/network/adviser/cases`;
       case "ORGANIZATION_ADMIN":
         return `/dashboard/organisation/cases`;
       case "ORGANIZATION_ADVISER":
