@@ -16,7 +16,7 @@ const UserLogin = () => {
       session?.user?.user_type === "NETWORK_ADMIN" ||
       session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
     ) {
-      router.push("/dashboard/network");
+      router.push("/dashboard/network/director");
     } else if (session?.user?.user_type === "NETWORK_ADVISER") {
       router.push("/dashboard/netadviser");
     } else if (session?.user?.user_type === "CLIENT") {

@@ -1,6 +1,7 @@
 import { Col, Container, Row } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import MyTask from "../../CommonComponents/MyTask/MyTask";
+
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";

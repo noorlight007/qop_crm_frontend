@@ -22,7 +22,7 @@ export default withAuth(
     }
 
     if (
-      path.startsWith("/dashboard/network") &&
+      path.startsWith("/dashboard/network/director") &&
       !["NETWORK_ADMIN", "NETWORK_COMPLIANCE_ASSISTANT"].includes(
         token.user_type as string
       )
@@ -85,7 +85,7 @@ export default withAuth(
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/dashboard/network/:path*",
+    "/dashboard/network/director/:path*",
     "/dashboard/netadviser/:path*",
     "/dashboard/organisation/:path*",
     "/dashboard/orgadviser/:path*",

@@ -1,4 +1,5 @@
 "use client";
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { useGetNetworkAdviserReportsMutation } from "@/Redux/Reducers/Network/Adviser/Reports/NetworkAdviserReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -17,7 +18,6 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
 const NetworkAdviserReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();
