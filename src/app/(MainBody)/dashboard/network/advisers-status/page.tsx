@@ -8,7 +8,7 @@ const NetworkAdvisersStatus = () => {
       if (typeof window !== "undefined") {
         const newClient = (
           await import(
-            "@/Components/General/Dashboard/Network/Users/AdvisersStatus"
+            "@/Components/General/Dashboard/Network/Director/Users/AdvisersStatus"
           )
         ).default;
         setClient(() => newClient);
