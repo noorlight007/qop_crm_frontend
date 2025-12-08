@@ -1,5 +1,5 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { Container, Row } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import ManageRole from "./ManageRole/ManageRole";
 import ManageUser from "./ManageUser/MangageUser";

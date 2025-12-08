@@ -1,5 +1,5 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import SecurityPoliciesManagement from "./SecurityPoliciesManagement/SecurityPoliciesManagement";
 
 const SecurityPolicyContainer: React.FC = () => {
