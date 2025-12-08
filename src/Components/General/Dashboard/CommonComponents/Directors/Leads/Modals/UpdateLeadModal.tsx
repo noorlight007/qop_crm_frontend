@@ -1,4 +1,4 @@
-import { useUpdateLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/Directors/LeadDetalisApi";
+import { useUpdateLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
 import {
   LeadsInfo,
   UpdateLeadModalProps,

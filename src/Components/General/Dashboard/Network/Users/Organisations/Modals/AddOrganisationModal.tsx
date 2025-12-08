@@ -2,7 +2,7 @@ import { useAddOrganisationMutation } from "@/Redux/Reducers/Network/Director/Or
 import {
   AddOrganisationModalProps,
   AddOrganisationProps,
-} from "@/Types/Network/OrganisationsTypes";
+} from "@/Types/Network/Director/OrganisationsTypes";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {

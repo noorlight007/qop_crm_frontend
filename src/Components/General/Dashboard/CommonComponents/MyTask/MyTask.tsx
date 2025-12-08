@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/Directors/UsersDetailsApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersDetailsApi";
 import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
 import { MyTaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";

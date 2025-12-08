@@ -1,4 +1,4 @@
-import { FetchSingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
+import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import Image from "next/image";
 import { useState } from "react";
 import {
@@ -57,10 +57,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Image
                 width={120}
                 height={120}
-                src={
-                  singleOrgInfo?.logo ||
-                  "/assets/images/network/logo.jpg"
-                }
+                src={singleOrgInfo?.logo || "/assets/images/network/logo.jpg"}
                 alt="Logo"
                 className="profile-pic object-fit-cover"
               />

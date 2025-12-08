@@ -1,4 +1,4 @@
-import { FetchSingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
+import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";

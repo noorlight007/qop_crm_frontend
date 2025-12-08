@@ -1,5 +1,5 @@
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
-import { UpdateOrganisationModalProps } from "@/Types/Network/OrganisationsTypes";
+import { UpdateOrganisationModalProps } from "@/Types/Network/Director/OrganisationsTypes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

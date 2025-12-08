@@ -1,5 +1,5 @@
 import CommonCardHeader from "@/CommonComponent/CommonCardHeader";
-import { FetchSingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
+import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import { Chart } from "react-google-charts";
 import { Card, CardBody } from "reactstrap";
 

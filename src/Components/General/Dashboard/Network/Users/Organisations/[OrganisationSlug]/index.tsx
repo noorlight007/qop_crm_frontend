@@ -3,7 +3,7 @@ import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
 } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
-import { SingleOrganisationProps } from "@/Types/Network/OrganisationsTypes";
+import { SingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import LoadingSpinner from "@/app/loading";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

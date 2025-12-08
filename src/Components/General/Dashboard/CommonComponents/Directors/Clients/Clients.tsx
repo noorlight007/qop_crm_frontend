@@ -1,4 +1,4 @@
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/ClientDetailsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
 import {
   ClientInfoProps,
   ClientsProps,
@@ -25,10 +25,10 @@ import {
   Table,
 } from "reactstrap";
 import AddClientModal from "./Modals/AddClientModal";
+import ClientInvitationModal from "./Modals/ClientInvitationModal";
 import DeleteClientModal from "./Modals/DeleteClientModal";
 import UpdateClientModal from "./Modals/UpdateClientModal";
 import ViewClientModal from "./Modals/ViewClientModal";
-import ClientInvitationModal from "./Modals/ClientInvitationModal";
 
 const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   const { data: session } = useSession();
