@@ -8,7 +8,7 @@ const OrganisationDetails = () => {
       if (typeof window !== "undefined") {
         const newClient = (
           await import(
-            "@/Components/General/Dashboard/Network/Users/Organisations"
+            "@/Components/General/Dashboard/Network/Director/Users/Organisations"
           )
         ).default;
         setClient(() => newClient);

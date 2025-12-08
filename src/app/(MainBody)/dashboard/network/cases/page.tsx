@@ -7,7 +7,9 @@ const NetworkCases = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/General/Dashboard/Network/Cases/Cases")
+          await import(
+            "@/Components/General/Dashboard/Network/Director/Cases/Cases"
+          )
         ).default;
         setClient(() => newClient);
       }

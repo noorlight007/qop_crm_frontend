@@ -8,7 +8,7 @@ const SingleCaseAlias = () => {
       if (typeof window !== "undefined") {
         const newClient = (
           await import(
-            "@/Components/General/Dashboard/Network/Cases/Cases/[CaseAlias]"
+            "@/Components/General/Dashboard/Network/Director/Cases/Cases/[CaseAlias]"
           )
         ).default;
         setClient(() => newClient);
