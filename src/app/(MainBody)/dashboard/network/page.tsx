@@ -7,7 +7,9 @@ const Network = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/General/Dashboard/Network/NetworkMain")
+          await import(
+            "@/Components/General/Dashboard/Network/Director/Dashboard"
+          )
         ).default;
         setClient(() => newClient);
       }

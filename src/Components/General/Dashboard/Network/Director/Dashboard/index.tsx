@@ -1,8 +1,8 @@
 import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
 import { Col, Container, Row } from "reactstrap";
-import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import MyTask from "../../CommonComponents/MyTask/MyTask";
-import OrganisationList from "../Users/Organisations/OrganisationList/OrganisationList";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import MyTask from "../../../CommonComponents/MyTask/MyTask";
+import OrganisationList from "../../Users/Organisations/OrganisationList/OrganisationList";
 import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
 import PerformanceOverview from "./PerformanceOverview/PerformanceOverview";
