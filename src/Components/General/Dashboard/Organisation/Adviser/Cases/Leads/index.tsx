@@ -1,6 +1,6 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import Leads from "@/Components/General/Dashboard/CommonComponents/Directors/Leads/Leads";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
 const OrganisationAdviserLeadsContainer: React.FC = () => {
   return (
