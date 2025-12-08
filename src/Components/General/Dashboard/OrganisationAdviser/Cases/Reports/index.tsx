@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrganisationAdviserReportsMutation } from "@/Redux/Reducers/OrganisationAdviser/Reports/OrganisationAdviserReportsApi";
+import { useGetOrganisationAdviserReportsMutation } from "@/Redux/Reducers/Organisation/Adviser/Reports/OrganisationAdviserReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

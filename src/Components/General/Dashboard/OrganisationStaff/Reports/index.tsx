@@ -1,4 +1,5 @@
 "use client";
+import { useGetOrgAdminReportsMutation } from "@/Redux/Reducers/Organisation/Admin/Reports/OrganisationAdminReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -17,13 +18,12 @@ import {
   Spinner,
 } from "reactstrap";
 import Breadcrumbs from "../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetOrgStaffReportsMutation } from "@/Redux/Reducers/OrganisationStaff/Reports/OrganisationStaffReportsApi";
 
-const OrganisationStaffReportsContainer: React.FC = () => {
+const OrganisationAdminReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-const [getOrgStaffReports, { isLoading }] = useGetOrgStaffReportsMutation();
+  const [getOrgAdminReports, { isLoading }] = useGetOrgAdminReportsMutation();
 
   const [filters, setFilters] = useState({
     date_filter: "",
@@ -194,7 +194,7 @@ const [getOrgStaffReports, { isLoading }] = useGetOrgStaffReportsMutation();
         payload.from_date = dateRange.from_date;
         payload.to_date = dateRange.to_date;
       }
-      const blob = await getOrgStaffReports(payload).unwrap();
+      const blob = await getOrgAdminReports(payload).unwrap();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -468,4 +468,4 @@ const [getOrgStaffReports, { isLoading }] = useGetOrgStaffReportsMutation();
   );
 };
 
-export default OrganisationStaffReportsContainer;
+export default OrganisationAdminReportsContainer;
