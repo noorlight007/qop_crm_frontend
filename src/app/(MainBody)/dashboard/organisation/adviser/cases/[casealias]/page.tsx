@@ -1,14 +1,14 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const SingleCaseAlias = () => {
+const OrganisationAdviserSingleCaseAlias = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
           await import(
-            "@/Components/General/Dashboard/OrganisationAdviser/Cases/Cases/[CaseAlias]"
+            "@/Components/General/Dashboard/Organisation/Adviser/Cases/Cases/[CaseAlias]"
           )
         ).default;
         setClient(() => newClient);
@@ -18,4 +18,4 @@ const SingleCaseAlias = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default SingleCaseAlias;
+export default OrganisationAdviserSingleCaseAlias;
