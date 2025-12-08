@@ -1,8 +1,8 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
+import Advisers from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Advisers";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import Advisers from "../../../CommonComponents/Directors/Advisers/Advisers";
 
-const OrganisationAdvisersContainer: React.FC = () => {
+const OrganisationDirectorAdvisersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const OrganisationAdvisersContainer: React.FC = () => {
   );
 };
 
-export default OrganisationAdvisersContainer;
+export default OrganisationDirectorAdvisersContainer;

@@ -1,8 +1,8 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
+import Introducers from "@/Components/General/Dashboard/CommonComponents/Directors/Introducers/Introducers";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
-import Introducers from "../../../CommonComponents/Directors/Introducers/Introducers";
 
-const OrganisationIntroducersContainer: React.FC = () => {
+const OrganisationDirectorIntroducersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const OrganisationIntroducersContainer: React.FC = () => {
   );
 };
 
-export default OrganisationIntroducersContainer;
+export default OrganisationDirectorIntroducersContainer;

@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import Cases from "@/Components/General/Dashboard/CommonComponents/Cases/Cases";
 import { Container } from "reactstrap";
 
-const CasesContainer: React.FC = () => {
+const OrganisationDirectorCasesContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const CasesContainer: React.FC = () => {
   );
 };
 
-export default CasesContainer;
+export default OrganisationDirectorCasesContainer;

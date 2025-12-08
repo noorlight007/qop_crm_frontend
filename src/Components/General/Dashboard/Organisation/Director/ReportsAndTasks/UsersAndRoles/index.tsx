@@ -1,9 +1,9 @@
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import UsersAndRolesOverview from "./UsersAndRolesOverview/UsersAndRolesOverview";
 import UsersAndRolesTabs from "./UsersAndRolesTabs/UsersAndRolesTabs";
 
-const UsersAndRolesContainer: React.FC = () => {
+const OrganisationDirectorUsersAndRolesContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -20,4 +20,4 @@ const UsersAndRolesContainer: React.FC = () => {
   );
 };
 
-export default UsersAndRolesContainer;
+export default OrganisationDirectorUsersAndRolesContainer;

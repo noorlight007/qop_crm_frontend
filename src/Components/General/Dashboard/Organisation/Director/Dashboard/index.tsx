@@ -9,7 +9,7 @@ import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
 import RecentAuditLogs from "./RecentAuditLogs/RecentAuditLogs";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
 
-const OrganisationContainer = () => {
+const OrganisationDirectorDashboardContainer = () => {
   //RTK hooks
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
@@ -92,4 +92,4 @@ const OrganisationContainer = () => {
   );
 };
 
-export default OrganisationContainer;
+export default OrganisationDirectorDashboardContainer;

@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcr
 import Clients from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Clients";
 import { Container } from "reactstrap";
 
-const OrganisationClientsContainer: React.FC = () => {
+const OrganisationDirectorClientsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -18,4 +18,4 @@ const OrganisationClientsContainer: React.FC = () => {
   );
 };
 
-export default OrganisationClientsContainer;
+export default OrganisationDirectorClientsContainer;

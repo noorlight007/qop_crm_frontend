@@ -3,7 +3,7 @@ import { Container } from "reactstrap";
 import SystemReportsAndLogsOverview from "./SystemReportsAndLogsOverview/SystemReportsAndLogsOverview";
 import SystemReportsAndLogsTabs from "./SystemReportsAndLogsTabs/SystemReportsAndLogsTabs";
 
-const ReportsAndLogsContainer: React.FC = () => {
+const OrganisationDirectorReportsAndLogsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -20,4 +20,4 @@ const ReportsAndLogsContainer: React.FC = () => {
   );
 };
 
-export default ReportsAndLogsContainer;
+export default OrganisationDirectorReportsAndLogsContainer;
