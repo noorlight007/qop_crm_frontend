@@ -16,10 +16,18 @@ export const NetworkAdviserDashboardApi = baseApi.injectEndpoints({
       }),
       providesTags: ["NetworkAdviserDashboardData"],
     }),
+    getNetworkAdviserDashboardDocumentData: builder.query({
+      query: () => ({
+        url: "/dashboard/network-adviser-files/",
+        method: "GET",
+      }),
+      providesTags: ["NetworkAdviserDashboardData"],
+    }),
   }),
 });
 
 export const {
   useGetNetworkAdviserDashboardSummaryDataQuery,
   useGetNetworkAdviserDashboardClientDataQuery,
+  useGetNetworkAdviserDashboardDocumentDataQuery,
 } = NetworkAdviserDashboardApi;

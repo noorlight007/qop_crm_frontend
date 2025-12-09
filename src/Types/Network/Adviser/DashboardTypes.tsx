@@ -35,7 +35,7 @@ export interface Performances {
   december: MonthlyPerformance;
 }
 
-export interface Document {
+export interface DocumentData {
   file: string;
   file_type: string;
   created_at: string;
@@ -49,7 +49,6 @@ export interface NetworkAdviserSummary {
   upcoming_tasks: number;
   case_stage: CaseStage;
   performances: Performances;
-  documents: Document[];
 }
 export interface CommonNetworkAdviserSummaryProps {
   isLoading: boolean;
@@ -65,4 +64,8 @@ export interface ClientData {
 export interface CommonNetworkAdviserClientProps {
   isLoading: boolean;
   netAdviserClientData: ClientData[];
+}
+export interface CommonNetworkAdviserDocumentProps {
+  isLoading: boolean;
+  netAdviserDocumentData: DocumentData[];
 }

@@ -1,5 +1,6 @@
 import {
   useGetNetworkAdviserDashboardClientDataQuery,
+  useGetNetworkAdviserDashboardDocumentDataQuery,
   useGetNetworkAdviserDashboardSummaryDataQuery,
 } from "@/Redux/Reducers/Network/Adviser/Dashboard/DashboardApi";
 import { Col, Container, Row } from "reactstrap";
@@ -16,8 +17,11 @@ import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 const NetworkAdviserContainer: React.FC = () => {
   const { data: netAdviserSummary, isLoading: isSummaryLoading } =
     useGetNetworkAdviserDashboardSummaryDataQuery(undefined);
-  const { data: netAdviserClients } =
+  const { data: netAdviserClients, isLoading: isClientsLoading } =
     useGetNetworkAdviserDashboardClientDataQuery(undefined);
+  const { data: netAdviserDocuments, isLoading: isDocumentsLoading } =
+    useGetNetworkAdviserDashboardDocumentDataQuery(undefined);
+
 
   return (
     <>
@@ -63,13 +67,13 @@ const NetworkAdviserContainer: React.FC = () => {
         <Row>
           <Col md={6} sm={12}>
             <DocumentStatus
-              isLoading={isSummaryLoading}
-              netAdviserSummaryData={netAdviserSummary}
+              isLoading={isDocumentsLoading}
+              netAdviserDocumentData={netAdviserDocuments}
             />
           </Col>
           <Col md={6} sm={12}>
             <MyClients
-              isLoading={isSummaryLoading}
+              isLoading={isClientsLoading}
               netAdviserClientData={netAdviserClients}
             />
           </Col>
