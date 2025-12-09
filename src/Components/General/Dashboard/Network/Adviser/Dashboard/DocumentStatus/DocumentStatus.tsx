@@ -11,7 +11,7 @@ const DocumentStatus: React.FC<{
   netAdviserSummaryData: any;
 }> = ({ isLoading, netAdviserSummaryData }) => {
   return (
-    <Card className="border-0 shadow-sm">
+    <Card className="border-0 shadow-sm px-3">
       <h4 className="p-3 pb-0">Document Upload & Status</h4>
       <CardBody style={{ height: "500px", overflowY: "auto" }}>
         {isLoading ? (
@@ -39,8 +39,7 @@ const DocumentStatus: React.FC<{
             (doc: Document, index: number) => (
               <Row
                 key={index}
-                className="mb-3 p-3 bg-light rounded align-items-center "
-                style={{ cursor: "pointer" }}
+                className="mb-3 p-3 bg-light-dark rounded align-items-center "
               >
                 <Col xs="auto">
                   <div className="bg-white rounded-circle p-2 d-flex align-items-center justify-content-center">

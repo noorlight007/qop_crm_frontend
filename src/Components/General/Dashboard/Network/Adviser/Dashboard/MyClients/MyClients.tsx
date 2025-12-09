@@ -1,6 +1,6 @@
-import Link from "next/link";
+import { CommonNetworkAdviserClientProps } from "@/Types/Network/Adviser/DashboardTypes";
 import React from "react";
-import { Badge, Card, CardBody } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 
 interface ClientData {
   name: string;
@@ -11,7 +11,10 @@ interface ClientData {
   status: string;
 }
 
-const MyClients: React.FC = () => {
+const MyClients: React.FC<CommonNetworkAdviserClientProps> = ({
+  isLoading,
+  netAdviserClientData,
+}) => {
   const clients: ClientData[] = [
     {
       name: "Sarah Williams",
@@ -50,62 +53,49 @@ const MyClients: React.FC = () => {
   return (
     <Card className="border-0 shadow-sm">
       <CardBody className="p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h4 className="text-xl font-semibold m-0">My Clients</h4>
-          <Link href="#" className="btn btn-primary btn-sm rounded-3 px-3">
-            View All
-          </Link>
-        </div>
+        <h4 className="text-xl font-semibold mb-3">My Clients</h4>
 
         <div
-          className="client-list space-y-3 overflow-auto"
-          style={{ maxHeight: "435px" }}
+          className="client-list space-y-3 overflow-auto p-1"
+          style={{ height: "455px", overflowY: "auto" }}
         >
-          {clients.map((client, index) => (
+          {netAdviserClientData.map((client, index) => (
             <Card
               key={index}
-              className="border rounded-3 mb-3 hover:shadow-md transition-shadow"
+              className="border rounded-3 mb-3 hover:shadow-md transition-shadow bg-light-dark"
             >
               <CardBody className="p-3">
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <div>
-                    <h5 className="mb-1">{client.name}</h5>
-                  </div>
-                  <Badge color="secondary" className="text-capitalize">
-                    {client.status}
-                  </Badge>
+                <div>
+                  <h5 className="mb-1">{client.name}</h5>
                 </div>
 
                 <div className="d-flex gap-4 mb-3 ">
                   <div>
-                    <small className="text-muted">Value:</small>
-                    <p className="mb-0">{client.value}</p>
-                  </div>
-                  <div>
                     <small className="text-muted">Cases:</small>
-                    <p className="mb-0">{client.cases}</p>
+                    <p className="mb-0">{client.total_cases}</p>
                   </div>
                   <div>
-                    <small className="text-muted">Last contact:</small>
-                    <p className="mb-0">{client.lastContact}</p>
+                    <small className="text-muted">Phone:</small>
+                    <p className="mb-0">{client.phone}</p>
+                  </div>
+                  <div>
+                    <small className="text-muted">Email:</small>
+                    <p className="mb-0">{client.email}</p>
                   </div>
                 </div>
 
-                <div className="d-flex align-items-center justify-content-between">
-                  <div className="d-flex align-items-center gap-2">
-                    <i className="fa-regular fa-calendar text-primary"></i>
-                    <span>Next: {client.nextMeeting}</span>
-                  </div>
+                <div className="d-flex align-items-center justify-content-end">
                   <div className="d-flex gap-2">
-                    <button className="btn text-primary btn-sm rounded-circle">
-                      <i className="fa-solid fa-phone"></i>
-                    </button>
-                    <button className="btn text-success btn-sm rounded-circle">
-                      <i className="fa-solid fa-envelope"></i>
-                    </button>
-                    <button className="btn text-warning btn-sm rounded-circle">
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
+                    <a href={`tel:${client.phone}`}>
+                      <button className="btn text-primary btn-sm rounded-circle">
+                        <i className="fa-solid fa-phone"></i>
+                      </button>
+                    </a>
+                    <a href={`mailto:${client.email}`}>
+                      <button className="btn text-success btn-sm rounded-circle">
+                        <i className="fa-solid fa-envelope"></i>
+                      </button>
+                    </a>
                   </div>
                 </div>
               </CardBody>
