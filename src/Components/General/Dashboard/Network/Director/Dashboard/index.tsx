@@ -7,6 +7,7 @@ import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
 import PerformanceOverview from "./PerformanceOverview/PerformanceOverview";
 import RecentActivity from "./RecentActivity/RecentActivity";
+import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const ContainerNetworkDirector = () => {
   //RTK hooks
@@ -19,24 +20,14 @@ const ContainerNetworkDirector = () => {
   return (
     <>
       <Breadcrumbs
-        title={
-          isLoading ? (
-            <div
-              className="skeleton-loading"
-              style={{
-                width: "200px",
-                height: "24px",
-                backgroundColor: "#e0e0e0",
-                borderRadius: "4px",
-              }}
-            />
-          ) : (
-            `${networkName} - Dashboard`
-          )
-        }
+        title="Dashboard"
         subTitle="Welcome to the Network Dashboard"
       />
       <Container fluid>
+        <WelcomeBanner
+          isLoading={isLoading}
+          commonDashboardData={commonDashboardData}
+        />
         <PerformanceOverview
           isLoading={isLoading}
           commonDashboardData={commonDashboardData}

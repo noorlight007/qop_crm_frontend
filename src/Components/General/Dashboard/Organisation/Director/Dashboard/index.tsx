@@ -8,47 +8,21 @@ import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
 import RecentAuditLogs from "./RecentAuditLogs/RecentAuditLogs";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
+import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationDirectorDashboardContainer = () => {
   //RTK hooks
   const { data: commonDashboardData, isLoading } =
     useGetCommonDashboardQuery(undefined);
 
-  // Get organisation name from meta data, fallback to "Not Assigned"
-  const organisationName = commonDashboardData?.meta?.name || "Not Assigned";
-  const networkName = commonDashboardData?.meta?.network || "Not Assigned";
-  const isNetworkNotAssigned = networkName === "Not Assigned";
-
   return (
     <>
-      <Breadcrumbs
-        title={
-          isLoading ? (
-            <div
-              className="skeleton-loading"
-              style={{
-                width: "320px",
-                height: "24px",
-                backgroundColor: "#e0e0e0",
-                borderRadius: "4px",
-              }}
-            />
-          ) : (
-            <>
-              {organisationName} - Dashboard
-              <small
-                className={`ms-2 ${
-                  isNetworkNotAssigned ? "text-muted" : "text-secondary"
-                }`}
-              >
-                (Network: {networkName})
-              </small>
-            </>
-          )
-        }
-        subTitle="Hello there! Welcome back"
-      />
+      <Breadcrumbs title="Dashboard" subTitle="Hello there! Welcome back" />
       <Container fluid>
+        <WelcomeBanner
+          isLoading={isLoading}
+          commonDashboardData={commonDashboardData}
+        />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}
