@@ -1,5 +1,8 @@
+import {
+  useGetNetworkAdviserDashboardClientDataQuery,
+  useGetNetworkAdviserDashboardSummaryDataQuery,
+} from "@/Redux/Reducers/Network/Adviser/Dashboard/DashboardApi";
 import { Col, Container, Row } from "reactstrap";
-
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
@@ -8,12 +11,22 @@ import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
 import OrganisationCards from "./OrganisationCards/OrganisationCards";
+import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const NetworkAdviserContainer: React.FC = () => {
+  const { data: netAdviserSummary, isLoading: isSummaryLoading } =
+    useGetNetworkAdviserDashboardSummaryDataQuery(undefined);
+  const { data: netAdviserClients } =
+    useGetNetworkAdviserDashboardClientDataQuery(undefined);
+
   return (
     <>
       <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
       <Container fluid>
+        <WelcomeBanner
+          isLoading={isSummaryLoading}
+          netAdviserSummaryData={netAdviserSummary}
+        />
         {/* 1st row  */}
         <DashboardOverview />
         {/* 2nd row  */}
