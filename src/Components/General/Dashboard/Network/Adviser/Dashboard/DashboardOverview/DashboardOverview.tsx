@@ -1,7 +1,11 @@
+import { CommonNetworkAdviserSummaryProps } from "@/Types/Network/Adviser/DashboardTypes";
 import { TbCheckbox, TbClock, TbUsers } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 
-const DashboardOverview: React.FC = () => {
+const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
+  isLoading,
+  netAdviserSummaryData,
+}) => {
   return (
     <Row>
       {/* New Clients This Month  */}
@@ -13,7 +17,9 @@ const DashboardOverview: React.FC = () => {
                 <CardTitle className="small text-muted">
                   New Clients This Month
                 </CardTitle>
-                <h4 className="mb-1 text-dark">10</h4>
+                <h4 className="mb-1 text-dark">
+                  {netAdviserSummaryData?.new_clients_this_month || 0}
+                </h4>
               </div>
               <div>
                 <span
@@ -37,7 +43,9 @@ const DashboardOverview: React.FC = () => {
                 <CardTitle className="small text-muted text-truncate">
                   Case Completed
                 </CardTitle>
-                <h4 className="mb-1 text-dark">167</h4>
+                <h4 className="mb-1 text-dark">
+                  {netAdviserSummaryData?.completed_cases || 0}
+                </h4>
               </div>
               <div>
                 <span
@@ -61,7 +69,9 @@ const DashboardOverview: React.FC = () => {
                 <CardTitle className="small text-muted text-truncate">
                   Upcoming Tasks
                 </CardTitle>
-                <h4 className="mb-1 text-dark">8</h4>
+                <h4 className="mb-1 text-dark">
+                  {netAdviserSummaryData?.upcoming_tasks || 0}
+                </h4>
               </div>
               <div>
                 <span

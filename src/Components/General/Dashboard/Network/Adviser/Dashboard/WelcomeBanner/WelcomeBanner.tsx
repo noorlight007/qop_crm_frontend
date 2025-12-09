@@ -28,7 +28,9 @@ const WelcomeBanner: React.FC<CommonNetworkAdviserSummaryProps> = ({
         </div>
         <div className="welcomeTextContent">
           <div className="welcomeGreeting">Welcome back</div>
-          <h2 className="welcomeTitle">{netAdviserSummaryData.network}</h2>
+          <h2 className="welcomeTitle">
+            {netAdviserSummaryData?.network || "Not Assigned"}
+          </h2>
           <p className="welcomeSubtitle">Network Adviser Dashboard</p>
         </div>
       </div>

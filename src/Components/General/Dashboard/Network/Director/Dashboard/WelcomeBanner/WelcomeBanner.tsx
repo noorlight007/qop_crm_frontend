@@ -7,7 +7,7 @@ const WelcomeBanner: React.FC<CommonDashboardProps> = ({
   isLoading,
   commonDashboardData,
 }) => {
-  const orgName = commonDashboardData?.meta?.name || "Not Assigned";
+  const networkName = commonDashboardData?.meta?.name || "Not Assigned";
 
   if (isLoading) {
     return (
@@ -30,7 +30,7 @@ const WelcomeBanner: React.FC<CommonDashboardProps> = ({
         </div>
         <div className="welcomeTextContent">
           <div className="welcomeGreeting">Welcome back</div>
-          <h2 className="welcomeTitle">{orgName}</h2>
+          <h2 className="welcomeTitle">{networkName}</h2>
           <p className="welcomeSubtitle">Network Dashboard</p>
         </div>
       </div>
