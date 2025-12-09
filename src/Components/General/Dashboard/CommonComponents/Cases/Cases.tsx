@@ -5,7 +5,7 @@ import {
   CaseUser,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
-import { getCaseUrl } from "@/utils/GetCaseUrl";
+import { getCaseUrl } from "@/utils/RedirectPaths";
 import {
   formatDateToDMY,
   formatDateToDMYAndTime,

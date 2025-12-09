@@ -5,7 +5,7 @@ import {
   formatDateToDMYAndTime,
 } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { getCaseUrl } from "@/utils/GetCaseUrl";
+import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
