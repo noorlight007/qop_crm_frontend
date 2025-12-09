@@ -2,7 +2,7 @@ import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/C
 import { useGetJointUserInfoQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointUser/JointUserDetailsApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import LoadingSpinner from "@/app/loading";
-import { useSession } from "next-auth/react";
+import { getAllCasesUrl } from "@/utils/RedirectPaths";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -18,32 +18,6 @@ const SingleCaseInfo: React.FC = () => {
   const params = useParams();
   const { casealias } = params;
   const router = useRouter();
-  const { data: session } = useSession();
-
-  // Function to generate role-based URL for case details
-  const getDashboardUrl = () => {
-    const userType = session?.user?.user_type;
-    switch (userType) {
-      case "ADMIN":
-        return `/dashboard/admin`;
-      case "NETWORK_DIRECTOR":
-        return `/dashboard/network/director/cases`;
-      case "NETWORK_COMPLIANCE_ASSISTANT":
-        return `/dashboard/network/director/cases`;
-      case "NETWORK_ADVISER":
-        return `/dashboard/network/adviser/cases`;
-      case "ORGANISATION_DIRECTOR":
-        return `/dashboard/organisation/director/cases`;
-      case "ORGANISATION_ADVISER":
-        return `/dashboard/organisation/adviser/cases`;
-      case "ORGANISATION_ADMIN":
-        return `/dashboard/organisation/admin/cases`;
-      case "CLIENT":
-        return `/dashboard/client/cases`;
-      default:
-        return `url not found`;
-    }
-  };
 
   // rtk hooks
   const { data: jointUserInfo, isLoading: isJointUserFetcing } =
@@ -58,13 +32,13 @@ const SingleCaseInfo: React.FC = () => {
   useEffect(() => {
     if (!isLoading) {
       if (isError || !caseData) {
-        router.push(getDashboardUrl());
+        router.push(getAllCasesUrl());
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
 
       if (caseData.alias !== casealias) {
-        router.push(getDashboardUrl());
+        router.push(getAllCasesUrl());
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
