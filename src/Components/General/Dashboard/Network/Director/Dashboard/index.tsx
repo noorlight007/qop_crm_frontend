@@ -6,7 +6,6 @@ import OrganisationList from "../Users/Organisations/OrganisationList/Organisati
 import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
 import PerformanceOverview from "./PerformanceOverview/PerformanceOverview";
-import RecentActivity from "./RecentActivity/RecentActivity";
 import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const ContainerNetworkDirector = () => {
@@ -45,9 +44,6 @@ const ContainerNetworkDirector = () => {
           <Col>
             <MyTask />
           </Col>
-        </Row>
-        <Row>
-          <RecentActivity />
         </Row>
       </Container>
     </>

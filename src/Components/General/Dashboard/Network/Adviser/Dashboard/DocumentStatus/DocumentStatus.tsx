@@ -1,93 +1,108 @@
+import {
+  CommonNetworkAdviserDocumentProps,
+  DocumentData,
+} from "@/Types/Network/Adviser/DashboardTypes";
+import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { FileText } from "react-feather";
-import { Badge, Card, CardBody, Col, Row } from "reactstrap";
+import { FaDownload } from "react-icons/fa";
+import { Button, Card, CardBody, Col, Row } from "reactstrap";
 
-interface Document {
-  title: string;
-  company: string;
-  updatedTime: string;
-  status: "Approved" | "Pending Review" | "In Progress";
-}
-
-const DocumentStatus: React.FC = () => {
-  const documents: Document[] = [
-    {
-      title: "Investment Proposal - Tech Solutions",
-      company: "Tech Solutions Ltd",
-      updatedTime: "1 hour ago",
-      status: "Approved",
-    },
-    {
-      title: "Risk Assessment - Global Investments",
-      company: "Global Investments",
-      updatedTime: "3 hours ago",
-      status: "Pending Review",
-    },
-    {
-      title: "Compliance Report - Innovation Corp",
-      company: "Innovation Corp",
-      updatedTime: "1 day ago",
-      status: "In Progress",
-    },
-    {
-      title: "Compliance Report - Innovation Corp",
-      company: "Innovation Corp",
-      updatedTime: "1 day ago",
-      status: "In Progress",
-    },
-    {
-      title: "Compliance Report - Innovation Corp",
-      company: "Innovation Corp",
-      updatedTime: "1 day ago",
-      status: "In Progress",
-    },
-    {
-      title: "Compliance Report - Innovation Corp",
-      company: "Innovation Corp",
-      updatedTime: "1 day ago",
-      status: "In Progress",
-    },
-  ];
-
-  const getStatusColor = (status: Document["status"]) => {
-    switch (status) {
-      case "Approved":
-        return "success";
-      case "Pending Review":
-        return "warning";
-      case "In Progress":
-        return "info";
-      default:
-        return "secondary";
-    }
+const DocumentStatus: React.FC<CommonNetworkAdviserDocumentProps> = ({
+  isLoading,
+  netAdviserDocumentData,
+}) => {
+  const isImageFile = (url: string) => {
+    return /\.(jpe?g|png|gif|bmp|webp|svg)(\?.*)?$/i.test(url);
   };
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card className="border-0 shadow-sm px-3">
       <h4 className="p-3 pb-0">Document Upload & Status</h4>
-      <CardBody style={{ maxHeight: "500px", overflowY: "auto" }}>
-        {documents.map((doc, index) => (
-          <Row
-            key={index}
-            className="mb-3 p-3 bg-light rounded align-items-center "
-            style={{ cursor: "pointer" }}
+      <CardBody style={{ height: "500px", overflowY: "auto" }}>
+        {isLoading ? (
+          // Skeleton placeholders for documents list
+          <div style={{ minHeight: 120 }}>
+            {[...Array(3)].map((_, i) => (
+              <Row key={i} className="mb-3 p-3 rounded align-items-center">
+                <Col xs="auto">
+                  <div
+                    className="skeleton-loading rounded-circle"
+                    style={{ width: 36, height: 36 }}
+                  />
+                </Col>
+                <Col>
+                  <div
+                    className="skeleton-loading mb-2"
+                    style={{ width: "30%", height: 12 }}
+                  />
+                  <div
+                    className="skeleton-loading"
+                    style={{ width: "20%", height: 10 }}
+                  />
+                </Col>
+                <Col xs="auto">
+                  <div
+                    className="skeleton-loading rounded"
+                    style={{ width: 36, height: 30 }}
+                  />
+                </Col>
+              </Row>
+            ))}
+          </div>
+        ) : !netAdviserDocumentData || netAdviserDocumentData?.length === 0 ? (
+          <div
+            className="d-flex align-items-center justify-content-center"
+            style={{ height: "100%" }}
           >
-            <Col xs="auto">
-              <div className="bg-white rounded-circle p-2 d-flex align-items-center justify-content-center">
-                <FileText size={20} className="text-primary" />
-              </div>
-            </Col>
-            <Col>
-              <h5 className="mb-1 text-dark">{doc.title}</h5>
-              <small className="text-muted">Updated {doc.updatedTime}</small>
-            </Col>
-            <Col xs="auto">
-              <Badge color={getStatusColor(doc.status)} className="px-3 py-2">
-                {doc.status}
-              </Badge>
-            </Col>
-          </Row>
-        ))}
+            <div className="text-center text-muted">
+              <FileText size={48} className="text-secondary mb-2" />
+              <div>No documents uploaded yet.</div>
+            </div>
+          </div>
+        ) : (
+          netAdviserDocumentData?.map((doc: DocumentData, index: number) => (
+            <Row
+              key={index}
+              className="mb-3 p-3 bg-light-dark rounded align-items-center "
+            >
+              <Col xs="auto">
+                {isImageFile(doc.file) ? (
+                  <div
+                    className="bg-white rounded-circle p-0 overflow-hidden"
+                    style={{ width: 36, height: 36 }}
+                  >
+                    <img
+                      src={doc.file}
+                      alt={doc.file_type}
+                      style={{ width: 36, height: 36, objectFit: "cover" }}
+                    />
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-circle p-2 d-flex align-items-center justify-content-center">
+                    <FileText size={20} className="text-primary" />
+                  </div>
+                )}
+              </Col>
+              <Col>
+                <h5 className="mb-1 text-dark">
+                  {formatChoiceFieldValue(doc.file_type)}
+                </h5>
+                <small className="text-muted">
+                  Updated {formatDateToDMYAndTime(doc.updated_at)}
+                </small>
+              </Col>
+              <Col xs="auto">
+                <a href={doc.file} target="_blank" rel="noopener noreferrer">
+                  <Button color="info" size="sm">
+                    <FaDownload />
+                  </Button>
+                </a>
+              </Col>
+            </Row>
+          ))
+        )}
       </CardBody>
     </Card>
   );

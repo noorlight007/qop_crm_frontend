@@ -1,17 +1,15 @@
 import { getMenuByRole } from "@/Data/Layout/SidebarData";
 import { useAppSelector } from "@/Redux/Hooks";
 import { MenuItem } from "@/Types/LayoutTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
+import { formatChoiceFieldValue } from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { Fragment, useState } from "react";
-import { useTranslation } from "react-i18next";
 import Menulist from "./Menulist";
 
 const SidebarMenuList = () => {
   const [activeMenu, setActiveMenu] = useState<string[]>(["", "", ""]);
   const { pinedMenu } = useAppSelector((state) => state.layout);
   const { data: session } = useSession();
-  const { t } = useTranslation("common");
 
   // Get role-specific menu
   const roleBasedMenu = session?.user?.user_type
@@ -45,7 +43,7 @@ const SidebarMenuList = () => {
                   }`}
                 >
                   <span className="bg-light-secondary px-2 py-1 rounded-5">
-                    {formatChoiceFieldValue(session?.user?.user_type || "")}
+                    {formatChoiceFieldValue(session?.user?.user_type)}
                   </span>
                 </h5>
               </div>

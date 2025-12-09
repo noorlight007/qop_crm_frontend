@@ -89,6 +89,7 @@ export const baseApi = createApi({
 
     //Network Adviser start
     "NetworkAdviserReports",
+    "NetworkAdviserDashboardData",
     //Network Adviser end
 
     //Organization start

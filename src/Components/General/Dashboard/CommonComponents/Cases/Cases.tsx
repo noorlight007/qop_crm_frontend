@@ -5,7 +5,7 @@ import {
   CaseUser,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
-import { getCaseUrl } from "@/utils/GetCaseUrl";
+import { getCaseUrl } from "@/utils/RedirectPaths";
 import {
   formatDateToDMY,
   formatDateToDMYAndTime,
@@ -38,10 +38,6 @@ import DeleteCaseModal from "./Modals/DeleteCaseModal";
 import UpdateCaseModal from "./Modals/UpdateCaseModal";
 
 interface CasesProps {
-  /**
-   * Optional initial value for the `is_removed` filter.
-   * Pass "false" to show active cases only, "true" to show removed only, or "" for all.
-   */
   initialIsRemoved?: string;
 }
 
@@ -571,20 +567,17 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               >
                                 <i className="icon-pencil-alt"></i>
                               </Button>
-                              {userType !== "ORGANISATION_ADMIN" &&
-                                userType !== "ORGANISATION_ADVISER" &&
-                                userType !== "NETWORK_COMPLIANCE_ASSISTANT" && (
-                                  <Button
-                                    size="sm"
-                                    color="danger"
-                                    title="Delete Case"
-                                    onClick={() =>
-                                      openDeleteCaseModal(caseItem)
-                                    }
-                                  >
-                                    <i className="icon-trash"></i>
-                                  </Button>
-                                )}
+                              {(userType === "NETWORK_DIRECTOR" ||
+                                userType === "ORGANISATION_DIRECTOR") && (
+                                <Button
+                                  size="sm"
+                                  color="danger"
+                                  title="Delete Case"
+                                  onClick={() => openDeleteCaseModal(caseItem)}
+                                >
+                                  <i className="icon-trash"></i>
+                                </Button>
+                              )}
                             </div>
                           </td>
                         </tr>
