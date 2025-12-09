@@ -1,6 +1,6 @@
 import { CommonNetworkAdviserSummaryProps } from "@/Types/Network/Adviser/DashboardTypes";
 import { TbCheckbox, TbClock, TbUsers } from "react-icons/tb";
-import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
+import { Card, CardBody, CardTitle, Col, Row, Spinner } from "reactstrap";
 
 const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
   isLoading,
@@ -17,9 +17,16 @@ const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
                 <CardTitle className="small text-muted">
                   New Clients This Month
                 </CardTitle>
-                <h4 className="mb-1 text-dark">
-                  {netAdviserSummaryData?.new_clients_this_month || 0}
-                </h4>
+                {isLoading ? (
+                  <div className="d-flex align-items-center">
+                    <Spinner color="primary" size="sm" />
+                    <span className="text-muted ms-2">Loading...</span>
+                  </div>
+                ) : (
+                  <h4 className="mb-1 text-dark">
+                    {netAdviserSummaryData?.new_clients_this_month || 0}
+                  </h4>
+                )}
               </div>
               <div>
                 <span
@@ -43,9 +50,16 @@ const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
                 <CardTitle className="small text-muted text-truncate">
                   Case Completed
                 </CardTitle>
-                <h4 className="mb-1 text-dark">
-                  {netAdviserSummaryData?.completed_cases || 0}
-                </h4>
+                {isLoading ? (
+                  <div className="d-flex align-items-center">
+                    <Spinner color="secondary" size="sm" />
+                    <span className="text-muted ms-2">Loading...</span>
+                  </div>
+                ) : (
+                  <h4 className="mb-1 text-dark">
+                    {netAdviserSummaryData?.completed_cases || 0}
+                  </h4>
+                )}
               </div>
               <div>
                 <span
@@ -69,9 +83,16 @@ const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
                 <CardTitle className="small text-muted text-truncate">
                   Upcoming Tasks
                 </CardTitle>
-                <h4 className="mb-1 text-dark">
-                  {netAdviserSummaryData?.upcoming_tasks || 0}
-                </h4>
+                {isLoading ? (
+                  <div className="d-flex align-items-center">
+                    <Spinner color="primary" size="sm" />
+                    <span className="text-muted ms-2">Loading...</span>
+                  </div>
+                ) : (
+                  <h4 className="mb-1 text-dark">
+                    {netAdviserSummaryData?.upcoming_tasks || 0}
+                  </h4>
+                )}
               </div>
               <div>
                 <span
