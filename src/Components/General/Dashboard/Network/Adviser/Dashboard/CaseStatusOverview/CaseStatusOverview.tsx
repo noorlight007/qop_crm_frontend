@@ -1,3 +1,7 @@
+import {
+  CaseStage,
+  CommonNetworkAdviserSummaryProps,
+} from "@/Types/Network/Adviser/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card } from "reactstrap";
@@ -5,13 +9,39 @@ import { Card } from "reactstrap";
 // Dynamically import Google Charts with SSR disabled
 const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
 
-const CaseStatusOverview: React.FC = () => {
-  // Data matching your image
-  const data = [
-    ["Category", "Percentage"],
-    ["Category 1", 33.3],
-    ["Category 2", 26.7],
-    ["Category 3", 20],
+const CaseStatusOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
+  isLoading,
+  netAdviserSummaryData,
+}) => {
+  // Map raw case stage keys to human readable labels
+  const labelMapping: Record<keyof CaseStage, string> = {
+    enquiry: "Enquiry",
+    fact_find: "Fact Find",
+    research_compliance_check: "Research / Compliance Check",
+    decision_in_principle: "Decision in Principle",
+    full_mortgage_application: "Full Mortgage Application",
+    submission: "Submission",
+    offer_from_bank: "Offer from Bank",
+    legal: "Legal",
+    completion: "Completion",
+    future_opportunity: "Future Opportunity",
+    accept_waiting_start_date: "Accept - Waiting Start Date",
+    accept_on_risk: "Accept on Risk",
+    further_medical_required: "Further Medical Required",
+    not_proceed: "Not Proceed",
+  };
+
+  const rawCaseStage: CaseStage | undefined = netAdviserSummaryData?.case_stage;
+
+  // Build the data array for Google Charts; include keys with numeric values
+  const data: Array<Array<string | number>> = [
+    ["Category", "Cases"],
+    ...(rawCaseStage
+      ? (Object.keys(rawCaseStage) as Array<keyof CaseStage>).map((k) => [
+          labelMapping[k] || String(k),
+          Number(rawCaseStage[k] ?? 0),
+        ])
+      : []),
   ];
 
   const options = {
@@ -48,9 +78,42 @@ const CaseStatusOverview: React.FC = () => {
     fontSize: 11, // Overall font size
   };
 
+  // If loading - show skeleton
+  if (isLoading || !netAdviserSummaryData) {
+    return (
+      <Card className="bg-white p-3 shadow-sm">
+        <div className="mb-2">
+          <div
+            className="skeleton-loading mb-2"
+            style={{ width: "50%", height: "20px" }}
+          />
+          <div
+            className="skeleton-loading"
+            style={{ width: "100%", height: "320px" }}
+          />
+        </div>
+      </Card>
+    );
+  }
+
+  // If all case stage values are 0
+  const totalCases = data.reduce(
+    (acc, val, i) => (i === 0 ? 0 : acc + Number(val[1] ?? 0)),
+    0
+  );
+
+  if (totalCases === 0) {
+    return (
+      <Card className="bg-white p-3 shadow-sm text-center">
+        <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
+        <div className="text-muted">No case stage data available</div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-white p-3 shadow-sm">
-      <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>{" "}
+      <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
       <div className="google-chart">
         <Chart
           chartType="PieChart"

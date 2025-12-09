@@ -1,10 +1,55 @@
+import {
+  CommonNetworkAdviserSummaryProps,
+  Performances,
+} from "@/Types/Network/Adviser/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
-import { Card } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const MonthlyPerformance: React.FC = () => {
+const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
+  isLoading,
+  netAdviserSummaryData,
+}) => {
+  // Safely extract performances from the provided data and map them to the expected order
+  const monthsOrder: Array<keyof Performances> = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+  ];
+
+  const monthShortNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const performanceData = monthsOrder.map((m) =>
+    Number(netAdviserSummaryData?.performances?.[m]?.performance ?? 0)
+  );
+  const targetData = monthsOrder.map((m) =>
+    Number(netAdviserSummaryData?.performances?.[m]?.target ?? 0)
+  );
+
   const options = {
     chart: {
       type: "bar",
@@ -49,7 +94,7 @@ const MonthlyPerformance: React.FC = () => {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+      categories: monthShortNames,
       axisBorder: {
         show: false,
       },
@@ -139,13 +184,35 @@ const MonthlyPerformance: React.FC = () => {
   const series = [
     {
       name: "Performance",
-      data: [8, 12, 9, 15, 11, 14],
+      data: performanceData,
     },
     {
       name: "Target",
-      data: [10, 10, 10, 12, 12, 12],
+      data: targetData,
     },
   ];
+
+  if (isLoading || !netAdviserSummaryData) {
+    // Render skeleton loader when data is being fetched
+    return (
+      <Card className="border-0 p-4 shadow-sm bg-white">
+        <CardBody className="p-0">
+          <div
+            className="skeleton-loading mb-4"
+            style={{ width: "50%", height: "20px" }}
+          />
+          <div
+            className="skeleton-loading mb-4"
+            style={{ width: "30%", height: "12px" }}
+          />
+          <div
+            className="skeleton-loading rounded-2"
+            style={{ width: "100%", height: "280px" }}
+          />
+        </CardBody>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-0 p-4 shadow-sm bg-white">
