@@ -120,7 +120,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                 >
                   <Card className="bg-white border organisation_card opacity-100  p-3 position-relative">
                     <Link
-                      href={`/dashboard/network/organisations/${item.slug}`}
+                      href={`/dashboard/network/director/organisations/${item.slug}`}
                       target="_blank"
                       title="Website"
                       className="text-muted position-absolute top-0 end-0 p-3"
@@ -144,7 +144,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                         <h5 className="mb-1">
                           <Link
                             className="text-black fw-bold text_decoration_hover"
-                            href={`/dashboard/network/organisations/${item.slug}`}
+                            href={`/dashboard/network/director/organisations/${item.slug}`}
                           >
                             {item.name}
                           </Link>
