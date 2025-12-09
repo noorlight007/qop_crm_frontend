@@ -520,26 +520,26 @@ const Documents: React.FC = () => {
                               >
                                 <i className="fa-solid fa-download"></i>
                               </a>
-                              <button
-                                className="btn btn-primary btn-sm"
+                              <Button
+                                color="warning"
+                                size="sm"
                                 title="Update Info"
                                 onClick={() => handleUpdateClick(fileData)}
                               >
                                 <i className="fa-solid fa-edit"></i>
-                              </button>
+                              </Button>
                               {(session?.user?.user_type ===
-                                "ORGANISATION_DIRECTOR" ||
+                                "NETWORK_DIRECTOR" ||
                                 session?.user?.user_type ===
-                                  "NETWORK_DIRECTOR" ||
-                                session?.user?.user_type !==
-                                  "NETWORK_COMPLIANCE_ASSISTANT") && (
-                                <button
-                                  className="btn btn-danger btn-sm"
+                                  "ORGANISATION_DIRECTOR") && (
+                                <Button
+                                  color="danger"
+                                  size="sm"
                                   title="Delete"
                                   onClick={() => handleDeleteClick(fileData)}
                                 >
                                   <i className="fa-regular fa-trash-can"></i>
-                                </button>
+                                </Button>
                               )}
                             </div>
                           </td>
