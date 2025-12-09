@@ -6,12 +6,12 @@ import {
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
+import OrganisationList from "../../Director/Users/Organisations/OrganisationList/OrganisationList";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
-import OrganisationCards from "./OrganisationCards/OrganisationCards";
 import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const NetworkAdviserContainer: React.FC = () => {
@@ -21,7 +21,6 @@ const NetworkAdviserContainer: React.FC = () => {
     useGetNetworkAdviserDashboardClientDataQuery(undefined);
   const { data: netAdviserDocuments, isLoading: isDocumentsLoading } =
     useGetNetworkAdviserDashboardDocumentDataQuery(undefined);
-
 
   return (
     <>
@@ -60,7 +59,7 @@ const NetworkAdviserContainer: React.FC = () => {
         {/* 4th row  */}
         <Row>
           <Col>
-            <OrganisationCards />
+            <OrganisationList maxItems={8} />
           </Col>
         </Row>
         {/* 5th row  */}
