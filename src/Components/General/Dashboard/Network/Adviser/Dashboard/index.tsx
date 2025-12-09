@@ -56,7 +56,10 @@ const NetworkAdviserContainer: React.FC = () => {
         {/* 5th row  */}
         <Row>
           <Col md={6} sm={12}>
-            <DocumentStatus />
+            <DocumentStatus
+              isLoading={isSummaryLoading}
+              netAdviserSummaryData={netAdviserSummary}
+            />
           </Col>
           <Col md={6} sm={12}>
             <MyClients />
