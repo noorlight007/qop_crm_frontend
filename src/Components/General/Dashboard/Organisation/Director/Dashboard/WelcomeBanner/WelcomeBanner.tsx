@@ -12,7 +12,7 @@ const WelcomeBanner: React.FC<CommonDashboardProps> = ({
 
   if (isLoading) {
     return (
-      <div className="p-3">
+      <div className="py-3">
         <div className="placeholder-glow">
           <span
             className="placeholder col-12 rounded"

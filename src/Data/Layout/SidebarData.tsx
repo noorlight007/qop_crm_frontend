@@ -179,7 +179,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation",
+        path: "/dashboard/organisation/director",
       },
       {
         title: "Cases",
@@ -187,27 +187,27 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/organisation/leads",
+            path: "/dashboard/organisation/director/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/cases",
+            path: "/dashboard/organisation/director/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/activecases",
+            path: "/dashboard/organisation/director/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/clients",
+            path: "/dashboard/organisation/director/clients",
             title: "Clients",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/reports",
+            path: "/dashboard/organisation/director/reports",
             title: "Reports",
             type: "link",
           },
@@ -219,17 +219,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/organisation/advisers",
+            path: "/dashboard/organisation/director/advisers",
             title: "Advisers",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/introducers",
+            path: "/dashboard/organisation/director/introducers",
             title: "Introducers",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/supportstaff",
+            path: "/dashboard/organisation/director/supportstaff",
             title: "Support Staff",
             type: "link",
           },
@@ -242,17 +242,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/dashboard/organisation/usersandroles",
+      //       path: "/dashboard/organisation/director/usersandroles",
       //       title: "Users & Roles",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/organisation/workflowsandintegrations",
+      //       path: "/dashboard/organisation/director/workflowsandintegrations",
       //       title: "Workflows & Integrations",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/organisation/systemreportsandlogs",
+      //       path: "/dashboard/organisation/director/systemreportsandlogs",
       //       title: "System Reports & Logs",
       //       type: "link",
       //     },
@@ -273,7 +273,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
         title: "Dashboard",
         icon: "Chart",
         lanClass: "lan-3",
-        path: "/dashboard/orgadviser",
+        path: "/dashboard/organisation/adviser",
         type: "link",
       },
       {
@@ -283,22 +283,22 @@ const OrganisationAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            path: "/dashboard/orgadviser/leads",
+            path: "/dashboard/organisation/adviser/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/orgadviser/cases",
+            path: "/dashboard/organisation/adviser/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/orgadviser/activecases",
+            path: "/dashboard/organisation/adviser/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
-            path: "/dashboard/orgadviser/reports",
+            path: "/dashboard/organisation/adviser/reports",
             title: "Reports",
             type: "link",
           },
@@ -311,12 +311,12 @@ const OrganisationAdviserMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/dashboard/orgadviser/marketinghub",
+      //       path: "/dashboard/organisation/adviser/marketinghub",
       //       title: "Marketing Hub",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/orgadviser/tasksandreminders",
+      //       path: "/dashboard/organisation/adviser/tasksandreminders",
       //       title: "Tasks & Reminders",
       //       type: "link",
       //     },
@@ -325,7 +325,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
     ],
   },
 ];
-//Or Organisation staff Menu
+//Or Organisation Admin Menu
 const OrganisationAdminMenu: MenuItem[] = [
   {
     title: "Admin",
@@ -337,21 +337,21 @@ const OrganisationAdminMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/orgstaff",
+        path: "/dashboard/organisation/admin",
       },
       {
         title: "Cases",
         icon: "Activity",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/orgstaff/cases",
+        path: "/dashboard/organisation/admin/cases",
       },
       {
         title: "Reports",
         icon: "Folder",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/orgstaff/reports",
+        path: "/dashboard/organisation/admin/reports",
       },
       // {
       //   title: "Tasks & Reminders",
@@ -365,28 +365,28 @@ const OrganisationAdminMenu: MenuItem[] = [
         icon: "Profile",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/orgstaff/adviserclient",
+        path: "/dashboard/organisation/admin/adviserclient",
       },
       // {
       //   title: "Document Management",
       //   icon: "Paper",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/orgstaff/documentmanagement",
+      //   path: "/dashboard/organisation/admin/documentmanagement",
       // },
       // {
       //   title: "Chat & Communication",
       //   icon: "Chat",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/orgstaff/chatandcommunication",
+      //   path: "/dashboard/organisation/admin/chatandcommunication",
       // },
       // {
       //   title: "Comments",
       //   icon: "Message",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/orgstaff/comments",
+      //   path: "/dashboard/organisation/admin/comments",
       // },
     ],
   },
