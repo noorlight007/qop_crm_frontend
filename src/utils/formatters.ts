@@ -1,19 +1,19 @@
 // Utility formatters used across the app
-export function formatChoiceFieldValue(
+export const formatChoiceFieldValue = (
   choiceFieldValue?: string | null
-): string {
+): string => {
   if (!choiceFieldValue) return "";
   return choiceFieldValue
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ");
-}
+};
+export default formatChoiceFieldValue;
 
 export function formatUserTypeName(userType?: string | null): string {
   if (!userType) {
     return "";
   }
-
   // Remove everything up to and including the first underscore (if present)
   const afterPrefix = userType.includes("_")
     ? userType.replace(/^[^_]*_/, "")
