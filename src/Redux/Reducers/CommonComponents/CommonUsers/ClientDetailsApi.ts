@@ -1,0 +1,53 @@
+import { baseApi } from "@/Redux/Api/BaseApi";
+
+export const ClientDetailsApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    getClientDetails: builder.query({
+      // Accept optional params: { page, page_size, search, ... }
+      query: (params) => ({
+        url: `/director/clients/`,
+        method: "GET",
+        params: params || {},
+      }),
+      providesTags: ["ClientDetails"],
+    }),
+    addClientDetails: builder.mutation({
+      query: ({ payload }) => ({
+        url: `/director/clients/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["ClientDetails"],
+    }),
+    updateClientDetails: builder.mutation({
+      query: ({ clientAlias, payload }) => ({
+        url: `/director/clients/${clientAlias}/`,
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["ClientDetails"],
+    }),
+    deleteClientDetails: builder.mutation({
+      query: ({ clientAlias }) => ({
+        url: `/director/clients/${clientAlias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ClientDetails"],
+    }),
+    clientInvitation: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/director/users/${userAlias}/invitation/`,
+        method: "GET",
+      }),
+      invalidatesTags: ["ClientDetails"],
+    }),
+  }),
+});
+
+export const {
+  useGetClientDetailsQuery,
+  useAddClientDetailsMutation,
+  useUpdateClientDetailsMutation,
+  useDeleteClientDetailsMutation,
+  useClientInvitationMutation,
+} = ClientDetailsApi;

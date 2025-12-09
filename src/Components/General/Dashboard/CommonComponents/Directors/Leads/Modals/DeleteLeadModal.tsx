@@ -1,4 +1,4 @@
-import { useDeleteLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/Directors/LeadDetalisApi";
+import { useDeleteLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
 import { DeleteLeadModalProps } from "@/Types/CommonComponents/Directors/LeadTypes";
 import React from "react";
 import { toast } from "react-toastify";

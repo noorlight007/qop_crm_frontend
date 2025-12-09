@@ -125,8 +125,10 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                           >
                             <i className="icon-pencil-alt"></i>
                           </Button>
-                          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                            session?.user?.user_type === "NETWORK_ADMIN") && (
+                          {(session?.user?.user_type ===
+                            "ORGANISATION_DIRECTOR" ||
+                            session?.user?.user_type ===
+                              "NETWORK_DIRECTOR") && (
                             <Button
                               color="danger"
                               size="sm"

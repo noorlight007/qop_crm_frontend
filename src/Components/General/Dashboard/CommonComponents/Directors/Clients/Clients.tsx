@@ -1,4 +1,4 @@
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/ClientDetailsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
 import {
   ClientInfoProps,
   ClientsProps,
@@ -9,6 +9,7 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { TbMailShare } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -24,6 +25,7 @@ import {
   Table,
 } from "reactstrap";
 import AddClientModal from "./Modals/AddClientModal";
+import ClientInvitationModal from "./Modals/ClientInvitationModal";
 import DeleteClientModal from "./Modals/DeleteClientModal";
 import UpdateClientModal from "./Modals/UpdateClientModal";
 import ViewClientModal from "./Modals/ViewClientModal";
@@ -39,6 +41,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<ClientInfoProps | null>(
     null
   );
@@ -73,6 +76,8 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
     setClientToDelete(client);
     toggleDeleteModal();
   };
+  const toggleInvitationModal = () =>
+    setIsInvitationModalOpen(!isInvitationModalOpen);
 
   useEffect(() => {
     if (clientData) {
@@ -254,6 +259,17 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
+                          color="info"
+                          size="sm"
+                          title="Send Client Invitation"
+                          onClick={() => {
+                            setSelectedClient(client);
+                            toggleInvitationModal();
+                          }}
+                        >
+                          <TbMailShare size="16" />
+                        </Button>
+                        <Button
                           color="success"
                           size="sm"
                           title="Update User"
@@ -414,6 +430,11 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               ? clientToDelete?.user?.middle_name + " "
               : ""
           }${clientToDelete?.user?.last_name}`}
+        />
+        <ClientInvitationModal
+          isOpen={isInvitationModalOpen}
+          toggle={toggleInvitationModal}
+          selectedClient={selectedClient}
         />
         {/* modals end */}
       </CardBody>

@@ -1,6 +1,6 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/AdviserDetailsApi";
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/LeadDetalisApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { LeadsInfo } from "@/Types/CommonComponents/Directors/LeadTypes";
@@ -22,7 +22,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import AddAdviserModal from "../../Directors/Advisers/Modals/AddAdviserModal";
 import AddLeadModal from "../../Directors/Leads/Modals/AddLeadModal";
 
 const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
@@ -55,9 +54,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   const userType = session?.user?.user_type;
   const router = useRouter();
 
-  const [isAddLeadModalOpen, setIsAddLeadModalOpen] = React.useState(false);
-  const [isAddAdviserModalOpen, setIsAddAdviserModalOpen] =
-    React.useState(false);
+  const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
 
   const handleOpenAddLead = () => setIsAddLeadModalOpen(true);
   const handleCloseAddLead = () => {
@@ -66,18 +63,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     try {
       refetchLeads();
     } catch (err) {
-      // ignore
-    }
-  };
-
-  const handleOpenAddAdviser = () => setIsAddAdviserModalOpen(true);
-  const handleCloseAddAdviser = () => {
-    setIsAddAdviserModalOpen(false);
-    // Refetch advisers after closing the add-adviser modal to refresh the list
-    try {
-      refetchAdvisers();
-    } catch (err) {
-      // ignore
+      console.error("Error refetching leads:", err);
     }
   };
 
@@ -164,7 +150,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   };
 
   const handleCaseCreated = (caseAlias: string) => {
-    // Close modals if needed
     toggle();
     // Redirect to the new case page
     router.push(getCaseUrl(caseAlias, userType as string));
@@ -173,7 +158,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        {!!leadId ? "Continue to Case" : "Create New Case"}
+        <h3 className="text-primary">
+          {!!leadId ? "Continue to Case" : "Create New Case"}
+        </h3>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
@@ -241,8 +228,8 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               <option value="GENERAL_INSURANCE">General Insurance</option>
             </Input>
           </FormGroup>
-          {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-            session?.user?.user_type === "NETWORK_ADMIN") && (
+          {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+            session?.user?.user_type === "NETWORK_DIRECTOR") && (
             <FormGroup>
               <Label for="adviser">Assign Adviser</Label>
               <Input
@@ -273,19 +260,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
-              {advisers.length === 0 && (
-                <div className="mt-2">
-                  <Button
-                    size="sm"
-                    color="primary"
-                    onClick={handleOpenAddAdviser}
-                    toggle={toggle}
-                  >
-                    <TbCirclePlus size={16} className="me-1" />
-                    Add Adviser
-                  </Button>
-                </div>
-              )}
             </FormGroup>
           )}
           <FormGroup>
@@ -329,10 +303,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         </ModalFooter>
       </Form>
       <AddLeadModal isOpen={isAddLeadModalOpen} toggle={handleCloseAddLead} />
-      <AddAdviserModal
-        isOpen={isAddAdviserModalOpen}
-        toggle={handleCloseAddAdviser}
-      />
     </Modal>
   );
 };

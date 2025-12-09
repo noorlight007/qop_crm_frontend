@@ -38,6 +38,7 @@ export const baseApi = createApi({
     "CasesSummary",
     "JointUserDetails",
     "CaseDocuments",
+    "CaseCopy",
     // Single case info end
 
     // Common Dashboard start

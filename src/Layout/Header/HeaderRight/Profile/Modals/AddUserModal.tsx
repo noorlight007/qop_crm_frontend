@@ -137,7 +137,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                   required
                 >
                   <option value="">Select...</option>
-                  {session?.user?.user_type === "NETWORK_ADMIN" && (
+                  {session?.user?.user_type === "NETWORK_DIRECTOR" && (
                     <>
                       {/* <option value="LEAD">Lead</option>
                       <option value="CLIENT">Client</option>
@@ -159,7 +159,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                       <option value="NETWORK_PRINCIPAL_ADVISER">
                         Network Principal Adviser
                       </option> 
-                      <option value="NETWORK_ADMIN">Network Admin</option>*/}
+                      <option value="NETWORK_DIRECTOR">Network Admin</option>*/}
                       <option value="NETWORK_ADVISER">Network Adviser</option>
                       {/* <option value="ORGANIZATION_CEO">Organization CEO</option>
                       <option value="ORGANIZATION_COO">Organization COO</option>
@@ -175,23 +175,23 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, toggle }) => {
                       <option value="ORGANIZATION_PRINCIPAL_ADVISER">
                         Organization Principal Adviser
                       </option> */}
-                      <option value="ORGANIZATION_ADVISER">
+                      <option value="ORGANISATION_ADVISER">
                         Organization Adviser
                       </option>
-                      <option value="ORGANIZATION_ADMIN">
+                      <option value="ORGANISATION_DIRECTOR">
                         Organization Admin
                       </option>
-                      <option value="ORGANIZATION_SUPPORT">
+                      <option value="ORGANISATION_ADMIN">
                         Organization Support Staff
                       </option>
                     </>
                   )}
-                  {session?.user?.user_type === "ORGANIZATION_ADMIN" && (
+                  {session?.user?.user_type === "ORGANISATION_DIRECTOR" && (
                     <>
-                      <option value="ORGANIZATION_ADVISER">
+                      <option value="ORGANISATION_ADVISER">
                         Organization Adviser
                       </option>
-                      <option value="ORGANIZATION_SUPPORT">
+                      <option value="ORGANISATION_ADMIN">
                         Organization Support Staff
                       </option>
                       {/* <option value="ORGANIZATION_CEO">Organization CEO</option>

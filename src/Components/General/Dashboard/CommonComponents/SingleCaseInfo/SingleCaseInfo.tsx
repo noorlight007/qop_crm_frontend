@@ -26,18 +26,18 @@ const SingleCaseInfo: React.FC = () => {
     switch (userType) {
       case "ADMIN":
         return `/dashboard/admin`;
-      case "NETWORK_ADMIN":
-        return `/dashboard/network/cases`;
+      case "NETWORK_DIRECTOR":
+        return `/dashboard/network/director/cases`;
       case "NETWORK_COMPLIANCE_ASSISTANT":
-        return `/dashboard/network/cases`;
+        return `/dashboard/network/director/cases`;
       case "NETWORK_ADVISER":
-        return `/dashboard/netadviser/cases`;
-      case "ORGANIZATION_ADMIN":
-        return `/dashboard/organisation/cases`;
-      case "ORGANIZATION_ADVISER":
-        return `/dashboard/orgadviser/cases`;
-      case "ORGANIZATION_SUPPORT":
-        return `/dashboard/orgstaff/cases`;
+        return `/dashboard/network/adviser/cases`;
+      case "ORGANISATION_DIRECTOR":
+        return `/dashboard/organisation/director/cases`;
+      case "ORGANISATION_ADVISER":
+        return `/dashboard/organisation/adviser/cases`;
+      case "ORGANISATION_ADMIN":
+        return `/dashboard/organisation/admin/cases`;
       case "CLIENT":
         return `/dashboard/client/cases`;
       default:

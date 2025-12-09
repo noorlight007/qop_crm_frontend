@@ -1,6 +1,7 @@
 import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
+import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/UpdateClientModal";
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Directors/ClientDetailsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
 import {
   CaseInfoPrpos,
   SingleCaseProps,
@@ -10,7 +11,12 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaArrowRight, FaTrash, FaUserEdit } from "react-icons/fa";
-import { TbCircleArrowUp, TbCopy, TbSettings } from "react-icons/tb";
+import {
+  TbCircleArrowUp,
+  TbCopy,
+  TbMailShare,
+  TbSettings,
+} from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -27,6 +33,7 @@ import {
   Spinner,
 } from "reactstrap";
 import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
+import CopyCaseModal from "./Modals/CopyCaseModal";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   const { data: session } = useSession();
@@ -34,10 +41,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [isUpdateClientModalOpen, setIsUpdateClientModalOpen] = useState(false);
+  const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInfoProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
+  const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
+    useState(false);
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
@@ -48,6 +58,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
   const toggleUpdateClientModal = () =>
     setIsUpdateClientModalOpen((prev) => !prev);
+
+  const toggleCopyCaseModal = () => setIsCopyCaseModalOpen((prev) => !prev);
 
   const { data: dirClientsData } = useGetClientDetailsQuery(undefined);
 
@@ -62,6 +74,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   };
   const toggleDeleteCaseModal = () =>
     setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
+
+  const toggleClientInvitationModal = () =>
+    setIsClientInvitationModalOpen(!isClientInvitationModalOpen);
 
   const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
     if (clientData?.user) {
@@ -111,12 +126,45 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                   <TbCircleArrowUp size="16" className="me-1" />
                   <span>Update Case</span>
                 </DropdownItem>
-                <DropdownItem className="opacity-100 py-3">
+                <DropdownItem
+                  onClick={() => {
+                    if (!caseInfo?.lead_user) {
+                      toast.error("No lead user found for this case.");
+                      return;
+                    }
+
+                    if (!caseInfo.lead_user.alias) {
+                      toast.error(
+                        "Client alias not found. This may be an Organization Client."
+                      );
+                      return;
+                    }
+
+                    setSelectedClient({
+                      alias: caseInfo.lead_user.alias,
+                      user: {
+                        email: caseInfo.lead_user.email,
+                        first_name: caseInfo.lead_user.first_name,
+                        last_name: caseInfo.lead_user.last_name,
+                      },
+                    } as Partial<ClientInfoProps>);
+                    toggleClientInvitationModal();
+                  }}
+                  disabled={!caseInfo}
+                  className="opacity-100 py-3"
+                >
+                  <TbMailShare size="16" className="me-1" />
+                  Client Invitation
+                </DropdownItem>
+                <DropdownItem
+                  className="opacity-100 py-3"
+                  onClick={toggleCopyCaseModal}
+                >
                   <TbCopy size="16" className="me-1" />
                   Copy Case
                 </DropdownItem>
-                {(session?.user?.user_type === "ORGANIZATION_ADMIN" ||
-                  session?.user?.user_type === "NETWORK_ADMIN") && (
+                {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                  session?.user?.user_type === "NETWORK_DIRECTOR") && (
                   <>
                     <DropdownItem divider />
                     <DropdownItem
@@ -555,6 +603,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           selectedClient={selectedClient}
         />
       )}
+      {selectedClient && (
+        <ClientInvitationModal
+          isOpen={isClientInvitationModalOpen}
+          toggle={toggleClientInvitationModal}
+          selectedClient={selectedClient}
+        />
+      )}
       <UpdateCaseModal
         isOpen={isUpdateCaseModalOpen}
         toggle={toggleUpdateCaseModal}
@@ -565,6 +620,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         toggle={toggleDeleteCaseModal}
         caseData={currentCase}
         onDelete={toggleDeleteCaseModal}
+      />
+      {/* Copy Case Modal - To be implemented */}
+      <CopyCaseModal
+        isOpen={isCopyCaseModalOpen}
+        toggle={toggleCopyCaseModal}
+        caseData={caseInfo as CaseInfoPrpos}
       />
     </Col>
   );
