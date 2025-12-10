@@ -1,4 +1,4 @@
-import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
+import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";

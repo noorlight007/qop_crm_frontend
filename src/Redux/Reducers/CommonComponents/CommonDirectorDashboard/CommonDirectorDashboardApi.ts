@@ -1,6 +1,6 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const CommonDashboardApi = baseApi.injectEndpoints({
+export const CommonDirectorDashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCommonDashboard: builder.query({
       query: () => ({
@@ -11,4 +11,4 @@ export const CommonDashboardApi = baseApi.injectEndpoints({
     }),
   }),
 });
-export const { useGetCommonDashboardQuery } = CommonDashboardApi;
+export const { useGetCommonDashboardQuery } = CommonDirectorDashboardApi;

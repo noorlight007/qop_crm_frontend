@@ -11,6 +11,7 @@ import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
+import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationAdviserContainer: React.FC = () => {
   const { data: netAdviserSummary, isLoading: isSummaryLoading } =
@@ -24,6 +25,10 @@ const OrganisationAdviserContainer: React.FC = () => {
     <>
       <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
       <Container fluid>
+        <WelcomeBanner
+          isLoading={isSummaryLoading}
+          netAdviserSummaryData={netAdviserSummary}
+        />
         {/* 1st row  */}
         <DashboardOverview />
         {/* 2nd row  */}
