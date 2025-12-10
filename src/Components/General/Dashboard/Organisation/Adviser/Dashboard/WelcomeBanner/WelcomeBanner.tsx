@@ -1,6 +1,6 @@
 import { CommonNetworkAdviserSummaryProps } from "@/Types/Network/Adviser/DashboardTypes";
 import React from "react";
-import { TbNetwork } from "react-icons/tb";
+import { TbBuildingSkyscraper } from "react-icons/tb";
 import { Card } from "reactstrap";
 
 const WelcomeBanner: React.FC<CommonNetworkAdviserSummaryProps> = ({
@@ -24,7 +24,7 @@ const WelcomeBanner: React.FC<CommonNetworkAdviserSummaryProps> = ({
     <Card className="welcomeCard">
       <div className="welcomeCardContent">
         <div className="welcomeIconWrapper">
-          <TbNetwork className="welcomeIcon" />
+          <TbBuildingSkyscraper className="welcomeIcon" />
         </div>
         <div className="welcomeTextContent">
           <div className="welcomeGreeting">Welcome back</div>
