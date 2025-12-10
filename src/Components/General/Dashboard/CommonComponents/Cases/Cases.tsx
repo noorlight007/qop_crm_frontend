@@ -1,5 +1,6 @@
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersDetailsApi";
 import {
   CaseInfoPrpos,
   CaseUser,
@@ -53,7 +54,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
 
   const defaultFilters = {
-    created_by: "",
+    created_by__id: "",
+    assigned_to__id: "",
     case_category: "",
     case_stage: "",
     // allow parent components to set initial is_removed filter
@@ -63,6 +65,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
 
   const { data: adviserData, isLoading: isAdviserLoading } =
     useGetAdviserDetailsQuery(undefined);
+
+  const { data: usersData } = useGetUsersQuery(undefined);
 
   const { data: caseData, isLoading: isCaseLoading } = useGetCasesQuery({
     search: searchQuery,
@@ -151,17 +155,16 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <i className="fa-solid fa-filter"></i>
                     )}
                   </Button>
-                  {userType !== "ORGANISATION_ADMIN" &&
-                    userType !== "NETWORK_COMPLIANCE_ASSISTANT" && (
-                      <Button
-                        color="primary"
-                        onClick={openAddNewCaseModal}
-                        className="d-flex justify-content-center align-items-center gap-1"
-                      >
-                        <TbCirclePlus size={18} />
-                        <span>Add New Case</span>
-                      </Button>
-                    )}
+                  {userType !== "ORGANISATION_ADMIN" && (
+                    <Button
+                      color="primary"
+                      onClick={openAddNewCaseModal}
+                      className="d-flex justify-content-center align-items-center gap-1"
+                    >
+                      <TbCirclePlus size={18} />
+                      <span>Add New Case</span>
+                    </Button>
+                  )}
                 </Col>
               </Row>
             </CardHeader>
@@ -169,18 +172,37 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
               {filterIcon && (
                 <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
-                    <Col xs="12" sm="6" md="3">
-                      <Label>Select Case Created Adviser</Label>
+                    <Col>
+                      <Label>Select Created By</Label>
                       <Input
                         type="select"
                         id="employeeFilter"
                         className="py-1"
-                        value={filters.created_by}
+                        value={filters.created_by__id}
                         onChange={(e) =>
-                          handleFilterChange("created_by", e.target.value)
+                          handleFilterChange("created_by__id", e.target.value)
                         }
                       >
-                        <option value="">All Advisers</option>
+                        <option value="">All Users</option>
+                        {usersData?.map((user: any) => (
+                          <option key={user.alias} value={user.id}>
+                            {user?.name}
+                          </option>
+                        ))}
+                      </Input>
+                    </Col>
+                    <Col>
+                      <Label>Select Assigned To</Label>
+                      <Input
+                        type="select"
+                        id="employeeFilter"
+                        className="py-1"
+                        value={filters.assigned_to__id}
+                        onChange={(e) =>
+                          handleFilterChange("assigned_to__id", e.target.value)
+                        }
+                      >
+                        <option value="">All Users</option>
                         {adviserData?.results.map(
                           (adviser: AdviserInfoProps) => (
                             <option key={adviser.alias} value={adviser.user.id}>
@@ -199,7 +221,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         )}
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col>
                       <Label>Select Category</Label>
                       <Input
                         type="select"
@@ -218,7 +240,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         </option>
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col>
                       <Label>Select Stage</Label>
                       <Input
                         type="select"
@@ -250,7 +272,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         <option value="NOT_PROCEED">Not Proceed</option>
                       </Input>
                     </Col>
-                    <Col xs="12" sm="6" md="3">
+                    <Col>
                       <Label>Clear All Filters</Label>
                       <Button
                         outline
