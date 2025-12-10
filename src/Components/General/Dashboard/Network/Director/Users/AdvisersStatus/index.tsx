@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDashboard/CommonDashboardApi";
+import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
 import { CommonDashboardDataProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
 import React, { useEffect, useMemo, useState } from "react";
 import {

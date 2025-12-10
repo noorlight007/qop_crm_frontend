@@ -3,9 +3,8 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const AdviserDetailsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAdviserDetails: builder.query({
-      // Accept optional params: { page, page_size, search, ... }
       query: (params) => ({
-        url: `/director/advisors/`,
+        url: `/director/advisers/`,
         method: "GET",
         params: params || {},
       }),
@@ -13,7 +12,7 @@ export const AdviserDetailsApi = baseApi.injectEndpoints({
     }),
     addAdviserDetails: builder.mutation({
       query: ({ payload }) => ({
-        url: `/director/advisors/`,
+        url: `/director/advisers/`,
         method: "POST",
         body: payload,
       }),
@@ -21,7 +20,7 @@ export const AdviserDetailsApi = baseApi.injectEndpoints({
     }),
     updateAdviserDetails: builder.mutation({
       query: ({ adviserAlias, payload }) => ({
-        url: `/director/advisors/${adviserAlias}/`,
+        url: `/director/advisers/${adviserAlias}/`,
         method: "PUT",
         body: payload,
       }),
@@ -29,7 +28,7 @@ export const AdviserDetailsApi = baseApi.injectEndpoints({
     }),
     deleteAdviserDetails: builder.mutation({
       query: ({ adviserAlias }) => ({
-        url: `/director/advisors/${adviserAlias}/`,
+        url: `/director/advisers/${adviserAlias}/`,
         method: "DELETE",
       }),
       invalidatesTags: ["AdviserDetails"],
