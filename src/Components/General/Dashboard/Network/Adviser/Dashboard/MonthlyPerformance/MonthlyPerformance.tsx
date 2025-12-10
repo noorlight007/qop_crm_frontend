@@ -192,7 +192,7 @@ const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
     },
   ];
 
-  if (isLoading || !netAdviserSummaryData) {
+  if (isLoading) {
     // Render skeleton loader when data is being fetched
     return (
       <Card className="border-0 p-4 shadow-sm bg-white">
@@ -210,6 +210,19 @@ const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
             style={{ width: "100%", height: "280px" }}
           />
         </CardBody>
+      </Card>
+    );
+  }
+
+  if (!netAdviserSummaryData) {
+    return (
+      <Card className="bg-white p-3 shadow-sm " style={{ height: "390px" }}>
+        <h4 className="mb-2 text-md font-semibold">
+          Monthly Performance vs Target
+        </h4>
+        <div className="text-muted d-flex justify-content-center align-items-center h-75">
+          No monthly performance data available
+        </div>
       </Card>
     );
   }

@@ -79,7 +79,7 @@ const CaseStatusOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
   };
 
   // If loading - show skeleton
-  if (isLoading || !netAdviserSummaryData) {
+  if (isLoading) {
     return (
       <Card className="bg-white p-3 shadow-sm">
         <div className="mb-2">
@@ -96,17 +96,13 @@ const CaseStatusOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
     );
   }
 
-  // If all case stage values are 0
-  const totalCases = data.reduce(
-    (acc, val, i) => (i === 0 ? 0 : acc + Number(val[1] ?? 0)),
-    0
-  );
-
-  if (totalCases === 0) {
+  if (!netAdviserSummaryData) {
     return (
-      <Card className="bg-white p-3 shadow-sm text-center">
+      <Card className="bg-white p-3 shadow-sm " style={{ height: "390px" }}>
         <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
-        <div className="text-muted">No case stage data available</div>
+        <div className="text-muted d-flex justify-content-center align-items-center h-75">
+          No case stage data available
+        </div>
       </Card>
     );
   }
