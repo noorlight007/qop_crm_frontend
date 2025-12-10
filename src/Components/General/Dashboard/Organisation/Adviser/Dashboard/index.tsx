@@ -29,10 +29,16 @@ const OrganisationAdviserContainer: React.FC = () => {
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <MonthlyPerformance />
+            <MonthlyPerformance
+              isLoading={isSummaryLoading}
+              netAdviserSummaryData={netAdviserSummary}
+            />
           </Col>
           <Col md={6} sm={12}>
-            <CaseStatusOverview />
+            <CaseStatusOverview
+              isLoading={isSummaryLoading}
+              netAdviserSummaryData={netAdviserSummary}
+            />
           </Col>
         </Row>
         {/* 3rd row  */}
