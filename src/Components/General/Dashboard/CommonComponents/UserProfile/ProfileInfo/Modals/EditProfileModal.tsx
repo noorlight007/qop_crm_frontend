@@ -198,18 +198,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  name="profile_image"
-                  id="profile_image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </FormGroup>
-            </Col>
+
             <Col sm="12" md="6">
               <FormGroup>
                 <Label for="middle_name">Middle Name</Label>
@@ -296,6 +285,18 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
                   id="country"
                   value={form.country}
                   onChange={handleChange}
+                />
+              </FormGroup>
+            </Col>
+            <Col sm="12" md="12">
+              <FormGroup>
+                <Label for="profile_image">Profile Image</Label>
+                <Input
+                  name="profile_image"
+                  id="profile_image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
                 />
               </FormGroup>
             </Col>
