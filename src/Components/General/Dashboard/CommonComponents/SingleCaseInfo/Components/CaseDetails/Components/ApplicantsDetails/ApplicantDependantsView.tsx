@@ -1,12 +1,14 @@
 import Loading from "@/app/loading";
 import {
   useAddDependantsMutation,
+  useDeleteDependantsMutation,
   useGetDependantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantDependantsViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
@@ -38,6 +40,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   );
 
   const [addDependants] = useAddDependantsMutation();
+  const [deleteDependants] = useDeleteDependantsMutation();
 
   const calcAge = (dob?: string | null) => {
     if (!dob) return "";
@@ -50,6 +53,27 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
       years--;
     }
     return years >= 0 ? String(years) : "";
+  };
+
+  const handleDeleteDependant = async (dependantId: string) => {
+    try {
+      const response = await deleteDependants({
+        case_alias: casealias,
+        applicantDetails_alias: applicantAlias,
+        dependant_id: dependantId,
+      });
+
+      if (response.data) {
+        toast.success("Dependant deleted successfully!");
+      } else if (response.error) {
+        const errorMessage =
+          (response.error as any)?.data?.detail || "Failed to delete dependant";
+        toast.error(errorMessage);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to delete dependant";
+      toast.error(errorMessage);
+    }
   };
 
   const handleCopyDependants = async () => {
@@ -135,13 +159,14 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                 <th>Name</th>
                 <th>Date of Birth</th>
                 <th>Age</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {applicantDependantsData && applicantDependantsData.length > 0 ? (
                 applicantDependantsData.map(
                   (
-                    dependant: { name: any; date_of_birth: any },
+                    dependant: { id?: string; name: any; date_of_birth: any },
                     index: number
                   ) => (
                     <tr className="text-center" key={index}>
@@ -149,12 +174,31 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                       <td>{dependant.name || "-"}</td>
                       <td>{dependant.date_of_birth || "-"}</td>
                       <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
+                      <td>
+                        <Button
+                          color="danger"
+                          outline
+                          size="sm"
+                          onClick={() => {
+                            if (dependant.id) {
+                              handleDeleteDependant(dependant.id);
+                            } else {
+                              toast.error(
+                                "Unable to delete: dependant ID not found"
+                              );
+                            }
+                          }}
+                          title="Delete dependant"
+                        >
+                          <FaTrash />
+                        </Button>
+                      </td>
                     </tr>
                   )
                 )
               ) : (
                 <tr>
-                  <td colSpan={4} className="text-center">
+                  <td colSpan={5} className="text-center">
                     No dependants found.
                   </td>
                 </tr>
