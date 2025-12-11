@@ -86,6 +86,7 @@ export const getOrganisationUrl = (session: Session | null) => {
     return "/auth/login";
   }
   const userType = session?.user?.user_type;
+  
   switch (userType) {
     case "NETWORK_DIRECTOR":
       return `/dashboard/network/director/organisations`;
