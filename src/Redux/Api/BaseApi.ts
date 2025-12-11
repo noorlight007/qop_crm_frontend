@@ -58,6 +58,7 @@ export const baseApi = createApi({
     "AdverseDetails",
     "Portfolio",
     "SecurityProperty",
+    "OtherOccupants",
     "SolicitorDetails",
     "AccountantDetails",
     "ExistingProtectionDetails",
