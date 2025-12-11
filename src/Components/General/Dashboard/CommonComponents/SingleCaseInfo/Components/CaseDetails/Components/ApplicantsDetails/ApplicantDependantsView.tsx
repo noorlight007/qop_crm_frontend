@@ -3,13 +3,18 @@ import { useGetDependantsQuery } from "@/Redux/Reducers/CommonComponents/SingleC
 import { ApplicantDependantsViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 
 import { useParams } from "next/navigation";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
+import { useState } from "react";
+import { TbCirclePlus } from "react-icons/tb";
+import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import AddDependantFormModal from "./ApplicantDetailsModals/AddApplicantDependantsModal";
 
-const ApplicantDependantsViewModal: React.FC<
-  ApplicantDependantsViewModalProps
-> = ({ isOpen, toggle, applicantAlias }) => {
+const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
+  applicantAlias,
+}) => {
   const params = useParams();
   const { casealias } = params;
+  const [isDependantsModalOpen, setIsDependantsModalOpen] = useState(false);
+
   const { data: applicantDependantsData, isLoading } = useGetDependantsQuery({
     case_alias: casealias,
     applicantDetails_alias: applicantAlias,
@@ -36,14 +41,18 @@ const ApplicantDependantsViewModal: React.FC<
     );
 
   return (
-    <Modal isOpen={isOpen} size="lg" toggle={toggle} centered>
+    <Card>
       {/* Modal Header */}
-      <ModalHeader toggle={toggle}>
+      <CardHeader className="d-flex align-items-center justify-content-between gap-1">
         <h2>Applicant Dependants</h2>
-      </ModalHeader>
+        <Button onClick={() => setIsDependantsModalOpen(true)}>
+          <TbCirclePlus size={20} className="me-1" />
+          Add Dependant
+        </Button>
+      </CardHeader>
 
       {/* Modal Body */}
-      <ModalBody>
+      <CardBody>
         <div className="table-responsive">
           <table className="table table-bordered">
             <thead>
@@ -79,16 +88,16 @@ const ApplicantDependantsViewModal: React.FC<
             </tbody>
           </table>
         </div>
-      </ModalBody>
-
-      {/* Modal Footer */}
-      <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
-          Close
-        </Button>
-      </ModalFooter>
-    </Modal>
+      </CardBody>
+      {/* Dependants of Applicant Modal */}
+      <AddDependantFormModal
+        isOpen={isDependantsModalOpen}
+        toggle={() => setIsDependantsModalOpen(false)}
+        case_alias={casealias as string}
+        applicantDetails_alias={applicantAlias as string}
+      />
+    </Card>
   );
 };
 
-export default ApplicantDependantsViewModal;
+export default ApplicantDependantsView;

@@ -30,10 +30,9 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import ApplicantDependantsView from "./ApplicantDependantsView";
 import AddCompanyDetailsFormModal from "./ApplicantDetailsModals/AddApplicantCompanyInfoModal";
-import AddDependantFormModal from "./ApplicantDetailsModals/AddApplicantDependantsModal";
 import AddPreviousAddressModal from "./ApplicantDetailsModals/AddPreviousAddressModal";
-import ApplicantDependantsViewModal from "./ApplicantDetailsModals/ApplicantDependantsViewModal";
 import ViewPreviousAddressModal from "./ApplicantDetailsModals/ViewPreviousAddressModal";
 
 const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
@@ -47,7 +46,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const { casealias } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
-  const [isDependantsModalOpen, setIsDependantsModalOpen] = useState(false);
   const [isDependantsViewModalOpen, setIsDependantsViewModalOpen] =
     useState(false);
   const [isAddPreviousAddressModalOpen, setIsAddPreviousAddressModalOpen] =
@@ -58,10 +56,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     "save" | "next" | "next-applicant" | "previous-applicant"
   >("save");
   const formRef = useRef<HTMLFormElement>(null);
-
-  const toggleViewModal = () => {
-    setIsDependantsViewModalOpen(!isDependantsViewModalOpen);
-  };
 
   // Rtk hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -978,20 +972,14 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 ))}
               </FormGroup>
             </Col>
-            {formValues.has_dependants && (
-              <Col
-                md={6}
-                className="d-flex align-items-center justify-content-center gap-3"
-              >
-                <Button onClick={() => setIsDependantsModalOpen(true)}>
-                  Add Dependants
-                </Button>
-                <Button color="success" onClick={toggleViewModal}>
-                  View Dependants
-                </Button>
-              </Col>
-            )}
           </Row>
+          {formValues.has_dependants && (
+            <Row>
+              <Col>
+                <ApplicantDependantsView applicantAlias={basicTab} />
+              </Col>
+            </Row>
+          )}
           <Row className="d-flex justify-content-between align-items-center mb-3">
             <Col xs="auto">
               <h3 className="text-info my-0">Current Address</h3>
@@ -2209,25 +2197,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           toggle={() => setIsCompanyModalOpen(false)}
           case_alias={casealias as string}
           applicantDetails_alias={formValues.alias as string}
-        />
-      ) : (
-        ""
-      )}
-
-      {/* Dependants of Applicant Modal */}
-      <AddDependantFormModal
-        isOpen={isDependantsModalOpen}
-        toggle={() => setIsDependantsModalOpen(false)}
-        case_alias={casealias as string}
-        applicantDetails_alias={formValues.alias as string}
-      />
-
-      {/* Modal Component */}
-      {formValues?.has_dependants === true ? (
-        <ApplicantDependantsViewModal
-          isOpen={isDependantsViewModalOpen}
-          toggle={toggleViewModal}
-          applicantAlias={formValues.alias as string}
         />
       ) : (
         ""
