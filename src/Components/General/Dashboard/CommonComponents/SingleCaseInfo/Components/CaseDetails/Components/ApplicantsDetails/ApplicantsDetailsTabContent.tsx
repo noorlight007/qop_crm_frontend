@@ -989,7 +989,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           {formValues.has_dependants && (
             <Row>
               <Col>
-                <ApplicantDependantsView applicantAlias={basicTab} />
+                <ApplicantDependantsView
+                  applicantAlias={basicTab}
+                  applicantsData={applicantsData}
+                />
               </Col>
             </Row>
           )}

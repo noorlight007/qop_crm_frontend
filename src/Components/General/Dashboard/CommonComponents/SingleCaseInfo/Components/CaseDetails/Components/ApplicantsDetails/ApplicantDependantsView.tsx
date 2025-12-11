@@ -1,24 +1,43 @@
 import Loading from "@/app/loading";
-import { useGetDependantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
+import {
+  useAddDependantsMutation,
+  useGetDependantsQuery,
+} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantDependantsViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
+import { toast } from "react-toastify";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import AddDependantFormModal from "./ApplicantDetailsModals/AddApplicantDependantsModal";
 
 const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   applicantAlias,
+  applicantsData,
 }) => {
   const params = useParams();
   const { casealias } = params;
   const [isDependantsModalOpen, setIsDependantsModalOpen] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   const { data: applicantDependantsData, isLoading } = useGetDependantsQuery({
     case_alias: casealias,
     applicantDetails_alias: applicantAlias,
   });
+
+  // Get first applicant's dependants
+  const firstApplicant = applicantsData?.[0];
+  const { data: firstApplicantDependants } = useGetDependantsQuery(
+    firstApplicant?.alias && firstApplicant?.alias !== applicantAlias
+      ? {
+          case_alias: casealias,
+          applicantDetails_alias: firstApplicant.alias,
+        }
+      : { case_alias: "", applicantDetails_alias: "" }
+  );
+
+  const [addDependants] = useAddDependantsMutation();
 
   const calcAge = (dob?: string | null) => {
     if (!dob) return "";
@@ -33,6 +52,43 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
     return years >= 0 ? String(years) : "";
   };
 
+  const handleCopyDependants = async () => {
+    try {
+      setIsCopying(true);
+
+      if (!firstApplicant || firstApplicant.alias === applicantAlias) {
+        toast.warning("Cannot copy from the same applicant");
+        return;
+      }
+
+      if (!firstApplicantDependants || firstApplicantDependants.length === 0) {
+        toast.info("First applicant has no dependants to copy");
+        return;
+      }
+
+      // Copy each dependant to current applicant
+      for (const dependant of firstApplicantDependants) {
+        await addDependants({
+          case_alias: casealias,
+          applicantDetails_alias: applicantAlias,
+          dependantsInfo: {
+            name: dependant.name,
+            date_of_birth: dependant.date_of_birth,
+          },
+        });
+      }
+
+      toast.success(
+        `Successfully copied ${firstApplicantDependants.length} dependant(s)`
+      );
+    } catch (error: any) {
+      const errorMessage = error?.message || "Failed to copy dependants";
+      toast.error(errorMessage);
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
   if (isLoading)
     return (
       <div>
@@ -43,12 +99,30 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   return (
     <Card>
       {/* Modal Header */}
-      <CardHeader className="d-flex align-items-center justify-content-between gap-1">
+      <CardHeader className="d-flex align-items-center justify-content-between">
         <h2>Applicant Dependants</h2>
-        <Button onClick={() => setIsDependantsModalOpen(true)}>
-          <TbCirclePlus size={20} className="me-1" />
-          Add Dependant
-        </Button>
+        <div className="d-flex justify-content-end gap-2">
+          <Button
+            color="info"
+            outline
+            onClick={handleCopyDependants}
+            disabled={
+              isCopying || !applicantsData || applicantsData.length <= 1
+            }
+            title={
+              !applicantsData || applicantsData.length <= 1
+                ? "Only available for non-first applicants"
+                : ""
+            }
+          >
+            <i className="fa fa-copy me-2"></i>
+            Copy Dependants from first Applicant
+          </Button>
+          <Button onClick={() => setIsDependantsModalOpen(true)}>
+            <TbCirclePlus size={20} className="me-1" />
+            Add Dependant
+          </Button>
+        </div>
       </CardHeader>
 
       {/* Modal Body */}
