@@ -85,7 +85,7 @@ const DashboardOverview: React.FC<CommonAdviserSummaryProps> = ({
                 </CardTitle>
                 {isLoading ? (
                   <div className="d-flex align-items-center">
-                    <Spinner color="primary" size="sm" />
+                    <Spinner color="success" size="sm" />
                     <span className="text-muted ms-2">Loading...</span>
                   </div>
                 ) : (
@@ -96,7 +96,7 @@ const DashboardOverview: React.FC<CommonAdviserSummaryProps> = ({
               </div>
               <div>
                 <span
-                  className="d-flex justify-content-center align-items-center bg-primary rounded-3"
+                  className="d-flex justify-content-center align-items-center bg-success rounded-3"
                   style={{ width: "30px", height: "30px" }}
                 >
                   <TbClock className="fs-6" />

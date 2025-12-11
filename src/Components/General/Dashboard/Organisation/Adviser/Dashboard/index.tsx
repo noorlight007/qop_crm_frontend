@@ -30,7 +30,10 @@ const OrganisationAdviserContainer: React.FC = () => {
           adviserSummaryData={adviserSummary}
         />
         {/* 1st row  */}
-        <DashboardOverview />
+        <DashboardOverview
+          isLoading={isSummaryLoading}
+          adviserSummaryData={adviserSummary}
+        />
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
