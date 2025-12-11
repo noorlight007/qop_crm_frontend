@@ -98,6 +98,7 @@ export interface ApplicantDependantsViewModalProps {
   name?: string;
   dateOfBirth?: string;
   applicantAlias?: any;
+  applicantsData?: ApplicantProps[];
 }
 export interface AddDependantFormModalProps {
   isOpen: boolean;

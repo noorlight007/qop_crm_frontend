@@ -32,6 +32,13 @@ export const ApplicantsDetailsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["ApplicantsDetails", "Dependants"],
     }),
+    deleteDependants: builder.mutation({
+      query: ({ case_alias, applicantDetails_alias, dependant_id }) => ({
+        url: `/cases/${case_alias}/applicant/details/${applicantDetails_alias}/dependants/${dependant_id}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ApplicantsDetails", "Dependants"],
+    }),
     getCompanyDetails: builder.query({
       query: ({ case_alias, applicantDetails_alias }) => ({
         url: `/cases/${case_alias}/applicant/details/${applicantDetails_alias}/company/`,
@@ -66,6 +73,7 @@ export const ApplicantsDetailsApi = baseApi.injectEndpoints({
 export const {
   useAddDependantsMutation,
   useGetDependantsQuery,
+  useDeleteDependantsMutation,
   useGetCompanyDetailsQuery,
   useAddCompanyDetailsMutation,
   useGetApplicantsQuery,
