@@ -1,5 +1,5 @@
 import {
-  CommonNetworkAdviserDocumentProps,
+  CommonAdviserDocumentProps,
   DocumentData,
 } from "@/Types/Network/Adviser/DashboardTypes";
 import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
@@ -9,9 +9,9 @@ import { FileText } from "react-feather";
 import { FaDownload } from "react-icons/fa";
 import { Button, Card, CardBody, Col, Row } from "reactstrap";
 
-const DocumentStatus: React.FC<CommonNetworkAdviserDocumentProps> = ({
+const DocumentStatus: React.FC<CommonAdviserDocumentProps> = ({
   isLoading,
-  netAdviserDocumentData,
+  adviserDocumentData,
 }) => {
   const isImageFile = (url: string) => {
     return /\.(jpe?g|png|gif|bmp|webp|svg)(\?.*)?$/i.test(url);
@@ -51,7 +51,7 @@ const DocumentStatus: React.FC<CommonNetworkAdviserDocumentProps> = ({
               </Row>
             ))}
           </div>
-        ) : !netAdviserDocumentData || netAdviserDocumentData?.length === 0 ? (
+        ) : !adviserDocumentData || adviserDocumentData?.length === 0 ? (
           <div
             className="d-flex align-items-center justify-content-center"
             style={{ height: "100%" }}
@@ -62,7 +62,7 @@ const DocumentStatus: React.FC<CommonNetworkAdviserDocumentProps> = ({
             </div>
           </div>
         ) : (
-          netAdviserDocumentData?.map((doc: DocumentData, index: number) => (
+          adviserDocumentData?.map((doc: DocumentData, index: number) => (
             <Row
               key={index}
               className="mb-3 p-3 bg-light-dark rounded align-items-center "
