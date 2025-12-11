@@ -1,31 +1,24 @@
 import { useGetOtherOccupantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
+import { OtherOccupantsTypes } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
 import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
+import { calculateAge } from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import { Button, Spinner, Table } from "reactstrap";
 
-export interface OtherOccupantsTypes {
-  alias: string;
-  full_name: string;
-  date_of_birth?: string | null;
-  relationship?: string | null;
-  created_at?: string;
-  updated_at?: string;
-}
-
-const calcAge = (dob?: string | null) => {
-  if (!dob) return "";
-  const birth = new Date(dob);
-  if (isNaN(birth.getTime())) return "";
-  const today = new Date();
-  let years = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    years--;
-  }
-  return years >= 0 ? `${years}` : "";
-};
+// const calcAge = (dob?: string | null) => {
+//   if (!dob) return "";
+//   const birth = new Date(dob);
+//   if (isNaN(birth.getTime())) return "";
+//   const today = new Date();
+//   let years = today.getFullYear() - birth.getFullYear();
+//   const m = today.getMonth() - birth.getMonth();
+//   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+//     years--;
+//   }
+//   return years >= 0 ? `${years}` : "";
+// };
 
 export const DependantsTable: React.FC = () => {
   const { casealias } = useParams();
@@ -44,7 +37,7 @@ export const DependantsTable: React.FC = () => {
         <thead className="table-light text-center small">
           <tr>
             <th style={{ width: 60 }}>#</th>
-            <th>Full Name</th>
+            <th>Name</th>
             <th>Date of Birth</th>
             <th>Age</th>
             <th>Relationship</th>
@@ -67,8 +60,8 @@ export const DependantsTable: React.FC = () => {
                 <td className="text-start">{o.full_name || "-"}</td>
                 <td>{o.date_of_birth || "-"}</td>
                 <td>
-                  {calcAge(o.date_of_birth)
-                    ? `${calcAge(o.date_of_birth)} y`
+                  {calculateAge(o.date_of_birth)
+                    ? `${calculateAge(o.date_of_birth)} y`
                     : "-"}
                 </td>
                 <td>{o.relationship || "-"}</td>
