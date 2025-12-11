@@ -107,6 +107,21 @@ const CaseStatusOverview: React.FC<CommonAdviserSummaryProps> = ({
     );
   }
 
+  const totalCases = rawCaseStage
+    ? Object.values(rawCaseStage).reduce((acc, v) => acc + Number(v ?? 0), 0)
+    : 0;
+
+  if (totalCases === 0) {
+    return (
+      <Card className="bg-white p-3 shadow-sm " style={{ height: "430px" }}>
+        <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
+        <div className="text-muted d-flex justify-content-center align-items-center h-75">
+          No case stage data available
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-white p-3 shadow-sm">
       <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
