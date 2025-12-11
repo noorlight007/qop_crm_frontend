@@ -252,7 +252,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
-        // Handle different submit actions
+        // Handle different submit actions only if they are not "save"
         if (submitActionRef.current === "next") {
           handleNextTab();
         } else if (submitActionRef.current === "next-applicant") {
@@ -260,6 +260,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         } else if (submitActionRef.current === "previous-applicant") {
           handlePreviousApplicantTab();
         }
+        // Reset to default save action after handling
+        submitActionRef.current = "save";
       } else if (response.error) {
         // Extract backend error message - prioritize details field
         const errorMessage =
