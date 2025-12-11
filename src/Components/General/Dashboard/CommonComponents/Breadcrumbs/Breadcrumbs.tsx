@@ -1,5 +1,6 @@
 import { BreadcrumbsProps } from "@/Types/BreadcrumbsType";
-import { getRedirectPaths } from "@/utils/RedirectPaths";
+import { getDashboardHomeUrl } from "@/utils/RedirectPaths";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Breadcrumb, BreadcrumbItem, Col, Container, Row } from "reactstrap";
 
@@ -9,6 +10,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   parent,
   child,
 }) => {
+  const { data: session } = useSession();
   return (
     <Container fluid>
       <Row className="page-title">
@@ -19,7 +21,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
         <Col sm="6">
           <Breadcrumb className="justify-content-sm-end align-items-center">
             <BreadcrumbItem>
-              <Link href={getRedirectPaths()}>
+              <Link href={getDashboardHomeUrl(session)}>
                 <i className="iconly-Home icli svg-color" />
               </Link>
             </BreadcrumbItem>

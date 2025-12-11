@@ -1,7 +1,6 @@
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
-export const getRedirectPaths = () => {
-  const { data: session } = useSession();
+export const getDashboardHomeUrl = (session: Session | null) => {
   if (!session) {
     return "/auth/login";
   }
@@ -30,12 +29,12 @@ export const getRedirectPaths = () => {
 };
 
 // Function to generate role-based URL for case details
-export const getAllCasesUrl = () => {
-  const { data: session } = useSession();
+export const getAllCasesUrl = (session: Session | null) => {
   if (!session) {
     return "/auth/login";
   }
   const userType = session?.user?.user_type;
+
   switch (userType) {
     case "ADMIN":
       return `/dashboard/admin`;
@@ -79,5 +78,22 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
       return `/dashboard/client/cases/${caseAlias}`;
     default:
       return "#";
+  }
+};
+
+export const getOrganisationUrl = (session: Session | null) => {
+  if (!session) {
+    return "/auth/login";
+  }
+  const userType = session?.user?.user_type;
+  switch (userType) {
+    case "NETWORK_DIRECTOR":
+      return `/dashboard/network/director/organisations`;
+    case "NETWORK_COMPLIANCE_ASSISTANT":
+      return `/dashboard/network/director/organisations`;
+    case "NETWORK_ADVISER":
+      return `/dashboard/network/adviser/organisations`;
+    default:
+      return `url not found`;
   }
 };
