@@ -126,22 +126,20 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
       <CardHeader className="d-flex align-items-center justify-content-between">
         <h2>Applicant Dependants</h2>
         <div className="d-flex justify-content-end gap-2">
-          <Button
-            color="info"
-            outline
-            onClick={handleCopyDependants}
-            disabled={
-              isCopying || !applicantsData || applicantsData.length <= 1
-            }
-            title={
-              !applicantsData || applicantsData.length <= 1
-                ? "Only available for non-first applicants"
-                : ""
-            }
-          >
-            <i className="fa fa-copy me-2"></i>
-            Copy Dependants from first Applicant
-          </Button>
+          {applicantsData &&
+            applicantsData.length > 1 &&
+            applicantsData[0]?.alias !== applicantAlias && (
+              <Button
+                color="info"
+                outline
+                onClick={handleCopyDependants}
+                disabled={isCopying}
+                title="Copy dependants from the first applicant"
+              >
+                <i className="fa fa-copy me-2"></i>
+                Copy Dependants from first Applicant
+              </Button>
+            )}
           <Button onClick={() => setIsDependantsModalOpen(true)}>
             <TbCirclePlus size={20} className="me-1" />
             Add Dependant
