@@ -390,12 +390,18 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           formValues.is_company_application ===
                           (option === "yes")
                         }
-                        onChange={(e) =>
+                        onChange={(e) => {
                           handleInputChange(
                             "is_company_application",
                             e.target.value === "yes"
-                          )
-                        }
+                          );
+                          // Trigger immediate save on selection
+                          setTimeout(() => {
+                            formRef.current?.dispatchEvent(
+                              new Event("submit", { bubbles: true })
+                            );
+                          }, 100);
+                        }}
                         className="me-1"
                       />
                       {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -959,12 +965,17 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         checked={
                           formValues.has_dependants === (value === "yes")
                         }
-                        onChange={(e) =>
+                        onChange={(e) => {
                           handleInputChange(
                             "has_dependants",
                             e.target.value === "yes"
-                          )
-                        }
+                          );
+                          setTimeout(() => {
+                            formRef.current?.dispatchEvent(
+                              new Event("submit", { bubbles: true })
+                            );
+                          }, 100);
+                        }}
                       />
                       {value.charAt(0).toUpperCase() + value.slice(1)}
                     </Label>
