@@ -1,11 +1,11 @@
-import { CommonNetworkAdviserClientProps } from "@/Types/Network/Adviser/DashboardTypes";
+import { CommonAdviserClientProps } from "@/Types/Network/Adviser/DashboardTypes";
 import React from "react";
 import { TbUsers } from "react-icons/tb";
 import { Card, CardBody, Spinner } from "reactstrap";
 
-const MyClients: React.FC<CommonNetworkAdviserClientProps> = ({
+const MyClients: React.FC<CommonAdviserClientProps> = ({
   isLoading,
-  netAdviserClientData,
+  adviserClientData,
 }) => {
   const renderClientList = isLoading ? (
     <div
@@ -17,7 +17,7 @@ const MyClients: React.FC<CommonNetworkAdviserClientProps> = ({
         <div className="text-muted mt-2">Loading clients...</div>
       </div>
     </div>
-  ) : !netAdviserClientData || netAdviserClientData.length === 0 ? (
+  ) : !adviserClientData || adviserClientData.length === 0 ? (
     <div
       className="d-flex align-items-center justify-content-center"
       style={{ height: "100%" }}
@@ -28,7 +28,7 @@ const MyClients: React.FC<CommonNetworkAdviserClientProps> = ({
       </div>
     </div>
   ) : (
-    netAdviserClientData?.map((client, index) => {
+    adviserClientData?.map((client, index) => {
       return (
         <Card
           key={index}

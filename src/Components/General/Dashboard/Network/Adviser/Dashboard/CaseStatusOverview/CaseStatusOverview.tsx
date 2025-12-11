@@ -1,6 +1,6 @@
 import {
   CaseStage,
-  CommonNetworkAdviserSummaryProps,
+  CommonAdviserSummaryProps,
 } from "@/Types/Network/Adviser/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -9,9 +9,9 @@ import { Card } from "reactstrap";
 // Dynamically import Google Charts with SSR disabled
 const Chart = dynamic(() => import("react-google-charts"), { ssr: false });
 
-const CaseStatusOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
+const CaseStatusOverview: React.FC<CommonAdviserSummaryProps> = ({
   isLoading,
-  netAdviserSummaryData,
+  adviserSummaryData,
 }) => {
   // Map raw case stage keys to human readable labels
   const labelMapping: Record<keyof CaseStage, string> = {
@@ -31,7 +31,7 @@ const CaseStatusOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
     not_proceed: "Not Proceed",
   };
 
-  const rawCaseStage: CaseStage | undefined = netAdviserSummaryData?.case_stage;
+  const rawCaseStage: CaseStage | undefined = adviserSummaryData?.case_stage;
 
   // Build the data array for Google Charts; include keys with numeric values
   const data: Array<Array<string | number>> = [
@@ -96,9 +96,24 @@ const CaseStatusOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
     );
   }
 
-  if (!netAdviserSummaryData) {
+  if (!adviserSummaryData) {
     return (
       <Card className="bg-white p-3 shadow-sm " style={{ height: "390px" }}>
+        <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
+        <div className="text-muted d-flex justify-content-center align-items-center h-75">
+          No case stage data available
+        </div>
+      </Card>
+    );
+  }
+
+  const totalCases = rawCaseStage
+    ? Object.values(rawCaseStage).reduce((acc, v) => acc + Number(v ?? 0), 0)
+    : 0;
+
+  if (totalCases === 0) {
+    return (
+      <Card className="bg-white p-3 shadow-sm " style={{ height: "430px" }}>
         <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
         <div className="text-muted d-flex justify-content-center align-items-center h-75">
           No case stage data available

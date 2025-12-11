@@ -43,6 +43,7 @@ export const baseApi = createApi({
 
     // Common Dashboard start
     "CommonDashboard",
+    "AdviserDashboardData",
     // Common Dashboard end
 
     // Case details start
@@ -89,7 +90,6 @@ export const baseApi = createApi({
 
     //Network Adviser start
     "NetworkAdviserReports",
-    "NetworkAdviserDashboardData",
     //Network Adviser end
 
     //Organization start
