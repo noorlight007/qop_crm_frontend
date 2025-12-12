@@ -46,8 +46,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const { casealias } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
-  const [isDependantsViewModalOpen, setIsDependantsViewModalOpen] =
-    useState(false);
+
   const [isAddPreviousAddressModalOpen, setIsAddPreviousAddressModalOpen] =
     useState(false);
   const [isViewPreviousAddressModalOpen, setIsViewPreviousAddressModalOpen] =
