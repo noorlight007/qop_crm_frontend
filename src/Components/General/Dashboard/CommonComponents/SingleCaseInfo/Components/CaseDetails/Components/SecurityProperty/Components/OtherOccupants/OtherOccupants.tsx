@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import { Button, Spinner, Table } from "reactstrap";
 import AddOtherOccupantModal from "./Modals/AddOtherOccupantModal";
+import DeleteOtherOccupantModal from "./Modals/DeleteOtherOccupantModal";
 import UpdateOtherOccupantModal from "./Modals/UpdateOtherOccupantModal";
 
 export const DependantsTable: React.FC = () => {
@@ -85,6 +86,10 @@ export const DependantsTable: React.FC = () => {
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-danger"
+                      onClick={() => {
+                        setSelectedOtherOccupant(o || null);
+                        setIsDeleteOtherOccupantModalOpen(true);
+                      }}
                     >
                       Delete
                     </button>
@@ -108,11 +113,17 @@ export const DependantsTable: React.FC = () => {
           setIsAddOtherOccupantModalOpen(!isAddOtherOccupantModalOpen)
         }
       />
-      {/* Update and Delete Modals can be added similarly */}
       <UpdateOtherOccupantModal
         isOpen={isUpdateOtherOccupantModalOpen}
         toggle={() =>
           setIsUpdateOtherOccupantModalOpen(!isUpdateOtherOccupantModalOpen)
+        }
+        selectedOccupant={selectedOtherOccupant || undefined}
+      />
+      <DeleteOtherOccupantModal
+        isOpen={isDeleteOtherOccupantModalOpen}
+        toggle={() =>
+          setIsDeleteOtherOccupantModalOpen(!isDeleteOtherOccupantModalOpen)
         }
         selectedOccupant={selectedOtherOccupant || undefined}
       />

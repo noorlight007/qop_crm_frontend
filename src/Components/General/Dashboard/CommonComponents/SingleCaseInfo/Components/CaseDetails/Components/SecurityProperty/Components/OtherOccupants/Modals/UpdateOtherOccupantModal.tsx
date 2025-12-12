@@ -62,12 +62,12 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
         occupant_alias: selectedOccupant!.alias,
         updatedOccupant: formData,
       }).unwrap();
-      toast.success("Other occupant updated successfully");
+      toast.success("Occupant updated successfully");
       // reset and close on success
       setFormData({ full_name: "", date_of_birth: "", relationship: "" });
       toggle();
     } catch (err: any) {
-      console.error("Failed to add other occupant", err);
+      console.error("Failed to update occupant", err);
       // Log full error for debugging (safe stringify)
       try {
         console.error(
@@ -120,7 +120,7 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Add Other Occupant</h3>
+        <h3 className="text-primary">Update Other Occupant</h3>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
@@ -186,7 +186,7 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
             Cancel
           </Button>
           <Button color="primary" type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save Other Occupant"}
+            {isLoading ? "Saving..." : "Save Occupant"}
           </Button>
         </ModalFooter>
       </Form>
