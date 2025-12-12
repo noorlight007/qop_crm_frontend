@@ -1,7 +1,7 @@
 import { useGetOtherOccupantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
 import { OtherOccupantsTypes } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
 import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
-import { calculateAge } from "@/utils/formatters";
+import formatChoiceFieldValue, { calculateAge } from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
@@ -67,7 +67,7 @@ export const DependantsTable: React.FC = () => {
                     ? `${calculateAge(o.date_of_birth)} y`
                     : "-"}
                 </td>
-                <td>{o.relationship || "-"}</td>
+                <td>{formatChoiceFieldValue(o.relationship) || "-"}</td>
                 <td>{formatDateToDMY(o.created_at)}</td>
                 <td>
                   <div className="d-flex justify-content-center gap-2">

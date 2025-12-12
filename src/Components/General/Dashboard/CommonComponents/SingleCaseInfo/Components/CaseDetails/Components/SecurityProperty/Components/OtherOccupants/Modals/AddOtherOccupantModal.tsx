@@ -22,20 +22,19 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
   const { casealias } = useParams();
   const [addOtherOccupant, { isLoading }] = useAddOtherOccupantMutation();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    full_name: string;
+    date_of_birth: string | null;
+    relationship: string;
+  }>({
     full_name: "",
-    date_of_birth: "",
+    date_of_birth: null,
     relationship: "",
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (
-      !formData.full_name ||
-      !formData.date_of_birth ||
-      !formData.relationship
-    )
-      return;
+    if (!formData.full_name || !formData.date_of_birth) return;
 
     try {
       await addOtherOccupant({
@@ -44,11 +43,56 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
       }).unwrap();
       toast.success("Other occupant added successfully");
       // reset and close on success
-      setFormData({ full_name: "", date_of_birth: "", relationship: "" });
+      setFormData({ full_name: "", date_of_birth: null, relationship: "" });
       toggle();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to add other occupant", err);
-      toast.error("Failed to add other occupant");
+      // Log full error for debugging (safe stringify)
+      try {
+        console.error(
+          "Full error (stringified):",
+          JSON.stringify(err, Object.getOwnPropertyNames(err), 2)
+        );
+      } catch (loggingErr) {
+        console.error("Error while logging error", loggingErr);
+      }
+
+      // Normalize various possible error shapes into a user-friendly string
+      const extractErrorMessage = (e: any): string => {
+        if (!e) return "";
+        if (typeof e === "string") return e;
+        // RTK Query often puts payload on `data`
+        if (e.data) {
+          if (typeof e.data === "string") return e.data;
+          if (e.data.message) return String(e.data.message);
+          if (e.data.detail) return String(e.data.detail);
+          // Validation errors can be an object of arrays/strings
+          if (typeof e.data === "object") {
+            const parts: string[] = [];
+            Object.entries(e.data).forEach(([k, v]) => {
+              if (Array.isArray(v)) parts.push(`${k}: ${v.join(", ")}`);
+              else if (typeof v === "object")
+                parts.push(`${k}: ${JSON.stringify(v)}`);
+              else parts.push(`${k}: ${String(v)}`);
+            });
+            if (parts.length) return parts.join("; ");
+          }
+        }
+        if (e.error)
+          return typeof e.error === "string"
+            ? e.error
+            : JSON.stringify(e.error);
+        if (e.message) return String(e.message);
+        try {
+          return JSON.stringify(e);
+        } catch {
+          return String(e);
+        }
+      };
+
+      const serverMsg =
+        extractErrorMessage(err) || "Failed to add other occupant";
+      toast.error(serverMsg);
     }
   };
 
@@ -67,7 +111,6 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
               name="full_name"
               required
               placeholder="Enter full name"
-              value={formData.full_name}
               onChange={(e) =>
                 setFormData((p) => ({ ...p, full_name: e.target.value }))
               }
@@ -79,21 +122,19 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
               type="date"
               id="date_of_birth"
               name="date_of_birth"
+              placeholder="Enter date of birth"
               required
-              value={formData.date_of_birth}
               onChange={(e) =>
                 setFormData((p) => ({ ...p, date_of_birth: e.target.value }))
               }
             />
           </FormGroup>
           <FormGroup>
-            <Label for="relationship">Relationship*</Label>
+            <Label for="relationship">Relationship</Label>
             <Input
               type="select"
               id="relationship"
               name="relationship"
-              required
-              value={formData.relationship}
               onChange={(e) =>
                 setFormData((p) => ({ ...p, relationship: e.target.value }))
               }
