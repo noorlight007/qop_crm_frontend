@@ -43,8 +43,9 @@ const ProductContent: React.FC = () => {
     true_cost_over_term: "",
     true_cost_without_fees: "",
     loan_required_including_fees: "",
-    arrangement_fee: "",
+    lender_product_fee: "",
     arrangement_fee_added_to_loan: "",
+    lender_solicitor_fee: "",
     valuation_fee: "",
     booking_fee: "",
     booking_fee_added_to_loan: "",
@@ -96,7 +97,8 @@ const ProductContent: React.FC = () => {
         true_cost_without_fees: details.true_cost_without_fees || null,
         loan_required_including_fees:
           details.loan_required_including_fees || null,
-        arrangement_fee: details.arrangement_fee || null,
+        lender_product_fee: details.lender_product_fee || null,
+        lender_solicitor_fee: details.lender_solicitor_fee || null,
         arrangement_fee_added_to_loan:
           details.arrangement_fee_added_to_loan || "",
         valuation_fee: details.valuation_fee || null,
@@ -537,15 +539,15 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="arrangementFee">Arrangement Fee (£)</Label>
+            <Label for="lender_product_fee">Lender Product Fee (£)</Label>
             <Input
-              id="arrangementFee"
-              name="arrangement_fee"
+              id="lender_product_fee"
+              name="lender_product_fee"
               type="number"
               step="0.01"
               inputMode="decimal"
               onInput={limitDecimalPlaces}
-              value={formData.arrangement_fee || ""}
+              value={formData.lender_product_fee || ""}
               onChange={handleChange}
             />
           </FormGroup>
@@ -568,6 +570,21 @@ const ProductContent: React.FC = () => {
               <option value="YES">Yes</option>
               <option value="NO">No</option>
             </Input>
+          </FormGroup>
+        </Col>
+        <Col md={4}>
+          <FormGroup>
+            <Label for="lender_solicitor_fee">Lender Solicitors Fee (£)</Label>
+            <Input
+              id="lender_solicitor_fee"
+              name="lender_solicitor_fee"
+              type="number"
+              step="0.01"
+              inputMode="decimal"
+              onInput={limitDecimalPlaces}
+              value={formData.lender_solicitor_fee || ""}
+              onChange={handleChange}
+            />
           </FormGroup>
         </Col>
         <Col md={4}>
