@@ -148,7 +148,7 @@
   .form-control {
     display: block;
     width: 100%;
-    padding: 0.375rem 0.75rem;
+    padding: 0.6rem 1rem;
     font-size: -2rem;
     font-weight: 400;
     line-height: 1.5;
@@ -224,6 +224,7 @@
 
 .form-select {
   border: 1px solid var(--light-gray);
+  padding: 0.5rem 1rem;
 }
 .basic-form {
   .checkbox-checked {
@@ -246,7 +247,7 @@
   .form-control {
     display: block;
     width: 100%;
-    padding: 0.375rem 0.75rem;
+    padding: 0.6rem 1rem;
     font-size: -2rem;
     font-weight: 400;
     line-height: 1.5;
@@ -267,10 +268,18 @@
       background-color: var(--light);
       font-size: 14px;
       color: #898989;
-      padding: 12px 10px;
+      padding: 0.6rem 1rem;
       box-shadow: none;
     }
   }
+}
+
+/* Ensure native select elements match form-control spacing */
+select,
+.form-select {
+  padding: 0.6rem 1rem;
+  line-height: 1.5;
+  box-sizing: border-box;
 }
 
 .custom-input {
@@ -328,7 +337,7 @@
     }
   }
   .form-control {
-    padding: 0.375rem 0.75rem;
+    padding: 0.5rem 1rem;
   }
 }
 .form-check-input {
