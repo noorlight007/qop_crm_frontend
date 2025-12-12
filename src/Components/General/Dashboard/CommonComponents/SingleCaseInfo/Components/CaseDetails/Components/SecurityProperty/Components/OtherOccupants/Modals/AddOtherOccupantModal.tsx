@@ -32,6 +32,19 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
     relationship: "",
   });
 
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!formData.full_name || !formData.date_of_birth) return;
@@ -111,9 +124,8 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
               name="full_name"
               required
               placeholder="Enter full name"
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, full_name: e.target.value }))
-              }
+              value={formData.full_name}
+              onChange={handleInputChange}
             />
           </FormGroup>
           <FormGroup>
@@ -124,9 +136,8 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
               name="date_of_birth"
               placeholder="Enter date of birth"
               required
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, date_of_birth: e.target.value }))
-              }
+              value={formData.date_of_birth ?? ""}
+              onChange={handleInputChange}
             />
           </FormGroup>
           <FormGroup>
@@ -135,9 +146,8 @@ const AddOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
               type="select"
               id="relationship"
               name="relationship"
-              onChange={(e) =>
-                setFormData((p) => ({ ...p, relationship: e.target.value }))
-              }
+              value={formData.relationship}
+              onChange={handleInputChange}
             >
               <option value="">Select Relationship</option>
               <option value="PARTNER">Partner</option>
