@@ -2,7 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersDetailsApi";
 import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
 import { MyTaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -481,7 +481,7 @@ const MyTask: React.FC = () => {
                           {task.status || "-"}
                         </Badge>
                       </td>
-                      <td>{formatDateToDMYAndTime(task.created_at)}</td>
+                      <td>{formatDateAndTime(task.created_at)}</td>
                       <td>
                         <span className="text-primary fw-bold text-truncate">
                           {task.current_case_name || "-"}

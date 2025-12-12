@@ -6,7 +6,7 @@ import {
   LeadsProps,
 } from "@/Types/CommonComponents/Directors/LeadTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -201,7 +201,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                         )
                       </p>
                     </td>
-                    <td>{formatDateToDMYAndTime(lead?.created_at)}</td>
+                    <td>{formatDateAndTime(lead?.created_at)}</td>
                   </tr>
                 ))
               ) : (

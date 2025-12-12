@@ -6,7 +6,7 @@ import {
   AdvisersProps,
 } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -225,7 +225,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                         )
                       </p>
                     </td>
-                    <td>{formatDateToDMYAndTime(adviser?.created_at)}</td>
+                    <td>{formatDateAndTime(adviser?.created_at)}</td>
                   </tr>
                 ))
               ) : (

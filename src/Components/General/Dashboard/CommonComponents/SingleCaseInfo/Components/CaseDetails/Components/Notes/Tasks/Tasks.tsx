@@ -1,10 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetTasksQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
 import { TaskProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
-import {
-  formatDateToDMY,
-  formatDateToDMYAndTime,
-} from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -130,8 +127,8 @@ const Tasks: React.FC = () => {
                   </td>
                   <td>{task?.created_by ? task?.created_by : "Unknown"}</td>
                   <td>{task?.name || "-"}</td>
-                  <td>{formatDateToDMYAndTime(task?.created_at || "-")}</td>
-                  <td>{formatDateToDMY(task?.due_date || "-")}</td>
+                  <td>{formatDateAndTime(task?.created_at || "-")}</td>
+                  <td>{formatDate(task?.due_date || "-")}</td>
                   <td>
                     {formatChoiceFieldValue(task?.current_case_stage || "-")}
                   </td>

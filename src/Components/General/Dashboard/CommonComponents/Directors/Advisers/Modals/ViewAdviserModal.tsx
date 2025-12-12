@@ -1,5 +1,5 @@
 import { ViewAdviserModalProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
@@ -91,7 +91,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <span className="text-muted">Created At:</span>
             <small>
               {(selectedAdviser?.created_at &&
-                formatDateToDMYAndTime(selectedAdviser?.created_at)) || (
+                formatDateAndTime(selectedAdviser?.created_at)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>
@@ -128,7 +128,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <small>
               {selectedAdviser?.joining_date &&
               !isNaN(Date.parse(selectedAdviser.joining_date))
-                ? formatDateToDMYAndTime(selectedAdviser.joining_date)
+                ? formatDateAndTime(selectedAdviser.joining_date)
                 : "Not available"}
             </small>
           </Col>

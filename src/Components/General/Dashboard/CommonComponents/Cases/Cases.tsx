@@ -7,10 +7,7 @@ import {
 } from "@/Types/CommonComponents/Cases/CaseTypes";
 import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
-import {
-  formatDateToDMY,
-  formatDateToDMYAndTime,
-} from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -490,8 +487,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                     className="ms-2 m-0 opacity-75"
                                     style={{ fontSize: "10px" }}
                                   >
-                                    ({formatDateToDMY(caseItem.completion_date)}
-                                    )
+                                    ({formatDate(caseItem.completion_date)})
                                   </p>
                                 ) : null}
                               </>
@@ -499,10 +495,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               "-"
                             )}
                           </td>
-                          <td>
-                            {formatDateToDMY(caseItem?.review_date) || "-"}
-                          </td>
-                          <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
+                          <td>{formatDate(caseItem?.review_date) || "-"}</td>
+                          <td>{formatDateAndTime(caseItem.created_at)}</td>
                           <td className="text-truncate">
                             {userType === "NETWORK_DIRECTOR" ||
                             userType === "NETWORK_ADVISER"

@@ -1,9 +1,6 @@
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
-import {
-  formatDateToDMY,
-  formatDateToDMYAndTime,
-} from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
@@ -335,8 +332,7 @@ const OrgCases: React.FC = () => {
                                     className="ms-2 m-0 opacity-75"
                                     style={{ fontSize: "10px" }}
                                   >
-                                    ({formatDateToDMY(caseItem.completion_date)}
-                                    )
+                                    ({formatDate(caseItem.completion_date)})
                                   </p>
                                 ) : null}
                               </>
@@ -344,10 +340,8 @@ const OrgCases: React.FC = () => {
                               "-"
                             )}
                           </td>
-                          <td>
-                            {formatDateToDMY(caseItem?.review_date) || "-"}
-                          </td>
-                          <td>{formatDateToDMYAndTime(caseItem.created_at)}</td>
+                          <td>{formatDate(caseItem?.review_date) || "-"}</td>
+                          <td>{formatDateAndTime(caseItem.created_at)}</td>
                           <td>
                             <p className="m-0">
                               {caseItem.created_by?.title

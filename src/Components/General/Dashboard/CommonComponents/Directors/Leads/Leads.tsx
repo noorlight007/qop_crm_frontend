@@ -4,7 +4,7 @@ import {
   LeadsProps,
 } from "@/Types/CommonComponents/Directors/LeadTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -236,7 +236,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         )
                       </p>
                     </td>
-                    <td>{formatDateToDMYAndTime(lead?.created_at)}</td>
+                    <td>{formatDateAndTime(lead?.created_at)}</td>
 
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">

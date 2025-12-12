@@ -1,6 +1,6 @@
 import { useGetOtherOccupantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
 import { OtherOccupantsTypes } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
-import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue, { calculateAge } from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -68,7 +68,7 @@ export const DependantsTable: React.FC = () => {
                     : "-"}
                 </td>
                 <td>{formatChoiceFieldValue(o.relationship) || "-"}</td>
-                <td>{formatDateToDMY(o.created_at)}</td>
+                <td>{formatDate(o.created_at)}</td>
                 <td>
                   <div className="d-flex justify-content-center gap-2">
                     <button

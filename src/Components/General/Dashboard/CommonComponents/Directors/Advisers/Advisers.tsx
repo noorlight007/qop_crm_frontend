@@ -4,7 +4,7 @@ import {
   AdvisersProps,
 } from "@/Types/CommonComponents/Directors/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -227,7 +227,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                     <td>
                       {adviser?.joining_date &&
                       !isNaN(Date.parse(adviser.joining_date))
-                        ? formatDateToDMYAndTime(adviser.joining_date)
+                        ? formatDateAndTime(adviser.joining_date)
                         : "-"}
                     </td>
                     <td>
@@ -252,7 +252,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         )
                       </p>
                     </td>
-                    <td>{formatDateToDMYAndTime(adviser?.created_at)}</td>
+                    <td>{formatDateAndTime(adviser?.created_at)}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
