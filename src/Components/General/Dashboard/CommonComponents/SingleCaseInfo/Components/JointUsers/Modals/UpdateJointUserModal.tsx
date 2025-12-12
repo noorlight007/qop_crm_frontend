@@ -37,7 +37,6 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
     relationship: "",
     notes: "",
   });
-  console.log("formData", formData);
 
   // Populate formData when user changes
   useEffect(() => {

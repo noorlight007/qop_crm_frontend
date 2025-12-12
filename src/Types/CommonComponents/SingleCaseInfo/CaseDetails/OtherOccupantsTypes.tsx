@@ -9,4 +9,5 @@ export interface OtherOccupantsTypes {
 export interface OtherOccupantModalProps {
   isOpen: boolean;
   toggle: () => void;
+  selectedOccupant?: OtherOccupantsTypes;
 }

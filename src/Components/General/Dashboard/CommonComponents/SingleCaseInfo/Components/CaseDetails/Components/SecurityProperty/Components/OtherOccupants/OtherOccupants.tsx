@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import { Button, Spinner, Table } from "reactstrap";
 import AddOtherOccupantModal from "./Modals/AddOtherOccupantModal";
+import UpdateOtherOccupantModal from "./Modals/UpdateOtherOccupantModal";
 
 export const DependantsTable: React.FC = () => {
   const { casealias } = useParams();
@@ -16,9 +17,8 @@ export const DependantsTable: React.FC = () => {
     useState(false);
   const [isDeleteOtherOccupantModalOpen, setIsDeleteOtherOccupantModalOpen] =
     useState(false);
-  const [selectedOtherOccupant, setSelectedOtherOccupant] = useState<
-    string | null
-  >(null);
+  const [selectedOtherOccupant, setSelectedOtherOccupant] =
+    useState<OtherOccupantsTypes | null>(null);
 
   const { data: OtherOccupantsData, isLoading } = useGetOtherOccupantsQuery({
     case_alias: casealias,
@@ -74,6 +74,10 @@ export const DependantsTable: React.FC = () => {
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-primary"
+                      onClick={() => {
+                        setSelectedOtherOccupant(o || null);
+                        setIsUpdateOtherOccupantModalOpen(true);
+                      }}
                     >
                       Edit
                     </button>
@@ -103,6 +107,14 @@ export const DependantsTable: React.FC = () => {
         toggle={() =>
           setIsAddOtherOccupantModalOpen(!isAddOtherOccupantModalOpen)
         }
+      />
+      {/* Update and Delete Modals can be added similarly */}
+      <UpdateOtherOccupantModal
+        isOpen={isUpdateOtherOccupantModalOpen}
+        toggle={() =>
+          setIsUpdateOtherOccupantModalOpen(!isUpdateOtherOccupantModalOpen)
+        }
+        selectedOccupant={selectedOtherOccupant || undefined}
       />
     </div>
   );
