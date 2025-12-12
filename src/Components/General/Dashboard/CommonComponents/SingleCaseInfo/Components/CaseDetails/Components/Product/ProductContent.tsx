@@ -218,7 +218,7 @@ const ProductContent: React.FC = () => {
     >
       <h4 className="mb-4 fs-4 text-primary">Product Details</h4>
       <Row>
-        <Col md={6}>
+        <Col md={4}>
           <FormGroup>
             <Label for="productDescription">Product Description*</Label>
             <Input
@@ -231,7 +231,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-        <Col md={6}>
+        <Col md={4}>
           <FormGroup>
             <Label for="initialRate">Initial Rate*</Label>
             <Input
@@ -247,10 +247,8 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-      </Row>
 
-      <Row>
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="initialRateType">Initial Rate Type*</Label>
             <Input
@@ -270,7 +268,7 @@ const ProductContent: React.FC = () => {
             </Input>
           </FormGroup>
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="initialRatePeriodType">Initial Rate Period Type*</Label>
             <Input
@@ -289,7 +287,7 @@ const ProductContent: React.FC = () => {
           </FormGroup>
         </Col>
         {formData.initial_rate_period_type === "MONTHS" && (
-          <Col md={3}>
+          <Col md={4}>
             <FormGroup>
               <Label for="initialRatePeriod">Initial Rate Period</Label>
               <Input
@@ -305,7 +303,7 @@ const ProductContent: React.FC = () => {
           </Col>
         )}
         {formData.initial_rate_period_type === "FIXED_DATE" && (
-          <Col md={3}>
+          <Col md={4}>
             <FormGroup>
               <Label for="fixedDate">Initial Rate Period (Fixed Date)</Label>
               <Input
@@ -318,7 +316,7 @@ const ProductContent: React.FC = () => {
             </FormGroup>
           </Col>
         )}
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="reversionRate">Reversion Rate(%)</Label>
             <Input
@@ -333,9 +331,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-      </Row>
 
-      <Row>
         <Col md={4}>
           <FormGroup>
             <Label for="maxLTV">Max LTV</Label>
@@ -386,10 +382,8 @@ const ProductContent: React.FC = () => {
             </Input>
           </FormGroup>
         </Col>
-      </Row>
 
-      <Row>
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="earlyRepaymentCharge">Early Repayment Charge</Label>
             <Input
@@ -403,7 +397,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="earlyRepaymentChargeEndDate">
               Early Repayment Charge End Date
@@ -417,7 +411,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="initialMonthlyPayment">
               Initial Monthly Payment (£)
@@ -434,7 +428,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-        <Col md={3}>
+        <Col md={4}>
           <FormGroup>
             <Label for="initialMonthlyPaymentIncludingFees">
               Initial Monthly Payment Including Fees (£)
@@ -451,9 +445,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-      </Row>
 
-      <Row>
         <Col md={4}>
           <FormGroup>
             <Label for="monthlyPaymentAfterInitial">
@@ -503,8 +495,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-      </Row>
-      <Row>
+
         <Col md={4}>
           <FormGroup>
             <Label for="trueCostWithoutFees">True Cost Without Fees</Label>
@@ -552,8 +543,7 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-      </Row>
-      <Row>
+
         <Col md={4}>
           <FormGroup>
             <Label for="arrangementFeeAddedToLoan">
@@ -617,9 +607,8 @@ const ProductContent: React.FC = () => {
             />
           </FormGroup>
         </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
+
+        <Col md={4}>
           <FormGroup>
             <Label for="bookingFeeAddedToLoan">Booking Fee Added to Loan</Label>
             <Input
@@ -636,7 +625,7 @@ const ProductContent: React.FC = () => {
             </Input>
           </FormGroup>
         </Col>
-        <Col md={6}>
+        <Col md={4}>
           <FormGroup>
             <Label for="procurationFee">Procuration Fee (£)</Label>
             <Input
