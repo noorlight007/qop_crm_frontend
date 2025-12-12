@@ -14,6 +14,7 @@ import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/Ca
 import LoadingSpinner from "@/app/loading";
 import { countries } from "@/utils/Countries";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -46,8 +47,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const { casealias } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
-  const [isDependantsViewModalOpen, setIsDependantsViewModalOpen] =
-    useState(false);
+
   const [isAddPreviousAddressModalOpen, setIsAddPreviousAddressModalOpen] =
     useState(false);
   const [isViewPreviousAddressModalOpen, setIsViewPreviousAddressModalOpen] =
@@ -147,6 +147,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     tenure: "",
     year_built: 0,
     notes: "",
+    marketing_preferences: [],
     rental_monthly_payment: null,
     landlord_name: null,
     landlord_telephone: null,
@@ -189,7 +190,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   useEffect(() => {
     if (selectedApplicant) {
       const { marketing_preferences, ...newValue } = selectedApplicant;
-      setFormValues(newValue);
+      setFormValues({
+        ...newValue,
+        marketing_preferences: marketing_preferences || [],
+      });
     }
   }, [selectedApplicant]);
 
@@ -915,20 +919,21 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           </Row>
 
           {/* Marketing Preferences */}
-          {/* <Row>
+          <Row>
             <Col md={12}>
               <FormGroup>
                 <Label for="marketing_preferences">
                   Marketing Preferences:
-                </Label>
+                </Label>{" "}
                 {["EMAIL", "TELEPHONE", "SMS", "POST", "NO_COMMUNICATION"].map(
                   (type) => (
                     <Label key={type} className="me-2">
                       <Input
                         type="checkbox"
-                        checked={formValues.marketing_preferences.includes(
-                          type
-                        )}
+                        className="me-2 border-primary"
+                        checked={(
+                          formValues.marketing_preferences || []
+                        ).includes(type)}
                         onChange={(e) => {
                           const isChecked = e.target.checked;
                           const currentValue =
@@ -942,14 +947,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           );
                         }}
                       />
-                      {type.charAt(0).toUpperCase() +
-                        type.slice(1).toLowerCase().replace("_", " ")}
+                      {formatChoiceFieldValue(type)}
                     </Label>
                   )
                 )}
               </FormGroup>
             </Col>
-          </Row> */}
+          </Row>
 
           {/* Dependents */}
           <Row>

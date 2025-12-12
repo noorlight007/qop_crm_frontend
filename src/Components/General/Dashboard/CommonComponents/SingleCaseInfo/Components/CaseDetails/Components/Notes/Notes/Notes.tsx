@@ -1,7 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
 import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -183,7 +183,7 @@ const Notes: React.FC = () => {
               (notesData.results ?? notesData).map((note: NoteProps) => (
                 <tr key={note.alias} className="small">
                   <td>{formatChoiceFieldValue(note.category || "-")}</td>
-                  <td>{formatDateToDMYAndTime(note.created_at || "-")}</td>
+                  <td>{formatDateAndTime(note.created_at || "-")}</td>
                   <td>{formatChoiceFieldValue(note.case.case_stage || "-")}</td>
                   <td>
                     {formatChoiceFieldValue(note?.user?.title)}{" "}

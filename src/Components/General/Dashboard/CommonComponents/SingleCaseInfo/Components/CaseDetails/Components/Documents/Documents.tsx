@@ -1,6 +1,6 @@
 import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { saveAs } from "file-saver";
 import { useSession } from "next-auth/react";
@@ -506,9 +506,7 @@ const Documents: React.FC = () => {
                                 } ${fileData.created_by.last_name || ""}`
                               : "-"}
                           </td>
-                          <td>
-                            {formatDateToDMYAndTime(fileData?.created_at)}
-                          </td>
+                          <td>{formatDateAndTime(fileData?.created_at)}</td>
                           <td>
                             <div className="d-flex justify-content-center gap-2 align-items-center">
                               <a

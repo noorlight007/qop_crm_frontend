@@ -2,7 +2,7 @@ import {
   CommonAdviserDocumentProps,
   DocumentData,
 } from "@/Types/Network/Adviser/DashboardTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { FileText } from "react-feather";
@@ -90,7 +90,7 @@ const DocumentStatus: React.FC<CommonAdviserDocumentProps> = ({
                   {formatChoiceFieldValue(doc.file_type)}
                 </h5>
                 <small className="text-muted">
-                  Updated {formatDateToDMYAndTime(doc.updated_at)}
+                  Updated {formatDateAndTime(doc.updated_at)}
                 </small>
               </Col>
               <Col xs="auto">

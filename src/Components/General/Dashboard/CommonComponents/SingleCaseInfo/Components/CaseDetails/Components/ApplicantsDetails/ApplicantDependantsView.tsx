@@ -1,7 +1,6 @@
 import Loading from "@/app/loading";
 import {
   useAddDependantsMutation,
-  useDeleteDependantsMutation,
   useGetDependantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantDependantsViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
@@ -13,6 +12,7 @@ import { TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import AddDependantFormModal from "./ApplicantDetailsModals/AddApplicantDependantsModal";
+import DeleteApplicantDependantModal from "./ApplicantDetailsModals/DeleteApplicantDependantModal";
 
 const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   applicantAlias,
@@ -21,6 +21,9 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   const params = useParams();
   const { casealias } = params;
   const [isDependantsModalOpen, setIsDependantsModalOpen] = useState(false);
+  const [isDependantDeleteModalOpen, setIsDependantDeleteModalOpen] = useState<
+    string | null
+  >(null);
   const [isCopying, setIsCopying] = useState(false);
 
   const { data: applicantDependantsData, isLoading } = useGetDependantsQuery({
@@ -40,7 +43,6 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   );
 
   const [addDependants] = useAddDependantsMutation();
-  const [deleteDependants] = useDeleteDependantsMutation();
 
   const calcAge = (dob?: string | null) => {
     if (!dob) return "";
@@ -53,27 +55,6 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
       years--;
     }
     return years >= 0 ? String(years) : "";
-  };
-
-  const handleDeleteDependant = async (dependantId: string) => {
-    try {
-      const response = await deleteDependants({
-        case_alias: casealias,
-        applicantDetails_alias: applicantAlias,
-        dependant_id: dependantId,
-      });
-
-      if (response.data) {
-        toast.success("Dependant deleted successfully!");
-      } else if (response.error) {
-        const errorMessage =
-          (response.error as any)?.data?.detail || "Failed to delete dependant";
-        toast.error(errorMessage);
-      }
-    } catch (error: any) {
-      const errorMessage = error?.message || "Failed to delete dependant";
-      toast.error(errorMessage);
-    }
   };
 
   const handleCopyDependants = async () => {
@@ -177,15 +158,9 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                           color="danger"
                           outline
                           size="sm"
-                          onClick={() => {
-                            if (dependant.id) {
-                              handleDeleteDependant(dependant.id);
-                            } else {
-                              toast.error(
-                                "Unable to delete: dependant ID not found"
-                              );
-                            }
-                          }}
+                          onClick={() =>
+                            setIsDependantDeleteModalOpen(dependant?.id ?? null)
+                          }
                           title="Delete dependant"
                         >
                           <FaTrash />
@@ -211,6 +186,13 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
         toggle={() => setIsDependantsModalOpen(false)}
         case_alias={casealias as string}
         applicantDetails_alias={applicantAlias as string}
+      />
+      {/* Delete Dependant Modal */}
+      <DeleteApplicantDependantModal
+        isOpen={Boolean(isDependantDeleteModalOpen)}
+        onClose={() => setIsDependantDeleteModalOpen(null)}
+        applicantAlias={applicantAlias as string}
+        dependantId={isDependantDeleteModalOpen ?? ""}
       />
     </Card>
   );

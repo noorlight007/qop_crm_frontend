@@ -7,7 +7,7 @@ import {
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
-import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -266,7 +266,7 @@ const PortfolioContent: React.FC = () => {
                                 </td>
                                 <td>
                                   {item?.date_purchased
-                                    ? formatDateToDMY(item.date_purchased)
+                                    ? formatDate(item.date_purchased)
                                     : "-"}
                                 </td>
                                 <td>
@@ -302,14 +302,12 @@ const PortfolioContent: React.FC = () => {
                                 <td>{item?.rate_type || "-"}</td>
                                 <td>
                                   {item?.current_rate_end_date
-                                    ? formatDateToDMY(
-                                        item.current_rate_end_date
-                                      )
+                                    ? formatDate(item.current_rate_end_date)
                                     : "-"}
                                 </td>
                                 <td>
                                   {item?.erc_end_date
-                                    ? formatDateToDMY(item.erc_end_date)
+                                    ? formatDate(item.erc_end_date)
                                     : "-"}
                                 </td>
                                 <td>{item?.account_number || "-"}</td>

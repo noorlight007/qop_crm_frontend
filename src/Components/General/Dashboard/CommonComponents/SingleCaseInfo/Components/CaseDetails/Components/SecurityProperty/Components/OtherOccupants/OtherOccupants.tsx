@@ -1,41 +1,38 @@
 import { useGetOtherOccupantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
-import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
+import { OtherOccupantsTypes } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue, { calculateAge } from "@/utils/formatters";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import { Button, Spinner, Table } from "reactstrap";
-
-export interface OtherOccupantsTypes {
-  alias: string;
-  full_name: string;
-  date_of_birth?: string | null;
-  relationship?: string | null;
-  created_at?: string;
-  updated_at?: string;
-}
-
-const calcAge = (dob?: string | null) => {
-  if (!dob) return "";
-  const birth = new Date(dob);
-  if (isNaN(birth.getTime())) return "";
-  const today = new Date();
-  let years = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    years--;
-  }
-  return years >= 0 ? `${years}` : "";
-};
+import AddOtherOccupantModal from "./Modals/AddOtherOccupantModal";
+import DeleteOtherOccupantModal from "./Modals/DeleteOtherOccupantModal";
+import UpdateOtherOccupantModal from "./Modals/UpdateOtherOccupantModal";
 
 export const DependantsTable: React.FC = () => {
   const { casealias } = useParams();
+  const [isAddOtherOccupantModalOpen, setIsAddOtherOccupantModalOpen] =
+    useState(false);
+  const [isUpdateOtherOccupantModalOpen, setIsUpdateOtherOccupantModalOpen] =
+    useState(false);
+  const [isDeleteOtherOccupantModalOpen, setIsDeleteOtherOccupantModalOpen] =
+    useState(false);
+  const [selectedOtherOccupant, setSelectedOtherOccupant] =
+    useState<OtherOccupantsTypes | null>(null);
+
   const { data: OtherOccupantsData, isLoading } = useGetOtherOccupantsQuery({
     case_alias: casealias,
   });
+
   return (
     <div className=" mb-4">
-      <div className="d-flex justify-content-end my-2">
-        <Button color="primary">
+      <div className="d-flex justify-content-between my-2">
+        <h3>Other Occupants</h3>
+        <Button
+          color="primary"
+          onClick={() => setIsAddOtherOccupantModalOpen(true)}
+        >
           <TbCirclePlus className="me-1" size={18} />
           Add Other Occupant
         </Button>
@@ -44,7 +41,7 @@ export const DependantsTable: React.FC = () => {
         <thead className="table-light text-center small">
           <tr>
             <th style={{ width: 60 }}>#</th>
-            <th>Full Name</th>
+            <th>Name</th>
             <th>Date of Birth</th>
             <th>Age</th>
             <th>Relationship</th>
@@ -67,17 +64,21 @@ export const DependantsTable: React.FC = () => {
                 <td className="text-start">{o.full_name || "-"}</td>
                 <td>{o.date_of_birth || "-"}</td>
                 <td>
-                  {calcAge(o.date_of_birth)
-                    ? `${calcAge(o.date_of_birth)} y`
+                  {calculateAge(o.date_of_birth)
+                    ? `${calculateAge(o.date_of_birth)} y`
                     : "-"}
                 </td>
-                <td>{o.relationship || "-"}</td>
-                <td>{formatDateToDMY(o.created_at)}</td>
+                <td>{formatChoiceFieldValue(o.relationship) || "-"}</td>
+                <td>{formatDate(o.created_at)}</td>
                 <td>
                   <div className="d-flex justify-content-center gap-2">
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-primary"
+                      onClick={() => {
+                        setSelectedOtherOccupant(o || null);
+                        setIsUpdateOtherOccupantModalOpen(true);
+                      }}
                     >
                       Edit
                     </button>
@@ -85,6 +86,10 @@ export const DependantsTable: React.FC = () => {
                     <button
                       type="button"
                       className="btn btn-sm btn-outline-danger"
+                      onClick={() => {
+                        setSelectedOtherOccupant(o || null);
+                        setIsDeleteOtherOccupantModalOpen(true);
+                      }}
                     >
                       Delete
                     </button>
@@ -101,6 +106,27 @@ export const DependantsTable: React.FC = () => {
           )}
         </tbody>
       </Table>
+      {/* Modals for Add, Update, Delete would go here */}
+      <AddOtherOccupantModal
+        isOpen={isAddOtherOccupantModalOpen}
+        toggle={() =>
+          setIsAddOtherOccupantModalOpen(!isAddOtherOccupantModalOpen)
+        }
+      />
+      <UpdateOtherOccupantModal
+        isOpen={isUpdateOtherOccupantModalOpen}
+        toggle={() =>
+          setIsUpdateOtherOccupantModalOpen(!isUpdateOtherOccupantModalOpen)
+        }
+        selectedOccupant={selectedOtherOccupant || undefined}
+      />
+      <DeleteOtherOccupantModal
+        isOpen={isDeleteOtherOccupantModalOpen}
+        toggle={() =>
+          setIsDeleteOtherOccupantModalOpen(!isDeleteOtherOccupantModalOpen)
+        }
+        selectedOccupant={selectedOtherOccupant || undefined}
+      />
     </div>
   );
 };

@@ -6,7 +6,7 @@ import {
   ClientsProps,
 } from "@/Types/CommonComponents/Directors/ClientTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -223,7 +223,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
                         )
                       </p>
                     </td>
-                    <td>{formatDateToDMYAndTime(client?.created_at)}</td>
+                    <td>{formatDateAndTime(client?.created_at)}</td>
                   </tr>
                 ))
               ) : (

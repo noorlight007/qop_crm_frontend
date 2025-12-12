@@ -1,7 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleCLientApplication/SingleCLientApplicationApi";
 import { SingleClientApplicationProps } from "@/Types/Client/SingleClientApplicationTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Link from "next/link";
 import React from "react";
@@ -48,7 +48,7 @@ const MyApplications: React.FC = () => {
                     {app.name}
                   </Link>
                 </td>
-                <td>{formatDateToDMYAndTime(app.created_at)}</td>
+                <td>{formatDateAndTime(app.created_at)}</td>
                 <td>
                   {app.case_category
                     ? formatChoiceFieldValue(app.case_category)

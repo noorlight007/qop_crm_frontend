@@ -1,5 +1,5 @@
 import { ViewClientModalProps } from "@/Types/CommonComponents/Directors/ClientTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
@@ -90,7 +90,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">Created At:</span>
             <small>
               {(selectedClient?.created_at &&
-                formatDateToDMYAndTime(selectedClient?.created_at)) || (
+                formatDateAndTime(selectedClient?.created_at)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>
@@ -126,7 +126,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             <span className="text-muted">Reason for Enquiry:</span>
             <small>
               {(selectedClient?.reason_for_enquiry &&
-                formatDateToDMYAndTime(selectedClient?.reason_for_enquiry)) || (
+                formatDateAndTime(selectedClient?.reason_for_enquiry)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>

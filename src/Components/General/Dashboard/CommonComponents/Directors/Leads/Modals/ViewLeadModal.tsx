@@ -1,5 +1,5 @@
 import { ViewLeadModalProps } from "@/Types/CommonComponents/Directors/LeadTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
@@ -89,7 +89,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
             <span className="text-muted">Created At:</span>
             <small>
               {(selectedLead?.created_at &&
-                formatDateToDMYAndTime(selectedLead?.created_at)) || (
+                formatDateAndTime(selectedLead?.created_at)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>
