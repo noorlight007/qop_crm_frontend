@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { Card, CardBody, CardHeader, Nav, NavItem, NavLink } from "reactstrap";
 import FoundProperty from "./Components/FoundProperty";
 import NoteForProperty from "./Components/NoteForProperty";
-import OtherOccupants from "./Components/OtherOccupants";
+import OtherOccupants from "./Components/OtherOccupants/OtherOccupants";
 import PropertyValuationCard from "./Components/PropertyValuationCard";
 import SecurityPropertyTabContent from "./SecurityPropertyTabContent";
 

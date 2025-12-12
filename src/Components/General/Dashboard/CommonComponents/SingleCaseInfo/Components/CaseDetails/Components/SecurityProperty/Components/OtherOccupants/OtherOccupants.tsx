@@ -3,32 +3,35 @@ import { OtherOccupantsTypes } from "@/Types/CommonComponents/SingleCaseInfo/Cas
 import { formatDateToDMY } from "@/utils/dateAndTimeFormatter";
 import { calculateAge } from "@/utils/formatters";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import { Button, Spinner, Table } from "reactstrap";
-
-// const calcAge = (dob?: string | null) => {
-//   if (!dob) return "";
-//   const birth = new Date(dob);
-//   if (isNaN(birth.getTime())) return "";
-//   const today = new Date();
-//   let years = today.getFullYear() - birth.getFullYear();
-//   const m = today.getMonth() - birth.getMonth();
-//   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-//     years--;
-//   }
-//   return years >= 0 ? `${years}` : "";
-// };
+import AddOtherOccupantModal from "./Modals/AddOtherOccupantModal";
 
 export const DependantsTable: React.FC = () => {
   const { casealias } = useParams();
+  const [isAddOtherOccupantModalOpen, setIsAddOtherOccupantModalOpen] =
+    useState(false);
+  const [isUpdateOtherOccupantModalOpen, setIsUpdateOtherOccupantModalOpen] =
+    useState(false);
+  const [isDeleteOtherOccupantModalOpen, setIsDeleteOtherOccupantModalOpen] =
+    useState(false);
+  const [selectedOtherOccupant, setSelectedOtherOccupant] = useState<
+    string | null
+  >(null);
+
   const { data: OtherOccupantsData, isLoading } = useGetOtherOccupantsQuery({
     case_alias: casealias,
   });
+
   return (
     <div className=" mb-4">
-      <div className="d-flex justify-content-end my-2">
-        <Button color="primary">
+      <div className="d-flex justify-content-between my-2">
+        <h3>Other Occupants</h3>
+        <Button
+          color="primary"
+          onClick={() => setIsAddOtherOccupantModalOpen(true)}
+        >
           <TbCirclePlus className="me-1" size={18} />
           Add Other Occupant
         </Button>
@@ -94,6 +97,13 @@ export const DependantsTable: React.FC = () => {
           )}
         </tbody>
       </Table>
+      {/* Modals for Add, Update, Delete would go here */}
+      <AddOtherOccupantModal
+        isOpen={isAddOtherOccupantModalOpen}
+        toggle={() =>
+          setIsAddOtherOccupantModalOpen(!isAddOtherOccupantModalOpen)
+        }
+      />
     </div>
   );
 };
