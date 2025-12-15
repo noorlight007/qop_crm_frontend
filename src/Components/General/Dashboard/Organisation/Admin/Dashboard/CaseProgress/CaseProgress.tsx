@@ -16,6 +16,23 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
 
   // derive categories (names) and series values (normalized to 0-1)
   const categories = advisers.map((a) => a.adviser_name || "Unknown");
+  // create shorter labels for display on the chart (keep full names for tooltips)
+  const shortCategories = categories.map((name) => {
+    if (!name) return "Unknown";
+    const words = name.trim().split(/\s+/);
+    if (words.length === 1) {
+      return words[0].length > 12 ? words[0].slice(0, 12) + "..." : words[0];
+    }
+    const title = words[0].toLowerCase();
+    if (["mr", "mrs", "ms", "dr"].includes(title)) {
+      const last = words[words.length - 1];
+      return last.length > 10
+        ? words[0] + " " + last.slice(0, 10) + "..."
+        : words[0] + " " + last;
+    }
+    // default: FirstName + LastInitial. -> "John D."
+    return words[0] + " " + words[1].charAt(0) + ".";
+  });
   const seriesValues = advisers.map((a) => {
     const raw = Number(a.completion_percentage ?? 0);
     if (isNaN(raw)) return 0;
@@ -41,7 +58,7 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
       enabled: false,
     },
     xaxis: {
-      categories,
+      categories: shortCategories,
       labels: {
         formatter: function (val: number) {
           return Math.round(val * 100) + "%";
@@ -64,6 +81,13 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
       strokeDashArray: 3,
     },
     tooltip: {
+      x: {
+        // show full adviser name in tooltip
+        formatter: function (_val: any, opts: any) {
+          const idx = opts?.dataPointIndex ?? 0;
+          return categories[idx] || "";
+        },
+      },
       y: {
         formatter: function (val: number) {
           return Math.round(val * 100) + "%";
