@@ -1,5 +1,6 @@
 import { Col, Container, Row } from "reactstrap";
 
+import { useGetAdminDashboardDataQuery } from "@/Redux/Reducers/Organisation/Admin/Dashboard/AdminDashboardApi";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import AdviserTaskOverview from "./AdviserTaskOverview/AdviserTaskOverview";
@@ -8,12 +9,18 @@ import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 
 const OrganisationAdminDashboardContainer: React.FC = () => {
+  const { data: adminDashboardData, isLoading } =
+    useGetAdminDashboardDataQuery(undefined);
+
   return (
     <>
       <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
       <Container fluid>
         {/* 1st row  */}
-        <DashboardOverview />
+        <DashboardOverview
+          isLoading={isLoading}
+          dashboardData={adminDashboardData}
+        />
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
