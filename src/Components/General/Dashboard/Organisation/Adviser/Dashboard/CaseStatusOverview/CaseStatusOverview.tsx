@@ -50,8 +50,6 @@ const CaseStatusOverview: React.FC<CommonAdviserSummaryProps> = ({
     is3D: true,
     slices: {
       0: { offset: 0.05 },
-      1: { offset: 0.03 },
-      2: { offset: 0.03 },
     },
     pieStartAngle: 0, // No rotation
     sliceVisibilityThreshold: 0.01, // Show all slices
@@ -62,7 +60,28 @@ const CaseStatusOverview: React.FC<CommonAdviserSummaryProps> = ({
         fontSize: 12,
       },
     },
-    colors: ["#2c7d7b", "#e97451", "#a5d6a7"],
+    colors: [
+      "#8FA4D7", // Light Blue
+      "#F28FB1", // Light Pink
+      "#FFB84D", // Light Orange
+      "#7BC87F", // Light Green
+      "#B85CBF", // Light Purple
+      "#FFD54F", // Light Yellow
+      "#90A4AE", // Light Blue Grey
+      "#A1887F", // Light Brown
+      "#FF8A65", // Light Deep Orange
+      "#AED581", // Light Green
+      "#9575CD", // Light Deep Purple
+      "#4DD0E1", // Light Cyan
+      "#FFF176", // Light Yellow
+      "#BDBDBD", // Light Grey
+      "#EF5350", // Light Red
+      "#64B5F6", // Light Blue
+      "#DCE775", // Light Lime
+      "#FF8A80", // Light Red
+      "#A5D6A7", // Light Green
+      "#C5E1A5", // Lighter Green
+    ],
     backgroundColor: "transparent",
     chartArea: {
       left: 30,
