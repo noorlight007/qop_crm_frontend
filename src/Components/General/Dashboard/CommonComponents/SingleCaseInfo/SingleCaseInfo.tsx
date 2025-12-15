@@ -8,11 +8,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
-import CalenderContainer from "./Components/Calender/CalenderContainer";
 import CaseDetails from "./Components/CaseDetails/CaseDetails";
 import CaseInfo from "./Components/CaseInfo/CaseInfo";
 import JointUsers from "./Components/JointUsers/JointUsers";
-import MeetingHistory from "./Components/MeetingHistory/MeetingHistory";
 
 const SingleCaseInfo: React.FC = () => {
   const { data: session } = useSession();
@@ -58,7 +56,7 @@ const SingleCaseInfo: React.FC = () => {
   }
 
   if (isError || !caseInfo) {
-    return null; // Will redirect in useEffect
+    return null;
   }
 
   return (
@@ -79,12 +77,7 @@ const SingleCaseInfo: React.FC = () => {
             isLoading={isJointUserFetcing}
           />
         </Row>
-        <Row>
-          <MeetingHistory />
-        </Row>
-        <Row>
-          <CalenderContainer />
-        </Row>
+        <Row>{/* <CalenderContainer /> */}</Row>
       </Container>
     </>
   );
