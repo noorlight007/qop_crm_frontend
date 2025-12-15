@@ -21,7 +21,7 @@ const OrganisationDirectorDashboardContainer = () => {
       <Container fluid>
         <WelcomeBanner
           isLoading={isLoading}
-          commonDashboardData={commonDirectorDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         {/* 1st row  */}
         <DashboardOverview
