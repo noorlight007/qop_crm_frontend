@@ -7,6 +7,7 @@ import AdviserTaskOverview from "./AdviserTaskOverview/AdviserTaskOverview";
 import CaseProgress from "./CaseProgress/CaseProgress";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
+import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationAdminDashboardContainer: React.FC = () => {
   const { data: adminDashboardData, isLoading } =
@@ -16,6 +17,10 @@ const OrganisationAdminDashboardContainer: React.FC = () => {
     <>
       <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
       <Container fluid>
+        <WelcomeBanner
+          isLoading={isLoading}
+          dashboardData={adminDashboardData}
+        />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}
