@@ -1,4 +1,4 @@
-import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
+import { useGetCommonDirectorDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
@@ -10,11 +10,8 @@ import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const ContainerNetworkDirector = () => {
   //RTK hooks
-  const { data: commonDashboardData, isLoading } =
-    useGetCommonDashboardQuery(undefined);
-
-  // Get network name from meta data, fallback to "Not Assigned"
-  const networkName = commonDashboardData?.meta?.name || "Not Assigned";
+  const { data: commonDirectorDashboardData, isLoading } =
+    useGetCommonDirectorDashboardQuery(undefined);
 
   return (
     <>
@@ -25,20 +22,20 @@ const ContainerNetworkDirector = () => {
       <Container fluid>
         <WelcomeBanner
           isLoading={isLoading}
-          commonDashboardData={commonDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         <PerformanceOverview
           isLoading={isLoading}
-          commonDashboardData={commonDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         <Charts
           isLoading={isLoading}
-          commonDashboardData={commonDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         <OrganisationList maxItems={8} />
         <AdviserStatus
           isLoading={isLoading}
-          commonDashboardData={commonDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         <Row>
           <Col>
