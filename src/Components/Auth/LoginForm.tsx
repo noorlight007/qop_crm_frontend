@@ -5,6 +5,7 @@ import {
   SignIn,
   SignInToAccount,
 } from "@/Constant";
+import { getDeviceInfo } from "@/utils/deviceInfo";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,9 +24,14 @@ export const LoginForm = () => {
   const formSubmitHandle = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
+
+    const deviceInfo = getDeviceInfo();
+    console.log("Device Info:", deviceInfo);
+
     const result = await signIn("credentials", {
       email,
       password,
+      deviceInfo: JSON.stringify(deviceInfo),
       redirect: false,
     });
     setIsLoading(false);

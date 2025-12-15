@@ -53,6 +53,7 @@ export const authoption: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        deviceInfo: { label: "Device Info", type: "text" },
       },
       async authorize(credentials) {
         try {
@@ -60,10 +61,24 @@ export const authoption: NextAuthOptions = {
             throw new Error("No credentials provided");
           }
 
-          const response = await apiClient.post("/auth/jwt/create/", {
+          const deviceInfo = credentials.deviceInfo
+            ? JSON.parse(credentials.deviceInfo)
+            : {};
+
+          console.log("Device Info:::", deviceInfo);
+
+          const payload = {
             email: credentials.email,
             password: credentials.password,
+            device_info: deviceInfo,
+          };
+
+          console.log("Full payload being sent:", {
+            ...payload,
+            password: "***",
           });
+
+          const response = await apiClient.post("/auth/jwt/create/", payload);
 
           if (response.data?.access) {
             return {
