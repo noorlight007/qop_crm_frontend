@@ -50,7 +50,10 @@ const OrganisationAdminDashboardContainer: React.FC = () => {
         {/* 4th row  */}
         <Row>
           <Col>
-            <AdviserTaskOverview />{" "}
+            <AdviserTaskOverview
+              isLoading={isLoading}
+              dashboardData={adminDashboardData}
+            />
           </Col>
         </Row>
       </Container>
