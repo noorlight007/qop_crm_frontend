@@ -1,10 +1,10 @@
-import { CommonDashboardProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
+import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
 import { TbBriefcase2Filled, TbCoinPound, TbUsers } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 
-const DashboardOverview: React.FC<CommonDashboardProps> = ({
+const DashboardOverview: React.FC<CommonDirectorDashboardProps> = ({
   isLoading,
-  commonDashboardData,
+  commonDirectorDashboardData,
 }) => {
   return (
     <Row>
@@ -50,7 +50,7 @@ const DashboardOverview: React.FC<CommonDashboardProps> = ({
                       Total Advisers
                     </CardTitle>
                     <h4 className="mb-1 text-dark">
-                      {commonDashboardData?.counters?.total_advisers}
+                      {commonDirectorDashboardData?.counters?.total_advisers}
                     </h4>
                   </div>
                   <div>
@@ -76,7 +76,7 @@ const DashboardOverview: React.FC<CommonDashboardProps> = ({
                       Active Clients
                     </CardTitle>
                     <h4 className="mb-1 text-dark">
-                      {commonDashboardData?.counters?.total_clients}
+                      {commonDirectorDashboardData?.counters?.total_clients}
                     </h4>
                   </div>
                   <div>

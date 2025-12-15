@@ -294,7 +294,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Lender</th>
-                      <th>Security property</th>
+                      <th className="text-truncate">Security property</th>
                       <th>Case Stage</th>
                       <th>Review Date</th>
                       <th>Created At</th>
@@ -302,12 +302,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         {session?.user?.user_type === "NETWORK_DIRECTOR" ||
                         session?.user?.user_type === "NETWORK_ADVISER"
                           ? "Organisation"
-                          : session?.user?.user_type === "ORGANISATION_ADMIN" ||
-                            session?.user?.user_type ===
-                              "ORGANISATION_ADVISER" ||
-                            session?.user?.user_type ===
-                              "ORGANISATION_SUPPORT" ||
-                            session?.user?.user_type ===
+                          : session?.user?.user_type ===
                               "ORGANISATION_DIRECTOR" ||
                             session?.user?.user_type ===
                               "ORGANISATION_ADVISER" ||
@@ -407,7 +402,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               "-"
                             )}
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {caseItem.case_category ? (
                               <>
                                 {formatChoiceFieldValue(caseItem.case_category)}
@@ -420,15 +415,24 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                         "")) && (
                                     <p className="small">
                                       (
+                                      {/* If both types exist show arrow between them */}
                                       {caseItem.application_type
                                         ? formatChoiceFieldValue(
                                             caseItem.application_type
                                           )
                                         : null}
-                                      {caseItem.mortgage_type ? (
+                                      {caseItem.application_type &&
+                                      caseItem.mortgage_type ? (
                                         <>
                                           {" "}
-                                          <TbArrowsRightLeft />{" "}
+                                          <TbArrowsRightLeft className="text-primary" />{" "}
+                                          {formatChoiceFieldValue(
+                                            caseItem.mortgage_type
+                                          )}
+                                        </>
+                                      ) : caseItem.mortgage_type ? (
+                                        /* If only mortgage_type exists, show it without arrow */
+                                        <>
                                           {formatChoiceFieldValue(
                                             caseItem.mortgage_type
                                           )}
@@ -447,7 +451,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               ? formatChoiceFieldValue(caseItem.lender)
                               : "-"}
                           </td>
-                          <td className="text-start ">
+                          <td className="text-start">
                             {(() => {
                               const pd = caseItem?.property_details;
                               if (!pd) return "N/A";
@@ -495,8 +499,12 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               "-"
                             )}
                           </td>
-                          <td>{formatDate(caseItem?.review_date) || "-"}</td>
-                          <td>{formatDateAndTime(caseItem.created_at)}</td>
+                          <td className="text-truncate">
+                            {formatDate(caseItem?.review_date) || "-"}
+                          </td>
+                          <td className="text-truncate">
+                            {formatDateAndTime(caseItem.created_at)}
+                          </td>
                           <td className="text-truncate">
                             {userType === "NETWORK_DIRECTOR" ||
                             userType === "NETWORK_ADVISER"
@@ -505,10 +513,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                     Owned by Network
                                   </span>
                                 )
-                              : userType === "ORGANISATION_ADMIN" ||
-                                userType === "ORGANISATION_ADVISER" ||
-                                userType === "ORGANISATION_SUPPORT" ||
-                                userType === "ORGANISATION_DIRECTOR" ||
+                              : userType === "ORGANISATION_DIRECTOR" ||
                                 userType === "ORGANISATION_ADVISER" ||
                                 userType === "ORGANISATION_ADMIN"
                               ? caseItem.network?.name ?? "Self"

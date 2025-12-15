@@ -1,16 +1,17 @@
 import CommonCardHeader from "@/CommonComponent/CommonCardHeader";
-import { CommonDashboardProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
+import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+
 import { Chart } from "react-google-charts";
 import { Card, CardBody } from "reactstrap";
 
-const MortgagesChart: React.FC<CommonDashboardProps> = ({
+const MortgagesChart: React.FC<CommonDirectorDashboardProps> = ({
   isLoading,
-  commonDashboardData,
+  commonDirectorDashboardData,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
   let allValuesZero = true;
 
-  if (!isLoading && commonDashboardData) {
+  if (!isLoading && commonDirectorDashboardData) {
     const {
       mortgage_type_counts: {
         PURCHASE,
@@ -23,7 +24,7 @@ const MortgagesChart: React.FC<CommonDashboardProps> = ({
         ASSET_FINANCE,
         OTHER,
       },
-    } = commonDashboardData;
+    } = commonDirectorDashboardData;
     const values = [
       PURCHASE ?? 0,
       REMORTGAGE ?? 0,

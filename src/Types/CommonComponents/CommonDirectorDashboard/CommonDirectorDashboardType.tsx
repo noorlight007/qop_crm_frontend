@@ -6,7 +6,7 @@ export interface Adviser {
   cases_completed?: number;
   total_loan_amount?: number; // e.g., 125000 or "125000"
 }
-export interface CommonDashboardDataProps {
+export interface CommonDirectorDashboardDataProps {
   summary_cards: {
     new_mortgage_enquiry?: number;
     mortgage_cases_submitted?: number;
@@ -196,7 +196,7 @@ export interface CommonDashboardDataProps {
   }[];
 }
 
-export interface CommonDashboardProps {
+export interface CommonDirectorDashboardProps {
   isLoading: boolean;
-  commonDashboardData: CommonDashboardDataProps | null;
+  commonDirectorDashboardData: CommonDirectorDashboardDataProps | null;
 }

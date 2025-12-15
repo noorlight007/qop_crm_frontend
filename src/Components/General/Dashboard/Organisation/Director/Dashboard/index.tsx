@@ -1,4 +1,4 @@
-import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
+import { useGetCommonDirectorDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
@@ -6,14 +6,14 @@ import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverT
 import ClientGrowth from "./ClientGrowth/ClientGrowth";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
-import RecentAuditLogs from "./RecentAuditLogs/RecentAuditLogs";
+import RecentLoginActivity from "./RecentLoginActivity/RecentLoginActivity";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
 import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationDirectorDashboardContainer = () => {
   //RTK hooks
-  const { data: commonDashboardData, isLoading } =
-    useGetCommonDashboardQuery(undefined);
+  const { data: commonDirectorDashboardData, isLoading } =
+    useGetCommonDirectorDashboardQuery(undefined);
 
   return (
     <>
@@ -21,12 +21,12 @@ const OrganisationDirectorDashboardContainer = () => {
       <Container fluid>
         <WelcomeBanner
           isLoading={isLoading}
-          commonDashboardData={commonDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}
-          commonDashboardData={commonDashboardData}
+          commonDirectorDashboardData={commonDirectorDashboardData}
         />
         {/* 2nd row  */}
         <Row>
@@ -45,7 +45,7 @@ const OrganisationDirectorDashboardContainer = () => {
           <Col md={6} sm={12}>
             <TopPerformingAdvisers
               isLoading={isLoading}
-              commonDashboardData={commonDashboardData}
+              commonDirectorDashboardData={commonDirectorDashboardData}
             />
           </Col>
         </Row>
@@ -58,7 +58,7 @@ const OrganisationDirectorDashboardContainer = () => {
         {/* 5th row */}
         <Row>
           <Col md={6} sm={12}>
-            <RecentAuditLogs />
+            <RecentLoginActivity />
           </Col>
         </Row>
       </Container>
