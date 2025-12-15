@@ -1,13 +1,20 @@
 import SVG from "@/CommonComponent/SVG";
 import { AdminDashboardProps } from "@/Types/Organisation/Admin/AdminDashboardTypes";
+import { useState } from "react";
 import { User } from "react-feather";
-import { Card, CardBody, Col, Progress, Row } from "reactstrap";
+import { Button, Card, CardBody, Col, Progress, Row } from "reactstrap";
 
 const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
   isLoading,
   dashboardData,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
   const advisers = dashboardData?.adviser_task ?? [];
+
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(advisers.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const paginatedAdvisers = advisers.slice(startIdx, startIdx + itemsPerPage);
 
   if (isLoading) {
     return (
@@ -67,11 +74,36 @@ const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
 
   return (
     <Card className="border-0 p-4 rounded-3 shadow-sm bg-white mt-4">
-      <div className="d-flex align-items-center mb-4">
+      <div className="d-flex align-items-center justify-content-between mb-4">
         <h5 className="mb-0 fw-bold text-dark">Adviser Task Overview</h5>
+        {advisers.length > itemsPerPage && (
+          <div className="d-flex gap-2 align-items-center">
+            <Button
+              outline
+              size="sm"
+              color="primary"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              ← Prev
+            </Button>
+            <span className="text-muted small">
+              {currentPage} of {totalPages}
+            </span>
+            <Button
+              outline
+              size="sm"
+              color="primary"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next →
+            </Button>
+          </div>
+        )}
       </div>
       <Row className="g-4">
-        {advisers.map((adv, idx) => {
+        {paginatedAdvisers.map((adv, idx) => {
           const total = Number(adv.total_tasks ?? 0);
           const completed = Number(adv.completed_tasks ?? 0);
           const overdue = Number(adv.overdue_tasks ?? 0);
