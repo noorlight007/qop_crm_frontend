@@ -29,10 +29,16 @@ const OrganisationAdminDashboardContainer: React.FC = () => {
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <CaseStatusOverview />
+            <CaseStatusOverview
+              isLoading={isLoading}
+              dashboardData={adminDashboardData}
+            />
           </Col>
           <Col md={6} sm={12}>
-            <CaseProgress />
+            <CaseProgress
+              isLoading={isLoading}
+              dashboardData={adminDashboardData}
+            />
           </Col>
         </Row>
         {/* 3rd row  */}

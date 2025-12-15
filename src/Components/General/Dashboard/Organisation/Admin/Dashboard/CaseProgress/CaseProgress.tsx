@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminDashboardProps } from "@/Types/Organisation/Admin/AdminDashboardTypes";
 import dynamic from "next/dynamic";
 import { Card } from "reactstrap";
 
@@ -7,7 +8,10 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
-const CaseProgress = () => {
+const CaseProgress: React.FC<AdminDashboardProps> = ({
+  isLoading,
+  dashboardData,
+}) => {
   const options = {
     chart: {
       type: "bar",
