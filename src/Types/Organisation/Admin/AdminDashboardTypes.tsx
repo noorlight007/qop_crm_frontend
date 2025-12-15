@@ -1,6 +1,6 @@
 export interface AdminDashboardTypes {
-  organisation: string;
   network: string;
+  organisation: string;
   new_clients_this_month: number;
   completed_cases: number;
   upcoming_tasks: number;
