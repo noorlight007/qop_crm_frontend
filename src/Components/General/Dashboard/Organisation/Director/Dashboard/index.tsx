@@ -6,7 +6,7 @@ import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverT
 import ClientGrowth from "./ClientGrowth/ClientGrowth";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
-import RecentAuditLogs from "./RecentAuditLogs/RecentAuditLogs";
+import RecentLoginActivity from "./RecentLoginActivity/RecentLoginActivity";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
 import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
@@ -58,7 +58,7 @@ const OrganisationDirectorDashboardContainer = () => {
         {/* 5th row */}
         <Row>
           <Col md={6} sm={12}>
-            <RecentAuditLogs />
+            <RecentLoginActivity />
           </Col>
         </Row>
       </Container>
