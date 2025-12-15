@@ -53,6 +53,7 @@ export const authoption: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
+        userAgent: { label: "User Agent", type: "text" },
       },
       async authorize(credentials) {
         try {
@@ -60,10 +61,19 @@ export const authoption: NextAuthOptions = {
             throw new Error("No credentials provided");
           }
 
-          const response = await apiClient.post("/auth/jwt/create/", {
-            email: credentials.email,
-            password: credentials.password,
-          });
+          const response = await apiClient.post(
+            "/auth/jwt/create/",
+            {
+              email: credentials.email,
+              password: credentials.password,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "X-Device-Info": credentials.userAgent || "",
+              },
+            }
+          );
 
           if (response.data?.access) {
             return {
