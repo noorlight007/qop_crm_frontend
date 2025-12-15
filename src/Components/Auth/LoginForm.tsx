@@ -23,9 +23,15 @@ export const LoginForm = () => {
   const formSubmitHandle = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
+
+    // Get user agent from navigator
+    const userAgent =
+      typeof navigator !== "undefined" ? navigator.userAgent : "Unknown Device";
+
     const result = await signIn("credentials", {
       email,
       password,
+      userAgent,
       redirect: false,
     });
     setIsLoading(false);
