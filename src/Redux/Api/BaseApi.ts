@@ -239,7 +239,7 @@ const logOut = async () => {
   }
 
   // Call logout API if tokens are available
-  if (refreshToken && accessToken) {
+  if (refreshToken ) {
     try {
       const formData = new FormData();
       formData.append("refresh", refreshToken);

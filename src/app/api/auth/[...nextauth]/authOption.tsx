@@ -64,7 +64,7 @@ export const authoption: NextAuthOptions = {
             throw new Error("No credentials provided");
           }
 
-          const response = await apiClient.post(
+          const result = await apiClient.post(
             "/auth/jwt/create/",
             {
               email: credentials.email,
@@ -78,28 +78,31 @@ export const authoption: NextAuthOptions = {
             }
           );
 
-          if (response.data?.access) {
+          const profileResponse = result?.data?.access
+            ? await apiClient.get("/auth/user-profile/", {
+                headers: {
+                  Authorization: `JWT ${result.data.access}`,
+                  "Content-Type": "application/json",
+                },
+              })
+            : null;
+
+          if (profileResponse?.data) {
+            const userData = profileResponse.data || {};
+            const fullName = `${
+              userData.title ? formatChoiceFieldValue(userData.title) + " " : ""
+            }${userData.first_name || ""}${
+              userData.middle_name ? " " + userData.middle_name : ""
+            }${userData.last_name ? " " + userData.last_name : ""}`.trim();
+
             return {
-              id: response.data.user_id || "default_id",
-              name:
-                `${
-                  response.data.user.title
-                    ? formatChoiceFieldValue(response.data.user.title) + " "
-                    : ""
-                }${response.data.user.first_name || ""}${
-                  response.data.user.middle_name
-                    ? " " + response.data.user.middle_name
-                    : ""
-                }${
-                  response.data.user.last_name
-                    ? " " + response.data.user.last_name
-                    : ""
-                }`.trim() || credentials.email,
+              id: profileResponse.data.user_id || "default_id",
+              name: fullName || credentials.email,
               email: credentials.email,
-              user_type: response.data.user.user_type || "",
-              profile_image: response.data.user.profile_image || null,
-              accessToken: response.data.access,
-              refreshToken: response.data.refresh,
+              user_type: userData.user_type || "",
+              profile_image: userData.profile_image || null,
+              accessToken: result.data.access,
+              refreshToken: result.data.refresh,
             };
           }
           return null;
