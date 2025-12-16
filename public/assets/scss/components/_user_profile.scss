@@ -1,0 +1,15 @@
+// User profile avatar hover camera styles
+.avatar-wrapper {
+  .camera-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: scale(0.95);
+  }
+
+  &:hover {
+    .camera-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}

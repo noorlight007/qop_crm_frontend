@@ -1,9 +1,14 @@
-import { useGetUserDetailsQuery } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
+import {
+  useGetUserDetailsQuery,
+  useUpdateUserDetailsMutation,
+} from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
 import { UserProfileData } from "@/Types/CommonComponents/UserProfile/UserProfileType";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { useState } from "react";
-import { FaUserEdit, FaUserLock } from "react-icons/fa";
+import { useSession } from "next-auth/react";
+import { useRef, useState } from "react";
+import { FaCamera, FaUserEdit, FaUserLock } from "react-icons/fa";
 import { TbCalendar, TbMail, TbMapPin, TbPhone, TbUser } from "react-icons/tb";
+import { toast } from "react-toastify";
 import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import EditProfileModal from "./Modals/EditProfileModal";
 import SendEmailForResetPasswordModal from "./Modals/SendEmailForResetPasswordModal";
@@ -12,6 +17,9 @@ const ProfileInfo: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
     useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { update: updateSession } = useSession();
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(true);
@@ -23,6 +31,7 @@ const ProfileInfo: React.FC = () => {
   // RTK Hooks
   const { data: userProfileData, isLoading } =
     useGetUserDetailsQuery(undefined);
+  const [updateUserDetails] = useUpdateUserDetailsMutation();
 
   const userData = userProfileData as UserProfileData;
 
@@ -76,6 +85,42 @@ const ProfileInfo: React.FC = () => {
     );
   }
 
+  const triggerFileDialog = () => fileInputRef.current?.click();
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Basic validation: images only, max ~5MB
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 5 * 1024 * 1024) return;
+
+    try {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append("profile_image", file);
+      const resp: any = await updateUserDetails({ payload: formData }).unwrap();
+      toast.success("Profile image updated successfully");
+
+      const newUrl = resp?.profile_image || resp?.data?.profile_image;
+      if (newUrl) {
+        try {
+          await updateSession({ profile_image: newUrl });
+        } catch (err) {
+          // ignore session update errors
+          console.error("Failed to update session profile image", err);
+        }
+      }
+    } catch (err) {
+      // no-op: error surfaces via toast layer if configured
+      console.error("Failed to upload profile image", err);
+      toast.error("Failed to upload profile image. Please try again.");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <Row className="g-4">
       {/* Profile Header Card */}
@@ -94,12 +139,13 @@ const ProfileInfo: React.FC = () => {
               <div className="d-flex align-items-end gap-3">
                 {/* Profile Image / Avatar */}
                 <div
-                  className="position-relative bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center"
+                  className="position-relative avatar-wrapper bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center"
                   style={{
                     width: "120px",
                     height: "120px",
                     border: "5px solid white",
                     marginBottom: "-60px",
+                    overflow: "hidden",
                   }}
                 >
                   {userData?.profile_image ? (
@@ -128,6 +174,38 @@ const ProfileInfo: React.FC = () => {
                       {getInitials()}
                     </div>
                   )}
+
+                  {/* Upload overlay: camera on hover */}
+                  <button
+                    type="button"
+                    aria-label="Change profile image"
+                    className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0"
+                    style={{
+                      right: "6px",
+                      bottom: "6px",
+                      width: "40px",
+                      height: "40px",
+                      background: "rgba(0,0,0,0.65)",
+                      color: "#fff",
+                      cursor: "pointer",
+                    }}
+                    onClick={triggerFileDialog}
+                  >
+                    {isUploading ? (
+                      <Spinner size="sm" color="light" />
+                    ) : (
+                      <FaCamera size={14} />
+                    )}
+                  </button>
+
+                  {/* Hidden file input */}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="d-none"
+                    onChange={handleImageChange}
+                  />
                 </div>
               </div>
             </div>
