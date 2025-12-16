@@ -5,7 +5,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 // Extend NextAuth's user type to include the JWT token
 interface UserWithToken extends NextAuthUser {
-  token?: string;
+  accessToken?: string;
+  refreshToken?: string;
   user_type?: string;
   profile_image?: string | null;
 }
@@ -20,6 +21,7 @@ declare module "next-auth" {
       user_type?: string | null;
       profile_image?: string | null;
       accessToken?: string;
+      refreshToken?: string;
     };
   }
 
@@ -95,7 +97,7 @@ export const authoption: NextAuthOptions = {
               email: credentials.email,
               user_type: response.data.user.user_type || "",
               profile_image: response.data.user.profile_image || null,
-              token: response.data.access,
+              accessToken: response.data.access,
             };
           }
           return null;
@@ -110,8 +112,11 @@ export const authoption: NextAuthOptions = {
       if (user) {
         const userWithToken = user as UserWithToken;
         token.name = userWithToken.name;
-        if (userWithToken.token) {
-          token.accessToken = userWithToken.token;
+        if (userWithToken.accessToken) {
+          token.accessToken = userWithToken.accessToken;
+        }
+        if (userWithToken.refreshToken) {
+          token.refreshToken = userWithToken.refreshToken;
         }
         if (userWithToken.user_type) {
           token.user_type = userWithToken.user_type;
@@ -123,12 +128,14 @@ export const authoption: NextAuthOptions = {
 
       // Handle session updates (when update() is called)
       if (trigger === "update" && session) {
-        // console.log("Session update triggered:", session);
         if (session.name) {
           token.name = session.name;
         }
         if (session.profile_image !== undefined) {
           token.profile_image = session.profile_image;
+        }
+        if (session.user_type !== undefined) {
+          token.user_type = session.user_type;
         }
       }
 
@@ -140,6 +147,7 @@ export const authoption: NextAuthOptions = {
         ...session.user,
         name: token.name as string | undefined,
         accessToken: token.accessToken as string | undefined,
+        refreshToken: token.refreshToken as string | undefined,
         user_type: token.user_type as string | undefined,
         profile_image: token.profile_image as string | null | undefined,
       };
