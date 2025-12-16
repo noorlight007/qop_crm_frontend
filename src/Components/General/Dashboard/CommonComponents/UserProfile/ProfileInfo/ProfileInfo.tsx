@@ -1,5 +1,5 @@
 import { useGetUserDetailsQuery } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
-import { UserProfileDataProps } from "@/Types/CommonComponents/UserProfile/UserProfileType";
+import { UserProfileData } from "@/Types/CommonComponents/UserProfile/UserProfileType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useState } from "react";
 import { FaUserEdit, FaUserLock } from "react-icons/fa";
@@ -24,7 +24,7 @@ const ProfileInfo: React.FC = () => {
   const { data: userProfileData, isLoading } =
     useGetUserDetailsQuery(undefined);
 
-  const userData = userProfileData as UserProfileDataProps;
+  const userData = userProfileData as UserProfileData;
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -379,10 +379,31 @@ const ProfileInfo: React.FC = () => {
             </h5>
 
             <Row>
-              <Col md="6">
+              <Col md="4">
                 <div className="d-flex align-items-center p-3 bg-light rounded">
                   <div
                     className="d-flex align-items-center justify-content-center rounded-circle bg-primary me-3"
+                    style={{ width: "50px", height: "50px" }}
+                  >
+                    <TbCalendar className="text-white" size={24} />
+                  </div>
+                  <div>
+                    <small className="text-muted d-block">
+                      Account Created
+                    </small>
+                    <h6 className="mb-0 fw-bold text-dark">
+                      {userData?.created_at
+                        ? formatDate(userData.created_at)
+                        : "N/A"}
+                    </h6>
+                  </div>
+                </div>
+              </Col>
+
+              <Col md="4">
+                <div className="d-flex align-items-center p-3 bg-light rounded">
+                  <div
+                    className="d-flex align-items-center justify-content-center rounded-circle bg-secondary me-3"
                     style={{ width: "50px", height: "50px" }}
                   >
                     <TbCalendar className="text-white" size={24} />
@@ -398,17 +419,29 @@ const ProfileInfo: React.FC = () => {
                 </div>
               </Col>
 
-              <Col md="6" className="mt-3 mt-md-0">
+              <Col md="4" className="mt-3 mt-md-0">
                 <div className="d-flex align-items-center p-3 bg-light rounded">
                   <div
-                    className="d-flex align-items-center justify-content-center rounded-circle bg-success me-3"
+                    className={`d-flex align-items-center justify-content-center rounded-circle me-3 ${
+                      userData?.is_active === true
+                        ? "bg-success"
+                        : "bg-light-dark"
+                    }`}
                     style={{ width: "50px", height: "50px" }}
                   >
                     <TbUser className="text-white" size={24} />
                   </div>
                   <div>
                     <small className="text-muted d-block">Account Status</small>
-                    <h6 className="mb-0 fw-bold text-success">Active</h6>
+                    <h6
+                      className={`mb-0 fw-bold ${
+                        userData?.is_active === true
+                          ? "text-success"
+                          : "text-muted"
+                      }`}
+                    >
+                      {userData?.is_active === true ? "Active" : "Inactive"}
+                    </h6>
                   </div>
                 </div>
               </Col>
@@ -425,7 +458,7 @@ const ProfileInfo: React.FC = () => {
       <SendEmailForResetPasswordModal
         isOpen={isResetPasswordModalOpen}
         onClose={() => setIsResetPasswordModalOpen(false)}
-         initialData={userData}
+        initialData={userData}
       />
     </Row>
   );
