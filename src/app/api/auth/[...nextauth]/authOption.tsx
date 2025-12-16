@@ -123,7 +123,7 @@ export const authoption: NextAuthOptions = {
 
       // Handle session updates (when update() is called)
       if (trigger === "update" && session) {
-        console.log("Session update triggered:", session);
+        // console.log("Session update triggered:", session);
         if (session.name) {
           token.name = session.name;
         }

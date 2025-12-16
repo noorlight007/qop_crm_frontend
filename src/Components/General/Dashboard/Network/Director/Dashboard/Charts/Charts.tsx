@@ -1,24 +1,24 @@
-import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import { Col, Row } from "reactstrap";
 import LendersChart from "./LendersChart/LendersChart";
 import MortgagesChart from "./MortgagesChart/MortgagesChart";
 
-const Charts: React.FC<CommonDirectorDashboardProps> = ({
+const Charts: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  commonDirectorDashboardData,
+  networkDirectorDashboardData,
 }) => {
   return (
     <Row>
       <Col sm="12" xl="6" className="box-col-6">
         <MortgagesChart
           isLoading={isLoading}
-          commonDirectorDashboardData={commonDirectorDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
       </Col>
       <Col sm="12" xl="6" className="box-col-6">
         <LendersChart
           isLoading={isLoading}
-          commonDirectorDashboardData={commonDirectorDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
       </Col>
     </Row>

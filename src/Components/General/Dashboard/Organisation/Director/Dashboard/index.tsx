@@ -1,10 +1,10 @@
-import { useGetCommonDirectorDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
+import { useGetOrganisationDirectorDashboardQuery } from "@/Redux/Reducers/Network/Director/Dashboard/DashdoardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
-import ClientGrowth from "./ClientGrowth/ClientGrowth";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
+import MonthlyClients from "./MonthlyClients/MonthlyClients";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
 import RecentLoginActivity from "./RecentLoginActivity/RecentLoginActivity";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
@@ -12,8 +12,8 @@ import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationDirectorDashboardContainer = () => {
   //RTK hooks
-  const { data: commonDirectorDashboardData, isLoading } =
-    useGetCommonDirectorDashboardQuery(undefined);
+  const { data: organisationDirectorDashboardData, isLoading } =
+    useGetOrganisationDirectorDashboardQuery(undefined);
 
   return (
     <>
@@ -21,31 +21,48 @@ const OrganisationDirectorDashboardContainer = () => {
       <Container fluid>
         <WelcomeBanner
           isLoading={isLoading}
-          commonDirectorDashboardData={commonDirectorDashboardData}
+          organisationDirectorDashboardData={organisationDirectorDashboardData}
         />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}
-          commonDirectorDashboardData={commonDirectorDashboardData}
+          organisationDirectorDashboardData={organisationDirectorDashboardData}
         />
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <MonthlyRevenueTrend />
+            <MonthlyRevenueTrend
+              isLoading={isLoading}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
+            />
           </Col>
           <Col md={6} sm={12}>
-            <CaseCompletionOverTime />
+            <CaseCompletionOverTime
+              isLoading={isLoading}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
+            />
           </Col>
         </Row>
         {/* 3rd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <ClientGrowth />
+            <MonthlyClients
+              isLoading={isLoading}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
+            />
           </Col>
           <Col md={6} sm={12}>
             <TopPerformingAdvisers
               isLoading={isLoading}
-              commonDirectorDashboardData={commonDirectorDashboardData}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
             />
           </Col>
         </Row>

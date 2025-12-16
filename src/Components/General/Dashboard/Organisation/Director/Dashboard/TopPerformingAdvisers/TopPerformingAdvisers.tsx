@@ -1,9 +1,9 @@
-import { CommonDashboardProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
+import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
 import { Card, CardBody } from "reactstrap";
 
-const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
+const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
   isLoading,
-  commonDashboardData,
+  organisationDirectorDashboardData,
 }) => {
   const formatCurrency = (amount: number): string => {
     if (!isFinite(amount)) return "£0";
@@ -58,13 +58,13 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
               </Card>
             ))}
           </>
-        ) : commonDashboardData?.top_performing_advisers &&
-          commonDashboardData.top_performing_advisers.length > 0 ? (
-          <div
-            className="space-y-6 mt-2"
-            style={{ height: "350px", overflow: "auto" }}
+        ) : organisationDirectorDashboardData?.top_advisers &&
+          organisationDirectorDashboardData.top_advisers.length > 0 ? (
+          <Card
+            className="space-y-4"
+            style={{ height: "325px", overflow: "auto" }}
           >
-            {commonDashboardData.top_performing_advisers.map((data) => (
+            {organisationDirectorDashboardData.top_advisers.map((data) => (
               <div
                 key={data?.rank}
                 className="d-flex justify-content-between mt-4 px-3 py-1"
@@ -79,7 +79,7 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
                     </span>
                   </div>
                   <div>
-                    <h6 className="fw-semibold">{data?.advisor_name}</h6>
+                    <h6 className="fw-semibold">{data?.adviser_name}</h6>
                     <p className="small">{data?.total_cases} cases</p>
                   </div>
                 </div>
@@ -96,11 +96,11 @@ const TopPerformingAdvisers: React.FC<CommonDashboardProps> = ({
                 </div>
               </div>
             ))}
-          </div>
+          </Card>
         ) : (
           <div
             className="d-flex justify-content-center align-items-center"
-            style={{ height: "350px" }}
+            style={{ height: "360px" }}
           >
             <p className="text-muted">No data available</p>
           </div>

@@ -1,16 +1,16 @@
-import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
 import React from "react";
 import { TbBuildingSkyscraper } from "react-icons/tb";
 import { Card } from "reactstrap";
 
-const WelcomeBanner: React.FC<CommonDirectorDashboardProps> = ({
+const WelcomeBanner: React.FC<OrganisationDirectorDashboardProps> = ({
   isLoading,
-  commonDirectorDashboardData,
+  organisationDirectorDashboardData,
 }) => {
-  const orgName = commonDirectorDashboardData?.meta?.name || "Not Assigned";
+  const orgName =
+    organisationDirectorDashboardData?.organisation || "Not Assigned";
   const networkName =
-    commonDirectorDashboardData?.meta?.network || "Not Assigned";
-
+    organisationDirectorDashboardData?.network || "Not Assigned";
   if (isLoading) {
     return (
       <div className="py-3">

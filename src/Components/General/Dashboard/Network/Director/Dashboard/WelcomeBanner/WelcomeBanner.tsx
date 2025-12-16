@@ -1,14 +1,13 @@
-import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import React from "react";
 import { TbNetwork } from "react-icons/tb";
 import { Card } from "reactstrap";
 
-const WelcomeBanner: React.FC<CommonDirectorDashboardProps> = ({
+const WelcomeBanner: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  commonDirectorDashboardData: commonDirectorDashboardData,
+  networkDirectorDashboardData,
 }) => {
-  const networkName = commonDirectorDashboardData?.meta?.name || "Not Assigned";
-
+  const networkName = networkDirectorDashboardData?.network || "Not Assigned";
   if (isLoading) {
     return (
       <div className="py-3">
