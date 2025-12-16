@@ -1,11 +1,11 @@
-import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import Link from "next/link";
 import { TbEye } from "react-icons/tb";
 import { Badge, Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
 
-const AdviserStatus: React.FC<CommonDirectorDashboardProps> = ({
+const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  commonDirectorDashboardData,
+  networkDashboardData,
 }) => {
   return (
     <Row>
@@ -76,11 +76,10 @@ const AdviserStatus: React.FC<CommonDirectorDashboardProps> = ({
                 ) : (
                   <>
                     {Array.isArray(
-                      commonDirectorDashboardData?.top_performing_advisers
+                      networkDashboardData?.top_performing_advisers
                     ) &&
-                    commonDirectorDashboardData.top_performing_advisers.length >
-                      0 ? (
-                      commonDirectorDashboardData.top_performing_advisers
+                    networkDashboardData.top_performing_advisers.length > 0 ? (
+                      networkDashboardData.top_performing_advisers
                         .slice(0, 5)
                         .map((data, idx: number) => (
                           <tr key={idx}>

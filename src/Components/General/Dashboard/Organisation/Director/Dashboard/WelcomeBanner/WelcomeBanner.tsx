@@ -1,9 +1,9 @@
-import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+import { NetworkDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
 import React from "react";
 import { TbBuildingSkyscraper } from "react-icons/tb";
 import { Card } from "reactstrap";
 
-const WelcomeBanner: React.FC<CommonDirectorDashboardProps> = ({
+const WelcomeBanner: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
   commonDirectorDashboardData,
 }) => {

@@ -1,8 +1,8 @@
-import { CommonDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
+import { NetworkDirectorDashboardProps } from "@/Types/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardType";
 import { TbBriefcase2Filled, TbCoinPound, TbUsers } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 
-const DashboardOverview: React.FC<CommonDirectorDashboardProps> = ({
+const DashboardOverview: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
   commonDirectorDashboardData,
 }) => {

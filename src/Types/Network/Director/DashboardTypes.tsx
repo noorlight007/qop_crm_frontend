@@ -4,9 +4,9 @@ export interface Adviser {
   full_name?: string;
   profile_image?: string;
   cases_completed?: number;
-  total_loan_amount?: number; // e.g., 125000 or "125000"
+  total_loan_amount?: number;
 }
-export interface CommonDirectorDashboardDataProps {
+export interface NetworkDirectorDashboardData {
   summary_cards: {
     new_mortgage_enquiry?: number;
     mortgage_cases_submitted?: number;
@@ -196,7 +196,7 @@ export interface CommonDirectorDashboardDataProps {
   }[];
 }
 
-export interface CommonDirectorDashboardProps {
+export interface NetworkDirectorDashboardProps {
   isLoading: boolean;
-  commonDirectorDashboardData: CommonDirectorDashboardDataProps | null;
+  networkDashboardData: NetworkDirectorDashboardData | null;
 }

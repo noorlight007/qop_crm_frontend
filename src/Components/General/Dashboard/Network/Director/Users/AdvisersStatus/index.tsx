@@ -1,6 +1,7 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetCommonDashboardQuery } from "@/Redux/Reducers/CommonComponents/CommonDirectorDashboard/CommonDirectorDashboardApi";
-import { CommonDashboardDataProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
+import { useGetNetworkDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
+import { NetworkDirectorDashboardData } from "@/Types/Network/Director/DashboardTypes";
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Badge,
@@ -18,8 +19,8 @@ import {
 
 const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
   // RTK hooks
-  const { data: commonDashboardData, isLoading } =
-    useGetCommonDashboardQuery(undefined);
+  const { data: networkDashboardData, isLoading } =
+    useGetNetworkDashboardQuery(undefined);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -27,10 +28,10 @@ const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
 
   // derive a typed alias for the top performing adviser entries
   type TopAdviser = NonNullable<
-    CommonDashboardDataProps["top_performing_advisers"]
+    NetworkDirectorDashboardData["top_performing_advisers"]
   >[number];
   const advisers: TopAdviser[] =
-    commonDashboardData?.top_performing_advisers ?? [];
+    networkDashboardData?.top_performing_advisers ?? [];
   const total = advisers.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
