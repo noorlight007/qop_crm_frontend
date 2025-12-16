@@ -27,6 +27,7 @@ declare module "next-auth" {
 
   interface User {
     accessToken?: string;
+    refreshToken?: string;
     user_type?: string;
     profile_image?: string | null;
   }
@@ -98,6 +99,7 @@ export const authoption: NextAuthOptions = {
               user_type: response.data.user.user_type || "",
               profile_image: response.data.user.profile_image || null,
               accessToken: response.data.access,
+              refreshToken: response.data.refresh,
             };
           }
           return null;

@@ -11,7 +11,11 @@ const baseQuery = fetchBaseQuery({
   // credentials: "include",
   prepareHeaders: async (headers) => {
     const session = await getSession();
-    const token = session?.user?.accessToken;
+    // Prefer refreshed token from localStorage; fall back to session
+    const token =
+      (typeof window !== "undefined" ? localStorage.getItem("token") : null) ||
+      session?.user?.accessToken ||
+      null;
 
     if (token) {
       headers.set("authorization", `JWT ${token}`);
@@ -24,64 +28,6 @@ const baseQuery = fetchBaseQuery({
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
-const logOut = async () => {
-  // Collect tokens from localStorage or session
-  let accessToken: string | null = null;
-  let refreshToken: string | null = null;
-
-  if (typeof window !== "undefined") {
-    try {
-      accessToken = localStorage.getItem("token");
-      refreshToken = localStorage.getItem("refreshToken");
-    } catch (e) {
-      console.error("Error reading localStorage during logout", e);
-    }
-  } else {
-    try {
-      const session = await getSession();
-      accessToken = session?.user?.accessToken ?? null;
-      refreshToken = session?.user?.refreshToken ?? null;
-    } catch (e) {
-      console.error("Error reading session during logout", e);
-    }
-  }
-
-  // Call logout API if tokens are available
-  if (refreshToken && accessToken) {
-    try {
-      const formData = new FormData();
-      formData.append("refresh_token", refreshToken);
-
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: formData,
-      }).catch((error) => {
-        console.error("Logout API call failed:", error);
-      });
-    } catch (e) {
-      console.error("Error calling logout API", e);
-    }
-  }
-
-  // Clear local storage
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-    } catch (e) {
-      console.error("Error clearing localStorage during logout", e);
-    }
-  }
-
-  try {
-    await signOut({ callbackUrl: "/auth/login" });
-  } catch (e) {
-    console.error("Error during signOut", e);
-  }
-};
 // Centralized token refresh function with mutex
 const refreshAccessToken = async (): Promise<string | null> => {
   // If already refreshing, wait for the existing promise
@@ -142,6 +88,9 @@ const refreshAccessToken = async (): Promise<string | null> => {
       console.error("Token refresh error:", error);
       await logOut();
       return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
     }
   })();
 
@@ -266,3 +215,62 @@ export const baseApi = createApi({
   ],
   endpoints: () => ({}),
 });
+
+const logOut = async () => {
+  // Collect tokens from localStorage or session
+  let accessToken: string | null = null;
+  let refreshToken: string | null = null;
+
+  if (typeof window !== "undefined") {
+    try {
+      accessToken = localStorage.getItem("token");
+      refreshToken = localStorage.getItem("refreshToken");
+    } catch (e) {
+      console.error("Error reading localStorage during logout", e);
+    }
+  } else {
+    try {
+      const session = await getSession();
+      accessToken = session?.user?.accessToken ?? null;
+      refreshToken = session?.user?.refreshToken ?? null;
+    } catch (e) {
+      console.error("Error reading session during logout", e);
+    }
+  }
+
+  // Call logout API if tokens are available
+  if (refreshToken && accessToken) {
+    try {
+      const formData = new FormData();
+      formData.append("refresh", refreshToken);
+
+      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout/`, {
+        method: "POST",
+        headers: {
+          Authorization: `JWT ${accessToken}`,
+        },
+        body: formData,
+      }).catch((error) => {
+        console.error("Logout API call failed:", error);
+      });
+    } catch (e) {
+      console.error("Error calling logout API", e);
+    }
+  }
+
+  // Clear local storage
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+    } catch (e) {
+      console.error("Error clearing localStorage during logout", e);
+    }
+  }
+
+  try {
+    await signOut({ callbackUrl: "/auth/login" });
+  } catch (e) {
+    console.error("Error during signOut", e);
+  }
+};
