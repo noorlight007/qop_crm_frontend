@@ -2,7 +2,7 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 
 export const NetworkDirectorDashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getNetworkDashboard: builder.query({
+    getNetworkDirectorDashboard: builder.query({
       query: () => ({
         url: `/dashboard/network-director-summary/`,
         method: "GET",
@@ -11,4 +11,5 @@ export const NetworkDirectorDashboardApi = baseApi.injectEndpoints({
     }),
   }),
 });
-export const { useGetNetworkDashboardQuery } = NetworkDirectorDashboardApi;
+export const { useGetNetworkDirectorDashboardQuery } =
+  NetworkDirectorDashboardApi;

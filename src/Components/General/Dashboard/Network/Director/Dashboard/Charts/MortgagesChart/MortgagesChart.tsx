@@ -6,12 +6,12 @@ import { Card, CardBody } from "reactstrap";
 
 const MortgagesChart: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  networkDashboardData,
+  networkDirectorDashboardData,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
   let allValuesZero = true;
 
-  if (!isLoading && networkDashboardData) {
+  if (!isLoading && networkDirectorDashboardData) {
     const {
       mortgage_type_counts: {
         PURCHASE,
@@ -24,7 +24,7 @@ const MortgagesChart: React.FC<NetworkDirectorDashboardProps> = ({
         ASSET_FINANCE,
         OTHER,
       },
-    } = networkDashboardData;
+    } = networkDirectorDashboardData;
     const values = [
       PURCHASE ?? 0,
       REMORTGAGE ?? 0,

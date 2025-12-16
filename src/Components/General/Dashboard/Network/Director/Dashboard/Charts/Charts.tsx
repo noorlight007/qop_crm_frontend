@@ -5,20 +5,20 @@ import MortgagesChart from "./MortgagesChart/MortgagesChart";
 
 const Charts: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  networkDashboardData,
+  networkDirectorDashboardData,
 }) => {
   return (
     <Row>
       <Col sm="12" xl="6" className="box-col-6">
         <MortgagesChart
           isLoading={isLoading}
-          networkDashboardData={networkDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
       </Col>
       <Col sm="12" xl="6" className="box-col-6">
         <LendersChart
           isLoading={isLoading}
-          networkDashboardData={networkDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
       </Col>
     </Row>

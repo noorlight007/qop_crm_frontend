@@ -1,4 +1,4 @@
-import { useGetNetworkDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
+import { useGetNetworkDirectorDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
@@ -10,8 +10,8 @@ import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const ContainerNetworkDirector = () => {
   //RTK hooks
-  const { data: networkDashboardData, isLoading } =
-    useGetNetworkDashboardQuery(undefined);
+  const { data: networkDirectorDashboardData, isLoading } =
+    useGetNetworkDirectorDashboardQuery(undefined);
 
   return (
     <>
@@ -22,20 +22,20 @@ const ContainerNetworkDirector = () => {
       <Container fluid>
         <WelcomeBanner
           isLoading={isLoading}
-          networkDashboardData={networkDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
         <PerformanceOverview
           isLoading={isLoading}
-          networkDashboardData={networkDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
         <Charts
           isLoading={isLoading}
-          networkDashboardData={networkDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
         <OrganisationList maxItems={8} />
         <AdviserStatus
           isLoading={isLoading}
-          networkDashboardData={networkDashboardData}
+          networkDirectorDashboardData={networkDirectorDashboardData}
         />
         <Row>
           <Col>

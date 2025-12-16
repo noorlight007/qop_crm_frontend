@@ -198,5 +198,5 @@ export interface NetworkDirectorDashboardData {
 
 export interface NetworkDirectorDashboardProps {
   isLoading: boolean;
-  networkDashboardData: NetworkDirectorDashboardData | null;
+  networkDirectorDashboardData: NetworkDirectorDashboardData | null;
 }

@@ -11,37 +11,45 @@ import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 
 const PerformanceOverview: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  networkDashboardData,
+  networkDirectorDashboardData,
 }) => {
   const performanceCards = [
     {
       title: "New Mortgage Enquiry",
-      value: networkDashboardData?.summary_cards?.new_mortgage_enquiry ?? 0,
+      value:
+        networkDirectorDashboardData?.summary_cards?.new_mortgage_enquiry ?? 0,
       icon: TbFileInvoice,
       bgColor: "bg-primary",
     },
     {
       title: "Mortgage Cases Submitted",
-      value: networkDashboardData?.summary_cards?.mortgage_cases_submitted ?? 0,
+      value:
+        networkDirectorDashboardData?.summary_cards?.mortgage_cases_submitted ??
+        0,
       icon: TbFileText,
       bgColor: "bg-success",
     },
     {
       title: "Mortgage Cases Offered",
-      value: networkDashboardData?.summary_cards?.mortgage_cases_offered ?? 0,
+      value:
+        networkDirectorDashboardData?.summary_cards?.mortgage_cases_offered ??
+        0,
       icon: TbFileCheck,
       bgColor: "bg-warning",
     },
     {
       title: "Mortgage Cases Completed",
-      value: networkDashboardData?.summary_cards?.mortgage_cases_completed ?? 0,
+      value:
+        networkDirectorDashboardData?.summary_cards?.mortgage_cases_completed ??
+        0,
       icon: TbFileX,
       bgColor: "bg-info",
     },
     {
       title: "Insurance Cases Submitted",
       value:
-        networkDashboardData?.summary_cards?.insurance_cases_submitted ?? 0,
+        networkDirectorDashboardData?.summary_cards
+          ?.insurance_cases_submitted ?? 0,
       icon: TbShield,
       bgColor: "bg-secondary",
     },

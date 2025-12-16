@@ -5,9 +5,10 @@ import { Card } from "reactstrap";
 
 const WelcomeBanner: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  networkDashboardData: networkDashboardData,
+  networkDirectorDashboardData,
 }) => {
-  const networkName = networkDashboardData?.meta?.name || "Not Assigned";
+  const networkName =
+    networkDirectorDashboardData?.meta?.name || "Not Assigned";
   if (isLoading) {
     return (
       <div className="py-3">

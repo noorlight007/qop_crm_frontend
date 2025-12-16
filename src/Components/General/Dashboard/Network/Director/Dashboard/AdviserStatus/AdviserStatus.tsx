@@ -5,7 +5,7 @@ import { Badge, Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
 
 const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  networkDashboardData,
+  networkDirectorDashboardData,
 }) => {
   return (
     <Row>
@@ -76,10 +76,11 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                 ) : (
                   <>
                     {Array.isArray(
-                      networkDashboardData?.top_performing_advisers
+                      networkDirectorDashboardData?.top_performing_advisers
                     ) &&
-                    networkDashboardData.top_performing_advisers.length > 0 ? (
-                      networkDashboardData.top_performing_advisers
+                    networkDirectorDashboardData.top_performing_advisers
+                      .length > 0 ? (
+                      networkDirectorDashboardData.top_performing_advisers
                         .slice(0, 5)
                         .map((data, idx: number) => (
                           <tr key={idx}>

@@ -5,12 +5,12 @@ import { Card, CardBody } from "reactstrap";
 
 const LendersChart: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  networkDashboardData,
+  networkDirectorDashboardData,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
   let allValuesZero = true;
 
-  if (!isLoading && networkDashboardData?.lender_counts) {
+  if (!isLoading && networkDirectorDashboardData?.lender_counts) {
     const {
       lender_counts: {
         ATOM_BANK,
@@ -157,7 +157,7 @@ const LendersChart: React.FC<NetworkDirectorDashboardProps> = ({
         WEST_BROMWICH_BUILDING_SOCIETY,
         WEST_ONE_LOANS,
       },
-    } = networkDashboardData;
+    } = networkDirectorDashboardData;
 
     const values = [
       ATOM_BANK ?? 0,

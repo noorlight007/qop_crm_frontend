@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetNetworkDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
+import { useGetNetworkDirectorDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
 import { NetworkDirectorDashboardData } from "@/Types/Network/Director/DashboardTypes";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -19,8 +19,8 @@ import {
 
 const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
   // RTK hooks
-  const { data: networkDashboardData, isLoading } =
-    useGetNetworkDashboardQuery(undefined);
+  const { data: networkDirectorDashboardData, isLoading } =
+    useGetNetworkDirectorDashboardQuery(undefined);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -31,7 +31,7 @@ const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
     NetworkDirectorDashboardData["top_performing_advisers"]
   >[number];
   const advisers: TopAdviser[] =
-    networkDashboardData?.top_performing_advisers ?? [];
+    networkDirectorDashboardData?.top_performing_advisers ?? [];
   const total = advisers.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
