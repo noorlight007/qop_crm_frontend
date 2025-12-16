@@ -1,16 +1,16 @@
 import CommonCardHeader from "@/CommonComponent/CommonCardHeader";
-import { CommonDashboardProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
+import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import Chart from "react-google-charts";
 import { Card, CardBody } from "reactstrap";
 
-const LendersChart: React.FC<CommonDashboardProps> = ({
+const LendersChart: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
-  commonDashboardData,
+  networkDirectorDashboardData,
 }) => {
   const chartData: (string | number)[][] = [["Category", "Value"]];
   let allValuesZero = true;
 
-  if (!isLoading && commonDashboardData?.lender_counts) {
+  if (!isLoading && networkDirectorDashboardData?.lender_counts) {
     const {
       lender_counts: {
         ATOM_BANK,
@@ -157,7 +157,7 @@ const LendersChart: React.FC<CommonDashboardProps> = ({
         WEST_BROMWICH_BUILDING_SOCIETY,
         WEST_ONE_LOANS,
       },
-    } = commonDashboardData;
+    } = networkDirectorDashboardData;
 
     const values = [
       ATOM_BANK ?? 0,

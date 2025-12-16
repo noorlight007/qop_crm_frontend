@@ -4,9 +4,10 @@ export interface Adviser {
   full_name?: string;
   profile_image?: string;
   cases_completed?: number;
-  total_loan_amount?: number; // e.g., 125000 or "125000"
+  total_loan_amount?: number;
 }
-export interface CommonDashboardDataProps {
+export interface NetworkDirectorDashboardData {
+  network?: string;
   summary_cards: {
     new_mortgage_enquiry?: number;
     mortgage_cases_submitted?: number;
@@ -170,17 +171,7 @@ export interface CommonDashboardDataProps {
     WEST_BROMWICH_BUILDING_SOCIETY?: number;
     WEST_ONE_LOANS?: number;
   };
-  counters: {
-    total_advisers?: number;
-    total_clients?: number;
-    total_leads?: number;
-    total_introducers?: number;
-    total_cases?: number;
-  };
-  meta?: {
-    name?: string;
-    network?: string;
-  };
+
   top_performing_advisers?: {
     rank?: number;
     advisor_name?: string;
@@ -196,7 +187,7 @@ export interface CommonDashboardDataProps {
   }[];
 }
 
-export interface CommonDashboardProps {
+export interface NetworkDirectorDashboardProps {
   isLoading: boolean;
-  commonDashboardData: CommonDashboardDataProps | null;
+  networkDirectorDashboardData: NetworkDirectorDashboardData | null;
 }

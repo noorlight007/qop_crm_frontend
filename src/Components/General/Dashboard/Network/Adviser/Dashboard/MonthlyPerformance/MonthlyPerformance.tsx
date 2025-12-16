@@ -1,5 +1,5 @@
 import {
-  CommonNetworkAdviserSummaryProps,
+  CommonAdviserSummaryProps,
   Performances,
 } from "@/Types/Network/Adviser/DashboardTypes";
 import dynamic from "next/dynamic";
@@ -8,9 +8,9 @@ import { Card, CardBody } from "reactstrap";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
+const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
   isLoading,
-  netAdviserSummaryData,
+  adviserSummaryData,
 }) => {
   // Safely extract performances from the provided data and map them to the expected order
   const monthsOrder: Array<keyof Performances> = [
@@ -44,10 +44,10 @@ const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
   ];
 
   const performanceData = monthsOrder.map((m) =>
-    Number(netAdviserSummaryData?.performances?.[m]?.performance ?? 0)
+    Number(adviserSummaryData?.performances?.[m]?.performance ?? 0)
   );
   const targetData = monthsOrder.map((m) =>
-    Number(netAdviserSummaryData?.performances?.[m]?.target ?? 0)
+    Number(adviserSummaryData?.performances?.[m]?.target ?? 0)
   );
 
   const options = {
@@ -192,7 +192,7 @@ const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
     },
   ];
 
-  if (isLoading || !netAdviserSummaryData) {
+  if (isLoading) {
     // Render skeleton loader when data is being fetched
     return (
       <Card className="border-0 p-4 shadow-sm bg-white">
@@ -210,6 +210,19 @@ const MonthlyPerformance: React.FC<CommonNetworkAdviserSummaryProps> = ({
             style={{ width: "100%", height: "280px" }}
           />
         </CardBody>
+      </Card>
+    );
+  }
+
+  if (!adviserSummaryData) {
+    return (
+      <Card className="bg-white p-3 shadow-sm " style={{ height: "390px" }}>
+        <h4 className="mb-2 text-md font-semibold">
+          Monthly Performance vs Target
+        </h4>
+        <div className="text-muted d-flex justify-content-center align-items-center h-75">
+          No monthly performance data available
+        </div>
       </Card>
     );
   }

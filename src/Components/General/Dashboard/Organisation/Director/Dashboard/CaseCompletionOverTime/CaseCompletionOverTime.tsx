@@ -1,17 +1,44 @@
+import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card } from "reactstrap";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const data = {
-  completed: [12, 14, 18, 22, 19, 25],
-  pending: [7, 5, 7, 5, 6, 4],
-};
+const MonthKeys = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+] as const;
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
-const CaseCompletionOverTime: React.FC = () => {
+const CaseCompletionOverTime: React.FC<OrganisationDirectorDashboardProps> = ({
+  isLoading,
+  organisationDirectorDashboardData,
+}) => {
   const options = {
     chart: {
       type: "bar",
@@ -99,14 +126,26 @@ const CaseCompletionOverTime: React.FC = () => {
     },
   };
 
+  const completed = MonthKeys.map(
+    (k) =>
+      organisationDirectorDashboardData?.monthly_cases?.[k]?.completed_cases ??
+      0
+  );
+  const pending = MonthKeys.map(
+    (k) =>
+      organisationDirectorDashboardData?.monthly_cases?.[k]?.pending_cases ?? 0
+  );
+
+  const hasData = [...completed, ...pending].some((v) => v > 0);
+
   const series = [
     {
       name: "Completed",
-      data: data.completed,
+      data: completed,
     },
     {
       name: "Pending",
-      data: data.pending,
+      data: pending,
     },
   ];
 
@@ -116,12 +155,23 @@ const CaseCompletionOverTime: React.FC = () => {
         Case Completion Over Time
       </h4>
       <div className="apex-chart w-100">
-        <Chart
-          options={options as any}
-          series={series}
-          type="bar"
-          height="300px"
-        />
+        {isLoading ? (
+          <div className="skeleton-loading" style={{ height: 300 }} />
+        ) : hasData ? (
+          <Chart
+            options={options as any}
+            series={series as any}
+            type="bar"
+            height="300px"
+          />
+        ) : (
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{ height: 315 }}
+          >
+            <p className="text-muted">No data available yet</p>
+          </div>
+        )}
       </div>
     </Card>
   );

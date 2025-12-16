@@ -1,14 +1,15 @@
 import LoadingSpinner from "@/app/loading";
+import { useGetPropertiesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyApi";
+import { initializeForm } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Card, CardBody, CardHeader, Nav, NavItem, NavLink } from "reactstrap";
 import FoundProperty from "./Components/FoundProperty";
 import NoteForProperty from "./Components/NoteForProperty";
+import OtherOccupants from "./Components/OtherOccupants/OtherOccupants";
 import PropertyValuationCard from "./Components/PropertyValuationCard";
 import SecurityPropertyTabContent from "./SecurityPropertyTabContent";
-import { useGetPropertiesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyApi";
-import { initializeForm } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 
 const propertyContentTabs = [
   { id: "1", title: "Property Address" },
@@ -49,36 +50,42 @@ const SecurityProperty: React.FC = () => {
         onPropertyFound={(value) => setIsPropertyFound(value)}
       />
       {isPropertyFound && (
-        <section>
-          <Card className="shadow-sm">
-            <CardHeader className="bg-white border-bottom">
-              <Nav
-                className="nav-primary d-flex justify-content-center align-items-center"
-                pills
-                style={{ gap: "0.5rem" }}
-              >
-                {propertyContentTabs.map((tab) => (
-                  <NavItem key={tab.id}>
-                    <NavLink
-                      className={activeContentTab === tab.id ? "active" : ""}
-                      onClick={() => setActiveContentTab(tab.id)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {tab.title}
-                    </NavLink>
-                  </NavItem>
-                ))}
-              </Nav>
-            </CardHeader>
-            <CardBody>
-              <SecurityPropertyTabContent
-                tabId={activeContentTab}
-                setTabId={setActiveContentTab}
-                propertyData={properties[0]}
-              />
-            </CardBody>
-          </Card>
-        </section>
+        <>
+          <section>
+            <Card className="shadow-sm">
+              <CardHeader className="bg-white border-bottom">
+                <Nav
+                  className="nav-primary d-flex justify-content-center align-items-center"
+                  pills
+                  style={{ gap: "0.5rem" }}
+                >
+                  {propertyContentTabs.map((tab) => (
+                    <NavItem key={tab.id}>
+                      <NavLink
+                        className={activeContentTab === tab.id ? "active" : ""}
+                        onClick={() => setActiveContentTab(tab.id)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {tab.title}
+                      </NavLink>
+                    </NavItem>
+                  ))}
+                </Nav>
+              </CardHeader>
+              <CardBody>
+                <SecurityPropertyTabContent
+                  tabId={activeContentTab}
+                  setTabId={setActiveContentTab}
+                  propertyData={properties[0]}
+                />
+              </CardBody>
+            </Card>
+          </section>
+          <hr />
+          <section>
+            <OtherOccupants />
+          </section>
+        </>
       )}
       <NoteForProperty property_alias={properties[0].alias} />
     </div>

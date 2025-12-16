@@ -42,17 +42,18 @@ export interface DocumentData {
   updated_at: string;
 }
 
-export interface NetworkAdviserSummary {
+export interface AdviserSummary {
   network: string;
+  organisation: string;
   new_clients_this_month: number;
   completed_cases: number;
   upcoming_tasks: number;
   case_stage: CaseStage;
   performances: Performances;
 }
-export interface CommonNetworkAdviserSummaryProps {
+export interface CommonAdviserSummaryProps {
   isLoading: boolean;
-  netAdviserSummaryData: NetworkAdviserSummary;
+  adviserSummaryData: AdviserSummary;
 }
 
 export interface ClientData {
@@ -61,11 +62,11 @@ export interface ClientData {
   phone: string;
   total_cases: number;
 }
-export interface CommonNetworkAdviserClientProps {
+export interface CommonAdviserClientProps {
   isLoading: boolean;
-  netAdviserClientData: ClientData[];
+  adviserClientData: ClientData[];
 }
-export interface CommonNetworkAdviserDocumentProps {
+export interface CommonAdviserDocumentProps {
   isLoading: boolean;
-  netAdviserDocumentData: DocumentData[];
+  adviserDocumentData: DocumentData[];
 }

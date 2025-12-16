@@ -1,10 +1,10 @@
-import { CommonNetworkAdviserSummaryProps } from "@/Types/Network/Adviser/DashboardTypes";
+import { CommonAdviserSummaryProps } from "@/Types/Network/Adviser/DashboardTypes";
 import { TbCheckbox, TbClock, TbUsers } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row, Spinner } from "reactstrap";
 
-const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
+const DashboardOverview: React.FC<CommonAdviserSummaryProps> = ({
   isLoading,
-  netAdviserSummaryData,
+  adviserSummaryData,
 }) => {
   return (
     <Row>
@@ -24,7 +24,7 @@ const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
                   </div>
                 ) : (
                   <h4 className="mb-1 text-dark">
-                    {netAdviserSummaryData?.new_clients_this_month || 0}
+                    {adviserSummaryData?.new_clients_this_month || 0}
                   </h4>
                 )}
               </div>
@@ -57,7 +57,7 @@ const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
                   </div>
                 ) : (
                   <h4 className="mb-1 text-dark">
-                    {netAdviserSummaryData?.completed_cases || 0}
+                    {adviserSummaryData?.completed_cases || 0}
                   </h4>
                 )}
               </div>
@@ -85,18 +85,18 @@ const DashboardOverview: React.FC<CommonNetworkAdviserSummaryProps> = ({
                 </CardTitle>
                 {isLoading ? (
                   <div className="d-flex align-items-center">
-                    <Spinner color="primary" size="sm" />
+                    <Spinner color="success" size="sm" />
                     <span className="text-muted ms-2">Loading...</span>
                   </div>
                 ) : (
                   <h4 className="mb-1 text-dark">
-                    {netAdviserSummaryData?.upcoming_tasks || 0}
+                    {adviserSummaryData?.upcoming_tasks || 0}
                   </h4>
                 )}
               </div>
               <div>
                 <span
-                  className="d-flex justify-content-center align-items-center bg-primary rounded-3"
+                  className="d-flex justify-content-center align-items-center bg-success rounded-3"
                   style={{ width: "30px", height: "30px" }}
                 >
                   <TbClock className="fs-6" />

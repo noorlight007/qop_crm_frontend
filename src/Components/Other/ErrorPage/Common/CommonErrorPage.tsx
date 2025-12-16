@@ -1,6 +1,7 @@
 "use client";
 import { CommonErrorPageProps } from "@/Types/PagesType";
-import { getRedirectPaths } from "@/utils/RedirectPaths";
+import { getDashboardHomeUrl } from "@/utils/RedirectPaths";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { Col, Container } from "reactstrap";
 
@@ -9,6 +10,7 @@ const CommonErrorPage: React.FC<CommonErrorPageProps> = ({
   title,
   subTitle,
 }) => {
+  const { data: session } = useSession();
   return (
     <div className="page-wrapper compact-wrapper" id="pageWrapper">
       <div className="error-wrapper">
@@ -17,7 +19,7 @@ const CommonErrorPage: React.FC<CommonErrorPageProps> = ({
           <Col md="8" className="offset-md-2">
             <h3>{title}</h3>
             <p className="sub-content">{subTitle}</p>
-            <a href={getRedirectPaths()} className="btn btn-primary">
+            <a href={getDashboardHomeUrl(session)} className="btn btn-primary">
               {"BACK TO MAIN PAGE"}
             </a>
           </Col>

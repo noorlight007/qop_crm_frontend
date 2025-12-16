@@ -1,5 +1,5 @@
 import { ViewIntroducerModalProps } from "@/Types/CommonComponents/Directors/IntroducerTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
@@ -91,7 +91,7 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <span className="text-muted">Created At:</span>
             <small>
               {(selectedIntroducer?.created_at &&
-                formatDateToDMYAndTime(selectedIntroducer?.created_at)) || (
+                formatDateAndTime(selectedIntroducer?.created_at)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>
@@ -132,7 +132,7 @@ const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
             <small>
               {selectedIntroducer?.joining_date &&
               !isNaN(Date.parse(selectedIntroducer.joining_date))
-                ? formatDateToDMYAndTime(selectedIntroducer.joining_date)
+                ? formatDateAndTime(selectedIntroducer.joining_date)
                 : "Not available"}
             </small>
           </Col>

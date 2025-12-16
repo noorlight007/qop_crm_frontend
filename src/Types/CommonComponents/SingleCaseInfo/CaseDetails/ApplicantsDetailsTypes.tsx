@@ -68,7 +68,7 @@ export interface ApplicantProps {
   tenure: string;
   year_built: number;
   notes: string;
-  marketing_preferences?: string;
+  marketing_preferences?: string[];
   rental_monthly_payment: number | null;
   landlord_name: string | null;
   landlord_telephone: string | null;
@@ -98,6 +98,7 @@ export interface ApplicantDependantsViewModalProps {
   name?: string;
   dateOfBirth?: string;
   applicantAlias?: any;
+  applicantsData?: ApplicantProps[];
 }
 export interface AddDependantFormModalProps {
   isOpen: boolean;

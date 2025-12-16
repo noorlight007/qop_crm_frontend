@@ -79,7 +79,12 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
       if (file) {
         const formData = new FormData();
         formData.append("profile_image", file);
-        formData.append("phone", form.phone || "");
+
+        // Only append phone if it has changed
+        if (form.phone !== initialData?.phone) {
+          formData.append("phone", form.phone || "");
+        }
+
         formData.append("title", form.title || "");
         formData.append("first_name", form.first_name || "");
         formData.append("middle_name", form.middle_name || "");
@@ -94,7 +99,6 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         updatedUserData = await editUserData({ payload: formData }).unwrap();
       } else {
         const payload: Record<string, any> = {
-          phone: form.phone || null,
           title: form.title || null,
           first_name: form.first_name || null,
           middle_name: form.middle_name || "",
@@ -105,6 +109,11 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
           country: form.country || null,
           post_code: form.post_code || null,
         };
+
+        // Only include phone if it has changed
+        if (form.phone !== initialData?.phone) {
+          payload.phone = form.phone || null;
+        }
 
         updatedUserData = await editUserData({ payload }).unwrap();
       }
@@ -148,9 +157,31 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
 
       toast.success("Profile updated successfully");
       onClose();
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to update profile");
+    } catch (err: any) {
+      console.error("Full error object:", err);
+
+      let errorMessage = "Failed to update profile";
+
+      // Handle field-level validation errors from API
+      if (err?.data && typeof err.data === "object") {
+        const errorArray: string[] = [];
+
+        Object.entries(err.data).forEach(([field, messages]: [string, any]) => {
+          if (Array.isArray(messages)) {
+            errorArray.push(...messages);
+          } else if (typeof messages === "string") {
+            errorArray.push(messages);
+          }
+        });
+
+        if (errorArray.length > 0) {
+          errorMessage = errorArray.join(" ");
+        }
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -198,18 +229,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
                 />
               </FormGroup>
             </Col>
-            <Col sm="12" md="6">
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  name="profile_image"
-                  id="profile_image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </FormGroup>
-            </Col>
+
             <Col sm="12" md="6">
               <FormGroup>
                 <Label for="middle_name">Middle Name</Label>
@@ -296,6 +316,18 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
                   id="country"
                   value={form.country}
                   onChange={handleChange}
+                />
+              </FormGroup>
+            </Col>
+            <Col sm="12" md="12">
+              <FormGroup>
+                <Label for="profile_image">Profile Image</Label>
+                <Input
+                  name="profile_image"
+                  id="profile_image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
                 />
               </FormGroup>
             </Col>

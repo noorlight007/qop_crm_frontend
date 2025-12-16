@@ -42,7 +42,7 @@ export const baseApi = createApi({
     // Single case info end
 
     // Common Dashboard start
-    "CommonDashboard",
+    "AdviserDashboardData",
     // Common Dashboard end
 
     // Case details start
@@ -57,6 +57,7 @@ export const baseApi = createApi({
     "AdverseDetails",
     "Portfolio",
     "SecurityProperty",
+    "OtherOccupants",
     "SolicitorDetails",
     "AccountantDetails",
     "ExistingProtectionDetails",
@@ -77,7 +78,7 @@ export const baseApi = createApi({
     // Case details end
     //Common components end
 
-    //Network start
+    //Network Director start
     "OrganisationList",
     "SingleOrganisation",
     "NetworkReports",
@@ -85,24 +86,25 @@ export const baseApi = createApi({
     "OrgClients",
     "OrgCases",
     "OrgAdvisers",
-    //Network end
+    "NetworkDirectorDashboard",
+    //Network Director end
 
     //Network Adviser start
     "NetworkAdviserReports",
-    "NetworkAdviserDashboardData",
     //Network Adviser end
 
-    //Organization start
+    //Organisation Director start
+    "OrganisationDirectorDashboard",
     "OrganisationReports",
-    //Organization end
+    //Organisation Director end
 
-    //Organization Adviser start
+    //Organisation Adviser start
     "OrganisationAdviserReports",
-    //Organization Adviser end
+    //Organisation Adviser end
 
-    //Organization Admin and support staff start
+    //Organisation Admin and support staff start
     "OrganisationStaffReports",
-    //Organization Admin and support staff end
+    //Organisation Admin and support staff end
 
     // Client start
     "CLientApplicationDetails",

@@ -1,5 +1,5 @@
 import { JointUserViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
@@ -72,7 +72,7 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
             <span className="text-muted">Created At:</span>
             <small>
               {(selectedUser?.created_at &&
-                formatDateToDMYAndTime(selectedUser?.created_at)) || (
+                formatDateAndTime(selectedUser?.created_at)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>

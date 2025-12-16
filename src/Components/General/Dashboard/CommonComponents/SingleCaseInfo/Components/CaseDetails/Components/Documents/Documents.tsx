@@ -1,12 +1,12 @@
 import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { saveAs } from "file-saver";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
 import { TbCircleArrowUp, TbEye, TbTransfer } from "react-icons/tb";
 import {
   Button,
@@ -506,9 +506,7 @@ const Documents: React.FC = () => {
                                 } ${fileData.created_by.last_name || ""}`
                               : "-"}
                           </td>
-                          <td>
-                            {formatDateToDMYAndTime(fileData?.created_at)}
-                          </td>
+                          <td>{formatDateAndTime(fileData?.created_at)}</td>
                           <td>
                             <div className="d-flex justify-content-center gap-2 align-items-center">
                               <a
@@ -518,7 +516,7 @@ const Documents: React.FC = () => {
                                 title="Download"
                                 rel="noopener noreferrer"
                               >
-                                <i className="fa-solid fa-download"></i>
+                                <FaEye size={16} />
                               </a>
                               <Button
                                 color="warning"

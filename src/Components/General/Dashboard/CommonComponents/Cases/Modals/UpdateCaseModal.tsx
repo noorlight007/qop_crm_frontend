@@ -114,7 +114,9 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
-      <ModalHeader toggle={toggle}>Update Case</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-primary">Update Case</h3>
+      </ModalHeader>
       <ModalBody>
         {formData ? (
           <Form>

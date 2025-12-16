@@ -1,3 +1,8 @@
+import {
+  useGetAdviserDashboardClientDataQuery,
+  useGetAdviserDashboardDocumentDataQuery,
+  useGetAdviserDashboardSummaryDataQuery,
+} from "@/Redux/Reducers/CommonComponents/CommonAdviserDashboard/CommonAdviserDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
@@ -6,43 +11,63 @@ import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
-import UpcomingTasks from "./UpcommingTasks/UpCommingTasks";
+import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationAdviserContainer: React.FC = () => {
+  const { data: adviserSummary, isLoading: isSummaryLoading } =
+    useGetAdviserDashboardSummaryDataQuery(undefined);
+  const { data: adviserClients, isLoading: isClientsLoading } =
+    useGetAdviserDashboardClientDataQuery(undefined);
+  const { data: adviserDocuments, isLoading: isDocumentsLoading } =
+    useGetAdviserDashboardDocumentDataQuery(undefined);
+
   return (
     <>
       <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
       <Container fluid>
+        <WelcomeBanner
+          isLoading={isSummaryLoading}
+          adviserSummaryData={adviserSummary}
+        />
         {/* 1st row  */}
-        <DashboardOverview />
+        <DashboardOverview
+          isLoading={isSummaryLoading}
+          adviserSummaryData={adviserSummary}
+        />
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <MonthlyPerformance />
+            <MonthlyPerformance
+              isLoading={isSummaryLoading}
+              adviserSummaryData={adviserSummary}
+            />
           </Col>
           <Col md={6} sm={12}>
-            <CaseStatusOverview />
+            <CaseStatusOverview
+              isLoading={isSummaryLoading}
+              adviserSummaryData={adviserSummary}
+            />
           </Col>
         </Row>
         {/* 3rd row  */}
-        <Row>
-          <Col md={6} sm={12}>
-            <MyClients />
-          </Col>
-          <Col md={6} sm={12}>
-            <UpcomingTasks />
-          </Col>
-        </Row>
-        {/* 4th row  */}
         <Row>
           <Col>
             <MyTask />
           </Col>
         </Row>
-        {/* 5th row */}
+        {/* 4th row  */}
         <Row>
-          <Col>
-            <DocumentStatus />
+          <Col md={6} sm={12}>
+            <DocumentStatus
+              isLoading={isDocumentsLoading}
+              adviserDocumentData={adviserDocuments}
+            />
+          </Col>
+          <Col md={6} sm={12}>
+            <MyClients
+              isLoading={isClientsLoading}
+              adviserClientData={adviserClients}
+            />
           </Col>
         </Row>
       </Container>

@@ -3,17 +3,17 @@ import { useGetJointUserInfoQuery } from "@/Redux/Reducers/CommonComponents/Sing
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import LoadingSpinner from "@/app/loading";
 import { getAllCasesUrl } from "@/utils/RedirectPaths";
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
-import CalenderContainer from "./Components/Calender/CalenderContainer";
 import CaseDetails from "./Components/CaseDetails/CaseDetails";
 import CaseInfo from "./Components/CaseInfo/CaseInfo";
 import JointUsers from "./Components/JointUsers/JointUsers";
-import MeetingHistory from "./Components/MeetingHistory/MeetingHistory";
 
 const SingleCaseInfo: React.FC = () => {
+  const { data: session } = useSession();
   const [caseInfo, setCaseInfo] = useState<CaseInfoPrpos>();
   const params = useParams();
   const { casealias } = params;
@@ -32,13 +32,13 @@ const SingleCaseInfo: React.FC = () => {
   useEffect(() => {
     if (!isLoading) {
       if (isError || !caseData) {
-        router.push(getAllCasesUrl());
+        router.push(getAllCasesUrl(session));
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
 
       if (caseData.alias !== casealias) {
-        router.push(getAllCasesUrl());
+        router.push(getAllCasesUrl(session));
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
@@ -56,7 +56,7 @@ const SingleCaseInfo: React.FC = () => {
   }
 
   if (isError || !caseInfo) {
-    return null; // Will redirect in useEffect
+    return null;
   }
 
   return (
@@ -77,12 +77,7 @@ const SingleCaseInfo: React.FC = () => {
             isLoading={isJointUserFetcing}
           />
         </Row>
-        <Row>
-          <MeetingHistory />
-        </Row>
-        <Row>
-          <CalenderContainer />
-        </Row>
+        <Row>{/* <CalenderContainer /> */}</Row>
       </Container>
     </>
   );

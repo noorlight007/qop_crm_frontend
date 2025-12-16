@@ -4,7 +4,7 @@ import {
   IntroducersProps,
 } from "@/Types/CommonComponents/Directors/IntroducerTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateToDMYAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -229,7 +229,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                     <td>
                       {introducer?.joining_date &&
                       !isNaN(Date.parse(introducer.joining_date))
-                        ? formatDateToDMYAndTime(introducer.joining_date)
+                        ? formatDateAndTime(introducer.joining_date)
                         : "-"}
                     </td>
                     <td>
@@ -251,7 +251,7 @@ const Introducers: React.FC<IntroducersProps> = ({
                         )
                       </p>
                     </td>
-                    <td>{formatDateToDMYAndTime(introducer?.created_at)}</td>
+                    <td>{formatDateAndTime(introducer?.created_at)}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button

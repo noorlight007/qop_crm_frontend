@@ -1,10 +1,10 @@
-import { CommonDashboardProps } from "@/Types/CommonComponents/CommonDashboard/CommonDashboardType";
+import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
 import { TbBriefcase2Filled, TbCoinPound, TbUsers } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 
-const DashboardOverview: React.FC<CommonDashboardProps> = ({
+const DashboardOverview: React.FC<OrganisationDirectorDashboardProps> = ({
   isLoading,
-  commonDashboardData,
+  organisationDirectorDashboardData,
 }) => {
   return (
     <Row>
@@ -50,7 +50,7 @@ const DashboardOverview: React.FC<CommonDashboardProps> = ({
                       Total Advisers
                     </CardTitle>
                     <h4 className="mb-1 text-dark">
-                      {commonDashboardData?.counters?.total_advisers}
+                      {organisationDirectorDashboardData?.total_advisers || 0}
                     </h4>
                   </div>
                   <div>
@@ -76,7 +76,7 @@ const DashboardOverview: React.FC<CommonDashboardProps> = ({
                       Active Clients
                     </CardTitle>
                     <h4 className="mb-1 text-dark">
-                      {commonDashboardData?.counters?.total_clients}
+                      {organisationDirectorDashboardData?.active_clients || 0}
                     </h4>
                   </div>
                   <div>
@@ -100,7 +100,11 @@ const DashboardOverview: React.FC<CommonDashboardProps> = ({
                     <CardTitle className="small text-muted text-truncate">
                       Revenue This Month
                     </CardTitle>
-                    <h4 className="mb-1 text-dark">£67,000</h4>
+                    <h4 className="mb-1 text-dark">
+                      £
+                      {organisationDirectorDashboardData?.revenue_this_month ||
+                        0}
+                    </h4>
                   </div>
                   <div>
                     <span

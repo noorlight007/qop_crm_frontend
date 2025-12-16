@@ -14,6 +14,7 @@ import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/Ca
 import LoadingSpinner from "@/app/loading";
 import { countries } from "@/utils/Countries";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -30,10 +31,9 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import ApplicantDependantsView from "./ApplicantDependantsView";
 import AddCompanyDetailsFormModal from "./ApplicantDetailsModals/AddApplicantCompanyInfoModal";
-import AddDependantFormModal from "./ApplicantDetailsModals/AddApplicantDependantsModal";
 import AddPreviousAddressModal from "./ApplicantDetailsModals/AddPreviousAddressModal";
-import ApplicantDependantsViewModal from "./ApplicantDetailsModals/ApplicantDependantsViewModal";
 import ViewPreviousAddressModal from "./ApplicantDetailsModals/ViewPreviousAddressModal";
 
 const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
@@ -47,9 +47,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const { casealias } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
-  const [isDependantsModalOpen, setIsDependantsModalOpen] = useState(false);
-  const [isDependantsViewModalOpen, setIsDependantsViewModalOpen] =
-    useState(false);
+
   const [isAddPreviousAddressModalOpen, setIsAddPreviousAddressModalOpen] =
     useState(false);
   const [isViewPreviousAddressModalOpen, setIsViewPreviousAddressModalOpen] =
@@ -58,10 +56,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     "save" | "next" | "next-applicant" | "previous-applicant"
   >("save");
   const formRef = useRef<HTMLFormElement>(null);
-
-  const toggleViewModal = () => {
-    setIsDependantsViewModalOpen(!isDependantsViewModalOpen);
-  };
 
   // Rtk hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -153,6 +147,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     tenure: "",
     year_built: 0,
     notes: "",
+    marketing_preferences: [],
     rental_monthly_payment: null,
     landlord_name: null,
     landlord_telephone: null,
@@ -195,7 +190,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   useEffect(() => {
     if (selectedApplicant) {
       const { marketing_preferences, ...newValue } = selectedApplicant;
-      setFormValues(newValue);
+      setFormValues({
+        ...newValue,
+        marketing_preferences: marketing_preferences || [],
+      });
     }
   }, [selectedApplicant]);
 
@@ -258,7 +256,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
-        // Handle different submit actions
+        // Handle different submit actions only if they are not "save"
         if (submitActionRef.current === "next") {
           handleNextTab();
         } else if (submitActionRef.current === "next-applicant") {
@@ -266,6 +264,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         } else if (submitActionRef.current === "previous-applicant") {
           handlePreviousApplicantTab();
         }
+        // Reset to default save action after handling
+        submitActionRef.current = "save";
       } else if (response.error) {
         // Extract backend error message - prioritize details field
         const errorMessage =
@@ -396,12 +396,18 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           formValues.is_company_application ===
                           (option === "yes")
                         }
-                        onChange={(e) =>
+                        onChange={(e) => {
                           handleInputChange(
                             "is_company_application",
                             e.target.value === "yes"
-                          )
-                        }
+                          );
+                          // Trigger immediate save on selection
+                          setTimeout(() => {
+                            formRef.current?.dispatchEvent(
+                              new Event("submit", { bubbles: true })
+                            );
+                          }, 100);
+                        }}
                         className="me-1"
                       />
                       {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -913,20 +919,21 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           </Row>
 
           {/* Marketing Preferences */}
-          {/* <Row>
+          <Row>
             <Col md={12}>
               <FormGroup>
                 <Label for="marketing_preferences">
                   Marketing Preferences:
-                </Label>
+                </Label>{" "}
                 {["EMAIL", "TELEPHONE", "SMS", "POST", "NO_COMMUNICATION"].map(
                   (type) => (
                     <Label key={type} className="me-2">
                       <Input
                         type="checkbox"
-                        checked={formValues.marketing_preferences.includes(
-                          type
-                        )}
+                        className="me-2 border-primary"
+                        checked={(
+                          formValues.marketing_preferences || []
+                        ).includes(type)}
                         onChange={(e) => {
                           const isChecked = e.target.checked;
                           const currentValue =
@@ -940,14 +947,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           );
                         }}
                       />
-                      {type.charAt(0).toUpperCase() +
-                        type.slice(1).toLowerCase().replace("_", " ")}
+                      {formatChoiceFieldValue(type)}
                     </Label>
                   )
                 )}
               </FormGroup>
             </Col>
-          </Row> */}
+          </Row>
 
           {/* Dependents */}
           <Row>
@@ -965,12 +971,17 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         checked={
                           formValues.has_dependants === (value === "yes")
                         }
-                        onChange={(e) =>
+                        onChange={(e) => {
                           handleInputChange(
                             "has_dependants",
                             e.target.value === "yes"
-                          )
-                        }
+                          );
+                          setTimeout(() => {
+                            formRef.current?.dispatchEvent(
+                              new Event("submit", { bubbles: true })
+                            );
+                          }, 100);
+                        }}
                       />
                       {value.charAt(0).toUpperCase() + value.slice(1)}
                     </Label>
@@ -978,20 +989,17 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 ))}
               </FormGroup>
             </Col>
-            {formValues.has_dependants && (
-              <Col
-                md={6}
-                className="d-flex align-items-center justify-content-center gap-3"
-              >
-                <Button onClick={() => setIsDependantsModalOpen(true)}>
-                  Add Dependants
-                </Button>
-                <Button color="success" onClick={toggleViewModal}>
-                  View Dependants
-                </Button>
-              </Col>
-            )}
           </Row>
+          {formValues.has_dependants && (
+            <Row>
+              <Col>
+                <ApplicantDependantsView
+                  applicantAlias={basicTab}
+                  applicantsData={applicantsData}
+                />
+              </Col>
+            </Row>
+          )}
           <Row className="d-flex justify-content-between align-items-center mb-3">
             <Col xs="auto">
               <h3 className="text-info my-0">Current Address</h3>
@@ -2209,25 +2217,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           toggle={() => setIsCompanyModalOpen(false)}
           case_alias={casealias as string}
           applicantDetails_alias={formValues.alias as string}
-        />
-      ) : (
-        ""
-      )}
-
-      {/* Dependants of Applicant Modal */}
-      <AddDependantFormModal
-        isOpen={isDependantsModalOpen}
-        toggle={() => setIsDependantsModalOpen(false)}
-        case_alias={casealias as string}
-        applicantDetails_alias={formValues.alias as string}
-      />
-
-      {/* Modal Component */}
-      {formValues?.has_dependants === true ? (
-        <ApplicantDependantsViewModal
-          isOpen={isDependantsViewModalOpen}
-          toggle={toggleViewModal}
-          applicantAlias={formValues.alias as string}
         />
       ) : (
         ""
