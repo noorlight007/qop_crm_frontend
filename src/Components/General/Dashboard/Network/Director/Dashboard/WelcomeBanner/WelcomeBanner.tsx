@@ -7,8 +7,7 @@ const WelcomeBanner: React.FC<NetworkDirectorDashboardProps> = ({
   isLoading,
   networkDirectorDashboardData,
 }) => {
-  const networkName =
-    networkDirectorDashboardData?.meta?.name || "Not Assigned";
+  const networkName = networkDirectorDashboardData?.network || "Not Assigned";
   if (isLoading) {
     return (
       <div className="py-3">
