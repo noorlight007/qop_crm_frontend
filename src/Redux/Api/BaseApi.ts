@@ -147,6 +147,7 @@ export const baseApi = createApi({
 
     // Common Dashboard start
     "AdviserDashboardData",
+    "LoginHistory",
     // Common Dashboard end
 
     // Case details start

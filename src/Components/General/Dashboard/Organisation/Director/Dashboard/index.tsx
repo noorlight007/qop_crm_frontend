@@ -1,12 +1,12 @@
 import { useGetOrganisationDirectorDashboardQuery } from "@/Redux/Reducers/Network/Director/Dashboard/DashdoardApi";
 import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import LoginHistory from "../../../CommonComponents/LoginHistory/LoginHistory";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyClients from "./MonthlyClients/MonthlyClients";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
-import RecentLoginActivity from "./RecentLoginActivity/RecentLoginActivity";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
 import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
@@ -74,8 +74,8 @@ const OrganisationDirectorDashboardContainer = () => {
         </Row>
         {/* 5th row */}
         <Row>
-          <Col md={6} sm={12}>
-            <RecentLoginActivity />
+          <Col sm={12}>
+            <LoginHistory />
           </Col>
         </Row>
       </Container>
