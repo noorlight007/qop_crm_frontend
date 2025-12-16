@@ -216,7 +216,7 @@ export const baseApi = createApi({
   endpoints: () => ({}),
 });
 
-const logOut = async () => {
+export const logOut = async () => {
   // Collect tokens from localStorage or session
   let accessToken: string | null = null;
   let refreshToken: string | null = null;
@@ -239,7 +239,7 @@ const logOut = async () => {
   }
 
   // Call logout API if tokens are available
-  if (refreshToken ) {
+  if (refreshToken) {
     try {
       const formData = new FormData();
       formData.append("refresh", refreshToken);
