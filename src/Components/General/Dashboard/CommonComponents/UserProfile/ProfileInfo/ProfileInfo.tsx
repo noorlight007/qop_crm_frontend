@@ -100,7 +100,7 @@ const ProfileInfo: React.FC = () => {
       const formData = new FormData();
       formData.append("profile_image", file);
       const resp: any = await updateUserDetails({ payload: formData }).unwrap();
-      toast.success("Profile image updated successfully");
+      toast.success("Profile image updated successfully!");
 
       const newUrl = resp?.profile_image || resp?.data?.profile_image;
       if (newUrl) {
@@ -127,14 +127,7 @@ const ProfileInfo: React.FC = () => {
       <Col xs="12">
         <Card className="border-0 shadow-sm overflow-hidden">
           {/* Cover Background */}
-          <div
-            className="position-relative"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--theme-default) 0%, rgba(48,142,135,0.95) 30%, rgba(56,160,150,0.8) 60%, rgba(12,90,82,0.95) 100%)",
-              height: "200px",
-            }}
-          >
+          <div className="position-relative profile-cover-bg">
             <div className="position-absolute bottom-0 start-0 w-100 p-4">
               <div className="d-flex align-items-end gap-3">
                 {/* Profile Image / Avatar */}
