@@ -62,7 +62,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
           organisationDirectorDashboardData.top_advisers.length > 0 ? (
           <Card
             className="space-y-4"
-            style={{ height: "350px", overflow: "auto" }}
+            style={{ height: "325px", overflow: "auto" }}
           >
             {organisationDirectorDashboardData.top_advisers.map((data) => (
               <div
@@ -100,7 +100,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
         ) : (
           <div
             className="d-flex justify-content-center align-items-center"
-            style={{ height: "350px" }}
+            style={{ height: "360px" }}
           >
             <p className="text-muted">No data available</p>
           </div>

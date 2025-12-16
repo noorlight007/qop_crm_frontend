@@ -3,8 +3,8 @@ import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
-import ClientGrowth from "./ClientGrowth/ClientGrowth";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
+import MonthlyClients from "./MonthlyClients/MonthlyClients";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
 import RecentLoginActivity from "./RecentLoginActivity/RecentLoginActivity";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
@@ -40,7 +40,12 @@ const OrganisationDirectorDashboardContainer = () => {
         {/* 3rd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <ClientGrowth />
+            <MonthlyClients
+              isLoading={isLoading}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
+            />
           </Col>
           <Col md={6} sm={12}>
             <TopPerformingAdvisers
