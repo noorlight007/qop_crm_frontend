@@ -31,10 +31,20 @@ const OrganisationDirectorDashboardContainer = () => {
         {/* 2nd row  */}
         <Row>
           <Col md={6} sm={12}>
-            <MonthlyRevenueTrend />
+            <MonthlyRevenueTrend
+              isLoading={isLoading}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
+            />
           </Col>
           <Col md={6} sm={12}>
-            <CaseCompletionOverTime />
+            <CaseCompletionOverTime
+              isLoading={isLoading}
+              organisationDirectorDashboardData={
+                organisationDirectorDashboardData
+              }
+            />
           </Col>
         </Row>
         {/* 3rd row  */}
