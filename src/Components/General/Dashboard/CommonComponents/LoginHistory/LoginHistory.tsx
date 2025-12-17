@@ -177,7 +177,7 @@ const LoginHistory: React.FC = () => {
                         <div className="flex-grow-1">
                           <div className="d-flex align-items-center justify-content-between mb-1">
                             <h6 className="mb-0 fw-bold text-dark">
-                              {history.user.name}
+                              {history.user.name || history.user.alias || "Unknown User"}
                             </h6>
                             <Badge
                               color={
@@ -188,18 +188,18 @@ const LoginHistory: React.FC = () => {
                               className={`${badge.className} p-2 shadow `}
                             >
                               {badge.icon}{" "}
-                              {formatChoiceFieldValue(history.status)}
+                              {formatChoiceFieldValue(history.status) || "Unknown"}
                             </Badge>
                           </div>
                           <div className="d-flex flex-wrap gap-2 mb-2">
                             <small className="text-muted d-flex align-items-center">
                               <i className="fa fa-envelope me-1"></i>
-                              {history.user.email}
+                              {history.user.email || "Not Provided"}
                             </small>
                             {history.user.phone && (
                               <small className="text-muted d-flex align-items-center">
                                 <i className="fa fa-phone me-1"></i>
-                                {history.user.phone}
+                                {history.user.phone || "Not Provided"}
                               </small>
                             )}
                           </div>
@@ -248,7 +248,7 @@ const LoginHistory: React.FC = () => {
                                   IP Address
                                 </small>
                                 <small className="fw-semibold text-dark">
-                                  {history.ip_address}
+                                  {history.ip_address || "Unknown"}
                                 </small>
                               </div>
                             </CardBody>
@@ -268,7 +268,7 @@ const LoginHistory: React.FC = () => {
                                   Login Time
                                 </small>
                                 <small className="fw-semibold text-dark">
-                                  {formatDate(history.logged_in_at)}
+                                  {formatDate(history.logged_in_at) || "Unknown"}
                                 </small>
                               </div>
                             </CardBody>
