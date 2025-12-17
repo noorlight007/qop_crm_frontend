@@ -157,13 +157,22 @@ const LoginHistory: React.FC = () => {
                       {/* User Info Section */}
                       <div className="d-flex align-items-start mb-3">
                         <div className="position-relative me-3">
-                          <Image
-                            src={history.user.profile_image}
-                            alt={history.user.name}
-                            width={50}
-                            height={50}
-                            className="object-fit-cover rounded-circle shadow-sm"
-                          />
+                          {history.user?.profile_image ? (
+                            <Image
+                              src={history.user.profile_image}
+                              alt={history.user.name || "User"}
+                              width={50}
+                              height={50}
+                              className="object-fit-cover rounded-circle shadow-sm"
+                            />
+                          ) : (
+                            <div
+                              className="rounded-circle shadow-sm bg-light-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                              style={{ width: "50px", height: "50px" }}
+                            >
+                              <i className="fa fa-user text-primary"></i>
+                            </div>
+                          )}
                         </div>
                         <div className="flex-grow-1">
                           <div className="d-flex align-items-center justify-content-between mb-1">

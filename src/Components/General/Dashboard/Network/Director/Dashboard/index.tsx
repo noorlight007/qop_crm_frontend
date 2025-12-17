@@ -44,7 +44,7 @@ const ContainerNetworkDirector = () => {
           </Col>
         </Row>
         <Row>
-          <Col sm={12}>
+          <Col>
             <LoginHistory />
           </Col>
         </Row>

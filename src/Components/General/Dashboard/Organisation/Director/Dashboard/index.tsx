@@ -74,7 +74,7 @@ const OrganisationDirectorDashboardContainer = () => {
         </Row>
         {/* 5th row */}
         <Row>
-          <Col sm={12}>
+          <Col>
             <LoginHistory />
           </Col>
         </Row>

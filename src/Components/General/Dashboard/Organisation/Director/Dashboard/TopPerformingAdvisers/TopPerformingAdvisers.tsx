@@ -100,7 +100,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
         ) : (
           <div
             className="d-flex justify-content-center align-items-center"
-            style={{ height: "360px" }}
+            style={{ height: "340px" }}
           >
             <p className="text-muted">No data available</p>
           </div>
