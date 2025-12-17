@@ -1,32 +1,19 @@
 import { useGetLoginHistoryQuery } from "@/Redux/Reducers/CommonComponents/LoginHistory/LoginHistoryApi";
+import { LoginHistoryItem } from "@/Types/CommonComponents/LoginHistory/LoginHistoryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
 import { FaClock, FaGlobe, FaMapMarkerAlt } from "react-icons/fa";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 
-interface LoginHistoryItem {
-  id?: number;
-  user: {
-    id: number;
-    alias: string;
-    name: string;
-    email: string;
-    phone: string;
-    profile_image: string;
-    user_type: string;
-  };
-  ip_address: string;
-  device_type: string;
-  browser_name: string;
-  os: string;
-  status: "SUCCESS" | "FAILED" | string;
-  logged_in_at: string;
-}
-
 const LoginHistory: React.FC = () => {
-  const { data: loginHistoryData, isLoading } =
-    useGetLoginHistoryQuery(undefined);
+  const {
+    data: loginHistoryData,
+    isLoading,
+    isFetching,
+  } = useGetLoginHistoryQuery(undefined, {
+    pollingInterval: 20000,
+  });
 
   const getStatusBadge = (status: string) => {
     if (status === "SUCCESS") {
@@ -71,8 +58,13 @@ const LoginHistory: React.FC = () => {
       <Card className="border-0 shadow h-100">
         <CardBody className="p-4">
           <div className="d-flex align-items-center mb-4">
-            <div className="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-              <i className="fa fa-history text-primary fs-4"></i>
+            <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3">
+              <i
+                className="fa fa-history text-primary fs-4"
+                style={{
+                  animation: isFetching ? "rotate360 0.6s ease-in-out" : "none",
+                }}
+              ></i>
             </div>
             <h4 className="mb-0 fw-bold text-dark">Login History</h4>
           </div>
@@ -93,7 +85,12 @@ const LoginHistory: React.FC = () => {
         <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
           <div className="d-flex align-items-center">
             <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3">
-              <i className="fa fa-history text-primary fs-4"></i>
+              <i
+                className="fa fa-history text-primary fs-4"
+                style={{
+                  animation: isFetching ? "rotate360 0.6s ease-in-out" : "none",
+                }}
+              ></i>
             </div>
             <div>
               <h4 className="mb-0 fw-bold text-dark">Login History</h4>
@@ -177,7 +174,9 @@ const LoginHistory: React.FC = () => {
                         <div className="flex-grow-1">
                           <div className="d-flex align-items-center justify-content-between mb-1">
                             <h6 className="mb-0 fw-bold text-dark">
-                              {history.user.name || history.user.alias || "Unknown User"}
+                              {history.user.name ||
+                                history.user.alias ||
+                                "Unknown User"}
                             </h6>
                             <Badge
                               color={
@@ -188,7 +187,8 @@ const LoginHistory: React.FC = () => {
                               className={`${badge.className} p-2 shadow `}
                             >
                               {badge.icon}{" "}
-                              {formatChoiceFieldValue(history.status) || "Unknown"}
+                              {formatChoiceFieldValue(history.status) ||
+                                "Unknown"}
                             </Badge>
                           </div>
                           <div className="d-flex flex-wrap gap-2 mb-2">
@@ -268,7 +268,8 @@ const LoginHistory: React.FC = () => {
                                   Login Time
                                 </small>
                                 <small className="fw-semibold text-dark">
-                                  {formatDate(history.logged_in_at) || "Unknown"}
+                                  {formatDate(history.logged_in_at) ||
+                                    "Unknown"}
                                 </small>
                               </div>
                             </CardBody>
