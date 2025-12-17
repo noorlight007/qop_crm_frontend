@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import Clients from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Clients";
+import Clients from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Clients";
 import { Container } from "reactstrap";
 
 const OrganisationDirectorClientsContainer: React.FC = () => {

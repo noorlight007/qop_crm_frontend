@@ -1,5 +1,5 @@
 "use client";
-import ViewClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/ViewClientModal";
+import ViewClientModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/ViewClientModal";
 import { useGetOrgClientsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgClientsApi";
 import {
   ClientInfoProps,

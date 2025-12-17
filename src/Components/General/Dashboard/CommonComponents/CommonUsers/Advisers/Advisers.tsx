@@ -23,10 +23,10 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import AddAdviserModal from "./Modals/AddAdviserModal";
-import DeleteAdviserModal from "./Modals/DeleteAdviserModal";
-import UpdateAdviserModal from "./Modals/UpdateAdviserModal";
-import ViewAdviserModal from "./Modals/ViewAdviserModal";
+import AddAdviserModal from "../../CommonUsers/Advisers/Modals/AddAdviserModal";
+import DeleteAdviserModal from "../../CommonUsers/Advisers/Modals/DeleteAdviserModal";
+import UpdateAdviserModal from "../../CommonUsers/Advisers/Modals/UpdateAdviserModal";
+import ViewAdviserModal from "../../CommonUsers/Advisers/Modals/ViewAdviserModal";
 
 const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
   const { data: session } = useSession();

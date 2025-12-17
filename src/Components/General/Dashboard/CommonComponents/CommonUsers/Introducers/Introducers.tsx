@@ -24,10 +24,10 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import AddIntroducerModal from "./Modals/AddIntroducerModal";
-import DeleteIntroducerModal from "./Modals/DeleteIntroducerModal";
-import UpdateIntroducerModal from "./Modals/UpdateIntroducerModal";
-import ViewIntroducerModal from "./Modals/ViewIntroducerModal";
+import AddIntroducerModal from "../../CommonUsers/Introducers/Modals/AddIntroducerModal";
+import DeleteIntroducerModal from "../../CommonUsers/Introducers/Modals/DeleteIntroducerModal";
+import UpdateIntroducerModal from "../../CommonUsers/Introducers/Modals/UpdateIntroducerModal";
+import ViewIntroducerModal from "../../CommonUsers/Introducers/Modals/ViewIntroducerModal";
 
 const Introducers: React.FC<IntroducersProps> = ({
   introducersPerPage = 10,
