@@ -1,10 +1,10 @@
 "use client";
-import ViewAdviserModal from "@/Components/General/Dashboard/CommonComponents/Directors/Advisers/Modals/ViewAdviserModal";
+import ViewAdviserModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Advisers/Modals/ViewAdviserModal";
 import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgAdvisersApi";
 import {
   AdviserInfoProps,
   AdvisersProps,
-} from "@/Types/CommonComponents/Directors/AdviserTypes";
+} from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

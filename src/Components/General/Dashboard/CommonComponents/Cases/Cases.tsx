@@ -5,7 +5,7 @@ import {
   CaseInfoPrpos,
   CaseUser,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
+import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

@@ -229,8 +229,8 @@ const OrganisationDirectorMenu: MenuItem[] = [
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/supportstaff",
-            title: "Support Staff",
+            path: "/dashboard/organisation/director/admins",
+            title: "Admins",
             type: "link",
           },
         ],
