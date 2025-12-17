@@ -126,7 +126,11 @@ const LoginHistory: React.FC = () => {
                 return (
                   <div
                     key={index}
-                    className={`login-history-item mb-3 p-0 border rounded-4 overflow-hidden position-relative transition-all`}
+                    className={`login-history-item mt-1 mb-3 p-0 border rounded-4 overflow-hidden position-relative transition-all ${
+                      history.status === "SUCCESS"
+                        ? "border-success"
+                        : "border-danger"
+                    } shadow-sm bg-white`}
                     style={{
                       transition: "all 0.3s ease",
                     }}
@@ -140,16 +144,6 @@ const LoginHistory: React.FC = () => {
                       e.currentTarget.style.boxShadow = "none";
                     }}
                   >
-                    {/* Status Indicator Bar */}
-                    <div
-                      className={`${
-                        history.status === "SUCCESS"
-                          ? "bg-success"
-                          : "bg-danger"
-                      }`}
-                      style={{ height: "4px" }}
-                    ></div>
-
                     <div className="p-3">
                       {/* User Info Section */}
                       <div className="d-flex align-items-start mb-3">
@@ -216,7 +210,7 @@ const LoginHistory: React.FC = () => {
 
                       <Row>
                         <Col md="4">
-                          <Card className="mb-0">
+                          <Card className="mb-0 shadow">
                             <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
                               <div className="bg-white rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center">
                                 <span>{icon}</span>
@@ -235,7 +229,7 @@ const LoginHistory: React.FC = () => {
                           </Card>
                         </Col>
                         <Col md="4">
-                          <Card className="mb-0">
+                          <Card className="mb-0 shadow">
                             <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
                               <div className="bg-white rounded-2 p-2 me-2">
                                 <FaMapMarkerAlt className="text-primary" />
@@ -255,7 +249,7 @@ const LoginHistory: React.FC = () => {
                           </Card>
                         </Col>
                         <Col md="4">
-                          <Card className="mb-0">
+                          <Card className="mb-0 shadow">
                             <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
                               <div className="bg-white rounded-2 p-2 me-2">
                                 <FaClock className="text-info" />
