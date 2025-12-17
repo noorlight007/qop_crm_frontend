@@ -1,5 +1,5 @@
 import { useDeleteIntroducerDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/IntroducerDetailsApi";
-import { DeleteIntroducerModalProps } from "@/Types/CommonComponents/Directors/IntroducerTypes";
+import { DeleteIntroducerModalProps } from "@/Types/CommonComponents/CommonUsers/IntroducerTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

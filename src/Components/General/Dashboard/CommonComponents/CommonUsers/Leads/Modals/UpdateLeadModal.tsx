@@ -2,7 +2,7 @@ import { useUpdateLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/
 import {
   LeadsInfo,
   UpdateLeadModalProps,
-} from "@/Types/CommonComponents/Directors/LeadTypes";
+} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {

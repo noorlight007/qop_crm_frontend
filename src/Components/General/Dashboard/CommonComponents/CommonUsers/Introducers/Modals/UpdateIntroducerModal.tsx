@@ -2,7 +2,7 @@ import { useUpdateIntroducerDetailsMutation } from "@/Redux/Reducers/CommonCompo
 import {
   IntroducerInfoProps,
   UpdateIntroducerModalProps,
-} from "@/Types/CommonComponents/Directors/IntroducerTypes";
+} from "@/Types/CommonComponents/CommonUsers/IntroducerTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {

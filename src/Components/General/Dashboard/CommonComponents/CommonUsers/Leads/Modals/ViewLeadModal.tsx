@@ -1,4 +1,4 @@
-import { ViewLeadModalProps } from "@/Types/CommonComponents/Directors/LeadTypes";
+import { ViewLeadModalProps } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {

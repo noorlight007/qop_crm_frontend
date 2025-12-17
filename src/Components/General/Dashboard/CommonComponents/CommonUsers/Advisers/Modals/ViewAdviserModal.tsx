@@ -1,4 +1,4 @@
-import { ViewAdviserModalProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
+import { ViewAdviserModalProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {

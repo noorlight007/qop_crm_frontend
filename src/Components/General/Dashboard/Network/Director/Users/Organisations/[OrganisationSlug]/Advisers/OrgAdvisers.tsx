@@ -4,7 +4,7 @@ import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Director/Organi
 import {
   AdviserInfoProps,
   AdvisersProps,
-} from "@/Types/CommonComponents/Directors/AdviserTypes";
+} from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

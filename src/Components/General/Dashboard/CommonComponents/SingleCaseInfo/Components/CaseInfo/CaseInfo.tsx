@@ -6,7 +6,7 @@ import {
   CaseInfoPrpos,
   SingleCaseProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { ClientInfoProps } from "@/Types/CommonComponents/Directors/ClientTypes";
+import { ClientInfoProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

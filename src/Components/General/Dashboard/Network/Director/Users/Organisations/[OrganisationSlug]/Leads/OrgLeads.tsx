@@ -4,7 +4,7 @@ import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Director/Organisat
 import {
   LeadsInfo,
   LeadsProps,
-} from "@/Types/CommonComponents/Directors/LeadTypes";
+} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

@@ -2,7 +2,7 @@ import { useGetIntroducerDetailsQuery } from "@/Redux/Reducers/CommonComponents/
 import {
   IntroducerInfoProps,
   IntroducersProps,
-} from "@/Types/CommonComponents/Directors/IntroducerTypes";
+} from "@/Types/CommonComponents/CommonUsers/IntroducerTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

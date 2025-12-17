@@ -1,4 +1,4 @@
-import { ViewIntroducerModalProps } from "@/Types/CommonComponents/Directors/IntroducerTypes";
+import { ViewIntroducerModalProps } from "@/Types/CommonComponents/CommonUsers/IntroducerTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {

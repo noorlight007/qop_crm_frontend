@@ -2,7 +2,7 @@ import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/Comm
 import {
   ClientInfoProps,
   ClientsProps,
-} from "@/Types/CommonComponents/Directors/ClientTypes";
+} from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

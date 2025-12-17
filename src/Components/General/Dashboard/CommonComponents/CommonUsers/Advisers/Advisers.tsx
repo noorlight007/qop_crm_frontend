@@ -2,7 +2,7 @@ import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/Com
 import {
   AdviserInfoProps,
   AdvisersProps,
-} from "@/Types/CommonComponents/Directors/AdviserTypes";
+} from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

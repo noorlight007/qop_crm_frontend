@@ -1,5 +1,5 @@
 import { useDeleteLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
-import { DeleteLeadModalProps } from "@/Types/CommonComponents/Directors/LeadTypes";
+import { DeleteLeadModalProps } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

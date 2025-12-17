@@ -1,4 +1,4 @@
-import { ViewClientModalProps } from "@/Types/CommonComponents/Directors/ClientTypes";
+import { ViewClientModalProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
