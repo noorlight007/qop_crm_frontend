@@ -2,7 +2,8 @@ import { useGetLoginHistoryQuery } from "@/Redux/Reducers/CommonComponents/Login
 import formatChoiceFieldValue from "@/utils/formatters";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
-import { Badge, Card, CardBody } from "reactstrap";
+import { FaClock, FaGlobe, FaMapMarkerAlt } from "react-icons/fa";
+import { Badge, Card, CardBody, Col, Row } from "reactstrap";
 
 interface LoginHistoryItem {
   id?: number;
@@ -27,21 +28,18 @@ const LoginHistory: React.FC = () => {
   const { data: loginHistoryData, isLoading } =
     useGetLoginHistoryQuery(undefined);
 
-
   const getStatusBadge = (status: string) => {
     if (status === "SUCCESS") {
       return {
-        className: "badge bg-success-light text-success fs-5",
         icon: "✓",
       };
     } else if (status === "FAILED") {
       return {
-        className: "badge bg-danger-light text-danger fs-5",
         icon: "✕",
       };
     }
     return {
-      className: "badge bg-secondary-light text-secondary fs-5",
+      className: "badge bg-light-secondary text-secondary",
       icon: "?",
     };
   };
@@ -94,7 +92,7 @@ const LoginHistory: React.FC = () => {
         {/* Header Section */}
         <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
           <div className="d-flex align-items-center">
-            <div className="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+            <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3">
               <i className="fa fa-history text-primary fs-4"></i>
             </div>
             <div>
@@ -134,7 +132,6 @@ const LoginHistory: React.FC = () => {
                     className={`login-history-item mb-3 p-0 border rounded-4 overflow-hidden position-relative transition-all`}
                     style={{
                       transition: "all 0.3s ease",
-                      cursor: "pointer",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
@@ -167,17 +164,6 @@ const LoginHistory: React.FC = () => {
                             height={50}
                             className="object-fit-cover rounded-circle shadow-sm"
                           />
-                          <span
-                            className={`position-absolute bottom-0 end-0 ${
-                              history.status === "SUCCESS"
-                                ? "bg-success"
-                                : "bg-danger"
-                            } border border-2 border-white rounded-circle`}
-                            style={{
-                              width: "14px",
-                              height: "14px",
-                            }}
-                          ></span>
                         </div>
                         <div className="flex-grow-1">
                           <div className="d-flex align-items-center justify-content-between mb-1">
@@ -185,10 +171,15 @@ const LoginHistory: React.FC = () => {
                               {history.user.name}
                             </h6>
                             <Badge
-                              className={`${badge.className} px-3 py-2 shadow-sm`}
-                              style={{ fontSize: "0.75rem" }}
+                              color={
+                                history.status === "SUCCESS"
+                                  ? "success"
+                                  : "danger"
+                              }
+                              className={`${badge.className} p-2 shadow `}
                             >
-                              {badge.icon} {history.status}
+                              {badge.icon}{" "}
+                              {formatChoiceFieldValue(history.status)}
                             </Badge>
                           </div>
                           <div className="d-flex flex-wrap gap-2 mb-2">
@@ -214,66 +205,67 @@ const LoginHistory: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Device Info Section */}
-                      <div className="bg-light rounded-3 p-3 mb-3">
-                        <div className="d-flex align-items-center gap-3">
-                          <div
-                            className="bg-white rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center"
-                            style={{ width: "50px", height: "50px" }}
-                          >
-                            <span style={{ fontSize: "28px" }}>{icon}</span>
-                          </div>
-                          <div className="flex-grow-1">
-                            <h6 className="mb-1 fw-bold text-dark text-capitalize">
-                              {history.device_type}
-                            </h6>
-                            <small className="text-muted d-flex align-items-center">
-                              <i className="fa fa-desktop me-1"></i>
-                              {history.browser_name || "Unknown"} • {history.os || "Unknown"}
-                            </small>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Details Section */}
-                      <div className="row g-2">
-                        <div className="col-md-6">
-                          <div className="d-flex align-items-center bg-light rounded-3 p-2">
-                            <div className="bg-white rounded-2 p-2 me-2">
-                              <i className="fa fa-map-marker-alt text-primary"></i>
-                            </div>
-                            <div>
-                              <small
-                                className="text-muted d-block"
-                                style={{ fontSize: "0.7rem" }}
-                              >
-                                IP Address
-                              </small>
-                              <small className="fw-semibold text-dark">
-                                {history.ip_address}
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="d-flex align-items-center bg-light rounded-3 p-2">
-                            <div className="bg-white rounded-2 p-2 me-2">
-                              <i className="fa fa-clock text-primary"></i>
-                            </div>
-                            <div>
-                              <small
-                                className="text-muted d-block"
-                                style={{ fontSize: "0.7rem" }}
-                              >
-                                Login Time
-                              </small>
-                              <small className="fw-semibold text-dark">
-                                {formatDate(history.logged_in_at)}
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <Row>
+                        <Col md="4">
+                          <Card className="mb-0">
+                            <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
+                              <div className="bg-white rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center">
+                                <span>{icon}</span>
+                              </div>
+                              <div className="flex-grow-1">
+                                <h6 className="mb-1 fw-bold text-dark text-capitalize">
+                                  {history.device_type || "Unknown Device"}
+                                </h6>
+                                <small className="text-muted d-flex align-items-center">
+                                  <FaGlobe className="me-1" />
+                                  {history.browser_name || "Unknown"} •{" "}
+                                  {history.os || "Unknown"}
+                                </small>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        <Col md="4">
+                          <Card className="mb-0">
+                            <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
+                              <div className="bg-white rounded-2 p-2 me-2">
+                                <FaMapMarkerAlt className="text-primary" />
+                              </div>
+                              <div>
+                                <small
+                                  className="text-muted d-block"
+                                  style={{ fontSize: "0.7rem" }}
+                                >
+                                  IP Address
+                                </small>
+                                <small className="fw-semibold text-dark">
+                                  {history.ip_address}
+                                </small>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        <Col md="4">
+                          <Card className="mb-0">
+                            <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
+                              <div className="bg-white rounded-2 p-2 me-2">
+                                <FaClock className="text-info" />
+                              </div>
+                              <div>
+                                <small
+                                  className="text-muted d-block"
+                                  style={{ fontSize: "0.7rem" }}
+                                >
+                                  Login Time
+                                </small>
+                                <small className="fw-semibold text-dark">
+                                  {formatDate(history.logged_in_at)}
+                                </small>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                      </Row>
                     </div>
                   </div>
                 );
@@ -281,7 +273,7 @@ const LoginHistory: React.FC = () => {
             )
           ) : (
             <div className="text-center py-5">
-              <div className="bg-light rounded-circle p-4 d-inline-flex mb-3">
+              <div className="bg-light-dark rounded-circle p-4 d-inline-flex mb-3">
                 <i
                   className="fa fa-history text-muted"
                   style={{ fontSize: "3rem" }}
