@@ -1,7 +1,8 @@
 import { useGetLoginHistoryQuery } from "@/Redux/Reducers/CommonComponents/LoginHistory/LoginHistoryApi";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
-import { Card, CardBody } from "reactstrap";
+import { Badge, Card, CardBody } from "reactstrap";
 
 interface LoginHistoryItem {
   id?: number;
@@ -12,10 +13,9 @@ interface LoginHistoryItem {
     email: string;
     phone: string;
     profile_image: string;
+    user_type: string;
   };
   ip_address: string;
-  user_agent: string;
-  device_name: string;
   device_type: string;
   browser_name: string;
   os: string;
@@ -26,6 +26,7 @@ interface LoginHistoryItem {
 const LoginHistory: React.FC = () => {
   const { data: loginHistoryData, isLoading } =
     useGetLoginHistoryQuery(undefined);
+
 
   const getStatusBadge = (status: string) => {
     if (status === "SUCCESS") {
@@ -69,24 +70,55 @@ const LoginHistory: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow h-100">
         <CardBody className="p-4">
-          <h4 className="mb-4">Login History</h4>
-          <p>Loading...</p>
+          <div className="d-flex align-items-center mb-4">
+            <div className="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+              <i className="fa fa-history text-primary fs-4"></i>
+            </div>
+            <h4 className="mb-0 fw-bold text-dark">Login History</h4>
+          </div>
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
         </CardBody>
       </Card>
     );
   }
 
   return (
-    <Card className="border-0 shadow-sm">
+    <Card className="border-0 shadow h-100">
       <CardBody className="p-4">
-        <h4 className="mb-4 fw-bold">Login History</h4>
+        {/* Header Section */}
+        <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+          <div className="d-flex align-items-center">
+            <div className="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+              <i className="fa fa-history text-primary fs-4"></i>
+            </div>
+            <div>
+              <h4 className="mb-0 fw-bold text-dark">Login History</h4>
+              <small className="text-muted">
+                Recent authentication activity
+              </small>
+            </div>
+          </div>
+          {loginHistoryData && loginHistoryData.length > 0 && (
+            <Badge color="primary" pill className="px-3 py-2">
+              {loginHistoryData.length}{" "}
+              {loginHistoryData.length === 1 ? "Record" : "Records"}
+            </Badge>
+          )}
+        </div>
+
+        {/* Login History Items */}
         <div
           className="login-history-container"
           style={{
             maxHeight: "500px",
             overflowY: "auto",
+            overflowX: "hidden",
             paddingRight: "8px",
           }}
         >
@@ -99,51 +131,148 @@ const LoginHistory: React.FC = () => {
                 return (
                   <div
                     key={index}
-                    className={`login-history-item mb-3 p-3 border rounded-3 ${
-                      history.status === "SUCCESS"
-                        ? "bg-light-success border-success"
-                        : "bg-light-danger border-danger"
-                    }`}
+                    className={`login-history-item mb-3 p-0 border rounded-4 overflow-hidden position-relative transition-all`}
+                    style={{
+                      transition: "all 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 16px rgba(0,0,0,0.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
                   >
-                    {/* User Info Section */}
-                    <div className="d-flex align-items-center mb-3 pb-3 border-bottom">
-                      <Image
-                        src={history.user.profile_image}
-                        alt={history.user.name}
-                        width={40}
-                        height={40}
-                        className="object-fit-cover rounded-circle me-2"
-                      />
-                      <div style={{ flex: 1 }}>
-                        <h6 className="mb-0 fw-bold">{history.user.name}</h6>
-                        <small className="text-muted">
-                          {history.user.email}
-                        </small>
-                      </div>
-                      <span className={badge.className}>{badge.icon}</span>
-                    </div>
+                    {/* Status Indicator Bar */}
+                    <div
+                      className={`${
+                        history.status === "SUCCESS"
+                          ? "bg-success"
+                          : "bg-danger"
+                      }`}
+                      style={{ height: "4px" }}
+                    ></div>
 
-                    {/* Device Info Section */}
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div className="d-flex align-items-center gap-2">
-                        <span style={{ fontSize: "24px" }}>{icon}</span>
-                        <div>
-                          <h6 className="mb-1 fw-bold">
-                            {history.device_type}
-                          </h6>
-                          <small className="text-muted">
-                            {history.browser_name} • {history.os}
-                          </small>
+                    <div className="p-3">
+                      {/* User Info Section */}
+                      <div className="d-flex align-items-start mb-3">
+                        <div className="position-relative me-3">
+                          <Image
+                            src={history.user.profile_image}
+                            alt={history.user.name}
+                            width={50}
+                            height={50}
+                            className="object-fit-cover rounded-circle shadow-sm"
+                          />
+                          <span
+                            className={`position-absolute bottom-0 end-0 ${
+                              history.status === "SUCCESS"
+                                ? "bg-success"
+                                : "bg-danger"
+                            } border border-2 border-white rounded-circle`}
+                            style={{
+                              width: "14px",
+                              height: "14px",
+                            }}
+                          ></span>
+                        </div>
+                        <div className="flex-grow-1">
+                          <div className="d-flex align-items-center justify-content-between mb-1">
+                            <h6 className="mb-0 fw-bold text-dark">
+                              {history.user.name}
+                            </h6>
+                            <Badge
+                              className={`${badge.className} px-3 py-2 shadow-sm`}
+                              style={{ fontSize: "0.75rem" }}
+                            >
+                              {badge.icon} {history.status}
+                            </Badge>
+                          </div>
+                          <div className="d-flex flex-wrap gap-2 mb-2">
+                            <small className="text-muted d-flex align-items-center">
+                              <i className="fa fa-envelope me-1"></i>
+                              {history.user.email}
+                            </small>
+                            {history.user.phone && (
+                              <small className="text-muted d-flex align-items-center">
+                                <i className="fa fa-phone me-1"></i>
+                                {history.user.phone}
+                              </small>
+                            )}
+                          </div>
+                          <Badge
+                            color="info"
+                            className="bg-opacity-10 text-info border border-info px-2 py-1"
+                            style={{ fontSize: "0.7rem" }}
+                          >
+                            {formatChoiceFieldValue(history.user.user_type) ||
+                              "Not Found"}
+                          </Badge>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Details Section */}
-                    <div className="row mt-3 small">
-                      <div className="col-md-6 text-end">
-                        <p className="mb-0 text-muted">
-                          Login At: {formatDate(history.logged_in_at)}
-                        </p>
+                      {/* Device Info Section */}
+                      <div className="bg-light rounded-3 p-3 mb-3">
+                        <div className="d-flex align-items-center gap-3">
+                          <div
+                            className="bg-white rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center"
+                            style={{ width: "50px", height: "50px" }}
+                          >
+                            <span style={{ fontSize: "28px" }}>{icon}</span>
+                          </div>
+                          <div className="flex-grow-1">
+                            <h6 className="mb-1 fw-bold text-dark text-capitalize">
+                              {history.device_type}
+                            </h6>
+                            <small className="text-muted d-flex align-items-center">
+                              <i className="fa fa-desktop me-1"></i>
+                              {history.browser_name || "Unknown"} • {history.os || "Unknown"}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Details Section */}
+                      <div className="row g-2">
+                        <div className="col-md-6">
+                          <div className="d-flex align-items-center bg-light rounded-3 p-2">
+                            <div className="bg-white rounded-2 p-2 me-2">
+                              <i className="fa fa-map-marker-alt text-primary"></i>
+                            </div>
+                            <div>
+                              <small
+                                className="text-muted d-block"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                IP Address
+                              </small>
+                              <small className="fw-semibold text-dark">
+                                {history.ip_address}
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="d-flex align-items-center bg-light rounded-3 p-2">
+                            <div className="bg-white rounded-2 p-2 me-2">
+                              <i className="fa fa-clock text-primary"></i>
+                            </div>
+                            <div>
+                              <small
+                                className="text-muted d-block"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                Login Time
+                              </small>
+                              <small className="fw-semibold text-dark">
+                                {formatDate(history.logged_in_at)}
+                              </small>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -151,7 +280,18 @@ const LoginHistory: React.FC = () => {
               }
             )
           ) : (
-            <p className="text-muted">No login history available</p>
+            <div className="text-center py-5">
+              <div className="bg-light rounded-circle p-4 d-inline-flex mb-3">
+                <i
+                  className="fa fa-history text-muted"
+                  style={{ fontSize: "3rem" }}
+                ></i>
+              </div>
+              <h6 className="text-muted mb-2">No Login History</h6>
+              <p className="text-muted small mb-0">
+                No authentication records found
+              </p>
+            </div>
           )}
         </div>
       </CardBody>
