@@ -4,7 +4,7 @@ import {
   AdvisersProps,
 } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -227,7 +227,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                     <td>
                       {adviser?.joining_date &&
                       !isNaN(Date.parse(adviser.joining_date))
-                        ? formatDateAndTime(adviser.joining_date)
+                        ? formatDate(adviser.joining_date)
                         : "-"}
                     </td>
                     <td>

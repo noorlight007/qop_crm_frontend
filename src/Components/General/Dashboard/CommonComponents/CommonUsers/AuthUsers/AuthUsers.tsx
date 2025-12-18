@@ -29,7 +29,7 @@ import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
   authUsersPerPage = 10,
-  organizationUsersRole = "ORGANISATION_ADMIN",
+  userRole,
 }) => {
   const { data: session } = useSession();
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
@@ -53,7 +53,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   });
 
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    organization_users__role: organizationUsersRole,
+    organization_users__role: userRole,
     page: currentPage,
     page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
