@@ -187,45 +187,78 @@ const Notes: React.FC = () => {
             ) : notesData &&
               (notesData.results?.length ?? (notesData as any)?.length) > 0 ? (
               // support old non-paginated array response and new paginated response
-              (notesData.results ?? notesData).map((note: NoteProps) => (
-                <tr key={note.alias} className="small">
-                  <td>{formatChoiceFieldValue(note.category || "-")}</td>
-                  <td>{formatDateAndTime(note.created_at || "-")}</td>
-                  <td>{formatChoiceFieldValue(note.case.case_stage || "-")}</td>
-                  <td>
-                    {formatChoiceFieldValue(note?.user?.title)}{" "}
-                    {note?.user?.first_name} {note?.user?.middle_name}{" "}
-                    {note?.user?.last_name}
-                  </td>
-                  <td>
-                    <div
-                      className={`note-content ${
-                        expandedNotes.has(note.alias) ? "" : "collapsed"
-                      }`}
-                      dangerouslySetInnerHTML={{
-                        __html: note.note || "-",
-                      }}
-                    />
-                    {note.note && note.note.length > 200 && (
-                      <Button
-                        color="link"
-                        size="sm"
-                        className="note-show-more-btn p-0"
-                        onClick={() => toggleNoteExpansion(note.alias)}
-                      >
-                        {expandedNotes.has(note.alias)
-                          ? "Show less"
-                          : "Show more"}
-                      </Button>
-                    )}
-                  </td>
-                  {session?.user?.user_type !== "CLIENT" && (
-                    <>
-                      <td className="text-center">
-                        {
-                          // support both old and new API boolean fields
-                          (note as any).note_visible_to_introducer ??
-                          (note as any).is_visible_to_introducer ? (
+              (notesData.results ?? notesData)
+                .filter((note: NoteProps) => {
+                  if (session?.user?.user_type === "CLIENT") {
+                    return (
+                      (note as any).is_visible_to_client ??
+                      (note as any).note_visible_to_client
+                    );
+                  } else if (session?.user?.user_type === "INTRODUCER") {
+                    return (
+                      (note as any).is_visible_to_introducer ??
+                      (note as any).is_visible_to_introducer
+                    );
+                  }
+                  // For other users, show all notes
+                  return true;
+                })
+                .map((note: NoteProps) => (
+                  <tr key={note.alias} className="small">
+                    <td>{formatChoiceFieldValue(note.category || "-")}</td>
+                    <td>{formatDateAndTime(note.created_at || "-")}</td>
+                    <td>
+                      {formatChoiceFieldValue(note.case.case_stage || "-")}
+                    </td>
+                    <td>
+                      {formatChoiceFieldValue(note?.user?.title)}{" "}
+                      {note?.user?.first_name} {note?.user?.middle_name}{" "}
+                      {note?.user?.last_name}
+                    </td>
+                    <td>
+                      <div
+                        className={`note-content ${
+                          expandedNotes.has(note.alias) ? "" : "collapsed"
+                        }`}
+                        dangerouslySetInnerHTML={{
+                          __html: note.note || "-",
+                        }}
+                      />
+                      {note.note && note.note.length > 200 && (
+                        <Button
+                          color="link"
+                          size="sm"
+                          className="note-show-more-btn p-0"
+                          onClick={() => toggleNoteExpansion(note.alias)}
+                        >
+                          {expandedNotes.has(note.alias)
+                            ? "Show less"
+                            : "Show more"}
+                        </Button>
+                      )}
+                    </td>
+                    {session?.user?.user_type !== "CLIENT" && (
+                      <>
+                        <td className="text-center">
+                          {
+                            // support both old and new API boolean fields
+                            (note as any).note_visible_to_introducer ??
+                            (note as any).is_visible_to_introducer ? (
+                              <FaRegCheckCircle
+                                size={16}
+                                className="text-primary"
+                              />
+                            ) : (
+                              <FaRegTimesCircle
+                                size={16}
+                                className="text-danger"
+                              />
+                            )
+                          }
+                        </td>
+                        <td className="text-center">
+                          {(note as any).note_visible_to_client ??
+                          (note as any).is_visible_to_client ? (
                             <FaRegCheckCircle
                               size={16}
                               className="text-primary"
@@ -235,37 +268,25 @@ const Notes: React.FC = () => {
                               size={16}
                               className="text-danger"
                             />
-                          )
-                        }
-                      </td>
-                      <td className="text-center">
-                        {(note as any).note_visible_to_client ??
-                        (note as any).is_visible_to_client ? (
-                          <FaRegCheckCircle
-                            size={16}
-                            className="text-primary"
-                          />
-                        ) : (
-                          <FaRegTimesCircle size={16} className="text-danger" />
-                        )}
-                      </td>
-                    </>
-                  )}
+                          )}
+                        </td>
+                      </>
+                    )}
 
-                  {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-                    session?.user?.user_type === "NETWORK_DIRECTOR") && (
-                    <td className="text-center">
-                      <Button
-                        color="danger"
-                        className="p-1"
-                        onClick={() => handleDeleteClick(note)}
-                      >
-                        <Trash2 size={20} />
-                      </Button>
-                    </td>
-                  )}
-                </tr>
-              ))
+                    {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                      session?.user?.user_type === "NETWORK_DIRECTOR") && (
+                      <td className="text-center">
+                        <Button
+                          color="danger"
+                          className="p-1"
+                          onClick={() => handleDeleteClick(note)}
+                        >
+                          <Trash2 size={20} />
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan={8} className="text-center">
