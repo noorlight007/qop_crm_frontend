@@ -158,12 +158,17 @@ const Notes: React.FC = () => {
               <th style={{ minWidth: "600px", textAlign: "left" }}>
                 Information
               </th>
-              <th style={{ minWidth: "100px", textAlign: "center" }}>
-                Introducer Visible
-              </th>
-              <th style={{ minWidth: "100px", textAlign: "center" }}>
-                Client Visible
-              </th>
+              {session?.user?.user_type !== "CLIENT" && (
+                <>
+                  <th style={{ minWidth: "100px", textAlign: "center" }}>
+                    Introducer Visible
+                  </th>
+                  <th style={{ minWidth: "100px", textAlign: "center" }}>
+                    Client Visible
+                  </th>
+                </>
+              )}
+
               {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
                 session?.user?.user_type === "NETWORK_DIRECTOR") && (
                 <th style={{ minWidth: "100px", textAlign: "center" }}>
@@ -214,25 +219,39 @@ const Notes: React.FC = () => {
                       </Button>
                     )}
                   </td>
-                  <td className="text-center">
-                    {
-                      // support both old and new API boolean fields
-                      (note as any).note_visible_to_introducer ??
-                      (note as any).is_visible_to_introducer ? (
-                        <FaRegCheckCircle size={16} className="text-primary" />
-                      ) : (
-                        <FaRegTimesCircle size={16} className="text-danger" />
-                      )
-                    }
-                  </td>
-                  <td className="text-center">
-                    {(note as any).note_visible_to_client ??
-                    (note as any).is_visible_to_client ? (
-                      <FaRegCheckCircle size={16} className="text-primary" />
-                    ) : (
-                      <FaRegTimesCircle size={16} className="text-danger" />
-                    )}
-                  </td>
+                  {session?.user?.user_type !== "CLIENT" && (
+                    <>
+                      <td className="text-center">
+                        {
+                          // support both old and new API boolean fields
+                          (note as any).note_visible_to_introducer ??
+                          (note as any).is_visible_to_introducer ? (
+                            <FaRegCheckCircle
+                              size={16}
+                              className="text-primary"
+                            />
+                          ) : (
+                            <FaRegTimesCircle
+                              size={16}
+                              className="text-danger"
+                            />
+                          )
+                        }
+                      </td>
+                      <td className="text-center">
+                        {(note as any).note_visible_to_client ??
+                        (note as any).is_visible_to_client ? (
+                          <FaRegCheckCircle
+                            size={16}
+                            className="text-primary"
+                          />
+                        ) : (
+                          <FaRegTimesCircle size={16} className="text-danger" />
+                        )}
+                      </td>
+                    </>
+                  )}
+
                   {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
                     session?.user?.user_type === "NETWORK_DIRECTOR") && (
                     <td className="text-center">
