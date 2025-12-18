@@ -1,12 +1,309 @@
 import { useGetAuthUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
+import LoadingSpinner from "@/app/loading";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { FaSearch } from "react-icons/fa";
+import { TbCirclePlus } from "react-icons/tb";
+import {
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Input,
+  InputGroup,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Row,
+  Spinner,
+  Table,
+} from "reactstrap";
 
-const Admins: React.FC = () => {
+interface AdminUser {
+  alias: string;
+  name: string;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+  gender: string;
+  created_at: string;
+  created_by: string | null;
+  joining_date: string;
+}
+
+interface AdminsProps {
+  adminsPerPage?: number;
+}
+
+const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
+  const { data: session } = useSession();
+  const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
+
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
     organization_users__role: "ORGANISATION_ADMIN",
+    page: currentPage,
+    page_size: adminsPerPage,
+    search: debouncedSearch || undefined,
   });
-  console.log("USERS::", authUsersData);
-  
-  return <div>{/* JSX here */}</div>;
+
+  useEffect(() => {
+    if (authUsersData) {
+      if (Array.isArray(authUsersData)) {
+        setAdmins(authUsersData || []);
+        setTotalCount(authUsersData.length || 0);
+      } else if (authUsersData.results) {
+        setAdmins(authUsersData.results || []);
+        setTotalCount(authUsersData.count || 0);
+      } else {
+        setAdmins([]);
+        setTotalCount(0);
+      }
+    }
+  }, [authUsersData]);
+
+  // Debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  const currentAdmins = admins;
+  const totalPages = Math.ceil(totalCount / adminsPerPage) || 1;
+
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  return (
+    <Card>
+      <CardBody>
+        <Row className="d-flex justify-content-between py-4">
+          <Col md="3" xs="12">
+            <h2>Organisation Admins</h2>
+          </Col>
+          <Col md={3} xs="12">
+            <InputGroup className="position-relative">
+              <FaSearch
+                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                style={{ zIndex: 10, pointerEvents: "none" }}
+              />
+              <Input
+                type="text"
+                placeholder="Search... "
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                style={{ padding: "10px 10px 10px 25px" }}
+              />
+            </InputGroup>
+          </Col>
+          <Col
+            md="3"
+            xs="12"
+            className="d-flex justify-content-end mt-sm-0 mt-2"
+          >
+            {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
+              <Button
+                color="primary"
+                className="d-flex justify-content-center align-items-center gap-1"
+              >
+                <TbCirclePlus size={18} />
+                <span>Add Admin</span>
+              </Button>
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Table hover responsive>
+            <thead className="thead-light">
+              <tr className="text-center">
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joining Date</th>
+                <th>Gender</th>
+                <th>Created At</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="text-center">
+                    <div className="d-flex justify-content-center align-items-center">
+                      <Spinner color="primary" />
+                    </div>
+                  </td>
+                </tr>
+              ) : currentAdmins.length > 0 ? (
+                currentAdmins.map((admin) => (
+                  <tr key={admin.alias} className="text-center">
+                    <td>
+                      <span className="text_decoration_hover">
+                        {admin?.title
+                          ? formatChoiceFieldValue(admin?.title)
+                          : ""}{" "}
+                        {admin?.first_name} {admin?.middle_name}{" "}
+                        {admin?.last_name}
+                      </span>
+                    </td>
+                    <td>{admin?.email || "-"}</td>
+                    <td>
+                      {admin?.phone ? (
+                        <a
+                          href={`tel:${admin?.phone}`}
+                          className="text-black text_decoration_hover"
+                        >
+                          {admin?.phone}
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td>{formatDate(admin?.joining_date)}</td>
+                    <td>
+                      {admin?.gender
+                        ? formatChoiceFieldValue(admin?.gender)
+                        : "-"}
+                    </td>
+                    <td>{formatDateAndTime(admin?.created_at)}</td>
+                    <td>
+                      <div className="d-flex justify-content-center gap-2 align-items-center">
+                        <Button color="success" size="sm" title="Update User">
+                          <i className="icon-pencil-alt"></i>
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center">
+                    No admins available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </Table>
+        </Row>
+        <Row>
+          <div className="d-flex justify-content-between align-items-center p-3">
+            <div className="px-2">
+              <p className="text-success">
+                Showing{" "}
+                {totalCount === 0 ? "0" : (currentPage - 1) * adminsPerPage + 1}{" "}
+                to{" "}
+                {currentAdmins.length === 0
+                  ? 0
+                  : (currentPage - 1) * adminsPerPage +
+                    currentAdmins.length}{" "}
+                of {totalCount} Admins
+              </p>
+            </div>
+            <Pagination className="d-flex justify-content-end p-2">
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink first onClick={() => setCurrentPage(1)} />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink
+                  previous
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                />
+              </PaginationItem>
+
+              {totalPages <= 7 ? (
+                Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (pageNumber) => (
+                    <PaginationItem
+                      key={pageNumber}
+                      active={pageNumber === currentPage}
+                    >
+                      <PaginationLink
+                        onClick={() => setCurrentPage(pageNumber)}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )
+              ) : (
+                <>
+                  <PaginationItem active={currentPage === 1}>
+                    <PaginationLink onClick={() => setCurrentPage(1)}>
+                      1
+                    </PaginationLink>
+                  </PaginationItem>
+
+                  {currentPage > 3 && (
+                    <PaginationItem disabled>
+                      <PaginationLink>...</PaginationLink>
+                    </PaginationItem>
+                  )}
+
+                  {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                    .filter(
+                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
+                    )
+                    .map((pageNumber) => (
+                      <PaginationItem
+                        key={pageNumber}
+                        active={pageNumber === currentPage}
+                      >
+                        <PaginationLink
+                          onClick={() => setCurrentPage(pageNumber)}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                  {currentPage < totalPages - 2 && (
+                    <PaginationItem disabled>
+                      <PaginationLink>...</PaginationLink>
+                    </PaginationItem>
+                  )}
+
+                  <PaginationItem active={currentPage === totalPages}>
+                    <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                      {totalPages}
+                    </PaginationLink>
+                  </PaginationItem>
+                </>
+              )}
+
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  next
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  last
+                  onClick={() => setCurrentPage(totalPages)}
+                />
+              </PaginationItem>
+            </Pagination>
+          </div>
+        </Row>
+      </CardBody>
+    </Card>
+  );
 };
 
 export default Admins;
