@@ -1,4 +1,4 @@
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersDetailsApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
 import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
 import { AddTaskModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
 import { useParams } from "next/navigation";

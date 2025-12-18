@@ -1,6 +1,6 @@
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersDetailsApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
 import {
   CaseInfoPrpos,
   CaseUser,

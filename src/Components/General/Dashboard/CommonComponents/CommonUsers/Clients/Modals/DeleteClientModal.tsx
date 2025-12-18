@@ -1,4 +1,4 @@
-import { useDeleteClientDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
+import { useDeleteClientDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import { DeleteClientModalProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

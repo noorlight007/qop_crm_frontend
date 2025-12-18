@@ -1,4 +1,4 @@
-import { useUpdateIntroducerDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/IntroducerDetailsApi";
+import { useUpdateIntroducerDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/IntroducersApi";
 import {
   IntroducerInfoProps,
   UpdateIntroducerModalProps,

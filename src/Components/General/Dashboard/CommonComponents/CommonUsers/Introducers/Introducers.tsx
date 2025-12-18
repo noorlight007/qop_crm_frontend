@@ -1,4 +1,4 @@
-import { useGetIntroducerDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/IntroducerDetailsApi";
+import { useGetIntroducerDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/IntroducersApi";
 import {
   IntroducerInfoProps,
   IntroducersProps,

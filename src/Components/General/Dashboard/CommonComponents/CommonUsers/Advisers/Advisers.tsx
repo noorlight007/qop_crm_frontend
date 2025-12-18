@@ -1,4 +1,4 @@
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
 import {
   AdviserInfoProps,
   AdvisersProps,

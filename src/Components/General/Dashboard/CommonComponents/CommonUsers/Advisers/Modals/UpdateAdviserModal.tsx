@@ -1,4 +1,4 @@
-import { useUpdateAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useUpdateAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
 import {
   AdviserInfoProps,
   UpdateAdviserModalProps,

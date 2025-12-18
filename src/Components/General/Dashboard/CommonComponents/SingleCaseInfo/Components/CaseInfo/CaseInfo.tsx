@@ -1,7 +1,7 @@
 import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/UpdateClientModal";
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import {
   CaseInfoPrpos,
   SingleCaseProps,

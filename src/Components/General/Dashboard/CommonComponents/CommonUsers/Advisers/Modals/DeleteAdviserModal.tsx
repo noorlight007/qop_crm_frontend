@@ -1,4 +1,4 @@
-import { useDeleteAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useDeleteAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
 import { DeleteAdviserModalProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import React from "react";
 import { toast } from "react-toastify";

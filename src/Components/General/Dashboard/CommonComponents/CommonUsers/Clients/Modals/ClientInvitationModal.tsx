@@ -1,4 +1,4 @@
-import { useClientInvitationMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
+import { useClientInvitationMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 

@@ -1,4 +1,4 @@
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
+import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
 import {
   LeadsInfo,
   LeadsProps,

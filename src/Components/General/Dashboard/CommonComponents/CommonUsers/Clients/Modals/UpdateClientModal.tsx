@@ -1,4 +1,4 @@
-import { useUpdateClientDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
+import { useUpdateClientDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import {
   ClientInfoProps,
   UpdateClientModalProps,
