@@ -16,5 +16,25 @@ interface AuthUser {
 interface AuthUsersProps {
   title: string;
   authUsersPerPage?: number;
-  userRole?: string;
+  organizationUsersRole?: string;
 }
+
+interface ViewAuthUserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedAuthUser: Partial<AuthUser>;
+}
+
+interface UpdateAuthUserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  onSave: (data: Partial<AuthUser>) => void;
+  selectedAuthUser: Partial<AuthUser>;
+}
+
+export type {
+  AuthUser,
+  AuthUsersProps,
+  UpdateAuthUserModalProps,
+  ViewAuthUserModalProps,
+};

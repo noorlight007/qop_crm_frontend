@@ -1,7 +1,12 @@
 import { useGetAuthUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
+import {
+  AuthUser,
+  AuthUsersProps,
+} from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -18,24 +23,54 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
+import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
   authUsersPerPage = 10,
-  userRole,
+  organizationUsersRole = "ORGANISATION_ADMIN",
 }) => {
+  const { data: session } = useSession();
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    email: "",
+    phone: null,
+    gender: "",
+    joining_date: "",
+    created_at: "",
+    created_by: null,
+  });
 
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    organization_users__role: userRole,
+    organization_users__role: organizationUsersRole,
     page: currentPage,
     page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
   });
+
+  const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+
+  const openViewModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleViewModal();
+  };
+
+  const openUpdateModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleUpdateModal();
+  };
 
   useEffect(() => {
     if (authUsersData) {
@@ -122,7 +157,13 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 currentAuthUsers.map((admin) => (
                   <tr key={admin.alias} className="text-center">
                     <td>
-                      <span className="text_decoration_hover">
+                      <span
+                        className="text_decoration_hover"
+                        onClick={() => {
+                          openViewModal(admin);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
                         {admin?.title
                           ? formatChoiceFieldValue(admin?.title)
                           : ""}{" "}
@@ -152,7 +193,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     <td>{formatDateAndTime(admin?.created_at)}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
-                        <Button color="success" size="sm" title="Update User">
+                        <Button
+                          color="success"
+                          size="sm"
+                          title="Update User"
+                          onClick={() => openUpdateModal(admin)}
+                        >
                           <i className="icon-pencil-alt"></i>
                         </Button>
                       </div>
@@ -271,6 +317,22 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
             </Pagination>
           </div>
         </Row>
+
+        {/* Modals */}
+        <ViewAuthUserModal
+          isOpen={isViewModalOpen}
+          toggle={toggleViewModal}
+          selectedAuthUser={selectedAuthUser}
+        />
+        <UpdateAuthUserModal
+          isOpen={isUpdateModalOpen}
+          toggle={toggleUpdateModal}
+          onSave={() => {
+            toggleUpdateModal();
+          }}
+          selectedAuthUser={selectedAuthUser}
+        />
+        {/* modals end */}
       </CardBody>
     </Card>
   );
