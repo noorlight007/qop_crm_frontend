@@ -5,7 +5,6 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -20,25 +19,6 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-
-interface AdminUser {
-  alias: string;
-  name: string;
-  title: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-  phone: string | null;
-  gender: string;
-  created_at: string;
-  created_by: string | null;
-  joining_date: string;
-}
-
-interface AdminsProps {
-  adminsPerPage?: number;
-}
 
 const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
   const { data: session } = useSession();
@@ -112,21 +92,7 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
               />
             </InputGroup>
           </Col>
-          <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
-            {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
-              <Button
-                color="primary"
-                className="d-flex justify-content-center align-items-center gap-1"
-              >
-                <TbCirclePlus size={18} />
-                <span>Add Admin</span>
-              </Button>
-            )}
-          </Col>
+          <Col md="3" xs="12" />
         </Row>
         <Row>
           <Table hover responsive>
