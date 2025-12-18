@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import Admins from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Admins/Admins";
+import AuthUsers from "@/Components/General/Dashboard/CommonComponents/CommonUsers/AuthUsers/AuthUsers";
 import { Container } from "reactstrap";
 
 const OrganisationAdminsContainer: React.FC = () => {
@@ -12,7 +12,7 @@ const OrganisationAdminsContainer: React.FC = () => {
         child="Admins"
       />
       <Container fluid>
-        <Admins />
+        <AuthUsers title="Admins" />
       </Container>
     </div>
   );

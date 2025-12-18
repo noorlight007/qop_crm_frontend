@@ -1,4 +1,4 @@
-interface AdminUser {
+interface AuthUser {
   alias: string;
   name: string;
   title: string;
@@ -13,6 +13,7 @@ interface AdminUser {
   joining_date: string;
 }
 
-interface AdminsProps {
-  adminsPerPage?: number;
+interface AuthUsersProps {
+  title: string;
+  authUsersPerPage?: number;
 }

@@ -20,9 +20,12 @@ import {
   Table,
 } from "reactstrap";
 
-const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
+const AuthUsers: React.FC<AuthUsersProps> = ({
+  title,
+  authUsersPerPage = 10,
+}) => {
   const { data: session } = useSession();
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
+  const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -31,20 +34,20 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
     organization_users__role: "ORGANISATION_ADMIN",
     page: currentPage,
-    page_size: adminsPerPage,
+    page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
   });
 
   useEffect(() => {
     if (authUsersData) {
       if (Array.isArray(authUsersData)) {
-        setAdmins(authUsersData || []);
+        setAuthUsers(authUsersData || []);
         setTotalCount(authUsersData.length || 0);
       } else if (authUsersData.results) {
-        setAdmins(authUsersData.results || []);
+        setAuthUsers(authUsersData.results || []);
         setTotalCount(authUsersData.count || 0);
       } else {
-        setAdmins([]);
+        setAuthUsers([]);
         setTotalCount(0);
       }
     }
@@ -56,8 +59,8 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const currentAdmins = admins;
-  const totalPages = Math.ceil(totalCount / adminsPerPage) || 1;
+  const currentAuthUsers = authUsers;
+  const totalPages = Math.ceil(totalCount / authUsersPerPage) || 1;
 
   if (isLoading) {
     return (
@@ -72,7 +75,7 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
       <CardBody>
         <Row className="d-flex justify-content-between py-4">
           <Col md="3" xs="12">
-            <h2>Organisation Admins</h2>
+            <h2>{title}</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -116,8 +119,8 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
                     </div>
                   </td>
                 </tr>
-              ) : currentAdmins.length > 0 ? (
-                currentAdmins.map((admin) => (
+              ) : currentAuthUsers.length > 0 ? (
+                currentAuthUsers.map((admin) => (
                   <tr key={admin.alias} className="text-center">
                     <td>
                       <span className="text_decoration_hover">
@@ -172,13 +175,15 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {totalCount === 0 ? "0" : (currentPage - 1) * adminsPerPage + 1}{" "}
+                {totalCount === 0
+                  ? "0"
+                  : (currentPage - 1) * authUsersPerPage + 1}{" "}
                 to{" "}
-                {currentAdmins.length === 0
+                {currentAuthUsers.length === 0
                   ? 0
-                  : (currentPage - 1) * adminsPerPage +
-                    currentAdmins.length}{" "}
-                of {totalCount} Admins
+                  : (currentPage - 1) * authUsersPerPage +
+                    currentAuthUsers.length}{" "}
+                of {totalCount} Users
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -272,4 +277,4 @@ const Admins: React.FC<AdminsProps> = ({ adminsPerPage = 10 }) => {
   );
 };
 
-export default Admins;
+export default AuthUsers;
