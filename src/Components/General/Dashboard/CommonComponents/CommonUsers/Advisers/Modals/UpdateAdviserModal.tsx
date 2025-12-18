@@ -233,6 +233,23 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 />
               </FormGroup>
             </Col>
+            <Col md={6} xs={6}>
+              <FormGroup>
+                <Label for="gender">Gender</Label>
+                <Input
+                  id="gender"
+                  name="gender"
+                  type="select"
+                  value={adviserData?.gender || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+              </FormGroup>
+            </Col>
             {/* <Col md={6} xs={6}>
               <FormGroup>
                 <Label for="profile_image">Profile Image</Label>

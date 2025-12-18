@@ -171,7 +171,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Gender</th>
                 <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
@@ -220,8 +220,8 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      {adviser?.role
-                        ? formatChoiceFieldValue(adviser.role)
+                      {adviser?.gender
+                        ? formatChoiceFieldValue(adviser.gender)
                         : "-"}
                     </td>
                     <td>
@@ -263,14 +263,14 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
-                        <Button
+                        {/* <Button
                           color="danger"
                           size="sm"
                           title="Delete User"
                           onClick={() => openDeleteModal(adviser)}
                         >
                           <i className="icon-trash"></i>
-                        </Button>
+                        </Button> */}
                       </div>
                     </td>
                   </tr>
