@@ -135,9 +135,11 @@ const Notes: React.FC = () => {
           </div>
         </Col>
         <Col md={6} className="text-end ">
-          <Button color="primary" onClick={toggleAddNoteModal}>
-            <i className="fa-solid fa-circle-plus"></i> Add New Note
-          </Button>
+          {session?.user?.user_type !== "CLIENT" && (
+            <Button color="primary" onClick={toggleAddNoteModal}>
+              <i className="fa-solid fa-circle-plus"></i> Add New Note
+            </Button>
+          )}
         </Col>
       </Row>
 
