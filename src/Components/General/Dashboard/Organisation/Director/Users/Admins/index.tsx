@@ -12,7 +12,7 @@ const OrganisationAdminsContainer: React.FC = () => {
         child="Admins"
       />
       <Container fluid>
-        <AuthUsers title="Admins" />
+        <AuthUsers title="Admins" userRole="ORGANISATION_ADMIN" />
       </Container>
     </div>
   );

@@ -2,7 +2,6 @@ import { useGetAuthUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUs
 import LoadingSpinner from "@/app/loading";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -23,8 +22,8 @@ import {
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
   authUsersPerPage = 10,
+  userRole,
 }) => {
-  const { data: session } = useSession();
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,7 +31,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const [totalCount, setTotalCount] = useState(0);
 
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    organization_users__role: "ORGANISATION_ADMIN",
+    organization_users__role: userRole,
     page: currentPage,
     page_size: authUsersPerPage,
     search: debouncedSearch || undefined,

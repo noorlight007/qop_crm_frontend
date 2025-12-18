@@ -16,4 +16,5 @@ interface AuthUser {
 interface AuthUsersProps {
   title: string;
   authUsersPerPage?: number;
+  userRole?: string;
 }
