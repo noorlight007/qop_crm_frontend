@@ -1,5 +1,5 @@
 import { ViewAdviserModalProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
   Button,
@@ -128,7 +128,7 @@ const ViewAdviserModal: React.FC<ViewAdviserModalProps> = ({
             <small>
               {selectedAdviser?.joining_date &&
               !isNaN(Date.parse(selectedAdviser.joining_date))
-                ? formatDateAndTime(selectedAdviser.joining_date)
+                ? formatDate(selectedAdviser.joining_date)
                 : "Not available"}
             </small>
           </Col>

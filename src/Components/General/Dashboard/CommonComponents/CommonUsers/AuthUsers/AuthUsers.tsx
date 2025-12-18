@@ -1,15 +1,14 @@
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
+import { useGetAuthUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
 import {
-  LeadsInfo,
-  LeadsProps,
-} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+  AuthUser,
+  AuthUsersProps,
+} from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -24,93 +23,78 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import AddLeadModal from "./Modals/AddLeadModal";
-import DeleteLeadModal from "./Modals/DeleteLeadModal";
-import UpdateLeadModal from "./Modals/UpdateLeadModal";
-import ViewLeadModal from "./Modals/ViewLeadModal";
+import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
+import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
-const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
+const AuthUsers: React.FC<AuthUsersProps> = ({
+  title,
+  authUsersPerPage = 10,
+  userRole,
+}) => {
   const { data: session } = useSession();
-  const [leads, setLeads] = useState<LeadsInfo[]>([]);
+  const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [leadToDelete, setLeadToDelete] = useState<LeadsInfo | null>(null);
-  // rtk hooks - pass pagination and debounced search params to the query
-  const { data: leadData, isLoading } = useGetLeadDetailsQuery({
+  const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    email: "",
+    phone: null,
+    gender: "",
+    joining_date: "",
+    created_at: "",
+    created_by: null,
+  });
+
+  const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
+    organization_users__role: userRole,
     page: currentPage,
-    page_size: leadsPerPage,
+    page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
   });
 
-  const [selectedLead, setSelectedLead] = useState<Partial<LeadsInfo>>({
-    user: {
-      title: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      profile_image: "",
-      user_type: "",
-    },
-    role: "",
-    gender: "",
-    reason_for_enquiry: "",
-  });
-
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
-  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
 
-  const openDeleteModal = (lead: LeadsInfo) => {
-    setLeadToDelete(lead);
-    toggleDeleteModal();
+  const openViewModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleViewModal();
+  };
+
+  const openUpdateModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleUpdateModal();
   };
 
   useEffect(() => {
-    if (leadData) {
-      // API may return paginated response like { count, next, previous, results }
-      if (Array.isArray(leadData)) {
-        setLeads(leadData || []);
-        setTotalCount(leadData.length || 0);
-      } else if (leadData.results) {
-        setLeads(leadData.results || []);
-        setTotalCount(leadData.count || 0);
-      } else if (leadData.leads) {
-        setLeads(leadData.leads || []);
-        setTotalCount((leadData.leads || []).length || 0);
+    if (authUsersData) {
+      if (Array.isArray(authUsersData)) {
+        setAuthUsers(authUsersData || []);
+        setTotalCount(authUsersData.length || 0);
+      } else if (authUsersData.results) {
+        setAuthUsers(authUsersData.results || []);
+        setTotalCount(authUsersData.count || 0);
       } else {
-        setLeads([]);
+        setAuthUsers([]);
         setTotalCount(0);
       }
     }
-  }, [leadData]);
+  }, [authUsersData]);
 
-  // openmodals
-  const openAddModal = () => {
-    toggleModal();
-  };
-
-  // Debounce search input to avoid firing API on every keystroke
+  // Debounce search input
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const openUpdateModal = (lead: LeadsInfo) => {
-    setSelectedLead(lead);
-    toggleUpdateModal();
-  };
-  // openmodals end
-
-  // Server-side search/pagination is used. `leads` already contains current page results.
-  const currentLeads = leads;
-  const totalPages = Math.ceil(totalCount / leadsPerPage) || 1;
+  const currentAuthUsers = authUsers;
+  const totalPages = Math.ceil(totalCount / authUsersPerPage) || 1;
 
   if (isLoading) {
     return (
@@ -125,7 +109,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
       <CardBody>
         <Row className="d-flex justify-content-between py-4">
           <Col md="3" xs="12">
-            <h2>Leads</h2>
+            <h2>{title}</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -145,22 +129,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
               />
             </InputGroup>
           </Col>
-          <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
-            {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
-              <Button
-                color="primary"
-                onClick={openAddModal}
-                className="d-flex justify-content-center align-items-center gap-1"
-              >
-                <TbCirclePlus size={18} />
-                <span>Add Lead</span>
-              </Button>
-            )}
-          </Col>
+          <Col md="3" xs="12" />
         </Row>
         <Row>
           <Table hover responsive>
@@ -169,8 +138,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
-                <th>Created By</th>
+                <th>Joining Date</th>
+                <th>Gender</th>
                 <th>Created At</th>
                 <th>Action</th>
               </tr>
@@ -178,95 +147,68 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
                   </td>
                 </tr>
-              ) : currentLeads.length > 0 ? (
-                currentLeads.map((lead) => (
-                  <tr key={lead.alias} className="text-center">
+              ) : currentAuthUsers.length > 0 ? (
+                currentAuthUsers.map((admin) => (
+                  <tr key={admin.alias} className="text-center">
                     <td>
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
-                          setSelectedLead(lead);
-                          toggleViewModal();
+                          openViewModal(admin);
                         }}
                         style={{ cursor: "pointer" }}
                       >
-                        {lead.user?.title
-                          ? formatChoiceFieldValue(lead.user?.title)
+                        {admin?.title
+                          ? formatChoiceFieldValue(admin?.title)
                           : ""}{" "}
-                        {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
-                        {lead?.user?.last_name}
+                        {admin?.first_name} {admin?.middle_name}{" "}
+                        {admin?.last_name}
                       </span>
                     </td>
-                    <td>{lead?.user?.email || "-"}</td>
+                    <td>{admin?.email || "-"}</td>
                     <td>
-                      {lead?.user?.phone ? (
+                      {admin?.phone ? (
                         <a
-                          href={`tel:${lead?.user?.phone}`}
+                          href={`tel:${admin?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {lead?.user?.phone}
+                          {admin?.phone}
                         </a>
                       ) : (
                         "-"
                       )}
                     </td>
+                    <td>{formatDate(admin?.joining_date)}</td>
                     <td>
-                      {lead?.role ? formatChoiceFieldValue(lead?.role) : "-"}
+                      {admin?.gender
+                        ? formatChoiceFieldValue(admin?.gender)
+                        : "-"}
                     </td>
-                    <td>
-                      <p className="m-0">
-                        {lead.created_by?.title
-                          ? formatChoiceFieldValue(lead.created_by?.title)
-                          : ""}{" "}
-                        {lead?.created_by?.first_name}{" "}
-                        {lead?.created_by?.middle_name}{" "}
-                        {lead?.created_by?.last_name}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {lead.created_by?.user_type
-                          ? formatChoiceFieldValue(lead.created_by?.user_type)
-                          : "N/A"}
-                        )
-                      </p>
-                    </td>
-                    <td>{formatDateAndTime(lead?.created_at)}</td>
-
+                    <td>{formatDateAndTime(admin?.created_at)}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
                           color="success"
                           size="sm"
                           title="Update User"
-                          onClick={() => openUpdateModal(lead)}
+                          onClick={() => openUpdateModal(admin)}
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
-                        {session?.user?.user_type !==
-                          "NETWORK_COMPLIANCE_ASSISTANT" && (
-                          <Button
-                            color="danger"
-                            size="sm"
-                            title="Delete User"
-                            onClick={() => openDeleteModal(lead)}
-                          >
-                            <i className="icon-trash"></i>
-                          </Button>
-                        )}
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
-                    No leads available.
+                  <td colSpan={8} className="text-center">
+                    No admins available.
                   </td>
                 </tr>
               )}
@@ -278,12 +220,15 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
             <div className="px-2">
               <p className="text-success">
                 Showing{" "}
-                {totalCount === 0 ? "0" : (currentPage - 1) * leadsPerPage + 1}{" "}
+                {totalCount === 0
+                  ? "0"
+                  : (currentPage - 1) * authUsersPerPage + 1}{" "}
                 to{" "}
-                {currentLeads.length === 0
+                {currentAuthUsers.length === 0
                   ? 0
-                  : (currentPage - 1) * leadsPerPage + currentLeads.length}{" "}
-                of {totalCount} Leads
+                  : (currentPage - 1) * authUsersPerPage +
+                    currentAuthUsers.length}{" "}
+                of {totalCount} Users
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -374,34 +319,18 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
         </Row>
 
         {/* Modals */}
-        <AddLeadModal isOpen={isModalOpen} toggle={toggleModal} />
-        <ViewLeadModal
+        <ViewAuthUserModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedLead={selectedLead}
+          selectedAuthUser={selectedAuthUser}
         />
-
-        <UpdateLeadModal
+        <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
           onSave={() => {
             toggleUpdateModal();
           }}
-          selectedLead={selectedLead}
-        />
-        <DeleteLeadModal
-          isOpen={isDeleteModalOpen}
-          toggle={toggleDeleteModal}
-          leadAlias={leadToDelete?.alias}
-          leadName={`${
-            leadToDelete?.user?.title
-              ? formatChoiceFieldValue(leadToDelete?.user?.title) + " "
-              : ""
-          }${leadToDelete?.user?.first_name} ${
-            leadToDelete?.user?.middle_name
-              ? leadToDelete?.user?.middle_name + " "
-              : ""
-          }${leadToDelete?.user?.last_name}`}
+          selectedAuthUser={selectedAuthUser}
         />
         {/* modals end */}
       </CardBody>
@@ -409,4 +338,4 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
   );
 };
 
-export default Leads;
+export default AuthUsers;

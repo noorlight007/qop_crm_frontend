@@ -1,8 +1,8 @@
-import { useUpdateAdviserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
 import {
-  AdviserInfoProps,
-  UpdateAdviserModalProps,
-} from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
+  AuthUser,
+  UpdateAuthUserModalProps,
+} from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -19,106 +19,78 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
+const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   isOpen,
   toggle,
   onSave,
-  selectedAdviser,
+  selectedAuthUser,
 }) => {
-  const [adviserData, setAdviserData] =
-    useState<Partial<AdviserInfoProps>>(selectedAdviser);
+  const [authUserData, setAuthUserData] =
+    useState<Partial<AuthUser>>(selectedAuthUser);
   const [isModified, setIsModified] = useState(false);
-  const [updateAdviserDetails, { isLoading }] =
-    useUpdateAdviserDetailsMutation();
+  const [updateAuthUserDetails, { isLoading }] =
+    useUpdateAuthUserDetailsMutation();
 
   useEffect(() => {
-    setAdviserData(selectedAdviser);
+    setAuthUserData(selectedAuthUser);
     setIsModified(false);
-  }, [selectedAdviser]);
+  }, [selectedAuthUser]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    const keys = name.split(".");
-    setAdviserData((prev) => {
-      const updatedData = JSON.parse(JSON.stringify(prev));
-      let current: any = updatedData;
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {};
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = value;
-      return updatedData as Partial<AdviserInfoProps>;
-    });
-    setIsModified(true); // Set the form as modified
+    setAuthUserData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setIsModified(true);
   };
 
-  const handleUpdateAdviser = async (
-    adviserData: Partial<AdviserInfoProps>
-  ) => {
+  const handleUpdateAuthUser = async (authUserData: Partial<AuthUser>) => {
     try {
-      if (adviserData.alias) {
-        // Only include email if it has changed
-        let payload: Partial<AdviserInfoProps> = { ...adviserData };
+      if (authUserData.alias) {
+        let payload: Partial<AuthUser> = { ...authUserData };
 
         // If joining_date is empty string, send null
         if (payload.joining_date === "") {
           payload.joining_date = null as unknown as any;
         }
-        const originalEmail = selectedAdviser?.user?.email || "";
-        const updatedEmail = adviserData?.user?.email || "";
-        if (originalEmail === updatedEmail) {
-          // Remove email from payload if not changed
-          if (payload.user) {
-            const { email, ...restUser } = payload.user;
-            payload.user = restUser;
-          }
-        }
-        const result = await updateAdviserDetails({
+
+        const result = await updateAuthUserDetails({
           payload,
-          adviserAlias: adviserData.alias,
+          userAlias: authUserData.alias,
         });
 
         if (result.data) {
-          toast.success("Adviser update successfully.");
+          toast.success("Admin updated successfully.");
         } else if ("error" in result) {
           const errorMessage =
-            (result.error as any)?.data?.user?.email?.[0] ||
-            (result.error as any)?.data?.user?.nid?.[0] ||
+            (result.error as any)?.data?.email?.[0] ||
             (result.error as any)?.data?.detail ||
             "Invalid Request...";
-          // Custom error for duplicate email
-          if (
-            typeof errorMessage === "string" &&
-            errorMessage.toLowerCase().includes("email") &&
-            errorMessage.toLowerCase().includes("exist")
-          ) {
-            toast.error("User with this email already exists.");
-          } else {
-            toast.error(errorMessage);
-          }
+          toast.error(errorMessage);
         } else {
           toast.error("Invalid Request...");
         }
       }
     } catch (error) {
-      toast.error("Failed to update adviser.");
-      console.error("Error saving advisor:", error);
+      toast.error("Failed to update admin.");
+      console.error("Error saving admin:", error);
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleUpdateAdviser(adviserData); // Pass the updated data to the server
-    onSave(adviserData); // Pass the updated data to the parent component
+    handleUpdateAuthUser(authUserData);
+    onSave(authUserData);
     toggle();
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Adviser</span>
+        <span className="fs-4 text-primary">Update Admin</span>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
@@ -128,9 +100,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Label for="title">Title*</Label>
                 <Input
                   id="title"
-                  name="user.title"
+                  name="title"
                   type="select"
-                  value={adviserData?.user?.title || ""}
+                  value={authUserData?.title || ""}
                   onChange={handleChange}
                   required
                 >
@@ -153,9 +125,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="text"
                   id="firstName"
-                  name="user.first_name"
+                  name="first_name"
                   placeholder="First Name"
-                  value={adviserData.user?.first_name || ""}
+                  value={authUserData?.first_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -168,9 +140,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="text"
                   id="middleName"
-                  name="user.middle_name"
+                  name="middle_name"
                   placeholder="Middle Name(s)"
-                  value={adviserData.user?.middle_name || ""}
+                  value={authUserData?.middle_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -182,9 +154,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="text"
                   id="lastName"
-                  name="user.last_name"
+                  name="last_name"
                   placeholder="Last Name"
-                  value={adviserData.user?.last_name || ""}
+                  value={authUserData?.last_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -197,9 +169,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="email"
                   id="email"
-                  name="user.email"
+                  name="email"
                   placeholder="Email"
-                  value={adviserData.user?.email || ""}
+                  value={authUserData?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -211,9 +183,9 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 <Input
                   type="number"
                   id="phone"
-                  name="user.phone"
+                  name="phone"
                   placeholder="Phone"
-                  value={adviserData.user?.phone || ""}
+                  value={authUserData?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -227,7 +199,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="joining_date"
                   name="joining_date"
                   placeholder="Joining Date"
-                  value={adviserData.joining_date || ""}
+                  value={authUserData?.joining_date || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -240,7 +212,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   id="gender"
                   name="gender"
                   type="select"
-                  value={adviserData?.gender || ""}
+                  value={authUserData?.gender || ""}
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
@@ -250,20 +222,6 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 </Input>
               </FormGroup>
             </Col>
-            {/* <Col md={6} xs={6}>
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  id="profile_image"
-                  name="user.profile_image"
-                  placeholder="Image"
-                  onChange={handleChange}
-                  className="mb-2"
-                />
-              </FormGroup>
-            </Col> */}
           </Row>
         </ModalBody>
         <ModalFooter>
@@ -282,4 +240,4 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
     </Modal>
   );
 };
-export default UpdateAdviserModal;
+export default UpdateAuthUserModal;

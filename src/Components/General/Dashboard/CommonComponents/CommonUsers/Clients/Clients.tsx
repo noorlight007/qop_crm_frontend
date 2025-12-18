@@ -1,4 +1,4 @@
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import {
   ClientInfoProps,
   ClientsProps,

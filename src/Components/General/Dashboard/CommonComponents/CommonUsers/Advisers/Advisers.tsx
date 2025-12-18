@@ -1,10 +1,10 @@
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
 import {
   AdviserInfoProps,
   AdvisersProps,
 } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -171,7 +171,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Gender</th>
                 <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
@@ -220,14 +220,14 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      {adviser?.role
-                        ? formatChoiceFieldValue(adviser.role)
+                      {adviser?.gender
+                        ? formatChoiceFieldValue(adviser.gender)
                         : "-"}
                     </td>
                     <td>
                       {adviser?.joining_date &&
                       !isNaN(Date.parse(adviser.joining_date))
-                        ? formatDateAndTime(adviser.joining_date)
+                        ? formatDate(adviser.joining_date)
                         : "-"}
                     </td>
                     <td>
@@ -263,14 +263,14 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
-                        <Button
+                        {/* <Button
                           color="danger"
                           size="sm"
                           title="Delete User"
                           onClick={() => openDeleteModal(adviser)}
                         >
                           <i className="icon-trash"></i>
-                        </Button>
+                        </Button> */}
                       </div>
                     </td>
                   </tr>
