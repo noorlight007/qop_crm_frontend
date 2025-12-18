@@ -1,11 +1,11 @@
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersDetailsApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
 import {
   CaseInfoPrpos,
   CaseUser,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
+import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

@@ -150,10 +150,8 @@ const CaseCompletionOverTime: React.FC<OrganisationDirectorDashboardProps> = ({
   ];
 
   return (
-    <Card>
-      <h4 className="text-xl p-3 font-semibold mb-4">
-        Case Completion Over Time
-      </h4>
+    <Card className="border-0 p-3 shadow-sm bg-white">
+      <h4 className="text-xl font-semibold mb-4">Case Completion Over Time</h4>
       <div className="apex-chart w-100">
         {isLoading ? (
           <div className="skeleton-loading" style={{ height: 300 }} />

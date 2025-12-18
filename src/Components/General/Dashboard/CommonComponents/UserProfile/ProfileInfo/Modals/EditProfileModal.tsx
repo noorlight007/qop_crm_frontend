@@ -28,14 +28,12 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
     first_name: "",
     middle_name: "",
     last_name: "",
-    profile_image: "",
     address: "",
     city: "",
     state: "",
     country: "",
     post_code: "",
   });
-  const [file, setFile] = useState<File | null>(null);
 
   const [editUserData, { isLoading }] = useUpdateUserDetailsMutation();
   const { data: session, update: updateSession } = useSession();
@@ -48,7 +46,6 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
         first_name: initialData.first_name || "",
         middle_name: initialData.middle_name || "",
         last_name: initialData.last_name || "",
-        profile_image: initialData.profile_image || "",
         address: initialData.address || "",
         city: initialData.city || "",
         state: initialData.state || "",
@@ -65,58 +62,27 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
     setForm((s) => ({ ...s, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files && e.target.files[0];
-    setFile(f || null);
-    setForm((s) => ({ ...s, profile_image: f ? f.name : "" }));
-  };
-
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     try {
-      let updatedUserData;
+      const payload: Record<string, any> = {
+        title: form.title || null,
+        first_name: form.first_name || null,
+        middle_name: form.middle_name || "",
+        last_name: form.last_name || null,
+        address: form.address || null,
+        city: form.city || null,
+        state: form.state || null,
+        country: form.country || null,
+        post_code: form.post_code || null,
+      };
 
-      if (file) {
-        const formData = new FormData();
-        formData.append("profile_image", file);
-
-        // Only append phone if it has changed
-        if (form.phone !== initialData?.phone) {
-          formData.append("phone", form.phone || "");
-        }
-
-        formData.append("title", form.title || "");
-        formData.append("first_name", form.first_name || "");
-        formData.append("middle_name", form.middle_name || "");
-        formData.append("last_name", form.last_name || "");
-        formData.append("address", form.address || "");
-        formData.append("city", form.city || "");
-        formData.append("state", form.state || "");
-        formData.append("country", form.country || "");
-        formData.append("post_code", form.post_code || "");
-
-        // send FormData as payload and include empty userAlias for current user
-        updatedUserData = await editUserData({ payload: formData }).unwrap();
-      } else {
-        const payload: Record<string, any> = {
-          title: form.title || null,
-          first_name: form.first_name || null,
-          middle_name: form.middle_name || "",
-          last_name: form.last_name || null,
-          address: form.address || null,
-          city: form.city || null,
-          state: form.state || null,
-          country: form.country || null,
-          post_code: form.post_code || null,
-        };
-
-        // Only include phone if it has changed
-        if (form.phone !== initialData?.phone) {
-          payload.phone = form.phone || null;
-        }
-
-        updatedUserData = await editUserData({ payload }).unwrap();
+      // Only include phone if it has changed
+      if (form.phone !== initialData?.phone) {
+        payload.phone = form.phone || null;
       }
+
+      const updatedUserData = await editUserData({ payload }).unwrap();
 
       // Update session with new profile data
       if (updateSession) {
@@ -143,8 +109,6 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
 
         const sessionUpdate = {
           name: updatedName,
-          profile_image:
-            updatedUserData?.profile_image || session?.user?.profile_image,
         };
 
         console.log("Updating session with:", sessionUpdate);
@@ -316,18 +280,6 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
                   id="country"
                   value={form.country}
                   onChange={handleChange}
-                />
-              </FormGroup>
-            </Col>
-            <Col sm="12" md="12">
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  name="profile_image"
-                  id="profile_image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
                 />
               </FormGroup>
             </Col>

@@ -1,9 +1,9 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadDetalisApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
-import { LeadsInfo } from "@/Types/CommonComponents/Directors/LeadTypes";
+import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
+import { LeadsInfo } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
@@ -22,7 +22,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import AddLeadModal from "../../Directors/Leads/Modals/AddLeadModal";
+import AddLeadModal from "../../CommonUsers/Leads/Modals/AddLeadModal";
 
 const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,

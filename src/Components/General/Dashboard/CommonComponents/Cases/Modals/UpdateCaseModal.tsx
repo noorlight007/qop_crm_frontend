@@ -1,10 +1,10 @@
 import { useUpdateCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdviserDetailsApi";
+import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/Directors/AdviserTypes";
+import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";

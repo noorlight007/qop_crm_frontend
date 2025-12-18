@@ -1,5 +1,6 @@
 import { Href, ImagePath } from "@/Constant";
-import { signOut, useSession } from "next-auth/react";
+import { logOut } from "@/Redux/Api/BaseApi";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,26 +44,9 @@ const Profile = () => {
   }, [show]);
 
   const handleLogout = async () => {
-    // notify other tabs about logout
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("qop_logout", Date.now().toString());
-      } catch (err) {
-        // ignore
-      }
-      try {
-        if ((window as any).BroadcastChannel) {
-          const bc = new BroadcastChannel("qop_channel");
-          bc.postMessage("logout");
-          bc.close();
-        }
-      } catch (err) {
-        // ignore
-      }
-    }
+    localStorage.setItem("logout-event", Date.now().toString());
 
-    await signOut({ redirect: false });
-    router.push("/auth/login");
+    await logOut();
   };
 
   return (

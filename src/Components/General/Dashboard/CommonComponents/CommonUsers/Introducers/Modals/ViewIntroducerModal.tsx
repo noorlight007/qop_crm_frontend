@@ -1,0 +1,150 @@
+import { ViewIntroducerModalProps } from "@/Types/CommonComponents/CommonUsers/IntroducerTypes";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
+import {
+  Button,
+  Col,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Row,
+} from "reactstrap";
+
+const ViewIntroducerModal: React.FC<ViewIntroducerModalProps> = ({
+  isOpen,
+  toggle,
+  selectedIntroducer,
+}) => {
+  return (
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+      <ModalHeader toggle={toggle}>
+        <h3 className="text-primary">Introducer Information</h3>
+      </ModalHeader>
+      <ModalBody>
+        {/* 1st row  */}
+        <Row>
+          <Col md="4" sm="12" className="d-flex flex-column">
+            <span className="text-muted">Name:</span>
+            <small>
+              {selectedIntroducer.user?.title
+                ? formatChoiceFieldValue(selectedIntroducer.user?.title)
+                : ""}{" "}
+              {selectedIntroducer?.user?.first_name}{" "}
+              {selectedIntroducer?.user?.middle_name}{" "}
+              {selectedIntroducer?.user?.last_name}
+            </small>
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column">
+            <span className="text-muted">Email:</span>
+            {selectedIntroducer?.user?.email ? (
+              <small>{selectedIntroducer.user?.email}</small>
+            ) : (
+              <span className="text-muted small">Not available</span>
+            )}
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">Phone:</span>
+
+            {selectedIntroducer?.user?.phone ? (
+              <a
+                className="text-dark text_decoration_hover small"
+                href={`tel:${selectedIntroducer?.user?.phone}`}
+              >
+                {selectedIntroducer.user?.phone}
+              </a>
+            ) : (
+              <span className="text-muted small">Not available</span>
+            )}
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">Gender:</span>
+            <small>
+              {selectedIntroducer?.gender ? (
+                formatChoiceFieldValue(selectedIntroducer?.gender)
+              ) : (
+                <span className="text-muted">Not available</span>
+              )}
+            </small>
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">User Type:</span>
+            <small>
+              {selectedIntroducer?.user?.user_type ? (
+                formatChoiceFieldValue(selectedIntroducer?.user?.user_type)
+              ) : (
+                <span className="text-muted">Not available</span>
+              )}
+            </small>
+          </Col>{" "}
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">User Role:</span>
+            <small>
+              {selectedIntroducer?.role ? (
+                formatChoiceFieldValue(selectedIntroducer?.role)
+              ) : (
+                <span className="text-muted">Not available</span>
+              )}
+            </small>
+          </Col>{" "}
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">Created At:</span>
+            <small>
+              {(selectedIntroducer?.created_at &&
+                formatDateAndTime(selectedIntroducer?.created_at)) || (
+                <span className="text-muted">Not available</span>
+              )}
+            </small>
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">Created By:</span>
+            <small>
+              {selectedIntroducer?.created_by ? (
+                <>
+                  {selectedIntroducer.created_by.title
+                    ? formatChoiceFieldValue(
+                        selectedIntroducer.created_by.title
+                      )
+                    : ""}{" "}
+                  {selectedIntroducer.created_by.first_name}{" "}
+                  {selectedIntroducer.created_by.middle_name}{" "}
+                  {selectedIntroducer.created_by.last_name}
+                </>
+              ) : (
+                "Not available"
+              )}
+            </small>
+            <small
+              className="text-muted"
+              style={{ marginTop: "-6px", fontSize: "10px" }}
+            >
+              (
+              {selectedIntroducer?.created_by?.user_type
+                ? formatChoiceFieldValue(
+                    selectedIntroducer.created_by.user_type
+                  )
+                : "Not available"}
+              )
+            </small>
+          </Col>
+          <Col md="4" sm="12" className="d-flex flex-column mt-4">
+            <span className="text-muted">Joining Date:</span>
+            <small>
+              {selectedIntroducer?.joining_date &&
+              !isNaN(Date.parse(selectedIntroducer.joining_date))
+                ? formatDateAndTime(selectedIntroducer.joining_date)
+                : "Not available"}
+            </small>
+          </Col>
+        </Row>
+      </ModalBody>
+      <ModalFooter className="d-flex justify-content-end">
+        <Button color="danger" onClick={toggle}>
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+export default ViewIntroducerModal;

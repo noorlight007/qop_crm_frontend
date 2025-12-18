@@ -1,12 +1,12 @@
 import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
-import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/ClientInvitationModal";
-import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/Directors/Clients/Modals/UpdateClientModal";
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientDetailsApi";
+import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/ClientInvitationModal";
+import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/UpdateClientModal";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import {
   CaseInfoPrpos,
   SingleCaseProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { ClientInfoProps } from "@/Types/CommonComponents/Directors/ClientTypes";
+import { ClientInfoProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
