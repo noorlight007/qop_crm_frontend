@@ -91,14 +91,21 @@ export interface ApplicantProps {
   updated_by?: any;
 }
 
+export interface ApplicantDependantsProps {
+  alias: string;
+  id: number;
+  name: string;
+  relationship_type: string;
+  other_relationship: string;
+  date_of_birth: string;
+}
+
 export interface ApplicantDependantsViewModalProps {
   isOpen?: boolean;
   toggle?: () => void;
   slNo?: number;
-  name?: string;
-  dateOfBirth?: string;
   applicantAlias?: any;
-  applicantsData?: ApplicantProps[];
+  applicantsData?: ApplicantDependantsProps[];
 }
 export interface AddDependantFormModalProps {
   isOpen: boolean;

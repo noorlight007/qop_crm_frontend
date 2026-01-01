@@ -31,7 +31,10 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
     lastName: "",
     email: "",
     phone: "",
-    reason_for_enquiry: "",
+    source: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    note: "",
   });
 
   // Hold per-field validation errors returned from API
@@ -161,7 +164,9 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      reason_for_enquiry: formData.reason_for_enquiry,
+      source: formData.source || "",
+      enquiry_type: formData.enquiry_type,
+      note: formData.note,
     };
 
     try {
@@ -171,7 +176,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         const leadId = result.data.user?.id;
         setCreatedLeadId(leadId);
         setIsCaseModalOpen(true);
-        // Clear any existing errors on success
         setErrors({});
       } else if ("error" in result) {
         const normalized = normalizeApiErrors(result);
@@ -213,7 +217,9 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      reason_for_enquiry: formData.reason_for_enquiry,
+      source: formData.source || "",
+      enquiry_type: formData.enquiry_type,
+      note: formData.note,
     };
 
     try {
@@ -228,7 +234,10 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
           lastName: "",
           email: "",
           phone: "",
-          reason_for_enquiry: "",
+          source: "",
+          enquiry_type: "",
+          other_enquiry_type: "",
+          note: "",
         });
         // Clear any existing errors on success
         setErrors({});
@@ -402,13 +411,37 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
               </FormGroup>
             </Col>
             <Col md={6}>
+              <FormGroup>
+                <Label for="source">Source</Label>
+                <Input
+                  id="source"
+                  name="source"
+                  type="select"
+                  value={formData.source || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="ONLINE_AD">Online Ad</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="WALK_IN">Walk-in</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {errors.source && (
+                  <div className="text-danger small mt-1">
+                    {errors.source.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
               <Label for="reasonForEnquiry">Reason For Enquiry</Label>
               <FormGroup>
                 <Input
                   id="reasonForEnquiry"
-                  name="reason_for_enquiry"
+                  name="enquiry_type"
                   type="select"
-                  value={formData.reason_for_enquiry}
+                  value={formData.enquiry_type || ""}
                   onChange={handleInputChange}
                 >
                   <option value="">Select...</option>
@@ -421,6 +454,44 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                 {errors.reason_for_enquiry && (
                   <div className="text-danger small mt-1">
                     {errors.reason_for_enquiry.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {formData.enquiry_type === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_enquiry">Other Enquiry</Label>
+                  <Input
+                    id="other_enquiry"
+                    name="other_enquiry_type"
+                    type="text"
+                    value={formData.other_enquiry_type || ""}
+                    onChange={handleInputChange}
+                  />
+                  {errors.other_enquiry_type && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_enquiry_type.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
+            <Col md={6}>
+              <FormGroup>
+                <Label className="text-muted">Note</Label>
+                <Input
+                  type="textarea"
+                  name="note"
+                  id="note"
+                  value={formData.note || ""}
+                  onChange={handleInputChange}
+                  placeholder="Additional information about the lead..."
+                />
+                {errors.note && (
+                  <div className="text-danger small mt-1">
+                    {errors.note.join(" ")}
                   </div>
                 )}
               </FormGroup>

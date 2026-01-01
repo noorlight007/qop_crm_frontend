@@ -3,8 +3,12 @@ import {
   useAddDependantsMutation,
   useGetDependantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
-import { ApplicantDependantsViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
+import {
+  ApplicantDependantsProps,
+  ApplicantDependantsViewModalProps,
+} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
@@ -33,13 +37,17 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
 
   // Get first applicant's dependants
   const firstApplicant = applicantsData?.[0];
+  const shouldFetchFirstApplicantDependants =
+    firstApplicant?.alias && firstApplicant?.alias !== applicantAlias;
+
   const { data: firstApplicantDependants } = useGetDependantsQuery(
-    firstApplicant?.alias && firstApplicant?.alias !== applicantAlias
+    shouldFetchFirstApplicantDependants
       ? {
           case_alias: casealias,
           applicantDetails_alias: firstApplicant.alias,
         }
-      : { case_alias: "", applicantDetails_alias: "" }
+      : null,
+    { skip: !shouldFetchFirstApplicantDependants }
   );
 
   const [addDependants] = useAddDependantsMutation();
@@ -78,6 +86,8 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
           applicantDetails_alias: applicantAlias,
           dependantsInfo: {
             name: dependant.name,
+            relationship_type: dependant.relationship_type,
+            other_relationship: dependant.other_relationship,
             date_of_birth: dependant.date_of_birth,
           },
         });
@@ -108,7 +118,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
         <h2>Applicant Dependants</h2>
         <div className="d-flex justify-content-end gap-2">
           {applicantsData &&
-            applicantsData.length > 1 &&
+            applicantsData.length > 0 &&
             applicantsData[0]?.alias !== applicantAlias && (
               <Button
                 color="info"
@@ -136,6 +146,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
               <tr className="text-center text-primary small">
                 <th>Serial No</th>
                 <th>Name</th>
+                <th>Relationship</th>
                 <th>Date of Birth</th>
                 <th>Age</th>
                 <th>Action</th>
@@ -144,13 +155,17 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
             <tbody>
               {applicantDependantsData && applicantDependantsData.length > 0 ? (
                 applicantDependantsData.map(
-                  (
-                    dependant: { id?: string; name: any; date_of_birth: any },
-                    index: number
-                  ) => (
-                    <tr className="text-center" key={index}>
+                  (dependant: ApplicantDependantsProps, index: number) => (
+                    <tr className="text-center" key={dependant.id}>
                       <td>{index + 1}</td>
                       <td>{dependant.name || "-"}</td>
+                      <td>
+                        {dependant.relationship_type === "OTHER"
+                          ? dependant.other_relationship || "-"
+                          : formatChoiceFieldValue(
+                              dependant.relationship_type
+                            ) || "-"}
+                      </td>
                       <td>{dependant.date_of_birth || "-"}</td>
                       <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
                       <td>
@@ -159,7 +174,11 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                           outline
                           size="sm"
                           onClick={() =>
-                            setIsDependantDeleteModalOpen(dependant?.id ?? null)
+                            setIsDependantDeleteModalOpen(
+                              dependant?.id != null
+                                ? String(dependant.id)
+                                : null
+                            )
                           }
                           title="Delete dependant"
                         >
@@ -171,7 +190,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                 )
               ) : (
                 <tr>
-                  <td colSpan={5} className="text-center">
+                  <td colSpan={6} className="text-center">
                     No dependants found.
                   </td>
                 </tr>
