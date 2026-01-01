@@ -31,7 +31,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
     lastName: "",
     email: "",
     phone: "",
-    gender: "",
     reason_for_enquiry: "",
   });
 
@@ -162,7 +161,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      gender: formData.gender,
       reason_for_enquiry: formData.reason_for_enquiry,
     };
 
@@ -215,7 +213,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      gender: formData.gender,
       reason_for_enquiry: formData.reason_for_enquiry,
     };
 
@@ -231,7 +228,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
           lastName: "",
           email: "",
           phone: "",
-          gender: "",
           reason_for_enquiry: "",
         });
         // Clear any existing errors on success
@@ -406,41 +402,22 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
               </FormGroup>
             </Col>
             <Col md={6}>
-              <FormGroup>
-                <Label for="gender">
-                  Gender<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="gender"
-                  name="gender"
-                  type="select"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select...</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                  <option value="OTHER">Other</option>
-                </Input>
-                {errors.gender && (
-                  <div className="text-danger small mt-1">
-                    {errors.gender.join(" ")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
               <Label for="reasonForEnquiry">Reason For Enquiry</Label>
               <FormGroup>
                 <Input
                   id="reasonForEnquiry"
                   name="reason_for_enquiry"
-                  type="text"
-                  className="rounded-end-0"
+                  type="select"
                   value={formData.reason_for_enquiry}
                   onChange={handleInputChange}
-                />
+                >
+                  <option value="">Select...</option>
+                  <option value="GENERAL_ENQUIRY">General Enquiry</option>
+                  <option value="LEGAL_ADVICE">Legal Advice</option>
+                  <option value="CASE_REVIEW">Case Review</option>
+                  <option value="FOLLOW_UP">Follow Up</option>
+                  <option value="OTHER">Other</option>
+                </Input>
                 {errors.reason_for_enquiry && (
                   <div className="text-danger small mt-1">
                     {errors.reason_for_enquiry.join(" ")}
