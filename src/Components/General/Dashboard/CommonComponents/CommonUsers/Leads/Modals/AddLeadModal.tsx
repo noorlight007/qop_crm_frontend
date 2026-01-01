@@ -32,6 +32,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
     email: "",
     phone: "",
     source: "",
+    other_source: "",
     enquiry_type: "",
     other_enquiry_type: "",
     note: "",
@@ -165,6 +166,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         phone: formData.phone || null,
       },
       source: formData.source || "",
+      other_source: formData.other_source,
       enquiry_type: formData.enquiry_type,
       note: formData.note,
     };
@@ -218,6 +220,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         phone: formData.phone || null,
       },
       source: formData.source || "",
+      other_source: formData.other_source,
       enquiry_type: formData.enquiry_type,
       note: formData.note,
     };
@@ -235,6 +238,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
           email: "",
           phone: "",
           source: "",
+          other_source: "",
           enquiry_type: "",
           other_enquiry_type: "",
           note: "",
@@ -434,6 +438,25 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                 )}
               </FormGroup>
             </Col>
+            {formData.source === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_source">Other Source</Label>
+                  <Input
+                    id="other_source"
+                    name="other_source"
+                    type="text"
+                    value={formData.other_source || ""}
+                    onChange={handleInputChange}
+                  />
+                  {errors.other_source && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_source.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
             <Col md={6}>
               <Label for="reasonForEnquiry">Reason For Enquiry</Label>
               <FormGroup>

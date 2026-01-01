@@ -13,6 +13,7 @@ export interface LeadsInfo {
   };
   role: string;
   source: string;
+  other_source: string;
   enquiry_type: string;
   other_enquiry_type: string;
   note: string;

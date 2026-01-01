@@ -72,14 +72,14 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
       if (payload.role === "" || payload.role == null) {
         delete (payload as any).role;
       }
-      if (payload.gender === "" || payload.gender == null) {
-        delete (payload as any).gender;
+      if (payload.source === "" || payload.source == null) {
+        delete (payload as any).source;
       }
       if (
-        (payload as any).reason_for_enquiry === "" ||
-        (payload as any).reason_for_enquiry == null
+        (payload as any).enquiry_type === "" ||
+        (payload as any).enquiry_type == null
       ) {
-        delete (payload as any).reason_for_enquiry;
+        delete (payload as any).enquiry_type;
       }
 
       // Only include email if it has changed
@@ -234,15 +234,82 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                 />
               </FormGroup>
             </Col>
-            <Col md={12}>
+            <Col md={6}>
               <FormGroup>
-                <Label for="reason_for_enquiry">Reason for Enquiry</Label>
+                <Label for="source">Source</Label>
                 <Input
-                  id="reason_for_enquiry"
-                  name="reason_for_enquiry"
-                  type="text"
-                  value={clientData.reason_for_enquiry || ""}
+                  id="source"
+                  name="source"
+                  type="select"
+                  value={clientData.source || ""}
                   onChange={handleChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="ONLINE_AD">Online Ad</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="WALK_IN">Walk-in</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            {clientData.source === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_source">Other Source</Label>
+                  <Input
+                    id="other_source"
+                    name="other_source"
+                    type="text"
+                    value={clientData.other_source || ""}
+                    onChange={handleChange}
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            <Col md={6}>
+              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
+              <FormGroup>
+                <Input
+                  id="reasonForEnquiry"
+                  name="enquiry_type"
+                  type="select"
+                  value={clientData.enquiry_type || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="GENERAL_ENQUIRY">General Enquiry</option>
+                  <option value="LEGAL_ADVICE">Legal Advice</option>
+                  <option value="CASE_REVIEW">Case Review</option>
+                  <option value="FOLLOW_UP">Follow Up</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            {clientData.enquiry_type === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_enquiry">Other Enquiry</Label>
+                  <Input
+                    id="other_enquiry"
+                    name="other_enquiry_type"
+                    type="text"
+                    value={clientData.other_enquiry_type || ""}
+                    onChange={handleChange}
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            <Col md={6}>
+              <FormGroup>
+                <Label className="text-muted">Note</Label>
+                <Input
+                  type="textarea"
+                  name="note"
+                  id="note"
+                  value={clientData.note || ""}
+                  onChange={handleChange}
+                  placeholder="Additional information about the lead..."
                 />
               </FormGroup>
             </Col>

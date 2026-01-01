@@ -167,6 +167,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Source</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -175,7 +176,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="text-center">
+                  <td colSpan={7} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -211,6 +212,15 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         </a>
                       ) : (
                         "-"
+                      )}
+                    </td>
+                    <td>
+                      {lead?.source === "OTHER" ? (
+                        lead?.other_source || "-"
+                      ) : lead?.source ? (
+                        formatChoiceFieldValue(lead.source)
+                      ) : (
+                        <span className="text-muted">Not available</span>
                       )}
                     </td>
                     <td>
@@ -259,7 +269,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="text-center">
+                  <td colSpan={7} className="text-center">
                     No leads available.
                   </td>
                 </tr>
