@@ -6,7 +6,7 @@ import { saveAs } from "file-saver";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaChevronLeft, FaChevronRight, FaEye } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaEye, FaFolder } from "react-icons/fa";
 import { TbCircleArrowUp, TbEye, TbTransfer } from "react-icons/tb";
 import {
   Button,
@@ -345,13 +345,22 @@ const Documents: React.FC = () => {
         {/* Tabs for file types */}
         <CardBody>
           <Row className="mb-3">
-            <Col>
-              <div className="d-flex flex-wrap justify-content-center gap-2">
+            <Col className="d-flex justify-content-center">
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+                  gap: "8px",
+                  width: "100%",
+                  maxWidth: "1200px",
+                }}
+              >
                 <Button
                   color={activeTab === "" ? "primary" : "outline-primary"}
                   size="sm"
                   onClick={() => setActiveTab("")}
                 >
+                  <FaFolder className="me-1" />
                   All ({caseDocuments.length})
                 </Button>
                 {FILE_TYPES.map((ft) => (
@@ -364,6 +373,7 @@ const Documents: React.FC = () => {
                     onClick={() => setActiveTab(ft.value)}
                     title={ft.label}
                   >
+                    <FaFolder className="me-1" />
                     {ft.label} (
                     {
                       caseDocuments.filter((d) => d.file_type === ft.value)
