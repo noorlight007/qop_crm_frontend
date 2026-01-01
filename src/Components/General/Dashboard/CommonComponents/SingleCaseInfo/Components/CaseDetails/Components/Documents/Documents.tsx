@@ -276,68 +276,79 @@ const Documents: React.FC = () => {
     <Col sm="12" className="box-col-12">
       <Card>
         <CardHeader>
-          <Row>
-            <Col lg="4" sm="12">
+          <Row className="align-items-center g-3">
+            <Col lg="3" xl="2">
               <h3>Documents</h3>
               {selectedDocuments.size > 0 && (
                 <small className="text-muted">
-                  {selectedDocuments.size} document(s) selected
+                  {selectedDocuments.size} selected
                 </small>
               )}
             </Col>
-            <Col
-              sm="12"
-              className="d-flex flex-md-row flex-xs-column justify-content-end gap-2"
-            >
-              <div className="position-relative" style={{ minWidth: "250px" }}>
-                <Input
-                  type="text"
-                  placeholder="Search documents..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pe-5"
-                  style={{ padding: "10px" }}
-                />
-                <i className="fa-solid fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
-              </div>
-              {selectedDocuments.size > 0 && (
-                <>
-                  {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-                    session?.user?.user_type === "NETWORK_DIRECTOR") && (
-                    <Button color="danger" onClick={handleBatchDelete}>
-                      <i className="fa-solid fa-trash me-1"></i>
-                      Delete Selected ({selectedDocuments.size})
-                    </Button>
-                  )}
-                  <Button
-                    color="info"
-                    onClick={handleBatchDownload}
-                    disabled={isDownloading}
-                  >
-                    <i className="fa-solid fa-download me-1"></i>
-                    {isDownloading
-                      ? "Preparing…"
-                      : `Download Selected (${selectedDocuments.size})`}
-                  </Button>
-                  <Button
-                    color="secondary"
-                    outline
-                    onClick={toggleTransferDocumentModal}
-                  >
-                    <TbTransfer />
-                    Transfer Documents ({selectedDocuments.size})
-                  </Button>
-                </>
-              )}
+            <Col lg="9" xl="12">
+              <div className="d-flex flex-column flex-md-row align-items-md-center gap-2">
+                <div
+                  className="position-relative flex-shrink-0"
+                  style={{ minWidth: "200px", maxWidth: "280px" }}
+                >
+                  <Input
+                    type="text"
+                    placeholder="Search documents..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pe-5"
+                    style={{ padding: "8px 12px" }}
+                  />
+                  <i className="fa-solid fa-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                </div>
 
-              <Button color="primary" onClick={toggleModal}>
-                <TbCircleArrowUp size={18} className="me-1" />
-                Upload Document
-              </Button>
-              <Button disabled>
-                <TbEye size={18} className="me-1" />
-                OCR Upload
-              </Button>
+                <div className="d-flex flex-wrap gap-2 ms-md-auto">
+                  {selectedDocuments.size > 0 && (
+                    <>
+                      {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+                        session?.user?.user_type === "NETWORK_DIRECTOR") && (
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={handleBatchDelete}
+                        >
+                          <i className="fa-solid fa-trash me-1"></i>
+                          Delete ({selectedDocuments.size})
+                        </Button>
+                      )}
+                      <Button
+                        color="info"
+                        size="sm"
+                        onClick={handleBatchDownload}
+                        disabled={isDownloading}
+                      >
+                        <i className="fa-solid fa-download me-1"></i>
+                        {isDownloading
+                          ? "Preparing…"
+                          : `Download (${selectedDocuments.size})`}
+                      </Button>
+                      <Button
+                        color="warning"
+                        outline
+                        size="sm"
+                        onClick={toggleTransferDocumentModal}
+                      >
+                        <TbTransfer size={16} className="me-1" />
+                        Transfer ({selectedDocuments.size})
+                      </Button>
+                    </>
+                  )}
+
+                  <Button color="primary" size="sm" onClick={toggleModal}>
+                    <TbCircleArrowUp size={16} className="me-1" />
+                    Upload Document
+                  </Button>
+                  <Button color="secondary" size="sm" disabled>
+                    <TbEye size={16} className="me-1" />
+                    OCR Upload
+                  </Button>
+                </div>
+              </div>
             </Col>
           </Row>
         </CardHeader>
@@ -359,6 +370,7 @@ const Documents: React.FC = () => {
                   color={activeTab === "" ? "primary" : "outline-primary"}
                   size="sm"
                   onClick={() => setActiveTab("")}
+                  className="p-2"
                 >
                   <FaFolder className="me-1" />
                   All ({caseDocuments.length})
@@ -372,6 +384,7 @@ const Documents: React.FC = () => {
                     size="sm"
                     onClick={() => setActiveTab(ft.value)}
                     title={ft.label}
+                    className="p-2"
                   >
                     <FaFolder className="me-1" />
                     {ft.label} (
