@@ -63,9 +63,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
       profile_image: "",
       user_type: "",
     },
-    role: "",
-    gender: "",
-    reason_for_enquiry: "",
+    source: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -185,7 +183,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Source</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -234,9 +232,13 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      {client?.role
-                        ? formatChoiceFieldValue(client?.role)
-                        : "-"}
+                      {client?.source === "OTHER" ? (
+                        client?.other_source || "-"
+                      ) : client?.source ? (
+                        formatChoiceFieldValue(client.source)
+                      ) : (
+                        <span className="text-muted">Not available</span>
+                      )}
                     </td>
                     <td>
                       <p className="m-0">

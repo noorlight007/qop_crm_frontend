@@ -57,9 +57,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
       profile_image: "",
       user_type: "",
     },
-    role: "",
-    gender: "",
-    reason_for_enquiry: "",
+    enquiry_type: "",
   });
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
@@ -169,7 +167,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Source</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Action</th>
@@ -217,7 +215,13 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      {lead?.role ? formatChoiceFieldValue(lead?.role) : "-"}
+                      {lead?.source === "OTHER" ? (
+                        lead?.other_source || "-"
+                      ) : lead?.source ? (
+                        formatChoiceFieldValue(lead.source)
+                      ) : (
+                        <span className="text-muted">Not available</span>
+                      )}
                     </td>
                     <td>
                       <p className="m-0">

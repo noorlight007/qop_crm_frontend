@@ -26,8 +26,11 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
     email: "",
     phone: "",
     password: "",
-    gender: "",
-    reason_for_enquiry: "",
+    source: "",
+    other_source: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    note: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,8 +54,11 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
         phone: formData.phone || "",
         password: formData.password,
       },
-      gender: formData.gender,
-      reason_for_enquiry: formData.reason_for_enquiry,
+      source: formData.source || "",
+      other_source: formData.other_source || "",
+      enquiry_type: formData.enquiry_type || "",
+      other_enquiry_type: formData.other_enquiry_type || "",
+      note: formData.note || "",
     };
 
     try {
@@ -68,8 +74,11 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
           email: "",
           phone: "",
           password: "",
-          gender: "",
-          reason_for_enquiry: "",
+          source: "",
+          other_source: "",
+          enquiry_type: "",
+          other_enquiry_type: "",
+          note: "",
         });
         toggle();
       } else if ("error" in result) {
@@ -203,35 +212,84 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
                 />
               </FormGroup>
             </Col>
+
             <Col md={6}>
               <FormGroup>
-                <Label for="gender">
-                  Gender<span className="text-danger">*</span>
-                </Label>
+                <Label for="source">Source</Label>
                 <Input
-                  id="gender"
-                  name="gender"
+                  id="source"
+                  name="source"
                   type="select"
-                  value={formData.gender}
+                  value={formData.source || ""}
                   onChange={handleInputChange}
-                  required
                 >
                   <option value="">Select...</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="ONLINE_AD">Online Ad</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="WALK_IN">Walk-in</option>
                   <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>
             </Col>
-            <Col md={12}>
+            {formData.source === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_source">Other Source</Label>
+                  <Input
+                    id="other_source"
+                    name="other_source"
+                    type="text"
+                    value={formData.other_source || ""}
+                    onChange={handleInputChange}
+                  />
+                </FormGroup>
+              </Col>
+            )}
+            <Col md={6}>
+              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
               <FormGroup>
-                <Label for="reason_for_enquiry">Reason for Enquiry</Label>
                 <Input
-                  id="reason_for_enquiry"
-                  name="reason_for_enquiry"
-                  type="text"
-                  value={formData.reason_for_enquiry || ""}
+                  id="reasonForEnquiry"
+                  name="enquiry_type"
+                  type="select"
+                  value={formData.enquiry_type || ""}
                   onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="GENERAL_ENQUIRY">General Enquiry</option>
+                  <option value="LEGAL_ADVICE">Legal Advice</option>
+                  <option value="CASE_REVIEW">Case Review</option>
+                  <option value="FOLLOW_UP">Follow Up</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+              </FormGroup>
+            </Col>
+            {formData.enquiry_type === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_enquiry">Other Enquiry</Label>
+                  <Input
+                    id="other_enquiry"
+                    name="other_enquiry_type"
+                    type="text"
+                    value={formData.other_enquiry_type || ""}
+                    onChange={handleInputChange}
+                  />
+                </FormGroup>
+              </Col>
+            )}
+
+            <Col md={6}>
+              <FormGroup>
+                <Label className="text-muted">Note</Label>
+                <Input
+                  type="textarea"
+                  name="note"
+                  id="note"
+                  value={formData.note || ""}
+                  onChange={handleInputChange}
+                  placeholder="Additional information about the lead..."
                 />
               </FormGroup>
             </Col>
