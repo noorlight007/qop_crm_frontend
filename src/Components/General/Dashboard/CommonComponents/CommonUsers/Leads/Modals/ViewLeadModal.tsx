@@ -124,7 +124,11 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Enquiry Type:</span>
             <small>
-              {selectedLead?.enquiry_type || (
+              {selectedLead?.enquiry_type === "OTHER" ? (
+                selectedLead?.other_enquiry_type || "-"
+              ) : selectedLead?.enquiry_type ? (
+                formatChoiceFieldValue(selectedLead.enquiry_type)
+              ) : (
                 <span className="text-muted">Not available</span>
               )}
             </small>
