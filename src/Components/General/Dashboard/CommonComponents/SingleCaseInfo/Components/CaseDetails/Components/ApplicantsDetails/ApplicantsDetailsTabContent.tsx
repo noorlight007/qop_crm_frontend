@@ -812,12 +812,19 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 <Label for="country_of_birth">Country of Birth</Label>
                 <Input
                   id="country_of_birth"
-                  type="text"
+                  type="select"
                   value={formValues.country_of_birth || ""}
                   onChange={(e) =>
                     handleInputChange("country_of_birth", e.target.value)
                   }
-                />
+                >
+                  <option value="">Select a country</option>
+                  {countries.map((country) => (
+                    <option key={country.code} value={country.code}>
+                      {country.name}
+                    </option>
+                  ))}
+                </Input>
               </FormGroup>
             </Col>
           </Row>
