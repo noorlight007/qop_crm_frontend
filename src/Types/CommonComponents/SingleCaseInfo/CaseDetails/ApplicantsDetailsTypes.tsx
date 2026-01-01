@@ -105,7 +105,7 @@ export interface ApplicantDependantsViewModalProps {
   toggle?: () => void;
   slNo?: number;
   applicantAlias?: any;
-  applicantsData?: ApplicantDependantsProps[];
+  applicantsData?: ApplicantProps[];
 }
 export interface AddDependantFormModalProps {
   isOpen: boolean;
