@@ -117,7 +117,7 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                       <td>
                         {userInfo?.relationship === "OTHER"
                           ? userInfo?.other_relationship
-                          : userInfo?.relationship || (
+                          : formatChoiceFieldValue(userInfo?.relationship) || (
                               <span className="text-muted">Not specified</span>
                             )}
                       </td>
