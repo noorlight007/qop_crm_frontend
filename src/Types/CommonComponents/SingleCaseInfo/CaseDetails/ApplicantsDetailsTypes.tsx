@@ -95,7 +95,7 @@ export interface ApplicantDependantsProps {
   alias: string;
   id: number;
   name: string;
-  relationship_type: string;
+  relationship: string;
   other_relationship: string;
   date_of_birth: string;
 }

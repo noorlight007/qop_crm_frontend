@@ -86,7 +86,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
           applicantDetails_alias: applicantAlias,
           dependantsInfo: {
             name: dependant.name,
-            relationship_type: dependant.relationship_type,
+            relationship: dependant.relationship,
             other_relationship: dependant.other_relationship,
             date_of_birth: dependant.date_of_birth,
           },
@@ -160,10 +160,10 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                       <td>{index + 1}</td>
                       <td>{dependant.name || "-"}</td>
                       <td>
-                        {dependant.relationship_type === "OTHER"
+                        {dependant.relationship === "OTHER"
                           ? dependant.other_relationship || "-"
                           : formatChoiceFieldValue(
-                              dependant.relationship_type
+                              dependant.relationship
                             ) || "-"}
                       </td>
                       <td>{dependant.date_of_birth || "-"}</td>

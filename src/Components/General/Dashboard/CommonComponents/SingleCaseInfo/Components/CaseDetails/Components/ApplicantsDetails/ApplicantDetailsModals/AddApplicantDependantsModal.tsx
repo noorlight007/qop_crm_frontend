@@ -26,7 +26,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
     useAddDependantsMutation();
   const [formData, setFormData] = useState({
     name: "",
-    relationship_type: "",
+    relationship: "",
     other_relationship: "",
     date_of_birth: "",
   });
@@ -66,7 +66,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
       toast.success("Dependant added successfully");
       setFormData({
         name: "",
-        relationship_type: "",
+        relationship: "",
         other_relationship: "",
         date_of_birth: "",
       });
@@ -99,14 +99,14 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
             </FormGroup>
 
             <FormGroup>
-              <Label for="relationship_type" className="small">
+              <Label for="relationship" className="small">
                 Relationship
               </Label>
               <Input
                 type="select"
-                name="relationship_type"
-                id="relationship_type"
-                value={formData.relationship_type}
+                name="relationship"
+                id="relationship"
+                value={formData.relationship}
                 onChange={handleChange}
               >
                 <option value="">Select...</option>
@@ -116,7 +116,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
               </Input>
             </FormGroup>
 
-            {formData.relationship_type === "OTHER" && (
+            {formData.relationship === "OTHER" && (
               <FormGroup>
                 <Label for="other_relationship" className="small">
                   Other Relationship
