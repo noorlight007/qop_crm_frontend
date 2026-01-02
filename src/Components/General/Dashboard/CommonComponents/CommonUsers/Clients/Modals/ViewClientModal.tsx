@@ -57,10 +57,12 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             )}
           </Col>
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Gender:</span>
+            <span className="text-muted">Source:</span>
             <small>
-              {selectedClient?.gender ? (
-                formatChoiceFieldValue(selectedClient?.gender)
+              {selectedClient?.source === "OTHER" ? (
+                selectedClient?.other_source || "-"
+              ) : selectedClient?.source ? (
+                formatChoiceFieldValue(selectedClient.source)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -125,8 +127,21 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
           <Col md="4" sm="6" className="d-flex flex-column mt-4">
             <span className="text-muted">Reason for Enquiry:</span>
             <small>
-              {(selectedClient?.reason_for_enquiry &&
-                formatDateAndTime(selectedClient?.reason_for_enquiry)) || (
+              {selectedClient?.enquiry_type === "OTHER" ? (
+                selectedClient?.other_enquiry_type || "-"
+              ) : selectedClient?.enquiry_type ? (
+                formatChoiceFieldValue(selectedClient.enquiry_type)
+              ) : (
+                <span className="text-muted">Not available</span>
+              )}
+            </small>
+          </Col>
+          <Col sm="12" className="d-flex flex-column mt-4 border rounded pb-2">
+            <span className="text-muted">Note:</span>
+            <small>
+              {selectedClient?.note ? (
+                selectedClient?.note
+              ) : (
                 <span className="text-muted">Not available</span>
               )}
             </small>

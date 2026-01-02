@@ -35,6 +35,7 @@ const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
     phone: "",
     email: "",
     relationship: "",
+    other_relationship: "",
     profileImage: "",
     notes: "",
   });
@@ -87,6 +88,7 @@ const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
         phone: "",
         email: "",
         relationship: "",
+        other_relationship: "",
         profileImage: "",
         notes: "",
       });
@@ -214,19 +216,40 @@ const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
             </Col>
             <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="relationship" className="form-label">
+                <Label for="relationship" className="small">
                   Relationship
                 </Label>
                 <Input
-                  type="text"
-                  id="relationship"
+                  type="select"
                   name="relationship"
-                  placeholder="Enter relationship"
+                  id="relationship"
                   value={formData.relationship}
                   onChange={handleInputChange}
-                />
+                >
+                  <option value="">Select...</option>
+                  <option value="SPOUSE">Spouse</option>
+                  <option value="SIBLING">Sibling</option>
+                  <option value="OTHER">Other</option>
+                </Input>
               </FormGroup>
             </Col>
+            {formData.relationship === "OTHER" && (
+              <Col xs={12} md={6}>
+                <FormGroup>
+                  <Label for="other_relationship" className="small">
+                    Other Relationship
+                  </Label>
+                  <Input
+                    type="text"
+                    name="other_relationship"
+                    id="other_relationship"
+                    value={formData.other_relationship}
+                    onChange={handleInputChange}
+                    placeholder="Specify other relationship"
+                  />
+                </FormGroup>
+              </Col>
+            )}
             <Col xs={12} md={6}>
               <FormGroup>
                 <Label for="notes" className="form-label">

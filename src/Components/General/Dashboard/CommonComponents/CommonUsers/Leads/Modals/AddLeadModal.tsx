@@ -31,8 +31,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
     lastName: "",
     email: "",
     phone: "",
-    gender: "",
-    reason_for_enquiry: "",
+    source: "",
+    other_source: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    note: "",
   });
 
   // Hold per-field validation errors returned from API
@@ -162,8 +165,10 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      gender: formData.gender,
-      reason_for_enquiry: formData.reason_for_enquiry,
+      source: formData.source || "",
+      other_source: formData.other_source,
+      enquiry_type: formData.enquiry_type,
+      note: formData.note,
     };
 
     try {
@@ -173,7 +178,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         const leadId = result.data.user?.id;
         setCreatedLeadId(leadId);
         setIsCaseModalOpen(true);
-        // Clear any existing errors on success
         setErrors({});
       } else if ("error" in result) {
         const normalized = normalizeApiErrors(result);
@@ -215,8 +219,10 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         email: formData.email,
         phone: formData.phone || null,
       },
-      gender: formData.gender,
-      reason_for_enquiry: formData.reason_for_enquiry,
+      source: formData.source || "",
+      other_source: formData.other_source,
+      enquiry_type: formData.enquiry_type,
+      note: formData.note,
     };
 
     try {
@@ -231,8 +237,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
           lastName: "",
           email: "",
           phone: "",
-          gender: "",
-          reason_for_enquiry: "",
+          source: "",
+          other_source: "",
+          enquiry_type: "",
+          other_enquiry_type: "",
+          note: "",
         });
         // Clear any existing errors on success
         setErrors({});
@@ -407,43 +416,111 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="gender">
-                  Gender<span className="text-danger">*</span>
-                </Label>
+                <Label for="source">Source</Label>
                 <Input
-                  id="gender"
-                  name="gender"
+                  id="source"
+                  name="source"
                   type="select"
-                  value={formData.gender}
+                  value={formData.source || ""}
                   onChange={handleInputChange}
-                  required
                 >
                   <option value="">Select...</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
+                  <option value="GOOGLE">Google</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="WEBSITE">Website</option>
                   <option value="OTHER">Other</option>
                 </Input>
-                {errors.gender && (
+                {errors.source && (
                   <div className="text-danger small mt-1">
-                    {errors.gender.join(" ")}
+                    {errors.source.join(" ")}
                   </div>
                 )}
               </FormGroup>
             </Col>
+            {formData.source === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_source">Other Source</Label>
+                  <Input
+                    id="other_source"
+                    name="other_source"
+                    type="text"
+                    value={formData.other_source || ""}
+                    onChange={handleInputChange}
+                  />
+                  {errors.other_source && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_source.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
             <Col md={6}>
-              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
+              <Label for="reasonForEnquiry">Enquiry Type</Label>
               <FormGroup>
                 <Input
                   id="reasonForEnquiry"
-                  name="reason_for_enquiry"
-                  type="text"
-                  className="rounded-end-0"
-                  value={formData.reason_for_enquiry}
+                  name="enquiry_type"
+                  type="select"
+                  value={formData.enquiry_type || ""}
                   onChange={handleInputChange}
-                />
-                {errors.reason_for_enquiry && (
+                >
+                  <option value="">Select...</option>
+                  <option value="PURCHASE">Purchase</option>
+                  <option value="REMORTGAGE">Remortgage</option>
+                  <option value="BUY_TO_LET">Buy to Let</option>
+                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                  <option value="COMMERCIAL_MORTGAGE">
+                    Commercial Mortgage
+                  </option>
+                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
+                  <option value="PROTECTION">Protection</option>
+                  <option value="GENERAL_INSURANCE">General Insurance</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {errors.enquiry_type && (
                   <div className="text-danger small mt-1">
-                    {errors.reason_for_enquiry.join(" ")}
+                    {errors.enquiry_type.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {formData.enquiry_type === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_enquiry_type">Other Enquiry</Label>
+                  <Input
+                    id="other_enquiry_type"
+                    name="other_enquiry_type"
+                    type="text"
+                    value={formData.other_enquiry_type || ""}
+                    onChange={handleInputChange}
+                  />
+                  {errors.other_enquiry_type && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_enquiry_type.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
+            <Col md={6}>
+              <FormGroup>
+                <Label className="text-muted">Note</Label>
+                <Input
+                  type="textarea"
+                  name="note"
+                  id="note"
+                  value={formData.note || ""}
+                  onChange={handleInputChange}
+                  placeholder="Additional information about the lead..."
+                />
+                {errors.note && (
+                  <div className="text-danger small mt-1">
+                    {errors.note.join(" ")}
                   </div>
                 )}
               </FormGroup>

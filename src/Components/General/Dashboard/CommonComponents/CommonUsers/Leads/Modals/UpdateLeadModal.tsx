@@ -304,21 +304,113 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-            <Col sm="12">
+            <Col md={6}>
               <FormGroup>
-                <Label for="reason_for_enquiry">Reason for Enquiry</Label>
+                <Label for="source">Source</Label>
                 <Input
-                  type="text"
-                  id="reason_for_enquiry"
-                  name="reason_for_enquiry"
-                  placeholder="Reason for Enquiry"
-                  value={leadData?.reason_for_enquiry || ""}
+                  id="source"
+                  name="source"
+                  type="select"
+                  value={leadData.source || ""}
                   onChange={handleChange}
-                  className="mb-2"
-                />
-                {errors["reason_for_enquiry"] && (
+                >
+                  <option value="">Select...</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="ONLINE_AD">Online Ad</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="WALK_IN">Walk-in</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {errors.source && (
                   <div className="text-danger small mt-1">
-                    {errors["reason_for_enquiry"].join(" ")}
+                    {errors.source.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {leadData.source === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_source">Other Source</Label>
+                  <Input
+                    id="other_source"
+                    name="other_source"
+                    type="text"
+                    value={leadData.other_source || ""}
+                    onChange={handleChange}
+                  />
+                  {errors.other_source && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_source.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+            <Col md={6}>
+              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
+              <FormGroup>
+                <Input
+                  id="reasonForEnquiry"
+                  name="enquiry_type"
+                  type="select"
+                  value={leadData.enquiry_type || ""}
+                  onChange={handleChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="PURCHASE">Purchase</option>
+                  <option value="REMORTGAGE">Remortgage</option>
+                  <option value="BUY_TO_LET">Buy to Let</option>
+                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                  <option value="COMMERCIAL_MORTGAGE">
+                    Commercial Mortgage
+                  </option>
+                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
+                  <option value="PROTECTION">Protection</option>
+                  <option value="GENERAL_INSURANCE">General Insurance</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {errors.enquiry_type && (
+                  <div className="text-danger small mt-1">
+                    {errors.enquiry_type.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {leadData.enquiry_type === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_enquiry_type">Other Enquiry</Label>
+                  <Input
+                    id="other_enquiry_type"
+                    name="other_enquiry_type"
+                    type="text"
+                    value={leadData.other_enquiry_type || ""}
+                    onChange={handleChange}
+                  />
+                  {errors.other_enquiry_type && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_enquiry_type.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
+            <Col md={6}>
+              <FormGroup>
+                <Label className="text-muted">Note</Label>
+                <Input
+                  type="textarea"
+                  name="note"
+                  id="note"
+                  value={leadData.note || ""}
+                  onChange={handleChange}
+                  placeholder="Additional information about the lead..."
+                />
+                {errors.note && (
+                  <div className="text-danger small mt-1">
+                    {errors.note.join(" ")}
                   </div>
                 )}
               </FormGroup>

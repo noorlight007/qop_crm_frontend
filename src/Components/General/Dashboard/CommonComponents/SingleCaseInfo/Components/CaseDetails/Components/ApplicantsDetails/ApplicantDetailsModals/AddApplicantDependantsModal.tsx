@@ -26,6 +26,8 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
     useAddDependantsMutation();
   const [formData, setFormData] = useState({
     name: "",
+    relationship: "",
+    other_relationship: "",
     date_of_birth: "",
   });
   const [age, setAge] = useState<string>("");
@@ -62,7 +64,12 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
     });
     if (response.data) {
       toast.success("Dependant added successfully");
-      setFormData({ name: "", date_of_birth: "" });
+      setFormData({
+        name: "",
+        relationship: "",
+        other_relationship: "",
+        date_of_birth: "",
+      });
       setAge("");
       toggle();
     }
@@ -90,6 +97,40 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 required
               />
             </FormGroup>
+
+            <FormGroup>
+              <Label for="relationship" className="small">
+                Relationship
+              </Label>
+              <Input
+                type="select"
+                name="relationship"
+                id="relationship"
+                value={formData.relationship}
+                onChange={handleChange}
+              >
+                <option value="">Select...</option>
+                <option value="SPOUSE">Spouse</option>
+                <option value="SIBLING">Sibling</option>
+                <option value="OTHER">Other</option>
+              </Input>
+            </FormGroup>
+
+            {formData.relationship === "OTHER" && (
+              <FormGroup>
+                <Label for="other_relationship" className="small">
+                  Other Relationship
+                </Label>
+                <Input
+                  type="text"
+                  name="other_relationship"
+                  id="other_relationship"
+                  value={formData.other_relationship}
+                  onChange={handleChange}
+                  placeholder="Specify other relationship"
+                />
+              </FormGroup>
+            )}
 
             <FormGroup>
               <Label for="date_of_birth" className="small">

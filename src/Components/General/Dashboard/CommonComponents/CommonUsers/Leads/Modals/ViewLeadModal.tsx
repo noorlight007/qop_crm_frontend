@@ -56,10 +56,12 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
             )}
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Gender:</span>
+            <span className="text-muted">Source:</span>
             <small>
-              {selectedLead?.gender ? (
-                formatChoiceFieldValue(selectedLead?.gender)
+              {selectedLead?.source === "OTHER" ? (
+                selectedLead?.other_source || "-"
+              ) : selectedLead?.source ? (
+                formatChoiceFieldValue(selectedLead.source)
               ) : (
                 <span className="text-muted">Not available</span>
               )}
@@ -122,9 +124,23 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
             </small>
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Reason for Enquiry:</span>
+            <span className="text-muted">Enquiry Type:</span>
             <small>
-              {selectedLead?.reason_for_enquiry || (
+              {selectedLead?.enquiry_type === "OTHER" ? (
+                selectedLead?.other_enquiry_type || "-"
+              ) : selectedLead?.enquiry_type ? (
+                formatChoiceFieldValue(selectedLead.enquiry_type)
+              ) : (
+                <span className="text-muted">Not available</span>
+              )}
+            </small>
+          </Col>
+          <Col sm="12" className="d-flex flex-column mt-4 border rounded pb-2">
+            <span className="text-muted">Note:</span>
+            <small>
+              {selectedLead?.note ? (
+                selectedLead?.note
+              ) : (
                 <span className="text-muted">Not available</span>
               )}
             </small>

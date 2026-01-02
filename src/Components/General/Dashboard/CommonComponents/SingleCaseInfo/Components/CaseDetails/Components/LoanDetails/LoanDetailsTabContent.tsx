@@ -10,6 +10,7 @@ import {
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { LoanDetailsTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetailsTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import LenderList from "@/utils/LenderList";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useSession } from "next-auth/react";
@@ -612,41 +613,43 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   </Input>
                 </FormGroup>
 
-                <FormGroup>
-                  <Label>Repayment Vehicle</Label>
-                  <Input
-                    type="select"
-                    name="repayment_vehicle"
-                    value={formDataTab1.repayment_vehicle}
-                    onChange={(e) =>
-                      handleFormChange(1, e.target.name, e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="ENDOWMENT">Endowment</option>
-                    <option value="INDIVIDUAL_SAVINGS_ACCOUNT">
-                      Individual Savings Account
-                    </option>
-                    <option value="PENSION">Pension</option>
-                    <option value="SALE_OF_MORTGAGED_PROPERTY">
-                      Sale of Mortgaged Property
-                    </option>
-                    <option value="SALE_OF_OTHER_PROPERTY">
-                      Sale of Other Property
-                    </option>
-                    <option value="INHERITANCE">Inheritance</option>
-                    <option value="MORTGAGE_LINKED_INVESTMENT">
-                      Mortgage-Linked Investment
-                    </option>
-                    <option value="REVERT_TO_CAPITAL_REPAYMENT">
-                      Revert to Capital Repayment
-                    </option>
-                    <option value="SALE_OF_NON_PROPERTY_ASSETS">
-                      Sale of non-Property Assets
-                    </option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                </FormGroup>
+                {formDataTab1.repayment_method !== "CAPITAL_AND_INTEREST" && (
+                  <FormGroup>
+                    <Label>Repayment Vehicle</Label>
+                    <Input
+                      type="select"
+                      name="repayment_vehicle"
+                      value={formDataTab1.repayment_vehicle}
+                      onChange={(e) =>
+                        handleFormChange(1, e.target.name, e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="ENDOWMENT">Endowment</option>
+                      <option value="INDIVIDUAL_SAVINGS_ACCOUNT">
+                        Individual Savings Account
+                      </option>
+                      <option value="PENSION">Pension</option>
+                      <option value="SALE_OF_MORTGAGED_PROPERTY">
+                        Sale of Mortgaged Property
+                      </option>
+                      <option value="SALE_OF_OTHER_PROPERTY">
+                        Sale of Other Property
+                      </option>
+                      <option value="INHERITANCE">Inheritance</option>
+                      <option value="MORTGAGE_LINKED_INVESTMENT">
+                        Mortgage-Linked Investment
+                      </option>
+                      <option value="REVERT_TO_CAPITAL_REPAYMENT">
+                        Revert to Capital Repayment
+                      </option>
+                      <option value="SALE_OF_NON_PROPERTY_ASSETS">
+                        Sale of non-Property Assets
+                      </option>
+                      <option value="OTHER">Other</option>
+                    </Input>
+                  </FormGroup>
+                )}
 
                 <FormGroup>
                   <Label>Lender's Reference</Label>
@@ -680,12 +683,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       required
                       min="0"
                       value={formDataTab2.purchase_price || ""}
+                      onInput={limitDecimalPlaces}
                       onChange={(e) =>
-                        handleFormChange(
-                          2,
-                          e.target.name,
-                          Number(e.target.value)
-                        )
+                        handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
                   </FormGroup>
@@ -703,12 +703,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       required
                       min="0"
                       value={formDataTab2.property_valuation || ""}
+                      onInput={limitDecimalPlaces}
                       onChange={(e) =>
-                        handleFormChange(
-                          2,
-                          e.target.name,
-                          Number(e.target.value)
-                        )
+                        handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
                   </FormGroup>
@@ -724,8 +721,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     required
                     min="0"
                     value={formDataTab2.loan_amount || ""}
+                    onInput={limitDecimalPlaces}
                     onChange={(e) =>
-                      handleFormChange(2, e.target.name, Number(e.target.value))
+                      handleFormChange(2, e.target.name, e.target.value)
                     }
                   />
                   <FormText className=" text-danger">
@@ -749,8 +747,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     required
                     min="0"
                     value={formDataTab2.estimated_value || ""}
+                    onInput={limitDecimalPlaces}
                     onChange={(e) =>
-                      handleFormChange(2, e.target.name, Number(e.target.value))
+                      handleFormChange(2, e.target.name, e.target.value)
                     }
                   />
                 </FormGroup>
@@ -781,11 +780,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         min="0"
                         value={formDataTab2.term_years || ""}
                         onChange={(e) =>
-                          handleFormChange(
-                            2,
-                            e.target.name,
-                            Number(e.target.value)
-                          )
+                          handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
                       <FormText>*In years</FormText>
@@ -802,11 +797,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         max="11"
                         value={formDataTab2.term_months || ""}
                         onChange={(e) =>
-                          handleFormChange(
-                            2,
-                            e.target.name,
-                            Number(e.target.value)
-                          )
+                          handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
                       <FormText>*In months (0-11)</FormText>
@@ -822,7 +813,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     name="interest_only_amount"
                     placeholder="0.00"
                     min="0"
-                    value={formDataTab2.interest_only_amount || ""}
+                    value={formDataTab2.interest_only_amount ?? ""}
+                    onInput={limitDecimalPlaces}
                     onChange={(e) =>
                       handleFormChange(2, e.target.name, e.target.value)
                     }
@@ -840,7 +832,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       name="deposit_amount"
                       min="0"
                       placeholder="0"
-                      value={formDataTab2.deposit_amount || ""}
+                      value={formDataTab2.deposit_amount ?? ""}
+                      onInput={limitDecimalPlaces}
                       onChange={(e) =>
                         handleFormChange(2, e.target.name, e.target.value)
                       }
@@ -876,7 +869,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       type="number"
                       name="outstanding_balance"
                       min="0"
-                      value={formDataTab2.outstanding_balance || ""}
+                      value={formDataTab2.outstanding_balance ?? ""}
+                      onInput={limitDecimalPlaces}
                       onChange={(e) =>
                         handleFormChange(2, e.target.name, e.target.value)
                       }
@@ -898,7 +892,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       type="number"
                       name="current_monthly_payment"
                       min="0"
-                      value={formDataTab2.current_monthly_payment || ""}
+                      value={formDataTab2.current_monthly_payment ?? ""}
+                      onInput={limitDecimalPlaces}
                       onChange={(e) =>
                         handleFormChange(2, e.target.name, e.target.value)
                       }
@@ -964,6 +959,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       name="original_purchase_price"
                       min="0"
                       value={formDataTab2.original_purchase_price || 0}
+                      onInput={limitDecimalPlaces}
                       onChange={(e) =>
                         handleFormChange(2, e.target.name, e.target.value)
                       }

@@ -114,7 +114,13 @@ const JointUsers: React.FC<JointUserProps> = ({ jointUserInfo, isLoading }) => {
                           {userInfo.joint_user_details?.phone}
                         </a>
                       </td>
-                      <td>{userInfo?.relationship || "-"}</td>
+                      <td>
+                        {userInfo?.relationship === "OTHER"
+                          ? userInfo?.other_relationship
+                          : formatChoiceFieldValue(userInfo?.relationship) || (
+                              <span className="text-muted">Not specified</span>
+                            )}
+                      </td>
                       <td>
                         <div className="d-flex justify-content-center gap-2 align-items-center">
                           <Button

@@ -70,9 +70,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
       profile_image: "",
       user_type: "",
     },
-    role: "",
-    reason_for_enquiry: "",
-    gender: "",
+    source: "",
   });
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
@@ -154,7 +152,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Source</th>
                 <th>Created By</th>
                 <th>Created At</th>
               </tr>
@@ -202,8 +200,8 @@ const OrgClients: React.FC<ClientsProps> = () => {
                       )}
                     </td>
                     <td>
-                      {client?.role
-                        ? formatChoiceFieldValue(client?.role)
+                      {client?.source
+                        ? formatChoiceFieldValue(client?.source)
                         : "-"}
                     </td>
                     <td>
