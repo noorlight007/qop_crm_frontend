@@ -358,15 +358,21 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
-                  <option value="GOOGLE">Google</option>
-                  <option value="SOCIAL_MEDIA">Social Media</option>
-                  <option value="REFERRAL">Referral</option>
-                  <option value="WEBSITE">Website</option>
+                  <option value="PURCHASE">Purchase</option>
+                  <option value="REMORTGAGE">Remortgage</option>
+                  <option value="BUY_TO_LET">Buy to Let</option>
+                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                  <option value="COMMERCIAL_MORTGAGE">
+                    Commercial Mortgage
+                  </option>
+                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
+                  <option value="PROTECTION">Protection</option>
+                  <option value="GENERAL_INSURANCE">General Insurance</option>
                   <option value="OTHER">Other</option>
                 </Input>
-                {errors.reason_for_enquiry && (
+                {errors.enquiry_type && (
                   <div className="text-danger small mt-1">
-                    {errors.reason_for_enquiry.join(" ")}
+                    {errors.enquiry_type.join(" ")}
                   </div>
                 )}
               </FormGroup>
@@ -374,9 +380,9 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
             {leadData.enquiry_type === "OTHER" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="other_enquiry">Other Enquiry</Label>
+                  <Label for="other_enquiry_type">Other Enquiry</Label>
                   <Input
-                    id="other_enquiry"
+                    id="other_enquiry_type"
                     name="other_enquiry_type"
                     type="text"
                     value={leadData.other_enquiry_type || ""}
