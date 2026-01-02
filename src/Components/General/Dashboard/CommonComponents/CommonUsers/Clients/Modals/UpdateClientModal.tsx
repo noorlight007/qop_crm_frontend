@@ -245,10 +245,10 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
-                  <option value="REFERRAL">Referral</option>
-                  <option value="ONLINE_AD">Online Ad</option>
+                  <option value="GOOGLE">Google</option>
                   <option value="SOCIAL_MEDIA">Social Media</option>
-                  <option value="WALK_IN">Walk-in</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="WEBSITE">Website</option>
                   <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>

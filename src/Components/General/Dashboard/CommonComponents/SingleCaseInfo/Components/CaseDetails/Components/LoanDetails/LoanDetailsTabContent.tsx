@@ -613,41 +613,43 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   </Input>
                 </FormGroup>
 
-                <FormGroup>
-                  <Label>Repayment Vehicle</Label>
-                  <Input
-                    type="select"
-                    name="repayment_vehicle"
-                    value={formDataTab1.repayment_vehicle}
-                    onChange={(e) =>
-                      handleFormChange(1, e.target.name, e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="ENDOWMENT">Endowment</option>
-                    <option value="INDIVIDUAL_SAVINGS_ACCOUNT">
-                      Individual Savings Account
-                    </option>
-                    <option value="PENSION">Pension</option>
-                    <option value="SALE_OF_MORTGAGED_PROPERTY">
-                      Sale of Mortgaged Property
-                    </option>
-                    <option value="SALE_OF_OTHER_PROPERTY">
-                      Sale of Other Property
-                    </option>
-                    <option value="INHERITANCE">Inheritance</option>
-                    <option value="MORTGAGE_LINKED_INVESTMENT">
-                      Mortgage-Linked Investment
-                    </option>
-                    <option value="REVERT_TO_CAPITAL_REPAYMENT">
-                      Revert to Capital Repayment
-                    </option>
-                    <option value="SALE_OF_NON_PROPERTY_ASSETS">
-                      Sale of non-Property Assets
-                    </option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                </FormGroup>
+                {formDataTab1.repayment_method !== "CAPITAL_AND_INTEREST" && (
+                  <FormGroup>
+                    <Label>Repayment Vehicle</Label>
+                    <Input
+                      type="select"
+                      name="repayment_vehicle"
+                      value={formDataTab1.repayment_vehicle}
+                      onChange={(e) =>
+                        handleFormChange(1, e.target.name, e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="ENDOWMENT">Endowment</option>
+                      <option value="INDIVIDUAL_SAVINGS_ACCOUNT">
+                        Individual Savings Account
+                      </option>
+                      <option value="PENSION">Pension</option>
+                      <option value="SALE_OF_MORTGAGED_PROPERTY">
+                        Sale of Mortgaged Property
+                      </option>
+                      <option value="SALE_OF_OTHER_PROPERTY">
+                        Sale of Other Property
+                      </option>
+                      <option value="INHERITANCE">Inheritance</option>
+                      <option value="MORTGAGE_LINKED_INVESTMENT">
+                        Mortgage-Linked Investment
+                      </option>
+                      <option value="REVERT_TO_CAPITAL_REPAYMENT">
+                        Revert to Capital Repayment
+                      </option>
+                      <option value="SALE_OF_NON_PROPERTY_ASSETS">
+                        Sale of non-Property Assets
+                      </option>
+                      <option value="OTHER">Other</option>
+                    </Input>
+                  </FormGroup>
+                )}
 
                 <FormGroup>
                   <Label>Lender's Reference</Label>

@@ -358,10 +358,10 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
-                  <option value="GENERAL_ENQUIRY">General Enquiry</option>
-                  <option value="LEGAL_ADVICE">Legal Advice</option>
-                  <option value="CASE_REVIEW">Case Review</option>
-                  <option value="FOLLOW_UP">Follow Up</option>
+                  <option value="GOOGLE">Google</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="WEBSITE">Website</option>
                   <option value="OTHER">Other</option>
                 </Input>
                 {errors.reason_for_enquiry && (
