@@ -107,9 +107,11 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Relationship:</span>
             <small>
-              {selectedUser?.relationship || (
-                <span className="text-muted">Not available</span>
-              )}
+              {selectedUser?.relationship === "OTHER"
+                ? selectedUser?.other_relationship
+                : selectedUser?.relationship || (
+                    <span className="text-muted">Not specified</span>
+                  )}
             </small>
           </Col>
           <Col md="6" sm="12" className="d-flex flex-column mt-4">

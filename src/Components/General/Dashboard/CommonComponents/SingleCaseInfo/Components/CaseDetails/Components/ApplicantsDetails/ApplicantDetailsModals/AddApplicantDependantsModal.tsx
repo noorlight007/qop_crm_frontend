@@ -100,7 +100,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
 
             <FormGroup>
               <Label for="relationship_type" className="small">
-                Relationship Type
+                Relationship
               </Label>
               <Input
                 type="select"
@@ -109,9 +109,9 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 value={formData.relationship_type}
                 onChange={handleChange}
               >
-                <option value="">Select relationship type</option>
+                <option value="">Select relationship</option>
                 <option value="SPOUSE">Spouse</option>
-                <option value="CHILD">Child</option>
+                <option value="SIBLING">Sibling</option>
                 <option value="OTHER">Other</option>
               </Input>
             </FormGroup>

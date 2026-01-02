@@ -15,6 +15,7 @@ export interface JointUserProps {
     user_type?: string;
   };
   relationship?: string;
+  other_relationship?: string;
   notes?: string;
 }
 export interface AddJointUserModalProps {
