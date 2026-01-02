@@ -245,10 +245,10 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
-                  <option value="REFERRAL">Referral</option>
-                  <option value="ONLINE_AD">Online Ad</option>
+                  <option value="GOOGLE">Google</option>
                   <option value="SOCIAL_MEDIA">Social Media</option>
-                  <option value="WALK_IN">Walk-in</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="WEBSITE">Website</option>
                   <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>
@@ -278,10 +278,16 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
-                  <option value="GENERAL_ENQUIRY">General Enquiry</option>
-                  <option value="LEGAL_ADVICE">Legal Advice</option>
-                  <option value="CASE_REVIEW">Case Review</option>
-                  <option value="FOLLOW_UP">Follow Up</option>
+                  <option value="PURCHASE">Purchase</option>
+                  <option value="REMORTGAGE">Remortgage</option>
+                  <option value="BUY_TO_LET">Buy to Let</option>
+                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                  <option value="COMMERCIAL_MORTGAGE">
+                    Commercial Mortgage
+                  </option>
+                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
+                  <option value="PROTECTION">Protection</option>
+                  <option value="GENERAL_INSURANCE">General Insurance</option>
                   <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>
@@ -289,9 +295,9 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
             {clientData.enquiry_type === "OTHER" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="other_enquiry">Other Enquiry</Label>
+                  <Label for="other_enquiry_type">Other Enquiry</Label>
                   <Input
-                    id="other_enquiry"
+                    id="other_enquiry_type"
                     name="other_enquiry_type"
                     type="text"
                     value={clientData.other_enquiry_type || ""}

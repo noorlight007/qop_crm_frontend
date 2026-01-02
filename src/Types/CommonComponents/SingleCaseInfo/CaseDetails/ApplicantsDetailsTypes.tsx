@@ -95,7 +95,7 @@ export interface ApplicantDependantsProps {
   alias: string;
   id: number;
   name: string;
-  relationship_type: string;
+  relationship: string;
   other_relationship: string;
   date_of_birth: string;
 }
@@ -105,7 +105,7 @@ export interface ApplicantDependantsViewModalProps {
   toggle?: () => void;
   slNo?: number;
   applicantAlias?: any;
-  applicantsData?: ApplicantDependantsProps[];
+  applicantsData?: ApplicantProps[];
 }
 export interface AddDependantFormModalProps {
   isOpen: boolean;

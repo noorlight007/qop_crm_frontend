@@ -69,9 +69,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
       profile_image: "",
       user_type: "",
     },
-    role: "",
-    reason_for_enquiry: "",
-    gender: "",
+    source: "",
   });
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
@@ -135,7 +133,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Source</th>
                 <th>Created By</th>
                 <th>Created At</th>
               </tr>
@@ -182,7 +180,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                       )}
                     </td>
                     <td>
-                      {lead?.role ? formatChoiceFieldValue(lead.role) : "-"}
+                      {lead?.source ? formatChoiceFieldValue(lead.source) : "-"}
                     </td>
                     <td>
                       <p className="m-0">

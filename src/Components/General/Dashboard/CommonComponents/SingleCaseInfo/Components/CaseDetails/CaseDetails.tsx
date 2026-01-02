@@ -178,7 +178,7 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
         <CardBody>
           <CardHeader className="p-0">
             <Nav
-              className="nav-success d-flex justify-content-center align-items-center flex-wrap gap-1 pb-2"
+              className="nav-secondary d-flex justify-content-center align-items-center flex-wrap gap-1 pb-2"
               pills
             >
               {currentTabData.map((item, index) => (

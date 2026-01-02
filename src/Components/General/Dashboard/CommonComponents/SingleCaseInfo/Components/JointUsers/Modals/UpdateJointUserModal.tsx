@@ -35,6 +35,7 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
     email: "",
     phone: "",
     relationship: "",
+    other_relationship: "",
     notes: "",
   });
 
@@ -49,6 +50,7 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
         email: user?.joint_user_details?.email || "",
         phone: user?.joint_user_details?.phone || "",
         relationship: user?.relationship || "",
+        other_relationship: user?.other_relationship || "",
         notes: user?.notes || "",
       });
     }
@@ -79,6 +81,7 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
           ...(hasEmailChanged && { email: formData.email }), // Only include email if it has changed
         },
         relationship: formData.relationship,
+        other_relationship: formData.other_relationship,
         notes: formData.notes,
       },
     };
@@ -201,18 +204,42 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
                 />
               </FormGroup>
             </Col>
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="relationship">Relationship</Label>
+                <Label for="relationship" className="small">
+                  Relationship
+                </Label>
                 <Input
-                  type="text"
-                  id="relationship"
+                  type="select"
                   name="relationship"
+                  id="relationship"
                   value={formData.relationship}
                   onChange={handleInputChange}
-                />
+                >
+                  <option value="">Select...</option>
+                  <option value="SPOUSE">Spouse</option>
+                  <option value="SIBLING">Sibling</option>
+                  <option value="OTHER">Other</option>
+                </Input>
               </FormGroup>
             </Col>
+            {formData.relationship === "OTHER" && (
+              <Col xs={12} md={6}>
+                <FormGroup>
+                  <Label for="other_relationship" className="small">
+                    Other Relationship
+                  </Label>
+                  <Input
+                    type="text"
+                    name="other_relationship"
+                    id="other_relationship"
+                    value={formData.other_relationship}
+                    onChange={handleInputChange}
+                    placeholder="Specify other relationship"
+                  />
+                </FormGroup>
+              </Col>
+            )}
             <Col xl={6} md={12}>
               <FormGroup>
                 <Label for="notes">Note</Label>
