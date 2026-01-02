@@ -216,7 +216,7 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
                   value={formData.relationship}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select relationship</option>
+                  <option value="">Select...</option>
                   <option value="SPOUSE">Spouse</option>
                   <option value="SIBLING">Sibling</option>
                   <option value="OTHER">Other</option>

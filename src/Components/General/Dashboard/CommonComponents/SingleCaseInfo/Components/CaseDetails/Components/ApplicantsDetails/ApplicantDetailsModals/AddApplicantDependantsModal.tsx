@@ -109,7 +109,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 value={formData.relationship_type}
                 onChange={handleChange}
               >
-                <option value="">Select relationship</option>
+                <option value="">Select...</option>
                 <option value="SPOUSE">Spouse</option>
                 <option value="SIBLING">Sibling</option>
                 <option value="OTHER">Other</option>
