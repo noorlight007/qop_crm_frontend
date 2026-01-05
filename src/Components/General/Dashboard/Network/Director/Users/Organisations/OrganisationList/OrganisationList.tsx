@@ -188,7 +188,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
           <Row>
             <div className="d-flex justify-content-between align-items-center px-3 pb-3">
               <div className="px-2">
-                <p className="text-success">
+                <p className="text-primary">
                   Showing 1 to{" "}
                   {Math.min(itemsPerPage, currentOrganisations?.length || 0)} of{" "}
                   {organisations?.length || 0} Organisations

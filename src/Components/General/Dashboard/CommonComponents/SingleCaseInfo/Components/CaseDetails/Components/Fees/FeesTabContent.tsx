@@ -45,7 +45,7 @@ export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
       </Row>
       <Row>
         <Col>
-          <div className="d-flex justify-content-center gap-2 mt-3 bg-success p-3 rounded">
+          <div className="d-flex justify-content-center gap-2 mt-3 bg-primary p-3 rounded">
             <h6 className="mb-0">Net Fees:</h6>
             <h5>£{feesCaculateData?.net_fees || "0.00"}</h5>
           </div>

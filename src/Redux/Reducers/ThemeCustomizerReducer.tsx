@@ -1,6 +1,33 @@
 import ConfigDB from "@/Config/ThemeConfig";
 import { createSlice } from "@reduxjs/toolkit";
 
+const hexToRgba = (hex: string, alpha: number): string => {
+  let sanitized = hex.trim();
+
+  if (sanitized.startsWith("#")) {
+    sanitized = sanitized.slice(1);
+  }
+
+  if (sanitized.length === 3) {
+    sanitized = sanitized
+      .split("")
+      .map((char) => char + char)
+      .join("");
+  }
+
+  if (sanitized.length !== 6) {
+    // Fallback: return original value if it's not a standard hex code
+    return hex;
+  }
+
+  const bigint = parseInt(sanitized, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 const getSavedTheme = () => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("theme") || "light";
@@ -16,6 +43,12 @@ const applyThemeColors = (primary: string, secondary: string) => {
     root.style.setProperty("--primary-color", primary);
     root.style.setProperty("--theme-secondary", secondary);
     root.style.setProperty("--secondary-color", secondary);
+
+    // Update light background helpers used by bg-light-primary/bg-light-secondary
+    const primaryLight = hexToRgba(primary, 0.1);
+    const secondaryLight = hexToRgba(secondary, 0.1);
+    root.style.setProperty("--bg-light-primary", primaryLight);
+    root.style.setProperty("--bg-light-secondary", secondaryLight);
   }
 };
 
