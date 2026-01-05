@@ -8,7 +8,7 @@ import {
 import { addColor } from "@/Redux/Reducers/ThemeCustomizerReducer";
 import { ChangeEvent, useEffect, useState } from "react";
 import { ChromePicker, ColorResult } from "react-color";
-import { Card, CardBody, Input, Label } from "reactstrap";
+import { Card, CardBody, Col, Input, Label, Row } from "reactstrap";
 
 const ThemeColorSwitcher = () => {
   const dispatch = useAppDispatch();
@@ -75,57 +75,71 @@ const ThemeColorSwitcher = () => {
     <Card>
       <CardBody>
         <h5 className="mb-3">Theme colors</h5>
-        <div className="d-flex flex-wrap gap-2 mb-3">
+        <Row className="g-2 mb-3">
           {UnlimitedColorOptions.map((option) => {
             const isActive =
               option.primary === primary_color &&
               option.secondary === secondary_color;
 
             return (
-              <button
-                key={option.name}
-                type="button"
-                onClick={() => handleChange(option.primary, option.secondary)}
-                className={`btn btn-light-dark d-flex align-items-center gap-2 ${
-                  isActive ? "border border-2 border-primary" : "border"
-                }`}
-                style={{ cursor: "pointer" }}
-              >
-                <span
+              <Col key={option.name} xs={6} sm={6} md={4} lg={3} xl={2}>
+                <button
+                  type="button"
+                  onClick={() => handleChange(option.primary, option.secondary)}
+                  className={`btn btn-light-dark d-flex align-items-center justify-content-start gap-2 w-100 ${
+                    isActive ? "border border-2 border-primary" : "border"
+                  }`}
                   style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: "50%",
-                    backgroundColor: option.primary,
-                    display: "inline-block",
+                    cursor: "pointer",
+                    minHeight: "44px",
+                    padding: "8px 12px",
                   }}
-                />
-                <span
-                  style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: "50%",
-                    backgroundColor: option.secondary,
-                    display: "inline-block",
-                  }}
-                />
-                <span className="ms-1">Theme {option.name}</span>
-              </button>
+                >
+                  <span
+                    style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "50%",
+                      backgroundColor: option.primary,
+                      display: "inline-block",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      width: 20,
+                      height: 20,
+                      borderRadius: "50%",
+                      backgroundColor: option.secondary,
+                      display: "inline-block",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    className="text-truncate"
+                    style={{ fontSize: "0.875rem" }}
+                  >
+                    Theme {option.name}
+                  </span>
+                </button>
+              </Col>
             );
           })}
-        </div>
+        </Row>
 
         {/* Custom colors */}
-        <div className="mt-2">
-          <h6 className="mb-2">Custom colors</h6>
-          <div className="d-flex flex-wrap gap-4">
-            <div style={{ minWidth: 220 }}>
+        <div className="mt-4">
+          <h6 className="mb-3">Custom colors</h6>
+          <Row className="g-3">
+            <Col xs={12} md={6}>
               <Label className="form-label mb-2">Primary</Label>
-              <ChromePicker
-                color={customPrimary}
-                onChange={(color: ColorResult) => setCustomPrimary(color.hex)}
-                disableAlpha
-              />
+              <div className="d-flex justify-content-center justify-content-md-start">
+                <ChromePicker
+                  color={customPrimary}
+                  onChange={(color: ColorResult) => setCustomPrimary(color.hex)}
+                  disableAlpha
+                />
+              </div>
               <Input
                 type="text"
                 className="mt-2"
@@ -133,14 +147,18 @@ const ThemeColorSwitcher = () => {
                 onChange={onPrimaryInputChange}
                 placeholder="#308e87"
               />
-            </div>
-            <div style={{ minWidth: 220 }}>
+            </Col>
+            <Col xs={12} md={6}>
               <Label className="form-label mb-2">Secondary</Label>
-              <ChromePicker
-                color={customSecondary}
-                onChange={(color: ColorResult) => setCustomSecondary(color.hex)}
-                disableAlpha
-              />
+              <div className="d-flex justify-content-center justify-content-md-start">
+                <ChromePicker
+                  color={customSecondary}
+                  onChange={(color: ColorResult) =>
+                    setCustomSecondary(color.hex)
+                  }
+                  disableAlpha
+                />
+              </div>
               <Input
                 type="text"
                 className="mt-2"
@@ -148,15 +166,19 @@ const ThemeColorSwitcher = () => {
                 onChange={onSecondaryInputChange}
                 placeholder="#f39159"
               />
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary mt-3"
-            onClick={applyCustomColors}
-          >
-            Apply
-          </button>
+            </Col>
+          </Row>
+          <Row className="mt-3">
+            <Col xs={12}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={applyCustomColors}
+              >
+                Apply
+              </button>
+            </Col>
+          </Row>
         </div>
       </CardBody>
     </Card>

@@ -196,19 +196,19 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 </option>
               )}
             </Input>
-            {leads.length === 0 && (
-              <div className="mt-2">
-                <Button
-                  size="sm"
-                  color="primary"
-                  onClick={handleOpenAddLead}
-                  toggle={toggle}
-                >
-                  <TbCirclePlus size={16} className="me-1" />
-                  Add Lead
-                </Button>
-              </div>
-            )}
+            {/* {leads.length === 0 && ( */}
+            <div className="mt-2">
+              <Button
+                size="sm"
+                color="primary"
+                onClick={handleOpenAddLead}
+                toggle={toggle}
+              >
+                <TbCirclePlus size={16} className="me-1" />
+                Add Lead
+              </Button>
+            </div>
+            {/* )} */}
           </FormGroup>
           <FormGroup>
             <Label for="case_category">
@@ -286,7 +286,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           )}
           <Button
             type="submit"
-            color="success"
+            color="secondary"
             disabled={addCaseLoading}
             onClick={() => setSubmitType("save_view")}
           >
@@ -294,7 +294,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           </Button>
           <Button
             type="button"
-            color="secondary"
+            color="warning"
             onClick={toggle}
             disabled={addCaseLoading}
           >
