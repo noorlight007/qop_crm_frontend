@@ -290,7 +290,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
         <Row>
           <div className="d-flex justify-content-between align-items-center p-3">
             <div className="px-2">
-              <p className="text-success">
+              <p className="text-primary">
                 Showing{" "}
                 {totalCount === 0 ? "0" : (currentPage - 1) * leadsPerPage + 1}{" "}
                 to{" "}
