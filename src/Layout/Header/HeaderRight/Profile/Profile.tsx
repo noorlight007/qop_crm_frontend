@@ -3,20 +3,14 @@ import { logOut } from "@/Redux/Api/BaseApi";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import AddUserModal from "./Modals/AddUserModal";
+import { TbSettings } from "react-icons/tb";
 
 const Profile = () => {
   const [show, setShow] = useState(false);
   const { data: session } = useSession();
-  const router = useRouter();
-  const wrapperRef = useRef<HTMLLIElement | null>(null);
-  const [showAddUserModal, setShowAddUserModal] = useState(false);
 
-  const handleAddUser = () => {
-    setShowAddUserModal(true);
-  };
+  const wrapperRef = useRef<HTMLLIElement | null>(null);
 
   // close dropdown when clicking outside or pressing Escape
   useEffect(() => {
@@ -80,14 +74,13 @@ const Profile = () => {
               </Link>
             </li>
             {session?.user?.user_type === "NETWORK_DIRECTOR" ||
+            session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
             session?.user?.user_type === "ORGANISATION_DIRECTOR" ? (
-              <li
-                className="d-flex gap-2"
-                style={{ cursor: "pointer" }}
-                onClick={handleAddUser}
-              >
-                <i className="fa-solid fa-circle-user"></i>
-                Add user
+              <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
+                <Link href="/dashboard/appearance" className="d-flex gap-2">
+                  <TbSettings />
+                  Appearance
+                </Link>
               </li>
             ) : null}
             <li className="d-flex gap-2" onClick={handleLogout}>
@@ -99,11 +92,6 @@ const Profile = () => {
           </ul>
         </div>
       </div>
-      {/* Modals */}
-      <AddUserModal
-        isOpen={showAddUserModal}
-        toggle={() => setShowAddUserModal(false)}
-      />
     </li>
   );
 };

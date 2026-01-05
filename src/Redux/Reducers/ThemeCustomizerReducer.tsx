@@ -1,12 +1,47 @@
 import ConfigDB from "@/Config/ThemeConfig";
 import { createSlice } from "@reduxjs/toolkit";
 
-// Load saved theme from localStorage or use default
 const getSavedTheme = () => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("theme") || "light";
   }
   return "light";
+};
+
+const applyThemeColors = (primary: string, secondary: string) => {
+  if (typeof document !== "undefined") {
+    const root = document.documentElement;
+    root.style.setProperty("--theme-default", primary);
+    root.style.setProperty("--theme-primary", primary);
+    root.style.setProperty("--primary-color", primary);
+    root.style.setProperty("--theme-secondary", secondary);
+    root.style.setProperty("--secondary-color", secondary);
+  }
+};
+
+const getSavedColors = () => {
+  const defaultPrimary = ConfigDB.color.primary_color;
+  const defaultSecondary = ConfigDB.color.secondary_color;
+
+  if (typeof window !== "undefined") {
+    const savedPrimary = localStorage.getItem("primary_color");
+    const savedSecondary = localStorage.getItem("secondary_color");
+
+    const primary = savedPrimary || defaultPrimary;
+    const secondary = savedSecondary || defaultSecondary;
+
+    applyThemeColors(primary, secondary);
+
+    return {
+      primary_color: primary,
+      secondary_color: secondary,
+    };
+  }
+
+  return {
+    primary_color: defaultPrimary,
+    secondary_color: defaultSecondary,
+  };
 };
 
 let initialState = {
@@ -16,8 +51,7 @@ let initialState = {
   mix_background_layout: getSavedTheme(),
   sideBarIconType: "stroke-svg",
   colors: {
-    primary_color: "",
-    secondary_color: "",
+    ...getSavedColors(),
   },
   mixLayout: false,
   sideBarToggle: false,
@@ -68,12 +102,23 @@ const ThemeCustomizerSlice = createSlice({
       state.sideBarIconType = action.payload;
     },
     addColor: (state, action) => {
-      const colorBackground1 = action.payload;
-      const colorBackground2 = action.payload;
-      ConfigDB.color.primary_color = colorBackground1;
-      ConfigDB.color.secondary_color = colorBackground2;
-      state.colors.primary_color = colorBackground1;
-      state.colors.secondary_color = colorBackground2;
+      const { primary, secondary } = action.payload as {
+        primary: string;
+        secondary: string;
+      };
+
+      ConfigDB.color.primary_color = primary;
+      ConfigDB.color.secondary_color = secondary;
+
+      state.colors.primary_color = primary;
+      state.colors.secondary_color = secondary;
+
+      applyThemeColors(primary, secondary);
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("primary_color", primary);
+        localStorage.setItem("secondary_color", secondary);
+      }
     },
     setMixLayout: (state, action) => {
       state.mixLayout = action.payload;
