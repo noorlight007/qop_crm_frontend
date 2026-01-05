@@ -123,6 +123,8 @@ export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithReauth,
   tagTypes: [
+    //Appearance Settings
+    "AppearanceSettings",
     //AddUser
     "AddUser",
 
