@@ -1,13 +1,13 @@
 .pagination {
   .page-item {
     &.active .page-link {
-      background-color: #308e87 !important;
+      background-color: var(--primary-color) !important;
       color: white !important;
       border: none !important;
     }
 
     .page-link {
-      color: #308e87 !important;
+      color: var(--primary-color) !important;
       padding: 0.5rem 0.75rem;
 
       &:focus {

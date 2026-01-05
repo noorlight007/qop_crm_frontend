@@ -115,7 +115,9 @@ const Menulist: React.FC<MenuListType> = ({
             <a
               href={item.path || "#"}
               className={`nav-link d-flex align-items-center gap-1 my-1 w-full ${
-                level === 0 ? "sidebar-link" : ""
+                level === 0
+                  ? `sidebar-link ${isCurrentActive ? "bg-light-primary" : ""}`
+                  : ""
               } ${isCurrentActive ? "active" : ""}`}
               onClick={(e) => handleClick(e, item)}
               style={{ cursor: "pointer", width: "220px" }}
@@ -161,12 +163,18 @@ const Menulist: React.FC<MenuListType> = ({
                     cursor: "pointer",
                     transform: isExpanded ? "rotate(90deg)" : "rotate(0)",
                     transition: "transform 0.3s ease",
-                    marginLeft: "8px",
-                    padding: 0,
+                    marginLeft: "auto",
+                    padding: "4px 12px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                   className="ms-auto"
                 >
-                  <i className="fa fa-chevron-right"></i>
+                  <i
+                    className="fa fa-chevron-right"
+                    style={{ fontSize: "12px", color: "currentColor" }}
+                  ></i>
                 </button>
               )}
             </a>

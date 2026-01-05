@@ -18,7 +18,6 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
   isLoading,
   singleOrgDashboardData,
-  isDashboardLoading,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -69,7 +68,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
             </div>
             <CardTitle
               tag="h3"
-              className="text-success"
+              className="text-primary"
               style={{ marginTop: "70px" }}
             >
               {singleOrgInfo?.name}

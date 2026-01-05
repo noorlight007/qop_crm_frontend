@@ -3,6 +3,7 @@ import {
   AddFeeOutModalProps,
   FeeDataProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/FeeTypes";
+import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { FC, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -88,10 +89,11 @@ const AddFeeOutModal: FC<AddFeeOutModalProps> = ({
                 <InputGroup>
                   <InputGroupText>£</InputGroupText>
                   <Input
-                    type="text"
+                    type="number"
                     id="amount"
                     placeholder="0.00"
                     value={feeData.fee}
+                    onInput={limitDecimalPlaces}
                     onChange={(e) => handleInputChange("fee", e.target.value)}
                   />
                 </InputGroup>

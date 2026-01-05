@@ -102,7 +102,7 @@ const OrgCases: React.FC = () => {
                   className="text-md-end text-center mt-2 mt-md-0 d-flex justify-content-end align-items-center gap-2"
                 >
                   <Button
-                    color="success"
+                    color="secondary"
                     onClick={toggleFilterIcon}
                     className="me-2"
                   >
@@ -117,7 +117,7 @@ const OrgCases: React.FC = () => {
             </CardHeader>
             <CardBody className="p-2 m-0">
               {filterIcon && (
-                <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
+                <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
                   <Row className="justify-content-center g-3">
                     <Col xs="12" sm="6" md="4">
                       <Label>Select Category</Label>
@@ -413,7 +413,7 @@ const OrgCases: React.FC = () => {
               <Row>
                 <div className="d-flex justify-content-between px-4 py-3">
                   <div>
-                    <p className="text-success">
+                    <p className="text-primary">
                       Showing{" "}
                       {caseData?.results?.length
                         ? (currentPage - 1) * casesPerPage + 1

@@ -10,6 +10,9 @@
   --theme-default: #308e87;
   --theme-primary: #308e87;
   --theme-secondary: #f39159;
+  /* Light background colors for primary/secondary (used by bg-light-*) */
+  --bg-light-primary: rgba(48, 142, 135, 0.1);
+  --bg-light-secondary: rgba(243, 145, 89, 0.1);
   --body-color: #f9f7f6;
   --primary-color: #308e87;
   --secondary-color: #f39159;

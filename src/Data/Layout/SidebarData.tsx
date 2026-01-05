@@ -60,15 +60,11 @@ const NetworkDirectorMenu: MenuItem[] = [
             path: "/dashboard/network/director/advisers",
             title: "Registered Advisers",
             type: "link",
+            children: [],
           },
           {
             path: "/dashboard/network/director/advisers-status",
             title: "Advisers Status",
-            type: "link",
-          },
-          {
-            path: "/dashboard/network/director/introducers",
-            title: "Introducers",
             type: "link",
           },
         ],
