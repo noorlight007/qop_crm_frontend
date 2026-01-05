@@ -16,7 +16,7 @@ const ClientContainer: React.FC = () => {
         <Row>
           <WelcomeMessage />
         </Row>
-        <Row>
+        <Row className="mt-3">
           <MyApplications />
         </Row>
       </Container>

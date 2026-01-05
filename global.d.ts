@@ -18,3 +18,13 @@ declare module "*.module.sass" {
   const classes: { [key: string]: string };
   export default classes;
 }
+
+// Minimal typings for react-color (ChromePicker, ColorResult)
+declare module "react-color" {
+  export interface ColorResult {
+    hex: string;
+    [key: string]: any;
+  }
+
+  export const ChromePicker: any;
+}
