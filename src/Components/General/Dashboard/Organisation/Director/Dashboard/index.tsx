@@ -3,7 +3,6 @@ import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import LoginHistory from "../../../CommonComponents/LoginHistory/LoginHistory";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
-import ThemeColorSwitcher from "../../../CommonComponents/ThemeColorSwitcher";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyClients from "./MonthlyClients/MonthlyClients";
@@ -24,11 +23,6 @@ const OrganisationDirectorDashboardContainer = () => {
           isLoading={isLoading}
           organisationDirectorDashboardData={organisationDirectorDashboardData}
         />
-        <Row className="mb-3">
-          <Col md={6} sm={12}>
-            <ThemeColorSwitcher />
-          </Col>
-        </Row>
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}

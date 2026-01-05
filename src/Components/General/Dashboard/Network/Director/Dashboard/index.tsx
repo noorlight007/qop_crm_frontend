@@ -3,7 +3,6 @@ import { Col, Container, Row } from "reactstrap";
 import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 import LoginHistory from "../../../CommonComponents/LoginHistory/LoginHistory";
 import MyTask from "../../../CommonComponents/MyTask/MyTask";
-import ThemeColorSwitcher from "../../../CommonComponents/ThemeColorSwitcher";
 import OrganisationList from "../Users/Organisations/OrganisationList/OrganisationList";
 import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
@@ -26,11 +25,6 @@ const ContainerNetworkDirector = () => {
           isLoading={isLoading}
           networkDirectorDashboardData={networkDirectorDashboardData}
         />
-        <Row className="mb-3">
-          <Col lg={6} md={12}>
-            <ThemeColorSwitcher />
-          </Col>
-        </Row>
         <PerformanceOverview
           isLoading={isLoading}
           networkDirectorDashboardData={networkDirectorDashboardData}
