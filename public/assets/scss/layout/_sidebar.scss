@@ -252,9 +252,9 @@
         .sidebar-submenu {
             >li.active {
                 .submenu-title {
-                    color: var(--body-font-color);
+                    color: var(--primary-color)
                     i {
-                        color: var(--body-font-color);
+                        color: var(--primary-color);
                     }
                 }
             }
