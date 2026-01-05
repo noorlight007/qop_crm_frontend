@@ -9,7 +9,7 @@
 
 .profile-pic {
   border-radius: 50%;
-  border: 1px solid #3eb95f;
+  border: 1px solid var(--primary-color);
   background: transparent;
 }
 
@@ -20,7 +20,7 @@
   border-radius: 50%;
   font-size: 14px;
   box-shadow: none;
-  border: 2px solid #3eb95f;
+  border: 2px solid var(--primary-color);
 }
 
 .edit_icon button {

@@ -194,7 +194,7 @@ const CaseDetails: React.FC<{ caseStage: string; caseCategory: string }> = ({
                   <NavLink
                     outline
                     className={`${basicTab === item.nav ? "active" : ""} 
-                     m-2 border d-flex justify-content-center  rounded p-3 text-center w-100`}
+                     m-2 border border-secondary d-flex justify-content-center  rounded p-3 text-center w-100`}
                     onClick={() => {
                       dispatch(basicTabIndicator(item.nav));
                     }}

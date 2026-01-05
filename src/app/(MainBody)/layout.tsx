@@ -4,7 +4,9 @@ import Header from "@/Layout/Header";
 import Sidebar from "@/Layout/Sidebar";
 import TapTop from "@/Layout/TapTop";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { useGetAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import {
+  addColor,
   addSidebarTypes,
   setSideBarToggle,
 } from "@/Redux/Reducers/ThemeCustomizerReducer";
@@ -21,6 +23,19 @@ export default function RootLayout({
     (state) => state.themeCustomizer
   );
   const dispatch = useAppDispatch();
+  const { data: appearanceData } = useGetAppranceQuery(undefined);
+
+  // Sync appearance data to Redux when fetched
+  useEffect(() => {
+    if (appearanceData?.primary_color && appearanceData?.secondary_color) {
+      dispatch(
+        addColor({
+          primary: appearanceData.primary_color as string,
+          secondary: appearanceData.secondary_color as string,
+        })
+      );
+    }
+  }, [appearanceData, dispatch]);
 
   const updateSidebarBasedOnWidth = () => {
     const windowWidth = window.innerWidth;

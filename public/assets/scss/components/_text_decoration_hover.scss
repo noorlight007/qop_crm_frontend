@@ -1,6 +1,6 @@
 .text_decoration_hover {
   text-decoration: none;
-  color: #308e87;
+  color: var(--primary-color);
   position: relative;
 }
 
@@ -13,7 +13,7 @@
   width: 100%;
   transform: scaleX(0);
   border-radius: 6px;
-  background-color: #308e87;
+  background-color: var(--primary-color);
   transition: transform 500ms;
 }
 
