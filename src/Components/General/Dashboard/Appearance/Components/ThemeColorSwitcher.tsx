@@ -8,7 +8,9 @@ import {
 import { addColor } from "@/Redux/Reducers/ThemeCustomizerReducer";
 import { ChangeEvent, useEffect, useState } from "react";
 import { ChromePicker, ColorResult } from "react-color";
+import { toast } from "react-toastify";
 import { Card, CardBody, Col, Input, Label, Row } from "reactstrap";
+import Swal from "sweetalert2";
 
 const ThemeColorSwitcher = () => {
   const dispatch = useAppDispatch();
@@ -50,9 +52,17 @@ const ThemeColorSwitcher = () => {
           secondary_color: secondary,
         },
       }).unwrap();
+      Swal.fire({
+        title: "Success",
+        text: "Theme updated successfully!",
+        icon: "success",
+        timer: 2000,
+        timerProgressBar: true,
+      });
     } catch (error) {
       // You can add toast/error handling here if needed
       console.error("Failed to update appearance settings", error);
+      toast.error("Failed to update theme colors");
     }
   };
 

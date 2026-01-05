@@ -115,7 +115,9 @@ const Menulist: React.FC<MenuListType> = ({
             <a
               href={item.path || "#"}
               className={`nav-link d-flex align-items-center gap-1 my-1 w-full ${
-                level === 0 ? "sidebar-link" : ""
+                level === 0
+                  ? `sidebar-link ${isCurrentActive ? "bg-light-primary" : ""}`
+                  : ""
               } ${isCurrentActive ? "active" : ""}`}
               onClick={(e) => handleClick(e, item)}
               style={{ cursor: "pointer", width: "220px" }}
