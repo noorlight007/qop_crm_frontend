@@ -9,7 +9,7 @@ const LogoWrapper = () => {
   const { sideBarToggle } = useAppSelector((state) => state.themeCustomizer);
   const dispatch = useAppDispatch();
   const { data: appearanceData } = useGetAppranceQuery(undefined);
-  const logoSrc = appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`;
+  const logoSrc = appearanceData?.logod || `${ImagePath}/logo/logo-dark.png`;
   return (
     <div className="logo-wrapper d-flex align-items-center col-auto">
       <Image
@@ -19,7 +19,7 @@ const LogoWrapper = () => {
         className="light-logo img-fluid"
         src={logoSrc}
         alt="logo"
-        style={{ width: "120px", height: "50px" }}
+        style={{ width: "120px", height: "40px" }}
       />
       <Image
         width={90}
@@ -28,7 +28,7 @@ const LogoWrapper = () => {
         className="dark-logo img-fluid"
         src={logoSrc}
         alt="logo"
-        style={{ width: "120px", height: "50px" }}
+        style={{ width: "120px", height: "40px" }}
       />
       <a
         className="close-btn toggle-sidebar"

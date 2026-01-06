@@ -56,6 +56,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     "save" | "next" | "next-applicant" | "previous-applicant"
   >("save");
   const formRef = useRef<HTMLFormElement>(null);
+  const [originalEmail, setOriginalEmail] = useState<string | undefined>(
+    undefined
+  );
 
   // Rtk hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -199,6 +202,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         ...newValue,
         marketing_preferences: marketing_preferences || [],
       });
+      // Store the original email for comparison
+      setOriginalEmail(selectedApplicant.applicant?.email);
     }
   }, [selectedApplicant]);
 
@@ -261,10 +266,22 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     e.preventDefault();
     setIsLoading(true);
     try {
+      // Create a copy of formValues
+      const dataToSend = { ...formValues };
+
+      // If email hasn't changed from original, remove it from the payload
+      if (
+        dataToSend.applicant &&
+        dataToSend.applicant.email === originalEmail
+      ) {
+        const { email, ...restApplicant } = dataToSend.applicant;
+        dataToSend.applicant = restApplicant as any;
+      }
+
       const response = await updateApplicantDetails({
         case_alias: casealias as string,
         applicantDetails_alias: formValues.alias as string,
-        applicantDetails: formValues,
+        applicantDetails: dataToSend,
       });
 
       if (response.data) {
@@ -948,9 +965,12 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   id="applicant.email"
                   type="email"
                   value={formValues?.applicant?.email || ""}
-                  onChange={(e) =>
-                    handleInputChange("applicant.email", e.target.value)
-                  }
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    if (newValue !== (formValues?.applicant?.email || "")) {
+                      handleInputChange("applicant.email", newValue);
+                    }
+                  }}
                 />
               </FormGroup>
             </Col>
