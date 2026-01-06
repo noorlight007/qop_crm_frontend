@@ -9,7 +9,7 @@ const LogoWrapper = () => {
   const { sideBarToggle } = useAppSelector((state) => state.themeCustomizer);
   const dispatch = useAppDispatch();
   const { data: appearanceData } = useGetAppranceQuery(undefined);
-  const logoSrc = appearanceData?.logo || `${ImagePath}/logo/logo1.png`;
+  const logoSrc = appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`;
   return (
     <div className="logo-wrapper d-flex align-items-center col-auto">
       <Image

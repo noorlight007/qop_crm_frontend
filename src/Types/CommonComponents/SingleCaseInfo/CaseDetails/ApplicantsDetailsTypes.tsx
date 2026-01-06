@@ -3,12 +3,13 @@ export interface ApplicantProps {
   alias?: string;
   is_company_application: boolean;
   applicant?: {
-    title?: string;
+    title: string;
     first_name: string;
-    middle_name?: string;
+    middle_name: string;
     last_name: string;
+    phone: string;
+    email: string;
   };
-  title: string;
   maiden_name: string;
   date_of_name_change: string;
   date_of_birth: string;
@@ -24,9 +25,7 @@ export interface ApplicantProps {
   country_of_birth: string;
   bank_name: string;
   home_phone: string;
-  mobile_phone: string;
   work_phone: string;
-  email: string;
   has_dependants: boolean;
   number_of_dependants: number;
   date_of_arrival_uk: string;

@@ -87,7 +87,14 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const [formValues, setFormValues] = useState<ApplicantProps>({
     alias: basicTab || "",
     is_company_application: false,
-    title: "",
+    applicant: {
+      title: "",
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      phone: "",
+      email: "",
+    },
     maiden_name: "",
     date_of_name_change: "",
     date_of_birth: "",
@@ -103,9 +110,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     country_of_birth: "",
     bank_name: "",
     home_phone: "",
-    mobile_phone: "",
     work_phone: "",
-    email: "",
     has_dependants: false,
     number_of_dependants: 0,
     date_of_arrival_uk: "",
@@ -227,13 +232,29 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   }
 
   const handleInputChange = (
-    name: keyof ApplicantProps,
+    name: string,
     value: string | number | boolean | string[] | null
   ) => {
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
+    setFormValues((prevValues) => {
+      // Handle nested applicant fields like "applicant.title"
+      if (name.startsWith("applicant.")) {
+        const field = name.split(".")[1] as keyof ApplicantProps["applicant"];
+
+        return {
+          ...prevValues,
+          applicant: {
+            ...prevValues.applicant,
+            [field]: value,
+          },
+        } as ApplicantProps;
+      }
+
+      // Fallback for top-level fields on ApplicantProps
+      return {
+        ...prevValues,
+        [name as keyof ApplicantProps]: value as any,
+      } as ApplicantProps;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -431,13 +452,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="title">Title</Label>
+                <Label for="applicant.title">Title*</Label>
                 <Input
-                  id="title"
+                  id="applicant.title"
                   type="select"
                   style={{ padding: "11px 11px" }}
                   value={formValues?.applicant?.title}
-                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("applicant.title", e.target.value)
+                  }
+                  required
                 >
                   <option value="">Select...</option>
                   <option value="MR">Mr</option>
@@ -454,31 +478,42 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="first_name">First Name</Label>
+                <Label for="applicant.first_name">First Name*</Label>
                 <Input
-                  id="first_name"
+                  id="applicant.first_name"
                   type="text"
-                  value={formValues.applicant?.first_name || ""}
+                  value={formValues?.applicant?.first_name || ""}
+                  onChange={(e) =>
+                    handleInputChange("applicant.first_name", e.target.value)
+                  }
+                  required
                 />
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="middle_name">Middle Name(s)</Label>
+                <Label for="applicant.middle_name">Middle Name(s)</Label>
                 <Input
-                  id="maiden_name"
+                  id="applicant.middle_name"
                   type="text"
                   value={formValues.applicant?.middle_name || ""}
+                  onChange={(e) =>
+                    handleInputChange("applicant.middle_name", e.target.value)
+                  }
                 />
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="last_name">Last Name</Label>
+                <Label for="applicant.last_name">Last Name*</Label>
                 <Input
-                  id="last_name"
+                  id="applicant.last_name"
                   type="text"
                   value={formValues.applicant?.last_name || ""}
+                  onChange={(e) =>
+                    handleInputChange("applicant.last_name", e.target.value)
+                  }
+                  required
                 />
               </FormGroup>
             </Col>
@@ -878,13 +913,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="mobile_phone">Mobile Number*</Label>
+                <Label for="applicant.phone">Mobile Number*</Label>
                 <Input
-                  id="mobile_phone"
+                  id="applicant.phone"
                   type="text"
-                  value={formValues.mobile_phone || ""}
+                  value={formValues?.applicant?.phone || ""}
                   onChange={(e) =>
-                    handleInputChange("mobile_phone", e.target.value)
+                    handleInputChange("applicant.phone", e.target.value)
                   }
                   required
                 />
@@ -908,12 +943,14 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="email">Email Address</Label>
+                <Label for="applicant.email">Email Address</Label>
                 <Input
-                  id="email"
+                  id="applicant.email"
                   type="email"
-                  value={formValues.email || ""}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  value={formValues?.applicant?.email || ""}
+                  onChange={(e) =>
+                    handleInputChange("applicant.email", e.target.value)
+                  }
                 />
               </FormGroup>
             </Col>
