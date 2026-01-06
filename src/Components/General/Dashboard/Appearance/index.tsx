@@ -1,5 +1,6 @@
 import { Col, Row } from "reactstrap";
 import Breadcrumbs from "../CommonComponents/Breadcrumbs/Breadcrumbs";
+import LogoChanger from "./Components/LogoChanger";
 import ThemeColorSwitcher from "./Components/ThemeColorSwitcher";
 
 const AppearanceContainer: React.FC = () => {
@@ -12,8 +13,11 @@ const AppearanceContainer: React.FC = () => {
         child="Appearance"
       />
       <Row>
-        <Col xl="4" lg="6" md="6">
+        <Col lg="6" md="6">
           <ThemeColorSwitcher />
+        </Col>
+        <Col lg="6" md="6">
+          <LogoChanger />
         </Col>
       </Row>
     </>

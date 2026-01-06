@@ -148,6 +148,7 @@ const ThemeColorSwitcher = () => {
                   color={customPrimary}
                   onChange={(color: ColorResult) => setCustomPrimary(color.hex)}
                   disableAlpha
+                  className="w-100"
                 />
               </div>
               <Input
@@ -167,6 +168,7 @@ const ThemeColorSwitcher = () => {
                     setCustomSecondary(color.hex)
                   }
                   disableAlpha
+                  className="w-100"
                 />
               </div>
               <Input
