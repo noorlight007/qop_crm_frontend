@@ -92,7 +92,7 @@ const ThemeColorSwitcher = () => {
               option.secondary === secondary_color;
 
             return (
-              <Col key={option.name} xs={6} sm={6} md={4} lg={3} xl={2}>
+              <Col key={option.name} xs={6} sm={6} md={4}>
                 <button
                   type="button"
                   onClick={() => handleChange(option.primary, option.secondary)}
@@ -148,6 +148,7 @@ const ThemeColorSwitcher = () => {
                   color={customPrimary}
                   onChange={(color: ColorResult) => setCustomPrimary(color.hex)}
                   disableAlpha
+                  className="w-100"
                 />
               </div>
               <Input
@@ -167,6 +168,7 @@ const ThemeColorSwitcher = () => {
                     setCustomSecondary(color.hex)
                   }
                   disableAlpha
+                  className="w-100"
                 />
               </div>
               <Input

@@ -282,7 +282,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                           <TbMailShare size="16" />
                         </Button>
                         <Button
-                          color="success"
+                          color="primary"
                           size="sm"
                           title="Update User"
                           onClick={() => openUpdateModal(client)}
