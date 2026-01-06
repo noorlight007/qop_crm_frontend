@@ -317,7 +317,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Case Info Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-warning">
+              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-primary ">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Case Info</h6>
                 </CardHeader>
@@ -327,7 +327,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                       <Spinner
                         animation="border"
                         role="status"
-                        color="warning"
+                        color="primary"
                       />
                     </Col>
                   </Row>
@@ -396,7 +396,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Assigned Advisor Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-info">
+              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Assigned Advisor</h6>
                 </CardHeader>
@@ -458,7 +458,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Created By Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-success">
+              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Created By</h6>
                 </CardHeader>
@@ -468,7 +468,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                       <Spinner
                         animation="border"
                         role="status"
-                        color="success"
+                        color="secondary"
                       />
                     </Col>
                   </Row>
