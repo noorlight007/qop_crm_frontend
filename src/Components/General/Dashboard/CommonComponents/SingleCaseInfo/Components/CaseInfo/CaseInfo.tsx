@@ -1,7 +1,6 @@
 import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
 import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/UpdateClientModal";
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
 import {
   CaseInfoPrpos,
   SingleCaseProps,
@@ -59,8 +58,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
     setIsUpdateClientModalOpen((prev) => !prev);
 
   const toggleCopyCaseModal = () => setIsCopyCaseModalOpen((prev) => !prev);
-
-  const { data: dirClientsData } = useGetClientDetailsQuery(undefined);
 
   const openUpdateCaseModal = (caseInfo: CaseInfoPrpos) => {
     setCurrentCase(caseInfo);
