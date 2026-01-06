@@ -10,7 +10,7 @@ import { ClientInfoProps } from "@/Types/CommonComponents/CommonUsers/ClientType
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { FaArrowRight, FaTrash, FaUserEdit } from "react-icons/fa";
+import { FaArrowRight, FaTrash } from "react-icons/fa";
 import {
   TbCircleArrowUp,
   TbCopy,
@@ -19,7 +19,6 @@ import {
 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
-  Button,
   ButtonGroup,
   Card,
   CardBody,
@@ -103,7 +102,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         <CardHeader className="d-flex justify-content-between">
           <h3 className="mb-2">
             Case Info
-            <span className="small text-muted opacity-75">
+            <span className="small text-primary opacity-75">
               ({caseInfo?.name})
             </span>
           </h3>
@@ -186,63 +185,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Client User Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-primary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center position-relative">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
+                <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Client User</h6>
-                  <Button
-                    size="xs"
-                    color="primary"
-                    outline
-                    style={{ position: "absolute", top: "-5px", right: "0px" }}
-                    onClick={() => {
-                      if (!caseInfo?.lead_user) return;
-                      // Try to find the client's alias using the lead user's email
-                      const clientsList: ClientInfoProps[] | undefined =
-                        Array.isArray(dirClientsData)
-                          ? (dirClientsData as ClientInfoProps[])
-                          : (dirClientsData as any)?.clients;
-
-                      const leadEmail = caseInfo.lead_user.email?.toLowerCase();
-                      const matchedClient:
-                        | Partial<ClientInfoProps>
-                        | undefined = clientsList?.find(
-                        (c: ClientInfoProps) =>
-                          c?.user?.email?.toLowerCase() === leadEmail
-                      );
-
-                      if (!matchedClient?.alias) {
-                        toast.error(
-                          "Client record not found for this lead user. Or this is Organisation Client."
-                        );
-                        return;
-                      }
-
-                      // Prefill from matched client (ensures alias is present for update API)
-                      const prefill: Partial<ClientInfoProps> = {
-                        alias: matchedClient.alias,
-                        user: {
-                          title: caseInfo.lead_user.title,
-                          first_name: caseInfo.lead_user.first_name,
-                          middle_name: caseInfo.lead_user.middle_name,
-                          last_name: caseInfo.lead_user.last_name,
-                          email: caseInfo.lead_user.email,
-                          phone: caseInfo.lead_user.phone,
-                          user_type: caseInfo.lead_user.user_type,
-                        },
-                        // Carry over optional fields if present
-                        role: (matchedClient as any)?.role,
-                        gender: (matchedClient as any)?.gender,
-                        reason_for_enquiry: (matchedClient as any)
-                          ?.reason_for_enquiry,
-                      } as Partial<ClientInfoProps>;
-
-                      setSelectedClient(prefill);
-                      setIsUpdateClientModalOpen(true);
-                    }}
-                    disabled={!caseInfo?.lead_user}
-                  >
-                    <FaUserEdit />
-                  </Button>
                 </CardHeader>
                 {isLoading ? (
                   <Row className="pt-2">
@@ -317,7 +262,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Case Info Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-primary ">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-primary ">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Case Info</h6>
                 </CardHeader>
@@ -396,7 +341,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Assigned Advisor Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Assigned Advisor</h6>
                 </CardHeader>
@@ -458,7 +403,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
           {/* Created By Card */}
           <Col sm={12} md={6}>
             <Card className="shadow">
-              <CardBody className="support-ticket-font pt-2 border-3 rounded-3 border-b-secondary">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
                   <h6 className="fw-bold">Created By</h6>
                 </CardHeader>
