@@ -434,16 +434,22 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 <Label for="title">Title</Label>
                 <Input
                   id="title"
-                  type="text"
+                  type="select"
                   style={{ padding: "11px 11px" }}
                   value={formValues?.applicant?.title}
                   onChange={(e) => handleInputChange("title", e.target.value)}
-                  readOnly
-                />
-
-                <FormText className="text-warning small">
-                  Read Only Field
-                </FormText>
+                >
+                  <option value="">Select...</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
+                </Input>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -453,11 +459,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   id="first_name"
                   type="text"
                   value={formValues.applicant?.first_name || ""}
-                  readOnly
                 />
-                <FormText className="text-warning small">
-                  Read Only Field
-                </FormText>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -467,11 +469,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   id="maiden_name"
                   type="text"
                   value={formValues.applicant?.middle_name || ""}
-                  readOnly
                 />
-                <FormText className="text-warning small">
-                  Read Only Field
-                </FormText>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -481,11 +479,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   id="last_name"
                   type="text"
                   value={formValues.applicant?.last_name || ""}
-                  readOnly
                 />
-                <FormText className="text-warning small">
-                  Read Only Field
-                </FormText>
               </FormGroup>
             </Col>
             <Col md={6}>

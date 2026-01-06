@@ -269,7 +269,7 @@
         opacity: 1;
       }
       .sidebar-link {
-        background-color: rgba($primary-color, 0.2);
+        background-color: var(--bg-light-primary);
         color: var(--theme-default);
         .stroke-icon {
           stroke: var(--theme-default);
@@ -280,7 +280,7 @@
       padding: 12px 10px;
       border-radius: 5px;
       &.active {
-        background-color: rgba($primary-color, 0.2);
+        background-color: var(--bg-light-primary);
         color: var(--theme-default);
         border-bottom: none;
         .stroke-icon {

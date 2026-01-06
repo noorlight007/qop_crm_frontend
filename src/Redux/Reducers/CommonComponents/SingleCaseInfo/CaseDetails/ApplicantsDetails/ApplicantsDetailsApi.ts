@@ -15,7 +15,12 @@ export const ApplicantsDetailsApi = baseApi.injectEndpoints({
         method: "PUT",
         body: applicantDetails,
       }),
-      invalidatesTags: ["ApplicantsDetails", "Dependants", "CompanyDetails"],
+      invalidatesTags: [
+        "ApplicantsDetails",
+        "Dependants",
+        "CompanyDetails",
+        "CaseDetails",
+      ],
     }),
     addDependants: builder.mutation({
       query: ({ case_alias, applicantDetails_alias, dependantsInfo }) => ({
