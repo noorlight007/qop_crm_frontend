@@ -31,7 +31,6 @@ export const ApplicantsDetailsTab = () => {
   const isApplicantValid = (applicant: ApplicantProps): boolean => {
     const requiredFields = [
       applicant.anticipated_retirement_age,
-      applicant.mobile_phone,
       applicant.postcode,
       applicant.house_number_or_name,
       applicant.address_line1,

@@ -12,7 +12,7 @@ export const ApplicantsDetailsApi = baseApi.injectEndpoints({
     updateApplicantDetails: builder.mutation({
       query: ({ case_alias, applicantDetails_alias, applicantDetails }) => ({
         url: `/cases/${case_alias}/applicant/details/${applicantDetails_alias}/`,
-        method: "PUT",
+        method: "PATCH",
         body: applicantDetails,
       }),
       invalidatesTags: [

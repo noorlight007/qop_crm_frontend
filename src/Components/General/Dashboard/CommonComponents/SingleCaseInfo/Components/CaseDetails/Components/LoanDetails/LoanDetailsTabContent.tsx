@@ -682,6 +682,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       placeholder="0"
                       required
                       min="0"
+                      step="0.01"
                       value={formDataTab2.purchase_price || ""}
                       onInput={limitDecimalPlaces}
                       onChange={(e) =>
@@ -702,6 +703,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       placeholder="0"
                       required
                       min="0"
+                      step="0.01"
                       value={formDataTab2.property_valuation || ""}
                       onInput={limitDecimalPlaces}
                       onChange={(e) =>
@@ -720,6 +722,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     placeholder="0"
                     required
                     min="0"
+                    step="0.01"
                     value={formDataTab2.loan_amount || ""}
                     onInput={limitDecimalPlaces}
                     onChange={(e) =>
@@ -746,6 +749,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     placeholder="0"
                     required
                     min="0"
+                    step="0.01"
                     value={formDataTab2.estimated_value || ""}
                     onInput={limitDecimalPlaces}
                     onChange={(e) =>
@@ -813,6 +817,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     name="interest_only_amount"
                     placeholder="0.00"
                     min="0"
+                    step="0.01"
                     value={formDataTab2.interest_only_amount ?? ""}
                     onInput={limitDecimalPlaces}
                     onChange={(e) =>
