@@ -255,7 +255,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
-                          color="success"
+                          color="primary"
                           size="sm"
                           title="Update User"
                           onClick={() => openUpdateModal(lead)}
