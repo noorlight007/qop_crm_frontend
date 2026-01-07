@@ -198,8 +198,8 @@ const LoginHistory: React.FC = () => {
                             )}
                           </div>
                           <Badge
-                            color="info"
-                            className="bg-opacity-10 text-info border border-info px-2 py-1"
+                            color="primary"
+                            className="bg-opacity-10 border border-primary px-2 py-1"
                             style={{ fontSize: "0.7rem" }}
                           >
                             {formatChoiceFieldValue(history.user.user_type) ||
