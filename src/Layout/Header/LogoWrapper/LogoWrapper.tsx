@@ -9,24 +9,24 @@ const LogoWrapper = () => {
   const { sideBarToggle } = useAppSelector((state) => state.themeCustomizer);
   const dispatch = useAppDispatch();
   const { data: appearanceData } = useGetAppranceQuery(undefined);
-  const logoSrc = appearanceData?.logod || `${ImagePath}/logo/logo-dark.png`;
+
   return (
     <div className="logo-wrapper d-flex align-items-center col-auto">
       <Image
         width={120}
-        height={60}
+        height={40}
         priority
         className="light-logo img-fluid"
-        src={logoSrc}
+        src={appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`}
         alt="logo"
         style={{ width: "120px", height: "40px" }}
       />
       <Image
-        width={90}
-        height={30}
+        width={120}
+        height={40}
         priority
         className="dark-logo img-fluid"
-        src={logoSrc}
+        src={appearanceData?.logo || `${ImagePath}/logo/logo1.png`}
         alt="logo"
         style={{ width: "120px", height: "40px" }}
       />

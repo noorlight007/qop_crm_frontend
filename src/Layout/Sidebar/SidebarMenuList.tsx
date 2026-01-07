@@ -1,5 +1,5 @@
 import { getMenuByRole } from "@/Data/Layout/SidebarData";
-import { useAppSelector } from "@/Redux/Hooks";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { MenuItem } from "@/Types/LayoutTypes";
 import { formatChoiceFieldValue } from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -9,6 +9,8 @@ import Menulist from "./Menulist";
 const SidebarMenuList = () => {
   const [activeMenu, setActiveMenu] = useState<string[]>(["", "", ""]);
   const { pinedMenu } = useAppSelector((state) => state.layout);
+  const { sideBarToggle } = useAppSelector((state) => state.themeCustomizer);
+  const dispatch = useAppDispatch();
   const { data: session } = useSession();
 
   // Get role-specific menu

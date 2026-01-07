@@ -1,3 +1,4 @@
+import DynamicFavicon from "@/CommonComponent/DynamicFavicon";
 import SessionWrapper from "@/CommonComponent/SessionWrapper";
 import NoSsr from "@/utils/NoSsr";
 import type { Metadata } from "next";
@@ -217,7 +218,10 @@ export default async function RootLayout({
         <body suppressHydrationWarning={true} className={`${nunito.variable}`}>
           <NoSsr>
             <SessionWrapper session={session}>
-              <MainProvider>{children}</MainProvider>
+              <MainProvider>
+                <DynamicFavicon />
+                {children}
+              </MainProvider>
               <ToastContainer />
             </SessionWrapper>
           </NoSsr>
