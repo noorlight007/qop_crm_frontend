@@ -19,7 +19,11 @@ import Swal from "sweetalert2";
 
 const LogoAndFavIconAndFontChanger: React.FC = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
-  const [updateAppearance, { isLoading }] = useUpdateAppearanceMutation();
+  // Use two separate mutation hook instances so each upload has its own loading flag
+  const [updateLogoMutation, { isLoading: isUploadingLogo }] =
+    useUpdateAppearanceMutation();
+  const [updateFaviconMutation, { isLoading: isUploadingFavicon }] =
+    useUpdateAppearanceMutation();
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
@@ -92,41 +96,61 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     }
   };
 
-  const handleUpload = async () => {
-    if (!logoFile && !faviconFile) {
-      toast.warning("Please select at least one file to upload");
+  const handleUploadLogo = async () => {
+    if (!logoFile) {
+      toast.warning("Please select a logo file to upload");
       return;
     }
 
     const formData = new FormData();
-    if (logoFile) {
-      formData.append("logo", logoFile);
-    }
-    if (faviconFile) {
-      formData.append("fav_icon", faviconFile);
-    }
+    formData.append("logo", logoFile);
 
     try {
-      await updateAppearance({
-        payload: formData,
-      }).unwrap();
+      await updateLogoMutation({ payload: formData }).unwrap();
 
       Swal.fire({
         title: "Success",
-        text: "Logo and fav_icon updated successfully!",
+        text: "Logo updated successfully!",
         icon: "success",
         timer: 2000,
         timerProgressBar: true,
       });
 
-      // Reset file states after successful upload
       setLogoFile(null);
-      setFaviconFile(null);
+      setLogoPreview(appearanceData?.logo || "");
       if (logoInputRef.current) logoInputRef.current.value = "";
+    } catch (error) {
+      console.error("Failed to update logo", error);
+      toast.error("Failed to update logo");
+    }
+  };
+
+  const handleUploadFavicon = async () => {
+    if (!faviconFile) {
+      toast.warning("Please select a favicon file to upload");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("fav_icon", faviconFile);
+
+    try {
+      await updateFaviconMutation({ payload: formData }).unwrap();
+
+      Swal.fire({
+        title: "Success",
+        text: "Favicon updated successfully!",
+        icon: "success",
+        timer: 2000,
+        timerProgressBar: true,
+      });
+
+      setFaviconFile(null);
+      setFaviconPreview(appearanceData?.fav_icon || "");
       if (faviconInputRef.current) faviconInputRef.current.value = "";
     } catch (error) {
-      console.error("Failed to update logo and favicon", error);
-      toast.error("Failed to update logo and favicon");
+      console.error("Failed to update favicon", error);
+      toast.error("Failed to update favicon");
     }
   };
 
@@ -163,11 +187,29 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   type="file"
                   accept=".png,image/png"
                   onChange={handleLogoChange}
-                  disabled={isLoading}
+                  disabled={isUploadingLogo}
                 />
                 <small className="text-muted">
                   Supported format: PNG (Max 5MB)
                 </small>
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    color="primary"
+                    onClick={handleUploadLogo}
+                    disabled={isUploadingLogo || !logoFile}
+                  >
+                    {isUploadingLogo ? "Uploading..." : "Upload Logo"}
+                  </Button>
+                  {logoFile && (
+                    <Button
+                      color="danger"
+                      onClick={resetLogo}
+                      disabled={isUploadingLogo}
+                    >
+                      Reset Logo
+                    </Button>
+                  )}
+                </div>
               </div>
             </Col>
             <Col md="6">
@@ -203,11 +245,29 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   type="file"
                   accept=".png,.ico,image/png"
                   onChange={handleFaviconChange}
-                  disabled={isLoading}
+                  disabled={isUploadingFavicon}
                 />
                 <small className="text-muted">
                   Supported formats: PNG, ICO (Max 100KB)
                 </small>
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    color="primary"
+                    onClick={handleUploadFavicon}
+                    disabled={isUploadingFavicon || !faviconFile}
+                  >
+                    {isUploadingFavicon ? "Uploading..." : "Upload Favicon"}
+                  </Button>
+                  {faviconFile && (
+                    <Button
+                      color="danger"
+                      onClick={resetFavicon}
+                      disabled={isUploadingFavicon}
+                    >
+                      Reset Favicon
+                    </Button>
+                  )}
+                </div>
               </div>
             </Col>
             <Col md="6">
@@ -227,27 +287,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
           </Row>
         </FormGroup>
 
-        {/* Action Buttons */}
-        <div className="d-flex gap-2">
-          <Button
-            color="primary"
-            onClick={handleUpload}
-            disabled={isLoading || (!logoFile && !faviconFile)}
-          >
-            {isLoading ? "Uploading..." : "Upload"}
-          </Button>
-          {(logoFile || faviconFile) && (
-            <Button
-              color="secondary"
-              onClick={() => {
-                resetLogo();
-                resetFavicon();
-              }}
-            >
-              Reset
-            </Button>
-          )}
-        </div>
+        {/* Individual upload buttons are provided in each section above */}
       </CardBody>
     </Card>
   );
