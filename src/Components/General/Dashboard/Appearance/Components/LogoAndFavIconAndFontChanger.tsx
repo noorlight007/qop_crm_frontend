@@ -17,7 +17,7 @@ import {
 } from "reactstrap";
 import Swal from "sweetalert2";
 
-const LogoAndFavIconChanger: React.FC = () => {
+const LogoAndFavIconAndFontChanger: React.FC = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
   const [updateAppearance, { isLoading }] = useUpdateAppearanceMutation();
 
@@ -253,4 +253,4 @@ const LogoAndFavIconChanger: React.FC = () => {
   );
 };
 
-export default LogoAndFavIconChanger;
+export default LogoAndFavIconAndFontChanger;
