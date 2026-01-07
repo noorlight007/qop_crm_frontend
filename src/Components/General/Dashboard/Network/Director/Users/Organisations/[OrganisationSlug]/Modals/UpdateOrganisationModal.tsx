@@ -35,7 +35,6 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
   });
 
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [logo, setLogo] = useState<File | null>(null);
   const [oldName, setOldName] = useState("");
   // Rtk hooks
   const [updateOrganisation, { isLoading }] = useUpdateOrganisationMutation();
@@ -44,12 +43,12 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
   useEffect(() => {
     if (organisationData && isOpen) {
       setFormData({
-        name: organisationData.organization.name || "",
-        email: organisationData.organization.email || "",
-        primary_mobile: organisationData.organization.primary_mobile || "",
-        other_contact: organisationData.organization.other_contact || "",
-        website: organisationData.organization.website || "",
-        contact_person: organisationData.organization.contact_person || "",
+        name: organisationData?.organization?.name || "",
+        email: organisationData?.organization?.email || "",
+        primary_mobile: organisationData?.organization?.primary_mobile || "",
+        other_contact: organisationData?.organization?.other_contact || "",
+        website: organisationData?.organization?.website || "",
+        contact_person: organisationData?.organization?.contact_person || "",
       });
       setOldName(organisationData.name || "");
     }
@@ -67,8 +66,6 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
     if (files && files.length > 0) {
       if (name === "profile_image") {
         setProfileImage(files[0]);
-      } else if (name === "logo") {
-        setLogo(files[0]);
       }
     }
   };
@@ -85,9 +82,6 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
       // Append files if selected
       if (profileImage) {
         formDataToSend.append("profile_image", profileImage);
-      }
-      if (logo) {
-        formDataToSend.append("logo", logo);
       }
       // Use RTK Query mutation
       const response = await updateOrganisation({
@@ -204,34 +198,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
             </Col>
           </Row>
           <Row>
-            {/* Logo Upload */}
-            <Col md="6">
-              <FormGroup>
-                <Label for="logo">Logo</Label>
-                <Input
-                  type="file"
-                  id="logo"
-                  name="logo"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-                {organisationData?.logo ? (
-                  <div className="d-flex justify-content-center  mt-2">
-                    <Image
-                      src={organisationData.logo}
-                      alt="Profile"
-                      width={80}
-                      height={80}
-                      className="rounded-circle w-25 h-25 border-1 border-success"
-                    />
-                  </div>
-                ) : (
-                  <div className="text-center mt-2 fw-medium opacity-50">
-                    <h6>Image not avaiable</h6>
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
+            {/* Logo upload removed */}
             {/* Profile Image Upload */}
             <Col md="6">
               <FormGroup>

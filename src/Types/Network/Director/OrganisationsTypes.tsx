@@ -239,9 +239,6 @@ export interface AddOrganisationProps {
   [key: string]: string | File | null | boolean; // Allow any string key, with values being string, File, or null
   name: string;
   email: string;
-  logo: File | null;
-  profile_image: File | null;
-  hero_image: File | null;
   primary_mobile: string;
   other_contact: string;
   contact_person: string;
