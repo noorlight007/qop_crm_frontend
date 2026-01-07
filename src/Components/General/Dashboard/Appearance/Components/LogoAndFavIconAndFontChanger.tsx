@@ -315,7 +315,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
-                    style={{ maxHeight: "100px", maxWidth: "100%" }}
+                    style={{ maxHeight: "120px", maxWidth: "100%" }}
                   />
                 </div>
               )}
@@ -368,12 +368,12 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
               {faviconPreview && (
                 <div
                   className="border rounded p-2 bg-light text-center"
-                  style={{ maxHeight: "120px" }}
+                  style={{ maxHeight: "80px" }}
                 >
                   <img
                     src={faviconPreview}
                     alt="Favicon Preview"
-                    style={{ maxHeight: "100px", maxWidth: "100%" }}
+                    style={{ maxHeight: "80px", maxWidth: "100%" }}
                   />
                 </div>
               )}
