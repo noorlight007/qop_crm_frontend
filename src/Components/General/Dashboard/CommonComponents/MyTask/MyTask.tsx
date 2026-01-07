@@ -535,7 +535,7 @@ const MyTask: React.FC = () => {
           <Row>
             <div className="d-flex justify-content-between px-4 py-3">
               <div>
-                <p className="text-success">
+                <p className="text-primary">
                   Showing {indexOfFirstTask} to {indexOfLastTask} of{" "}
                   {totalCount} tasks
                 </p>
