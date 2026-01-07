@@ -34,7 +34,14 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   const [selectedFont, setSelectedFont] = useState<string>("");
 
   // Must stay in sync with backend AppearanceFontFamilyType
-  const fontOptions = ["Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins"];
+  const fontOptions = [
+    "Inter",
+    "Roboto",
+    "Open Sans",
+    "Lato",
+    "Montserrat",
+    "Poppins",
+  ];
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
@@ -207,10 +214,10 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   return (
     <Card>
       <CardBody>
-        <h5 className="mb-4">Logo & Favicon</h5>
+        <h5 className="mb-4">Font, Logo & Favicon</h5>
 
         {/* Font Family Section */}
-        <FormGroup className="mb-4">
+        <FormGroup className="mb-5">
           <Label className="form-label">Font family</Label>
           <Row className="g-3">
             <Col md="6">
@@ -259,7 +266,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Logo Upload Section */}
-        <FormGroup className="mb-4">
+        <FormGroup className="mb-5">
           <Label className="form-label">
             Logo{" "}
             <small className="text-warning">
@@ -317,7 +324,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup className="mb-4">
+        <FormGroup className="mb-4 pb-1">
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">
@@ -373,8 +380,6 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
             </Col>
           </Row>
         </FormGroup>
-
-        {/* Individual upload buttons are provided in each section above */}
       </CardBody>
     </Card>
   );
