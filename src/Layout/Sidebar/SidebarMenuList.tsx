@@ -33,7 +33,7 @@ const SidebarMenuList = () => {
       {roleBasedMenu && roleBasedMenu.length > 0 ? (
         roleBasedMenu.map((mainMenu: MenuItem, index: number) => (
           <Fragment key={index}>
-            <li
+            {/* <li
               className={`sidebar-main-title ${
                 shouldHideMenu(mainMenu) ? "d-none" : ""
               }`}
@@ -49,7 +49,7 @@ const SidebarMenuList = () => {
                   </span>
                 </h5>
               </div>
-            </li>
+            </li> */}
             <Menulist
               menu={mainMenu.Items}
               activeMenu={activeMenu}

@@ -1,6 +1,6 @@
 import SVG from "@/CommonComponent/SVG";
 import { getMenuByRole } from "@/Data/Layout/SidebarData";
-import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { useAppSelector } from "@/Redux/Hooks";
 import { MenuListType } from "@/Types/LayoutTypes";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -15,7 +15,6 @@ const Menulist: React.FC<MenuListType> = ({
 }) => {
   const { pinedMenu } = useAppSelector((state) => state.layout);
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
   const { t } = useTranslation("common");
   const [initialLoad, setInitialLoad] = useState(true);
   const { data: session } = useSession();
