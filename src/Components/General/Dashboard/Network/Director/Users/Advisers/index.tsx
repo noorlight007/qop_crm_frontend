@@ -6,8 +6,8 @@ const NetworkDirectorAdvisersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Registered Advisers Status"
-        subTitle="Welcome to the Registered Advisers Status"
+        title="Registered Advisers"
+        subTitle="Welcome to the Registered Advisers"
         parent="Users"
         child="Advisers"
       />

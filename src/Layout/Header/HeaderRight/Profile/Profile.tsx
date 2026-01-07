@@ -1,5 +1,6 @@
 import { Href, ImagePath } from "@/Constant";
 import { logOut } from "@/Redux/Api/BaseApi";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,9 +56,11 @@ const Profile = () => {
           />
         </div>
         <div className="user-content" onClick={() => setShow(!show)}>
-          <h6>{session?.user?.email}</h6>
+          <h6>{session?.user?.name}</h6>
           <p className="mb-0 text-primary">
-            {session?.user?.name || "User Name"}
+            <span className="bg-light-primary mt-1 px-2 py-1 rounded-5">
+              {formatChoiceFieldValue(session?.user?.user_type || "User Type")}{" "}
+            </span>
             <i className="fa-solid fa-chevron-down" />
           </p>
         </div>
