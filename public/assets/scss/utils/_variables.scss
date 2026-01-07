@@ -158,7 +158,7 @@ $dark: #292929;
   --bs-btn-active-color: #b6b0b0;
   --bs-nav-tabs-link-hover-border-color: #e9ecef;
 }
-$body-font: var(--nunito);
+$body-font: var(--app-body-font, var(--nunito));
 $heading_1: 30px;
 $heading_2: 24px;
 $heading_3: 20px;

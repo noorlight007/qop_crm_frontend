@@ -24,11 +24,17 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     useUpdateAppearanceMutation();
   const [updateFaviconMutation, { isLoading: isUploadingFavicon }] =
     useUpdateAppearanceMutation();
+  const [updateFontMutation, { isLoading: isUpdatingFont }] =
+    useUpdateAppearanceMutation();
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string>("");
   const [faviconPreview, setFaviconPreview] = useState<string>("");
+  const [selectedFont, setSelectedFont] = useState<string>("");
+
+  // Must stay in sync with backend AppearanceFontFamilyType
+  const fontOptions = ["Inter", "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins"];
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
@@ -41,6 +47,9 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
       }
       if (appearanceData.fav_icon) {
         setFaviconPreview(appearanceData.fav_icon);
+      }
+      if (appearanceData.font_family) {
+        setSelectedFont(appearanceData.font_family);
       }
     }
   }, [appearanceData]);
@@ -166,10 +175,88 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     if (faviconInputRef.current) faviconInputRef.current.value = "";
   };
 
+  const handleFontChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSelectedFont(value);
+  };
+
+  const handleApplyFont = async () => {
+    if (!selectedFont) {
+      toast.warning("Please select a font to apply");
+      return;
+    }
+
+    try {
+      await updateFontMutation({
+        payload: { font_family: selectedFont },
+      }).unwrap();
+
+      Swal.fire({
+        title: "Success",
+        text: "Font updated successfully!",
+        icon: "success",
+        timer: 2000,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      console.error("Failed to update font", error);
+      toast.error("Failed to update font");
+    }
+  };
+
   return (
     <Card>
       <CardBody>
         <h5 className="mb-4">Logo & Favicon</h5>
+
+        {/* Font Family Section */}
+        <FormGroup className="mb-4">
+          <Label className="form-label">Font family</Label>
+          <Row className="g-3">
+            <Col md="6">
+              <div className="d-flex flex-column gap-2">
+                <Input
+                  type="select"
+                  value={selectedFont}
+                  onChange={handleFontChange}
+                  disabled={isUpdatingFont}
+                >
+                  <option value="">Select font</option>
+                  {fontOptions.map((font) => (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  ))}
+                </Input>
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    color="primary"
+                    onClick={handleApplyFont}
+                    disabled={isUpdatingFont || !selectedFont}
+                  >
+                    {isUpdatingFont ? "Applying..." : "Apply Font"}
+                  </Button>
+                </div>
+                <small className="text-muted">
+                  Choose one of the available fonts for the application.
+                </small>
+              </div>
+            </Col>
+            <Col md="6">
+              {selectedFont && (
+                <div className="border rounded p-2 bg-dark-light h-100 d-flex align-items-center justify-content-center">
+                  <span
+                    style={{ fontFamily: selectedFont, fontSize: "1.1rem" }}
+                  >
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Nodi neque quae porro facilis laboriosam consectetur ea
+                    accusantium inventore dolor amet! ...
+                  </span>
+                </div>
+              )}
+            </Col>
+          </Row>
+        </FormGroup>
 
         {/* Logo Upload Section */}
         <FormGroup className="mb-4">
