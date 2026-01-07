@@ -444,7 +444,7 @@ const MyTask: React.FC = () => {
                   <th>Created By</th>
                   <th>Status</th>
                   <th>Date & Time</th>
-                  <th>Case Name</th>
+                  <th>Case ID</th>
                   <th>Client Name</th>
                   <th>Lender</th>
                   <th>Workflow</th>
