@@ -19,12 +19,33 @@ import Swal from "sweetalert2";
 
 const LogoAndFavIconAndFontChanger: React.FC = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
-  const [updateAppearance, { isLoading }] = useUpdateAppearanceMutation();
+  // Use two separate mutation hook instances so each upload has its own loading flag
+  const [updateLogoMutation, { isLoading: isUploadingLogo }] =
+    useUpdateAppearanceMutation();
+  const [updateFaviconMutation, { isLoading: isUploadingFavicon }] =
+    useUpdateAppearanceMutation();
+  const [updateFontMutation, { isLoading: isUpdatingFont }] =
+    useUpdateAppearanceMutation();
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string>("");
   const [faviconPreview, setFaviconPreview] = useState<string>("");
+  const [selectedFont, setSelectedFont] = useState<string>("");
+
+  // Must stay in sync with backend AppearanceFontFamilyType (enum values)
+  const fontOptions = [
+    { value: "ROBOTO", label: "Roboto" },
+    { value: "POPPINS", label: "Poppins" },
+    { value: "PLAYFAIR_DISPLAY", label: "Playfair Display" },
+    { value: "RALEWAY", label: "Raleway" },
+    { value: "SATISFY", label: "Satisfy" },
+    { value: "KARLA", label: "Karla" },
+    { value: "MONTSERRAT", label: "Montserrat" },
+    { value: "INTER", label: "Inter" },
+    { value: "CAVEAT", label: "Caveat" },
+    { value: "OPEN_SANS", label: "Open Sans" },
+  ];
 
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
@@ -37,6 +58,9 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
       }
       if (appearanceData.fav_icon) {
         setFaviconPreview(appearanceData.fav_icon);
+      }
+      if (appearanceData.font_family) {
+        setSelectedFont(appearanceData.font_family);
       }
     }
   }, [appearanceData]);
@@ -92,41 +116,61 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     }
   };
 
-  const handleUpload = async () => {
-    if (!logoFile && !faviconFile) {
-      toast.warning("Please select at least one file to upload");
+  const handleUploadLogo = async () => {
+    if (!logoFile) {
+      toast.warning("Please select a logo file to upload");
       return;
     }
 
     const formData = new FormData();
-    if (logoFile) {
-      formData.append("logo", logoFile);
-    }
-    if (faviconFile) {
-      formData.append("fav_icon", faviconFile);
-    }
+    formData.append("logo", logoFile);
 
     try {
-      await updateAppearance({
-        payload: formData,
-      }).unwrap();
+      await updateLogoMutation({ payload: formData }).unwrap();
 
       Swal.fire({
         title: "Success",
-        text: "Logo and fav_icon updated successfully!",
+        text: "Logo updated successfully!",
         icon: "success",
         timer: 2000,
         timerProgressBar: true,
       });
 
-      // Reset file states after successful upload
       setLogoFile(null);
-      setFaviconFile(null);
+      setLogoPreview(appearanceData?.logo || "");
       if (logoInputRef.current) logoInputRef.current.value = "";
+    } catch (error) {
+      console.error("Failed to update logo", error);
+      toast.error("Failed to update logo");
+    }
+  };
+
+  const handleUploadFavicon = async () => {
+    if (!faviconFile) {
+      toast.warning("Please select a favicon file to upload");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("fav_icon", faviconFile);
+
+    try {
+      await updateFaviconMutation({ payload: formData }).unwrap();
+
+      Swal.fire({
+        title: "Success",
+        text: "Favicon updated successfully!",
+        icon: "success",
+        timer: 2000,
+        timerProgressBar: true,
+      });
+
+      setFaviconFile(null);
+      setFaviconPreview(appearanceData?.fav_icon || "");
       if (faviconInputRef.current) faviconInputRef.current.value = "";
     } catch (error) {
-      console.error("Failed to update logo and favicon", error);
-      toast.error("Failed to update logo and favicon");
+      console.error("Failed to update favicon", error);
+      toast.error("Failed to update favicon");
     }
   };
 
@@ -142,13 +186,96 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     if (faviconInputRef.current) faviconInputRef.current.value = "";
   };
 
+  const handleFontChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSelectedFont(value);
+  };
+
+  const handleApplyFont = async () => {
+    if (!selectedFont) {
+      toast.warning("Please select a font to apply");
+      return;
+    }
+
+    try {
+      await updateFontMutation({
+        payload: { font_family: selectedFont },
+      }).unwrap();
+
+      Swal.fire({
+        title: "Success",
+        text: "Font updated successfully!",
+        icon: "success",
+        timer: 2000,
+        timerProgressBar: true,
+      });
+    } catch (error) {
+      console.error("Failed to update font", error);
+      toast.error("Failed to update font");
+    }
+  };
+
   return (
     <Card>
       <CardBody>
-        <h5 className="mb-4">Logo & Favicon</h5>
+        <h5 className="mb-4">Font, Logo & Favicon</h5>
+
+        {/* Font Family Section */}
+        <FormGroup className="mb-5">
+          <Label className="form-label">Font family</Label>
+          <Row className="g-3">
+            <Col md="6">
+              <div className="d-flex flex-column gap-2">
+                <Input
+                  type="select"
+                  value={selectedFont}
+                  onChange={handleFontChange}
+                  disabled={isUpdatingFont}
+                >
+                  <option value="">Select font</option>
+                  {fontOptions.map((font) => (
+                    <option key={font.value} value={font.value}>
+                      {font.label}
+                    </option>
+                  ))}
+                </Input>
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    color="primary"
+                    onClick={handleApplyFont}
+                    disabled={isUpdatingFont || !selectedFont}
+                  >
+                    {isUpdatingFont ? "Applying..." : "Apply Font"}
+                  </Button>
+                </div>
+                <small className="text-muted">
+                  Choose one of the available fonts for the application.
+                </small>
+              </div>
+            </Col>
+            <Col md="6">
+              {selectedFont && (
+                <div className="border rounded p-2 bg-dark-light h-100 d-flex align-items-center justify-content-center">
+                  <span
+                    style={{
+                      fontFamily:
+                        fontOptions.find((f) => f.value === selectedFont)
+                          ?.label || selectedFont,
+                      fontSize: "1.1rem",
+                    }}
+                  >
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                    Nodi neque quae porro facilis laboriosam consectetur ea
+                    accusantium inventore dolor amet! ...
+                  </span>
+                </div>
+              )}
+            </Col>
+          </Row>
+        </FormGroup>
 
         {/* Logo Upload Section */}
-        <FormGroup className="mb-4">
+        <FormGroup className="mb-5">
           <Label className="form-label">
             Logo{" "}
             <small className="text-warning">
@@ -163,11 +290,29 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   type="file"
                   accept=".png,image/png"
                   onChange={handleLogoChange}
-                  disabled={isLoading}
+                  disabled={isUploadingLogo}
                 />
                 <small className="text-muted">
                   Supported format: PNG (Max 5MB)
                 </small>
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    color="primary"
+                    onClick={handleUploadLogo}
+                    disabled={isUploadingLogo || !logoFile}
+                  >
+                    {isUploadingLogo ? "Uploading..." : "Upload Logo"}
+                  </Button>
+                  {logoFile && (
+                    <Button
+                      color="danger"
+                      onClick={resetLogo}
+                      disabled={isUploadingLogo}
+                    >
+                      Reset Logo
+                    </Button>
+                  )}
+                </div>
               </div>
             </Col>
             <Col md="6">
@@ -179,7 +324,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
-                    style={{ maxHeight: "100px", maxWidth: "100%" }}
+                    style={{ maxHeight: "120px", maxWidth: "100%" }}
                   />
                 </div>
               )}
@@ -188,7 +333,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup className="mb-4">
+        <FormGroup className="mb-4 pb-1">
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">
@@ -203,51 +348,47 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   type="file"
                   accept=".png,.ico,image/png"
                   onChange={handleFaviconChange}
-                  disabled={isLoading}
+                  disabled={isUploadingFavicon}
                 />
                 <small className="text-muted">
                   Supported formats: PNG, ICO (Max 100KB)
                 </small>
+                <div className="d-flex gap-2 mt-2">
+                  <Button
+                    color="primary"
+                    onClick={handleUploadFavicon}
+                    disabled={isUploadingFavicon || !faviconFile}
+                  >
+                    {isUploadingFavicon ? "Uploading..." : "Upload Favicon"}
+                  </Button>
+                  {faviconFile && (
+                    <Button
+                      color="danger"
+                      onClick={resetFavicon}
+                      disabled={isUploadingFavicon}
+                    >
+                      Reset Favicon
+                    </Button>
+                  )}
+                </div>
               </div>
             </Col>
             <Col md="6">
               {faviconPreview && (
                 <div
                   className="border rounded p-2 bg-light text-center"
-                  style={{ maxHeight: "120px" }}
+                  style={{ maxHeight: "80px" }}
                 >
                   <img
                     src={faviconPreview}
                     alt="Favicon Preview"
-                    style={{ maxHeight: "100px", maxWidth: "100%" }}
+                    style={{ maxHeight: "80px", maxWidth: "100%" }}
                   />
                 </div>
               )}
             </Col>
           </Row>
         </FormGroup>
-
-        {/* Action Buttons */}
-        <div className="d-flex gap-2">
-          <Button
-            color="primary"
-            onClick={handleUpload}
-            disabled={isLoading || (!logoFile && !faviconFile)}
-          >
-            {isLoading ? "Uploading..." : "Upload"}
-          </Button>
-          {(logoFile || faviconFile) && (
-            <Button
-              color="secondary"
-              onClick={() => {
-                resetLogo();
-                resetFavicon();
-              }}
-            >
-              Reset
-            </Button>
-          )}
-        </div>
       </CardBody>
     </Card>
   );
