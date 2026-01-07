@@ -344,13 +344,15 @@
   .page-header {
     .logo-wrapper {
       .dark-logo {
+        display: block;
         @media (max-width: 1199px) {
-          display: none;
+          display: block;
         }
       }
       .light-logo {
+        display: none;
         @media (max-width: 1199px) {
-          display: block;
+          display: none;
         }
       }
     }

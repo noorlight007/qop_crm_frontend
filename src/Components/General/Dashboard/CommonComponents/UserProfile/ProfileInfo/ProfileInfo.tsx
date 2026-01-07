@@ -159,7 +159,7 @@ const ProfileInfo: React.FC = () => {
                         width: "100%",
                         height: "100%",
                         background:
-                          "linear-gradient(135deg, var(--theme-default) 0%, rgba(48,142,135,0.95) 30%, rgba(56,160,150,0.8) 60%, rgba(12,90,82,0.95) 100%)",
+                          "linear-gradient(135deg, var(--theme-default) 0%, var(--theme-default) 30%, var(--theme-default) 60%, var(--theme-default) 100%)",
                         fontSize: "2.5rem",
                         borderRadius: "50%",
                       }}

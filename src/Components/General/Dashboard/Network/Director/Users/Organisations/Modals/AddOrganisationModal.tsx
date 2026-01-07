@@ -26,9 +26,6 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   const [formData, setFormData] = useState<AddOrganisationProps>({
     name: "",
     email: "",
-    logo: null,
-    profile_image: null,
-    hero_image: null,
     primary_mobile: "",
     other_contact: "",
     contact_person: "",
@@ -87,9 +84,6 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
         setFormData({
           name: "",
           email: "",
-          logo: null,
-          profile_image: null,
-          hero_image: null,
           primary_mobile: "",
           other_contact: "",
           contact_person: "",
@@ -112,7 +106,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggleModal} size="lg">
-      <ModalHeader toggle={toggleModal}>Add New Organisation</ModalHeader>
+      <ModalHeader toggle={toggleModal}>
+        <h3 className="text-primary">Add New Organisation</h3>{" "}
+      </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
@@ -132,6 +128,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   required
                 />
               </FormGroup>
+            </Col>
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="primary_mobile">
                   Primary Mobile<span className="text-danger">*</span>
@@ -146,6 +144,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   required
                 />
               </FormGroup>
+            </Col>
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="other_contact">Other Contact</Label>
                 <Input
@@ -157,24 +157,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   placeholder="Enter other contact person's phone"
                 />
               </FormGroup>
-              <FormGroup>
-                <Label for="logo">Logo</Label>
-                <Input
-                  type="file"
-                  id="logo"
-                  name="logo"
-                  onChange={(e) => handleFileChange(e, "logo")}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="profile_image">Profile Image</Label>
-                <Input
-                  type="file"
-                  id="profile_image"
-                  name="profile_image"
-                  onChange={(e) => handleFileChange(e, "profile_image")}
-                />
-              </FormGroup>{" "}
+            </Col>
+
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="license_no">License Number</Label>
                 <Input
@@ -187,6 +172,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 />
               </FormGroup>
             </Col>
+
             {/* 2nd Column  */}
             <Col md={6} xs={12}>
               <FormGroup>
@@ -203,6 +189,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   required
                 />
               </FormGroup>
+            </Col>
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="website">
                   Website{" "}
@@ -219,6 +207,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   placeholder="Enter website URL"
                 />
               </FormGroup>
+            </Col>
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="contact_person">Contact Person</Label>
                 <Input
@@ -230,6 +220,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   placeholder="Enter contact person's name"
                 />
               </FormGroup>
+            </Col>
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="contact_person_designation">
                   Contact Person Designation
@@ -243,15 +235,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   placeholder="Enter contact person's designation"
                 />
               </FormGroup>
-              <FormGroup>
-                <Label for="hero_image">Hero Image</Label>
-                <Input
-                  type="file"
-                  id="hero_image"
-                  name="hero_image"
-                  onChange={(e) => handleFileChange(e, "hero_image")}
-                />
-              </FormGroup>
+            </Col>
+            <Col md={6} xs={12}>
               <FormGroup>
                 <Label for="license_image">License Image</Label>
                 <Input

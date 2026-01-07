@@ -1,3 +1,4 @@
+import DynamicFavicon from "@/CommonComponent/DynamicFavicon";
 import SessionWrapper from "@/CommonComponent/SessionWrapper";
 import NoSsr from "@/utils/NoSsr";
 import type { Metadata } from "next";
@@ -157,6 +158,10 @@ export default async function RootLayout({
             href="https://fonts.gstatic.com"
             crossOrigin=""
           />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Raleway:wght@300;400;500;600;700&family=Satisfy&family=Karla:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700&display=swap"
+            rel="stylesheet"
+          />
 
           {/* Additional SEO Meta Tags */}
           <meta name="theme-color" content="#0066cc" />
@@ -217,7 +222,10 @@ export default async function RootLayout({
         <body suppressHydrationWarning={true} className={`${nunito.variable}`}>
           <NoSsr>
             <SessionWrapper session={session}>
-              <MainProvider>{children}</MainProvider>
+              <MainProvider>
+                <DynamicFavicon />
+                {children}
+              </MainProvider>
               <ToastContainer />
             </SessionWrapper>
           </NoSsr>
