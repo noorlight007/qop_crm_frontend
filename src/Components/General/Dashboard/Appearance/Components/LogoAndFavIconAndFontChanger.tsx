@@ -324,7 +324,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
-                    style={{ maxHeight: "120px", maxWidth: "100%" }}
+                    style={{ height: "100px", maxWidth: "100%" }}
                   />
                 </div>
               )}
