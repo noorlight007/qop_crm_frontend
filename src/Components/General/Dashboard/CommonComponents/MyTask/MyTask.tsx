@@ -270,7 +270,7 @@ const MyTask: React.FC = () => {
             </Col>
             <Col md="2" xs="12" className="d-flex justify-content-end">
               <Button
-                color="success"
+                color="secondary"
                 onClick={toggleFilterIcon}
                 className="me-2"
               >
@@ -287,7 +287,7 @@ const MyTask: React.FC = () => {
         <CardBody className="p-2 m-0">
           {/* Conditional Filters Section */}
           {filterIcon && (
-            <Card className="shadow-lg bg-light-success rounded-3 p-3 mt-3 mb-3">
+            <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
               <Row className="justify-content-start g-3">
                 <Col xs="12" sm="6" md="3">
                   <Label>Task Assigned To</Label>
@@ -535,7 +535,7 @@ const MyTask: React.FC = () => {
           <Row>
             <div className="d-flex justify-content-between px-4 py-3">
               <div>
-                <p className="text-success">
+                <p className="text-primary">
                   Showing {indexOfFirstTask} to {indexOfLastTask} of{" "}
                   {totalCount} tasks
                 </p>

@@ -33,18 +33,66 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   const [faviconPreview, setFaviconPreview] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<string>("");
 
+  type FontOption = {
+    value: string;
+    label: string;
+    cssFamily: string;
+  };
+
   // Must stay in sync with backend AppearanceFontFamilyType (enum values)
-  const fontOptions = [
-    { value: "ROBOTO", label: "Roboto" },
-    { value: "POPPINS", label: "Poppins" },
-    { value: "PLAYFAIR_DISPLAY", label: "Playfair Display" },
-    { value: "RALEWAY", label: "Raleway" },
-    { value: "SATISFY", label: "Satisfy" },
-    { value: "KARLA", label: "Karla" },
-    { value: "MONTSERRAT", label: "Montserrat" },
-    { value: "INTER", label: "Inter" },
-    { value: "CAVEAT", label: "Caveat" },
-    { value: "OPEN_SANS", label: "Open Sans" },
+  const fontOptions: FontOption[] = [
+    {
+      value: "ROBOTO",
+      label: "Roboto",
+      cssFamily: "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
+    {
+      value: "POPPINS",
+      label: "Poppins",
+      cssFamily: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
+    {
+      value: "PLAYFAIR_DISPLAY",
+      label: "Playfair Display",
+      cssFamily: "'Playfair Display', 'Times New Roman', serif",
+    },
+    {
+      value: "RALEWAY",
+      label: "Raleway",
+      cssFamily: "'Raleway', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
+    {
+      value: "SATISFY",
+      label: "Satisfy",
+      cssFamily: "'Satisfy', 'Comic Sans MS', cursive",
+    },
+    {
+      value: "KARLA",
+      label: "Karla",
+      cssFamily: "'Karla', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
+    {
+      value: "MONTSERRAT",
+      label: "Montserrat",
+      cssFamily:
+        "'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
+    {
+      value: "INTER",
+      label: "Inter",
+      cssFamily: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
+    {
+      value: "CAVEAT",
+      label: "Caveat",
+      cssFamily: "'Caveat', 'Comic Sans MS', cursive",
+    },
+    {
+      value: "OPEN_SANS",
+      label: "Open Sans",
+      cssFamily:
+        "'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif",
+    },
   ];
 
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -231,10 +279,19 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   value={selectedFont}
                   onChange={handleFontChange}
                   disabled={isUpdatingFont}
+                  style={{
+                    fontFamily: fontOptions.find(
+                      (f) => f.value === selectedFont
+                    )?.cssFamily,
+                  }}
                 >
                   <option value="">Select font</option>
                   {fontOptions.map((font) => (
-                    <option key={font.value} value={font.value}>
+                    <option
+                      key={font.value}
+                      value={font.value}
+                      style={{ fontFamily: font.cssFamily }}
+                    >
                       {font.label}
                     </option>
                   ))}
@@ -255,18 +312,25 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
             </Col>
             <Col md="6">
               {selectedFont && (
-                <div className="border rounded p-2 bg-dark-light h-100 d-flex align-items-center justify-content-center">
+                <div
+                  className="border rounded p-2 bg-dark-light d-flex align-items-center justify-content-center"
+                  style={{
+                    maxHeight: "100px",
+                    overflow: "hidden",
+                  }}
+                >
                   <span
                     style={{
                       fontFamily:
                         fontOptions.find((f) => f.value === selectedFont)
-                          ?.label || selectedFont,
+                          ?.cssFamily || selectedFont,
                       fontSize: "1.1rem",
+                      whiteSpace: "normal",
+                      wordBreak: "break-word",
                     }}
                   >
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    Nodi neque quae porro facilis laboriosam consectetur ea
-                    accusantium inventore dolor amet! ...
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                    Error, atque...
                   </span>
                 </div>
               )}
@@ -324,7 +388,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   <img
                     src={logoPreview}
                     alt="Logo Preview"
-                    style={{ maxHeight: "120px", maxWidth: "100%" }}
+                    style={{ height: "100px", maxWidth: "100%" }}
                   />
                 </div>
               )}
@@ -333,7 +397,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup className="mb-4 pb-1">
+        <FormGroup className="mb-4 pb-2">
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">
