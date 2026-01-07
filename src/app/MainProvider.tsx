@@ -57,14 +57,18 @@ const AppearanceFontApplier: React.FC<MainProviderProps> = ({ children }) => {
     const fontKey = appearanceData?.font_family;
 
     const fontMap: Record<string, string> = {
-      Inter: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      Roboto: "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      "Open Sans":
-        "'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      Lato: "'Lato', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      Montserrat:
+      ROBOTO: "'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      POPPINS: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      PLAYFAIR_DISPLAY: "'Playfair Display', 'Times New Roman', serif",
+      RALEWAY: "'Raleway', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      SATISFY: "'Satisfy', 'Comic Sans MS', cursive",
+      KARLA: "'Karla', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      MONTSERRAT:
         "'Montserrat', system-ui, -apple-system, 'Segoe UI', sans-serif",
-      Poppins: "'Poppins', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      INTER: "'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif",
+      CAVEAT: "'Caveat', 'Comic Sans MS', cursive",
+      OPEN_SANS:
+        "'Open Sans', system-ui, -apple-system, 'Segoe UI', sans-serif",
     };
 
     const mappedFont = fontKey ? fontMap[fontKey] : undefined;

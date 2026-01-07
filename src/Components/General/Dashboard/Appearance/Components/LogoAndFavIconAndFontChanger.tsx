@@ -33,14 +33,18 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   const [faviconPreview, setFaviconPreview] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<string>("");
 
-  // Must stay in sync with backend AppearanceFontFamilyType
+  // Must stay in sync with backend AppearanceFontFamilyType (enum values)
   const fontOptions = [
-    "Inter",
-    "Roboto",
-    "Open Sans",
-    "Lato",
-    "Montserrat",
-    "Poppins",
+    { value: "ROBOTO", label: "Roboto" },
+    { value: "POPPINS", label: "Poppins" },
+    { value: "PLAYFAIR_DISPLAY", label: "Playfair Display" },
+    { value: "RALEWAY", label: "Raleway" },
+    { value: "SATISFY", label: "Satisfy" },
+    { value: "KARLA", label: "Karla" },
+    { value: "MONTSERRAT", label: "Montserrat" },
+    { value: "INTER", label: "Inter" },
+    { value: "CAVEAT", label: "Caveat" },
+    { value: "OPEN_SANS", label: "Open Sans" },
   ];
 
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -230,8 +234,8 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                 >
                   <option value="">Select font</option>
                   {fontOptions.map((font) => (
-                    <option key={font} value={font}>
-                      {font}
+                    <option key={font.value} value={font.value}>
+                      {font.label}
                     </option>
                   ))}
                 </Input>
@@ -253,7 +257,12 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
               {selectedFont && (
                 <div className="border rounded p-2 bg-dark-light h-100 d-flex align-items-center justify-content-center">
                   <span
-                    style={{ fontFamily: selectedFont, fontSize: "1.1rem" }}
+                    style={{
+                      fontFamily:
+                        fontOptions.find((f) => f.value === selectedFont)
+                          ?.label || selectedFont,
+                      fontSize: "1.1rem",
+                    }}
                   >
                     Lorem ipsum dolor sit amet consectetur, adipisicing elit.
                     Nodi neque quae porro facilis laboriosam consectetur ea
