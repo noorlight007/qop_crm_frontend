@@ -152,7 +152,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     if (!postcode) return;
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_ADRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
       );
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
@@ -169,7 +169,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     try {
       // Calling the specific get/{id} endpoint
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_ADRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
       );
 
       const address = res.data;
