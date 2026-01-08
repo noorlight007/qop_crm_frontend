@@ -348,35 +348,63 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
           </Label>
           <Row className="g-3">
             <Col md="6">
-              <div className="d-flex flex-column gap-2">
+              <div
+                className="d-flex align-items-center gap-2 border rounded p-3"
+                style={{ backgroundColor: "#f8f9fa" }}
+              >
                 <Input
                   innerRef={logoInputRef}
                   type="file"
                   accept=".png,image/png"
                   onChange={handleLogoChange}
                   disabled={isUploadingLogo}
+                  style={{ display: "none" }}
                 />
-                <small className="text-muted">
-                  Supported format: PNG (Max 5MB)
-                </small>
-                <div className="d-flex gap-2 mt-2">
+                <Button
+                  color="secondary"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={isUploadingLogo}
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  Choose File
+                </Button>
+                <span
+                  className="text-muted"
+                  style={{
+                    fontSize: "0.9rem",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    flex: 1,
+                  }}
+                >
+                  {logoFile
+                    ? logoFile.name
+                    : appearanceData?.logo
+                    ? appearanceData.logo.split("/").pop()
+                    : "No file chosen"}
+                </span>
+              </div>
+              <small className="text-muted">
+                Supported format: PNG (Max 5MB)
+              </small>
+              <div className="d-flex gap-2 mt-2">
+                <Button
+                  color="primary"
+                  onClick={handleUploadLogo}
+                  disabled={isUploadingLogo || !logoFile}
+                >
+                  {isUploadingLogo ? "Uploading..." : "Upload Logo"}
+                </Button>
+                {logoFile && (
                   <Button
-                    color="primary"
-                    onClick={handleUploadLogo}
-                    disabled={isUploadingLogo || !logoFile}
+                    color="danger"
+                    onClick={resetLogo}
+                    disabled={isUploadingLogo}
                   >
-                    {isUploadingLogo ? "Uploading..." : "Upload Logo"}
+                    Reset Logo
                   </Button>
-                  {logoFile && (
-                    <Button
-                      color="danger"
-                      onClick={resetLogo}
-                      disabled={isUploadingLogo}
-                    >
-                      Reset Logo
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </Col>
             <Col md="6">
@@ -397,7 +425,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup className="mb-4 pb-2">
+        <FormGroup>
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">
@@ -406,42 +434,70 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
           </Label>
           <Row className="g-3">
             <Col md="6">
-              <div className="d-flex flex-column gap-2">
+              <div
+                className="d-flex align-items-center gap-2 border rounded p-3"
+                style={{ backgroundColor: "#f8f9fa" }}
+              >
                 <Input
                   innerRef={faviconInputRef}
                   type="file"
                   accept=".png,.ico,image/png"
                   onChange={handleFaviconChange}
                   disabled={isUploadingFavicon}
+                  style={{ display: "none" }}
                 />
-                <small className="text-muted">
-                  Supported formats: PNG, ICO (Max 100KB)
-                </small>
-                <div className="d-flex gap-2 mt-2">
+                <Button
+                  color="secondary"
+                  onClick={() => faviconInputRef.current?.click()}
+                  disabled={isUploadingFavicon}
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  Choose File
+                </Button>
+                <span
+                  className="text-muted"
+                  style={{
+                    fontSize: "0.9rem",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    flex: 1,
+                  }}
+                >
+                  {faviconFile
+                    ? faviconFile.name
+                    : appearanceData?.fav_icon
+                    ? appearanceData.fav_icon.split("/").pop()
+                    : "No file chosen"}
+                </span>
+              </div>
+              <small className="text-muted">
+                Supported formats: PNG, ICO (Max 100KB)
+              </small>
+              <div className="d-flex gap-2 mt-2">
+                <Button
+                  color="primary"
+                  onClick={handleUploadFavicon}
+                  disabled={isUploadingFavicon || !faviconFile}
+                >
+                  {isUploadingFavicon ? "Uploading..." : "Upload Favicon"}
+                </Button>
+                {faviconFile && (
                   <Button
-                    color="primary"
-                    onClick={handleUploadFavicon}
-                    disabled={isUploadingFavicon || !faviconFile}
+                    color="danger"
+                    onClick={resetFavicon}
+                    disabled={isUploadingFavicon}
                   >
-                    {isUploadingFavicon ? "Uploading..." : "Upload Favicon"}
+                    Reset Favicon
                   </Button>
-                  {faviconFile && (
-                    <Button
-                      color="danger"
-                      onClick={resetFavicon}
-                      disabled={isUploadingFavicon}
-                    >
-                      Reset Favicon
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </Col>
             <Col md="6">
               {faviconPreview && (
                 <div
                   className="border rounded p-2 bg-light text-center"
-                  style={{ maxHeight: "80px" }}
+                  style={{ maxHeight: "100px" }}
                 >
                   <img
                     src={faviconPreview}
