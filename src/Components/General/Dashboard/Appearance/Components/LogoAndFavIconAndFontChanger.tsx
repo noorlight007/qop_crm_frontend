@@ -349,7 +349,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
           <Row className="g-3">
             <Col md="6">
               <div
-                className="d-flex align-items-center gap-2 border rounded p-3"
+                className="d-flex align-items-center gap-2 border rounded p-2"
                 style={{ backgroundColor: "#f8f9fa" }}
               >
                 <Input
@@ -435,7 +435,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
           <Row className="g-3">
             <Col md="6">
               <div
-                className="d-flex align-items-center gap-2 border rounded p-3"
+                className="d-flex align-items-center gap-2 border rounded p-2"
                 style={{ backgroundColor: "#f8f9fa" }}
               >
                 <Input
