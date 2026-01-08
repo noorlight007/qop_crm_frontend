@@ -1,4 +1,5 @@
 import DynamicFavicon from "@/CommonComponent/DynamicFavicon";
+import DynamicTitle from "@/CommonComponent/DynamicTitle";
 import SessionWrapper from "@/CommonComponent/SessionWrapper";
 import NoSsr from "@/utils/NoSsr";
 import type { Metadata } from "next";
@@ -21,7 +22,7 @@ const nunito = Nunito_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "QOP CRM - Customer Relationship Management System",
+    default: "QOP CRM",
     template: "%s | QOP CRM",
   },
   description:
@@ -224,6 +225,7 @@ export default async function RootLayout({
             <SessionWrapper session={session}>
               <MainProvider>
                 <DynamicFavicon />
+                <DynamicTitle />
                 {children}
               </MainProvider>
               <ToastContainer />
