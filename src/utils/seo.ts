@@ -17,7 +17,7 @@ export function generateSEOMetadata({
   ogImage,
   noindex = false,
 }: SEOProps): Metadata {
-  const baseUrl = "https://portal.qopcrm.com"; // Replace with your actual domain
+  const baseUrl = "https://qopcrm.com"; // Replace with your actual domain
 
   const seoTitle = title
     ? `${title} | QOP CRM`
