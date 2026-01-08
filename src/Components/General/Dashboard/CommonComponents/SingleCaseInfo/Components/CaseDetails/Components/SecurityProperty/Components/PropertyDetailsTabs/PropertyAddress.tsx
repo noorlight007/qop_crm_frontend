@@ -1,6 +1,7 @@
 import { useGetApplicantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
 import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
+import apiAddress from "@/services/api-address";
 import { AddressDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -13,12 +14,19 @@ import {
   InputGroup,
   Label,
   Row,
+  Spinner,
 } from "reactstrap";
+import PropertyAddressModal from "./Modals/PropertyAddressModal";
 
 const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Get case alias from URL params
   const params = useParams();
   const { casealias } = params;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addressList, setAddressList] = useState<any[]>([]);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   // Fetch applicants data
   const { data: applicantsData, isLoading } = useGetApplicantsQuery({
@@ -140,8 +148,94 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     return true;
   };
 
+  const fetchAddressByPostcode = async (postcode: string) => {
+    if (!postcode) return;
+    try {
+      const response = await apiAddress.get(
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_ADRESS_API_KEY}`
+      );
+      setAddressList(response.data.suggestions || []);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Error looking up address:", err);
+    }
+  };
+  
+  const handleSelectAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    // Close the modal immediately after selection
+    setIsModalOpen(false); 
+
+    try {
+      // Calling the specific get/{id} endpoint
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_ADRESS_API_KEY}`
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      // Dispatching the detailed data to your Redux store
+      dispatch(
+        updateProperty({
+          postcode: address.postcode,
+          // Often building name/number are separate; we prioritize building_name
+          house_name_or_number: address.building_name || address.building_number || "",
+          address_one: address.line_1,
+          address_two: address.line_2,
+          city: address.town_or_city,
+          county: address.county,
+          country: mapCountryToFormValue(address.country),
+        })
+      );
+
+      // Clear validation errors for the fields we just filled
+      setErrors((prev) => {
+        const updatedErrors = { ...prev };
+        delete updatedErrors.postcode;
+        delete updatedErrors.house_name_or_number;
+        delete updatedErrors.address_one;
+        delete updatedErrors.city;
+        return updatedErrors;
+      });
+
+    } catch (error) {
+      console.error("Error fetching detailed address:", error);
+      // Optional: add a toast or error state here to notify the user
+    } finally {
+      setIsFetchingAddress(false);
+    }
+  };
+
+
+
+  // Helper function to map country values from API to form values
+  const mapCountryToFormValue = (country: string | undefined) => {
+    if (!country) return null;
+
+    const countryLower = country.toLowerCase();
+    if (countryLower.includes("england")) return "ENGLAND";
+    if (countryLower.includes("scotland")) return "SCOTLAND";
+    if (countryLower.includes("wales")) return "WALES";
+    if (countryLower.includes("northern ireland")) return "NORTHERN_IRELAND";
+    if (countryLower.includes("united kingdom") || countryLower.includes("uk"))
+      return "UNITED_KINGDOM";
+
+    return null;
+  };
+
   return (
     <div>
+      {isFetchingAddress && (
+        <div className="text-center mb-3">
+          <Spinner size="sm" color="primary" /> Loading address details...
+        </div>
+      )}
+
       <Row>
         <Col sm={12}>
           <Row>
@@ -158,6 +252,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     value={propertyState.postcode}
                     maxLength={10}
                     required
+                    disabled={isFetchingAddress}
                   />
                   <Button
                     color="primary"
@@ -167,12 +262,18 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     disabled={
                       !applicantsData ||
                       applicantsData.length === 0 ||
-                      isLoading
+                      isLoading ||
+                      isFetchingAddress
                     }
                   >
                     Copy Main Address
                   </Button>
-                  <Button color="info" type="button">
+                  <Button
+                    color="info"
+                    type="button"
+                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
+                    disabled={isFetchingAddress}
+                  >
                     Lookup
                   </Button>
                 </InputGroup>
@@ -197,6 +298,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   onChange={handleChange}
                   maxLength={255}
                   required
+                  disabled={isFetchingAddress}
                 />
                 {errors.house_name_or_number && (
                   <div className="text-danger">
@@ -218,6 +320,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   onChange={handleChange}
                   maxLength={255}
                   required
+                  disabled={isFetchingAddress}
                 />
                 {errors.address_one && (
                   <div className="text-danger">{errors.address_one}</div>
@@ -236,6 +339,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   value={propertyState.address_two}
                   onChange={handleChange}
                   maxLength={255}
+                  disabled={isFetchingAddress}
                 />
               </FormGroup>
             </Col>
@@ -252,6 +356,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   onChange={handleChange}
                   maxLength={255}
                   required
+                  disabled={isFetchingAddress}
                 />
                 {errors.city && (
                   <div className="text-danger">{errors.city}</div>
@@ -270,6 +375,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   value={propertyState.county}
                   onChange={handleChange}
                   maxLength={255}
+                  disabled={isFetchingAddress}
                 />
               </FormGroup>
             </Col>
@@ -283,6 +389,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   name="region"
                   value={propertyState.region || ""}
                   onChange={handleChange}
+                  disabled={isFetchingAddress}
                 >
                   <option value="">Please select a region</option>
                   <option value="NORTH">North</option>
@@ -316,6 +423,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   name="country"
                   value={propertyState.country || ""}
                   onChange={handleChange}
+                  disabled={isFetchingAddress}
                 >
                   <option value="">Please select a country</option>
                   <option value="UNITED_KINGDOM">United Kingdom</option>
@@ -329,6 +437,13 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           </Row>
         </Col>
       </Row>
+
+      <PropertyAddressModal
+        isOpen={isModalOpen}
+        toggle={toggleModal}
+        addresses={addressList}
+        onSelect={handleSelectAddress}
+      />
     </div>
   );
 };
