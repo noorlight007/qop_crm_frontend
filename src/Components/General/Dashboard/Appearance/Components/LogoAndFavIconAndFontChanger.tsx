@@ -425,7 +425,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup>
+        <FormGroup className="mb-5">
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">
