@@ -20,11 +20,15 @@ import Swal from "sweetalert2";
 const LogoAndFavIconAndFontChanger: React.FC = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
   // Use two separate mutation hook instances so each upload has its own loading flag
+  const [updateFontMutation, { isLoading: isUpdatingFont }] =
+    useUpdateAppearanceMutation();
   const [updateLogoMutation, { isLoading: isUploadingLogo }] =
+    useUpdateAppearanceMutation();
+  const [deleteLogoMutation, { isLoading: isDeletingLogo }] =
     useUpdateAppearanceMutation();
   const [updateFaviconMutation, { isLoading: isUploadingFavicon }] =
     useUpdateAppearanceMutation();
-  const [updateFontMutation, { isLoading: isUpdatingFont }] =
+  const [deleteFaviconMutation, { isLoading: isDeletingFavicon }] =
     useUpdateAppearanceMutation();
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -234,6 +238,68 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     if (faviconInputRef.current) faviconInputRef.current.value = "";
   };
 
+  const handleDeleteLogo = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will remove the current logo.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteLogoMutation({ payload: { logo: null } }).unwrap();
+
+        Swal.fire({
+          title: "Deleted",
+          text: "Logo deleted successfully!",
+          icon: "success",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+
+        setLogoFile(null);
+        setLogoPreview("");
+        if (logoInputRef.current) logoInputRef.current.value = "";
+      } catch (error) {
+        console.error("Failed to delete logo", error);
+        toast.error("Failed to delete logo");
+      }
+    }
+  };
+
+  const handleDeleteFavicon = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will remove the current favicon.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteFaviconMutation({ payload: { fav_icon: null } }).unwrap();
+
+        Swal.fire({
+          title: "Deleted",
+          text: "Favicon deleted successfully!",
+          icon: "success",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+
+        setFaviconFile(null);
+        setFaviconPreview("");
+        if (faviconInputRef.current) faviconInputRef.current.value = "";
+      } catch (error) {
+        console.error("Failed to delete favicon", error);
+        toast.error("Failed to delete favicon");
+      }
+    }
+  };
+
   const handleFontChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSelectedFont(value);
@@ -405,6 +471,15 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                     Reset Logo
                   </Button>
                 )}
+                {(appearanceData?.logo || logoPreview) && !logoFile && (
+                  <Button
+                    color="danger"
+                    onClick={handleDeleteLogo}
+                    disabled={isDeletingLogo}
+                  >
+                    {isDeletingLogo ? "Deleting..." : "Delete Logo"}
+                  </Button>
+                )}
               </div>
             </Col>
             <Col md="6">
@@ -491,6 +566,16 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                     Reset Favicon
                   </Button>
                 )}
+                {(appearanceData?.fav_icon || faviconPreview) &&
+                  !faviconFile && (
+                    <Button
+                      color="danger"
+                      onClick={handleDeleteFavicon}
+                      disabled={isDeletingFavicon}
+                    >
+                      {isDeletingFavicon ? "Deleting..." : "Delete Favicon"}
+                    </Button>
+                  )}
               </div>
             </Col>
             <Col md="6">
