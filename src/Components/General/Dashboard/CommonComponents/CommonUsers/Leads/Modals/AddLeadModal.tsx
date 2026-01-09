@@ -475,7 +475,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   <option value="COMMERCIAL_MORTGAGE">
                     Commercial Mortgage
                   </option>
-                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
                   <option value="PROTECTION">Protection</option>
                   <option value="GENERAL_INSURANCE">General Insurance</option>
                   <option value="OTHER">Other</option>
