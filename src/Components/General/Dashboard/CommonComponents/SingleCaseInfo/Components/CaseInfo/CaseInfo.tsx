@@ -340,7 +340,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Assigned Advisor</h6>
+                  <h6 className="fw-bold">Assigned Adviser</h6>
                 </CardHeader>
                 {isLoading ? (
                   <Row className="pt-2">

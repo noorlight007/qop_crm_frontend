@@ -43,6 +43,7 @@ export interface CaseInfoPrpos {
     user_type: string;
   };
   assigned_to?: string;
+  assigned_to_admin?: string;
   updated_by: {
     title: string;
     email: string;
