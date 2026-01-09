@@ -8,7 +8,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-const PropertyAddressModal: React.FC<Props> = ({
+const GetAddressModal: React.FC<Props> = ({
   isOpen,
   toggle,
   addresses,
@@ -42,4 +42,4 @@ const PropertyAddressModal: React.FC<Props> = ({
   );
 };
 
-export default PropertyAddressModal;
+export default GetAddressModal;

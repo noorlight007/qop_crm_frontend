@@ -16,7 +16,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import PropertyAddressModal from "../../../../CommonModals/GetAddressModal";
+import GetAddressModal from "../../../../CommonModals/GetAddressModal";
 
 const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Get case alias from URL params
@@ -160,11 +160,11 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       console.error("Error looking up address:", err);
     }
   };
-  
+
   const handleSelectAddress = async (id: string) => {
     setIsFetchingAddress(true);
     // Close the modal immediately after selection
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
 
     try {
       // Calling the specific get/{id} endpoint
@@ -184,7 +184,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
         updateProperty({
           postcode: address.postcode,
           // Often building name/number are separate; we prioritize building_name
-          house_name_or_number: address.building_name || address.building_number || "",
+          house_name_or_number:
+            address.building_name || address.building_number || "",
           address_one: address.line_1,
           address_two: address.line_2,
           city: address.town_or_city,
@@ -202,7 +203,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
         delete updatedErrors.city;
         return updatedErrors;
       });
-
     } catch (error) {
       console.error("Error fetching detailed address:", error);
       // Optional: add a toast or error state here to notify the user
@@ -210,8 +210,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setIsFetchingAddress(false);
     }
   };
-
-
 
   // Helper function to map country values from API to form values
   const mapCountryToFormValue = (country: string | undefined) => {
@@ -258,7 +256,9 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     color="primary"
                     type="button"
                     className="mx-2 rounded"
-                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
+                    onClick={() =>
+                      fetchAddressByPostcode(propertyState.postcode)
+                    }
                     disabled={isFetchingAddress}
                   >
                     Lookup
@@ -440,7 +440,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
         </Col>
       </Row>
 
-      <PropertyAddressModal
+      <GetAddressModal
         isOpen={isModalOpen}
         toggle={toggleModal}
         addresses={addressList}

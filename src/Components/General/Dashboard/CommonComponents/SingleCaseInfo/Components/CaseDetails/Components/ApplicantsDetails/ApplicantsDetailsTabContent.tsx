@@ -12,6 +12,7 @@ import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonC
 import { ApplicantProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsUserTypes";
 import LoadingSpinner from "@/app/loading";
+import apiAddress from "@/services/api-address";
 import { countries } from "@/utils/Countries";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -31,12 +32,11 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import GetAddressModal from "../../CommonModals/GetAddressModal";
 import ApplicantDependantsView from "./ApplicantDependantsView";
 import AddCompanyDetailsFormModal from "./ApplicantDetailsModals/AddApplicantCompanyInfoModal";
 import AddPreviousAddressModal from "./ApplicantDetailsModals/AddPreviousAddressModal";
 import ViewPreviousAddressModal from "./ApplicantDetailsModals/ViewPreviousAddressModal";
-import apiAddress from "@/services/api-address";
-import PropertyAddressModal from "../../CommonModals/GetAddressModal";
 
 const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   applicantsData,
@@ -431,7 +431,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
   const handleSelectAddress = async (id: string) => {
     setIsFetchingAddress(true);
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
 
     try {
       const res = await apiAddress.get(
@@ -450,14 +450,12 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       setFormValues((prevValues) => ({
         ...prevValues,
         house_number_or_name:
-        address.building_number ||
-        address.building_name || "",
+          address.building_number || address.building_name || "",
         address_line1: address.line_1 || "",
         city: address.town_or_city || "",
         county: address.county || "",
         country: address.country || "",
       }));
-
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -1159,7 +1157,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   >
                     Lookup
                   </Button>
-                </InputGroup>                
+                </InputGroup>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -2362,7 +2360,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         applicantAlias={formValues.alias}
       />
 
-      <PropertyAddressModal
+      <GetAddressModal
         isOpen={isModalOpen}
         toggle={toggleModal}
         addresses={addressList}
