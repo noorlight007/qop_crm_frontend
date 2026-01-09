@@ -36,6 +36,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     page: 1,
     page_size: 1000,
   });
+  const { data: userLEADListData } = useGetUserListQuery({
+    role: "LEAD",
+  });
   const { data: userNetAdviserListData } = useGetUserListQuery({
     role: "NETWORK_ADVISER",
   });
@@ -170,16 +173,10 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               disabled={!!leadId}
             >
               <option value="">Select...</option>
-              {leads.length > 0 ? (
-                leads.map((lead) => (
-                  <option key={lead.user.id} value={lead.user.id}>
-                    {`${
-                      lead.user?.title
-                        ? formatChoiceFieldValue(lead.user.title) + " "
-                        : ""
-                    }${lead.user?.first_name}${
-                      lead.user?.middle_name ? " " + lead.user.middle_name : ""
-                    } ${lead.user?.last_name}`}
+              {userLEADListData?.length > 0 ? (
+                userLEADListData?.map((lead: any) => (
+                  <option key={lead.id} value={lead.id}>
+                    {lead.name}
                   </option>
                 ))
               ) : (
