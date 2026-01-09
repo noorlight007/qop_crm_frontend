@@ -41,6 +41,9 @@ declare module "next-auth" {
 }
 
 export const authoption: NextAuthOptions = {
+  // For a single Next.js app serving multiple subdomains, do not rely on NEXTAUTH_URL.
+  // NextAuth will infer the correct base URL from the incoming request host.
+  // (Type may not include this in some NextAuth versions; see type widening below.)
   session: {
     strategy: "jwt",
     maxAge: 12 * 60 * 60, // 12 hours
@@ -164,4 +167,56 @@ export const authoption: NextAuthOptions = {
     },
   },
   debug: true,
+} as NextAuthOptions & {
+  trustHost?: boolean;
 };
+
+(authoption as { trustHost?: boolean }).trustHost = true;
+
+// Optional: share NextAuth cookies across subdomains (e.g. portal/admin on *.mahbub.com)
+// Set NEXTAUTH_COOKIE_DOMAIN=.mahbub.com in production if you need shared sessions.
+const cookieDomain = process.env.NEXTAUTH_COOKIE_DOMAIN;
+if (cookieDomain) {
+  authoption.cookies = {
+    sessionToken: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.session-token"
+          : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: cookieDomain,
+      },
+    },
+    callbackUrl: {
+      name:
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.callback-url"
+          : "next-auth.callback-url",
+      options: {
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: cookieDomain,
+      },
+    },
+    csrfToken: {
+      name:
+        // NOTE: __Host- cookies are not allowed to set a Domain attribute.
+        // For cross-subdomain cookies we must use a non-__Host name.
+        process.env.NODE_ENV === "production"
+          ? "__Secure-next-auth.csrf-token"
+          : "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: cookieDomain,
+      },
+    },
+  };
+}

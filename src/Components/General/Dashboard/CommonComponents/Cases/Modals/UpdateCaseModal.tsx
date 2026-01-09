@@ -32,6 +32,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     return {
       ...data,
       assigned_to: data.assigned_user?.id?.toString() || data.assigned_to || "",
+      assigned_to_admin:
+        data.assigned_admin?.id?.toString() || data.assigned_to_admin || "",
     };
   };
 

@@ -414,35 +414,33 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                 ) : (
                   <Row className="pt-2">
                     <Col xs="12">
-                      {caseInfo?.assigned_to_admin ? (
+                      {caseInfo?.assigned_admin ? (
                         <>
                           <h6 className="pt-1">
                             <span className="small">Name:</span>{" "}
                             <strong className="small">
-                              {caseInfo?.assigned_to_admin?.title
+                              {caseInfo?.assigned_admin?.title
                                 ? formatChoiceFieldValue(
-                                    caseInfo.assigned_to_admin.title
+                                    caseInfo.assigned_admin.title
                                   )
                                 : ""}{" "}
-                              {caseInfo?.assigned_to_admin?.first_name}{" "}
-                              {caseInfo?.assigned_to_admin?.middle_name}{" "}
-                              {caseInfo?.assigned_to_admin?.last_name}
+                              {caseInfo?.assigned_admin?.first_name}{" "}
+                              {caseInfo?.assigned_admin?.middle_name}{" "}
+                              {caseInfo?.assigned_admin?.last_name}
                             </strong>
                           </h6>
                           <h6 className="pt-1">
                             <span className="small">Email:</span>{" "}
                             <strong>
-                              <small>
-                                {caseInfo?.assigned_to_admin?.email}
-                              </small>
+                              <small>{caseInfo?.assigned_admin?.email}</small>
                             </strong>
                           </h6>
                           <h6 className="pt-1">
                             <span className="small">User Type:</span>{" "}
                             <strong className="small">
-                              {caseInfo?.assigned_to_admin?.user_type
+                              {caseInfo?.assigned_admin?.user_type
                                 ? formatChoiceFieldValue(
-                                    caseInfo.assigned_to_admin?.user_type
+                                    caseInfo.assigned_admin?.user_type
                                   )
                                 : "N/A"}
                             </strong>
