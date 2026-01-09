@@ -1,4 +1,3 @@
-import { LoanDetailsFormTabTitleData } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsFormTabTitleData";
 import { useState } from "react";
 import {
   Card,
@@ -10,6 +9,25 @@ import {
   NavLink,
 } from "reactstrap";
 import { LoanDetailsTabContent } from "./LoanDetailsTabContent";
+
+export const LoanDetailsFormTabTitleData = [
+  {
+    id: "1",
+    nav: "Mortgage Details",
+  },
+  {
+    id: "2",
+    nav: "Loan Details",
+  },
+  {
+    id: "3",
+    nav: "Key dates",
+  },
+  {
+    id: "4",
+    nav: "Lead Source",
+  },
+];
 
 export const LoanDetailsTab = () => {
   const [basicTab, setBasicTab] = useState("1");

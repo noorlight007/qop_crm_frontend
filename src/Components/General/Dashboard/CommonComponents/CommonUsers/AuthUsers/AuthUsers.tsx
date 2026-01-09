@@ -31,7 +31,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 10,
   userRole,
 }) => {
-  const { data: session } = useSession();
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");

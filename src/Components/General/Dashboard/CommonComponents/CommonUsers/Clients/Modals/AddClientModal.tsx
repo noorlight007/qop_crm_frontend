@@ -247,7 +247,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
               </Col>
             )}
             <Col md={6}>
-              <Label for="reasonForEnquiry">Reason For Enquiry</Label>
+              <Label for="reasonForEnquiry">Enquiry Type</Label>
               <FormGroup>
                 <Input
                   id="reasonForEnquiry"
@@ -264,7 +264,6 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, toggle }) => {
                   <option value="COMMERCIAL_MORTGAGE">
                     Commercial Mortgage
                   </option>
-                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
                   <option value="PROTECTION">Protection</option>
                   <option value="GENERAL_INSURANCE">General Insurance</option>
                   <option value="OTHER">Other</option>

@@ -1,8 +1,7 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
 import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import { LeadsInfo } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
@@ -31,21 +30,31 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   onCaseCreated,
 }) => {
   const [leads, setLeads] = useState<LeadsInfo[]>([]);
-  const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
+
   // Rtk query - request a large page_size so the select can show many leads
   const { data: leadData, refetch: refetchLeads } = useGetLeadDetailsQuery({
     page: 1,
     page_size: 1000,
   });
-  // Request a large page_size so the select can show many advisers
-  const { data: adviserData, refetch: refetchAdvisers } =
-    useGetAdviserDetailsQuery({ page: 1, page_size: 1000 });
+  const { data: userLEADListData } = useGetUserListQuery({
+    role: "LEAD",
+  });
+  const { data: userNetAdviserListData } = useGetUserListQuery({
+    role: "NETWORK_ADVISER",
+  });
+  const { data: userOrgAdviserListData } = useGetUserListQuery({
+    role: "ORGANISATION_ADVISER",
+  });
+  const { data: userOrgAdminListData } = useGetUserListQuery({
+    role: "ORGANISATION_ADMIN",
+  });
   const [addCaseDetails, { isLoading: addCaseLoading }] = useAddCaseMutation();
 
   const [formData, setFormData] = useState({
     lead: leadId || 0,
     case_category: "",
     assigned_to: "",
+    assigned_to_admin: "",
     notes: "",
   });
   const [submitType, setSubmitType] = useState<"save" | "save_view">("save");
@@ -89,21 +98,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     }
   }, [leadData]);
 
-  // Fetch adviser data from backend
-  useEffect(() => {
-    if (adviserData) {
-      if (Array.isArray(adviserData)) {
-        setAdvisers(adviserData || []);
-      } else if ((adviserData as any).results) {
-        setAdvisers((adviserData as any).results || []);
-      } else if ((adviserData as any).advisers) {
-        setAdvisers((adviserData as any).advisers || []);
-      } else {
-        setAdvisers([]);
-      }
-    }
-  }, [adviserData]);
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -135,6 +129,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           lead: leadId || 0,
           case_category: "",
           assigned_to: "",
+          assigned_to_admin: "",
           notes: "",
         });
         toggle();
@@ -178,16 +173,10 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               disabled={!!leadId}
             >
               <option value="">Select...</option>
-              {leads.length > 0 ? (
-                leads.map((lead) => (
-                  <option key={lead.user.id} value={lead.user.id}>
-                    {`${
-                      lead.user?.title
-                        ? formatChoiceFieldValue(lead.user.title) + " "
-                        : ""
-                    }${lead.user?.first_name}${
-                      lead.user?.middle_name ? " " + lead.user.middle_name : ""
-                    } ${lead.user?.last_name}`}
+              {userLEADListData?.length > 0 ? (
+                userLEADListData?.map((lead: any) => (
+                  <option key={lead.id} value={lead.id}>
+                    {lead.name}
                   </option>
                 ))
               ) : (
@@ -228,30 +217,86 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               <option value="GENERAL_INSURANCE">General Insurance</option>
             </Input>
           </FormGroup>
-          {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-            session?.user?.user_type === "NETWORK_DIRECTOR") && (
+
+          {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
+            session?.user?.user_type === "NETWORK_ADVISER" ||
+            session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT") && (
             <FormGroup>
               <Label for="adviser">Assign Adviser</Label>
               <Input
                 id="adviser"
                 name="assigned_to"
                 type="select"
-                value={formData.assigned_to}
+                value={formData?.assigned_to || ""}
                 onChange={handleChange}
               >
                 <option value="">Select...</option>
-                {advisers.length > 0 ? (
-                  advisers.map((adviser) => (
-                    <option key={adviser.user.id} value={adviser.user.id}>
+                {userNetAdviserListData?.length > 0 ? (
+                  userNetAdviserListData?.map((user: any) => (
+                    <option key={user.id} value={user.id}>
                       {`${
-                        adviser.user?.title
-                          ? formatChoiceFieldValue(adviser.user.title) + " "
+                        user?.title
+                          ? formatChoiceFieldValue(user.title) + " "
                           : ""
-                      }${adviser.user?.first_name}${
-                        adviser.user?.middle_name
-                          ? " " + adviser.user.middle_name
-                          : ""
-                      } ${adviser.user?.last_name}`}
+                      }${user?.first_name}${
+                        user?.middle_name ? " " + user.middle_name : ""
+                      } ${user?.last_name}`}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No advisers available
+                  </option>
+                )}
+              </Input>
+            </FormGroup>
+          )}
+
+          {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+            session?.user?.user_type === "ORGANISATION_ADVISER" ||
+            session?.user?.user_type === "ORGANISATION_ADMIN") && (
+            <FormGroup>
+              <Label for="adviser">Assign Adviser</Label>
+              <Input
+                id="adviser"
+                name="assigned_to"
+                type="select"
+                value={formData?.assigned_to || ""}
+                onChange={handleChange}
+              >
+                <option value="">Select...</option>
+                {userOrgAdviserListData?.length > 0 ? (
+                  userOrgAdviserListData?.map((user: any) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No advisers available
+                  </option>
+                )}
+              </Input>
+            </FormGroup>
+          )}
+
+          {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+            session?.user?.user_type === "ORGANISATION_ADVISER" ||
+            session?.user?.user_type === "ORGANISATION_ADMIN") && (
+            <FormGroup>
+              <Label for="adviser">Assign Admin</Label>
+              <Input
+                id="admin"
+                name="assigned_to_admin"
+                type="select"
+                value={formData?.assigned_to_admin || ""}
+                onChange={handleChange}
+              >
+                <option value="">Select...</option>
+                {userOrgAdminListData?.length > 0 ? (
+                  userOrgAdminListData?.map((user: any) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
                     </option>
                   ))
                 ) : (
