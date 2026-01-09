@@ -6,6 +6,11 @@ const baseQuery = fetchBaseQuery({
 export const authBaseApi = createApi({
   reducerPath: "authBaseApi",
   baseQuery: baseQuery,
-  tagTypes: ["SetPassword", "ForgotPassword"],
+  tagTypes: [
+    //Appearance Settings
+    "AppearanceSettings",
+    "SetPassword",
+    "ForgotPassword",
+  ],
   endpoints: () => ({}),
 });

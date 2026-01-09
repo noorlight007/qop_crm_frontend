@@ -5,6 +5,7 @@ import {
   SignIn,
   SignInToAccount,
 } from "@/Constant";
+import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +20,8 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
 
   const formSubmitHandle = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -53,7 +56,7 @@ export const LoginForm = () => {
               width={91}
               height={27}
               className="img-fluid for-light"
-              src={imageOne}
+              src={appearanceData?.logo || imageOne}
               alt="login page"
               priority
             />
@@ -61,7 +64,7 @@ export const LoginForm = () => {
               width={91}
               height={27}
               className="img-fluid for-dark"
-              src={imageTwo}
+              src={appearanceData?.logo || imageTwo}
               alt="login page"
               priority
             />
@@ -102,9 +105,6 @@ export const LoginForm = () => {
             </Button>
           </div>
         </FormGroup>
-        {/* <p className="mt-4 mb-0 text-center">{DontHaveAccount}
-            <Link className="ms-2" href="/others/authentication/registersimple">{CreateAccount}</Link>
-          </p> */}
       </Form>
     </div>
   );
