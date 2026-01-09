@@ -4,7 +4,6 @@ import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -39,7 +38,6 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   const [formData, setFormData] = useState<CaseInfoPrpos | null>(
     getInitialFormData(caseData)
   );
-  const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
 
   const [updateCaseDetails, { isLoading: isUpdating }] =
     useUpdateCaseMutation();
@@ -175,8 +173,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                   onChange={handleInputChange}
                 >
                   <option value="">Select...</option>
-                  {userNetAdviserListData.length > 0 ? (
-                    userNetAdviserListData.map((user: any) => (
+                  {userNetAdviserListData?.length > 0 ? (
+                    userNetAdviserListData?.map((user: any) => (
                       <option key={user.id} value={user.id}>
                         {`${
                           user?.title
@@ -209,8 +207,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                   onChange={handleInputChange}
                 >
                   <option value="">Select...</option>
-                  {userOrgAdviserListData.length > 0 ? (
-                    userOrgAdviserListData.map((user: any) => (
+                  {userOrgAdviserListData?.length > 0 ? (
+                    userOrgAdviserListData?.map((user: any) => (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>
