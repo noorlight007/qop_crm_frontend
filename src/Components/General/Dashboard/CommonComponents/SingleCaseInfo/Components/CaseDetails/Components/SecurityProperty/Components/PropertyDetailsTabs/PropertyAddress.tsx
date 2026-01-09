@@ -16,7 +16,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import PropertyAddressModal from "./Modals/PropertyAddressModal";
+import PropertyAddressModal from "../../../../CommonModals/GetAddressModal";
 
 const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Get case alias from URL params
@@ -247,7 +247,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                 <InputGroup>
                   <Input
                     name="postcode"
-                    className="form-control border-primary"
+                    className="form-control border-primary rounded"
                     onChange={handleChange}
                     value={propertyState.postcode}
                     maxLength={10}
@@ -256,9 +256,19 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   />
                   <Button
                     color="primary"
-                    className="mx-2"
+                    type="button"
+                    className="mx-2 rounded"
+                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
+                    disabled={isFetchingAddress}
+                  >
+                    Lookup
+                  </Button>
+                  <Button
+                    color="info"
+                    className="rounded"
                     onClick={handleCopyMainAddress}
                     type="button"
+                    outline
                     disabled={
                       !applicantsData ||
                       applicantsData.length === 0 ||
@@ -267,14 +277,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     }
                   >
                     Copy Main Address
-                  </Button>
-                  <Button
-                    color="info"
-                    type="button"
-                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
-                    disabled={isFetchingAddress}
-                  >
-                    Lookup
                   </Button>
                 </InputGroup>
                 {errors.postcode && (

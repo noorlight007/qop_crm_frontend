@@ -1,12 +1,23 @@
-import React from 'react';
-import { Modal, ModalHeader, ModalBody, ListGroup, ListGroupItem } from 'reactstrap';
-import { AddressItem, Props } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { Props } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import React from "react";
+import {
+  ListGroup,
+  ListGroupItem,
+  Modal,
+  ModalBody,
+  ModalHeader,
+} from "reactstrap";
 
-const PropertyAddressModal: React.FC<Props> = ({ isOpen, toggle, addresses, onSelect }) => {
+const PropertyAddressModal: React.FC<Props> = ({
+  isOpen,
+  toggle,
+  addresses,
+  onSelect,
+}) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="lg">
       <ModalHeader toggle={toggle}>Select Address</ModalHeader>
-      <ModalBody style={{ maxHeight: '450px', overflowY: 'auto' }}>
+      <ModalBody style={{ maxHeight: "450px", overflowY: "auto" }}>
         <ListGroup>
           {Array.isArray(addresses) && addresses.length > 0 ? (
             addresses.map((item) => (
@@ -21,7 +32,9 @@ const PropertyAddressModal: React.FC<Props> = ({ isOpen, toggle, addresses, onSe
               </ListGroupItem>
             ))
           ) : (
-            <div className="p-3 text-center text-muted">No addresses found.</div>
+            <div className="p-3 text-center text-muted">
+              No addresses found.
+            </div>
           )}
         </ListGroup>
       </ModalBody>
