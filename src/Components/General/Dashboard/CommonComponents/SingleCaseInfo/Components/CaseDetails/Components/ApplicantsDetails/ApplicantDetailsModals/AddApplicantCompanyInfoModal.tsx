@@ -17,6 +17,7 @@ import {
   Form,
   FormGroup,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -200,6 +201,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     }
   };
 
+  const fetchCompanyDetails = ( company_registration_number : string) => {
+    if (!company_registration_number) return;
+    console.log("Company Registration Number: ", company_registration_number);
+  }
+
   if (isLoading)
     return (
       <div>
@@ -231,6 +237,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label className="small">Company Registration Number*</Label>
+                <InputGroup>
                 <Input
                   type="text"
                   name="company_registration_number"
@@ -238,6 +245,18 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   onChange={handleChange}
                   required
                 />
+                <Button
+                  color="primary"
+                  type="button"
+                  className="mx-2 rounded"
+                  onClick={() =>
+                    fetchCompanyDetails(formData.company_registration_number)
+                  }
+                >
+                  Get Details
+                </Button>
+                </InputGroup>
+                
               </FormGroup>
             </Col>
           </Row>

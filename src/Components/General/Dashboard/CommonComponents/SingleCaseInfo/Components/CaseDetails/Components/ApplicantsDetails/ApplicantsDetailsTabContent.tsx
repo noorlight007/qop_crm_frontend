@@ -12,7 +12,7 @@ import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonC
 import { ApplicantProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsUserTypes";
 import LoadingSpinner from "@/app/loading";
-import apiAddress from "@/services/api-address";
+import { apiAddress } from "@/services/third-party-api";
 import { countries } from "@/utils/Countries";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
