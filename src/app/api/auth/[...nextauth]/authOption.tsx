@@ -39,6 +39,7 @@ declare module "next-auth" {
     user_type?: string;
     profile_image?: string | null;
     name?: string;
+    subdomain?: string | null;
   }
 
   // Extend core auth options to support trustHost
