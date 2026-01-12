@@ -1,4 +1,5 @@
 import DynamicFavicon from "@/CommonComponent/DynamicFavicon";
+import DynamicTitle from "@/CommonComponent/DynamicTitle";
 import SessionWrapper from "@/CommonComponent/SessionWrapper";
 import NoSsr from "@/utils/NoSsr";
 import type { Metadata } from "next";
@@ -21,7 +22,7 @@ const nunito = Nunito_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "QOP CRM - Customer Relationship Management System",
+    default: "QOP CRM",
     template: "%s | QOP CRM",
   },
   description:
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
     "qop crm",
     "CRM",
     "crm",
-    "QOP CRM - Customer Relationship Management System",
+    "QOP CRM",
     "PORTAL",
     "Portal",
     "portal qop crm",
@@ -64,22 +65,22 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://portal.qopcrm.com"), // Replace with your actual domain
+  metadataBase: new URL("https://qopcrm.com"), // Replace with your actual domain
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "QOP CRM - Customer Relationship Management System",
+    title: "QOP CRM",
     description:
       "Comprehensive CRM solution for real estate, property management, and customer relations. Manage leads, properties, and transactions efficiently.",
-    url: "https://portal.qopcrm.com", // Replace with your actual domain
+    url: "https://qopcrm.com", // Replace with your actual domain
     siteName: "QOP CRM",
     images: [
       {
         url: "/assets/images/logo/qop-og-image.png", // Add this image to your public folder
         width: 1200,
         height: 630,
-        alt: "QOP CRM - Customer Relationship Management System",
+        alt: "QOP CRM",
       },
     ],
     locale: "en_US",
@@ -87,7 +88,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "QOP CRM - Customer Relationship Management System",
+    title: "QOP CRM",
     description:
       "Comprehensive CRM solution for real estate, property management, and customer relations.",
     images: ["/assets/images/logo/qop-twitter-image.png"], // Add this image to your public folder
@@ -224,6 +225,7 @@ export default async function RootLayout({
             <SessionWrapper session={session}>
               <MainProvider>
                 <DynamicFavicon />
+                <DynamicTitle />
                 {children}
               </MainProvider>
               <ToastContainer />

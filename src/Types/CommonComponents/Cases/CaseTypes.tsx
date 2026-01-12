@@ -42,7 +42,19 @@ export interface CaseInfoPrpos {
     profile_image: null;
     user_type: string;
   };
+  assigned_admin: {
+    id: number;
+    title: string;
+    email: string;
+    phone: string;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    profile_image: null;
+    user_type: string;
+  };
   assigned_to?: string;
+  assigned_to_admin?: string;
   updated_by: {
     title: string;
     email: string;

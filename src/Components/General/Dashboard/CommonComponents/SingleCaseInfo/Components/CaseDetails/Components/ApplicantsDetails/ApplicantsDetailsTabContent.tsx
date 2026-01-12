@@ -12,6 +12,7 @@ import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonC
 import { ApplicantProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
 import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsUserTypes";
 import LoadingSpinner from "@/app/loading";
+import { apiAddress } from "@/services/third-party-api";
 import { countries } from "@/utils/Countries";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -31,6 +32,7 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import GetAddressModal from "../../CommonModals/GetAddressModal";
 import ApplicantDependantsView from "./ApplicantDependantsView";
 import AddCompanyDetailsFormModal from "./ApplicantDetailsModals/AddApplicantCompanyInfoModal";
 import AddPreviousAddressModal from "./ApplicantDetailsModals/AddPreviousAddressModal";
@@ -47,6 +49,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const { casealias } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addressList, setAddressList] = useState<any[]>([]);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const [isAddPreviousAddressModalOpen, setIsAddPreviousAddressModalOpen] =
     useState(false);
@@ -409,6 +415,53 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   if (isCaseFetching) {
     return <LoadingSpinner />;
   }
+
+  const fetchAddressByPostcode = async (postcode: string) => {
+    if (!postcode) return;
+    try {
+      const response = await apiAddress.get(
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+      );
+      setAddressList(response.data.suggestions || []);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Error looking up address:", err);
+    }
+  };
+
+  const handleSelectAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    setIsModalOpen(false);
+
+    try {
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      console.log("address details: ", address);
+
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        house_number_or_name:
+          address.building_number || address.building_name || "",
+        address_line1: address.line_1 || "",
+        city: address.town_or_city || "",
+        county: address.county || "",
+        country: address.country || "",
+      }));
+    } catch (error) {
+      console.error("Error fetching detailed address:", error);
+    } finally {
+      setIsFetchingAddress(false);
+    }
+  };
 
   return (
     <>
@@ -1085,16 +1138,26 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="postcode">Postcode*</Label>
-                <Input
-                  id="postcode"
-                  type="text"
-                  className="border-primary"
-                  value={formValues.postcode || ""}
-                  onChange={(e) =>
-                    handleInputChange("postcode", e.target.value)
-                  }
-                  required
-                />
+                <InputGroup className="d-flex align-items-stretch gap-2">
+                  <Input
+                    id="postcode"
+                    type="text"
+                    className="border-primary rounded"
+                    value={formValues.postcode || ""}
+                    onChange={(e) =>
+                      handleInputChange("postcode", e.target.value)
+                    }
+                    required
+                  />
+                  <Button
+                    color="primary"
+                    type="button"
+                    className="text-nowrap"
+                    onClick={() => fetchAddressByPostcode(formValues.postcode)}
+                  >
+                    Lookup
+                  </Button>
+                </InputGroup>
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -2295,6 +2358,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           setIsViewPreviousAddressModalOpen(!isViewPreviousAddressModalOpen)
         }
         applicantAlias={formValues.alias}
+      />
+
+      <GetAddressModal
+        isOpen={isModalOpen}
+        toggle={toggleModal}
+        addresses={addressList}
+        onSelect={handleSelectAddress}
       />
     </>
   );

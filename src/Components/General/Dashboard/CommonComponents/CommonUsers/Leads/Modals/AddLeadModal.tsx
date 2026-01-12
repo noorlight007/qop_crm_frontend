@@ -20,7 +20,11 @@ import {
 } from "reactstrap";
 import AddNewCaseModal from "../../../Cases/Modals/AddNewCaseModal";
 
-const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
+const AddLeadModal: React.FC<AddLeadModalProps> = ({
+  isOpen,
+  toggle,
+  onLeadCreated,
+}) => {
   const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();
   const router = useRouter();
 
@@ -177,6 +181,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
         toast.success("Lead added successfully.");
         const leadId = result.data.user?.id;
         setCreatedLeadId(leadId);
+        // If a parent provided onLeadCreated, notify it as well
+        // so it can update any dependent UI (e.g., lead dropdown).
+        if (onLeadCreated && result.data) {
+          onLeadCreated(result.data as any);
+        }
         setIsCaseModalOpen(true);
         setErrors({});
       } else if ("error" in result) {
@@ -229,6 +238,11 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
       const result = await addLeadDetails({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
+        // Notify parent with the full created lead payload so it
+        // can derive ID and display name as needed.
+        if (onLeadCreated && result.data) {
+          onLeadCreated(result.data as any);
+        }
         // Clear form data
         setFormData({
           title: "",
@@ -475,7 +489,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({ isOpen, toggle }) => {
                   <option value="COMMERCIAL_MORTGAGE">
                     Commercial Mortgage
                   </option>
-                  <option value="DEBT_CONSOLIDATION">Debt Consolidation</option>
                   <option value="PROTECTION">Protection</option>
                   <option value="GENERAL_INSURANCE">General Insurance</option>
                   <option value="OTHER">Other</option>

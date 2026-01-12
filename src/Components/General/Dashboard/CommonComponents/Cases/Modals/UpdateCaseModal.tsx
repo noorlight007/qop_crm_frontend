@@ -1,10 +1,9 @@
 import { useUpdateCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -33,19 +32,26 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     return {
       ...data,
       assigned_to: data.assigned_user?.id?.toString() || data.assigned_to || "",
+      assigned_to_admin:
+        data.assigned_admin?.id?.toString() || data.assigned_to_admin || "",
     };
   };
 
   const [formData, setFormData] = useState<CaseInfoPrpos | null>(
     getInitialFormData(caseData)
   );
-  const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
 
   const [updateCaseDetails, { isLoading: isUpdating }] =
     useUpdateCaseMutation();
-  const { data: adviserData } = useGetAdviserDetailsQuery({
-    page: 1,
-    page_size: 1000,
+
+  const { data: userNetAdviserListData } = useGetUserListQuery({
+    role: "NETWORK_ADVISER",
+  });
+  const { data: userOrgAdviserListData } = useGetUserListQuery({
+    role: "ORGANISATION_ADVISER",
+  });
+  const { data: userOrgAdminListData } = useGetUserListQuery({
+    role: "ORGANISATION_ADMIN",
   });
 
   // Compare current data with the original data
@@ -60,21 +66,6 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
       setFormData(getInitialFormData(caseData));
     }
   }, [caseData]);
-
-  // Fetch adviser data from backend
-  useEffect(() => {
-    if (adviserData) {
-      if (Array.isArray(adviserData)) {
-        setAdvisers(adviserData || []);
-      } else if ((adviserData as any).results) {
-        setAdvisers((adviserData as any).results || []);
-      } else if ((adviserData as any).advisers) {
-        setAdvisers((adviserData as any).advisers || []);
-      } else {
-        setAdvisers([]);
-      }
-    }
-  }, [adviserData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -170,8 +161,10 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                 )}
               </Input>
             </FormGroup>
-            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-              session?.user?.user_type === "NETWORK_DIRECTOR") && (
+
+            {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
+              session?.user?.user_type === "NETWORK_ADVISER" ||
+              session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT") && (
               <FormGroup>
                 <Label for="adviser">Assign Adviser</Label>
                 <Input
@@ -182,18 +175,16 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                   onChange={handleInputChange}
                 >
                   <option value="">Select...</option>
-                  {advisers.length > 0 ? (
-                    advisers.map((adviser) => (
-                      <option key={adviser.user.id} value={adviser.user.id}>
+                  {userNetAdviserListData?.length > 0 ? (
+                    userNetAdviserListData?.map((user: any) => (
+                      <option key={user.id} value={user.id}>
                         {`${
-                          adviser.user?.title
-                            ? formatChoiceFieldValue(adviser.user.title) + " "
+                          user?.title
+                            ? formatChoiceFieldValue(user.title) + " "
                             : ""
-                        }${adviser.user?.first_name}${
-                          adviser.user?.middle_name
-                            ? " " + adviser.user.middle_name
-                            : ""
-                        } ${adviser.user?.last_name}`}
+                        }${user?.first_name}${
+                          user?.middle_name ? " " + user.middle_name : ""
+                        } ${user?.last_name}`}
                       </option>
                     ))
                   ) : (
@@ -204,6 +195,63 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                 </Input>
               </FormGroup>
             )}
+
+            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+              session?.user?.user_type === "ORGANISATION_ADVISER" ||
+              session?.user?.user_type === "ORGANISATION_ADMIN") && (
+              <FormGroup>
+                <Label for="adviser">Assign Adviser</Label>
+                <Input
+                  id="adviser"
+                  name="assigned_to"
+                  type="select"
+                  value={formData?.assigned_to || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  {userOrgAdviserListData?.length > 0 ? (
+                    userOrgAdviserListData?.map((user: any) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No advisers available
+                    </option>
+                  )}
+                </Input>
+              </FormGroup>
+            )}
+
+            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+              session?.user?.user_type === "ORGANISATION_ADVISER" ||
+              session?.user?.user_type === "ORGANISATION_ADMIN") && (
+              <FormGroup>
+                <Label for="adviser">Assign Admin</Label>
+                <Input
+                  id="admin"
+                  name="assigned_to_admin"
+                  type="select"
+                  value={formData?.assigned_to_admin || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  {userOrgAdminListData?.length > 0 ? (
+                    userOrgAdminListData?.map((user: any) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No advisers available
+                    </option>
+                  )}
+                </Input>
+              </FormGroup>
+            )}
+
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Input

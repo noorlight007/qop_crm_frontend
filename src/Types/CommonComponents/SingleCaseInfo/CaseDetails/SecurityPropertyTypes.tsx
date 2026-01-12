@@ -212,3 +212,16 @@ export interface PropertyDetailsModalTabProps {
   isOpen: boolean;
   toggle: () => void;
 }
+
+export interface AddressItem {
+  address: string;
+  id: string;
+  url: string;
+  [key: string]: any;
+}
+export interface Props {
+  isOpen: boolean;
+  toggle: () => void;
+  addresses: AddressItem[];
+  onSelect: (id: string) => void;
+}

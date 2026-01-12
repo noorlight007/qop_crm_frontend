@@ -334,13 +334,15 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
+        </Row>
 
+        <Row className="px-3 mt-3">
           {/* Assigned Advisor Card */}
-          <Col sm={12} md={6}>
+          <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Assigned Advisor</h6>
+                  <h6 className="fw-bold">Assigned Adviser</h6>
                 </CardHeader>
                 {isLoading ? (
                   <Row className="pt-2">
@@ -396,9 +398,70 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
+          {/* Assigned Admin Card */}
+          <Col sm={12} md={4}>
+            <Card className="shadow">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
+                <CardHeader className="pt-0 pb-1 m-0 text-center">
+                  <h6 className="fw-bold">Assigned Admin</h6>
+                </CardHeader>
+                {isLoading ? (
+                  <Row className="pt-2">
+                    <Col xs="12" className="text-center">
+                      <Spinner animation="border" role="status" color="info" />
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="pt-2">
+                    <Col xs="12">
+                      {caseInfo?.assigned_admin ? (
+                        <>
+                          <h6 className="pt-1">
+                            <span className="small">Name:</span>{" "}
+                            <strong className="small">
+                              {caseInfo?.assigned_admin?.title
+                                ? formatChoiceFieldValue(
+                                    caseInfo.assigned_admin.title
+                                  )
+                                : ""}{" "}
+                              {caseInfo?.assigned_admin?.first_name}{" "}
+                              {caseInfo?.assigned_admin?.middle_name}{" "}
+                              {caseInfo?.assigned_admin?.last_name}
+                            </strong>
+                          </h6>
+                          <h6 className="pt-1">
+                            <span className="small">Email:</span>{" "}
+                            <strong>
+                              <small>{caseInfo?.assigned_admin?.email}</small>
+                            </strong>
+                          </h6>
+                          <h6 className="pt-1">
+                            <span className="small">User Type:</span>{" "}
+                            <strong className="small">
+                              {caseInfo?.assigned_admin?.user_type
+                                ? formatChoiceFieldValue(
+                                    caseInfo.assigned_admin?.user_type
+                                  )
+                                : "N/A"}
+                            </strong>
+                          </h6>
+                        </>
+                      ) : (
+                        <div className="text-center py-3 mt-2">
+                          <h6 className="text-muted">
+                            <em>Not Assigned Yet</em>
+                          </h6>
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                )}
+              </CardBody>
+            </Card>
+          </Col>
 
           {/* Created By Card */}
-          <Col sm={12} md={6}>
+          <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-secondary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
