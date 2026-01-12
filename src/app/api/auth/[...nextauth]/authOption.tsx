@@ -77,6 +77,7 @@ export const authoption: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
         userAgent: { label: "User Agent", type: "text" },
+        subdomain: { label: "Subdomain", type: "text" },
       },
       async authorize(credentials) {
         try {
@@ -94,6 +95,7 @@ export const authoption: NextAuthOptions = {
               headers: {
                 "Content-Type": "application/json",
                 "X-Device-Info": credentials.userAgent || "",
+                "X-TENANT-SUBDOMAIN": credentials.subdomain || "test-plus",
               },
             }
           );
@@ -103,6 +105,7 @@ export const authoption: NextAuthOptions = {
                 headers: {
                   Authorization: `JWT ${result.data.access}`,
                   "Content-Type": "application/json",
+                  "X-TENANT-SUBDOMAIN": credentials.subdomain || "test-plus",
                 },
               })
             : null;

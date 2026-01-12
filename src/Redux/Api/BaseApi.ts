@@ -21,6 +21,39 @@ const baseQuery = fetchBaseQuery({
       headers.set("authorization", `JWT ${token}`);
     }
 
+    // Extract subdomain from browser URL
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname;
+      let subdomainToSet = "";
+
+      // If localhost, set default subdomain
+      if (hostname === "localhost" || hostname === "127.0.0.1") {
+        subdomainToSet = "test-plus";
+      } else {
+        const parts = hostname.split(".");
+
+        // Extract subdomain (first part if there are multiple parts)
+        // e.g., "subdomain.example.com" -> "subdomain"
+        // e.g., "subdomain.localhost" -> "subdomain"
+        if (
+          parts.length > 2 ||
+          (parts.length === 2 && parts[1] === "localhost")
+        ) {
+          const subdomain = parts[0];
+          if (subdomain && subdomain !== "www") {
+            subdomainToSet = subdomain;
+          }
+        }
+      }
+
+      if (subdomainToSet) {
+        headers.set("X-TENANT-SUBDOMAIN", subdomainToSet);
+        console.log("BaseApi - Setting subdomain header:", subdomainToSet);
+      } else {
+        console.warn("BaseApi - No subdomain detected for hostname:", hostname);
+      }
+    }
+
     return headers;
   },
 });
@@ -61,9 +94,31 @@ const refreshAccessToken = async (): Promise<string | null> => {
       const formData = new FormData();
       formData.append("refresh", refreshToken);
 
+      // Extract subdomain for refresh request
+      let subdomain = "test-plus"; // Default for localhost
+      if (typeof window !== "undefined") {
+        const hostname = window.location.hostname;
+
+        if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+          const parts = hostname.split(".");
+          if (
+            parts.length > 2 ||
+            (parts.length === 2 && parts[1] === "localhost")
+          ) {
+            const extractedSubdomain = parts[0];
+            if (extractedSubdomain && extractedSubdomain !== "www") {
+              subdomain = extractedSubdomain;
+            }
+          }
+        }
+      }
+
       const refreshUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/jwt/refresh/`;
       const response = await fetch(refreshUrl, {
         method: "POST",
+        headers: {
+          "X-TENANT-SUBDOMAIN": subdomain,
+        },
         body: formData,
       });
 
@@ -269,20 +324,20 @@ export const logOut = async () => {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
       sessionStorage.clear();
-      
+
       // Clear NextAuth cookies manually for subdomain compatibility
       // This ensures cookies are removed regardless of subdomain
-      const domain = window.location.hostname.split('.').slice(-2).join('.');
+      const domain = window.location.hostname.split(".").slice(-2).join(".");
       const cookiesToClear = [
-        'next-auth.session-token',
-        '__Secure-next-auth.session-token',
-        'next-auth.csrf-token',
-        '__Host-next-auth.csrf-token',
-        'next-auth.callback-url',
-        '__Secure-next-auth.callback-url'
+        "next-auth.session-token",
+        "__Secure-next-auth.session-token",
+        "next-auth.csrf-token",
+        "__Host-next-auth.csrf-token",
+        "next-auth.callback-url",
+        "__Secure-next-auth.callback-url",
       ];
-      
-      cookiesToClear.forEach(cookieName => {
+
+      cookiesToClear.forEach((cookieName) => {
         // Clear for current path
         document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
         // Clear for root domain
