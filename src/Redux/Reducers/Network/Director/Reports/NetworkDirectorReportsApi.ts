@@ -8,12 +8,19 @@ export const NetworkDirectorReportsApi = baseApi.injectEndpoints({
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
-      }),
-
+      }),    
       invalidatesTags: ["NetworkReports"],
     }),
+    getNetworkDirectorReportsView: builder.query({
+      query: (params) => ({
+        url: "reports/network-view/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["NetworkReports"],
+    })
   }),
 });
 
-export const { useGetNetworkDirectorReportsMutation } =
+export const { useGetNetworkDirectorReportsMutation, useGetNetworkDirectorReportsViewQuery } =
   NetworkDirectorReportsApi;
