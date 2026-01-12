@@ -263,19 +263,53 @@ export const logOut = async () => {
     }
   }
 
-  // Clear local storage
+  // Clear local storage and session storage
   if (typeof window !== "undefined") {
     try {
       localStorage.removeItem("token");
       localStorage.removeItem("refreshToken");
+      sessionStorage.clear();
+      
+      // Clear NextAuth cookies manually for subdomain compatibility
+      // This ensures cookies are removed regardless of subdomain
+      const domain = window.location.hostname.split('.').slice(-2).join('.');
+      const cookiesToClear = [
+        'next-auth.session-token',
+        '__Secure-next-auth.session-token',
+        'next-auth.csrf-token',
+        '__Host-next-auth.csrf-token',
+        'next-auth.callback-url',
+        '__Secure-next-auth.callback-url'
+      ];
+      
+      cookiesToClear.forEach(cookieName => {
+        // Clear for current path
+        document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+        // Clear for root domain
+        document.cookie = `${cookieName}=; path=/; domain=.${domain}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+        // Clear for current subdomain
+        document.cookie = `${cookieName}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+      });
     } catch (e) {
-      console.error("Error clearing localStorage during logout", e);
+      console.error("Error clearing storage/cookies during logout", e);
     }
   }
 
+  // Use NextAuth signOut without automatic redirect
+  // Build login URL with current origin to maintain subdomain context
   try {
-    await signOut({ callbackUrl: "/auth/login" });
+    await signOut({ redirect: false });
+
+    if (typeof window !== "undefined") {
+      // Force redirect to login page on the same subdomain
+      const loginUrl = `${window.location.origin}/auth/login`;
+      window.location.href = loginUrl;
+    }
   } catch (e) {
     console.error("Error during signOut", e);
+    // Fallback: force redirect even if signOut fails
+    if (typeof window !== "undefined") {
+      window.location.href = `${window.location.origin}/auth/login`;
+    }
   }
 };

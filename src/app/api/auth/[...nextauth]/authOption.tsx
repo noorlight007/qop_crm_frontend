@@ -38,12 +38,14 @@ declare module "next-auth" {
     profile_image?: string | null;
     name?: string;
   }
+
+  // Extend core auth options to support trustHost
+  interface AuthOptions {
+    trustHost?: boolean;
+  }
 }
 
 export const authoption: NextAuthOptions = {
-  // For a single Next.js app serving multiple subdomains, do not rely on NEXTAUTH_URL.
-  // NextAuth will infer the correct base URL from the incoming request host.
-  // (Type may not include this in some NextAuth versions; see type widening below.)
   session: {
     strategy: "jwt",
     maxAge: 12 * 60 * 60, // 12 hours
@@ -51,6 +53,21 @@ export const authoption: NextAuthOptions = {
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/login",
+  },
+  trustHost: true,
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        // Extract base domain for subdomain support
+        // If you're on app.example.com, this sets .example.com
+        domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined,
+      },
+    },
   },
   providers: [
     CredentialsProvider({
@@ -167,56 +184,4 @@ export const authoption: NextAuthOptions = {
     },
   },
   debug: true,
-} as NextAuthOptions & {
-  trustHost?: boolean;
 };
-
-(authoption as { trustHost?: boolean }).trustHost = true;
-
-// Optional: share NextAuth cookies across subdomains (e.g. portal/admin on *.mahbub.com)
-// Set NEXTAUTH_COOKIE_DOMAIN=.mahbub.com in production if you need shared sessions.
-const cookieDomain = process.env.NEXTAUTH_COOKIE_DOMAIN;
-if (cookieDomain) {
-  authoption.cookies = {
-    sessionToken: {
-      name:
-        process.env.NODE_ENV === "production"
-          ? "__Secure-next-auth.session-token"
-          : "next-auth.session-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: cookieDomain,
-      },
-    },
-    callbackUrl: {
-      name:
-        process.env.NODE_ENV === "production"
-          ? "__Secure-next-auth.callback-url"
-          : "next-auth.callback-url",
-      options: {
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: cookieDomain,
-      },
-    },
-    csrfToken: {
-      name:
-        // NOTE: __Host- cookies are not allowed to set a Domain attribute.
-        // For cross-subdomain cookies we must use a non-__Host name.
-        process.env.NODE_ENV === "production"
-          ? "__Secure-next-auth.csrf-token"
-          : "next-auth.csrf-token",
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: cookieDomain,
-      },
-    },
-  };
-}
