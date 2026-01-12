@@ -17,7 +17,6 @@ export const NetworkAdviserReportsApi = baseApi.injectEndpoints({
         url: "reports/adviser-view/",
         method: "GET",
         params,
-        responseHandler: (response) => response.blob(),
       }),
 
       providesTags: ["NetworkAdviserReports"],

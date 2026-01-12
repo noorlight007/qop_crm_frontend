@@ -252,7 +252,7 @@ const NetworkDirectorReportsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Organisation Reports"
+        title="Network Director Reports"
         subTitle="Generate and analyze comprehensive organisation reports"
         parent="Cases"
         child="Reports"
@@ -266,7 +266,7 @@ const NetworkDirectorReportsContainer: React.FC = () => {
                   <Col md={6}>
                     <h4 className="mb-0 text-primary fw-bold">
                       <i className="fa fa-chart-line me-2"></i>
-                      Organisation Reports Dashboard
+                      Network Director Reports Dashboard
                     </h4>
                     <p className="text-muted mb-0 mt-1">
                       Generate comprehensive reports across your organisation
@@ -540,12 +540,8 @@ const NetworkDirectorReportsContainer: React.FC = () => {
                                       <td className="text-primary fw-medium">{item.case_number || "N/A"}</td>
                                       <td>{item.adviser_name || "N/A"}</td>
                                       <td>{item.mortgage_type || "N/A"}</td>
-                                      <td>{item.ltv ? `${item.ltv}%` : "N/A"}</td>
-                                      <td>
-                                        <span className="badge bg-light text-dark border">
-                                          {item.current_stage || "N/A"}
-                                        </span>
-                                      </td>
+                                      <td>{item.ltv ? `${item.ltv}` : "N/A"}</td>
+                                      <td>{item.current_stage || "N/A"}</td>
                                       <td>{item.lender_name || "N/A"}</td>
                                     </tr>
                                   ))}
