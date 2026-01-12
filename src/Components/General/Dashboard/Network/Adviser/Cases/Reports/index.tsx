@@ -40,21 +40,21 @@ const NetworkAdviserReportsContainer: React.FC = () => {
   const [dateRangeError, setDateRangeError] = useState("");
 
   const activePayload = {
-      ...filters,
-      ...(filters.date_filter === "range" ? { 
-        from_date: dateRange.from_date, 
-        to_date: dateRange.to_date 
-      } : {})
-    };
+    ...filters,
+    ...(filters.date_filter === "range" ? { 
+      from_date: dateRange.from_date, 
+      to_date: dateRange.to_date 
+    } : {})
+  };
   
-    const { 
-      data: getNetworkReportsViewData, 
-      isLoading: isViewLoading,
-      isFetching,
-      error: viewError 
-    } = useGetNetworkAdviserReportsViewQuery(activePayload, {
-      skip: !filters.date_filter 
-    });
+  const { 
+    data: getNetworkAdviserReportsViewData, 
+    isLoading: isViewLoading,
+    isFetching,
+    error: viewError 
+  } = useGetNetworkAdviserReportsViewQuery(activePayload, {
+    skip: !filters.date_filter 
+  });
 
   const filterOptions = {
     dateFilters: [
@@ -245,7 +245,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Organisation Reports"
+        title="Network Adviser Reports"
         subTitle="Generate and analyze comprehensive organisation reports"
         parent="Cases"
         child="Reports"
@@ -259,7 +259,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                   <Col md={6}>
                     <h4 className="mb-0 text-primary fw-bold">
                       <i className="fa fa-chart-line me-2"></i>
-                      Organisation Reports Dashboard
+                      Network Adviser Reports Dashboard
                     </h4>
                     <p className="text-muted mb-0 mt-1">
                       Generate comprehensive reports across your organisation
@@ -489,7 +489,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                               <Spinner color="primary" />
                               <p className="mt-2 text-muted">Updating report data...</p>
                             </div>
-                          ) : getNetworkReportsViewData && getNetworkReportsViewData.length > 0 ? (
+                          ) : getNetworkAdviserReportsViewData && getNetworkAdviserReportsViewData.length > 0 ? (
                             <div className="table-responsive">
                               <table className="table table-hover align-middle">
                                 <thead className="table-light">
@@ -503,17 +503,13 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {getNetworkReportsViewData.map((item: any, index: number) => (
+                                  {getNetworkAdviserReportsViewData.map((item: any, index: number) => (
                                     <tr key={index}>
                                       <td className="text-primary fw-medium">{item.case_number || "N/A"}</td>
                                       <td>{item.adviser_name || "N/A"}</td>
                                       <td>{item.mortgage_type || "N/A"}</td>
-                                      <td>{item.ltv ? `${item.ltv}%` : "N/A"}</td>
-                                      <td>
-                                        <span className="badge bg-light text-dark border">
-                                          {item.current_stage || "N/A"}
-                                        </span>
-                                      </td>
+                                      <td>{item.ltv ? `${item.ltv}` : "N/A"}</td>
+                                      <td>{item.current_stage || "N/A"}</td>
                                       <td>{item.lender_name || "N/A"}</td>
                                     </tr>
                                   ))}

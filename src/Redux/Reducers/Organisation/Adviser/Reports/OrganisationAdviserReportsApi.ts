@@ -11,7 +11,15 @@ export const NetworkReportsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["OrganisationAdviserReports"],
     }),
+    getOrganisationAdviserReportsView: builder.query({
+      query: (params) => ({
+        url: "reports/adviser-view/",
+        method: "GET",
+        params,
+      }),
+      providesTags: ["NetworkReports"],
+    })
   }),
 });
 
-export const { useGetOrganisationAdviserReportsMutation } = NetworkReportsApi;
+export const { useGetOrganisationAdviserReportsMutation, useGetOrganisationAdviserReportsViewQuery } = NetworkReportsApi;

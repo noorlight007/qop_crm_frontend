@@ -33,7 +33,8 @@ apiClient.interceptors.request.use(
 
       // If localhost, set default subdomain
       if (hostname === "localhost" || hostname === "127.0.0.1") {
-        config.headers["X-TENANT-SUBDOMAIN"] = "test-plus";
+        config.headers["X-TENANT-SUBDOMAIN"] =
+          process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus";
       } else {
         const parts = hostname.split(".");
 
