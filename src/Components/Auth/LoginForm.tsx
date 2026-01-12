@@ -31,10 +31,30 @@ export const LoginForm = () => {
     const userAgent =
       typeof navigator !== "undefined" ? navigator.userAgent : "Unknown Device";
 
+    // Extract subdomain from browser URL
+    let subdomain = "test-plus"; // Default for localhost
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname;
+
+      if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+        const parts = hostname.split(".");
+        if (
+          parts.length > 2 ||
+          (parts.length === 2 && parts[1] === "localhost")
+        ) {
+          const extractedSubdomain = parts[0];
+          if (extractedSubdomain && extractedSubdomain !== "www") {
+            subdomain = extractedSubdomain;
+          }
+        }
+      }
+    }
+
     const result = await signIn("credentials", {
       email,
       password,
       userAgent,
+      subdomain,
       redirect: false,
     });
     setIsLoading(false);

@@ -27,6 +27,31 @@ apiClient.interceptors.request.use(
       // console.warn("No token found in session!");
     }
 
+    // Add subdomain header
+    if (typeof window !== "undefined") {
+      const hostname = window.location.hostname;
+
+      // If localhost, set default subdomain
+      if (hostname === "localhost" || hostname === "127.0.0.1") {
+        config.headers["X-TENANT-SUBDOMAIN"] = "test-plus";
+      } else {
+        const parts = hostname.split(".");
+
+        // Extract subdomain (first part if there are multiple parts)
+        let subdomain = "";
+        if (
+          parts.length > 2 ||
+          (parts.length === 2 && parts[1] === "localhost")
+        ) {
+          subdomain = parts[0];
+        }
+
+        if (subdomain && subdomain !== "www") {
+          config.headers["X-TENANT-SUBDOMAIN"] = subdomain;
+        }
+      }
+    }
+
     return config;
   },
   (error) => {
