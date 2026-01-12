@@ -33,6 +33,7 @@ export interface LeadsProps {
 export interface AddLeadModalProps {
   isOpen: boolean;
   toggle: () => void;
+  onLeadCreated?: (lead: Partial<LeadsInfo> | any) => void;
 }
 export interface ViewLeadModalProps {
   isOpen: boolean;

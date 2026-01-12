@@ -1,9 +1,6 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
-import { LeadsInfo } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
@@ -30,13 +27,12 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   leadId,
   onCaseCreated,
 }) => {
-  const [leads, setLeads] = useState<LeadsInfo[]>([]);
-  const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
-  // Rtk query - request a large page_size so the select can show many leads
-  const { data: leadData, refetch: refetchLeads } = useGetLeadDetailsQuery({
-    page: 1,
-    page_size: 1000,
-  });
+  const [leads, setLeads] = useState<any[]>([]);
+  const { data: userLEADListData, refetch: refetchLeads } = useGetUserListQuery(
+    {
+      role: "LEAD",
+    }
+  );
   const { data: userNetAdviserListData } = useGetUserListQuery({
     role: "NETWORK_ADVISER",
   });
@@ -56,7 +52,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     notes: "",
   });
   const [submitType, setSubmitType] = useState<"save" | "save_view">("save");
-
   const { data: session } = useSession();
   const userType = session?.user?.user_type;
   const router = useRouter();
@@ -73,6 +68,43 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       console.error("Error refetching leads:", err);
     }
   };
+  const handleLeadCreated = (createdLead: any) => {
+    if (!createdLead) {
+      handleCloseAddLead();
+      return;
+    }
+
+    // Created lead from /leads will have shape matching LeadsInfo
+    // i.e., { alias, user: { id, title, first_name, ... }, ... }
+    const user = createdLead.user || createdLead;
+    const newLeadId = user?.id;
+
+    if (!newLeadId) {
+      handleCloseAddLead();
+      return;
+    }
+
+    // Optimistically add this user into the local leads list so the
+    // dropdown can show it immediately, even before refetch completes.
+    setLeads((prev) => {
+      const exists = prev?.some((l: any) => {
+        const existingId = l?.id ?? l?.user?.id;
+        return existingId === newLeadId;
+      });
+
+      if (exists) return prev;
+
+      return [...(prev || []), user];
+    });
+
+    // Set the form's selected lead to the newly created one.
+    setFormData((prev) => ({
+      ...prev,
+      lead: newLeadId,
+    }));
+
+    handleCloseAddLead();
+  };
 
   // Update formData.lead if leadId changes
   useEffect(() => {
@@ -83,18 +115,18 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {
-    if (leadData) {
-      if (Array.isArray(leadData)) {
-        setLeads(leadData || []);
-      } else if ((leadData as any).results) {
-        setLeads((leadData as any).results || []);
-      } else if ((leadData as any).leads) {
-        setLeads((leadData as any).leads || []);
+    if (userLEADListData) {
+      if (Array.isArray(userLEADListData)) {
+        setLeads(userLEADListData || []);
+      } else if ((userLEADListData as any).results) {
+        setLeads((userLEADListData as any).results || []);
+      } else if ((userLEADListData as any).leads) {
+        setLeads((userLEADListData as any).leads || []);
       } else {
         setLeads([]);
       }
     }
-  }, [leadData]);
+  }, [userLEADListData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -171,25 +203,21 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               disabled={!!leadId}
             >
               <option value="">Select...</option>
-              {leads.length > 0 ? (
-                leads.map((lead) => (
-                  <option key={lead.user.id} value={lead.user.id}>
-                    {`${
-                      lead.user?.title
-                        ? formatChoiceFieldValue(lead.user.title) + " "
-                        : ""
-                    }${lead.user?.first_name}${
-                      lead.user?.middle_name ? " " + lead.user.middle_name : ""
-                    } ${lead.user?.last_name}`}
-                  </option>
-                ))
+              {leads && leads.length > 0 ? (
+                leads.map((lead: any) => {
+                  const optionId = lead?.id ?? lead?.user?.id;
+                  return (
+                    <option key={optionId} value={optionId}>
+                      {lead?.name || "Unnamed Lead"}
+                    </option>
+                  );
+                })
               ) : (
                 <option value="" disabled>
                   No leads available
                 </option>
               )}
             </Input>
-            {/* {leads.length === 0 && ( */}
             <div className="mt-2">
               <Button
                 size="sm"
@@ -201,7 +229,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 Add Lead
               </Button>
             </div>
-            {/* )} */}
           </FormGroup>
           <FormGroup>
             <Label for="case_category">
@@ -337,7 +364,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
             disabled={addCaseLoading}
             onClick={() => setSubmitType("save_view")}
           >
-            {addCaseLoading ? "Saving..." : "Save and Case View"}
+            {addCaseLoading ? "Saving..." : "Save and View Case"}
           </Button>
           <Button
             type="button"
@@ -349,7 +376,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           </Button>
         </ModalFooter>
       </Form>
-      <AddLeadModal isOpen={isAddLeadModalOpen} toggle={handleCloseAddLead} />
+      <AddLeadModal
+        isOpen={isAddLeadModalOpen}
+        toggle={handleCloseAddLead}
+        onLeadCreated={handleLeadCreated}
+      />
     </Modal>
   );
 };
