@@ -28,7 +28,7 @@ const baseQuery = fetchBaseQuery({
 
       // If localhost, set default subdomain
       if (hostname === "localhost" || hostname === "127.0.0.1") {
-        subdomainToSet = "test-plus";
+        subdomainToSet = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus";
       } else {
         const parts = hostname.split(".");
 
@@ -95,7 +95,7 @@ const refreshAccessToken = async (): Promise<string | null> => {
       formData.append("refresh", refreshToken);
 
       // Extract subdomain for refresh request
-      let subdomain = "test-plus"; // Default for localhost
+      let subdomain = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus"; // Default for localhost
       if (typeof window !== "undefined") {
         const hostname = window.location.hostname;
 
