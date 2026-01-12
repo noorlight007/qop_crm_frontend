@@ -9,6 +9,7 @@ interface UserWithToken extends NextAuthUser {
   refreshToken?: string;
   user_type?: string;
   profile_image?: string | null;
+  subdomain?: string | null;
 }
 
 // TypeScript Declaration Module for Custom Session and User Properties
@@ -20,6 +21,7 @@ declare module "next-auth" {
       image?: string | null;
       user_type?: string | null;
       profile_image?: string | null;
+      subdomain?: string | null;
       accessToken?: string;
       refreshToken?: string;
     };
@@ -37,6 +39,7 @@ declare module "next-auth" {
     user_type?: string;
     profile_image?: string | null;
     name?: string;
+    subdomain?: string | null;
   }
 
   // Extend core auth options to support trustHost
@@ -124,6 +127,7 @@ export const authoption: NextAuthOptions = {
               email: credentials.email,
               user_type: userData.user_type || "",
               profile_image: userData.profile_image || null,
+              subdomain: credentials.subdomain || null,
               accessToken: result.data.access,
               refreshToken: result.data.refresh,
             };
@@ -152,6 +156,9 @@ export const authoption: NextAuthOptions = {
         if (userWithToken.profile_image) {
           token.profile_image = userWithToken.profile_image;
         }
+        if (userWithToken.subdomain) {
+          token.subdomain = userWithToken.subdomain;
+        }
       }
 
       // Handle session updates (when update() is called)
@@ -164,6 +171,9 @@ export const authoption: NextAuthOptions = {
         }
         if (session.user_type !== undefined) {
           token.user_type = session.user_type;
+        }
+        if (session.subdomain !== undefined) {
+          token.subdomain = session.subdomain;
         }
       }
 
@@ -178,6 +188,7 @@ export const authoption: NextAuthOptions = {
         refreshToken: token.refreshToken as string | undefined,
         user_type: token.user_type as string | undefined,
         profile_image: token.profile_image as string | null | undefined,
+        subdomain: token.subdomain as string | null | undefined,
       };
       return session;
     },
