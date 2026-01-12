@@ -12,7 +12,17 @@ export const NetworkAdviserReportsApi = baseApi.injectEndpoints({
 
       invalidatesTags: ["NetworkAdviserReports"],
     }),
+    getNetworkAdviserReportsView: builder.query({
+      query: (params) => ({
+        url: "reports/adviser-view/",
+        method: "GET",
+        params,
+        responseHandler: (response) => response.blob(),
+      }),
+
+      providesTags: ["NetworkAdviserReports"],
+    }),
   }),
 });
 
-export const { useGetNetworkAdviserReportsMutation } = NetworkAdviserReportsApi;
+export const { useGetNetworkAdviserReportsMutation, useGetNetworkAdviserReportsViewQuery } = NetworkAdviserReportsApi;
