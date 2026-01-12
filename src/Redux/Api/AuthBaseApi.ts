@@ -10,7 +10,7 @@ const baseQuery = fetchBaseQuery({
 
       // If localhost, set default subdomain
       if (hostname === "localhost" || hostname === "127.0.0.1") {
-        subdomainToSet = "test-plus";
+        subdomainToSet = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus";
       } else {
         const parts = hostname.split(".");
 
