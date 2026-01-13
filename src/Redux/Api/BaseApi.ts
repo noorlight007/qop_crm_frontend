@@ -48,7 +48,7 @@ const baseQuery = fetchBaseQuery({
 
       if (subdomainToSet) {
         headers.set("X-TENANT-SUBDOMAIN", subdomainToSet);
-        console.log("BaseApi - Setting subdomain header:", subdomainToSet);
+        // console.log("BaseApi - Setting subdomain header:", subdomainToSet);
       } else {
         console.warn("BaseApi - No subdomain detected for hostname:", hostname);
       }
