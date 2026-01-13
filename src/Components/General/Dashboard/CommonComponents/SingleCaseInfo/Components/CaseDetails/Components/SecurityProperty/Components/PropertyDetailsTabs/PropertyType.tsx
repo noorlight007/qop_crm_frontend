@@ -513,21 +513,20 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               <Label for="epc_rating">EPC Rating</Label>
               <InputGroup style={{ width: "100%" }}>
                 <Input
-                  type="select"
+                  type="text"
                   id="epc_rating"
                   name="epc_rating"
-                  className="epcRatingDropDown"
+                  className=""
                   value={propertyState.epc_rating || ""}
                   onChange={handleChange}
                 >
-                  <option value="SELECT">Select...</option>
-                  {["A", "B", "C", "D", "E", "F", "G"].map((rating) => (
-                    <option key={rating} value={rating}>
-                      {rating}
-                    </option>
-                  ))}
                 </Input>
               </InputGroup>
+              {propertyState.address_one && !propertyState.epc_rating && (
+                <small className="text-danger" style={{ marginTop: "5px", display: "block" }}>
+                  No EPC rating found for this address.
+                </small>
+              )}
             </FormGroup>
           </Col>
 

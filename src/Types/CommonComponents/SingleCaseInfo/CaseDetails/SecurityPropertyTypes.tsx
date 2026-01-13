@@ -13,6 +13,8 @@ export interface SecurityPropertyFormStateProps {
     house_name_or_number: string; // "1040 Blackstone Drive"
     address_one: string; // "as1"
     address_two: string; // ""
+    address_three?: string;
+    address_four?: string;
     city: string; // "Decatur"
     county: string; // "IL"
     region: string | null; // "SOUTH_EAST"
@@ -119,6 +121,9 @@ export interface PropertyData {
   house_name_or_number: string;
   address_one: string;
   address_two: string;
+  address_three: string;
+  address_four: string;
+
   city: string;
   county: string;
   region: string | null;
@@ -197,7 +202,7 @@ export interface AdditionalInfoProps {
 }
 
 export interface AddressDetailsProps {
-  propertyData?: any;
+  propertyData?: PropertyData;
 }
 
 export interface PropertyDetailsProps {
