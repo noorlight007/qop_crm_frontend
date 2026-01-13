@@ -20,8 +20,7 @@ const SubdomainValidator = () => {
         hostnameWithoutPort === "localhost" ||
         hostnameWithoutPort === "127.0.0.1"
       ) {
-        currentSubdomain =
-          process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus";
+        currentSubdomain = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "";
       } else {
         const parts = hostnameWithoutPort.split(".");
         if (parts.length >= 3) {

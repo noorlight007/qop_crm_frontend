@@ -32,7 +32,7 @@ export const LoginForm = () => {
       typeof navigator !== "undefined" ? navigator.userAgent : "Unknown Device";
 
     // Extract subdomain from browser URL
-    let subdomain = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus"; // Default for localhost
+    let subdomain = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || ""; // Default for localhost
     if (typeof window !== "undefined") {
       const hostname = window.location.hostname;
 
