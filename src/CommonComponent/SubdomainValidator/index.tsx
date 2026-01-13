@@ -49,15 +49,12 @@ const SubdomainValidator = () => {
         sessionSubdomain &&
         sessionSubdomain !== currentSubdomain
       ) {
-        console.log("⚠️ Subdomain mismatch detected! Redirecting back...");
+        // console.log("⚠️ Subdomain mismatch detected! Redirecting back...");
         toast.error(
           "Subdomain mismatch detected. Redirecting to the previous page."
         );
         // Use browser's back navigation to return to previous page
         window.history.back();
-      } else {
-        // console.log("✓ Subdomain validation passed");
-        // toast.success("Subdomain validation passed.");
       }
     };
 
