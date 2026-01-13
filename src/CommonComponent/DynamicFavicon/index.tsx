@@ -1,14 +1,26 @@
 "use client";
 
-import { useGetAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import {
+  useGetAppranceQuery,
+  useGetPublicAppranceQuery,
+} from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 const DynamicFavicon = () => {
   const { data: session } = useSession();
-  const { data: appearanceData } = useGetAppranceQuery(undefined, {
-    skip: !session?.user, // Skip the query if user is not authenticated
+
+  // Fetch appearance for authenticated users
+  const { data: privateAppearance } = useGetAppranceQuery(undefined, {
+    skip: !session?.user,
   });
+
+  // Fetch public appearance for unauthenticated (e.g., login) pages
+  const { data: publicAppearance } = useGetPublicAppranceQuery(undefined, {
+    skip: !!session?.user,
+  });
+
+  const appearanceData = privateAppearance || publicAppearance;
 
   useEffect(() => {
     if (appearanceData?.fav_icon) {
