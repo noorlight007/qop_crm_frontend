@@ -98,7 +98,7 @@ export const authoption: NextAuthOptions = {
               headers: {
                 "Content-Type": "application/json",
                 "X-Device-Info": credentials.userAgent || "",
-                "X-TENANT-SUBDOMAIN": credentials.subdomain || "test-plus",
+                "X-TENANT-SUBDOMAIN": credentials.subdomain || "",
               },
             }
           );
@@ -108,7 +108,7 @@ export const authoption: NextAuthOptions = {
                 headers: {
                   Authorization: `JWT ${result.data.access}`,
                   "Content-Type": "application/json",
-                  "X-TENANT-SUBDOMAIN": credentials.subdomain || "test-plus",
+                  "X-TENANT-SUBDOMAIN": credentials.subdomain || "",
                 },
               })
             : null;
