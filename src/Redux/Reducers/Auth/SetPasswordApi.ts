@@ -1,6 +1,6 @@
-import { authBaseApi } from "@/Redux/Api/AuthBaseApi";
+import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
 
-export const SetNewPasswordApi = authBaseApi.injectEndpoints({
+export const SetNewPasswordApi = publicBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     setNewPassword: builder.mutation({
       query: ({ payload, uid, token }) => ({

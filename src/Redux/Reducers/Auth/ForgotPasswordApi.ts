@@ -1,6 +1,6 @@
-import { authBaseApi } from "@/Redux/Api/AuthBaseApi";
+import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
 
-export const ForgotPasswordApi = authBaseApi.injectEndpoints({
+export const ForgotPasswordApi = publicBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     forgotPasswordSendEmail: builder.mutation({
       query: ({ payload }) => ({

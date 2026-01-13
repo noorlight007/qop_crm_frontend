@@ -34,11 +34,11 @@ const baseQuery = fetchBaseQuery({
     return headers;
   },
 });
-export const authBaseApi = createApi({
-  reducerPath: "authBaseApi",
+export const publicBaseApi = createApi({
+  reducerPath: "publicBaseApi",
   baseQuery: baseQuery,
   tagTypes: [
-    //Appearance Settings
+    //Appearance Settings 
     "AppearanceSettings",
     "SetPassword",
     "ForgotPassword",
