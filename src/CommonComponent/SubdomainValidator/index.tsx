@@ -39,9 +39,9 @@ const SubdomainValidator = () => {
       // Get session subdomain
       const sessionSubdomain = (session as any)?.user?.subdomain;
 
-    //   console.log("Full hostname:", hostname);
-    //   console.log("Current Subdomain (from URL):", currentSubdomain);
-    //   console.log("Session Subdomain:", sessionSubdomain);
+      //   console.log("Full hostname:", hostname);
+      //   console.log("Current Subdomain (from URL):", currentSubdomain);
+      //   console.log("Session Subdomain:", sessionSubdomain);
 
       // Validate subdomain matches the one stored in session
       if (
@@ -56,8 +56,8 @@ const SubdomainValidator = () => {
         // Use browser's back navigation to return to previous page
         window.history.back();
       } else {
-        console.log("✓ Subdomain validation passed");
-        toast.success("Subdomain validation passed.");
+        // console.log("✓ Subdomain validation passed");
+        // toast.success("Subdomain validation passed.");
       }
     };
 
