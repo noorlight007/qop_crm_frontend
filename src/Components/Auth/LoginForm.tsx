@@ -73,25 +73,27 @@ export const LoginForm = () => {
         <div>
           <Link className="logo mb-2" href="/">
             <Image
-              width={91}
-              height={27}
+              width={300}
+              height={100}
               className="img-fluid for-light"
               src={appearanceData?.logo || imageOne}
               alt="login page"
               priority
+              style={{ width: "160px", height: "60px" }}
             />
             <Image
-              width={91}
-              height={27}
+              width={300}
+              height={100}
               className="img-fluid for-dark"
               src={appearanceData?.logo || imageTwo}
               alt="login page"
               priority
+              style={{ width: "160px", height: "60px" }}
             />
           </Link>
         </div>
         <h2 className="text-center">{SignInToAccount}</h2>
-        <p className="text-center">Enter your email & password to login</p>
+        <p className="text-center mb-2">Enter your email & password to login</p>
         <FormGroup>
           <Label className="col-form-label">{EmailAddressLogIn}</Label>
           <Input

@@ -1,17 +1,19 @@
 "use client";
+import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useForgotPasswordSendEmailMutation } from "@/Redux/Reducers/Auth/ForgotPasswordApi";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
-import logoDark from "../../../../../public/assets/images/logo/logo-dark.png";
-import logoLight from "../../../../../public/assets/images/logo/logo1.png";
+import imageTwo from "../../../../../public/assets/images/logo/logo-dark.png";
+import imageOne from "../../../../../public/assets/images/logo/logo1.png";
 
 export default function ForgotPasswordSendEmail() {
   const [email, setEmail] = useState("");
   const [cooldown, setCooldown] = useState(0);
   const [sentOnce, setSentOnce] = useState(false);
+  const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
 
   const RESEND_KEY = "forgot_password_resend_expiry";
 
@@ -110,26 +112,30 @@ export default function ForgotPasswordSendEmail() {
             <div className="card shadow-sm">
               <div className="card-body p-4">
                 <div className="text-center mb-3">
-                  <Link href="/" className="logo mb-2">
+                  <Link className="logo mb-2" href="/">
                     <Image
-                      src={logoLight}
-                      alt="logo"
-                      width={120}
-                      height={36}
+                      width={300}
+                      height={100}
                       className="img-fluid for-light"
+                      src={appearanceData?.logo || imageOne}
+                      alt="login page"
+                      priority
+                      style={{ width: "140px", height: "50px" }}
                     />
                     <Image
-                      src={logoDark}
-                      alt="logo-dark"
-                      width={120}
-                      height={36}
+                      width={300}
+                      height={100}
                       className="img-fluid for-dark"
+                      src={appearanceData?.logo || imageTwo}
+                      alt="login page"
+                      priority
+                      style={{ width: "160px", height: "60px" }}
                     />
                   </Link>
                 </div>
 
                 <h3 className="text-center mb-2">Forgot Password</h3>
-                <p className="text-center text-muted mb-4">
+                <p className="text-center text-muted mb-2">
                   Enter your email and we'll send a link to reset your password.
                 </p>
 

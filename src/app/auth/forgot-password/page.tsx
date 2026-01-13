@@ -1,16 +1,17 @@
 "use client";
-import { useSetNewPasswordMutation } from "@/Redux/Reducers/Auth/SetPasswordApi";
+import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import { useForgotPasswordMutation } from "@/Redux/Reducers/Auth/ForgotPasswordApi";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
-import logoDark from "../../../../public/assets/images/logo/logo-dark.png";
-import logoLight from "../../../../public/assets/images/logo/logo1.png";
-import { useForgotPasswordMutation } from "@/Redux/Reducers/Auth/ForgotPasswordApi";
+import imageTwo from "../../../../public/assets/images/logo/logo-dark.png";
+import imageOne from "../../../../public/assets/images/logo/logo1.png";
 
 export default function ForgotPassword() {
+  const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   const router = useRouter();
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
@@ -106,26 +107,30 @@ export default function ForgotPassword() {
             <div className="card shadow-sm">
               <div className="card-body p-4">
                 <div className="text-center mb-3">
-                  <Link href="/" className="logo mb-2">
+                  <Link className="logo mb-2" href="/">
                     <Image
-                      src={logoLight}
-                      alt="logo"
-                      width={120}
-                      height={36}
+                      width={300}
+                      height={100}
                       className="img-fluid for-light"
+                      src={appearanceData?.logo || imageOne}
+                      alt="login page"
+                      priority
+                      style={{ width: "160px", height: "60px" }}
                     />
                     <Image
-                      src={logoDark}
-                      alt="logo-dark"
-                      width={120}
-                      height={36}
+                      width={300}
+                      height={100}
                       className="img-fluid for-dark"
+                      src={appearanceData?.logo || imageTwo}
+                      alt="login page"
+                      priority
+                      style={{ width: "160px", height: "60px" }}
                     />
                   </Link>
                 </div>
 
                 <h3 className="text-center mb-2">Set a new password</h3>
-                <p className="text-center text-muted mb-4">
+                <p className="text-center text-muted mb-2">
                   Choose a strong password and confirm it to secure your
                   account.
                 </p>
