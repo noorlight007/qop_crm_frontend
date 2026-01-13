@@ -1,4 +1,5 @@
 "use client";
+import SubdomainValidator from "@/CommonComponent/SubdomainValidator";
 import Footer from "@/Layout/Footer";
 import Header from "@/Layout/Header";
 import Sidebar from "@/Layout/Sidebar";
@@ -64,6 +65,7 @@ export default function RootLayout({
 
   return (
     <Provider store={Store}>
+      <SubdomainValidator />
       <div
         className={`page-wrapper ${
           sideBarToggle ? "compact-wrapper" : sidebar_types
