@@ -7,7 +7,9 @@ import LoadingSpinner from "@/app/loading";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
 import {
   Button,
@@ -190,7 +192,23 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
               ) : currentAdvisers.length > 0 ? (
                 currentAdvisers.map((adviser) => (
                   <tr key={adviser.alias} className="text-center">
-                    <td>
+                    <td className="d-flex justify-content-center align-items-center gap-1 text-truncate">
+                      <span
+                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                        style={{ width: 40, height: 40 }}
+                      >
+                        {adviser.user?.profile_image ? (
+                          <Image
+                            src={adviser.user.profile_image}
+                            alt="Profile"
+                            width={35}
+                            height={35}
+                            className="rounded-circle"
+                          />
+                        ) : (
+                          <User size={35} className="text-secondary" />
+                        )}
+                      </span>
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
