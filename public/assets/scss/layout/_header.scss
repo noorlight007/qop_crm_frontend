@@ -93,7 +93,8 @@
       transition: 0.3s all;
       color: $white;
       @media (max-width: 1199px) {
-        background-color: rgba($primary-color, 0.2);
+        // background-color: rgba($primary-color, 0.2);
+        background-color: var(--theme-default);
         color: var(--theme-default);
       }
       @media (max-width: 767.98px) {
