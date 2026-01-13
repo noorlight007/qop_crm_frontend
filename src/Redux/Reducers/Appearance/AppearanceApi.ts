@@ -1,5 +1,5 @@
-import { authBaseApi } from "@/Redux/Api/AuthBaseApi";
 import { baseApi } from "@/Redux/Api/BaseApi";
+import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
 
 export const AppearanceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -23,7 +23,7 @@ export const AppearanceApi = baseApi.injectEndpoints({
 export const { useGetAppranceQuery, useUpdateAppearanceMutation } =
   AppearanceApi;
 
-export const AppearancePublicApi = authBaseApi.injectEndpoints({
+export const AppearancePublicApi = publicBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPublicApprance: builder.query({
       query: () => ({

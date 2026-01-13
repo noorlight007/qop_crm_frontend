@@ -138,7 +138,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-  const handleFaviconChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFaviconChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const name = file.name.toLowerCase();
@@ -153,9 +153,54 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         return;
       }
 
-      // Validate file size (max 100KB for fav_icon)
-      if (file.size > 100 * 1024) {
-        toast.error("Favicon file size must be less than 100KB");
+      // Validate file size (max 50KB for fav_icon)
+      if (file.size > 50 * 1024) {
+        toast.error("Favicon file size must be less than 50KB");
+        return;
+      }
+
+      // Validate image dimensions (max 32x32 px). Some ICO files may not load in Image,
+      // so for ICOs we'll skip strict dimension failure if the browser can't parse it.
+      try {
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        const canValidateDimensions = await new Promise<boolean>(
+          (resolve, reject) => {
+            img.onload = () => {
+              const valid = img.width <= 48 && img.height <= 48;
+              URL.revokeObjectURL(objectUrl);
+              if (!valid) reject(new Error("dimensions"));
+              else resolve(true);
+            };
+            img.onerror = () => {
+              URL.revokeObjectURL(objectUrl);
+              // If ICO failed to load, resolve false so we can decide to allow with a warning
+              resolve(false);
+            };
+            img.src = objectUrl;
+          }
+        );
+
+        if (!canValidateDimensions && isPng) {
+          // PNG should be loadable; if not, treat as an error
+          toast.error(
+            "Failed to validate favicon image dimensions. Please ensure it's 48x48 px."
+          );
+          return;
+        }
+
+        if (canValidateDimensions === true) {
+          // dimensions already checked in onload
+        }
+      } catch (err) {
+        if ((err as Error).message === "dimensions") {
+          toast.error("Favicon dimensions must be at most 48x48 pixels");
+          return;
+        }
+        // Other errors fallthrough with a generic message
+        toast.error(
+          "Failed to validate favicon image. Please ensure it's a valid image (48x48 px, PNG or ICO)."
+        );
         return;
       }
 
@@ -409,7 +454,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
           <Label className="form-label">
             Logo{" "}
             <small className="text-warning">
-              (Preferred resolution: 350x120 px)
+              (Preferred resolution: 420x150 px)
             </small>{" "}
           </Label>
           <Row className="g-3">
@@ -503,9 +548,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         <FormGroup className="mb-5">
           <Label className="form-label">
             Favicon{" "}
-            <small className="text-warning">
-              (Preferred resolution: 32x32 px)
-            </small>
+            <small className="text-warning">(Max resolution: 48x48 px)</small>
           </Label>
           <Row className="g-3">
             <Col md="6">
@@ -547,7 +590,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                 </span>
               </div>
               <small className="text-muted">
-                Supported formats: PNG, ICO (Max 100KB)
+                Supported formats: PNG, ICO (Max 50KB)
               </small>
               <div className="d-flex gap-2 mt-2">
                 <Button

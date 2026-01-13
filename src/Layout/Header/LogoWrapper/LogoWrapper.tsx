@@ -11,7 +11,7 @@ const LogoWrapper = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
 
   return (
-    <div className="logo-wrapper d-flex align-items-center col-auto">
+    <div className="logo-wrapper d-flex justify-content-center gap-2 align-items-center col-auto">
       <Image
         width={120}
         height={40}
@@ -19,7 +19,7 @@ const LogoWrapper = () => {
         className="light-logo img-fluid"
         src={appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`}
         alt="logo"
-        style={{ width: "120px", height: "40px" }}
+        style={{ width: "100px", height: "40px" }}
       />
       <Image
         width={120}
@@ -28,11 +28,13 @@ const LogoWrapper = () => {
         className="dark-logo img-fluid"
         src={appearanceData?.logo || `${ImagePath}/logo/logo1.png`}
         alt="logo"
-        style={{ width: "120px", height: "40px" }}
+        style={{ width: "100px", height: "40px" }}
       />
+      
       <a
         className="close-btn toggle-sidebar"
         onClick={() => dispatch(setSideBarToggle(!sideBarToggle))}
+        // style={{cursor:""}}
       >
         <SVG className="svg-color" iconId="Category" />
       </a>
