@@ -15,6 +15,7 @@ import {
   Form,
   FormGroup,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -22,6 +23,9 @@ import {
   Row,
 } from "reactstrap";
 import "../PortfolioContent.css";
+import { apiAddress } from "@/services/third-party-api";
+import GetAddressModal from "../../../CommonModals/GetAddressModal";
+import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
 
 interface AddPortfolioContentModalProps {
   isOpen: boolean;
@@ -45,6 +49,24 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     useGetPortfolioApplicantsQuery({
       case_alias: casealias,
     });
+  const [ postcode, setPostcode ] = useState('');
+  const [fetchedEpcRating, setFetchedEpcRating] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [addressList, setAddressList] = useState<any[]>([]);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+  
+  const [houseNumber, setHouseNumber] = useState<string>("");
+  const [address1, setAddress1] = useState<string>("");
+  const [address2, setAddress2] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [county, setCounty] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
+
+
+  const [
+    getPropertyEPCRating,{ isLoading: isEpcLoading},
+  ] = useGetPropertyEPCRatingMutation();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -170,6 +192,85 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     (applicant: any) => !selectedApplicants.includes(applicant.id.toString())
   );
 
+  const fetchAddressByPostcode = async (postcode: string) => {
+    if (!postcode) return;
+    try {
+      const response = await apiAddress.get(
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+      );
+      setAddressList(response.data.suggestions || []);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Error looking up address:", err);
+    }
+  };
+
+  const buildFullAddressForEPC = (property: {
+    address_one?: string;
+    address_two?: string;
+    address_three?: string;
+    address_four?: string;
+  }) => {
+    return [
+      property.address_one,
+      property.address_two,
+      property.address_three,
+      property.address_four,
+    ]
+      .filter((line) => Boolean(line && line.trim()))
+      .join(", ");
+  };
+
+  const handleSelectAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    setIsModalOpen(false);
+
+    try {
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      console.log("address details: ", address);
+
+      // setAddress1(address.line_1);
+
+      setHouseNumber(address.building_number || address.building_name || '');
+      setAddress1(address.line_1 || '');
+      setAddress2(address.line_2 || '');
+      setCity(address.town_or_city || '');
+      setCounty(address.county || '');
+      setCountry(address.country || '');
+
+      const fullAddressForEPC = buildFullAddressForEPC({
+      address_one: address.line_1,
+      address_two: address.line_2,
+      address_three: address.line_3,
+      address_four: address.line_4,
+    });
+
+    console.log("📍 EPC request address:", fullAddressForEPC);
+
+    const epcResponse = await getPropertyEPCRating({
+      case_alias: casealias as string,
+      property_postcode: address.postcode,
+      property_address: fullAddressForEPC,
+    }).unwrap();
+    setFetchedEpcRating(epcResponse.epc_rating);
+    console.log("✅ EPC Rating received:", epcResponse.epc_rating);
+    } catch (error) {
+      console.error("Error fetching detailed address:", error);
+    } finally {
+      setIsFetchingAddress(false);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
       <ModalHeader toggle={toggle}>
@@ -257,9 +358,24 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="postcode">Postcode*</Label>
-                <div className="d-flex gap-2">
-                  <Input id="postcode" name="postcode" type="text" required />
-                </div>
+                <InputGroup className="d-flex align-items-center gap-2">
+                  <Input
+                    id="postcode"
+                    type="text"
+                    className="rounded"
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                    required
+                  />
+                  <Button
+                    color="primary"
+                    type="button"
+                    className="text-nowrap"
+                    onClick={() => fetchAddressByPostcode(postcode)}
+                  >
+                    Lookup
+                  </Button>
+                </InputGroup>
               </FormGroup>
             </Col>
           </Row>
@@ -271,6 +387,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   id="houseNumber"
                   name="houseNumber"
                   type="text"
+                  value={houseNumber}
+                  onChange={(e) => setHouseNumber(e.target.value)}
                   required
                 />
               </FormGroup>
@@ -278,13 +396,26 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="address1">Address 1*</Label>
-                <Input id="address1" name="address1" type="text" required />
+                <Input
+                  id="address1"
+                  name="address1"
+                  type="text"
+                  value={address1}
+                  onChange={(e) => setAddress1(e.target.value)}
+                  required
+                />
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
                 <Label for="address2">Address 2</Label>
-                <Input id="address2" name="address2" type="text" />
+                <Input
+                  id="address2"
+                  name="address2"
+                  type="text"
+                  value={address2}
+                  onChange={(e) => setAddress2(e.target.value)}
+                />
               </FormGroup>
             </Col>
           </Row>
@@ -292,19 +423,39 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="city">City*</Label>
-                <Input id="city" name="city" type="text" required />
+                <Input
+                  id="city"
+                  name="city"
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  required
+                />
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
                 <Label for="county">County</Label>
-                <Input id="county" name="county" type="text" />
+                <Input
+                  id="county"
+                  name="county"
+                  type="text"
+                  value={county}
+                  onChange={(e) => setCounty(e.target.value)}
+                />
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
                 <Label for="country">Country*</Label>
-                <Input id="country" name="country" type="text" required />
+                <Input
+                  id="country"
+                  name="country"
+                  type="text"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  required
+                />
               </FormGroup>
             </Col>
           </Row>
@@ -577,21 +728,23 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   Is Limited Company
                 </Label>
               </FormGroup>
-            </Col>
+            </Col>            
             <Col md={4}>
               <FormGroup>
                 <Label for="epcRating">EPC Rating</Label>
-                <Input id="epcRating" name="epcRating" type="select">
-                  <option value="">Select...</option>
-                  <option value="UNKNOWN">Unknown</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </Input>
+                <Input 
+                  id="epcRating" 
+                  name="epcRating" 
+                  type="text"
+                  value={fetchedEpcRating}
+                  onChange={(e) => setFetchedEpcRating(e.target.value)} 
+                  placeholder={isEpcLoading ? "Fetching..." : "e.g. C"}
+                />
+                { address1 && !fetchedEpcRating && !isEpcLoading && (
+                  <small className="text-danger" style={{ marginTop: "5px", display: "block" }}>
+                    No EPC rating found for this address.
+                  </small>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -619,6 +772,12 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           </Row>
         </Form>
       </ModalBody>
+      <GetAddressModal
+        isOpen={isModalOpen}
+        toggle={toggleModal}
+        addresses={addressList}
+        onSelect={handleSelectAddress}
+      />
     </Modal>
   );
 };
