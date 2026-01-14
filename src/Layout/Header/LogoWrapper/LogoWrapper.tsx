@@ -11,30 +11,31 @@ const LogoWrapper = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
 
   return (
-    <div className="logo-wrapper d-flex justify-content-center gap-2 align-items-center col-auto">
-      <Image
-        width={120}
-        height={40}
-        priority
-        className="light-logo img-fluid"
-        src={appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`}
-        alt="logo"
-        style={{ width: "100px", height: "40px" }}
-      />
-      <Image
-        width={120}
-        height={40}
-        priority
-        className="dark-logo img-fluid"
-        src={appearanceData?.logo || `${ImagePath}/logo/logo1.png`}
-        alt="logo"
-        style={{ width: "100px", height: "40px" }}
-      />
-      
+    <div className="logo-wrapper d-flex align-items-center col-auto">
+      <div className="d-flex gap-2 align-items-center flex-grow-1 justify-content-center">
+        <Image
+          width={120}
+          height={40}
+          priority
+          className="light-logo img-fluid"
+          src={appearanceData?.logo || `${ImagePath}/logo/logo-dark.png`}
+          alt="logo"
+          style={{ width: "100px", height: "40px" }}
+        />
+        <Image
+          width={120}
+          height={40}
+          priority
+          className="dark-logo img-fluid"
+          src={appearanceData?.logo || `${ImagePath}/logo/logo1.png`}
+          alt="logo"
+          style={{ width: "100px", height: "40px" }}
+        />
+      </div>
+
       <a
-        className="close-btn toggle-sidebar"
+        className="close-btn ms-auto"
         onClick={() => dispatch(setSideBarToggle(!sideBarToggle))}
-        // style={{cursor:""}}
       >
         <SVG className="svg-color" iconId="Category" />
       </a>
