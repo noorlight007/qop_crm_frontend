@@ -154,7 +154,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Role</th>
+                <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
               </tr>
@@ -217,9 +217,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                       )}
                     </td>
                     <td>
-                      {adviser?.role
-                        ? formatChoiceFieldValue(adviser.role)
-                        : "-"}
+                      {adviser?.joining_date ? adviser.joining_date : "-"}
                     </td>
                     <td>
                       <p className="m-0">
