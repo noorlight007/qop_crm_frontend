@@ -1,10 +1,10 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const NetworkReportsApi = baseApi.injectEndpoints({
+export const OrganisationAdviserReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganisationAdviserReports: builder.mutation({
       query: (params) => ({
-        url: "reports/adviser/",
+        url: "/reports/adviser/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
@@ -13,13 +13,16 @@ export const NetworkReportsApi = baseApi.injectEndpoints({
     }),
     getOrganisationAdviserReportsView: builder.query({
       query: (params) => ({
-        url: "reports/adviser-view/",
+        url: "/reports/adviser-view/",
         method: "GET",
         params,
       }),
-      providesTags: ["NetworkReports"],
-    })
+      providesTags: ["OrganisationAdviserReports"],
+    }),
   }),
 });
 
-export const { useGetOrganisationAdviserReportsMutation, useGetOrganisationAdviserReportsViewQuery } = NetworkReportsApi;
+export const {
+  useGetOrganisationAdviserReportsMutation,
+  useGetOrganisationAdviserReportsViewQuery,
+} = OrganisationAdviserReportsApi;

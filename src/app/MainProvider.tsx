@@ -1,6 +1,11 @@
 "use client";
 import ErrorPage1Container from "@/Components/Other/ErrorPage/ErrorPage1Container";
-import { useGetAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import { useAppDispatch } from "@/Redux/Hooks";
+import {
+  useGetAppranceQuery,
+  useGetPublicAppranceQuery,
+} from "@/Redux/Reducers/Appearance/AppearanceApi";
+import { addColor } from "@/Redux/Reducers/ThemeCustomizerReducer";
 import Store from "@/Redux/Store";
 import { useSession } from "next-auth/react";
 import React, { ErrorInfo, ReactNode, useEffect } from "react";
@@ -46,9 +51,19 @@ class ErrorBoundary extends React.Component<
 
 const AppearanceFontApplier: React.FC<MainProviderProps> = ({ children }) => {
   const { data: session } = useSession();
-  const { data: appearanceData } = useGetAppranceQuery(undefined, {
-    skip: !session?.user, // Skip the query if user is not authenticated
+  const dispatch = useAppDispatch();
+
+  // Authenticated appearance
+  const { data: privateAppearance } = useGetAppranceQuery(undefined, {
+    skip: !session?.user,
   });
+
+  // Public appearance for unauthenticated pages (e.g., auth/login)
+  const { data: publicAppearance } = useGetPublicAppranceQuery(undefined, {
+    skip: !!session?.user,
+  });
+
+  const appearanceData = privateAppearance || publicAppearance;
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -79,6 +94,22 @@ const AppearanceFontApplier: React.FC<MainProviderProps> = ({ children }) => {
       root.style.removeProperty("--app-body-font");
     }
   }, [appearanceData?.font_family]);
+
+  // Apply theme colors for unauthenticated pages using public appearance
+  useEffect(() => {
+    if (session?.user) return;
+
+    const primary = (appearanceData as any)?.primary_color as
+      | string
+      | undefined;
+    const secondary = (appearanceData as any)?.secondary_color as
+      | string
+      | undefined;
+
+    if (primary && secondary) {
+      dispatch(addColor({ primary, secondary }));
+    }
+  }, [appearanceData, session, dispatch]);
 
   return children as JSX.Element;
 };

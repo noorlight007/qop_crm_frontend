@@ -10,7 +10,7 @@ const baseQuery = fetchBaseQuery({
 
       // If localhost, set default subdomain
       if (hostname === "localhost" || hostname === "127.0.0.1") {
-        subdomainToSet = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "test-plus";
+        subdomainToSet = process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "";
       } else {
         const parts = hostname.split(".");
 
@@ -34,11 +34,11 @@ const baseQuery = fetchBaseQuery({
     return headers;
   },
 });
-export const authBaseApi = createApi({
-  reducerPath: "authBaseApi",
+export const publicBaseApi = createApi({
+  reducerPath: "publicBaseApi",
   baseQuery: baseQuery,
   tagTypes: [
-    //Appearance Settings
+    //Appearance Settings 
     "AppearanceSettings",
     "SetPassword",
     "ForgotPassword",

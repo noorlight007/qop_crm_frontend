@@ -17,6 +17,7 @@ import {
   Spinner,
 } from "reactstrap";
 import GetAddressModal from "../../../../CommonModals/GetAddressModal";
+import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
 
 const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Get case alias from URL params
@@ -25,6 +26,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -41,6 +43,10 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Add local error state
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+  const [
+  getPropertyEPCRating,{ isLoading: isEpcLoading},
+] = useGetPropertyEPCRatingMutation();
+
   useEffect(() => {
     if (propertyData) {
       dispatch(
@@ -49,6 +55,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           house_name_or_number: propertyData.house_name_or_number || "",
           address_one: propertyData.address_one || "",
           address_two: propertyData.address_two || "",
+          address_three: propertyData.address_three || "",
+          address_four: propertyData.address_four || "",
           city: propertyData.city || "",
           county: propertyData.county || "",
           region: propertyData.region || null,
@@ -150,6 +158,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
   const fetchAddressByPostcode = async (postcode: string) => {
     if (!postcode) return;
+    setIsSearchingPostcode(true);
+
     try {
       const response = await apiAddress.get(
         `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
@@ -158,13 +168,32 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setIsModalOpen(true);
     } catch (err) {
       console.error("Error looking up address:", err);
+    } finally {
+      setIsSearchingPostcode(false);
     }
+  };
+
+  const buildFullAddressForEPC = (property: {
+    address_one?: string;
+    address_two?: string;
+    address_three?: string;
+    address_four?: string;
+  }) => {
+    return [
+      property.address_one,
+      property.address_two,
+      property.address_three,
+      property.address_four,
+    ]
+      .filter((line) => Boolean(line && line.trim()))
+      .join(", ");
   };
 
   const handleSelectAddress = async (id: string) => {
     setIsFetchingAddress(true);
-    // Close the modal immediately after selection
     setIsModalOpen(false);
+
+    dispatch(updateProperty({ epc_rating: "" }));
 
     try {
       // Calling the specific get/{id} endpoint
@@ -185,16 +214,39 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           postcode: address.postcode,
           // Often building name/number are separate; we prioritize building_name
           house_name_or_number:
-            address.building_name || address.building_number || "",
+          address.building_name || address.building_number || "",
           address_one: address.line_1,
           address_two: address.line_2,
+          address_three: address.line_3,
+          address_four: address.line_4,
           city: address.town_or_city,
           county: address.county,
           country: mapCountryToFormValue(address.country),
         })
       );
 
-      // Clear validation errors for the fields we just filled
+      const fullAddressForEPC = buildFullAddressForEPC({
+        address_one: address.line_1,
+        address_two: address.line_2,
+        address_three: address.line_3,
+        address_four: address.line_4,
+      });
+
+      console.log("📍 EPC request address:", fullAddressForEPC);
+
+      const epcResponse = await getPropertyEPCRating({
+        case_alias: casealias as string,
+        property_postcode: address.postcode,
+        property_address: fullAddressForEPC,
+      }).unwrap();
+      console.log("✅ EPC Rating received:", epcResponse.epc_rating);
+
+      dispatch(
+        updateProperty({
+          epc_rating: epcResponse.epc_rating,
+        })
+      );
+
       setErrors((prev) => {
         const updatedErrors = { ...prev };
         delete updatedErrors.postcode;
@@ -205,7 +257,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       });
     } catch (error) {
       console.error("Error fetching detailed address:", error);
-      // Optional: add a toast or error state here to notify the user
     } finally {
       setIsFetchingAddress(false);
     }
@@ -256,12 +307,14 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     color="primary"
                     type="button"
                     className="mx-2 rounded"
-                    onClick={() =>
-                      fetchAddressByPostcode(propertyState.postcode)
-                    }
-                    disabled={isFetchingAddress}
+                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
+                    disabled={isFetchingAddress || isSearchingPostcode}
                   >
-                    Lookup
+                    {isSearchingPostcode ? (
+                      "Loading..."                      
+                    ) : (
+                      "Lookup"
+                    )}
                   </Button>
                   <Button
                     color="info"

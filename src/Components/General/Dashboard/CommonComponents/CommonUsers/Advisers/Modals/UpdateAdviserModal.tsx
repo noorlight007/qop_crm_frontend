@@ -3,7 +3,9 @@ import {
   AdviserInfoProps,
   UpdateAdviserModalProps,
 } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { User } from "react-feather";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -39,10 +41,20 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const target = e.target as HTMLInputElement | HTMLSelectElement;
+    const name = target.name;
+    let value: any;
+
+    // Handle file inputs separately
+    if (target instanceof HTMLInputElement && target.type === "file") {
+      value = target.files && target.files[0] ? target.files[0] : null;
+    } else {
+      value = target.value;
+    }
+
     const keys = name.split(".");
     setAdviserData((prev) => {
-      const updatedData = JSON.parse(JSON.stringify(prev));
+      const updatedData = JSON.parse(JSON.stringify(prev || {}));
       let current: any = updatedData;
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]]) current[keys[i]] = {};
@@ -51,12 +63,12 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
       current[keys[keys.length - 1]] = value;
       return updatedData as Partial<AdviserInfoProps>;
     });
-    setIsModified(true); // Set the form as modified
+    setIsModified(true);
   };
 
   const handleUpdateAdviser = async (
     adviserData: Partial<AdviserInfoProps>
-  ) => {
+  ): Promise<boolean> => {
     try {
       if (adviserData.alias) {
         // Only include email if it has changed
@@ -75,13 +87,57 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
             payload.user = restUser;
           }
         }
+        // Helper: detect File anywhere in the payload
+        const hasFile = (obj: any): boolean => {
+          if (!obj) return false;
+          if (obj instanceof File) return true;
+          if (typeof obj !== "object") return false;
+          for (const k of Object.keys(obj)) {
+            if (hasFile(obj[k])) return true;
+          }
+          return false;
+        };
+
+        // Helper: append nested object values to FormData using dot keys
+        const appendFormData = (
+          fd: FormData,
+          data: any,
+          parentKey?: string
+        ) => {
+          if (data instanceof File) {
+            if (parentKey) fd.append(parentKey, data);
+            return;
+          }
+          if (data === null || data === undefined) {
+            if (parentKey) fd.append(parentKey, "");
+            return;
+          }
+          if (typeof data === "object" && !(data instanceof Date)) {
+            Object.keys(data).forEach((key) => {
+              const value = data[key];
+              const formKey = parentKey ? `${parentKey}.${key}` : key;
+              appendFormData(fd, value, formKey);
+            });
+            return;
+          }
+          if (parentKey) fd.append(parentKey, String(data));
+        };
+
+        let payloadToSend: any = payload;
+        if (hasFile(payload)) {
+          const formData = new FormData();
+          appendFormData(formData, payload);
+          payloadToSend = formData;
+        }
+
         const result = await updateAdviserDetails({
-          payload,
+          payload: payloadToSend,
           adviserAlias: adviserData.alias,
         });
 
         if (result.data) {
           toast.success("Adviser update successfully.");
+          return true;
         } else if ("error" in result) {
           const errorMessage =
             (result.error as any)?.data?.user?.email?.[0] ||
@@ -98,21 +154,27 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
           } else {
             toast.error(errorMessage);
           }
+          return false;
         } else {
           toast.error("Invalid Request...");
+          return false;
         }
       }
     } catch (error) {
       toast.error("Failed to update adviser.");
       console.error("Error saving advisor:", error);
+      return false;
     }
+    return false;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleUpdateAdviser(adviserData); // Pass the updated data to the server
-    onSave(adviserData); // Pass the updated data to the parent component
-    toggle();
+    const success = await handleUpdateAdviser(adviserData); // Pass the updated data to the server
+    if (success) {
+      onSave(adviserData); // Pass the updated data to the parent component
+      toggle();
+    }
   };
 
   return (
@@ -250,7 +312,7 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                 </Input>
               </FormGroup>
             </Col>
-            {/* <Col md={6} xs={6}>
+            <Col md={6} xs={6}>
               <FormGroup>
                 <Label for="profile_image">Profile Image</Label>
                 <Input
@@ -263,7 +325,33 @@ const UpdateAdviserModal: React.FC<UpdateAdviserModalProps> = ({
                   className="mb-2"
                 />
               </FormGroup>
-            </Col> */}
+            </Col>
+            <Col
+              md={6}
+              xs={6}
+              className="d-flex justify-content-center align-items-center"
+            >
+              {adviserData.user?.profile_image ? (
+                <Image
+                  src={
+                    typeof adviserData.user.profile_image === "string"
+                      ? adviserData.user.profile_image
+                      : URL.createObjectURL(
+                          adviserData.user.profile_image as File
+                        )
+                  }
+                  alt="Profile Preview"
+                  width={80}
+                  height={80}
+                  className="rounded-circle border"
+                />
+              ) : (
+                <User
+                  size={80}
+                  className="text-secondary border rounded-circle"
+                />
+              )}
+            </Col>
           </Row>
         </ModalBody>
         <ModalFooter>

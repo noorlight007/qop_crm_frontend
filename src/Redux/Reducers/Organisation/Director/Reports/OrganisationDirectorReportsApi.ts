@@ -4,7 +4,7 @@ export const OrganisationDirectorReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganisationDirectorReports: builder.mutation({
       query: (params) => ({
-        url: "reports/organization/",
+        url: "/reports/organization/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
@@ -14,14 +14,16 @@ export const OrganisationDirectorReportsApi = baseApi.injectEndpoints({
     }),
     getOrganisationDirectorReportsView: builder.query({
       query: (params) => ({
-        url: "reports/organization-view/",
+        url: "/reports/organization-view/",
         method: "GET",
         params,
       }),
-      providesTags: ["NetworkReports"],
-    })
+      providesTags: ["OrganisationReports"],
+    }),
   }),
 });
 
-export const { useGetOrganisationDirectorReportsMutation, useGetOrganisationDirectorReportsViewQuery } =
-  OrganisationDirectorReportsApi;
+export const {
+  useGetOrganisationDirectorReportsMutation,
+  useGetOrganisationDirectorReportsViewQuery,
+} = OrganisationDirectorReportsApi;
