@@ -11,7 +11,6 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import "../../Organisations.css"; // Import external CSS for styling
 import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
 
 const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
@@ -51,8 +50,19 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 alt="Banner"
               />
             </div>
+            {/* Edit button moved to top-right of the card (not over the logo) */}
+            <div className="edit_icon position-absolute">
+              <Button
+                size="sm"
+                color="primary"
+                onClick={toggleUpdateModal}
+                title="Edit Organisation"
+              >
+                <i className="iconly-Edit icli"></i>
+              </Button>
+            </div>
             {/* Profile Image Positioned Over Banner */}
-            <div className="profile-container">
+            <div className="org-profile-container">
               <Image
                 width={120}
                 height={120}
@@ -60,11 +70,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 alt="Logo"
                 className="profile-pic object-fit-cover"
               />
-              <div className="edit_icon">
-                <Button onClick={toggleUpdateModal}>
-                  <i className="iconly-Edit icli"></i>
-                </Button>
-              </div>
+              {/* edit icon intentionally removed from inside the logo */}
             </div>
             <CardTitle
               tag="h3"

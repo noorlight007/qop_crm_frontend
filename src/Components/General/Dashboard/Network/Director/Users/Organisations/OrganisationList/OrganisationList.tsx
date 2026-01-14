@@ -21,7 +21,6 @@ import {
   Spinner,
 } from "reactstrap";
 import AddOrganisationModal from "../Modals/AddOrganisationModal";
-import "../Organisations.css";
 
 type OrganisationListProps = {
   maxItems?: number;
