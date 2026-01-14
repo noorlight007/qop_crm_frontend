@@ -129,14 +129,24 @@
       }
     }
     .dark-logo {
-      display: none;
-      @media (max-width: 1199px) {
-        display: block;
-      }
+      display: none !important;
     }
     .light-logo {
-      @media (max-width: 1199px) {
-        display: none;
+      display: block !important;
+    }
+  }
+}
+
+// Dark mode styles
+.dark-only,
+.dark-sidebar {
+  .page-header {
+    .logo-wrapper {
+      .dark-logo {
+        display: block !important;
+      }
+      .light-logo {
+        display: none !important;
       }
     }
   }
