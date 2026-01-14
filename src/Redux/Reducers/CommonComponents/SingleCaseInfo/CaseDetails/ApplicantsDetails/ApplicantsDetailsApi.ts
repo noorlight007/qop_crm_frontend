@@ -72,6 +72,14 @@ export const ApplicantsDetailsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["ApplicantsDetails", "CompanyDetails"],
     }),
+    getCompanyDetailsByRegistration: builder.query({
+      query: ({ case_alias, applicantDetails_alias, company_registration_number }) => ({
+        url: `/cases/${case_alias}/applicant/details/${applicantDetails_alias}/company-address/`,
+        method: "GET",
+        params: { company_registration_number },
+      }),
+      providesTags: ["ApplicantsDetails", "CompanyDetails"],
+    }),
   }),
 });
 
@@ -84,4 +92,5 @@ export const {
   useGetApplicantsQuery,
   useUpdateApplicantDetailsMutation,
   useUpdateCompanyDetailsMutation,
+  useGetCompanyDetailsByRegistrationQuery,
 } = ApplicantsDetailsApi;

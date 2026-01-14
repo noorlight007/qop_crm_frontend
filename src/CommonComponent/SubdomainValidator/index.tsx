@@ -1,10 +1,12 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+import { useEffect, useRef, useState } from "react";
 
 const SubdomainValidator = () => {
   const { data: session } = useSession();
+  const hasShownError = useRef(false);
+  const redirectTimeout = useRef<NodeJS.Timeout>();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     if (!session?.user) return;
@@ -48,19 +50,56 @@ const SubdomainValidator = () => {
         sessionSubdomain &&
         sessionSubdomain !== currentSubdomain
       ) {
-        // console.log("⚠️ Subdomain mismatch detected! Redirecting back...");
-        toast.error(
-          "Subdomain mismatch detected. Redirecting to the previous page."
-        );
-        // Use browser's back navigation to return to previous page
-        window.history.back();
+        // Prevent showing error multiple times
+        if (hasShownError.current) return;
+
+        hasShownError.current = true;
+        setIsRedirecting(true);
+
+        // Redirect to correct subdomain after a short delay
+        redirectTimeout.current = setTimeout(() => {
+          const protocol = window.location.protocol;
+          const port = window.location.port ? `:${window.location.port}` : "";
+          const newUrl = `${protocol}//${sessionSubdomain}.${hostnameWithoutPort.replace(
+            currentSubdomain + ".",
+            ""
+          )}${port}${window.location.pathname}${window.location.search}`;
+          window.location.href = newUrl;
+        }, 500);
       }
     };
 
     checkSubdomain();
+
+    return () => {
+      if (redirectTimeout.current) {
+        clearTimeout(redirectTimeout.current);
+      }
+    };
   }, [session]);
 
-  return null;
+  if (!isRedirecting) return null;
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 2147483647,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#ffffff",
+        color: "#d11200",
+        fontSize: 18,
+        fontWeight: 600,
+      }}
+    >
+      Checking Domain...
+    </div>
+  );
 };
 
 export default SubdomainValidator;

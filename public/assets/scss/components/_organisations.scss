@@ -1,5 +1,5 @@
 /* OrganizationBanner css */
-.profile-container {
+.org-profile-container {
   position: absolute;
   top: 140px;
   left: 80px;
@@ -15,12 +15,11 @@
 
 .edit_icon {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
+  top: 10px;
+  right: 10px;
   border-radius: 50%;
   font-size: 14px;
   box-shadow: none;
-  border: 2px solid var(--primary-color);
 }
 
 .edit_icon button {
