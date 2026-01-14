@@ -26,6 +26,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -157,6 +158,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
   const fetchAddressByPostcode = async (postcode: string) => {
     if (!postcode) return;
+    setIsSearchingPostcode(true);
+
     try {
       const response = await apiAddress.get(
         `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
@@ -165,6 +168,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setIsModalOpen(true);
     } catch (err) {
       console.error("Error looking up address:", err);
+    } finally {
+      setIsSearchingPostcode(false);
     }
   };
 
@@ -186,8 +191,9 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
   const handleSelectAddress = async (id: string) => {
     setIsFetchingAddress(true);
-    // Close the modal immediately after selection
     setIsModalOpen(false);
+
+    dispatch(updateProperty({ epc_rating: "" }));
 
     try {
       // Calling the specific get/{id} endpoint
@@ -301,12 +307,14 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     color="primary"
                     type="button"
                     className="mx-2 rounded"
-                    onClick={() =>
-                      fetchAddressByPostcode(propertyState.postcode)
-                    }
-                    disabled={isFetchingAddress}
+                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
+                    disabled={isFetchingAddress || isSearchingPostcode}
                   >
-                    Lookup
+                    {isSearchingPostcode ? (
+                      "Loading..."                      
+                    ) : (
+                      "Lookup"
+                    )}
                   </Button>
                   <Button
                     color="info"
