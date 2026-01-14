@@ -43,14 +43,32 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
   useEffect(() => {
     if (organisationData && isOpen) {
       setFormData({
-        name: organisationData?.organization?.name || "",
-        email: organisationData?.organization?.email || "",
-        primary_mobile: organisationData?.organization?.primary_mobile || "",
-        other_contact: organisationData?.organization?.other_contact || "",
-        website: organisationData?.organization?.website || "",
-        contact_person: organisationData?.organization?.contact_person || "",
+        name:
+          organisationData?.organization?.name ?? organisationData?.name ?? "",
+        email:
+          organisationData?.organization?.email ??
+          organisationData?.email ??
+          "",
+        primary_mobile:
+          organisationData?.organization?.primary_mobile ??
+          organisationData?.primary_mobile ??
+          "",
+        other_contact:
+          organisationData?.organization?.other_contact ??
+          organisationData?.other_contact ??
+          "",
+        website:
+          organisationData?.organization?.website ??
+          organisationData?.website ??
+          "",
+        contact_person:
+          organisationData?.organization?.contact_person ??
+          organisationData?.contact_person ??
+          "",
       });
-      setOldName(organisationData.name || "");
+      setOldName(
+        organisationData?.name ?? organisationData?.organization?.name ?? ""
+      );
     }
   }, [organisationData, isOpen]);
 
@@ -92,7 +110,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
         toast.success("Organisation updated successfully!");
         // Redirect if name changed
         if (formData.name !== oldName) {
-          router.push("/dashboard/network/organisations");
+          router.push("/dashboard/network/director/organisations");
           toast.warning(
             "Due to the name change, redirected to the Organisations page."
           );

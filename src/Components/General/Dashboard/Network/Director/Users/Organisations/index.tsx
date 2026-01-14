@@ -1,6 +1,5 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import OrganisationList from "./OrganisationList/OrganisationList";
-import "./Organisations.css";
 
 const NetworkDirectorOrganisationsContainer = () => {
   return (
