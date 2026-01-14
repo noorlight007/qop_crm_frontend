@@ -18,10 +18,12 @@ export const OrganisationDirectorReportsApi = baseApi.injectEndpoints({
         method: "GET",
         params,
       }),
-      providesTags: ["NetworkReports"],
-    })
+      providesTags: ["OrganisationReports"],
+    }),
   }),
 });
 
-export const { useGetOrganisationDirectorReportsMutation, useGetOrganisationDirectorReportsViewQuery } =
-  OrganisationDirectorReportsApi;
+export const {
+  useGetOrganisationDirectorReportsMutation,
+  useGetOrganisationDirectorReportsViewQuery,
+} = OrganisationDirectorReportsApi;

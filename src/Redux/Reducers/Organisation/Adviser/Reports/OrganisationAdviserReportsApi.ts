@@ -1,6 +1,6 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const NetworkReportsApi = baseApi.injectEndpoints({
+export const OrganisationAdviserReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganisationAdviserReports: builder.mutation({
       query: (params) => ({
@@ -17,9 +17,12 @@ export const NetworkReportsApi = baseApi.injectEndpoints({
         method: "GET",
         params,
       }),
-      providesTags: ["NetworkReports"],
-    })
+      providesTags: ["OrganisationAdviserReports"],
+    }),
   }),
 });
 
-export const { useGetOrganisationAdviserReportsMutation, useGetOrganisationAdviserReportsViewQuery } = NetworkReportsApi;
+export const {
+  useGetOrganisationAdviserReportsMutation,
+  useGetOrganisationAdviserReportsViewQuery,
+} = OrganisationAdviserReportsApi;

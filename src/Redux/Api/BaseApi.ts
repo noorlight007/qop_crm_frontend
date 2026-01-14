@@ -267,7 +267,7 @@ export const baseApi = createApi({
     //Organisation Adviser end
 
     //Organisation Admin and support staff start
-    "OrganisationStaffReports",
+    "OrganisationAdminReports",
     //Organisation Admin and support staff end
 
     // Client start
