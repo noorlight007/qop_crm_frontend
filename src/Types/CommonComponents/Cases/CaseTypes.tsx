@@ -119,6 +119,8 @@ export interface AddNewCaseModalProps {
   isOpen: boolean;
   toggle: () => void;
   leadId?: number;
+  /** Optional display name for the preselected lead */
+  leadName?: string;
   onCaseCreated?: (caseAlias: string) => void;
 }
 

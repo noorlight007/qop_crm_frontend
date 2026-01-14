@@ -69,6 +69,13 @@ const NetworkDirectorMenu: MenuItem[] = [
           },
         ],
       },
+      {
+        title: "Support Tickets",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/dashboard/network/director/support-ticket",
+      },
       // {
       //   title: "Reports & Tasks",
       //   type: "sub",
@@ -141,6 +148,13 @@ const NetworkAdviserMenu: MenuItem[] = [
             type: "link",
           },
         ],
+      },
+      {
+        title: "Support Tickets",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/dashboard/network/adviser/support-ticket",
       },
       // {
       //   title: "Users",
@@ -231,6 +245,13 @@ const OrganisationDirectorMenu: MenuItem[] = [
           },
         ],
       },
+      {
+        title: "Support Tickets",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/dashboard/organisation/director/support-ticket",
+      },
       // {
       //   title: "Reports & Tasks",
       //   type: "sub",
@@ -300,6 +321,14 @@ const OrganisationAdviserMenu: MenuItem[] = [
           },
         ],
       },
+      {
+        title: "Support Tickets",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/dashboard/organisation/adviser/support-ticket",
+      },
+
       // {
       //   title: "Users",
       //   type: "sub",
@@ -362,6 +391,13 @@ const OrganisationAdminMenu: MenuItem[] = [
         type: "link",
         lanClass: "lan-3",
         path: "/dashboard/organisation/admin/adviserclient",
+      },
+      {
+        title: "Support Tickets",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/dashboard/organisation/admin/support-ticket",
       },
       // {
       //   title: "Document Management",

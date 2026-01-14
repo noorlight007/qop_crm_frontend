@@ -25,6 +25,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,
   toggle,
   leadId,
+  leadName,
   onCaseCreated,
 }) => {
   const [leads, setLeads] = useState<any[]>([]);
@@ -112,6 +113,31 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       setFormData((prev) => ({ ...prev, lead: leadId }));
     }
   }, [leadId]);
+
+  // If a specific leadId/leadName is provided (e.g. from AddLeadModal),
+  // ensure the local leads list contains it so the select can display
+  // the real lead name immediately.
+  useEffect(() => {
+    if (!leadId) return;
+
+    setLeads((prev) => {
+      const exists = prev?.some((lead: any) => {
+        const existingId = lead?.id ?? lead?.user?.id;
+        return existingId === leadId;
+      });
+
+      if (exists) return prev;
+
+      const displayName = leadName || "Selected Lead";
+
+      const syntheticLead = {
+        id: leadId,
+        name: displayName,
+      };
+
+      return [...(prev || []), syntheticLead];
+    });
+  }, [leadId, leadName]);
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {

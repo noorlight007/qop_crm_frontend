@@ -564,6 +564,15 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         isOpen={isCaseModalOpen}
         toggle={toggleCaseModal}
         leadId={createdLeadId || undefined}
+        leadName={
+          formData.firstName || formData.lastName
+            ? `${formData.title ? formData.title + " " : ""}${
+                formData.firstName
+              }${formData.middleName ? " " + formData.middleName : ""} ${
+                formData.lastName
+              }`
+            : undefined
+        }
         onCaseCreated={handleCaseCreated}
       />
     </Modal>
