@@ -55,6 +55,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
   
   const [houseNumber, setHouseNumber] = useState<string>("");
   const [address1, setAddress1] = useState<string>("");
@@ -194,6 +195,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
   const fetchAddressByPostcode = async (postcode: string) => {
     if (!postcode) return;
+    setIsSearchingPostcode(true);
     try {
       const response = await apiAddress.get(
         `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
@@ -202,6 +204,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       setIsModalOpen(true);
     } catch (err) {
       console.error("Error looking up address:", err);
+    } finally {
+      setIsSearchingPostcode(false);
     }
   };
 
@@ -372,8 +376,13 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     type="button"
                     className="text-nowrap"
                     onClick={() => fetchAddressByPostcode(postcode)}
+                    disabled={isFetchingAddress || isSearchingPostcode}
                   >
-                    Lookup
+                    {isSearchingPostcode ? (
+                      "Loading..."
+                    ) : (
+                      "Lookup"
+                    )}
                   </Button>
                 </InputGroup>
               </FormGroup>
