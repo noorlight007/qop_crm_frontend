@@ -1,6 +1,15 @@
 "use client";
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetNetworkAdviserReportsMutation, useGetNetworkAdviserReportsViewQuery } from "@/Redux/Reducers/Network/Adviser/Reports/NetworkAdviserReportsApi";
+import {
+  caseCategories,
+  caseStages,
+  dateFilters,
+  reportTypes,
+} from "@/Data/General/Dashboard/CommonData/ReportFilterChoiceFields";
+import {
+  useGetNetworkAdviserReportsMutation,
+  useGetNetworkAdviserReportsViewQuery,
+} from "@/Redux/Reducers/Network/Adviser/Reports/NetworkAdviserReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -41,61 +50,22 @@ const NetworkAdviserReportsContainer: React.FC = () => {
 
   const activePayload = {
     ...filters,
-    ...(filters.date_filter === "range" ? { 
-      from_date: dateRange.from_date, 
-      to_date: dateRange.to_date 
-    } : {})
+    ...(filters.date_filter === "range"
+      ? {
+          from_date: dateRange.from_date,
+          to_date: dateRange.to_date,
+        }
+      : {}),
   };
-  
-  const { 
-    data: getNetworkAdviserReportsViewData, 
+
+  const {
+    data: getNetworkAdviserReportsViewData,
     isLoading: isViewLoading,
     isFetching,
-    error: viewError 
+    error: viewError,
   } = useGetNetworkAdviserReportsViewQuery(activePayload, {
-    skip: !filters.date_filter 
+    skip: !filters.date_filter,
   });
-
-  const filterOptions = {
-    dateFilters: [
-      { value: "today", label: "Today" },
-      { value: "this_week", label: "This Week" },
-      { value: "this_month", label: "This Month" },
-      { value: "this_year", label: "This Year" },
-      { value: "range", label: "Custom Range" },
-    ],
-    caseCategories: [
-      { value: "", label: "All Categories" },
-      { value: "MORTGAGE", label: "Mortgage" },
-      { value: "PROTECTION", label: "Protection" },
-      { value: "GENERAL_INSURANCE", label: "General Insurance" },
-    ],
-    caseStages: [
-      { value: "", label: "All Stages" },
-      { value: "ENQUIRY", label: "Enquiry" },
-      { value: "FACT_FIND", label: "Fact Find" },
-      {
-        value: "RESEARCH_COMPLIANCE_CHECK",
-        label: "Research & Compliance Check",
-      },
-      { value: "DECISION_IN_PRINCIPLE", label: "Decision in Principle" },
-      {
-        value: "FULL_MORTGAGE_APPLICATION",
-        label: "Full Mortgage Application",
-      },
-      { value: "OFFER_FROM_BANK", label: "Offer from Bank" },
-      { value: "LEGAL", label: "Legal" },
-      { value: "COMPLETION", label: "Completion" },
-      { value: "FUTURE_OPPORTUNITY", label: "Future Opportunity" },
-      { value: "NOT_PROCEED", label: "Not Proceed" },
-    ],
-    reportTypes: [
-      { value: "", label: "All Types" },
-      { value: "standard", label: "Standard" },
-      { value: "submitted", label: "Submitted" },
-      { value: "completed", label: "Completed" },
-    ],
-  };
 
   // Get current date and calculate date range (one year from today)
   const getCurrentDateLimits = () => {
@@ -349,7 +319,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                           <option value="" disabled>
                             Select Date Range
                           </option>
-                          {filterOptions.dateFilters.map((option) => (
+                          {dateFilters?.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
@@ -421,7 +391,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                           }
                           className="form-select"
                         >
-                          {filterOptions.caseCategories.map((option) => (
+                          {caseCategories?.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
@@ -444,7 +414,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                           }
                           className="form-select"
                         >
-                          {filterOptions.caseStages.map((option) => (
+                          {caseStages?.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
@@ -467,7 +437,7 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                           }
                           className="form-select"
                         >
-                          {filterOptions.reportTypes.map((option) => (
+                          {reportTypes?.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
                             </option>
@@ -481,45 +451,60 @@ const NetworkAdviserReportsContainer: React.FC = () => {
                     <Col>
                       <Card className="shadow-sm border-0">
                         <CardHeader className="bg-white border-bottom">
-                          <h5 className="mb-0 text-dark fw-bold">Report Results</h5>
+                          <h5 className="mb-0 text-dark fw-bold">
+                            Report Results
+                          </h5>
                         </CardHeader>
                         <CardBody>
                           {isViewLoading || isFetching ? (
                             <div className="text-center p-5">
                               <Spinner color="primary" />
-                              <p className="mt-2 text-muted">Updating report data...</p>
+                              <p className="mt-2 text-muted">
+                                Updating report data...
+                              </p>
                             </div>
-                          ) : getNetworkAdviserReportsViewData && getNetworkAdviserReportsViewData.length > 0 ? (
+                          ) : getNetworkAdviserReportsViewData &&
+                            getNetworkAdviserReportsViewData.length > 0 ? (
                             <div className="table-responsive">
                               <table className="table table-hover align-middle">
                                 <thead className="table-light">
                                   <tr>
                                     <th className="fw-bold">Case Number</th>
                                     <th className="fw-bold">Adviser Name</th>
-                                    <th className="fw-bold">Type of Mortgage/Insurance</th>
+                                    <th className="fw-bold">
+                                      Type of Mortgage/Insurance
+                                    </th>
                                     <th className="fw-bold">LTV (%)</th>
                                     <th className="fw-bold">Current Stage</th>
                                     <th className="fw-bold">Lender Name</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {getNetworkAdviserReportsViewData.map((item: any, index: number) => (
-                                    <tr key={index}>
-                                      <td className="text-primary fw-medium">{item.case_number || "N/A"}</td>
-                                      <td>{item.adviser_name || "N/A"}</td>
-                                      <td>{item.mortgage_type || "N/A"}</td>
-                                      <td>{item.ltv ? `${item.ltv}` : "N/A"}</td>
-                                      <td>{item.current_stage || "N/A"}</td>
-                                      <td>{item.lender_name || "N/A"}</td>
-                                    </tr>
-                                  ))}
+                                  {getNetworkAdviserReportsViewData.map(
+                                    (item: any, index: number) => (
+                                      <tr key={index}>
+                                        <td className="text-primary fw-medium">
+                                          {item.case_number || "N/A"}
+                                        </td>
+                                        <td>{item.adviser_name || "N/A"}</td>
+                                        <td>{item.mortgage_type || "N/A"}</td>
+                                        <td>
+                                          {item.ltv ? `${item.ltv}` : "N/A"}
+                                        </td>
+                                        <td>{item.current_stage || "N/A"}</td>
+                                        <td>{item.lender_name || "N/A"}</td>
+                                      </tr>
+                                    )
+                                  )}
                                 </tbody>
                               </table>
                             </div>
                           ) : (
                             <div className="text-center p-5 border rounded bg-light">
                               <i className="fa fa-folder-open fa-3x text-muted mb-3"></i>
-                              <p className="text-muted">No data found for the selected filters.</p>
+                              <p className="text-muted">
+                                No data found for the selected filters.
+                              </p>
                             </div>
                           )}
                         </CardBody>
