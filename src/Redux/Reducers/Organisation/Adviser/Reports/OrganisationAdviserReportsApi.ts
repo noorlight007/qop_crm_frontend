@@ -4,7 +4,7 @@ export const OrganisationAdviserReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganisationAdviserReports: builder.mutation({
       query: (params) => ({
-        url: "reports/adviser/",
+        url: "/reports/adviser/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
@@ -13,7 +13,7 @@ export const OrganisationAdviserReportsApi = baseApi.injectEndpoints({
     }),
     getOrganisationAdviserReportsView: builder.query({
       query: (params) => ({
-        url: "reports/adviser-view/",
+        url: "/reports/adviser-view/",
         method: "GET",
         params,
       }),

@@ -4,7 +4,7 @@ export const OrganisationAdminReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgAdminReports: builder.mutation({
       query: (params) => ({
-        url: "reports/organisation-admin/",
+        url: "/reports/organisation-admin/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
@@ -14,7 +14,7 @@ export const OrganisationAdminReportsApi = baseApi.injectEndpoints({
     }),
     getOrgAdminReportsView: builder.query({
       query: (params) => ({
-        url: "reports/organisation-admin-view/",
+        url: "/reports/organisation-admin-view/",
         method: "GET",
         params,
       }),
