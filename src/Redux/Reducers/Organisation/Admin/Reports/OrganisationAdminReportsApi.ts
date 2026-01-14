@@ -4,22 +4,22 @@ export const OrganisationAdminReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgAdminReports: builder.mutation({
       query: (params) => ({
-        url: "reports/organization-staff/",
+        url: "/reports/organisation-admin/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
       }),
 
-      invalidatesTags: ["OrganisationStaffReports"],
+      invalidatesTags: ["OrganisationAdminReports"],
     }),
     getOrgAdminReportsView: builder.query({
       query: (params) => ({
-        url: "reports/organization-staff-view/",
+        url: "/reports/organisation-admin-view/",
         method: "GET",
         params,
       }),
 
-      providesTags: ["NetworkAdviserReports"],
+      providesTags: ["OrganisationAdminReports"],
     }),
   }),
 });

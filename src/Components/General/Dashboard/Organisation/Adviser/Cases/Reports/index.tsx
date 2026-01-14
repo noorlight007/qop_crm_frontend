@@ -1,6 +1,9 @@
 "use client";
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import { useGetOrganisationAdviserReportsMutation, useGetOrganisationAdviserReportsViewQuery } from "@/Redux/Reducers/Organisation/Adviser/Reports/OrganisationAdviserReportsApi";
+import {
+  useGetOrganisationAdviserReportsMutation,
+  useGetOrganisationAdviserReportsViewQuery,
+} from "@/Redux/Reducers/Organisation/Adviser/Reports/OrganisationAdviserReportsApi";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -41,19 +44,21 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
 
   const activePayload = {
     ...filters,
-    ...(filters.date_filter === "range" ? { 
-      from_date: dateRange.from_date, 
-      to_date: dateRange.to_date 
-    } : {})
+    ...(filters.date_filter === "range"
+      ? {
+          from_date: dateRange.from_date,
+          to_date: dateRange.to_date,
+        }
+      : {}),
   };
-  
-  const { 
-    data: getGetOrganisationAdviserReportsViewData, 
+
+  const {
+    data: getGetOrganisationAdviserReportsViewData,
     isLoading: isViewLoading,
     isFetching,
-    error: viewError 
+    error: viewError,
   } = useGetOrganisationAdviserReportsViewQuery(activePayload, {
-    skip: !filters.date_filter 
+    skip: !filters.date_filter,
   });
 
   const filterOptions = {
@@ -481,45 +486,61 @@ const OrganisationAdviserReportsContainer: React.FC = () => {
                     <Col>
                       <Card className="shadow-sm border-0">
                         <CardHeader className="bg-white border-bottom">
-                          <h5 className="mb-0 text-dark fw-bold">Report Results</h5>
+                          <h5 className="mb-0 text-dark fw-bold">
+                            Report Results
+                          </h5>
                         </CardHeader>
                         <CardBody>
                           {isViewLoading || isFetching ? (
                             <div className="text-center p-5">
                               <Spinner color="primary" />
-                              <p className="mt-2 text-muted">Updating report data...</p>
+                              <p className="mt-2 text-muted">
+                                Updating report data...
+                              </p>
                             </div>
-                          ) : getGetOrganisationAdviserReportsViewData && getGetOrganisationAdviserReportsViewData.length > 0 ? (
+                          ) : getGetOrganisationAdviserReportsViewData &&
+                            getGetOrganisationAdviserReportsViewData.length >
+                              0 ? (
                             <div className="table-responsive">
                               <table className="table table-hover align-middle">
                                 <thead className="table-light">
                                   <tr>
                                     <th className="fw-bold">Case Number</th>
                                     <th className="fw-bold">Adviser Name</th>
-                                    <th className="fw-bold">Type of Mortgage/Insurance</th>
+                                    <th className="fw-bold">
+                                      Type of Mortgage/Insurance
+                                    </th>
                                     <th className="fw-bold">LTV (%)</th>
                                     <th className="fw-bold">Current Stage</th>
                                     <th className="fw-bold">Lender Name</th>
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {getGetOrganisationAdviserReportsViewData.map((item: any, index: number) => (
-                                    <tr key={index}>
-                                      <td className="text-primary fw-medium">{item.case_number || "N/A"}</td>
-                                      <td>{item.adviser_name || "N/A"}</td>
-                                      <td>{item.mortgage_type || "N/A"}</td>
-                                      <td>{item.ltv ? `${item.ltv}` : "N/A"}</td>
-                                      <td>{item.current_stage || "N/A"}</td>
-                                      <td>{item.lender_name || "N/A"}</td>
-                                    </tr>
-                                  ))}
+                                  {getGetOrganisationAdviserReportsViewData.map(
+                                    (item: any, index: number) => (
+                                      <tr key={index}>
+                                        <td className="text-primary fw-medium">
+                                          {item.case_number || "N/A"}
+                                        </td>
+                                        <td>{item.adviser_name || "N/A"}</td>
+                                        <td>{item.mortgage_type || "N/A"}</td>
+                                        <td>
+                                          {item.ltv ? `${item.ltv}` : "N/A"}
+                                        </td>
+                                        <td>{item.current_stage || "N/A"}</td>
+                                        <td>{item.lender_name || "N/A"}</td>
+                                      </tr>
+                                    )
+                                  )}
                                 </tbody>
                               </table>
                             </div>
                           ) : (
                             <div className="text-center p-5 border rounded bg-light">
                               <i className="fa fa-folder-open fa-3x text-muted mb-3"></i>
-                              <p className="text-muted">No data found for the selected filters.</p>
+                              <p className="text-muted">
+                                No data found for the selected filters.
+                              </p>
                             </div>
                           )}
                         </CardBody>

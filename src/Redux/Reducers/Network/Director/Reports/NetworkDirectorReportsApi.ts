@@ -4,7 +4,7 @@ export const NetworkDirectorReportsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getNetworkDirectorReports: builder.mutation({
       query: (params) => ({
-        url: "reports/network/",
+        url: "/reports/network/",
         method: "GET",
         params,
         responseHandler: (response) => response.blob(),
@@ -13,7 +13,7 @@ export const NetworkDirectorReportsApi = baseApi.injectEndpoints({
     }),
     getNetworkDirectorReportsView: builder.query({
       query: (params) => ({
-        url: "reports/network-view/",
+        url: "/reports/network-view/",
         method: "GET",
         params,
       }),
