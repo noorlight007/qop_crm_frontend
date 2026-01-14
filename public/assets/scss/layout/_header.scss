@@ -91,11 +91,10 @@
       height: 38px;
       background-color: var(--theme-default);
       transition: 0.3s all;
-      color: $white;
+      color: var(--white) !important;
       @media (max-width: 1199px) {
-        // background-color: rgba($primary-color, 0.2);
         background-color: var(--theme-default);
-        color: var(--theme-default);
+        color: var(--white);
       }
       @media (max-width: 767.98px) {
         width: 35px;
@@ -104,17 +103,17 @@
       .svg-color {
         stroke: $white;
         @media (max-width: 1199px) {
-          stroke: var(--theme-default);
+          stroke: $white;
         }
       }
       &:hover {
-        background-color: var(--body-color);
+        background-color: color-mix(in srgb, var(--theme-default) 60%, black);
         cursor: pointer;
         @media (max-width: 1199px) {
-          background-color: var(--theme-default);
+          background-color: color-mix(in srgb, var(--theme-default) 60%, black);
         }
         .svg-color {
-          stroke: var(--theme-default) !important;
+          stroke: $white !important;
         }
       }
     }
