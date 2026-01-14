@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import {
   useAddCompanyDetailsMutation,
+  useGetCompanyDetailsByRegistrationQuery,
   useGetCompanyDetailsQuery,
   useUpdateCompanyDetailsMutation,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
@@ -56,6 +57,20 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     country: "",
     directors_shareholders: [],
   });
+
+  const [shouldFetch, setShouldFetch] = useState<boolean>(false);
+  const {
+    data: companyDetails,
+    isLoading: isFetchingCompanyDetails,
+    error,
+  } = useGetCompanyDetailsByRegistrationQuery(
+    {
+      case_alias,
+      applicantDetails_alias,
+      company_registration_number: formData.company_registration_number,
+    },
+    { skip: !shouldFetch || !formData.company_registration_number }
+  );
 
   useEffect(() => {
     if (data && data[0]) {
@@ -201,10 +216,100 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     }
   };
 
-  const fetchCompanyDetails = ( company_registration_number : string) => {
-    if (!company_registration_number) return;
-    console.log("Company Registration Number: ", company_registration_number);
-  }
+  const fetchCompanyDetails = () => {
+    if (!formData.company_registration_number) {
+      toast.error("Please enter a company registration number");
+      return;
+    }
+
+    setFormData((prev) => ({
+      company_name: "",
+      company_registration_number: prev.company_registration_number,
+      date_of_incorporation: null,
+      company_type: "PRIVATE_LIMITED",
+      trade_business_type: "",
+      sic_code: "",
+      is_spv: false,
+      postcode: "",
+      house_number_or_name: "",
+      address_line1: "",
+      city: "",
+      county: "",
+      country: "",
+      directors_shareholders: [],
+    }));
+    setNumberOfDirectors("0");
+    setShouldFetch(true);
+  };
+
+  // Map company type from API to your form values
+  const mapCompanyType = (apiCompanyType: string): string => {
+    if (!apiCompanyType) return "PRIVATE_LIMITED";
+
+    const typeMapping: Record<string, string> = {
+      "Public Limited Company": "PUBLIC_LIMITED",
+      "Private Limited Company": "PRIVATE_LIMITED",
+      "Limited Liability Partnership": "LIMITED_LIABILITY_PARTNERSHIP",
+      Partnership: "PARTNERSHIP",
+      "Sole Trader": "SOLE_TRADER",
+    };
+
+    return typeMapping[apiCompanyType] || "PRIVATE_LIMITED";
+  };
+
+  useEffect(() => {
+    if (companyDetails && shouldFetch) {
+      console.log("API Response Data:", companyDetails);
+
+      const apiOfficers = companyDetails.number_of_directors_shareholders;
+      let mappedDirectors: any[] = [];
+
+      if (
+        apiOfficers &&
+        apiOfficers.officers &&
+        Array.isArray(apiOfficers.officers)
+      ) {
+        mappedDirectors = apiOfficers.officers.map((officer: any) => {
+          const role = officer.role;
+
+          return {
+            full_name: officer.name || "",
+            percentage_share: "",
+            role: role,
+          };
+        });
+      }
+
+      setFormData({
+        company_name: companyDetails.company_name || "",
+        company_registration_number: formData.company_registration_number,
+        date_of_incorporation: companyDetails.date_of_incorporation || null,
+        company_type: mapCompanyType(companyDetails.company_type) || "PRIVATE_LIMITED",
+        trade_business_type: companyDetails.trade_business_type || "",
+        sic_code: companyDetails.sic_codes?.join(", ") || "",
+        is_spv: formData.is_spv, // Keep this as user might have set it
+        postcode: companyDetails.postcode || "",
+        house_number_or_name: companyDetails.house_number_or_name || "",
+        address_line1: companyDetails.address_line1 || "",
+        city: companyDetails.city || "",
+        county: companyDetails.county || "",
+        country: companyDetails.country || "",
+        directors_shareholders: mappedDirectors,
+        number_of_directors_shareholders: mappedDirectors.length,
+      });
+
+      setNumberOfDirectors(String(mappedDirectors.length));
+      setShouldFetch(false);
+    }
+  }, [companyDetails, shouldFetch]);
+
+  useEffect(() => {
+    if (error && shouldFetch) {
+      console.error("Error:", error);
+      toast.error("Failed to fetch company details");
+      setShouldFetch(false);
+    }
+  }, [error, shouldFetch]);
 
   if (isLoading)
     return (
@@ -224,6 +329,32 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
+                <Label className="small">Company Registration Number*</Label>
+                <InputGroup>
+                  <Input
+                    type="text"
+                    name="company_registration_number"
+                    value={formData.company_registration_number}
+                    onChange={handleChange}
+                    required
+                  />
+                  <Button
+                    color="primary"
+                    type="button"
+                    className="mx-2 rounded"
+                    onClick={fetchCompanyDetails}
+                    disabled={
+                      isFetchingCompanyDetails ||
+                      !formData.company_registration_number
+                    }
+                  >
+                    {isFetchingCompanyDetails ? "Fetching..." : "Get Details"}
+                  </Button>
+                </InputGroup>
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
                 <Label className="small">Company Name*</Label>
                 <Input
                   type="text"
@@ -232,31 +363,6 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   onChange={handleChange}
                   required
                 />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label className="small">Company Registration Number*</Label>
-                <InputGroup>
-                <Input
-                  type="text"
-                  name="company_registration_number"
-                  value={formData.company_registration_number}
-                  onChange={handleChange}
-                  required
-                />
-                <Button
-                  color="primary"
-                  type="button"
-                  className="mx-2 rounded"
-                  onClick={() =>
-                    fetchCompanyDetails(formData.company_registration_number)
-                  }
-                >
-                  Get Details
-                </Button>
-                </InputGroup>
-                
               </FormGroup>
             </Col>
           </Row>
@@ -461,15 +567,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                       <FormGroup>
                         <Label className="small">Role</Label>
                         <Input
-                          type="select"
+                          type="text"
                           name="role"
                           value={d.role}
                           onChange={(e) => handleDirectorChange(i, e)}
-                        >
-                          <option value="DIRECTOR">Director</option>
-                          <option value="SHAREHOLDER">Shareholder</option>
-                          <option value="OTHER">Other</option>
-                        </Input>
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
