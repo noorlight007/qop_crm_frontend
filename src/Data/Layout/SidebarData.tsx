@@ -70,7 +70,7 @@ const NetworkDirectorMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Support Tickets",
+        title: "Support Ticket",
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
@@ -150,7 +150,7 @@ const NetworkAdviserMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Support Tickets",
+        title: "Support Ticket",
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
@@ -246,7 +246,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Support Tickets",
+        title: "Support Ticket",
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
@@ -322,7 +322,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Support Tickets",
+        title: "Support Ticket",
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
@@ -393,7 +393,7 @@ const OrganisationAdminMenu: MenuItem[] = [
         path: "/dashboard/organisation/admin/adviserclient",
       },
       {
-        title: "Support Tickets",
+        title: "Support Ticket",
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
