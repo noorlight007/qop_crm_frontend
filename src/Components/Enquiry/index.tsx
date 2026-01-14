@@ -6,7 +6,7 @@ const EnquiryContainer: React.FC = () => {
     <Container fluid>
       <Row className="page-title">
         <Col sm="6">
-          <h2>Enquirie</h2>
+          <h2>Enquiry</h2>
           <p className="mb-0 text-title-gray">
             Please fill out the form below to submit your enquiry.
           </p>
@@ -16,7 +16,7 @@ const EnquiryContainer: React.FC = () => {
             <BreadcrumbItem>
               <i className="iconly-Home icli svg-color" />
             </BreadcrumbItem>
-            <BreadcrumbItem>Enquirie</BreadcrumbItem>
+            <BreadcrumbItem>Enquiry</BreadcrumbItem>
           </Breadcrumb>
         </Col>
       </Row>
