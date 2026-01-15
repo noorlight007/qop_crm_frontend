@@ -1,4 +1,6 @@
 import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
+import Image from "next/image";
+import { User } from "react-feather";
 import { Card, CardBody } from "reactstrap";
 
 const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
@@ -42,7 +44,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
                     <div style={{ width: "80%" }} className="d-flex gap-2">
                       <div
                         className="skeleton-loading mb-2 rounded-circle"
-                        style={{ width: "30px", height: "30px" }}
+                        style={{ width: "40px", height: "40px" }}
                       />
                       <div
                         className="skeleton-loading"
@@ -64,38 +66,71 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
             className="space-y-4"
             style={{ height: "325px", overflow: "auto" }}
           >
-            {organisationDirectorDashboardData.top_advisers.map((data) => (
-              <div
-                key={data?.rank}
-                className="d-flex justify-content-between mt-4 px-3 py-1"
-              >
-                <div className="d-flex justify-content-start gap-2">
-                  <div className="d-flex align-items-center justify-content-center">
-                    <span
-                      className="d-flex align-items-center justify-content-center rounded-circle text-white bg-primary fw-medium small"
-                      style={{ width: "25px", height: "25px" }}
+            {organisationDirectorDashboardData.top_advisers.map((data) => {
+              return (
+                <div
+                  key={data?.rank}
+                  className="d-flex justify-content-between align-items-center mt-4 px-3 py-1"
+                >
+                  <div className="d-flex justify-content-start gap-2 align-items-center">
+                    <div
+                      style={{ position: "relative", width: 40, height: 40 }}
                     >
-                      {data?.rank}
-                    </span>
+                      {data?.profile_image ? (
+                        <Image
+                          src={data.profile_image}
+                          alt={data?.name ?? "Profile Image"}
+                          width={35}
+                          height={35}
+                          className="rounded-circle"
+                          style={{ objectFit: "cover" }}
+                        />
+                      ) : (
+                        <div
+                          className="d-flex align-items-center justify-content-center rounded-circle bg-secondary"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          <User size={35} className="text-white" />
+                        </div>
+                      )}
+
+                      <span
+                        className="d-flex align-items-center justify-content-center rounded-circle text-white bg-primary fw-medium small"
+                        style={{
+                          width: 20,
+                          height: 20,
+                          position: "absolute",
+                          right: -6,
+                          top: -6,
+                          fontSize: 12,
+                        }}
+                      >
+                        {data?.rank}
+                      </span>
+                    </div>
+
+                    <div>
+                      <h6 className="fw-semibold mb-0">
+                        {data?.name ?? "Not Available"}
+                      </h6>
+                      <p className="small mb-0">{data?.total_cases} cases</p>
+                    </div>
                   </div>
-                  <div>
-                    <h6 className="fw-semibold">{data?.adviser_name}</h6>
-                    <p className="small">{data?.total_cases} cases</p>
+
+                  <div className="d-flex justify-content-center align-items-center flex-column">
+                    <small>Loan Amount</small>
+                    <h6 className="fw-semibold">
+                      {data?.total_loan_amount
+                        ? formatCurrency(data?.total_loan_amount)
+                        : "0"}
+                    </h6>
+                    <p className="small">
+                      <i className="fa-solid fa-award text-warning"></i>
+                    </p>
                   </div>
                 </div>
-                <div className="d-flex justify-content-center align-items-center flex-column">
-                  <small>Loan Amount</small>
-                  <h6 className="fw-semibold">
-                    {data?.total_loan_amount
-                      ? formatCurrency(data?.total_loan_amount)
-                      : "0"}
-                  </h6>
-                  <p className="small">
-                    <i className="fa-solid fa-award text-warning"></i>
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </Card>
         ) : (
           <div
