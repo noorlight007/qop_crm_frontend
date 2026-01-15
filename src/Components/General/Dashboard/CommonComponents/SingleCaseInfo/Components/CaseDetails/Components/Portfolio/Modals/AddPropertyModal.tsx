@@ -1,8 +1,10 @@
+import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
 import {
   useAddPropertyDetailsMutation,
   useGetPortfolioApplicantsQuery,
 } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { apiAddress } from "@/services/third-party-api";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
@@ -22,10 +24,8 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import "../PortfolioContent.css";
-import { apiAddress } from "@/services/third-party-api";
 import GetAddressModal from "../../../CommonModals/GetAddressModal";
-import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
+import "../PortfolioContent.css";
 
 interface AddPortfolioContentModalProps {
   isOpen: boolean;
@@ -49,14 +49,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     useGetPortfolioApplicantsQuery({
       case_alias: casealias,
     });
-  const [ postcode, setPostcode ] = useState('');
+  const [postcode, setPostcode] = useState("");
   const [fetchedEpcRating, setFetchedEpcRating] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
-  
+
   const [houseNumber, setHouseNumber] = useState<string>("");
   const [address1, setAddress1] = useState<string>("");
   const [address2, setAddress2] = useState<string>("");
@@ -64,10 +64,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const [county, setCounty] = useState<string>("");
   const [country, setCountry] = useState<string>("");
 
-
-  const [
-    getPropertyEPCRating,{ isLoading: isEpcLoading},
-  ] = useGetPropertyEPCRatingMutation();
+  const [getPropertyEPCRating, { isLoading: isEpcLoading }] =
+    useGetPropertyEPCRatingMutation();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -245,29 +243,29 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
       // setAddress1(address.line_1);
 
-      setHouseNumber(address.building_number || address.building_name || '');
-      setAddress1(address.line_1 || '');
-      setAddress2(address.line_2 || '');
-      setCity(address.town_or_city || '');
-      setCounty(address.county || '');
-      setCountry(address.country || '');
+      setHouseNumber(address.building_number || address.building_name || "");
+      setAddress1(address.line_1 || "");
+      setAddress2(address.line_2 || "");
+      setCity(address.town_or_city || "");
+      setCounty(address.county || "");
+      setCountry(address.country || "");
 
       const fullAddressForEPC = buildFullAddressForEPC({
-      address_one: address.line_1,
-      address_two: address.line_2,
-      address_three: address.line_3,
-      address_four: address.line_4,
-    });
+        address_one: address.line_1,
+        address_two: address.line_2,
+        address_three: address.line_3,
+        address_four: address.line_4,
+      });
 
-    console.log("📍 EPC request address:", fullAddressForEPC);
+      console.log("📍 EPC request address:", fullAddressForEPC);
 
-    const epcResponse = await getPropertyEPCRating({
-      case_alias: casealias as string,
-      property_postcode: address.postcode,
-      property_address: fullAddressForEPC,
-    }).unwrap();
-    setFetchedEpcRating(epcResponse.epc_rating);
-    console.log("✅ EPC Rating received:", epcResponse.epc_rating);
+      const epcResponse = await getPropertyEPCRating({
+        case_alias: casealias as string,
+        property_postcode: address.postcode,
+        property_address: fullAddressForEPC,
+      }).unwrap();
+      setFetchedEpcRating(epcResponse.epc_rating);
+      console.log("✅ EPC Rating received:", epcResponse.epc_rating);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -366,6 +364,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   <Input
                     id="postcode"
                     type="text"
+                    name="postcode"
                     className="rounded"
                     value={postcode}
                     onChange={(e) => setPostcode(e.target.value)}
@@ -378,11 +377,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     onClick={() => fetchAddressByPostcode(postcode)}
                     disabled={isFetchingAddress || isSearchingPostcode}
                   >
-                    {isSearchingPostcode ? (
-                      "Loading..."
-                    ) : (
-                      "Lookup"
-                    )}
+                    {isSearchingPostcode ? "Loading..." : "Lookup"}
                   </Button>
                 </InputGroup>
               </FormGroup>
@@ -737,20 +732,23 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   Is Limited Company
                 </Label>
               </FormGroup>
-            </Col>            
+            </Col>
             <Col md={4}>
               <FormGroup>
                 <Label for="epcRating">EPC Rating</Label>
-                <Input 
-                  id="epcRating" 
-                  name="epcRating" 
+                <Input
+                  id="epcRating"
+                  name="epcRating"
                   type="text"
                   value={fetchedEpcRating}
-                  onChange={(e) => setFetchedEpcRating(e.target.value)} 
+                  onChange={(e) => setFetchedEpcRating(e.target.value)}
                   placeholder={isEpcLoading ? "Fetching..." : "e.g. C"}
                 />
-                { address1 && !fetchedEpcRating && !isEpcLoading && (
-                  <small className="text-danger" style={{ marginTop: "5px", display: "block" }}>
+                {address1 && !fetchedEpcRating && !isEpcLoading && (
+                  <small
+                    className="text-danger"
+                    style={{ marginTop: "5px", display: "block" }}
+                  >
                     No EPC rating found for this address.
                   </small>
                 )}

@@ -1,10 +1,12 @@
 import { useSubmitEnquiryMutation } from "@/Redux/Reducers/Enquiry/EnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { TbCircleX } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -24,6 +26,7 @@ const InitialEnquiryForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [apiErrors, setApiErrors] = useState<string[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
 
   const INITIAL_FORM_DATA: InitialEnquiryData = {
@@ -91,6 +94,48 @@ const InitialEnquiryForm: React.FC = () => {
         delete newErrors[fieldName];
         return newErrors;
       });
+    }
+  };
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v)
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
     }
   };
 
@@ -164,8 +209,52 @@ const InitialEnquiryForm: React.FC = () => {
       toast.success("Form submitted successfully");
       setShowSuccess(true);
     } catch (err) {
-      console.error("Submission failed", err);
-      toast.error("Submission failed");
+      const e: any = err;
+      console.error("Submission failed", e);
+
+      const newFieldErrors: Record<string, string> = {};
+      let newApiErrors: string[] = [];
+
+      const apiData = e?.data ?? (e?.originalStatus ? e : null);
+
+      if (apiData && typeof apiData === "object") {
+        Object.entries(apiData).forEach(([key, value]) => {
+          if (
+            key === "non_field_errors" ||
+            key === "detail" ||
+            key === "message"
+          ) {
+            const msg = Array.isArray(value) ? value.join(" ") : String(value);
+            if (msg) newApiErrors.push(msg);
+            return;
+          }
+
+          if (Array.isArray(value)) {
+            newFieldErrors[key] = value.join(" ");
+          } else if (typeof value === "string") {
+            newFieldErrors[key] = value;
+          } else if (typeof value === "object") {
+            const nested = getErrorMessage({ data: value });
+            if (nested) newFieldErrors[key] = nested;
+          } else {
+            newFieldErrors[key] = String(value);
+          }
+        });
+      } else {
+        newApiErrors.push(getErrorMessage(e));
+      }
+
+      if (Object.keys(newFieldErrors).length) {
+        setErrors((prev) => ({ ...prev, ...newFieldErrors }));
+      }
+
+      if (newApiErrors.length === 0) {
+        const summary = getErrorMessage(e);
+        if (summary) newApiErrors.push(summary);
+      }
+
+      setApiErrors(newApiErrors);
+      newApiErrors.forEach((m) => toast.error(m));
     }
   };
 
@@ -218,6 +307,15 @@ const InitialEnquiryForm: React.FC = () => {
       ) : (
         <Card className="shadow-sm border-0 justify-content-center">
           <CardBody className="p-4">
+            {apiErrors.length > 0 && (
+              <div className="mb-3">
+                <Alert color="danger" toggle={() => setApiErrors([])}>
+                  {apiErrors.map((m, i) => (
+                    <div key={i}>{m}</div>
+                  ))}
+                </Alert>
+              </div>
+            )}
             <Nav className="mb-4 d-flex justify-content-center align-items-center gap-2 pb-2 p-0">
               {initialEnquiryTabTitleData.map((item, index) => {
                 const step = index + 1;
@@ -573,7 +671,8 @@ const InitialEnquiryForm: React.FC = () => {
                       <div className="border rounded p-3 h-100">
                         <h6 className="fw-bold mb-3">Personal Information</h6>
                         <p>
-                          <strong>Title:</strong> {formData.title}
+                          <strong>Title:</strong>
+                          {formatChoiceFieldValue(formData.title)}
                         </p>
                         <p>
                           <strong>Name:</strong> {formData.first_name}{" "}
@@ -593,7 +692,8 @@ const InitialEnquiryForm: React.FC = () => {
                       <div className="border rounded p-3 h-100">
                         <h6 className="fw-bold mb-3">Enquiry Information</h6>
                         <p>
-                          <strong>Enquiry Type:</strong> {formData.enquiry_type}
+                          <strong>Enquiry Type:</strong>{" "}
+                          {formatChoiceFieldValue(formData.enquiry_type)}
                         </p>
                         <p>
                           <strong>Property Value:</strong> £
@@ -615,12 +715,14 @@ const InitialEnquiryForm: React.FC = () => {
                   <div className="border rounded p-3">
                     <FormGroup check className="mb-2">
                       <Input
+                        id="contact_consent"
                         type="checkbox"
                         name="contact_consent"
                         checked={formData.contact_consent}
                         onChange={handleChange}
+                        className="border-primary"
                       />
-                      <Label check className="ms-2">
+                      <Label for="contact_consent" check className="ms-2">
                         I consent to be contacted by telephone, email, or SMS in
                         relation to my mortgage enquiry.
                       </Label>
@@ -628,12 +730,18 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <FormGroup check>
                       <Input
+                        id="privacy_notice_consent"
                         type="checkbox"
                         name="privacy_notice_consent"
                         checked={formData.privacy_notice_consent}
                         onChange={handleChange}
+                        className="border-primary"
                       />
-                      <Label check className="ms-2">
+                      <Label
+                        for="privacy_notice_consent"
+                        check
+                        className="ms-2"
+                      >
                         I confirm that I have read and understood the Privacy
                         Notice and consent to my personal data being processed
                         in accordance with it.

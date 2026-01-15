@@ -30,7 +30,7 @@ const AboutOrg: React.FC = () => {
       </p>
       <div className="d-flex justify-content-center">
         <Image
-          src="/assets/images/building.png"
+          src="/assets/images/building.svg"
           alt={appearanceData?.site_title || "Company"}
           width={250}
           height={150}
