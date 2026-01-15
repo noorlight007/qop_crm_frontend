@@ -36,6 +36,9 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   const [logoPreview, setLogoPreview] = useState<string>("");
   const [faviconPreview, setFaviconPreview] = useState<string>("");
   const [selectedFont, setSelectedFont] = useState<string>("");
+  const [logoError, setLogoError] = useState<string | null>(null);
+  const [faviconError, setFaviconError] = useState<string | null>(null);
+  const [fontError, setFontError] = useState<string | null>(null);
 
   type FontOption = {
     value: string;
@@ -117,9 +120,56 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
     }
   }, [appearanceData]);
 
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    // If server returned a plain string in data
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v)
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    // Prefer explicit message field from server response
+    if (err?.data?.message) return String(err.data.message);
+
+    // If data is an object with validation errors like { logo: ["..."] }
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    // Some RTK Query errors include an `error` or `message` property
+    if (err?.error) return String(err.error);
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   const handleLogoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setLogoError(null);
       // Validate file type
       if (file.type !== "image/png") {
         toast.error("Please select a PNG file");
@@ -141,6 +191,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   const handleFaviconChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setFaviconError(null);
       const name = file.name.toLowerCase();
       const isPng = file.type === "image/png" || name.endsWith(".png");
       const isIco =
@@ -233,12 +284,15 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         timerProgressBar: true,
       });
 
+      setLogoError(null);
       setLogoFile(null);
       setLogoPreview(appearanceData?.logo || "");
       if (logoInputRef.current) logoInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to update logo", error);
-      toast.error("Failed to update logo");
+      const msg = getErrorMessage(error);
+      setLogoError(msg || "Failed to update logo");
+      toast.error(msg || "Failed to update logo");
     }
   };
 
@@ -262,24 +316,29 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         timerProgressBar: true,
       });
 
+      setFaviconError(null);
       setFaviconFile(null);
       setFaviconPreview(appearanceData?.fav_icon || "");
       if (faviconInputRef.current) faviconInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to update favicon", error);
-      toast.error("Failed to update favicon");
+      const msg = getErrorMessage(error);
+      setFaviconError(msg || "Failed to update favicon");
+      toast.error(msg || "Failed to update favicon");
     }
   };
 
   const resetLogo = () => {
     setLogoFile(null);
     setLogoPreview(appearanceData?.logo || "");
+    setLogoError(null);
     if (logoInputRef.current) logoInputRef.current.value = "";
   };
 
   const resetFavicon = () => {
     setFaviconFile(null);
     setFaviconPreview(appearanceData?.fav_icon || "");
+    setFaviconError(null);
     if (faviconInputRef.current) faviconInputRef.current.value = "";
   };
 
@@ -306,10 +365,13 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
 
         setLogoFile(null);
         setLogoPreview("");
+        setLogoError(null);
         if (logoInputRef.current) logoInputRef.current.value = "";
       } catch (error) {
         console.error("Failed to delete logo", error);
-        toast.error("Failed to delete logo");
+        const msg = getErrorMessage(error);
+        setLogoError(msg || "Failed to delete logo");
+        toast.error(msg || "Failed to delete logo");
       }
     }
   };
@@ -337,10 +399,13 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
 
         setFaviconFile(null);
         setFaviconPreview("");
+        setFaviconError(null);
         if (faviconInputRef.current) faviconInputRef.current.value = "";
       } catch (error) {
         console.error("Failed to delete favicon", error);
-        toast.error("Failed to delete favicon");
+        const msg = getErrorMessage(error);
+        setFaviconError(msg || "Failed to delete favicon");
+        toast.error(msg || "Failed to delete favicon");
       }
     }
   };
@@ -368,9 +433,12 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         timer: 2000,
         timerProgressBar: true,
       });
+      setFontError(null);
     } catch (error) {
       console.error("Failed to update font", error);
-      toast.error("Failed to update font");
+      const msg = getErrorMessage(error);
+      setFontError(msg || "Failed to update font");
+      toast.error(msg || "Failed to update font");
     }
   };
 
@@ -380,7 +448,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         <h5 className="mb-4">Font, Logo & Favicon</h5>
 
         {/* Font Family Section */}
-        <FormGroup className="mb-5">
+        <FormGroup className="mb-3">
           <Label className="form-label">Font family</Label>
           <Row className="g-3">
             <Col md="6">
@@ -419,6 +487,11 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                 <small className="text-muted">
                   Choose one of the available fonts for the application.
                 </small>
+                <div>
+                  {fontError && (
+                    <small className="text-danger">{fontError}</small>
+                  )}
+                </div>
               </div>
             </Col>
             <Col md="6">
@@ -450,7 +523,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Logo Upload Section */}
-        <FormGroup className="mb-5">
+        <FormGroup className="mb-3">
           <Label className="form-label">
             Logo{" "}
             <small className="text-warning">
@@ -499,6 +572,11 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
               <small className="text-muted">
                 Supported format: PNG (Max 5MB)
               </small>
+              <div>
+                {logoError && (
+                  <small className="text-danger">{logoError}</small>
+                )}
+              </div>
               <div className="d-flex gap-2 mt-2">
                 <Button
                   color="primary"
@@ -545,7 +623,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup className="mb-5">
+        <FormGroup className="mb-3">
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">(Max resolution: 48x48 px)</small>
@@ -592,6 +670,11 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
               <small className="text-muted">
                 Supported formats: PNG, ICO (Max 50KB)
               </small>
+              <div>
+                {faviconError && (
+                  <small className="text-danger">{faviconError}</small>
+                )}
+              </div>
               <div className="d-flex gap-2 mt-2">
                 <Button
                   color="primary"
