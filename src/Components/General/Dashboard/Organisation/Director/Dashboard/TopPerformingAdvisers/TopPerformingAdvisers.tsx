@@ -124,9 +124,6 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
                         ? formatCurrency(data?.total_loan_amount)
                         : "0"}
                     </h6>
-                    <p className="small">
-                      <i className="fa-solid fa-award text-warning"></i>
-                    </p>
                   </div>
                 </div>
               );
