@@ -185,7 +185,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                             className="rounded-circle"
                           />
                         ) : (
-                          <User size={35} className="text-secondary" />
+                          <User size={35} className="text-primary" />
                         )}
                       </span>
                       <span

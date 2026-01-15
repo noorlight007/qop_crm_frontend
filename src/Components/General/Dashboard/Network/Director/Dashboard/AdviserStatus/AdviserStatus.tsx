@@ -101,7 +101,7 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                                     className="rounded-circle"
                                   />
                                 ) : (
-                                  <User size={25} className="text-secondary" />
+                                  <User size={25} className="text-primary" />
                                 )}
                               </span>
                               <span>{data?.name ?? "Not Available"}</span>

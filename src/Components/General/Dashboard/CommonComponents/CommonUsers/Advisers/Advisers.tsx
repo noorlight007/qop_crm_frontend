@@ -206,7 +206,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                             className="rounded-circle"
                           />
                         ) : (
-                          <User size={35} className="text-secondary" />
+                          <User size={35} className="text-primary" />
                         )}
                       </span>
                       <span
