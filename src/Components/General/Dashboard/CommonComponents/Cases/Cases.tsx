@@ -587,6 +587,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 <i className="icon-pencil-alt"></i>
                               </Button>
                               {(userType === "NETWORK_DIRECTOR" ||
+                                userType === "NETWORK_COMPLIANCE_ASSISTANT" ||
                                 userType === "ORGANISATION_DIRECTOR") && (
                                 <Button
                                   size="sm"
