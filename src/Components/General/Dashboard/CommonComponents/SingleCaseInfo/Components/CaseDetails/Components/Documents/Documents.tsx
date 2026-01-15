@@ -305,8 +305,11 @@ const Documents: React.FC = () => {
                 <div className="d-flex flex-wrap gap-2 ms-md-auto">
                   {selectedDocuments.size > 0 && (
                     <>
-                      {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-                        session?.user?.user_type === "NETWORK_DIRECTOR") && (
+                      {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
+                        session?.user?.user_type ===
+                          "NETWORK_COMPLIANCE_ASSISTANT" ||
+                        session?.user?.user_type ===
+                          "ORGANISATION_DIRECTOR") && (
                         <Button
                           color="danger"
                           size="sm"
@@ -551,6 +554,8 @@ const Documents: React.FC = () => {
                               </Button>
                               {(session?.user?.user_type ===
                                 "NETWORK_DIRECTOR" ||
+                                session?.user?.user_type ===
+                                  "NETWORK_COMPLIANCE_ASSISTANT" ||
                                 session?.user?.user_type ===
                                   "ORGANISATION_DIRECTOR") && (
                                 <Button

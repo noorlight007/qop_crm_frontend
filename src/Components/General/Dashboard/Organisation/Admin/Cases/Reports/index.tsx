@@ -1,4 +1,5 @@
 "use client";
+import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import {
   caseCategories,
   caseStages,
@@ -26,7 +27,6 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
 
 const OrganisationAdminReportsContainer: React.FC = () => {
   const searchParams = useSearchParams();

@@ -289,14 +289,20 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
-                        <Button
-                          color="danger"
-                          size="sm"
-                          title="Delete User"
-                          onClick={() => openDeleteModal(client)}
-                        >
-                          <i className="icon-trash"></i>
-                        </Button>
+                        {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
+                          session?.user?.user_type ===
+                            "NETWORK_COMPLIANCE_ASSISTANT" ||
+                          session?.user?.user_type ===
+                            "ORGANISATION_DIRECTOR") && (
+                          <Button
+                            color="danger"
+                            size="sm"
+                            title="Delete User"
+                            onClick={() => openDeleteModal(client)}
+                          >
+                            <i className="icon-trash"></i>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
