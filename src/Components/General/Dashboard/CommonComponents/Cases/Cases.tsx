@@ -152,16 +152,14 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <i className="fa-solid fa-filter"></i>
                     )}
                   </Button>
-                  {userType !== "ORGANISATION_ADMIN" && (
-                    <Button
-                      color="primary"
-                      onClick={openAddNewCaseModal}
-                      className="d-flex justify-content-center align-items-center gap-1"
-                    >
-                      <TbCirclePlus size={18} />
-                      <span>Add New Case</span>
-                    </Button>
-                  )}
+                  <Button
+                    color="primary"
+                    onClick={openAddNewCaseModal}
+                    className="d-flex justify-content-center align-items-center gap-1"
+                  >
+                    <TbCirclePlus size={18} />
+                    <span>Add New Case</span>
+                  </Button>
                 </Col>
               </Row>
             </CardHeader>

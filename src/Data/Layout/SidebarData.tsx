@@ -369,14 +369,29 @@ const OrganisationAdminMenu: MenuItem[] = [
         icon: "Activity",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/admin/cases",
-      },
-      {
-        title: "Reports",
-        icon: "Folder",
-        type: "link",
-        lanClass: "lan-3",
-        path: "/dashboard/organisation/admin/reports",
+
+        children: [
+          {
+            title: "All Cases",
+            type: "link",
+            path: "/dashboard/organisation/admin/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/dashboard/organisation/admin/leads",
+          },
+          {
+            title: "Clients",
+            type: "link",
+            path: "/dashboard/organisation/admin/clients",
+          },
+          {
+            title: "Reports",
+            type: "link",
+            path: "/dashboard/organisation/admin/reports",
+          },
+        ],
       },
       // {
       //   title: "Tasks & Reminders",
@@ -385,13 +400,13 @@ const OrganisationAdminMenu: MenuItem[] = [
       //   lanClass: "lan-3",
       //   path: "/dashboard/orgstaff/tasksandreminders",
       // },
-      {
-        title: "Adviser Clients",
-        icon: "Profile",
-        type: "link",
-        lanClass: "lan-3",
-        path: "/dashboard/organisation/admin/adviserclient",
-      },
+      // {
+      //   title: "Adviser Clients",
+      //   icon: "Profile",
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/dashboard/organisation/admin/adviserclient",
+      // },
       {
         title: "Support Ticket",
         icon: "Ticket",
