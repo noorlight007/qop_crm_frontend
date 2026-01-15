@@ -117,8 +117,8 @@ const LoginHistory: React.FC = () => {
             paddingRight: "8px",
           }}
         >
-          {loginHistoryData && loginHistoryData.length > 0 ? (
-            loginHistoryData?.map(
+          {loginHistoryData.results && loginHistoryData.results.length > 0 ? (
+            loginHistoryData?.results?.map(
               (history: LoginHistoryItem, index: number) => {
                 const badge = getStatusBadge(history.status);
                 const icon = getDeviceIcon(history.device_type);

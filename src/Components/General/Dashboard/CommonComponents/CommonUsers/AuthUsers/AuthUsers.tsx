@@ -6,7 +6,6 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import {
@@ -52,7 +51,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   });
 
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    organization_users__role: userRole,
+    role: userRole,
     page: currentPage,
     page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
