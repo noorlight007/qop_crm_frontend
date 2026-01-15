@@ -93,20 +93,6 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
                           <User size={35} className="text-white" />
                         </div>
                       )}
-
-                      <span
-                        className="d-flex align-items-center justify-content-center rounded-circle text-white bg-primary fw-medium small"
-                        style={{
-                          width: 20,
-                          height: 20,
-                          position: "absolute",
-                          right: -6,
-                          top: -6,
-                          fontSize: 12,
-                        }}
-                      >
-                        {data?.rank}
-                      </span>
                     </div>
 
                     <div>
