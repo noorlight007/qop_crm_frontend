@@ -18,25 +18,25 @@ const AboutOrg: React.FC = () => {
             src={appearanceData?.logo || imageTwo}
             alt="login page"
             priority
-            style={{ width: "160px", height: "60px", objectFit: "cover" }}
+            style={{ width: "160px", height: "60px" }}
           />
         </Link>
       </div>
-      <h4>About Test Company</h4>
+      <h4>About Our {appearanceData?.site_title || "Company"}</h4>
       <p className="text-title-gray">
-        This section contains information about the organization. Please review
-        the details before proceeding with your enquiry.
+        {appearanceData?.about
+          ? appearanceData.about
+          : "No description available."}
       </p>
       <div className="d-flex justify-content-center">
         <Image
-        src="/assets/images/building.png"
-        alt="Organization"
-        width={250}
-        height={150}
-        className="img-fluid"
-      />
+          src="/assets/images/building.png"
+          alt={appearanceData?.site_title || "Company"}
+          width={250}
+          height={150}
+          className="img-fluid"
+        />
       </div>
-      
     </Card>
   );
 };

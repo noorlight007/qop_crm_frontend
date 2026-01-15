@@ -1,4 +1,5 @@
-import { useSubmitEnquiryMutation } from "@/Redux/Reducers/InitialEnquiry/InitialEnquiryApi";
+import { useSubmitEnquiryMutation } from "@/Redux/Reducers/Enquiry/EnquiryApi";
+import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
 import React, { useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { TbCircleX } from "react-icons/tb";
@@ -19,32 +20,13 @@ import {
   Row,
 } from "reactstrap";
 
-interface FormData {
-  title: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  phone: string;
-  email: string;
-  enquiry_type: string;
-  other_enquiry_type: string;
-  estimated_property_value?: string;
-  approximate_mortgage_required?: string;
-  approximate_deposit_available?: string;
-  source?: string;
-  other_source?: string;
-  notes: string;
-  contact_consent: boolean;
-  privacy_notice_consent: boolean;
-}
-
 const InitialEnquiryForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
 
-  const INITIAL_FORM_DATA: FormData = {
+  const INITIAL_FORM_DATA: InitialEnquiryData = {
     title: "",
     first_name: "",
     middle_name: "",
@@ -63,7 +45,8 @@ const InitialEnquiryForm: React.FC = () => {
     privacy_notice_consent: false,
   };
 
-  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
+  const [formData, setFormData] =
+    useState<InitialEnquiryData>(INITIAL_FORM_DATA);
 
   const [submitEnquiry, { isLoading, isError, isSuccess, error }] =
     useSubmitEnquiryMutation();
@@ -101,9 +84,9 @@ const InitialEnquiryForm: React.FC = () => {
 
   const handleBlur = (fieldName: string, value: any) => {
     if (!value) {
-      setErrors(prev => ({ ...prev, [fieldName]: 'This field is required' }));
+      setErrors((prev) => ({ ...prev, [fieldName]: "This field is required" }));
     } else {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[fieldName];
         return newErrors;
@@ -116,24 +99,22 @@ const InitialEnquiryForm: React.FC = () => {
       case 1:
         return Boolean(
           formData.title &&
-          formData.first_name &&
-          formData.last_name &&
-          formData.email &&
-          formData.phone
+            formData.first_name &&
+            formData.last_name &&
+            formData.email &&
+            formData.phone
         );
 
       case 2:
         return Boolean(
           formData.enquiry_type &&
-          formData.estimated_property_value &&
-          formData.approximate_mortgage_required &&
-          formData.approximate_deposit_available
+            formData.estimated_property_value &&
+            formData.approximate_mortgage_required &&
+            formData.approximate_deposit_available
         );
 
       case 3:
-        return Boolean(
-          formData.source
-        );
+        return Boolean(formData.source);
 
       case 4:
         return formData.contact_consent && formData.privacy_notice_consent;
@@ -278,7 +259,7 @@ const InitialEnquiryForm: React.FC = () => {
                           type="select"
                           name="title"
                           value={formData.title}
-                          onBlur={(e) => handleBlur('title', e.target.value)}
+                          onBlur={(e) => handleBlur("title", e.target.value)}
                           onChange={handleChange}
                           required
                         >
@@ -293,7 +274,9 @@ const InitialEnquiryForm: React.FC = () => {
                           <option value="PROFESSOR">Professor</option>
                           <option value="DOCTOR">Doctor</option>
                         </Input>
-                        {errors.title && <small className="text-danger">{errors.title}</small>}
+                        {errors.title && (
+                          <small className="text-danger">{errors.title}</small>
+                        )}
                       </FormGroup>
                     </Col>
 
@@ -303,11 +286,17 @@ const InitialEnquiryForm: React.FC = () => {
                         <Input
                           name="first_name"
                           value={formData.first_name}
-                          onBlur={(e) => handleBlur('first_name', e.target.value)}
+                          onBlur={(e) =>
+                            handleBlur("first_name", e.target.value)
+                          }
                           onChange={handleChange}
                           required
                         />
-                        {errors.first_name && <small className="text-danger">{errors.first_name}</small>}
+                        {errors.first_name && (
+                          <small className="text-danger">
+                            {errors.first_name}
+                          </small>
+                        )}
                       </FormGroup>
                     </Col>
 
@@ -328,11 +317,17 @@ const InitialEnquiryForm: React.FC = () => {
                         <Input
                           name="last_name"
                           value={formData.last_name}
-                          onBlur={(e) => handleBlur('last_name', e.target.value)}
+                          onBlur={(e) =>
+                            handleBlur("last_name", e.target.value)
+                          }
                           onChange={handleChange}
                           required
                         />
-                        {errors.last_name && <small className="text-danger">{errors.last_name}</small>}
+                        {errors.last_name && (
+                          <small className="text-danger">
+                            {errors.last_name}
+                          </small>
+                        )}
                       </FormGroup>
                     </Col>
 
@@ -343,11 +338,13 @@ const InitialEnquiryForm: React.FC = () => {
                           type="email"
                           name="email"
                           value={formData.email}
-                          onBlur={(e) => handleBlur('email', e.target.value)}
+                          onBlur={(e) => handleBlur("email", e.target.value)}
                           onChange={handleChange}
                           required
                         />
-                        {errors.email && <small className="text-danger">{errors.email}</small>}
+                        {errors.email && (
+                          <small className="text-danger">{errors.email}</small>
+                        )}
                       </FormGroup>
                     </Col>
 
@@ -357,11 +354,13 @@ const InitialEnquiryForm: React.FC = () => {
                         <Input
                           name="phone"
                           value={formData.phone}
-                          onBlur={(e) => handleBlur('phone', e.target.value)}
+                          onBlur={(e) => handleBlur("phone", e.target.value)}
                           onChange={handleChange}
                           required
                         />
-                        {errors.phone && <small className="text-danger">{errors.phone}</small>}
+                        {errors.phone && (
+                          <small className="text-danger">{errors.phone}</small>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -379,7 +378,9 @@ const InitialEnquiryForm: React.FC = () => {
                           type="select"
                           name="enquiry_type"
                           value={formData.enquiry_type}
-                          onBlur={(e) => handleBlur('enquiry_type', e.target.value)}
+                          onBlur={(e) =>
+                            handleBlur("enquiry_type", e.target.value)
+                          }
                           onChange={handleChange}
                           required
                         >
@@ -396,7 +397,11 @@ const InitialEnquiryForm: React.FC = () => {
                           </option>
                           <option value="OTHER">Other</option>
                         </Input>
-                        {errors.enquiry_type && <small className="text-danger">{errors.enquiry_type}</small>}
+                        {errors.enquiry_type && (
+                          <small className="text-danger">
+                            {errors.enquiry_type}
+                          </small>
+                        )}
                       </FormGroup>
                     </Col>
                     {formData.enquiry_type === "OTHER" && (
@@ -410,10 +415,16 @@ const InitialEnquiryForm: React.FC = () => {
                             name="other_enquiry_type"
                             type="text"
                             value={formData.other_enquiry_type || ""}
-                            onBlur={(e) => handleBlur('enquiry_type', e.target.value)}
+                            onBlur={(e) =>
+                              handleBlur("enquiry_type", e.target.value)
+                            }
                             onChange={handleChange}
                           />
-                          {errors.enquiry_type && <small className="text-danger">{errors.enquiry_type}</small>}
+                          {errors.enquiry_type && (
+                            <small className="text-danger">
+                              {errors.enquiry_type}
+                            </small>
+                          )}
                         </FormGroup>
                       </Col>
                     )}
@@ -425,11 +436,20 @@ const InitialEnquiryForm: React.FC = () => {
                           name="estimated_property_value"
                           type="number"
                           value={formData.estimated_property_value}
-                          onBlur={(e) => handleBlur('estimated_property_value', e.target.value)}
+                          onBlur={(e) =>
+                            handleBlur(
+                              "estimated_property_value",
+                              e.target.value
+                            )
+                          }
                           onChange={handleChange}
                           required
                         />
-                        {errors.estimated_property_value && <small className="text-danger">{errors.estimated_property_value}</small>}
+                        {errors.estimated_property_value && (
+                          <small className="text-danger">
+                            {errors.estimated_property_value}
+                          </small>
+                        )}
                       </FormGroup>
                     </Col>
 
@@ -440,11 +460,20 @@ const InitialEnquiryForm: React.FC = () => {
                           name="approximate_mortgage_required"
                           type="number"
                           value={formData.approximate_mortgage_required}
-                          onBlur={(e) => handleBlur('approximate_mortgage_required', e.target.value)}
+                          onBlur={(e) =>
+                            handleBlur(
+                              "approximate_mortgage_required",
+                              e.target.value
+                            )
+                          }
                           onChange={handleChange}
                           required
                         />
-                        {errors.approximate_mortgage_required && <small className="text-danger">{errors.approximate_mortgage_required}</small>}
+                        {errors.approximate_mortgage_required && (
+                          <small className="text-danger">
+                            {errors.approximate_mortgage_required}
+                          </small>
+                        )}
                       </FormGroup>
                     </Col>
 
@@ -455,11 +484,20 @@ const InitialEnquiryForm: React.FC = () => {
                           name="approximate_deposit_available"
                           type="number"
                           value={formData.approximate_deposit_available}
-                          onBlur={(e) => handleBlur('approximate_deposit_available', e.target.value)}
+                          onBlur={(e) =>
+                            handleBlur(
+                              "approximate_deposit_available",
+                              e.target.value
+                            )
+                          }
                           onChange={handleChange}
                           required
                         />
-                        {errors.approximate_deposit_available && <small className="text-danger">{errors.approximate_deposit_available}</small>}
+                        {errors.approximate_deposit_available && (
+                          <small className="text-danger">
+                            {errors.approximate_deposit_available}
+                          </small>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -477,7 +515,7 @@ const InitialEnquiryForm: React.FC = () => {
                         name="source"
                         required
                         value={formData.source}
-                        onBlur={(e) => handleBlur('source', e.target.value)}
+                        onBlur={(e) => handleBlur("source", e.target.value)}
                         onChange={handleChange}
                       >
                         <option value="">Select...</option>
@@ -487,7 +525,9 @@ const InitialEnquiryForm: React.FC = () => {
                         <option value="WEBSITE">Website</option>
                         <option value="OTHER">Other</option>
                       </Input>
-                      {errors.source && <small className="text-danger">{errors.source}</small>}
+                      {errors.source && (
+                        <small className="text-danger">{errors.source}</small>
+                      )}
                     </FormGroup>
                   </Col>
                   {formData.source === "OTHER" && (
@@ -499,10 +539,12 @@ const InitialEnquiryForm: React.FC = () => {
                           name="other_source"
                           type="text"
                           value={formData.other_source || ""}
-                          onBlur={(e) => handleBlur('source', e.target.value)}
+                          onBlur={(e) => handleBlur("source", e.target.value)}
                           onChange={handleChange}
                         />
-                        {errors.source && <small className="text-danger">{errors.source}</small>}
+                        {errors.source && (
+                          <small className="text-danger">{errors.source}</small>
+                        )}
                       </FormGroup>
                     </Col>
                   )}
