@@ -445,10 +445,10 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
   return (
     <Card>
       <CardBody>
-        <h5 className="mb-4">Font, Logo & Favicon</h5>
+        <h5 className="mb-3">Font, Logo & Favicon</h5>
 
         {/* Font Family Section */}
-        <FormGroup className="mb-3">
+        <FormGroup className="mb-4">
           <Label className="form-label">Font family</Label>
           <Row className="g-3">
             <Col md="6">
@@ -523,7 +523,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Logo Upload Section */}
-        <FormGroup className="mb-3">
+        <FormGroup className="mb-4">
           <Label className="form-label">
             Logo{" "}
             <small className="text-warning">
@@ -583,7 +583,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   onClick={handleUploadLogo}
                   disabled={isUploadingLogo || !logoFile}
                 >
-                  {isUploadingLogo ? "Uploading..." : "Upload Logo"}
+                  {isUploadingLogo ? "Uploading..." : "Upload"}
                 </Button>
                 {logoFile && (
                   <Button
@@ -591,7 +591,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                     onClick={resetLogo}
                     disabled={isUploadingLogo}
                   >
-                    Reset Logo
+                    Reset
                   </Button>
                 )}
                 {(appearanceData?.logo || logoPreview) && !logoFile && (
@@ -600,7 +600,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                     onClick={handleDeleteLogo}
                     disabled={isDeletingLogo}
                   >
-                    {isDeletingLogo ? "Deleting..." : "Delete Logo"}
+                    {isDeletingLogo ? "Deleting..." : "Delete"}
                   </Button>
                 )}
               </div>
@@ -623,7 +623,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
         </FormGroup>
 
         {/* Favicon Upload Section */}
-        <FormGroup className="mb-3">
+        <FormGroup className="mb-4">
           <Label className="form-label">
             Favicon{" "}
             <small className="text-warning">(Max resolution: 48x48 px)</small>
@@ -681,7 +681,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                   onClick={handleUploadFavicon}
                   disabled={isUploadingFavicon || !faviconFile}
                 >
-                  {isUploadingFavicon ? "Uploading..." : "Upload Favicon"}
+                  {isUploadingFavicon ? "Uploading..." : "Upload"}
                 </Button>
                 {faviconFile && (
                   <Button
@@ -689,7 +689,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                     onClick={resetFavicon}
                     disabled={isUploadingFavicon}
                   >
-                    Reset Favicon
+                    Reset
                   </Button>
                 )}
                 {(appearanceData?.fav_icon || faviconPreview) &&
@@ -699,7 +699,7 @@ const LogoAndFavIconAndFontChanger: React.FC = () => {
                       onClick={handleDeleteFavicon}
                       disabled={isDeletingFavicon}
                     >
-                      {isDeletingFavicon ? "Deleting..." : "Delete Favicon"}
+                      {isDeletingFavicon ? "Deleting..." : "Delete"}
                     </Button>
                   )}
               </div>

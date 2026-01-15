@@ -13,10 +13,10 @@ const AppearanceContainer: React.FC = () => {
         child="Appearance"
       />
       <Row>
-        <Col lg="6" md="12">
+        <Col xxl="6" xl="12">
           <ThemeColorSwitcher />
         </Col>
-        <Col lg="6" md="12">
+        <Col xxl="6" xl="12">
           <LogoAndFavIconChanger />
         </Col>
       </Row>
