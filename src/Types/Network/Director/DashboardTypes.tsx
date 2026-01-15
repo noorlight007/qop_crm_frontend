@@ -174,7 +174,8 @@ export interface NetworkDirectorDashboardData {
 
   top_performing_advisers?: {
     rank?: number;
-    advisor_name?: string;
+    profile_image?: string;
+    name?: string;
     total_cases?: number;
     residential?: number;
     buy_to_let?: number;

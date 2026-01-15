@@ -1,8 +1,10 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import { useGetNetworkDirectorDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
 import { NetworkDirectorDashboardData } from "@/Types/Network/Director/DashboardTypes";
+import Image from "next/image";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { User } from "react-feather";
 import {
   Badge,
   Card,
@@ -118,7 +120,7 @@ const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
                   <tr>
                     <th className="border-0 small text-uppercase">Rank</th>
                     <th className="border-0 small text-uppercase">
-                      Advisor Name
+                      Adviser Name
                     </th>
                     <th className="border-0 small text-uppercase">
                       Total Cases
@@ -162,7 +164,25 @@ const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
                       {pagedAdvisers.map((data, idx: number) => (
                         <tr key={idx}>
                           <td>{data?.rank ?? "0"}</td>
-                          <td>{data?.advisor_name ?? "0"}</td>
+                          <td className="d-flex justify-content-center align-items-center gap-1 text-truncate">
+                            <span
+                              className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                              style={{ width: 30, height: 30 }}
+                            >
+                              {data?.profile_image ? (
+                                <Image
+                                  src={data.profile_image}
+                                  alt="Profile"
+                                  width={25}
+                                  height={25}
+                                  className="rounded-circle"
+                                />
+                              ) : (
+                                <User size={25} className="text-secondary" />
+                              )}
+                            </span>
+                            <span>{data?.name ?? "Not Available"}</span>
+                          </td>
                           <td>{data?.total_cases ?? "0"}</td>
                           <td>{data?.residential ?? "0"}</td>
                           <td>{data?.buy_to_let ?? "0"}</td>
