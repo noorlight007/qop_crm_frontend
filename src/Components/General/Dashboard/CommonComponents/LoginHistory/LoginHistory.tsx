@@ -3,17 +3,32 @@ import { LoginHistoryItem } from "@/Types/CommonComponents/LoginHistory/LoginHis
 import formatChoiceFieldValue from "@/utils/formatters";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
+import { useState } from "react";
 import { FaClock, FaGlobe, FaMapMarkerAlt } from "react-icons/fa";
-import { Badge, Card, CardBody, Col, Row } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  Col,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  Row,
+} from "reactstrap";
 
 const LoginHistory: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
   const {
     data: loginHistoryData,
     isLoading,
     isFetching,
-  } = useGetLoginHistoryQuery(undefined, {
-    pollingInterval: 20000,
-  });
+  } = useGetLoginHistoryQuery(
+    { page: currentPage },
+    {
+      pollingInterval: 20000,
+    }
+  );
 
   const getStatusBadge = (status: string) => {
     if (status === "SUCCESS") {
@@ -52,6 +67,14 @@ const LoginHistory: React.FC = () => {
       return dateString;
     }
   };
+
+  // Pagination logic from API
+  const totalCount = loginHistoryData?.count || 0;
+  const currentResults = loginHistoryData?.results || [];
+  const hasNextPage = !!loginHistoryData?.next;
+  const hasPreviousPage = !!loginHistoryData?.previous;
+  const pageSize = currentResults.length || 10;
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   if (isLoading) {
     return (
@@ -118,163 +141,160 @@ const LoginHistory: React.FC = () => {
           }}
         >
           {loginHistoryData.results && loginHistoryData.results.length > 0 ? (
-            loginHistoryData?.results?.map(
-              (history: LoginHistoryItem, index: number) => {
-                const badge = getStatusBadge(history.status);
-                const icon = getDeviceIcon(history.device_type);
+            currentResults.map((history: LoginHistoryItem, index: number) => {
+              const badge = getStatusBadge(history.status);
+              const icon = getDeviceIcon(history.device_type);
 
-                return (
-                  <div
-                    key={index}
-                    className={`login-history-item mt-1 mb-3 p-0 border rounded-4 overflow-hidden position-relative transition-all ${
-                      history.status === "SUCCESS"
-                        ? "border-success"
-                        : "border-danger"
-                    } shadow-sm bg-white`}
-                    style={{
-                      transition: "all 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow =
-                        "0 8px 16px rgba(0,0,0,0.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "none";
-                    }}
-                  >
-                    <div className="p-3">
-                      {/* User Info Section */}
-                      <div className="d-flex align-items-start mb-3">
-                        <div className="position-relative me-3">
-                          {history.user?.profile_image ? (
-                            <Image
-                              src={history.user.profile_image}
-                              alt={history.user.name || "User"}
-                              width={50}
-                              height={50}
-                              className="object-fit-cover rounded-circle shadow-sm"
-                            />
-                          ) : (
-                            <div
-                              className="rounded-circle shadow-sm bg-light-primary bg-opacity-10 d-flex align-items-center justify-content-center"
-                              style={{ width: "50px", height: "50px" }}
-                            >
-                              <i className="fa fa-user text-primary"></i>
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-grow-1">
-                          <div className="d-flex align-items-center justify-content-between mb-1">
-                            <h6 className="mb-0 fw-bold text-dark">
-                              {history.user.name ||
-                                history.user.alias ||
-                                "Unknown User"}
-                            </h6>
-                            <Badge
-                              color={
-                                history.status === "SUCCESS"
-                                  ? "success"
-                                  : "danger"
-                              }
-                              className={`${badge.className} p-2 shadow `}
-                            >
-                              {badge.icon}{" "}
-                              {formatChoiceFieldValue(history.status) ||
-                                "Unknown"}
-                            </Badge>
-                          </div>
-                          <div className="d-flex flex-wrap gap-2 mb-2">
-                            <small className="text-muted d-flex align-items-center">
-                              <i className="fa fa-envelope me-1"></i>
-                              {history.user.email || "Not Provided"}
-                            </small>
-                            {history.user.phone && (
-                              <small className="text-muted d-flex align-items-center">
-                                <i className="fa fa-phone me-1"></i>
-                                {history.user.phone || "Not Provided"}
-                              </small>
-                            )}
-                          </div>
-                          <Badge
-                            color="primary"
-                            className="bg-opacity-10 border border-primary px-2 py-1"
-                            style={{ fontSize: "0.7rem" }}
+              return (
+                <div
+                  key={index}
+                  className={`login-history-item mt-1 mb-3 p-0 border rounded-4 overflow-hidden position-relative transition-all ${
+                    history.status === "SUCCESS"
+                      ? "border-success"
+                      : "border-danger"
+                  } shadow-sm bg-white`}
+                  style={{
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 16px rgba(0,0,0,0.1)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div className="p-3">
+                    {/* User Info Section */}
+                    <div className="d-flex align-items-start mb-3">
+                      <div className="position-relative me-3">
+                        {history.user?.profile_image ? (
+                          <Image
+                            src={history.user.profile_image}
+                            alt={history.user.name || "User"}
+                            width={50}
+                            height={50}
+                            className="object-fit-cover rounded-circle shadow-sm"
+                          />
+                        ) : (
+                          <div
+                            className="rounded-circle shadow-sm bg-light-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                            style={{ width: "50px", height: "50px" }}
                           >
-                            {formatChoiceFieldValue(history.user.user_type) ||
-                              "Not Found"}
+                            <i className="fa fa-user text-primary"></i>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-grow-1">
+                        <div className="d-flex align-items-center justify-content-between mb-1">
+                          <h6 className="mb-0 fw-bold text-dark">
+                            {history.user.name ||
+                              history.user.alias ||
+                              "Unknown User"}
+                          </h6>
+                          <Badge
+                            color={
+                              history.status === "SUCCESS"
+                                ? "success"
+                                : "danger"
+                            }
+                            className={`${badge.className} p-2 shadow `}
+                          >
+                            {badge.icon}{" "}
+                            {formatChoiceFieldValue(history.status) ||
+                              "Unknown"}
                           </Badge>
                         </div>
+                        <div className="d-flex flex-wrap gap-2 mb-2">
+                          <small className="text-muted d-flex align-items-center">
+                            <i className="fa fa-envelope me-1"></i>
+                            {history.user.email || "Not Provided"}
+                          </small>
+                          {history.user.phone && (
+                            <small className="text-muted d-flex align-items-center">
+                              <i className="fa fa-phone me-1"></i>
+                              {history.user.phone || "Not Provided"}
+                            </small>
+                          )}
+                        </div>
+                        <Badge
+                          color="primary"
+                          className="bg-opacity-10 border border-primary px-2 py-1"
+                          style={{ fontSize: "0.7rem" }}
+                        >
+                          {formatChoiceFieldValue(history.user.user_type) ||
+                            "Not Found"}
+                        </Badge>
                       </div>
-
-                      <Row>
-                        <Col md="4">
-                          <Card className="mb-0 shadow">
-                            <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
-                              <div className="bg-white rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center">
-                                <span>{icon}</span>
-                              </div>
-                              <div className="flex-grow-1">
-                                <h6 className="mb-1 fw-bold text-dark text-capitalize">
-                                  {history.device_type || "Unknown Device"}
-                                </h6>
-                                <small className="text-muted d-flex align-items-center">
-                                  <FaGlobe className="me-1" />
-                                  {history.browser_name || "Unknown"} •{" "}
-                                  {history.os || "Unknown"}
-                                </small>
-                              </div>
-                            </CardBody>
-                          </Card>
-                        </Col>
-                        <Col md="4">
-                          <Card className="mb-0 shadow">
-                            <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
-                              <div className="bg-white rounded-2 p-2 me-2">
-                                <FaMapMarkerAlt className="text-primary" />
-                              </div>
-                              <div>
-                                <small
-                                  className="text-muted d-block"
-                                  style={{ fontSize: "0.7rem" }}
-                                >
-                                  IP Address
-                                </small>
-                                <small className="fw-semibold text-dark">
-                                  {history.ip_address || "Unknown"}
-                                </small>
-                              </div>
-                            </CardBody>
-                          </Card>
-                        </Col>
-                        <Col md="4">
-                          <Card className="mb-0 shadow">
-                            <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
-                              <div className="bg-white rounded-2 p-2 me-2">
-                                <FaClock className="text-info" />
-                              </div>
-                              <div>
-                                <small
-                                  className="text-muted d-block"
-                                  style={{ fontSize: "0.7rem" }}
-                                >
-                                  Login Time
-                                </small>
-                                <small className="fw-semibold text-dark">
-                                  {formatDate(history.logged_in_at) ||
-                                    "Unknown"}
-                                </small>
-                              </div>
-                            </CardBody>
-                          </Card>
-                        </Col>
-                      </Row>
                     </div>
+
+                    <Row>
+                      <Col md="4">
+                        <Card className="mb-0 shadow">
+                          <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
+                            <div className="bg-white rounded-3 p-2 shadow-sm d-flex align-items-center justify-content-center">
+                              <span>{icon}</span>
+                            </div>
+                            <div className="flex-grow-1">
+                              <h6 className="mb-1 fw-bold text-dark text-capitalize">
+                                {history.device_type || "Unknown Device"}
+                              </h6>
+                              <small className="text-muted d-flex align-items-center">
+                                <FaGlobe className="me-1" />
+                                {history.browser_name || "Unknown"} •{" "}
+                                {history.os || "Unknown"}
+                              </small>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                      <Col md="4">
+                        <Card className="mb-0 shadow">
+                          <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
+                            <div className="bg-white rounded-2 p-2 me-2">
+                              <FaMapMarkerAlt className="text-primary" />
+                            </div>
+                            <div>
+                              <small
+                                className="text-muted d-block"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                IP Address
+                              </small>
+                              <small className="fw-semibold text-dark">
+                                {history.ip_address || "Unknown"}
+                              </small>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                      <Col md="4">
+                        <Card className="mb-0 shadow">
+                          <CardBody className="d-flex align-items-center gap-3 bg-light-dark rounded">
+                            <div className="bg-white rounded-2 p-2 me-2">
+                              <FaClock className="text-info" />
+                            </div>
+                            <div>
+                              <small
+                                className="text-muted d-block"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                Login Time
+                              </small>
+                              <small className="fw-semibold text-dark">
+                                {formatDate(history.logged_in_at) || "Unknown"}
+                              </small>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                    </Row>
                   </div>
-                );
-              }
-            )
+                </div>
+              );
+            })
           ) : (
             <div className="text-center py-5">
               <div className="bg-light-dark rounded-circle p-4 d-inline-flex mb-3">
@@ -290,6 +310,111 @@ const LoginHistory: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Pagination Section */}
+        {totalCount > pageSize && (
+          <Row className="mt-4">
+            <div className="d-flex justify-content-between align-items-center p-3">
+              <div className="px-2">
+                <p className="text-primary mb-0">
+                  Showing{" "}
+                  {totalCount === 0 ? "0" : (currentPage - 1) * pageSize + 1} to{" "}
+                  {currentResults.length === 0
+                    ? 0
+                    : (currentPage - 1) * pageSize + currentResults.length}{" "}
+                  of {totalCount} Records
+                </p>
+              </div>
+              <Pagination className="d-flex justify-content-end p-2 mb-0">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink first onClick={() => setCurrentPage(1)} />
+                </PaginationItem>
+                <PaginationItem disabled={!hasPreviousPage}>
+                  <PaginationLink
+                    previous
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  />
+                </PaginationItem>
+
+                {totalPages <= 7 ? (
+                  Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (pageNumber) => (
+                      <PaginationItem
+                        key={pageNumber}
+                        active={pageNumber === currentPage}
+                      >
+                        <PaginationLink
+                          onClick={() => setCurrentPage(pageNumber)}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )
+                ) : (
+                  <>
+                    <PaginationItem active={currentPage === 1}>
+                      <PaginationLink onClick={() => setCurrentPage(1)}>
+                        1
+                      </PaginationLink>
+                    </PaginationItem>
+
+                    {currentPage > 3 && (
+                      <PaginationItem disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    )}
+
+                    {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                      .filter(
+                        (pageNumber) =>
+                          pageNumber > 1 && pageNumber < totalPages
+                      )
+                      .map((pageNumber) => (
+                        <PaginationItem
+                          key={pageNumber}
+                          active={pageNumber === currentPage}
+                        >
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNumber)}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+
+                    {currentPage < totalPages - 2 && (
+                      <PaginationItem disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    )}
+
+                    <PaginationItem active={currentPage === totalPages}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(totalPages)}
+                      >
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
+                )}
+
+                <PaginationItem disabled={!hasNextPage}>
+                  <PaginationLink
+                    next
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    last
+                    onClick={() => setCurrentPage(totalPages)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            </div>
+          </Row>
+        )}
       </CardBody>
     </Card>
   );
