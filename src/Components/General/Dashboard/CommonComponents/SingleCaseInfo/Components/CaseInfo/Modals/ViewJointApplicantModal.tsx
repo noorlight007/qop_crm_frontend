@@ -1,4 +1,4 @@
-import { JointUserViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
+import { JointApplicantViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import {
@@ -11,12 +11,12 @@ import {
   Row,
 } from "reactstrap";
 
-const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
+const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
   isOpen,
   toggle,
-  selectedUser,
+  selectedApplicant,
 }) => {
-  if (!selectedUser) return null;
+  if (!selectedApplicant) return null;
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
@@ -27,41 +27,43 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
           <Col md="4" sm="12" className="d-flex flex-column">
             <span className="text-muted">Name:</span>
             <small>
-              {selectedUser.joint_user_details?.title
-                ? formatChoiceFieldValue(selectedUser.joint_user_details?.title)
+              {selectedApplicant.joint_user_details?.title
+                ? formatChoiceFieldValue(
+                    selectedApplicant.joint_user_details?.title
+                  )
                 : ""}{" "}
-              {selectedUser.joint_user_details?.first_name}{" "}
-              {selectedUser.joint_user_details?.middle_name}{" "}
-              {selectedUser.joint_user_details?.last_name}
+              {selectedApplicant.joint_user_details?.first_name}{" "}
+              {selectedApplicant.joint_user_details?.middle_name}{" "}
+              {selectedApplicant.joint_user_details?.last_name}
             </small>
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column">
             <span className="text-muted">Email:</span>
-            {selectedUser.joint_user_details?.email ? (
-              <small>{selectedUser.joint_user_details?.email}</small>
+            {selectedApplicant.joint_user_details?.email ? (
+              <small>{selectedApplicant.joint_user_details?.email}</small>
             ) : (
               <span className="text-muted small">Not available</span>
             )}
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column">
             <span className="text-muted">Phone:</span>
-            {selectedUser.joint_user_details?.phone ? (
+            {selectedApplicant.joint_user_details?.phone ? (
               <a
                 className="text-dark text_decoration_hover small"
-                href={`tel:${selectedUser.joint_user_details?.phone}`}
+                href={`tel:${selectedApplicant.joint_user_details?.phone}`}
               >
-                {selectedUser.joint_user_details?.phone}
+                {selectedApplicant.joint_user_details?.phone}
               </a>
             ) : (
               <span className="text-muted small">Not available</span>
             )}
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">User Type:</span>
+            <span className="text-muted">Applicant Type:</span>
             <small>
-              {selectedUser.joint_user_details?.user_type ? (
+              {selectedApplicant.joint_user_details?.user_type ? (
                 formatChoiceFieldValue(
-                  selectedUser.joint_user_details?.user_type
+                  selectedApplicant.joint_user_details?.user_type
                 )
               ) : (
                 <span className="text-muted">Not available</span>
@@ -71,8 +73,8 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Created At:</span>
             <small>
-              {(selectedUser?.created_at &&
-                formatDateAndTime(selectedUser?.created_at)) || (
+              {(selectedApplicant?.created_at &&
+                formatDateAndTime(selectedApplicant?.created_at)) || (
                 <span className="text-muted">Not available</span>
               )}
             </small>
@@ -80,14 +82,16 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Created By:</span>
             <small>
-              {selectedUser?.created_by ? (
+              {selectedApplicant?.created_by ? (
                 <>
-                  {selectedUser?.created_by.title
-                    ? formatChoiceFieldValue(selectedUser?.created_by.title)
+                  {selectedApplicant?.created_by.title
+                    ? formatChoiceFieldValue(
+                        selectedApplicant?.created_by.title
+                      )
                     : ""}{" "}
-                  {selectedUser?.created_by.first_name}{" "}
-                  {selectedUser?.created_by.middle_name}{" "}
-                  {selectedUser?.created_by.last_name}
+                  {selectedApplicant?.created_by.first_name}{" "}
+                  {selectedApplicant?.created_by.middle_name}{" "}
+                  {selectedApplicant?.created_by.last_name}
                 </>
               ) : (
                 "Not available"
@@ -98,8 +102,10 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
               style={{ marginTop: "-6px", fontSize: "10px" }}
             >
               (
-              {selectedUser?.created_by?.user_type
-                ? formatChoiceFieldValue(selectedUser?.created_by?.user_type)
+              {selectedApplicant?.created_by?.user_type
+                ? formatChoiceFieldValue(
+                    selectedApplicant?.created_by?.user_type
+                  )
                 : "Not available"}
               )
             </small>
@@ -107,9 +113,9 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Relationship:</span>
             <small>
-              {selectedUser?.relationship === "OTHER"
-                ? selectedUser?.other_relationship
-                : selectedUser?.relationship || (
+              {selectedApplicant?.relationship === "OTHER"
+                ? selectedApplicant?.other_relationship
+                : selectedApplicant?.relationship || (
                     <span className="text-muted">Not specified</span>
                   )}
             </small>
@@ -117,7 +123,7 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
           <Col md="6" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Notes:</span>
             <small>
-              {selectedUser?.notes || (
+              {selectedApplicant?.notes || (
                 <span className="text-muted">Not available</span>
               )}
             </small>
@@ -133,4 +139,4 @@ const ViewJointUserModal: React.FC<JointUserViewModalProps> = ({
   );
 };
 
-export default ViewJointUserModal;
+export default ViewJointApplicantModal;

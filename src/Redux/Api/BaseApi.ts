@@ -199,7 +199,7 @@ export const baseApi = createApi({
     "CaseDetails",
     "SectionCompleteStatus",
     "CasesSummary",
-    "JointUserDetails",
+    "JointApplicantDetails",
     "CaseDocuments",
     "CaseCopy",
     // Single case info end

@@ -1,6 +1,6 @@
-export interface JointUserProps {
-  jointUserInfo?: any | undefined;
-  fetchJointUserInfo?: any | undefined;
+export interface JointApplicantProps {
+  jointApplicantInfo?: any | undefined;
+  fetchJointApplicantInfo?: any | undefined;
   isLoading?: boolean;
   alias?: string;
   joint_user_details?: {
@@ -18,23 +18,23 @@ export interface JointUserProps {
   other_relationship?: string;
   notes?: string;
 }
-export interface AddJointUserModalProps {
+export interface AddJointApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   handleFileUpload?: any;
 }
-export interface UpdateJointUserModalProps {
+export interface UpdateJointApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   user: any;
 }
-export interface JointUserDeleteModalProps {
+export interface JointApplicantDeleteModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedUser?: any;
+  selectedApplicant?: any;
 }
-export interface JointUserViewModalProps {
+export interface JointApplicantViewModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedUser?: any;
+  selectedApplicant?: any;
 }

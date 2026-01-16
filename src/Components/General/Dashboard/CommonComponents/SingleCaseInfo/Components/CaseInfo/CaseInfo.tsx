@@ -33,7 +33,12 @@ import {
 import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 
-const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
+const CaseInfo: React.FC<SingleCaseProps> = ({
+  caseInfo,
+  isLoading,
+  jointApplicantInfo,
+  isJointApplicantLoading,
+}) => {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -181,7 +186,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
         <Row className="px-3 mt-3">
           {/* Client User Card */}
-          <Col sm={12} md={6}>
+          <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
@@ -256,9 +261,85 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
+          {/* Joint Applicants Card */}
+          <Col sm={12} md={4}>
+            <Card className="shadow">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
+                <CardHeader className="pt-0 pb-1 m-0 text-center">
+                  <h6 className="fw-bold">Joint Applicants</h6>
+                </CardHeader>
+                {isLoading ? (
+                  <Row className="pt-2">
+                    <Col xs="12" className="text-center">
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        color="primary"
+                      />
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="pt-2">
+                    <Col xs="12">
+                      <h6 className="pt-1">
+                        <span className="small">Name:</span>{" "}
+                        <strong className="small">
+                          {displayLeadUser?.title
+                            ? formatChoiceFieldValue(displayLeadUser.title)
+                            : ""}{" "}
+                          {displayLeadUser?.first_name}{" "}
+                          {displayLeadUser?.middle_name}{" "}
+                          {displayLeadUser?.last_name}
+                          {caseInfo?.joint_users &&
+                          caseInfo.joint_users.length > 0 ? (
+                            <>
+                              <small className="fw-lighter">
+                                {" "}
+                                (Joint Applicant)
+                              </small>
+                            </>
+                          ) : (
+                            ""
+                          )}
+                        </strong>
+                      </h6>
+                      <h6 className="pt-1">
+                        <span className="small">Email:</span>{" "}
+                        <strong>
+                          <small>{displayLeadUser?.email}</small>
+                        </strong>
+                      </h6>
+                      <h6 className="pt-1">
+                        {displayLeadUser?.phone ? (
+                          <>
+                            <span className="small">Phone:</span>{" "}
+                            <strong>
+                              <a
+                                className="text-dark text_decoration_hover small"
+                                href={`tel:${displayLeadUser?.phone}`}
+                              >
+                                {displayLeadUser?.phone}
+                              </a>
+                            </strong>
+                          </>
+                        ) : (
+                          <>
+                            <span className="small">Phone:</span>{" "}
+                            <strong className="text-muted opacity-50 small">
+                              Not Found
+                            </strong>
+                          </>
+                        )}
+                      </h6>
+                    </Col>
+                  </Row>
+                )}
+              </CardBody>
+            </Card>
+          </Col>
 
           {/* Case Info Card */}
-          <Col sm={12} md={6}>
+          <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-primary ">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">

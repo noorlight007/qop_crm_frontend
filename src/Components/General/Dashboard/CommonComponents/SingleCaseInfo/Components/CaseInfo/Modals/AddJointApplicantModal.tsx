@@ -1,8 +1,7 @@
-import { useUpdateJointUserInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointUser/JointUserDetailsApi";
-import { UpdateJointUserModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
-import { isEqual } from "lodash";
+import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantApi";
+import { AddJointApplicantModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -18,111 +17,101 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
+const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
   isOpen,
   toggle,
-  user,
 }) => {
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const params = useParams();
   const { casealias } = params;
-  const [updateJointUserInfo, { isLoading }] = useUpdateJointUserInfoMutation();
+  const [addJointApplicantInfo, { isLoading: isAddingJointApplicant }] =
+    useAddJointApplicantInfoMutation(undefined);
 
   const [formData, setFormData] = useState({
     title: "",
-    first_name: "",
-    middle_name: "",
-    last_name: "",
-    email: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     phone: "",
+    email: "",
     relationship: "",
     other_relationship: "",
+    profileImage: "",
     notes: "",
   });
 
-  // Populate formData when user changes
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        title: user?.joint_user_details?.title || "",
-        first_name: user?.joint_user_details?.first_name || "",
-        middle_name: user?.joint_user_details?.middle_name || "",
-        last_name: user?.joint_user_details?.last_name || "",
-        email: user?.joint_user_details?.email || "",
-        phone: user?.joint_user_details?.phone || "",
-        relationship: user?.relationship || "",
-        other_relationship: user?.other_relationship || "",
-        notes: user?.notes || "",
-      });
-    }
-  }, [user]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const handleSave = async () => {
-    // Determine if the email has changed
-    const originalEmail = user?.joint_user_details?.email || "";
-    const hasEmailChanged = formData.email !== originalEmail;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setProfileImage(e.target.files[0]);
+    }
+  };
 
-    // Prepare the payload, conditionally including the email field
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const payload = {
-      case_alias: casealias,
-      userAlias: user.alias,
-      updatedJointuserInfo: {
-        joint_user: {
-          title: formData.title,
-          first_name: formData.first_name,
-          middle_name: formData.middle_name,
-          last_name: formData.last_name,
-          phone: formData.phone,
-
-          ...(hasEmailChanged && { email: formData.email }), // Only include email if it has changed
-        },
-        relationship: formData.relationship,
-        other_relationship: formData.other_relationship,
-        notes: formData.notes,
+      joint_user: {
+        title: formData.title,
+        first_name: formData.firstName,
+        middle_name: formData.middleName,
+        last_name: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
       },
+      relationship: formData.relationship,
+      notes: formData.notes,
     };
-
-    const res = await updateJointUserInfo(payload);
-
+    const res = await addJointApplicantInfo({
+      case_alias: casealias,
+      jointuserInfo: payload,
+    });
     if (res.data) {
-      toast.success("User updated successfully!");
+      toast.success("Joint user added successfully!");
+      // Reset form data after successful submission
+      setFormData({
+        title: "",
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        relationship: "",
+        other_relationship: "",
+        profileImage: "",
+        notes: "",
+      });
       toggle();
-      console.log("Update successful:", res.data);
     } else if ("error" in res) {
       const errorMessage =
         (res.error as any)?.data?.joint_user?.email?.[0] ||
-        "Failed to update user information.";
+        "Failed to add joint user.";
       toast.error(errorMessage);
     }
   };
 
-  // Compare current data with the original data
-  const hasChanges = !isEqual(formData, {
-    title: user?.joint_user_details?.title || "",
-    first_name: user?.joint_user_details?.first_name || "",
-    middle_name: user?.joint_user_details?.middle_name || "",
-    last_name: user?.joint_user_details?.last_name || "",
-    email: user?.joint_user_details?.email || "",
-    phone: user?.joint_user_details?.phone || "",
-    relationship: user?.relationship || "",
-    notes: user?.notes || "",
-  });
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Joint Applicant</span>
+        <span className="fs-4 text-primary">Add Joint Applicant</span>
       </ModalHeader>
-      <ModalBody>
-        <Form>
+      <Form onSubmit={handleSubmit}>
+        <ModalBody>
           <Row>
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="title">
+                <Label for="title" className="form-label">
                   Title<span className="text-danger">*</span>
                 </Label>
                 <Input
@@ -146,59 +135,80 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
                 </Input>
               </FormGroup>
             </Col>
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="firstName">First Name</Label>
+                <Label for="first_name" className="form-label">
+                  First Name<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="firstName"
-                  name="first_name"
-                  value={formData.first_name}
+                  type="text"
+                  id="first_name"
+                  name="firstName"
+                  required
+                  placeholder="Enter first name"
+                  value={formData.firstName}
                   onChange={handleInputChange}
                 />
               </FormGroup>
             </Col>
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="middleName">Middle Name</Label>
+                <Label for="middle_name" className="form-label">
+                  Middle Name
+                </Label>
                 <Input
-                  id="middleName"
-                  name="middle_name"
-                  value={formData.middle_name}
+                  type="text"
+                  id="middle_name"
+                  name="middleName"
+                  placeholder="Enter middle name"
+                  value={formData.middleName}
                   onChange={handleInputChange}
                 />
               </FormGroup>
             </Col>
-
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="lastName">Last Name</Label>
+                <Label for="last_name" className="form-label">
+                  Last Name<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="lastName"
-                  name="last_name"
-                  value={formData.last_name}
+                  type="text"
+                  id="last_name"
+                  name="lastName"
+                  required
+                  placeholder="Enter last name"
+                  value={formData.lastName}
                   onChange={handleInputChange}
                 />
               </FormGroup>
-            </Col>
-            <Col xl={6} md={12}>
+            </Col>{" "}
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for="email" className="form-label">
+                  Email<span className="text-danger">*</span>
+                </Label>
                 <Input
+                  type="email"
                   id="email"
                   name="email"
-                  type="email"
+                  required
+                  placeholder="Enter email"
                   value={formData.email}
                   onChange={handleInputChange}
                 />
               </FormGroup>
             </Col>
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="phone">Phone</Label>
+                <Label for="phone" className="form-label">
+                  Phone<span className="text-danger">*</span>
+                </Label>
                 <Input
+                  type="number"
                   id="phone"
                   name="phone"
-                  type="number"
+                  required
+                  placeholder="Enter phone number"
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
@@ -240,35 +250,34 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
                 </FormGroup>
               </Col>
             )}
-            <Col xl={6} md={12}>
+            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="notes">Note</Label>
+                <Label for="notes" className="form-label">
+                  Notes
+                </Label>
                 <Input
                   type="textarea"
                   id="notes"
                   name="notes"
+                  placeholder="Enter notes"
                   value={formData.notes}
                   onChange={handleInputChange}
                 />
               </FormGroup>
             </Col>
           </Row>
-        </Form>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
-          Cancel
-        </Button>{" "}
-        <Button
-          color="primary"
-          onClick={handleSave}
-          disabled={!hasChanges || isLoading}
-        >
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
-      </ModalFooter>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={toggle} block>
+            Cancel
+          </Button>
+          <Button color="primary" block={isAddingJointApplicant}>
+            {isAddingJointApplicant ? "Saving..." : "Save Joint Applicant"}
+          </Button>
+        </ModalFooter>
+      </Form>
     </Modal>
   );
 };
 
-export default UpdateJointUserModal;
+export default AddJointApplicantModal;

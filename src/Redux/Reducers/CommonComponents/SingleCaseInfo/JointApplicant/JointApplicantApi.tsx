@@ -1,8 +1,8 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const JointUserDetailsApi = baseApi.injectEndpoints({
+export const JointApplicantApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getJointUserInfo: builder.query({
+    getJointApplicantInfo: builder.query({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/joint/users/`,
         method: "GET",
@@ -10,12 +10,12 @@ export const JointUserDetailsApi = baseApi.injectEndpoints({
       providesTags: [
         "ApplicantsDetails",
         "EmploymentDetails",
-        "JointUserDetails",
+        "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
       ],
     }),
-    addJointUserInfo: builder.mutation({
+    addJointApplicantInfo: builder.mutation({
       query: ({ case_alias, jointuserInfo }) => ({
         url: `/cases/${case_alias}/joint/users/`,
         method: "POST",
@@ -24,12 +24,12 @@ export const JointUserDetailsApi = baseApi.injectEndpoints({
       invalidatesTags: [
         "ApplicantsDetails",
         "EmploymentDetails",
-        "JointUserDetails",
+        "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
       ],
     }),
-    updateJointUserInfo: builder.mutation({
+    updateJointApplicantInfo: builder.mutation({
       query: ({ case_alias, userAlias, updatedJointuserInfo }) => ({
         url: `/cases/${case_alias}/joint/users/${userAlias}/`,
         method: "PUT",
@@ -38,12 +38,12 @@ export const JointUserDetailsApi = baseApi.injectEndpoints({
       invalidatesTags: [
         "ApplicantsDetails",
         "EmploymentDetails",
-        "JointUserDetails",
+        "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
       ],
     }),
-    deleteJointUserInfo: builder.mutation({
+    deleteJointApplicantInfo: builder.mutation({
       query: ({ case_alias, userAlias }) => ({
         url: `/cases/${case_alias}/joint/users/${userAlias}/`,
         method: "DELETE",
@@ -51,7 +51,7 @@ export const JointUserDetailsApi = baseApi.injectEndpoints({
       invalidatesTags: [
         "ApplicantsDetails",
         "EmploymentDetails",
-        "JointUserDetails",
+        "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
       ],
@@ -60,8 +60,8 @@ export const JointUserDetailsApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useGetJointUserInfoQuery,
-  useAddJointUserInfoMutation,
-  useUpdateJointUserInfoMutation,
-  useDeleteJointUserInfoMutation,
-} = JointUserDetailsApi;
+  useGetJointApplicantInfoQuery,
+  useAddJointApplicantInfoMutation,
+  useUpdateJointApplicantInfoMutation,
+  useDeleteJointApplicantInfoMutation,
+} = JointApplicantApi;
