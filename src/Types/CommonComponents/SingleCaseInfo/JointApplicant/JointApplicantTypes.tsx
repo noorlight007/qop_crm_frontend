@@ -28,10 +28,11 @@ export interface UpdateJointApplicantModalProps {
   toggle: () => void;
   user: any;
 }
-export interface JointApplicantDeleteModalProps {
+export interface DeleteJointApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedApplicant?: any;
+  onDelete?: () => void;
 }
 export interface JointApplicantViewModalProps {
   isOpen: boolean;

@@ -1,6 +1,7 @@
 import { JointApplicantViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useState } from "react";
 import { FaRegWindowClose, FaTrash } from "react-icons/fa";
 import { TbUserEdit } from "react-icons/tb";
 import {
@@ -12,12 +13,25 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import DeleteJointApplicantModal from "./DeleteJointApplicantModal";
+import UpdateJointApplicantModal from "./UpdateJointApplicantModal";
 
 const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
   isOpen,
   toggle,
   selectedApplicant,
 }) => {
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
+
+  const handleDeleteSuccess = () => {
+    setIsDeleteModalOpen(false);
+    toggle();
+  };
+
   if (!selectedApplicant) return null;
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -124,10 +138,10 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
       </ModalBody>
       <ModalFooter className="d-flex justify-content-between">
         <div className="d-flex gap-1 align-items-center">
-          <Button color="danger">
+          <Button color="danger" onClick={toggleDeleteModal}>
             <FaTrash /> Delete
           </Button>
-          <Button color="secondary">
+          <Button color="secondary" onClick={toggleUpdateModal}>
             <TbUserEdit /> Edit
           </Button>
         </div>
@@ -140,6 +154,17 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
           Close
         </Button>
       </ModalFooter>
+      <UpdateJointApplicantModal
+        isOpen={isUpdateModalOpen}
+        toggle={toggleUpdateModal}
+        user={selectedApplicant}
+      />
+      <DeleteJointApplicantModal
+        isOpen={isDeleteModalOpen}
+        toggle={toggleDeleteModal}
+        selectedApplicant={selectedApplicant}
+        onDelete={handleDeleteSuccess}
+      />
     </Modal>
   );
 };
