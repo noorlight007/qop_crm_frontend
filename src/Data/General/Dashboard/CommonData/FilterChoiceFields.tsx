@@ -14,7 +14,7 @@ export const caseCategories = [
 ];
 
 export const mortgageStages = [
-  { value: "", label: "Select..." },
+  { value: "", label: "All Stages" },
   { value: "ENQUIRY", label: "Enquiry" },
   { value: "FACT_FIND", label: "Fact Find" },
   {
@@ -35,7 +35,7 @@ export const mortgageStages = [
 ];
 
 export const insuranceCaseStages = [
-  { value: "", label: "Select..." },
+  { value: "", label: "All Stages" },
   { value: "ENQUIRY", label: "Enquiry" },
   { value: "FACT_FIND", label: "Fact Find" },
   { value: "SUBMISSION", label: "Submission" },
