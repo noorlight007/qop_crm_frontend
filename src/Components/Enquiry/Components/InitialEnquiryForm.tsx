@@ -264,7 +264,7 @@ const InitialEnquiryForm: React.FC = () => {
         <div className="d-flex align-items-center justify-content-center p-4">
           <div style={{ maxWidth: "500px", width: "100%" }}>
             {/* Success Card */}
-            <Card className="border-0 shadow">
+            <Card className="border-0 shadow-lg">
               <button
                 onClick={handleCloseSuccess}
                 className="btn btn-link position-absolute top-0 end-0 text-secondary p-3"
@@ -305,7 +305,7 @@ const InitialEnquiryForm: React.FC = () => {
           </div>
         </div>
       ) : (
-        <Card className="shadow-sm border-0 justify-content-center">
+        <Card className="shadow-lg border-0 justify-content-center">
           <CardBody className="p-4">
             {apiErrors.length > 0 && (
               <div className="mb-3">

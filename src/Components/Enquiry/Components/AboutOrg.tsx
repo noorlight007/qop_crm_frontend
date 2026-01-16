@@ -1,6 +1,5 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import Image from "next/image";
-import Link from "next/link";
 import { Card } from "reactstrap";
 import imageTwo from "../../../../public/assets/images/logo/logo-dark.png";
 
@@ -10,7 +9,7 @@ const AboutOrg: React.FC = () => {
   return (
     <Card className="p-3 mb-3">
       <div className="d-flex justify-content-center">
-        <Link className="logo" href="/">
+        <div className="logo">
           <Image
             width={300}
             height={100}
@@ -20,9 +19,11 @@ const AboutOrg: React.FC = () => {
             priority
             style={{ width: "160px", height: "60px" }}
           />
-        </Link>
+        </div>
       </div>
-      <h4>About Our {appearanceData?.site_title || "Company"}</h4>
+      <h4>
+        About Our <b>{appearanceData?.site_title || "Company"}</b>
+      </h4>
       <p className="text-title-gray">
         {appearanceData?.about
           ? appearanceData.about
