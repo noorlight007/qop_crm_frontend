@@ -1236,9 +1236,15 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               <FormGroup>
                 <Label for="effective_from">
                   Effective From*
-                  <small className="text-danger">
-                    (Three years address history required)
-                  </small>
+                  {formValues.effective_from &&
+                  new Date(formValues.effective_from) <
+                    new Date(
+                      new Date().setFullYear(new Date().getFullYear() - 3)
+                    ) ? null : (
+                    <small className="text-danger">
+                      (Three years address history required)
+                    </small>
+                  )}
                 </Label>
                 <Input
                   id="effective_from"
