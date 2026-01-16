@@ -191,6 +191,57 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     (applicant: any) => !selectedApplicants.includes(applicant.id.toString())
   );
 
+  const getAddressErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+
+    if (typeof err === "string") return err;
+
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+
+      if (typeof value === "string") return [value];
+
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v)
+        );
+
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   const fetchAddressByPostcode = async (postcode: string) => {
     if (!postcode) return;
     setIsSearchingPostcode(true);
@@ -200,8 +251,10 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       );
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
-    } catch (err) {
-      console.error("Error looking up address:", err);
+    } catch (err: any) {
+      console.log("Raw Axios Error:", err);
+      const message = getAddressErrorMessage(err.response || err);
+      toast.error(message);
     } finally {
       setIsSearchingPostcode(false);
     }

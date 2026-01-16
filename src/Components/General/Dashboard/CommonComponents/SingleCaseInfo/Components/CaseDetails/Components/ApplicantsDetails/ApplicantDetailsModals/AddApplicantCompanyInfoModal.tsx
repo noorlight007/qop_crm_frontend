@@ -215,30 +215,87 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     }
   };
 
-  const fetchCompanyDetails = () => {
-    if (!formData.company_registration_number) {
-      toast.error("Please enter a company registration number");
-      return;
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+
+    if (typeof err === "string") return err;
+
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+
+      if (typeof value === "string") return [value];
+
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v)
+        );
+
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+
+      if (msgs.length) return msgs.join(", ");
     }
 
-    setFormData((prev) => ({
-      company_name: "",
-      company_registration_number: prev.company_registration_number,
-      date_of_incorporation: null,
-      company_type: "PRIVATE_LIMITED",
-      trade_business_type: "",
-      sic_code: "",
-      is_spv: false,
-      postcode: "",
-      house_number_or_name: "",
-      address_line1: "",
-      city: "",
-      county: "",
-      country: "",
-      directors_shareholders: [],
-    }));
-    setNumberOfDirectors("0");
-    setShouldFetch(true);
+    if (err?.error) return String(err.error);
+
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
+  const fetchCompanyDetails = () => {
+    try {
+      if (!formData.company_registration_number) {
+        toast.error("Please enter a company registration number");
+        return;
+      }
+
+      setFormData((prev) => ({
+        company_name: "",
+        company_registration_number: prev.company_registration_number,
+        date_of_incorporation: null,
+        company_type: "PRIVATE_LIMITED",
+        trade_business_type: "",
+        sic_code: "",
+        is_spv: false,
+        postcode: "",
+        house_number_or_name: "",
+        address_line1: "",
+        city: "",
+        county: "",
+        country: "",
+        directors_shareholders: [],
+      }));
+      setNumberOfDirectors("0");
+      setShouldFetch(true);
+    } catch (err: any) {
+      console.log("Setup Error:", err);
+      const errorMsg = getErrorMessage(err.response || err);
+      toast.error(errorMsg);
+    }
   };
 
   // Map company type from API to your form values
@@ -304,12 +361,14 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   }, [companyDetails, shouldFetch]);
 
   useEffect(() => {
-    if (error && shouldFetch) {
-      console.error("Error:", error);
-      toast.error("Failed to fetch company details");
-      setShouldFetch(false);
-    }
-  }, [error, shouldFetch]);
+  if (error && shouldFetch) {
+    console.error("Error detected:", error);
+    const errMessage = getErrorMessage(error);
+    toast.error(errMessage);
+
+    setShouldFetch(false);
+  }
+}, [error, shouldFetch]);
 
   if (isLoading)
     return (
