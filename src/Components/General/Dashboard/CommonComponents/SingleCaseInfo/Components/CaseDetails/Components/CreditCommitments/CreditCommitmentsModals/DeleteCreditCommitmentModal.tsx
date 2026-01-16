@@ -11,6 +11,7 @@ const DeleteCreditCommitmentModal: React.FC<
   casealias,
   creditCommitmentAlias,
   creditCommitmentName,
+  onDelete,
 }) => {
   // rtk hooks
   const [deleteCreditCommitmentsDetails, { isLoading }] =
@@ -23,13 +24,20 @@ const DeleteCreditCommitmentModal: React.FC<
         case_alias: casealias,
         creditCommitment_alias: creditCommitmentAlias,
       });
-      if (res.data) {
+      if (res.data || !("error" in res)) {
         toast.success("Credit Commitment deleted successfully");
-      } else {
-        toast.error("Failed to delete Credit Commitment");
+        toggle();
+        if (onDelete) {
+          onDelete();
+        }
+      } else if ("error" in res) {
+        const errorMessage =
+          (res.error as any)?.data?.detail ||
+          "Failed to delete Credit Commitment";
+        toast.error(errorMessage);
       }
-      toggle();
     } catch (error) {
+      console.error("Error deleting credit commitment:", error);
       toast.error("Failed to delete Credit Commitment");
     }
   };
