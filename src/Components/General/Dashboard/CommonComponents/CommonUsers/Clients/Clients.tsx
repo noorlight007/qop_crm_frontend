@@ -7,7 +7,9 @@ import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
 import { TbMailShare } from "react-icons/tb";
 import {
@@ -180,7 +182,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
@@ -203,7 +205,23 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
               ) : currentClients.length > 0 ? (
                 currentClients.map((client: any) => (
                   <tr key={client.alias} className="text-center">
-                    <td>
+                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                      <span
+                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                        style={{ width: 40, height: 40 }}
+                      >
+                        {client.user?.profile_image ? (
+                          <Image
+                            src={client.user.profile_image}
+                            alt="Profile"
+                            width={35}
+                            height={35}
+                            className="rounded-circle"
+                          />
+                        ) : (
+                          <User size={30} className="text-primary" />
+                        )}
+                      </span>
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
