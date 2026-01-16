@@ -33,6 +33,7 @@ import {
   Spinner,
 } from "reactstrap";
 import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
+import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
@@ -58,6 +59,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState(false);
   const [selectedJointApplicant, setSelectedJointApplicant] =
     useState<any>(null);
+  const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
+    useState(false);
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
@@ -88,6 +91,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
 
   const toggleViewJointApplicantModal = () =>
     setIsViewJointApplicantModalOpen(!isViewJointApplicantModalOpen);
+
+  const toggleAddJointApplicantModal = () =>
+    setIsAddJointApplicantModalOpen(!isAddJointApplicantModalOpen);
 
   const openViewJointApplicantModal = (jointApplicant: any) => {
     setSelectedJointApplicant(jointApplicant);
@@ -275,6 +281,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     color="primary"
                     size="xs"
                     className="position-absolute"
+                    onClick={toggleAddJointApplicantModal}
                     style={{
                       top: "30%",
                       right: "0px",
@@ -302,9 +309,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           style={{
                             listStyleType: "disc",
                             paddingLeft: "20px",
-                            maxHeight: "55px",
+                            height: "55px",
                             overflowY: "auto",
                           }}
+                          className="text-primary"
                         >
                           {jointApplicantInfo.map((jointApplicant, index) => (
                             <li key={index}>
@@ -732,6 +740,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           selectedApplicant={selectedJointApplicant}
         />
       )}
+      <AddJointApplicantModal
+        isOpen={isAddJointApplicantModalOpen}
+        toggle={toggleAddJointApplicantModal}
+      />
     </Col>
   );
 };

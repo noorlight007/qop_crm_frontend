@@ -71,6 +71,7 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
         phone: formData.phone,
       },
       relationship: formData.relationship,
+      other_relationship: formData.other_relationship,
       notes: formData.notes,
     };
     const res = await addJointApplicantInfo({
