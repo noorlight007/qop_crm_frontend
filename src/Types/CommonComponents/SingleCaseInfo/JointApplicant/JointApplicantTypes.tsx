@@ -27,6 +27,7 @@ export interface UpdateJointApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   user: any;
+  onUpdateSuccess?: (updatedApplicant: any) => void;
 }
 export interface DeleteJointApplicantModalProps {
   isOpen: boolean;

@@ -22,6 +22,7 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
   isOpen,
   toggle,
   user,
+  onUpdateSuccess,
 }) => {
   const params = useParams();
   const { casealias } = params;
@@ -91,6 +92,9 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
 
     if (res.data) {
       toast.success("Applicant updated successfully!");
+      if (onUpdateSuccess) {
+        onUpdateSuccess(res.data);
+      }
       toggle();
       console.log("Update successful:", res.data);
     } else if ("error" in res) {
