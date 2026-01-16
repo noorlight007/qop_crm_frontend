@@ -1,4 +1,5 @@
 import { useGetApplicantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
+import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
 import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
 import { apiAddress } from "@/services/third-party-api";
@@ -6,6 +7,7 @@ import { AddressDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/Cas
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import {
   Button,
   Col,
@@ -17,7 +19,6 @@ import {
   Spinner,
 } from "reactstrap";
 import GetAddressModal from "../../../../CommonModals/GetAddressModal";
-import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
 
 const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Get case alias from URL params
@@ -43,9 +44,8 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   // Add local error state
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const [
-  getPropertyEPCRating,{ isLoading: isEpcLoading},
-] = useGetPropertyEPCRatingMutation();
+  const [getPropertyEPCRating, { isLoading: isEpcLoading }] =
+    useGetPropertyEPCRatingMutation();
 
   useEffect(() => {
     if (propertyData) {
@@ -156,6 +156,57 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     return true;
   };
 
+  const getAddressErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+
+    if (typeof err === "string") return err;
+
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+
+      if (typeof value === "string") return [value];
+
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v)
+        );
+
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   const fetchAddressByPostcode = async (postcode: string) => {
     if (!postcode) return;
     setIsSearchingPostcode(true);
@@ -166,8 +217,10 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       );
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
-    } catch (err) {
-      console.error("Error looking up address:", err);
+    } catch (err: any) {
+      console.log("Raw Axios Error:", err);
+      const message = getAddressErrorMessage(err.response || err);
+      toast.error(message);
     } finally {
       setIsSearchingPostcode(false);
     }
@@ -196,7 +249,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     dispatch(updateProperty({ epc_rating: "" }));
 
     try {
-      // Calling the specific get/{id} endpoint
       const res = await apiAddress.get(
         `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
       );
@@ -208,13 +260,11 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
         return;
       }
 
-      // Dispatching the detailed data to your Redux store
       dispatch(
         updateProperty({
           postcode: address.postcode,
-          // Often building name/number are separate; we prioritize building_name
           house_name_or_number:
-          address.building_name || address.building_number || "",
+            address.building_name || address.building_number || "",
           address_one: address.line_1,
           address_two: address.line_2,
           address_three: address.line_3,
@@ -232,14 +282,11 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
         address_four: address.line_4,
       });
 
-      console.log("📍 EPC request address:", fullAddressForEPC);
-
       const epcResponse = await getPropertyEPCRating({
         case_alias: casealias as string,
         property_postcode: address.postcode,
         property_address: fullAddressForEPC,
       }).unwrap();
-      console.log("✅ EPC Rating received:", epcResponse.epc_rating);
 
       dispatch(
         updateProperty({
@@ -307,14 +354,12 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     color="primary"
                     type="button"
                     className="mx-2 rounded"
-                    onClick={() => fetchAddressByPostcode(propertyState.postcode)}
+                    onClick={() =>
+                      fetchAddressByPostcode(propertyState.postcode)
+                    }
                     disabled={isFetchingAddress || isSearchingPostcode}
                   >
-                    {isSearchingPostcode ? (
-                      "Loading..."                      
-                    ) : (
-                      "Lookup"
-                    )}
+                    {isSearchingPostcode ? "Loading..." : "Lookup"}
                   </Button>
                   <Button
                     color="info"
