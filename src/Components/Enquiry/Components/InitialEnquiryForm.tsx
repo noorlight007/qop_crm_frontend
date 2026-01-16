@@ -169,6 +169,38 @@ const InitialEnquiryForm: React.FC = () => {
     }
   };
 
+  const validateStepAndCollectErrors = (step: number): Record<string, string> => {
+    const newErrors: Record<string, string> = {};
+
+    switch (step) {
+      case 1:
+        if (!formData.title) newErrors.title = "This field is required";
+        if (!formData.first_name) newErrors.first_name = "This field is required";
+        if (!formData.last_name) newErrors.last_name = "This field is required";
+        if (!formData.email) newErrors.email = "This field is required";
+        if (!formData.phone) newErrors.phone = "This field is required";
+        break;
+
+      case 2:
+        if (!formData.enquiry_type) newErrors.enquiry_type = "This field is required";
+        if (!formData.estimated_property_value) newErrors.estimated_property_value = "This field is required";
+        if (!formData.approximate_mortgage_required) newErrors.approximate_mortgage_required = "This field is required";
+        if (!formData.approximate_deposit_available) newErrors.approximate_deposit_available = "This field is required";
+        break;
+
+      case 3:
+        if (!formData.source) newErrors.source = "This field is required";
+        break;
+
+      case 4:
+        if (!formData.contact_consent) newErrors.contact_consent = "This field is required";
+        if (!formData.privacy_notice_consent) newErrors.privacy_notice_consent = "This field is required";
+        break;
+    }
+
+    return newErrors;
+  };
+
   const getFirstInvalidStep = (): number | null => {
     for (let step = 1; step <= 4; step++) {
       if (!validateStep(step)) {
@@ -179,9 +211,14 @@ const InitialEnquiryForm: React.FC = () => {
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep((prev) => prev + 1);
+    const stepErrors = validateStepAndCollectErrors(currentStep);
+    
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, ...stepErrors }));
+      return;
     }
+    
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrev = () => {
@@ -201,6 +238,8 @@ const InitialEnquiryForm: React.FC = () => {
 
     if (invalidStep) {
       setCurrentStep(invalidStep);
+      const stepErrors = validateStepAndCollectErrors(invalidStep);
+      setErrors((prev) => ({ ...prev, ...stepErrors }));
       return;
     }
 
@@ -305,8 +344,8 @@ const InitialEnquiryForm: React.FC = () => {
           </div>
         </div>
       ) : (
-        <Card className="shadow-lg border-0 justify-content-center">
-          <CardBody className="p-4">
+        <Card className="shadow-lg border-0 justify-content-center" style={{ minHeight: "500px", display: "flex", flexDirection: "column" }}>
+          <CardBody className="p-4" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
             {apiErrors.length > 0 && (
               <div className="mb-3">
                 <Alert color="danger" toggle={() => setApiErrors([])}>
@@ -345,14 +384,14 @@ const InitialEnquiryForm: React.FC = () => {
               />
             </Nav>
 
-            <Form innerRef={formRef} onSubmit={handleSubmit}>
+            <Form innerRef={formRef} onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", flex: 1 }}>
               {/* STEP 1 */}
               {currentStep === 1 && (
                 <>
                   <Row>
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Title *</Label>
+                        <Label>Title<span className="text-danger">*</span></Label>
                         <Input
                           type="select"
                           name="title"
@@ -380,7 +419,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>First Name *</Label>
+                        <Label>First Name<span className="text-danger">*</span></Label>
                         <Input
                           name="first_name"
                           value={formData.first_name}
@@ -411,7 +450,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Last Name *</Label>
+                        <Label>Last Name<span className="text-danger">*</span></Label>
                         <Input
                           name="last_name"
                           value={formData.last_name}
@@ -431,7 +470,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Email *</Label>
+                        <Label>Email<span className="text-danger">*</span></Label>
                         <Input
                           type="email"
                           name="email"
@@ -448,7 +487,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Mobile Number *</Label>
+                        <Label>Mobile Number<span className="text-danger">*</span></Label>
                         <Input
                           name="phone"
                           value={formData.phone}
@@ -471,7 +510,7 @@ const InitialEnquiryForm: React.FC = () => {
                   <Row>
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Enquiry Type *</Label>
+                        <Label>Enquiry Type<span className="text-danger">*</span></Label>
                         <Input
                           type="select"
                           name="enquiry_type"
@@ -529,7 +568,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Estimated Property Value (£) *</Label>
+                        <Label>Estimated Property Value (£)<span className="text-danger">*</span></Label>
                         <Input
                           name="estimated_property_value"
                           type="number"
@@ -553,7 +592,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Mortgage Required (£) *</Label>
+                        <Label>Approximate Mortgage Required (£)<span className="text-danger">*</span></Label>
                         <Input
                           name="approximate_mortgage_required"
                           type="number"
@@ -577,7 +616,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Deposit Available (£ or %) *</Label>
+                        <Label>Approximate Deposit Available (£ or %)<span className="text-danger">*</span></Label>
                         <Input
                           name="approximate_deposit_available"
                           type="number"
@@ -605,60 +644,53 @@ const InitialEnquiryForm: React.FC = () => {
               {/* STEP 3 */}
               {currentStep === 3 && (
                 <>
-                  <Col>
+                  <FormGroup>
+                    <Label>How did you hear about us?<span className="text-danger">*</span></Label>
+                    <Input
+                      type="select"
+                      name="source"
+                      required
+                      value={formData.source}
+                      onBlur={(e) => handleBlur("source", e.target.value)}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select...</option>
+                      <option value="GOOGLE">Google</option>
+                      <option value="SOCIAL_MEDIA">Social Media</option>
+                      <option value="REFERRAL">Referral</option>
+                      <option value="WEBSITE">Website</option>
+                      <option value="OTHER">Other</option>
+                    </Input>
+                    {errors.source && (
+                      <small className="text-danger">{errors.source}</small>
+                    )}
+                  </FormGroup>
+                  {formData.source === "OTHER" && (
                     <FormGroup>
-                      <Label>How did you hear about us? *</Label>
+                      <Label for="other_source">Other Source</Label>
                       <Input
-                        type="select"
-                        name="source"
-                        required
-                        value={formData.source}
+                        id="other_source"
+                        name="other_source"
+                        type="text"
+                        value={formData.other_source || ""}
                         onBlur={(e) => handleBlur("source", e.target.value)}
                         onChange={handleChange}
-                      >
-                        <option value="">Select...</option>
-                        <option value="GOOGLE">Google</option>
-                        <option value="SOCIAL_MEDIA">Social Media</option>
-                        <option value="REFERRAL">Referral</option>
-                        <option value="WEBSITE">Website</option>
-                        <option value="OTHER">Other</option>
-                      </Input>
+                      />
                       {errors.source && (
                         <small className="text-danger">{errors.source}</small>
                       )}
                     </FormGroup>
-                  </Col>
-                  {formData.source === "OTHER" && (
-                    <Col>
-                      <FormGroup>
-                        <Label for="other_source">Other Source</Label>
-                        <Input
-                          id="other_source"
-                          name="other_source"
-                          type="text"
-                          value={formData.other_source || ""}
-                          onBlur={(e) => handleBlur("source", e.target.value)}
-                          onChange={handleChange}
-                        />
-                        {errors.source && (
-                          <small className="text-danger">{errors.source}</small>
-                        )}
-                      </FormGroup>
-                    </Col>
                   )}
-
-                  <Col>
-                    <FormGroup>
-                      <Label>Notes / Additional Comments</Label>
-                      <Input
-                        type="textarea"
-                        name="notes"
-                        value={formData.notes}
-                        onChange={handleChange}
-                        rows={4}
-                      />
-                    </FormGroup>
-                  </Col>
+                  <FormGroup>
+                    <Label>Notes / Additional Comments</Label>
+                    <Input
+                      type="textarea"
+                      name="notes"
+                      value={formData.notes}
+                      onChange={handleChange}
+                      rows={4}
+                    />
+                  </FormGroup>
                 </>
               )}
 
@@ -751,7 +783,7 @@ const InitialEnquiryForm: React.FC = () => {
                 </>
               )}
 
-              <hr />
+              <hr style={{ marginTop: "auto" }} />
 
               <div className="d-flex justify-content-between">
                 {currentStep > 1 && (
