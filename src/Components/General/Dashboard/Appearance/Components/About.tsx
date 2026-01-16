@@ -65,7 +65,9 @@ const About: React.FC = () => {
       </CardBody>
 
       <Modal isOpen={isModalOpen} toggle={toggleModal} size="lg" centered>
-        <ModalHeader toggle={toggleModal}>Update About Information</ModalHeader>
+        <ModalHeader toggle={toggleModal}>
+          <h2 className="text-primary">Update About Information</h2>
+        </ModalHeader>
         <ModalBody>
           <Form>
             <FormGroup>
