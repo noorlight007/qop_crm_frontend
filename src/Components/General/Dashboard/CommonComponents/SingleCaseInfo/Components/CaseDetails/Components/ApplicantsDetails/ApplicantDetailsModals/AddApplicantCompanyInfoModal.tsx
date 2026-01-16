@@ -77,7 +77,6 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
       const loadedDirectors = Array.isArray(data[0].directors_shareholders)
         ? data[0].directors_shareholders.map((d: any) => ({
             ...d,
-            role: d && d.role ? String(d.role).toUpperCase() : "DIRECTOR",
           }))
         : [];
       setFormData({
@@ -123,7 +122,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
           directors_shareholders.push({
             full_name: "",
             percentage_share: "",
-            role: "DIRECTOR",
+            role: "",
           });
         }
       } else if (target < directors_shareholders.length) {
@@ -284,7 +283,8 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         company_name: companyDetails.company_name || "",
         company_registration_number: formData.company_registration_number,
         date_of_incorporation: companyDetails.date_of_incorporation || null,
-        company_type: mapCompanyType(companyDetails.company_type) || "PRIVATE_LIMITED",
+        company_type:
+          mapCompanyType(companyDetails.company_type) || "PRIVATE_LIMITED",
         trade_business_type: companyDetails.trade_business_type || "",
         sic_code: companyDetails.sic_codes?.join(", ") || "",
         is_spv: formData.is_spv, // Keep this as user might have set it
