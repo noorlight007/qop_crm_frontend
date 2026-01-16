@@ -23,7 +23,7 @@ const DeleteCreditCommitmentModal: React.FC<
         case_alias: casealias,
         creditCommitment_alias: creditCommitmentAlias,
       });
-      if (res) {
+      if (res.data) {
         toast.success("Credit Commitment deleted successfully");
       } else {
         toast.error("Failed to delete Credit Commitment");
