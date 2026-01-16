@@ -323,14 +323,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                {jointApplicant.joint_user_details.title
+                                {jointApplicant?.joint_user_details?.title
                                   ? formatChoiceFieldValue(
                                       jointApplicant.joint_user_details.title
                                     ) + " "
                                   : " "}
-                                {jointApplicant.joint_user_details.first_name}{" "}
-                                {jointApplicant.joint_user_details
-                                  .middle_name && (
+                                {jointApplicant?.joint_user_details?.first_name}{" "}
+                                {jointApplicant?.joint_user_details
+                                  ?.middle_name && (
                                   <>
                                     {
                                       jointApplicant.joint_user_details
@@ -338,7 +338,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                                     }{" "}
                                   </>
                                 )}
-                                {jointApplicant.joint_user_details.last_name}
+                                {jointApplicant?.joint_user_details?.last_name}
                               </strong>
                             </li>
                           ))}
