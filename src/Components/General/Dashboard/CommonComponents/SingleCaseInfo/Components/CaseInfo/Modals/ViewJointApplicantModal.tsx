@@ -1,6 +1,8 @@
 import { JointApplicantViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { FaRegWindowClose, FaTrash } from "react-icons/fa";
+import { TbUserEdit } from "react-icons/tb";
 import {
   Button,
   Col,
@@ -120,8 +122,21 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
           </Col>
         </Row>
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-end">
-        <Button color="danger" onClick={toggle}>
+      <ModalFooter className="d-flex justify-content-between">
+        <div className="d-flex gap-1 align-items-center">
+          <Button color="danger">
+            <FaTrash /> Delete
+          </Button>
+          <Button color="secondary">
+            <TbUserEdit /> Edit
+          </Button>
+        </div>
+        <Button
+          color="warning"
+          onClick={toggle}
+          className="d-flex gap-1 align-items-center"
+        >
+          <FaRegWindowClose />
           Close
         </Button>
       </ModalFooter>
