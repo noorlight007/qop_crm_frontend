@@ -214,17 +214,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           {displayLeadUser?.first_name}{" "}
                           {displayLeadUser?.middle_name}{" "}
                           {displayLeadUser?.last_name}
-                          {caseInfo?.joint_users &&
-                          caseInfo.joint_users.length > 0 ? (
-                            <>
-                              <small className="fw-lighter">
-                                {" "}
-                                (Joint Applicant)
-                              </small>
-                            </>
-                          ) : (
-                            ""
-                          )}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
@@ -281,56 +270,45 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 ) : (
                   <Row className="pt-2">
                     <Col xs="12">
-                      <h6 className="pt-1">
-                        <span className="small">Name:</span>{" "}
-                        <strong className="small">
-                          {displayLeadUser?.title
-                            ? formatChoiceFieldValue(displayLeadUser.title)
-                            : ""}{" "}
-                          {displayLeadUser?.first_name}{" "}
-                          {displayLeadUser?.middle_name}{" "}
-                          {displayLeadUser?.last_name}
-                          {caseInfo?.joint_users &&
-                          caseInfo.joint_users.length > 0 ? (
-                            <>
-                              <small className="fw-lighter">
-                                {" "}
-                                (Joint Applicant)
-                              </small>
-                            </>
-                          ) : (
-                            ""
-                          )}
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Email:</span>{" "}
-                        <strong>
-                          <small>{displayLeadUser?.email}</small>
-                        </strong>
-                      </h6>
-                      <h6 className="pt-1">
-                        {displayLeadUser?.phone ? (
-                          <>
-                            <span className="small">Phone:</span>{" "}
-                            <strong>
-                              <a
-                                className="text-dark text_decoration_hover small"
-                                href={`tel:${displayLeadUser?.phone}`}
-                              >
-                                {displayLeadUser?.phone}
-                              </a>
-                            </strong>
-                          </>
-                        ) : (
-                          <>
-                            <span className="small">Phone:</span>{" "}
-                            <strong className="text-muted opacity-50 small">
-                              Not Found
-                            </strong>
-                          </>
-                        )}
-                      </h6>
+                      {jointApplicantInfo && jointApplicantInfo.length > 0 ? (
+                        <ul
+                          style={{
+                            listStyleType: "disc",
+                            paddingLeft: "20px",
+                            maxHeight: "55px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          {jointApplicantInfo.map((jointApplicant, index) => (
+                            <li key={index}>
+                              <strong className="small">
+                                {jointApplicant.joint_user_details.title
+                                  ? formatChoiceFieldValue(
+                                      jointApplicant.joint_user_details.title
+                                    ) + " "
+                                  : " "}
+                                {jointApplicant.joint_user_details.first_name}{" "}
+                                {jointApplicant.joint_user_details
+                                  .middle_name && (
+                                  <>
+                                    {
+                                      jointApplicant.joint_user_details
+                                        .middle_name
+                                    }{" "}
+                                  </>
+                                )}
+                                {jointApplicant.joint_user_details.last_name}
+                              </strong>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="text-center py-3 mt-2">
+                          <h6 className="text-muted">
+                            <em>No Joint Applicants</em>
+                          </h6>
+                        </div>
+                      )}
                     </Col>
                   </Row>
                 )}
