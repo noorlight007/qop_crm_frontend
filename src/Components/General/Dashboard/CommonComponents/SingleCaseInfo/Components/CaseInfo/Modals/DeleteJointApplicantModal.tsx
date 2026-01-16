@@ -17,26 +17,33 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
     useDeleteJointApplicantInfoMutation(undefined);
 
   const handleDelete = async () => {
-    if (!selectedApplicant?.id) {
-      toast.error("Invalid applicant ID");
+    if (!selectedApplicant?.alias) {
+      toast.error("Invalid applicant");
       return;
     }
 
-    const res = await deleteJointApplicantInfo({
-      case_alias: casealias,
-      joint_applicant_id: selectedApplicant.id,
-    });
-
-    if (res.data) {
-      toast.success("Joint applicant deleted successfully!");
-      toggle();
-      if (onDelete) {
-        onDelete();
+    try {
+      const res = await deleteJointApplicantInfo({
+        case_alias: casealias,
+        userAlias: selectedApplicant?.alias,
+      });
+      if (res.data || !("error" in res)) {
+        toast.success("Joint applicant deleted successfully!");
+        toggle();
+        if (onDelete) {
+          onDelete();
+        }
+      } else if ("error" in res) {
+        const errorMessage =
+          (res.error as any)?.data?.detail ||
+          "Failed to delete joint applicant.";
+        toast.error(errorMessage);
+        return;
       }
-    } else if ("error" in res) {
-      const errorMessage =
-        (res.error as any)?.data?.detail || "Failed to delete joint applicant.";
-      toast.error(errorMessage);
+    } catch (error) {
+      console.error("Error deleting joint applicant:", error);
+      toast.error("Failed to delete joint applicant. Please try again.");
+      return;
     }
   };
 
