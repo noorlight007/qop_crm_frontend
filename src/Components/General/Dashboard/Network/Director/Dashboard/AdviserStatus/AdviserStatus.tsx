@@ -1,5 +1,7 @@
 import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
+import Image from "next/image";
 import Link from "next/link";
+import { User } from "react-feather";
 import { TbEye } from "react-icons/tb";
 import { Badge, Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
 
@@ -37,7 +39,7 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
               </Badge>
             </div>
             <Link
-              href="/dashboard/network/advisers-status"
+              href="/dashboard/network/director/advisers-status"
               className="ms-3 text_decoration_hover"
             >
               <TbEye size={18} className="me-1" />
@@ -49,8 +51,8 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
               <thead className="bg-light-primary text-center">
                 <tr>
                   <th className="border-0 small text-uppercase">Rank</th>
-                  <th className="border-0 small text-uppercase">
-                    Advisor Name
+                  <th className="border-0 small text-uppercase text-start">
+                    Adviser Name
                   </th>
                   <th className="border-0 small text-uppercase">Total Cases</th>
                   <th className="border-0 small text-uppercase">Residential</th>
@@ -85,7 +87,25 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                         .map((data, idx: number) => (
                           <tr key={idx}>
                             <td>{data?.rank ?? "0"}</td>
-                            <td>{data?.advisor_name ?? "0"}</td>
+                            <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                              <span
+                                className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                                style={{ width: 30, height: 30 }}
+                              >
+                                {data?.profile_image ? (
+                                  <Image
+                                    src={data.profile_image}
+                                    alt="Profile"
+                                    width={25}
+                                    height={25}
+                                    className="rounded-circle"
+                                  />
+                                ) : (
+                                  <User size={25} className="text-primary" />
+                                )}
+                              </span>
+                              <span>{data?.name ?? "Not Available"}</span>
+                            </td>
                             <td>{data?.total_cases ?? "0"}</td>
                             <td>{data?.residential ?? "0"}</td>
                             <td>{data?.buy_to_let ?? "0"}</td>

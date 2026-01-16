@@ -170,7 +170,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Gender</th>
@@ -192,7 +192,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
               ) : currentAdvisers.length > 0 ? (
                 currentAdvisers.map((adviser) => (
                   <tr key={adviser.alias} className="text-center">
-                    <td className="d-flex justify-content-center align-items-center gap-1 text-truncate">
+                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                       <span
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}
@@ -206,7 +206,7 @@ const Advisers: React.FC<AdvisersProps> = ({ advisersPerPage = 10 }) => {
                             className="rounded-circle"
                           />
                         ) : (
-                          <User size={35} className="text-secondary" />
+                          <User size={30} className="text-primary" />
                         )}
                       </span>
                       <span

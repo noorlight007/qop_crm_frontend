@@ -1,5 +1,5 @@
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetJointUserInfoQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointUser/JointUserDetailsApi";
+import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import LoadingSpinner from "@/app/loading";
 import { getAllCasesUrl } from "@/utils/RedirectPaths";
@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
 import CaseDetails from "./Components/CaseDetails/CaseDetails";
 import CaseInfo from "./Components/CaseInfo/CaseInfo";
-import JointUsers from "./Components/JointUsers/JointUsers";
 
 const SingleCaseInfo: React.FC = () => {
   const { data: session } = useSession();
@@ -20,8 +19,11 @@ const SingleCaseInfo: React.FC = () => {
   const router = useRouter();
 
   // rtk hooks
-  const { data: jointUserInfo, isLoading: isJointUserFetcing } =
-    useGetJointUserInfoQuery({ case_alias: casealias }, { skip: !casealias });
+  const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
+    useGetJointApplicantInfoQuery(
+      { case_alias: casealias },
+      { skip: !casealias }
+    );
 
   const {
     data: caseData,
@@ -63,18 +65,17 @@ const SingleCaseInfo: React.FC = () => {
     <>
       <Container fluid>
         <Row>
-          <CaseInfo caseInfo={caseInfo} isLoading={isLoading} />
+          <CaseInfo
+            caseInfo={caseInfo}
+            isLoading={isLoading}
+            jointApplicantInfo={jointApplicantInfo}
+            isJointApplicantLoading={isJointApplicantLoading}
+          />
         </Row>
         <Row>
           <CaseDetails
             caseCategory={caseInfo?.case_category || ""}
             caseStage={caseInfo?.case_stage || ""}
-          />
-        </Row>
-        <Row>
-          <JointUsers
-            jointUserInfo={jointUserInfo}
-            isLoading={isJointUserFetcing}
           />
         </Row>
         <Row>{/* <CalenderContainer /> */}</Row>

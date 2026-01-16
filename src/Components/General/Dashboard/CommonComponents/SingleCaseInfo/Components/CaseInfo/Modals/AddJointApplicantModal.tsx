@@ -1,5 +1,5 @@
-import { useAddJointUserInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointUser/JointUserDetailsApi";
-import { AddJointUserModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
+import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantApi";
+import { AddJointApplicantModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -17,15 +17,15 @@ import {
   Row,
 } from "reactstrap";
 
-const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
+const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
   isOpen,
   toggle,
 }) => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const params = useParams();
   const { casealias } = params;
-  const [addJointUserInfo, { isLoading: isAddingJointUser }] =
-    useAddJointUserInfoMutation(undefined);
+  const [addJointApplicantInfo, { isLoading: isAddingJointApplicant }] =
+    useAddJointApplicantInfoMutation(undefined);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -71,9 +71,10 @@ const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
         phone: formData.phone,
       },
       relationship: formData.relationship,
+      other_relationship: formData.other_relationship,
       notes: formData.notes,
     };
-    const res = await addJointUserInfo({
+    const res = await addJointApplicantInfo({
       case_alias: casealias,
       jointuserInfo: payload,
     });
@@ -271,8 +272,8 @@ const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
           <Button color="secondary" onClick={toggle} block>
             Cancel
           </Button>
-          <Button color="primary" block={isAddingJointUser}>
-            {isAddingJointUser ? "Saving..." : "Save Joint Applicant"}
+          <Button color="primary" block={isAddingJointApplicant}>
+            {isAddingJointApplicant ? "Saving..." : "Save Joint Applicant"}
           </Button>
         </ModalFooter>
       </Form>
@@ -280,4 +281,4 @@ const AddJointUserModal: React.FC<AddJointUserModalProps> = ({
   );
 };
 
-export default AddJointUserModal;
+export default AddJointApplicantModal;

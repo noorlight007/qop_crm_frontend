@@ -38,10 +38,11 @@ export const publicBaseApi = createApi({
   reducerPath: "publicBaseApi",
   baseQuery: baseQuery,
   tagTypes: [
-    //Appearance Settings 
+    //Appearance Settings
     "AppearanceSettings",
     "SetPassword",
     "ForgotPassword",
+    "Enquiry",
   ],
   endpoints: () => ({}),
 });

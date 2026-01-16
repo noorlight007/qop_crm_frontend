@@ -15,9 +15,11 @@ import {
   TbCopy,
   TbMailShare,
   TbSettings,
+  TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
+  Button,
   ButtonGroup,
   Card,
   CardBody,
@@ -31,9 +33,16 @@ import {
   Spinner,
 } from "reactstrap";
 import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
+import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
+import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
-const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
+const CaseInfo: React.FC<SingleCaseProps> = ({
+  caseInfo,
+  isLoading,
+  jointApplicantInfo,
+  isJointApplicantLoading,
+}) => {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -45,6 +54,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
+    useState(false);
+  const [isViewJointApplicantModalOpen, setIsViewJointApplicantModalOpen] =
+    useState(false);
+  const [selectedJointApplicant, setSelectedJointApplicant] =
+    useState<any>(null);
+  const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
 
   useEffect(() => {
@@ -73,6 +88,17 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
   const toggleClientInvitationModal = () =>
     setIsClientInvitationModalOpen(!isClientInvitationModalOpen);
+
+  const toggleViewJointApplicantModal = () =>
+    setIsViewJointApplicantModalOpen(!isViewJointApplicantModalOpen);
+
+  const toggleAddJointApplicantModal = () =>
+    setIsAddJointApplicantModalOpen(!isAddJointApplicantModalOpen);
+
+  const openViewJointApplicantModal = (jointApplicant: any) => {
+    setSelectedJointApplicant(jointApplicant);
+    toggleViewJointApplicantModal();
+  };
 
   const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
     if (clientData?.user) {
@@ -181,7 +207,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
 
         <Row className="px-3 mt-3">
           {/* Client User Card */}
-          <Col sm={12} md={6}>
+          <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
@@ -209,17 +235,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
                           {displayLeadUser?.first_name}{" "}
                           {displayLeadUser?.middle_name}{" "}
                           {displayLeadUser?.last_name}
-                          {caseInfo?.joint_users &&
-                          caseInfo.joint_users.length > 0 ? (
-                            <>
-                              <small className="fw-lighter">
-                                {" "}
-                                (Joint Applicant)
-                              </small>
-                            </>
-                          ) : (
-                            ""
-                          )}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
@@ -256,9 +271,94 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
               </CardBody>
             </Card>
           </Col>
+          {/* Joint Applicants Card */}
+          <Col sm={12} md={4}>
+            <Card className="shadow">
+              <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
+                <CardHeader className="pt-0 pb-1 m-0 text-center position-relative">
+                  <h6 className="fw-bold">Joint Applicants</h6>
+                  <Button
+                    color="primary"
+                    size="xs"
+                    className="position-absolute"
+                    onClick={toggleAddJointApplicantModal}
+                    style={{
+                      top: "30%",
+                      right: "0px",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <TbUserPlus size="16" />
+                  </Button>
+                </CardHeader>
+                {isLoading ? (
+                  <Row className="pt-2">
+                    <Col xs="12" className="text-center">
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        color="primary"
+                      />
+                    </Col>
+                  </Row>
+                ) : (
+                  <Row className="pt-2">
+                    <Col xs="12">
+                      {jointApplicantInfo && jointApplicantInfo.length > 0 ? (
+                        <ul
+                          style={{
+                            listStyleType: "disc",
+                            paddingLeft: "20px",
+                            height: "55px",
+                            overflowY: "auto",
+                          }}
+                          className="text-primary"
+                        >
+                          {jointApplicantInfo.map((jointApplicant, index) => (
+                            <li key={index}>
+                              <strong
+                                className="small text_decoration_hover"
+                                onClick={() =>
+                                  openViewJointApplicantModal(jointApplicant)
+                                }
+                                style={{ cursor: "pointer" }}
+                              >
+                                {jointApplicant?.joint_user_details?.title
+                                  ? formatChoiceFieldValue(
+                                      jointApplicant.joint_user_details.title
+                                    ) + " "
+                                  : " "}
+                                {jointApplicant?.joint_user_details?.first_name}{" "}
+                                {jointApplicant?.joint_user_details
+                                  ?.middle_name && (
+                                  <>
+                                    {
+                                      jointApplicant.joint_user_details
+                                        .middle_name
+                                    }{" "}
+                                  </>
+                                )}
+                                {jointApplicant?.joint_user_details?.last_name}
+                              </strong>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="text-center py-3 mt-2">
+                          <h6 className="text-muted">
+                            <em>No Joint Applicants</em>
+                          </h6>
+                        </div>
+                      )}
+                    </Col>
+                  </Row>
+                )}
+              </CardBody>
+            </Card>
+          </Col>
 
           {/* Case Info Card */}
-          <Col sm={12} md={6}>
+          <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-primary ">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
@@ -632,6 +732,17 @@ const CaseInfo: React.FC<SingleCaseProps> = ({ caseInfo, isLoading }) => {
         isOpen={isCopyCaseModalOpen}
         toggle={toggleCopyCaseModal}
         caseData={caseInfo as CaseInfoPrpos}
+      />
+      {selectedJointApplicant && (
+        <ViewJointApplicantModal
+          isOpen={isViewJointApplicantModalOpen}
+          toggle={toggleViewJointApplicantModal}
+          selectedApplicant={selectedJointApplicant}
+        />
+      )}
+      <AddJointApplicantModal
+        isOpen={isAddJointApplicantModalOpen}
+        toggle={toggleAddJointApplicantModal}
       />
     </Col>
   );

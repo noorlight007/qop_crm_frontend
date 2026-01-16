@@ -13,13 +13,13 @@ export const caseCategories = [
   { value: "GENERAL_INSURANCE", label: "General Insurance" },
 ];
 
-export const caseStages = [
+export const mortgageStages = [
   { value: "", label: "All Stages" },
   { value: "ENQUIRY", label: "Enquiry" },
   { value: "FACT_FIND", label: "Fact Find" },
   {
     value: "RESEARCH_COMPLIANCE_CHECK",
-    label: "Research & Compliance Check",
+    label: "Research and Compliance Check",
   },
   { value: "DECISION_IN_PRINCIPLE", label: "Decision in Principle" },
   {
@@ -27,13 +27,21 @@ export const caseStages = [
     label: "Full Mortgage Application",
   },
   { value: "SUBMISSION", label: "Submission" },
-  { value: "OFFER_FROM_BANK", label: "Offer from Bank" },
+  { value: "OFFER_FROM_BANK", label: "Offer From Bank" },
   { value: "LEGAL", label: "Legal" },
   { value: "COMPLETION", label: "Completion" },
   { value: "FUTURE_OPPORTUNITY", label: "Future Opportunity" },
+  { value: "NOT_PROCEED", label: "Not Proceed" },
+];
+
+export const insuranceCaseStages = [
+  { value: "", label: "All Stages" },
+  { value: "ENQUIRY", label: "Enquiry" },
+  { value: "FACT_FIND", label: "Fact Find" },
+  { value: "SUBMISSION", label: "Submission" },
   {
     value: "ACCEPT_WAITING_START_DATE",
-    label: "Accept Waiting Start Date",
+    label: "Accept Awaiting Start Date",
   },
   { value: "ACCEPTED_ON_RISK", label: "Accepted on Risk" },
   { value: "FURTHER_MEDICAL_REQUIRED", label: "Further Medical Required" },

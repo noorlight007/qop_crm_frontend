@@ -27,7 +27,8 @@ export interface MonthlyClientsItem {
 
 export interface TopAdviser {
   rank: number;
-  adviser_name: string;
+  profile_image?: string;
+  name: string;
   total_cases: number;
   total_loan_amount: number;
 }

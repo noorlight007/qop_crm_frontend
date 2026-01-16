@@ -1,3 +1,8 @@
+import {
+  caseCategories,
+  insuranceCaseStages,
+  mortgageStages,
+} from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
@@ -227,12 +232,11 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           handleFilterChange("case_category", e.target.value)
                         }
                       >
-                        <option value="">All Categories</option>
-                        <option value="MORTGAGE">Mortgage</option>
-                        <option value="PROTECTION">Protection</option>
-                        <option value="GENERAL_INSURANCE">
-                          General Insurance
-                        </option>
+                        {caseCategories?.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
                       </Input>
                     </Col>
                     <Col>
@@ -245,26 +249,25 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         onChange={(e) =>
                           handleFilterChange("case_stage", e.target.value)
                         }
+                        disabled={!filters.case_category}
                       >
-                        <option value="">All Stages</option>
-                        <option value="ENQUIRY">Enquiry</option>
-                        <option value="FACT_FIND">Fact Find</option>
-                        <option value="RESEARCH_COMPLIANCE_CHECK">
-                          Research and Compliance Check
-                        </option>
-                        <option value="DECISION_IN_PRINCIPLE">
-                          Decision in Principle
-                        </option>
-                        <option value="FULL_MORTGAGE_APPLICATION">
-                          Full Mortgage Application
-                        </option>
-                        <option value="OFFER_FROM_BANK">Offer From Bank</option>
-                        <option value="LEGAL">Legal</option>
-                        <option value="COMPLETION">Completion</option>
-                        <option value="FUTURE_OPPORTUNITY">
-                          Future Opportunity
-                        </option>
-                        <option value="NOT_PROCEED">Not Proceed</option>
+                        {filters?.case_category === "MORTGAGE" ? (
+                          <>
+                            {mortgageStages.map((stage) => (
+                              <option key={stage.value} value={stage.value}>
+                                {stage.label}
+                              </option>
+                            ))}
+                          </>
+                        ) : (
+                          <>
+                            {insuranceCaseStages.map((stage) => (
+                              <option key={stage.value} value={stage.value}>
+                                {stage.label}
+                              </option>
+                            ))}
+                          </>
+                        )}
                       </Input>
                     </Col>
                     <Col>

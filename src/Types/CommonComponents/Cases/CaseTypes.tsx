@@ -1,3 +1,5 @@
+import { JointApplicantProps } from "../SingleCaseInfo/JointApplicant/JointApplicantTypes";
+
 export interface CaseInfoPrpos {
   alias: string;
   lead: number;
@@ -108,6 +110,8 @@ export interface CaseUser {
 export interface SingleCaseProps {
   caseInfo: CaseInfoPrpos | undefined;
   isLoading: boolean;
+  jointApplicantInfo?: JointApplicantProps[] | undefined;
+  isJointApplicantLoading?: boolean;
 }
 export interface CaseSearchProps {
   fetchCaseInfo?: any;

@@ -11,6 +11,8 @@ interface AuthUser {
   created_at: string;
   created_by: string | null;
   joining_date: string;
+  is_active: boolean;
+  profile_image: string | null;
 }
 
 interface AuthUsersProps {

@@ -1,28 +1,16 @@
-import { Breadcrumb, BreadcrumbItem, Col, Container, Row } from "reactstrap";
-import Test from "./Components/Test";
+import { Col, Container, Row } from "reactstrap";
+import AboutOrg from "./Components/AboutOrg";
+import InitialEnquiryForm from "./Components/InitialEnquiryForm";
 
 const EnquiryContainer: React.FC = () => {
   return (
-    <Container fluid>
-      <Row className="page-title">
-        <Col sm="6">
-          <h2>Enquiry</h2>
-          <p className="mb-0 text-title-gray">
-            Please fill out the form below to submit your enquiry.
-          </p>
+    <Container fluid className="min-vh-100">
+      <Row className="py-4 w-100">
+        <Col xs={12} sm={12} md={3} className="mb-4 mb-md-0">
+          <AboutOrg />
         </Col>
-        <Col sm="6">
-          <Breadcrumb className="justify-content-sm-end align-items-center">
-            <BreadcrumbItem>
-              <i className="iconly-Home icli svg-color" />
-            </BreadcrumbItem>
-            <BreadcrumbItem>Enquiry</BreadcrumbItem>
-          </Breadcrumb>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <Test />
+        <Col xs={12} sm={12} md={9} style={{ marginTop: "100px" }}>
+          <InitialEnquiryForm />
         </Col>
       </Row>
     </Container>

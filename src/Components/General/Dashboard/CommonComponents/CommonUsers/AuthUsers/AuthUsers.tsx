@@ -6,10 +6,12 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { useSession } from "next-auth/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -52,7 +54,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   });
 
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    organization_users__role: userRole,
+    role: userRole,
     page: currentPage,
     page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
@@ -134,9 +136,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Status</th>
                 <th>Joining Date</th>
                 <th>Gender</th>
                 <th>Created At</th>
@@ -155,7 +158,23 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               ) : currentAuthUsers.length > 0 ? (
                 currentAuthUsers.map((admin) => (
                   <tr key={admin.alias} className="text-center">
-                    <td>
+                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                      <span
+                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                        style={{ width: 40, height: 40 }}
+                      >
+                        {admin?.profile_image ? (
+                          <Image
+                            src={admin.profile_image}
+                            alt="Profile"
+                            width={35}
+                            height={35}
+                            className="rounded-circle"
+                          />
+                        ) : (
+                          <User size={30} className="text-primary" />
+                        )}
+                      </span>
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
@@ -183,13 +202,20 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         "-"
                       )}
                     </td>
-                    <td>{formatDate(admin?.joining_date)}</td>
+                    <td>
+                      {admin?.is_active ? (
+                        <Badge color="success">Active</Badge>
+                      ) : (
+                        <Badge color="danger">Inactive</Badge>
+                      )}
+                    </td>
+                    <td>{formatDate(admin?.joining_date) || "-"}</td>
                     <td>
                       {admin?.gender
                         ? formatChoiceFieldValue(admin?.gender)
                         : "-"}
                     </td>
-                    <td>{formatDateAndTime(admin?.created_at)}</td>
+                    <td>{formatDateAndTime(admin?.created_at) || "-"}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button

@@ -3,10 +3,11 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
 import {
   caseCategories,
-  caseStages,
   dateFilters,
+  insuranceCaseStages,
+  mortgageStages,
   reportTypes,
-} from "@/Data/General/Dashboard/CommonData/ReportFilterChoiceFields";
+} from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
 import {
   useGetOrganisationDirectorReportsMutation,
   useGetOrganisationDirectorReportsViewQuery,
@@ -414,12 +415,25 @@ const OrganisationDirectorReportsContainer: React.FC = () => {
                             handleFilterChange("case_stage", e.target.value)
                           }
                           className="form-select"
+                          disabled={!filters.case_category}
                         >
-                          {caseStages?.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
+                          {filters?.case_category === "MORTGAGE" ? (
+                            <>
+                              {mortgageStages.map((stage) => (
+                                <option key={stage.value} value={stage.value}>
+                                  {stage.label}
+                                </option>
+                              ))}
+                            </>
+                          ) : (
+                            <>
+                              {insuranceCaseStages.map((stage) => (
+                                <option key={stage.value} value={stage.value}>
+                                  {stage.label}
+                                </option>
+                              ))}
+                            </>
+                          )}
                         </Input>
                       </FormGroup>
                     </Col>
