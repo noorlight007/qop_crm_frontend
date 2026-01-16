@@ -2,6 +2,7 @@ import { Col, Row } from "reactstrap";
 import Breadcrumbs from "../CommonComponents/Breadcrumbs/Breadcrumbs";
 import LogoAndFavIconChanger from "./Components/LogoAndFavIconAndFontChanger";
 import ThemeColorSwitcher from "./Components/ThemeColorSwitcher";
+import About from "./Components/About";
 
 const AppearanceContainer: React.FC = () => {
   return (
@@ -18,6 +19,9 @@ const AppearanceContainer: React.FC = () => {
         </Col>
         <Col xxl="6" xl="12">
           <LogoAndFavIconChanger />
+        </Col>
+        <Col>
+          <About />
         </Col>
       </Row>
     </>
