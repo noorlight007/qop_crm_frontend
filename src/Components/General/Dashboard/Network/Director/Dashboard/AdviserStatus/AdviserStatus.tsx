@@ -51,8 +51,8 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
               <thead className="bg-light-primary text-center">
                 <tr>
                   <th className="border-0 small text-uppercase">Rank</th>
-                  <th className="border-0 small text-uppercase">
-                    Advisor Name
+                  <th className="border-0 small text-uppercase text-start">
+                    Adviser Name
                   </th>
                   <th className="border-0 small text-uppercase">Total Cases</th>
                   <th className="border-0 small text-uppercase">Residential</th>
@@ -87,7 +87,7 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                         .map((data, idx: number) => (
                           <tr key={idx}>
                             <td>{data?.rank ?? "0"}</td>
-                            <td className="d-flex justify-content-center align-items-center gap-1 text-truncate">
+                            <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                               <span
                                 className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                                 style={{ width: 30, height: 30 }}

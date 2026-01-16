@@ -7,14 +7,14 @@ export const AdverseDetailsApi = baseApi.injectEndpoints({
         url: `/cases/${case_alias}/adverse/`,
         method: "GET",
       }),
-      providesTags: ["AdverseDetails", "JointUserDetails"],
+      providesTags: ["AdverseDetails", "JointApplicantDetails"],
     }),
     getSingleAdverseDetails: builder.query({
       query: ({ case_alias, adverse_alias }) => ({
         url: `/cases/${case_alias}/adverse/${adverse_alias}/`,
         method: "GET",
       }),
-      providesTags: ["AdverseDetails", "JointUserDetails"],
+      providesTags: ["AdverseDetails", "JointApplicantDetails"],
     }),
 
     updateAdverseDetails: builder.mutation({
@@ -23,7 +23,7 @@ export const AdverseDetailsApi = baseApi.injectEndpoints({
         method: "PUT",
         body: adverse_details,
       }),
-      invalidatesTags: ["AdverseDetails", "JointUserDetails"],
+      invalidatesTags: ["AdverseDetails", "JointApplicantDetails"],
     }),
     addPropertyRepossessed: builder.mutation({
       query: ({ case_alias, adverse_alias, value }) => ({

@@ -136,7 +136,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Status</th>
@@ -158,7 +158,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               ) : currentAuthUsers.length > 0 ? (
                 currentAuthUsers.map((admin) => (
                   <tr key={admin.alias} className="text-center">
-                    <td className="d-flex justify-content-center align-items-center gap-1 text-truncate">
+                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                       <span
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}

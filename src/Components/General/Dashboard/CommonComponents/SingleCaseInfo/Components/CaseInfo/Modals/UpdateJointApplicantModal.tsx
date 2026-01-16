@@ -1,5 +1,5 @@
-import { useUpdateJointUserInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointUser/JointUserDetailsApi";
-import { UpdateJointUserModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointUser/JointUserTypes";
+import { useUpdateJointApplicantInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantApi";
+import { UpdateJointApplicantModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { isEqual } from "lodash";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -18,14 +18,16 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
+const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
   isOpen,
   toggle,
   user,
+  onUpdateSuccess,
 }) => {
   const params = useParams();
   const { casealias } = params;
-  const [updateJointUserInfo, { isLoading }] = useUpdateJointUserInfoMutation();
+  const [updateJointApplicantInfo, { isLoading }] =
+    useUpdateJointApplicantInfoMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -86,10 +88,13 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
       },
     };
 
-    const res = await updateJointUserInfo(payload);
+    const res = await updateJointApplicantInfo(payload);
 
     if (res.data) {
-      toast.success("User updated successfully!");
+      toast.success("Applicant updated successfully!");
+      if (onUpdateSuccess) {
+        onUpdateSuccess(res.data);
+      }
       toggle();
       console.log("Update successful:", res.data);
     } else if ("error" in res) {
@@ -271,4 +276,4 @@ const UpdateJointUserModal: React.FC<UpdateJointUserModalProps> = ({
   );
 };
 
-export default UpdateJointUserModal;
+export default UpdateJointApplicantModal;
