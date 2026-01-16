@@ -15,9 +15,11 @@ import {
   TbCopy,
   TbMailShare,
   TbSettings,
+  TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
+  Button,
   ButtonGroup,
   Card,
   CardBody,
@@ -267,8 +269,20 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
-                <CardHeader className="pt-0 pb-1 m-0 text-center">
+                <CardHeader className="pt-0 pb-1 m-0 text-center position-relative">
                   <h6 className="fw-bold">Joint Applicants</h6>
+                  <Button
+                    color="primary"
+                    size="xs"
+                    className="position-absolute"
+                    style={{
+                      top: "30%",
+                      right: "0px",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <TbUserPlus size="16" />
+                  </Button>
                 </CardHeader>
                 {isLoading ? (
                   <Row className="pt-2">
