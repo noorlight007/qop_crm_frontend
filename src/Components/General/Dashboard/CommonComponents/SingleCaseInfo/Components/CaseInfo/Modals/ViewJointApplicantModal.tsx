@@ -59,18 +59,6 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             )}
           </Col>
           <Col md="4" sm="12" className="d-flex flex-column mt-4">
-            <span className="text-muted">Applicant Type:</span>
-            <small>
-              {selectedApplicant.joint_user_details?.user_type ? (
-                formatChoiceFieldValue(
-                  selectedApplicant.joint_user_details?.user_type
-                )
-              ) : (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Created At:</span>
             <small>
               {(selectedApplicant?.created_at &&
@@ -114,13 +102,15 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             <span className="text-muted">Relationship:</span>
             <small>
               {selectedApplicant?.relationship === "OTHER"
-                ? selectedApplicant?.other_relationship
-                : selectedApplicant?.relationship || (
+                ? formatChoiceFieldValue(
+                    selectedApplicant?.other_relationship || ""
+                  ) || <span className="text-muted">Not specified</span>
+                : formatChoiceFieldValue(selectedApplicant?.relationship) || (
                     <span className="text-muted">Not specified</span>
                   )}
             </small>
           </Col>
-          <Col md="6" sm="12" className="d-flex flex-column mt-4">
+          <Col sm="12" className="d-flex flex-column mt-4">
             <span className="text-muted">Notes:</span>
             <small>
               {selectedApplicant?.notes || (

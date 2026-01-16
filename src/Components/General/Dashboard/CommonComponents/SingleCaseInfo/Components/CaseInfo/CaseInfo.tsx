@@ -32,6 +32,7 @@ import {
 } from "reactstrap";
 import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
+import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({
   caseInfo,
@@ -51,6 +52,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
     useState(false);
+  const [isViewJointApplicantModalOpen, setIsViewJointApplicantModalOpen] =
+    useState(false);
+  const [selectedJointApplicant, setSelectedJointApplicant] =
+    useState<any>(null);
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
@@ -78,6 +83,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
 
   const toggleClientInvitationModal = () =>
     setIsClientInvitationModalOpen(!isClientInvitationModalOpen);
+
+  const toggleViewJointApplicantModal = () =>
+    setIsViewJointApplicantModalOpen(!isViewJointApplicantModalOpen);
+
+  const openViewJointApplicantModal = (jointApplicant: any) => {
+    setSelectedJointApplicant(jointApplicant);
+    toggleViewJointApplicantModal();
+  };
 
   const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
     if (clientData?.user) {
@@ -281,7 +294,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         >
                           {jointApplicantInfo.map((jointApplicant, index) => (
                             <li key={index}>
-                              <strong className="small">
+                              <strong
+                                className="small text_decoration_hover"
+                                onClick={() =>
+                                  openViewJointApplicantModal(jointApplicant)
+                                }
+                                style={{ cursor: "pointer" }}
+                              >
                                 {jointApplicant.joint_user_details.title
                                   ? formatChoiceFieldValue(
                                       jointApplicant.joint_user_details.title
@@ -692,6 +711,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         toggle={toggleCopyCaseModal}
         caseData={caseInfo as CaseInfoPrpos}
       />
+      {selectedJointApplicant && (
+        <ViewJointApplicantModal
+          isOpen={isViewJointApplicantModalOpen}
+          toggle={toggleViewJointApplicantModal}
+          selectedApplicant={selectedJointApplicant}
+        />
+      )}
     </Col>
   );
 };
