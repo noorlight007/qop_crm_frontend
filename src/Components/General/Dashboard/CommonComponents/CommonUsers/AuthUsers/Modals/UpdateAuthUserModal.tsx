@@ -46,6 +46,48 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     setIsModified(true);
   };
 
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v)
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   const handleUpdateAuthUser = async (
     e: React.FormEvent<HTMLFormElement>,
     authUserData: Partial<AuthUser>
@@ -69,17 +111,15 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
           toast.success("Admin updated successfully.");
           toggle();
         } else if ("error" in result) {
-          const errorMessage =
-            (result.error as any)?.data?.email?.[0] ||
-            (result.error as any)?.data?.detail ||
-            "Invalid Request...";
+          const errorMessage = getErrorMessage((result.error as any)?.data);
           toast.error(errorMessage);
         } else {
           toast.error("Invalid Request...");
         }
       }
     } catch (error) {
-      toast.error("Failed to update admin.");
+      const errorMessage = getErrorMessage(error);
+      toast.error(errorMessage);
       console.error("Error saving admin:", error);
     }
   };
