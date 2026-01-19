@@ -26,6 +26,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import ViewOrgAdviserModals from "./Modals/ViewOrgAdviserModals";
 
 const OrgAdvisers: React.FC<AdvisersProps> = () => {
   const params = useParams();
@@ -36,6 +37,18 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [stablePageSize, setStablePageSize] = useState<number>(0);
+  const [isViewOrgAdviserModalOpen, setIsViewOrgAdviserModalOpen] =
+    useState(false);
+  const [selectedAdviser, setSelectedAdviser] = useState<
+    Partial<AdviserInfoProps>
+  >({});
+
+  const toggleViewOrgAdviserModal = (adviser?: AdviserInfoProps) => {
+    if (adviser) {
+      setSelectedAdviser(adviser);
+    }
+    setIsViewOrgAdviserModalOpen(!isViewOrgAdviserModalOpen);
+  };
 
   // debounce search input
   useEffect(() => {
@@ -167,7 +180,11 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                           <User size={30} className="text-primary" />
                         )}
                       </span>
-                      <span>
+                      <span
+                        className="text_decoration_hover"
+                        onClick={() => toggleViewOrgAdviserModal(adviser)}
+                        style={{ cursor: "pointer" }}
+                      >
                         {adviser.user?.title
                           ? formatChoiceFieldValue(adviser.user.title)
                           : ""}
@@ -295,6 +312,12 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
           </div>
         </Row>
       </CardBody>
+      {/* Modals */}
+      <ViewOrgAdviserModals
+        isOpen={isViewOrgAdviserModalOpen}
+        toggle={toggleViewOrgAdviserModal}
+        selectedAdviser={selectedAdviser}
+      />
     </Card>
   );
 };
