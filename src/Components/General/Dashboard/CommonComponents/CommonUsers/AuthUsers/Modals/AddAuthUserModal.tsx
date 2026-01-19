@@ -89,18 +89,27 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     e.preventDefault();
 
     const payload = {
-      user: {
-        title: formData.title,
-        first_name: formData.firstName,
-        middle_name: formData.middleName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || null,
-        password: formData.password,
-      },
+      title: formData.title,
+      first_name: formData.firstName,
+      middle_name: formData.middleName,
+      last_name: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || null,
+      password: formData.password,
       gender: formData.gender,
-      // If joining date is empty string, send null
       joining_date: formData.joining_date ? formData.joining_date : null,
+      role:
+        pathname === "/dashboard/network/director/advisers"
+          ? "NETWORK_ADVISER"
+          : pathname === "/dashboard/network/director/compliance-assistant"
+            ? "NETWORK_COMPLIANCE_ASSISTANT"
+            : pathname === "/dashboard/organisation/director/advisers"
+              ? "ORGANISATION_ADVISER"
+              : pathname === "/dashboard/organisation/director/admin"
+                ? "ORGANISATION_ADMIN"
+                : pathname === "/dashboard/organisation/director/introducers"
+                  ? "INTRODUCER"
+                  : "",
     };
 
     try {

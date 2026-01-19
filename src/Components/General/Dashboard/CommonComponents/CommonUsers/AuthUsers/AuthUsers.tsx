@@ -221,9 +221,9 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     </td>
                     <td>
                       {admin?.is_active ? (
-                        <Badge color="success">Active</Badge>
+                        <Badge color="success">Approved</Badge>
                       ) : (
-                        <Badge color="danger">Inactive</Badge>
+                        <Badge color="danger">Pending</Badge>
                       )}
                     </td>
                     <td>{formatDate(admin?.joining_date) || "-"}</td>
@@ -260,7 +260,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
         <Row>
           <div className="d-flex justify-content-between align-items-center p-3">
             <div className="px-2">
-              <p className="text-success">
+              <p className="text-primary">
                 Showing{" "}
                 {totalCount === 0
                   ? "0"
