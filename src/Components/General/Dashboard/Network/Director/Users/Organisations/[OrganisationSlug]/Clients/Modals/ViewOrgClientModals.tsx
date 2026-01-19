@@ -1,32 +1,32 @@
-import { AdviserInfoProps } from "@/Types/Network/Director/AdviserTypes";
+import { ClientInfoProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
-import { Mail, Phone, User } from "react-feather";
+import { FileText, Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-interface ViewOrgAdviserModalsProps {
+interface ViewOrgClientModalsProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedAdviser?: Partial<AdviserInfoProps>;
+  selectedClient?: Partial<ClientInfoProps>;
 }
 
-const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
+const ViewOrgClientModals: React.FC<ViewOrgClientModalsProps> = ({
   isOpen,
   toggle,
-  selectedAdviser,
+  selectedClient,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Adviser Information</span>
+        <span className="fs-5 fw-bold text-primary">Client Information</span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedAdviser?.user?.profile_image ? (
+            {selectedClient?.user?.profile_image ? (
               <Image
-                src={selectedAdviser.user.profile_image}
+                src={selectedClient.user.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -43,29 +43,23 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">
-            {selectedAdviser?.user?.title
-              ? formatChoiceFieldValue(selectedAdviser.user.title) + ". "
+            {selectedClient?.user?.title
+              ? formatChoiceFieldValue(selectedClient.user.title) + ". "
               : ""}
-            {selectedAdviser?.user?.first_name}{" "}
-            {selectedAdviser?.user?.middle_name &&
-              selectedAdviser?.user?.middle_name + " "}
-            {selectedAdviser?.user?.last_name}
+            {selectedClient?.user?.first_name}{" "}
+            {selectedClient?.user?.middle_name &&
+              selectedClient?.user?.middle_name + " "}
+            {selectedClient?.user?.last_name}
           </h4>
           <p className="mb-2 text-muted small">
-            {selectedAdviser?.role
-              ? formatChoiceFieldValue(selectedAdviser.role)
-              : "Adviser"}
+            {selectedClient?.role
+              ? formatChoiceFieldValue(selectedClient.role)
+              : "Client"}
           </p>
           <div>
-            {selectedAdviser?.is_active ? (
-              <Badge color="success" pill className="px-3 py-2">
-                ✓ Approved
-              </Badge>
-            ) : (
-              <Badge color="warning" pill className="px-3 py-2">
-                ⏳ Pending
-              </Badge>
-            )}
+            <Badge color="info" pill className="px-3 py-2">
+              👤 Client
+            </Badge>
           </div>
         </div>
 
@@ -85,7 +79,7 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedAdviser?.user?.email || "-"}
+                      {selectedClient?.user?.email || "-"}
                     </p>
                   </div>
                 </div>
@@ -96,12 +90,12 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedAdviser?.user?.phone ? (
+                      {selectedClient?.user?.phone ? (
                         <a
-                          href={`tel:${selectedAdviser.user.phone}`}
+                          href={`tel:${selectedClient.user.phone}`}
                           className="text-decoration-none"
                         >
-                          {selectedAdviser.user.phone}
+                          {selectedClient.user.phone}
                         </a>
                       ) : (
                         "-"
@@ -115,21 +109,21 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
 
           <hr className="my-3" />
 
-          {/* Personal Details */}
+          {/* Client Details */}
           <div className="mb-4">
             <h6
               className="text-uppercase fw-bold text-primary mb-3"
               style={{ fontSize: "11px", letterSpacing: "0.5px" }}
             >
-              Personal Details
+              Client Details
             </h6>
             <Row>
               <Col md="6" className="mb-3">
                 <div>
-                  <small className="text-muted d-block fw-500">Gender</small>
+                  <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdviser?.gender
-                      ? formatChoiceFieldValue(selectedAdviser.gender)
+                    {selectedClient?.source
+                      ? formatChoiceFieldValue(selectedClient.source)
                       : "-"}
                   </p>
                 </div>
@@ -137,17 +131,77 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
               <Col md="6" className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">
-                    Joining Date
+                    Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdviser?.joining_date || "-"}
+                    {selectedClient?.enquiry_type
+                      ? formatChoiceFieldValue(selectedClient.enquiry_type)
+                      : "-"}
                   </p>
                 </div>
               </Col>
             </Row>
+            {selectedClient?.other_source && (
+              <Row>
+                <Col md="6" className="mb-3">
+                  <div>
+                    <small className="text-muted d-block fw-500">
+                      Other Source
+                    </small>
+                    <p className="m-0 text-dark fw-500">
+                      {selectedClient.other_source}
+                    </p>
+                  </div>
+                </Col>
+                {selectedClient?.other_enquiry_type && (
+                  <Col md="6" className="mb-3">
+                    <div>
+                      <small className="text-muted d-block fw-500">
+                        Other Enquiry Type
+                      </small>
+                      <p className="m-0 text-dark fw-500">
+                        {selectedClient.other_enquiry_type}
+                      </p>
+                    </div>
+                  </Col>
+                )}
+              </Row>
+            )}
           </div>
 
           <hr className="my-3" />
+
+          {/* Notes */}
+          {selectedClient?.note && (
+            <>
+              <div className="mb-4">
+                <h6
+                  className="text-uppercase fw-bold text-primary mb-3"
+                  style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                >
+                  <FileText
+                    size={14}
+                    className="me-2"
+                    style={{ display: "inline" }}
+                  />
+                  Notes
+                </h6>
+                <div
+                  className="p-3 bg-light rounded"
+                  style={{ borderLeft: "3px solid #0d6efd" }}
+                >
+                  <p
+                    className="m-0 text-dark"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    {selectedClient.note}
+                  </p>
+                </div>
+              </div>
+
+              <hr className="my-3" />
+            </>
+          )}
 
           {/* Metadata */}
           <div>
@@ -157,27 +211,27 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
             >
               Additional Information
             </h6>
-            {selectedAdviser?.created_by ? (
+            {selectedClient?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
                   <strong>
-                    {selectedAdviser.created_by.title
+                    {selectedClient.created_by.title
                       ? formatChoiceFieldValue(
-                          selectedAdviser.created_by.title
+                          selectedClient.created_by.title
                         ).trim() + " "
                       : ""}
-                    {selectedAdviser.created_by.first_name}{" "}
-                    {selectedAdviser.created_by.middle_name}{" "}
-                    {selectedAdviser.created_by.last_name}
+                    {selectedClient.created_by.first_name}{" "}
+                    {selectedClient.created_by.middle_name}{" "}
+                    {selectedClient.created_by.last_name}
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedAdviser.created_by.user_type
+                  {selectedClient.created_by.user_type
                     ? formatChoiceFieldValue(
-                        selectedAdviser.created_by.user_type
+                        selectedClient.created_by.user_type
                       )
                     : ""}
                 </small>
@@ -202,4 +256,4 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
   );
 };
 
-export default ViewOrgAdviserModals;
+export default ViewOrgClientModals;

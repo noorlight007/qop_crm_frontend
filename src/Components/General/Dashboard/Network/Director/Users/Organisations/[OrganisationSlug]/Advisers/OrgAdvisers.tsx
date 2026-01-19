@@ -194,13 +194,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                     </td>
                     <td>{adviser?.user?.email || "-"}</td>
                     <td>
-                      {adviser?.is_active ? (
-                        <Badge color="success">Approved</Badge>
-                      ) : (
-                        <Badge color="danger">Pending</Badge>
-                      )}
-                    </td>
-                    <td>
                       {adviser?.user?.phone ? (
                         <a
                           href={`tel:${adviser?.user?.phone}`}
@@ -210,6 +203,13 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                         </a>
                       ) : (
                         "-"
+                      )}
+                    </td>
+                    <td>
+                      {adviser?.is_active ? (
+                        <Badge color="success">Approved</Badge>
+                      ) : (
+                        <Badge color="danger">Pending</Badge>
                       )}
                     </td>
                     <td>

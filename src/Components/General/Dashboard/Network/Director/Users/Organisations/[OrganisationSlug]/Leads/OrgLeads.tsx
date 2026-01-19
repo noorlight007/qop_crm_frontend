@@ -1,5 +1,4 @@
 "use client";
-import ViewLeadModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Leads/Modals/ViewLeadModal";
 import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgLeadsApi";
 import {
   LeadsInfo,
@@ -24,6 +23,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
 const OrgLeads: React.FC<LeadsProps> = () => {
   // Correctly extract dynamic route param (folder is [OrganisationSlug])
@@ -72,7 +72,12 @@ const OrgLeads: React.FC<LeadsProps> = () => {
     source: "",
   });
 
-  const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleViewModal = (lead?: LeadsInfo) => {
+    if (lead) {
+      setSelectedLead(lead);
+    }
+    setIsViewModalOpen(!isViewModalOpen);
+  };
 
   // Extract leads and pagination info from API response
   const leads = Array.isArray(leadData) ? leadData : leadData?.results || [];
@@ -130,7 +135,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
@@ -150,13 +155,10 @@ const OrgLeads: React.FC<LeadsProps> = () => {
               ) : leads.length > 0 ? (
                 leads.map((lead: LeadsInfo) => (
                   <tr key={lead.alias} className="text-center">
-                    <td>
+                    <td className="text-start">
                       <span
                         className="text_decoration_hover"
-                        onClick={() => {
-                          setSelectedLead(lead);
-                          toggleViewModal();
-                        }}
+                        onClick={() => toggleViewModal(lead)}
                         style={{ cursor: "pointer" }}
                       >
                         {lead.user?.title
@@ -273,7 +275,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
         </Row>
 
         {/* Modals */}
-        <ViewLeadModal
+        <ViewOrgLeadModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedLead={selectedLead}
