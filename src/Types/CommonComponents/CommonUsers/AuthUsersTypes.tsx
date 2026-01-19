@@ -13,6 +13,8 @@ interface AuthUser {
   joining_date: string;
   is_active: boolean;
   profile_image: string | null;
+  company_name?: string;
+  company_address?: string;
 }
 
 interface AuthUsersProps {

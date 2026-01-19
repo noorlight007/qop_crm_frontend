@@ -32,6 +32,8 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     password: "",
     gender: "",
     joining_date: "",
+    company_name: "",
+    company_address: "",
   });
 
   const getErrorMessage = (err: any) => {
@@ -96,7 +98,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       email: formData.email,
       phone: formData.phone || null,
       password: formData.password,
-      gender: formData.gender,
+      gender: formData.gender ? formData.gender : null,
       joining_date: formData.joining_date ? formData.joining_date : null,
       role:
         pathname === "/dashboard/network/director/advisers"
@@ -110,6 +112,8 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 : pathname === "/dashboard/organisation/director/introducers"
                   ? "INTRODUCER"
                   : "",
+      company_name: formData.company_name,
+      company_address: formData.company_address,
     };
 
     try {
@@ -127,6 +131,8 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
           password: "",
           gender: "",
           joining_date: "",
+          company_name: "",
+          company_address: "",
         });
         toggle();
       } else if ("error" in result) {
@@ -248,26 +254,63 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                   />
                 </FormGroup>
               </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="gender">
-                    Gender<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    id="gender"
-                    name="gender"
-                    type="select"
-                    value={formData.gender}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select...</option>
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                </FormGroup>
-              </Col>
+
+              {pathname !== "/dashboard/organisation/director/introducers" && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="gender">
+                      Gender<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="gender"
+                      name="gender"
+                      type="select"
+                      value={formData.gender}
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="">Select...</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                      <option value="OTHER">Other</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              )}
+              {pathname === "/dashboard/organisation/director/introducers" && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="company_name">
+                        Company Name<span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        id="company_name"
+                        name="company_name"
+                        type="text"
+                        value={formData.company_name}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="company_address">
+                        Company Address<span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        id="company_address"
+                        name="company_address"
+                        type="text"
+                        value={formData.company_address}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
               <Col md={6}>
                 <FormGroup>
                   <Label for="joining_date">Joining Date</Label>

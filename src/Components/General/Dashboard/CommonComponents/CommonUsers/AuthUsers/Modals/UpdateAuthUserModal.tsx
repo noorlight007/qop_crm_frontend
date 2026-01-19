@@ -24,6 +24,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   toggle,
   selectedAuthUser,
 }) => {
+  const pathname = window.location.pathname;
   const [authUserData, setAuthUserData] =
     useState<Partial<AuthUser>>(selectedAuthUser);
   const [isModified, setIsModified] = useState(false);
@@ -240,6 +241,59 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 />
               </FormGroup>
             </Col>
+            {pathname !== "/dashboard/organisation/director/introducers" && (
+              <Col md={6} xs={6}>
+                <FormGroup>
+                  <Label for="gender">Gender</Label>
+                  <Input
+                    id="gender"
+                    name="gender"
+                    type="select"
+                    value={authUserData?.gender || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select...</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                  </Input>
+                </FormGroup>
+              </Col>
+            )}
+            {pathname === "/dashboard/organisation/director/introducers" && (
+              <>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="company_name">
+                      Company Name<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="company_name"
+                      name="company_name"
+                      type="text"
+                      value={authUserData.company_name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="company_address">
+                      Company Address<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="company_address"
+                      name="company_address"
+                      type="text"
+                      value={authUserData.company_address}
+                      onChange={handleChange}
+                      required
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
             <Col md={6} xs={6}>
               <FormGroup>
                 <Label for="joining_date">Joining Date</Label>
@@ -252,23 +306,6 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
-              </FormGroup>
-            </Col>
-            <Col md={6} xs={6}>
-              <FormGroup>
-                <Label for="gender">Gender</Label>
-                <Input
-                  id="gender"
-                  name="gender"
-                  type="select"
-                  value={authUserData?.gender || ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Select...</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                  <option value="OTHER">Other</option>
-                </Input>
               </FormGroup>
             </Col>
           </Row>
