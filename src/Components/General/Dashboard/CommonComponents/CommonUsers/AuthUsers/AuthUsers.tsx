@@ -26,6 +26,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import AddAuthUserModal from "./Modals/AddAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
@@ -40,6 +41,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
     title: "",
@@ -62,11 +64,16 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   });
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
 
   const openViewModal = (authUser: AuthUser) => {
     setSelectedAuthUser(authUser);
     toggleViewModal();
+  };
+
+  const openAddUserModal = () => {
+    toggleAddUserModal();
   };
 
   const openUpdateModal = (authUser: AuthUser) => {
@@ -136,12 +143,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            <Button
-              color="primary"
-              onClick={() => {
-                // Open Add Auth User Modal
-              }}
-            >
+            <Button color="primary" onClick={openAddUserModal}>
               <TbCirclePlus size={18} className="me-1" />
               Add {title.slice(0, -1)}
             </Button>
@@ -363,6 +365,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedAuthUser={selectedAuthUser}
+        />
+        <AddAuthUserModal
+          isOpen={isAddUserModalOpen}
+          toggle={toggleAddUserModal}
         />
         <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}

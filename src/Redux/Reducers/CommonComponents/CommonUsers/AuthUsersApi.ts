@@ -10,6 +10,14 @@ export const AuthUsersApi = baseApi.injectEndpoints({
       }),
       providesTags: ["AuthUsers"],
     }),
+    addAuthUser: builder.mutation({
+      query: ({ payload }) => ({
+        url: "/auth/user-list/",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["AuthUsers"],
+    }),
     updateAuthUserDetails: builder.mutation({
       query: ({ payload, userAlias }) => ({
         url: `/auth/user-list/${userAlias}/`,
@@ -20,5 +28,8 @@ export const AuthUsersApi = baseApi.injectEndpoints({
     }),
   }),
 });
-export const { useGetAuthUsersQuery, useUpdateAuthUserDetailsMutation } =
-  AuthUsersApi;
+export const {
+  useGetAuthUsersQuery,
+  useAddAuthUserMutation,
+  useUpdateAuthUserDetailsMutation,
+} = AuthUsersApi;
