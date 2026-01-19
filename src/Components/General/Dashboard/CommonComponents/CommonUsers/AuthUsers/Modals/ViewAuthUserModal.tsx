@@ -42,7 +42,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
           </div>
           <h4 className="mb-1 text-dark fw-bold">
             {selectedAuthUser?.title
-              ? formatChoiceFieldValue(selectedAuthUser.title) + ". "
+              ? formatChoiceFieldValue(selectedAuthUser.title) + " "
               : ""}
             {selectedAuthUser?.first_name}{" "}
             {selectedAuthUser?.middle_name &&
