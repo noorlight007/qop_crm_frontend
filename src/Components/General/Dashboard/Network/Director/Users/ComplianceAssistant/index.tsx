@@ -6,8 +6,8 @@ const NetworkComplianceAssistantContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Compliance Assistant Overview"
-        subTitle="Welcome to the Compliance Assistant Overview"
+        title="Compliance Assistant Status"
+        subTitle="Welcome to the Compliance Assistant Status"
         parent="Users"
         child="Compliance Assistants"
       />
