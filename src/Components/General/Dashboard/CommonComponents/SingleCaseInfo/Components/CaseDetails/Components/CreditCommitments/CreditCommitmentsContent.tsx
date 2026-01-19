@@ -281,6 +281,7 @@ const CreditCommitmentsContent: React.FC = () => {
       <DeleteCreditCommitmentModal
         isOpen={isDeleteModalOpen}
         toggle={() => setIsDeleteModalOpen(!isDeleteModalOpen)}
+        onDelete={() => setIsDeleteModalOpen(false)}
         casealias={casealias?.toString()}
         creditCommitmentAlias={selectedItemAlias}
         creditCommitmentName={selectedItemName}

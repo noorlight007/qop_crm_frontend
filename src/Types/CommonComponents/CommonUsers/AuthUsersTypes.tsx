@@ -13,6 +13,9 @@ interface AuthUser {
   joining_date: string;
   is_active: boolean;
   profile_image: string | null;
+  company_name?: string;
+  company_address?: string;
+  role?: string;
 }
 
 interface AuthUsersProps {
@@ -27,10 +30,14 @@ interface ViewAuthUserModalProps {
   selectedAuthUser: Partial<AuthUser>;
 }
 
+export interface AddAuthUserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+}
+
 interface UpdateAuthUserModalProps {
   isOpen: boolean;
   toggle: () => void;
-  onSave: (data: Partial<AuthUser>) => void;
   selectedAuthUser: Partial<AuthUser>;
 }
 
