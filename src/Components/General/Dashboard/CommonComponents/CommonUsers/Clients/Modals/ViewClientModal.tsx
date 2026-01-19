@@ -47,7 +47,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
             {selectedClient?.user?.last_name}
           </h4>
           <div>
-            <Badge color="secondary" pill className="px-3 py-2">
+            <Badge pill className="px-3 py-2 bg-light-primary">
               👤 {formatChoiceFieldValue(selectedClient.role)}
             </Badge>
           </div>

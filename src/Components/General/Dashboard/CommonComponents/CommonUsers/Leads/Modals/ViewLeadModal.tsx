@@ -50,7 +50,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
           </h4>
 
           <div>
-            <Badge color="secondary" pill className="px-3 py-2">
+            <Badge pill className="px-3 py-2 bg-light-primary">
               👤 {formatChoiceFieldValue(selectedLead.role)}
             </Badge>
           </div>

@@ -55,18 +55,18 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
               : "User"}
           </p>
           <div>
-            <Badge color="info" pill className="px-3 py-2 me-2">
+            <Badge pill className="px-3 py-2 me-2 bg-light-primary">
               👤{" "}
               {selectedAuthUser?.role
                 ? formatChoiceFieldValue(selectedAuthUser.role)
                 : "User"}
             </Badge>
             {selectedAuthUser?.is_active ? (
-              <Badge color="success" pill className="px-3 py-2">
+              <Badge pill className="px-3 py-2 bg-light-success">
                 ✓ Approved
               </Badge>
             ) : (
-              <Badge color="danger" pill className="px-3 py-2">
+              <Badge pill className="px-3 py-2 bg-light-danger">
                 ⏳ Pending
               </Badge>
             )}
