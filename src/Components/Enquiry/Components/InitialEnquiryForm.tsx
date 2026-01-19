@@ -144,19 +144,14 @@ const InitialEnquiryForm: React.FC = () => {
       case 1:
         return Boolean(
           formData.title &&
-            formData.first_name &&
-            formData.last_name &&
-            formData.email &&
-            formData.phone
+          formData.first_name &&
+          formData.last_name &&
+          formData.email &&
+          formData.phone
         );
 
       case 2:
-        return Boolean(
-          formData.enquiry_type &&
-            formData.estimated_property_value &&
-            formData.approximate_mortgage_required &&
-            formData.approximate_deposit_available
-        );
+        return Boolean(formData.enquiry_type);
 
       case 3:
         return Boolean(formData.source);
@@ -169,23 +164,24 @@ const InitialEnquiryForm: React.FC = () => {
     }
   };
 
-  const validateStepAndCollectErrors = (step: number): Record<string, string> => {
+  const validateStepAndCollectErrors = (
+    step: number
+  ): Record<string, string> => {
     const newErrors: Record<string, string> = {};
 
     switch (step) {
       case 1:
         if (!formData.title) newErrors.title = "This field is required";
-        if (!formData.first_name) newErrors.first_name = "This field is required";
+        if (!formData.first_name)
+          newErrors.first_name = "This field is required";
         if (!formData.last_name) newErrors.last_name = "This field is required";
         if (!formData.email) newErrors.email = "This field is required";
         if (!formData.phone) newErrors.phone = "This field is required";
         break;
 
       case 2:
-        if (!formData.enquiry_type) newErrors.enquiry_type = "This field is required";
-        if (!formData.estimated_property_value) newErrors.estimated_property_value = "This field is required";
-        if (!formData.approximate_mortgage_required) newErrors.approximate_mortgage_required = "This field is required";
-        if (!formData.approximate_deposit_available) newErrors.approximate_deposit_available = "This field is required";
+        if (!formData.enquiry_type)
+          newErrors.enquiry_type = "This field is required";
         break;
 
       case 3:
@@ -193,8 +189,10 @@ const InitialEnquiryForm: React.FC = () => {
         break;
 
       case 4:
-        if (!formData.contact_consent) newErrors.contact_consent = "This field is required";
-        if (!formData.privacy_notice_consent) newErrors.privacy_notice_consent = "This field is required";
+        if (!formData.contact_consent)
+          newErrors.contact_consent = "This field is required";
+        if (!formData.privacy_notice_consent)
+          newErrors.privacy_notice_consent = "This field is required";
         break;
     }
 
@@ -212,12 +210,12 @@ const InitialEnquiryForm: React.FC = () => {
 
   const handleNext = () => {
     const stepErrors = validateStepAndCollectErrors(currentStep);
-    
+
     if (Object.keys(stepErrors).length > 0) {
       setErrors((prev) => ({ ...prev, ...stepErrors }));
       return;
     }
-    
+
     setCurrentStep((prev) => prev + 1);
   };
 
@@ -244,7 +242,19 @@ const InitialEnquiryForm: React.FC = () => {
     }
 
     try {
-      await submitEnquiry({ payload: formData }).unwrap();
+      // Filter out empty number fields to avoid "A valid number is required" errors
+      const cleanedData = {
+        ...formData,
+        estimated_property_value: formData.estimated_property_value || null,
+        approximate_mortgage_required:
+          formData.approximate_mortgage_required || null,
+        approximate_deposit_available:
+          formData.approximate_deposit_available || null,
+        other_enquiry_type: formData.other_enquiry_type || null,
+        other_source: formData.other_source || null,
+      };
+
+      await submitEnquiry({ payload: cleanedData }).unwrap();
       toast.success("Form submitted successfully");
       setShowSuccess(true);
     } catch (err) {
@@ -344,8 +354,18 @@ const InitialEnquiryForm: React.FC = () => {
           </div>
         </div>
       ) : (
-        <Card className="shadow-lg border-0 justify-content-center" style={{ minHeight: "500px", display: "flex", flexDirection: "column" }}>
-          <CardBody className="p-4" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+        <Card
+          className="shadow-lg border-0 justify-content-center"
+          style={{
+            minHeight: "500px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <CardBody
+            className="p-4"
+            style={{ display: "flex", flexDirection: "column", flex: 1 }}
+          >
             {apiErrors.length > 0 && (
               <div className="mb-3">
                 <Alert color="danger" toggle={() => setApiErrors([])}>
@@ -384,14 +404,20 @@ const InitialEnquiryForm: React.FC = () => {
               />
             </Nav>
 
-            <Form innerRef={formRef} onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <Form
+              innerRef={formRef}
+              onSubmit={handleSubmit}
+              style={{ display: "flex", flexDirection: "column", flex: 1 }}
+            >
               {/* STEP 1 */}
               {currentStep === 1 && (
                 <>
                   <Row>
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Title<span className="text-danger">*</span></Label>
+                        <Label>
+                          Title<span className="text-danger">*</span>
+                        </Label>
                         <Input
                           type="select"
                           name="title"
@@ -419,7 +445,9 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>First Name<span className="text-danger">*</span></Label>
+                        <Label>
+                          First Name<span className="text-danger">*</span>
+                        </Label>
                         <Input
                           name="first_name"
                           value={formData.first_name}
@@ -450,7 +478,9 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Last Name<span className="text-danger">*</span></Label>
+                        <Label>
+                          Last Name<span className="text-danger">*</span>
+                        </Label>
                         <Input
                           name="last_name"
                           value={formData.last_name}
@@ -470,7 +500,9 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Email<span className="text-danger">*</span></Label>
+                        <Label>
+                          Email<span className="text-danger">*</span>
+                        </Label>
                         <Input
                           type="email"
                           name="email"
@@ -487,7 +519,9 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Mobile Number<span className="text-danger">*</span></Label>
+                        <Label>
+                          Mobile Number<span className="text-danger">*</span>
+                        </Label>
                         <Input
                           name="phone"
                           value={formData.phone}
@@ -510,7 +544,9 @@ const InitialEnquiryForm: React.FC = () => {
                   <Row>
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Enquiry Type<span className="text-danger">*</span></Label>
+                        <Label>
+                          Enquiry Type<span className="text-danger">*</span>
+                        </Label>
                         <Input
                           type="select"
                           name="enquiry_type"
@@ -568,7 +604,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Estimated Property Value (£)<span className="text-danger">*</span></Label>
+                        <Label>Estimated Property Value (£)</Label>
                         <Input
                           name="estimated_property_value"
                           type="number"
@@ -580,7 +616,6 @@ const InitialEnquiryForm: React.FC = () => {
                             )
                           }
                           onChange={handleChange}
-                          required
                         />
                         {errors.estimated_property_value && (
                           <small className="text-danger">
@@ -592,7 +627,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Mortgage Required (£)<span className="text-danger">*</span></Label>
+                        <Label>Approximate Mortgage Required (£)</Label>
                         <Input
                           name="approximate_mortgage_required"
                           type="number"
@@ -604,7 +639,6 @@ const InitialEnquiryForm: React.FC = () => {
                             )
                           }
                           onChange={handleChange}
-                          required
                         />
                         {errors.approximate_mortgage_required && (
                           <small className="text-danger">
@@ -616,7 +650,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Deposit Available (£ or %)<span className="text-danger">*</span></Label>
+                        <Label>Approximate Deposit Available (£ or %)</Label>
                         <Input
                           name="approximate_deposit_available"
                           type="number"
@@ -628,7 +662,6 @@ const InitialEnquiryForm: React.FC = () => {
                             )
                           }
                           onChange={handleChange}
-                          required
                         />
                         {errors.approximate_deposit_available && (
                           <small className="text-danger">
@@ -645,7 +678,10 @@ const InitialEnquiryForm: React.FC = () => {
               {currentStep === 3 && (
                 <>
                   <FormGroup>
-                    <Label>How did you hear about us?<span className="text-danger">*</span></Label>
+                    <Label>
+                      How did you hear about us?
+                      <span className="text-danger">*</span>
+                    </Label>
                     <Input
                       type="select"
                       name="source"
@@ -729,15 +765,15 @@ const InitialEnquiryForm: React.FC = () => {
                         </p>
                         <p>
                           <strong>Property Value:</strong> £
-                          {formData.estimated_property_value}
+                          {formData.estimated_property_value || 0}
                         </p>
                         <p>
                           <strong>Mortgage Required:</strong> £
-                          {formData.approximate_mortgage_required}
+                          {formData.approximate_mortgage_required || 0}
                         </p>
                         <p>
-                          <strong>Deposit Available:</strong>{" "}
-                          {formData.approximate_deposit_available}
+                          <strong>Deposit Available:</strong> £
+                          {formData.approximate_deposit_available || 0}
                         </p>
                       </div>
                     </Col>

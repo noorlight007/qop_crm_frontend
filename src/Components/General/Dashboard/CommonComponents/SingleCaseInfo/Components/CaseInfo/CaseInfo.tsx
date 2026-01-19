@@ -41,7 +41,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   caseInfo,
   isLoading,
   jointApplicantInfo,
-  isJointApplicantLoading,
 }) => {
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -114,7 +113,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
             phone: clientData.user!.phone ?? prev?.phone,
             user_type: prev?.user_type || "",
             profile_image: prev?.profile_image || "",
-          } as any)
+          }) as any
       );
     }
   };
@@ -615,89 +614,194 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
             </Card>
           </Col>
         </Row>
-        <Row className="px-3">
-          <Col className="border-2 border-r-light">
-            <div>
-              <h6>Property Address:</h6>
-              <p className="p-1 small">
-                {(() => {
-                  const pd = caseInfo?.property_details;
-                  if (!pd) return "N/A";
-                  const countryFormatted = pd.country
-                    ? formatChoiceFieldValue(pd.country)
-                    : pd.country;
-                  const parts = [
-                    pd.house_name_or_number,
-                    pd.address_line_1,
-                    pd.address_line_2,
-                    pd.city,
-                    pd.county,
-                    pd.postcode,
-                    countryFormatted,
-                  ].filter(
-                    (v) =>
-                      v !== null && v !== undefined && String(v).trim() !== ""
-                  );
-                  return parts.length ? (
-                    parts.join(", ")
-                  ) : (
-                    <span className="text-muted">Not available</span>
-                  );
-                })()}
-              </p>
-            </div>
-            <div className="d-flex justify-content-between gap-2">
-              <div>
-                <h6>Property Value:</h6>
-                <p className="p-1 small">
-                  {caseInfo?.property_valuation ? (
-                    `£${caseInfo.property_valuation}`
-                  ) : (
-                    <span className="text-muted">Not available</span>
-                  )}
-                </p>
-              </div>
-              <div>
-                <h6>Purchase Price:</h6>
-                <p className="p-1 small">
-                  {caseInfo?.purchase_price ? (
-                    `£${caseInfo.purchase_price}`
-                  ) : (
-                    <span className="text-muted">Not available</span>
-                  )}
-                </p>
-              </div>
-              <div>
-                <h6>Loan Amount :</h6>
-                <p className="p-1 small">
-                  {caseInfo?.loan_amount ? (
-                    `£${caseInfo.loan_amount}`
-                  ) : (
-                    <span className="text-muted">Not available</span>
-                  )}
-                </p>
-              </div>
-              <div>
-                <h6>Lender:</h6>
-                <p className="p-1 small">
-                  {caseInfo?.lender ? (
-                    formatChoiceFieldValue(caseInfo.lender)
-                  ) : (
-                    <span className="text-muted">No lender available.</span>
-                  )}
-                </p>
-              </div>
-            </div>
-          </Col>
-          <Col>
-            <h6>Notes:</h6>
-            <p className="p-1 small">
-              {caseInfo?.notes ? (
-                formatChoiceFieldValue(caseInfo.notes)
-              ) : (
-                <span className="text-muted">No notes available.</span>
-              )}
-            </p>
+        <Row className="px-3 mt-3">
+          <Col sm="12">
+            <Card className="shadow">
+              <CardBody className="pt-2">
+                {/* Property Details Section */}
+                <div className="mb-4">
+                  <h6
+                    className="text-uppercase fw-bold text-primary mb-3"
+                    style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                  >
+                    Property Details
+                  </h6>
+                  <Row>
+                    <Col md="6">
+                      <div className="p-3 bg-light rounded mb-3">
+                        <small className="text-muted d-block fw-500 mb-2">
+                          Property Address
+                        </small>
+                        <p className="m-0 text-dark fw-500">
+                          {(() => {
+                            const pd = caseInfo?.property_details;
+                            if (!pd) return "N/A";
+                            const countryFormatted = pd.country
+                              ? formatChoiceFieldValue(pd.country)
+                              : pd.country;
+                            const parts = [
+                              pd.house_name_or_number,
+                              pd.address_line_1,
+                              pd.address_line_2,
+                              pd.city,
+                              pd.county,
+                              pd.postcode,
+                              countryFormatted,
+                            ].filter(
+                              (v) =>
+                                v !== null &&
+                                v !== undefined &&
+                                String(v).trim() !== ""
+                            );
+                            return parts.length ? (
+                              parts.join(", ")
+                            ) : (
+                              <span className="text-muted">Not available</span>
+                            );
+                          })()}
+                        </p>
+                      </div>
+
+                      <Row>
+                        <Col md="6" className="mb-3">
+                          <div className="p-3 bg-light rounded">
+                            <small className="text-muted d-block fw-500 mb-2">
+                              Property Value
+                            </small>
+                            <p className="m-0 text-dark fw-500">
+                              {caseInfo?.property_valuation ? (
+                                `£${caseInfo.property_valuation}`
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </Col>
+                        <Col md="6" className="mb-3">
+                          <div className="p-3 bg-light rounded">
+                            <small className="text-muted d-block fw-500 mb-2">
+                              Purchase Price
+                            </small>
+                            <p className="m-0 text-dark fw-500">
+                              {caseInfo?.purchase_price ? (
+                                `£${caseInfo.purchase_price}`
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </Col>
+                        <Col md="6" className="mb-3">
+                          <div className="p-3 bg-light rounded">
+                            <small className="text-muted d-block fw-500 mb-2">
+                              Loan Amount
+                            </small>
+                            <p className="m-0 text-dark fw-500">
+                              {caseInfo?.loan_amount ? (
+                                `£${caseInfo.loan_amount}`
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </Col>
+                        <Col md="6" className="mb-3">
+                          <div className="p-3 bg-light rounded">
+                            <small className="text-muted d-block fw-500 mb-2">
+                              Lender
+                            </small>
+                            <p className="m-0 text-dark fw-500">
+                              {caseInfo?.lender ? (
+                                formatChoiceFieldValue(caseInfo.lender)
+                              ) : (
+                                <span className="text-muted">
+                                  Not available
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </Col>
+                      </Row>
+                    </Col>
+
+                    {/* Notes Section on the right */}
+                    <Col md="6" className="ps-3">
+                      <h6
+                        className="text-uppercase fw-bold text-primary mb-3"
+                        style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                      >
+                        Notes
+                      </h6>
+                      <div
+                        className="p-3 bg-light rounded h-75 overflow-auto"
+                        style={{ borderLeft: "3px solid #0d6efd" }}
+                      >
+                        <p
+                          className="m-0 text-dark"
+                          style={{ whiteSpace: "pre-wrap" }}
+                        >
+                          {caseInfo?.notes ? (
+                            caseInfo.notes
+                          ) : (
+                            <span className="text-muted">
+                              No notes available
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+
+                <hr className="my-3" />
+
+                {/* Application & Mortgage Type Section */}
+                <div>
+                  <h6
+                    className="text-uppercase fw-bold text-primary mb-3"
+                    style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                  >
+                    Application & Mortgage Details
+                  </h6>
+                  <Row>
+                    <Col md="6" className="mb-3">
+                      <div className="p-3 bg-light rounded">
+                        <small className="text-muted d-block fw-500 mb-2">
+                          Application Type
+                        </small>
+                        <p className="m-0 text-dark fw-500">
+                          {caseInfo?.application_type ? (
+                            formatChoiceFieldValue(caseInfo.application_type)
+                          ) : (
+                            <span className="text-muted">Not available</span>
+                          )}
+                        </p>
+                      </div>
+                    </Col>
+                    <Col md="6" className="mb-3">
+                      <div className="p-3 bg-light rounded">
+                        <small className="text-muted d-block fw-500 mb-2">
+                          Mortgage Type
+                        </small>
+                        <p className="m-0 text-dark fw-500">
+                          {caseInfo?.mortgage_type ? (
+                            formatChoiceFieldValue(caseInfo.mortgage_type)
+                          ) : (
+                            <span className="text-muted">Not available</span>
+                          )}
+                        </p>
+                      </div>
+                    </Col>
+                  </Row>
+                </div>
+              </CardBody>
+            </Card>
           </Col>
         </Row>
       </Card>

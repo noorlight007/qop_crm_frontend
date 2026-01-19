@@ -22,7 +22,7 @@ export const LoanDetailsApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: mergedData,
       }),
-      invalidatesTags: ["LoanDetails"],
+      invalidatesTags: ["LoanDetails", "CaseDetails"],
     }),
   }),
 });
