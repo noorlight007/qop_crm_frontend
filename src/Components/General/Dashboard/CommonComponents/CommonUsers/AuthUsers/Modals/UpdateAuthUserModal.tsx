@@ -27,12 +27,15 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   const pathname = window.location.pathname;
   const [authUserData, setAuthUserData] =
     useState<Partial<AuthUser>>(selectedAuthUser);
+  const [originalData, setOriginalData] =
+    useState<Partial<AuthUser>>(selectedAuthUser);
   const [isModified, setIsModified] = useState(false);
   const [updateAuthUserDetails, { isLoading }] =
     useUpdateAuthUserDetailsMutation();
 
   useEffect(() => {
     setAuthUserData(selectedAuthUser);
+    setOriginalData(selectedAuthUser);
     setIsModified(false);
   }, [selectedAuthUser]);
 
@@ -96,15 +99,45 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     e.preventDefault();
     try {
       if (authUserData.alias) {
-        let payload: Partial<AuthUser> = { ...authUserData };
+        // Build payload with only changed fields
+        const payload: Record<string, any> = {};
+
+        // Check each field for changes
+        const fieldsToCheck = [
+          "title",
+          "first_name",
+          "middle_name",
+          "last_name",
+          "email",
+          "phone",
+          "gender",
+          "joining_date",
+          "company_name",
+          "company_address",
+        ];
+
+        fieldsToCheck.forEach((field) => {
+          const currentValue = (authUserData as any)[field];
+          const originalValue = (originalData as any)[field];
+
+          if (currentValue !== originalValue) {
+            payload[field] = currentValue;
+          }
+        });
 
         // If joining_date is empty string, send null
         if (payload.joining_date === "") {
-          payload.joining_date = null as unknown as any;
+          payload.joining_date = null;
+        }
+
+        // If no fields changed, show message
+        if (Object.keys(payload).length === 0) {
+          toast.info("No changes to save.");
+          return;
         }
 
         const result = await updateAuthUserDetails({
-          payload,
+          payload: payload as Partial<AuthUser>,
           userAlias: authUserData.alias,
         });
 

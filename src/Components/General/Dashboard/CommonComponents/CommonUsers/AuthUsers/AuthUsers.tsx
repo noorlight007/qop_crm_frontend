@@ -35,6 +35,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 10,
   userRole,
 }) => {
+  const pathname = window.location.pathname;
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,6 +53,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     phone: null,
     gender: "",
     joining_date: "",
+    is_active: false,
+    profile_image: null,
+    company_name: "",
+    company_address: "",
     created_at: "",
     created_by: null,
   });
@@ -158,7 +163,17 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Phone</th>
                 <th>Status</th>
                 <th>Joining Date</th>
-                <th>Gender</th>
+                {pathname !==
+                  "/dashboard/organisation/director/introducers" && (
+                  <th>Gender</th>
+                )}
+                {pathname ===
+                  "/dashboard/organisation/director/introducers" && (
+                  <>
+                    <th>Company Name</th>
+                    <th>Company Address</th>
+                  </>
+                )}
                 <th>Created At</th>
                 <th>Action</th>
               </tr>
@@ -227,11 +242,22 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
                     <td>{formatDate(admin?.joining_date) || "-"}</td>
+                    {pathname !==
+                      "/dashboard/organisation/director/introducers" && (
+                      
                     <td>
                       {admin?.gender
                         ? formatChoiceFieldValue(admin?.gender)
                         : "-"}
                     </td>
+                    )}
+                    {pathname ===
+                      "/dashboard/organisation/director/introducers" && (
+                      <>
+                        <td>{admin?.company_name || "-"}</td>
+                        <td>{admin?.company_address || "-"}</td>
+                      </>
+                    )}
                     <td>{formatDateAndTime(admin?.created_at) || "-"}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
