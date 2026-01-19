@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
+import { TbCirclePlus } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -130,7 +131,21 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               />
             </InputGroup>
           </Col>
-          <Col md="3" xs="12" />
+          <Col
+            md="3"
+            xs="12"
+            className="d-flex justify-content-end mt-sm-0 mt-2"
+          >
+            <Button
+              color="primary"
+              onClick={() => {
+                // Open Add Auth User Modal
+              }}
+            >
+              <TbCirclePlus size={18} className="me-1" />
+              Add {title.slice(0, -1)}
+            </Button>
+          </Col>
         </Row>
         <Row>
           <Table hover responsive>

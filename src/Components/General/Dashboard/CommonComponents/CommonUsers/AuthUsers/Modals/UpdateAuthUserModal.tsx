@@ -90,14 +90,16 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Admin</span>
+        <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
             <Col md="6" sm="12">
               <FormGroup>
-                <Label for="title">Title*</Label>
+                <Label for="title">
+                  Title<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="title"
                   name="title"
@@ -121,7 +123,9 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="firstName">First Name*</Label>
+                <Label for="firstName">
+                  First Name<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="text"
                   id="firstName"
@@ -150,7 +154,9 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
             </Col>
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="lastName">Last Name*</Label>
+                <Label for="lastName">
+                  Last Name<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="text"
                   id="lastName"
@@ -165,7 +171,9 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
             </Col>
             <Col md="6" xs="12">
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for="email">
+                  Email<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="email"
                   id="email"
@@ -174,6 +182,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   value={authUserData?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
+                  required
                 />
               </FormGroup>
             </Col>

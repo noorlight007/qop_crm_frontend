@@ -19,7 +19,12 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Admin Information</h3>
+        <h3 className="text-primary">
+          {selectedAuthUser?.name
+            ? formatChoiceFieldValue(selectedAuthUser?.name)
+            : ""}{" "}
+          Information
+        </h3>
       </ModalHeader>
       <ModalBody>
         {/* 1st row  */}
