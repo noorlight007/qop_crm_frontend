@@ -4,13 +4,13 @@ import {
   mortgageStages,
 } from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
 import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetAdviserDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AdvisersApi";
+
+import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
 import {
   CaseInfoPrpos,
   CaseUser,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/Network/Director/AdviserTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -65,8 +65,26 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   };
   const [filters, setFilters] = useState(defaultFilters);
 
+  // Determine role based on user type
+  const getAdviserRole = (): string => {
+    if (
+      session?.user?.user_type === "NETWORK_DIRECTOR" ||
+      session?.user?.user_type === "NETWORK_ADVISER" ||
+      session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
+    ) {
+      return "NETWORK_ADVISER";
+    } else if (
+      session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
+      session?.user?.user_type === "ORGANISATION_ADVISER" ||
+      session?.user?.user_type === "ORGANISATION_ADMIN"
+    ) {
+      return "ORGANISATION_ADVISER";
+    }
+    return "";
+  };
+
   const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetAdviserDetailsQuery(undefined);
+    useGetUserListQuery({ role: getAdviserRole() });
 
   const { data: usersData } = useGetUsersQuery(undefined);
 
@@ -203,22 +221,11 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         }
                       >
                         <option value="">All Users</option>
-                        {adviserData?.results.map(
-                          (adviser: AdviserInfoProps) => (
-                            <option key={adviser.alias} value={adviser.user.id}>
-                              {adviser.user.title
-                                ? adviser.user.title[0].toUpperCase() +
-                                  adviser.user.title.slice(1).toLowerCase() +
-                                  " "
-                                : ""}
-                              {adviser.user.first_name}{" "}
-                              {adviser.user.middle_name
-                                ? adviser.user.middle_name + " "
-                                : ""}
-                              {adviser.user.last_name}
-                            </option>
-                          )
-                        )}
+                        {adviserData?.map((adviser: any) => (
+                          <option key={adviser.alias} value={adviser.id}>
+                            {adviser.name}
+                          </option>
+                        ))}
                       </Input>
                     </Col>
                     <Col>
