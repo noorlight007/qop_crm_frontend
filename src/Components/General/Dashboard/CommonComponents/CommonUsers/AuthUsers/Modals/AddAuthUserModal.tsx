@@ -148,7 +148,6 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
         <h2 className="text-primary text-capitalize">
           Add {pathname.split("/").pop()?.replace(/-/g, " ").slice(0, -1)}
         </h2>
-        {pathname}
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={handleSaveUser} encType="multipart/form-data">

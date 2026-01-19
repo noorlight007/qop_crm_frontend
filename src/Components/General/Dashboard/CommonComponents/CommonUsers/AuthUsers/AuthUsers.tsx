@@ -250,7 +250,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               ) : (
                 <tr>
                   <td colSpan={8} className="text-center">
-                    No admins available.
+                    No users available.
                   </td>
                 </tr>
               )}
