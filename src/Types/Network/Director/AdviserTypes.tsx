@@ -13,6 +13,7 @@ export interface AdviserInfoProps {
   };
   role: string;
   gender: string;
+  is_active: boolean;
   joining_date: string;
   created_by?: {
     title: string;

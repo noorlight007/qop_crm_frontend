@@ -1,10 +1,9 @@
 "use client";
-import ViewAdviserModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Advisers/Modals/ViewAdviserModal";
 import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgAdvisersApi";
 import {
   AdviserInfoProps,
   AdvisersProps,
-} from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
+} from "@/Types/Network/Director/AdviserTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -14,6 +13,7 @@ import { useEffect, useState } from "react";
 import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
 import {
+  Badge,
   Card,
   CardBody,
   Col,
@@ -35,7 +35,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [stablePageSize, setStablePageSize] = useState<number>(0);
 
   // debounce search input
@@ -57,27 +56,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
     },
     { skip: !organisationslug }
   );
-
-  const [selectedAdviser, setSelectedAdviser] = useState<
-    Partial<AdviserInfoProps>
-  >({
-    user: {
-      id: 0,
-      title: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      profile_image: "",
-      user_type: "",
-    },
-    role: "",
-    joining_date: "",
-    gender: "",
-  });
-
-  const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
 
   useEffect(() => {
     if (adviserData) {
@@ -151,9 +129,10 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Status</th>
                 <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
@@ -171,7 +150,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
               ) : currentAdvisers.length > 0 ? (
                 currentAdvisers.map((adviser) => (
                   <tr key={adviser.alias} className="text-center">
-                    <td className="d-flex justify-content-center align-items-center gap-1 text-truncate">
+                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                       <span
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}
@@ -188,14 +167,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                           <User size={30} className="text-primary" />
                         )}
                       </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => {
-                          setSelectedAdviser(adviser);
-                          toggleViewModal();
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
+                      <span>
                         {adviser.user?.title
                           ? formatChoiceFieldValue(adviser.user.title)
                           : ""}
@@ -204,6 +176,13 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                       </span>
                     </td>
                     <td>{adviser?.user?.email || "-"}</td>
+                    <td>
+                      {adviser?.is_active ? (
+                        <Badge color="success">Approved</Badge>
+                      ) : (
+                        <Badge color="danger">Pending</Badge>
+                      )}
+                    </td>
                     <td>
                       {adviser?.user?.phone ? (
                         <a
@@ -226,7 +205,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                               adviser.created_by?.title
                                 ? formatChoiceFieldValue(
                                     adviser.created_by.title
-                                  )
+                                  ).trim() + " "
                                 : ""
                             }${adviser.created_by.first_name || ""} ${
                               adviser.created_by.middle_name || ""
@@ -315,14 +294,6 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
             )}
           </div>
         </Row>
-
-        {/* modals */}
-        <ViewAdviserModal
-          isOpen={isViewModalOpen}
-          toggle={toggleViewModal}
-          selectedAdviser={selectedAdviser}
-        />
-        {/* modals end */}
       </CardBody>
     </Card>
   );

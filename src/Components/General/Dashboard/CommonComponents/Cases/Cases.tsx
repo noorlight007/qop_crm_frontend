@@ -10,7 +10,7 @@ import {
   CaseInfoPrpos,
   CaseUser,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { AdviserInfoProps } from "@/Types/CommonComponents/CommonUsers/AdviserTypes";
+import { AdviserInfoProps } from "@/Types/Network/Director/AdviserTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -305,12 +305,12 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         session?.user?.user_type === "NETWORK_ADVISER"
                           ? "Organisation"
                           : session?.user?.user_type ===
-                              "ORGANISATION_DIRECTOR" ||
-                            session?.user?.user_type ===
-                              "ORGANISATION_ADVISER" ||
-                            session?.user?.user_type === "ORGANISATION_ADMIN"
-                          ? "Network"
-                          : "Unknown"}
+                                "ORGANISATION_DIRECTOR" ||
+                              session?.user?.user_type ===
+                                "ORGANISATION_ADVISER" ||
+                              session?.user?.user_type === "ORGANISATION_ADMIN"
+                            ? "Network"
+                            : "Unknown"}
                       </th>
                       <th>Created By</th>
                       <th>Assigned To</th>
@@ -510,16 +510,16 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <td className="text-truncate">
                             {userType === "NETWORK_DIRECTOR" ||
                             userType === "NETWORK_ADVISER"
-                              ? caseItem.organization?.name ?? (
+                              ? (caseItem.organization?.name ?? (
                                   <span className="text-muted">
                                     Owned by Network
                                   </span>
-                                )
+                                ))
                               : userType === "ORGANISATION_DIRECTOR" ||
-                                userType === "ORGANISATION_ADVISER" ||
-                                userType === "ORGANISATION_ADMIN"
-                              ? caseItem.network?.name ?? "Self"
-                              : "-"}
+                                  userType === "ORGANISATION_ADVISER" ||
+                                  userType === "ORGANISATION_ADMIN"
+                                ? (caseItem.network?.name ?? "Self")
+                                : "-"}
                           </td>
                           <td className="text-truncate">
                             <p className="m-0">
