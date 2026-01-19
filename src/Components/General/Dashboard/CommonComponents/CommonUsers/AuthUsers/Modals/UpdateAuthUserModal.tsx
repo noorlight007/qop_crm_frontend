@@ -129,7 +129,10 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
       <ModalHeader toggle={toggle}>
         <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
-      <Form onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}>
+      <Form
+        onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}
+        encType="multipart/form-data"
+      >
         <ModalBody>
           <Row>
             <Col md="6" sm="12">
