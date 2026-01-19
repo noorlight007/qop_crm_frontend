@@ -367,9 +367,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
         <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
-          onSave={() => {
-            toggleUpdateModal();
-          }}
           selectedAuthUser={selectedAuthUser}
         />
         {/* modals end */}

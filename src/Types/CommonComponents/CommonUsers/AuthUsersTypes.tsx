@@ -30,7 +30,6 @@ interface ViewAuthUserModalProps {
 interface UpdateAuthUserModalProps {
   isOpen: boolean;
   toggle: () => void;
-  onSave: (data: Partial<AuthUser>) => void;
   selectedAuthUser: Partial<AuthUser>;
 }
 

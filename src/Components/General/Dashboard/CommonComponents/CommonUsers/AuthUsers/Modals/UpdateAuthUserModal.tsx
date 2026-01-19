@@ -22,7 +22,6 @@ import {
 const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   isOpen,
   toggle,
-  onSave,
   selectedAuthUser,
 }) => {
   const [authUserData, setAuthUserData] =
@@ -47,7 +46,11 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     setIsModified(true);
   };
 
-  const handleUpdateAuthUser = async (authUserData: Partial<AuthUser>) => {
+  const handleUpdateAuthUser = async (
+    e: React.FormEvent<HTMLFormElement>,
+    authUserData: Partial<AuthUser>
+  ) => {
+    e.preventDefault();
     try {
       if (authUserData.alias) {
         let payload: Partial<AuthUser> = { ...authUserData };
@@ -64,6 +67,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
 
         if (result.data) {
           toast.success("Admin updated successfully.");
+          toggle();
         } else if ("error" in result) {
           const errorMessage =
             (result.error as any)?.data?.email?.[0] ||
@@ -80,19 +84,12 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleUpdateAuthUser(authUserData);
-    onSave(authUserData);
-    toggle();
-  };
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
         <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}>
         <ModalBody>
           <Row>
             <Col md="6" sm="12">
