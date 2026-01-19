@@ -161,7 +161,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Status</th>
                 <th>Joining Date</th>
                 {pathname !==
                   "/dashboard/organisation/director/introducers" && (
@@ -175,6 +174,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   </>
                 )}
                 <th>Created At</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -234,22 +234,15 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         "-"
                       )}
                     </td>
-                    <td>
-                      {admin?.is_active ? (
-                        <Badge color="success">Approved</Badge>
-                      ) : (
-                        <Badge color="danger">Pending</Badge>
-                      )}
-                    </td>
+
                     <td>{formatDate(admin?.joining_date) || "-"}</td>
                     {pathname !==
                       "/dashboard/organisation/director/introducers" && (
-                      
-                    <td>
-                      {admin?.gender
-                        ? formatChoiceFieldValue(admin?.gender)
-                        : "-"}
-                    </td>
+                      <td>
+                        {admin?.gender
+                          ? formatChoiceFieldValue(admin?.gender)
+                          : "-"}
+                      </td>
                     )}
                     {pathname ===
                       "/dashboard/organisation/director/introducers" && (
@@ -259,6 +252,13 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       </>
                     )}
                     <td>{formatDateAndTime(admin?.created_at) || "-"}</td>
+                    <td>
+                      {admin?.is_active ? (
+                        <Badge color="success">Approved</Badge>
+                      ) : (
+                        <Badge color="danger">Pending</Badge>
+                      )}
+                    </td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button

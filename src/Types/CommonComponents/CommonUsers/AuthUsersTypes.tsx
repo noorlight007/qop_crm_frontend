@@ -15,6 +15,7 @@ interface AuthUser {
   profile_image: string | null;
   company_name?: string;
   company_address?: string;
+  role?: string;
 }
 
 interface AuthUsersProps {
