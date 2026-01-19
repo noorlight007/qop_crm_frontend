@@ -25,7 +25,6 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 <i className="iconly-Home icli svg-color" />
               </Link>
             </BreadcrumbItem>
-            <BreadcrumbItem>Dashboard</BreadcrumbItem>
             {parent && <BreadcrumbItem>{parent}</BreadcrumbItem>}
             {child && (
               <BreadcrumbItem className="active">{child}</BreadcrumbItem>
