@@ -226,68 +226,33 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
           {existingFiles.length > 0 && (
             <FormGroup>
               <Label>Attached Files ({existingFiles.length})</Label>
+
               <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "6px",
-                  padding: "10px",
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                }}
+                className="border rounded p-2 overflow-auto"
+                style={{ maxHeight: "200px" }}
               >
                 {existingFiles.map((file, index) => (
                   <div
                     key={file.alias}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "8px 10px",
-                      borderBottom:
-                        index !== existingFiles.length - 1
-                          ? "1px solid #f0f0f0"
-                          : "none",
-                    }}
+                    className={`d-flex justify-content-between align-items-center py-2 px-2 ${
+                      index !== existingFiles.length - 1 ? "border-bottom" : ""
+                    }`}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      <div style={{ minWidth: 0, flex: 1 }}>
+                    <div className="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <div className="flex-grow-1 min-w-0">
                         <div
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: "500",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
+                          className="fw-medium text-truncate small"
                           title={file.ticket_file.split("/").pop()}
                         >
                           {file.ticket_file.split("/").pop()}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#666" }}>
-                          {file.size ? `${(file.size / 1024).toFixed(2)} KB` : ""}
-                        </div>
                       </div>
                     </div>
+
                     <button
                       type="button"
                       onClick={() => removeExistingFile(index)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        fontSize: "20px",
-                        cursor: "pointer",
-                        color: "#dc3545",
-                        padding: "0",
-                        marginLeft: "10px",
-                      }}
+                      className="btn btn-link text-danger p-0 ms-2 fs-4 text-decoration-none"
                       title="Remove file"
                     >
                       ✕
@@ -302,68 +267,37 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
           {newFiles.length > 0 && (
             <FormGroup>
               <Label>New Files ({newFiles.length})</Label>
+
               <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "6px",
-                  padding: "10px",
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                }}
+                className="border rounded p-2 overflow-auto"
+                style={{ maxHeight: "200px" }}
               >
                 {newFiles.map((file, index) => (
                   <div
                     key={`${file.name}-${index}`}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "8px 10px",
-                      borderBottom:
-                        index !== newFiles.length - 1
-                          ? "1px solid #f0f0f0"
-                          : "none",
-                    }}
+                    className={`d-flex justify-content-between align-items-center py-2 px-2 ${
+                      index !== newFiles.length - 1 ? "border-bottom" : ""
+                    }`}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      <div style={{ minWidth: 0, flex: 1 }}>
+                    <div className="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <div className="flex-grow-1 min-w-0">
                         <div
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: "500",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
+                          className="text-truncate fw-medium small"
                           title={file.name}
                         >
                           {file.name}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#666" }}>
+
+                        <div className="text-muted small">
                           {(file.size / 1024).toFixed(2)} KB
                         </div>
                       </div>
                     </div>
+
                     <button
                       type="button"
                       onClick={() => removeNewFile(index)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        fontSize: "20px",
-                        cursor: "pointer",
-                        color: "#dc3545",
-                        padding: "0",
-                        marginLeft: "10px",
-                      }}
+                      className="btn btn-link text-danger p-0 ms-2 fs-4 text-decoration-none"
                       title="Remove file"
                     >
                       ✕

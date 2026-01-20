@@ -43,7 +43,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
   }, [isOpen]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -187,68 +187,37 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
           {formData.files.length > 0 && (
             <FormGroup>
               <Label>Attached Files ({formData.files.length})</Label>
+
               <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "6px",
-                  padding: "10px",
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                }}
+                className="border rounded p-2 overflow-auto"
+                style={{ maxHeight: "200px" }}
               >
                 {formData.files.map((file, index) => (
                   <div
                     key={`${file.name}-${index}`}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "8px 10px",
-                      borderBottom:
-                        index !== formData.files.length - 1
-                          ? "1px solid #f0f0f0"
-                          : "none",
-                    }}
+                    className={`d-flex justify-content-between align-items-center py-2 px-2 ${
+                      index !== formData.files.length - 1 ? "border-bottom" : ""
+                    }`}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      <div style={{ minWidth: 0, flex: 1 }}>
+                    <div className="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <div className="flex-grow-1 min-w-0">
                         <div
-                          style={{
-                            fontSize: "14px",
-                            fontWeight: "500",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
+                          className="fw-medium text-truncate"
                           title={file.name}
                         >
                           {file.name}
                         </div>
-                        <div style={{ fontSize: "12px", color: "#666" }}>
+
+                        <div className="text-muted small">
                           {(file.size / 1024).toFixed(2)} KB
                         </div>
                       </div>
                     </div>
+
                     <button
                       type="button"
                       onClick={() => handleRemoveFile(index)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        fontSize: "20px",
-                        cursor: "pointer",
-                        color: "#dc3545",
-                        padding: "0",
-                        marginLeft: "10px",
-                      }}
+                      className="btn btn-link text-danger p-0 ms-2 fs-4 text-decoration-none"
                       title="Remove file"
                     >
                       ✕
