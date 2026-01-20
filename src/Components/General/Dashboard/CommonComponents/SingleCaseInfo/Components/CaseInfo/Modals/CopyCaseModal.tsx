@@ -1,6 +1,6 @@
 import { useCopyCaseMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseCopy/CaseCopyApi";
 import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -161,7 +161,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
   const isFieldVisible = (fieldLabel: string): boolean => {
     const availableTabs = getAvailableTabs(
       caseData.case_category,
-      formData.case_stage || caseData.case_stage
+      formData.case_stage || caseData.case_stage,
     );
     return availableTabs.includes(fieldLabel);
   };
@@ -192,8 +192,39 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
     is_link_cases_together: false,
   });
 
+  useEffect(() => {
+    if (isOpen && caseData) {
+      setFormData({
+        case_stage: caseData.case_stage || "",
+        is_loan_details: false,
+        is_insurance_loan_details: false,
+        is_commission: false,
+        is_applicants_details: false,
+        is_employment_income: false,
+        is_credit_commitments: false,
+        is_adverse: false,
+        is_portfolio: false,
+        is_security_property: false,
+        is_solicitors_accountants: false,
+        is_budget_planner: false,
+        is_existing_protection: false,
+        is_mortgage_your_needs: false,
+        is_notes: false,
+        is_product: false,
+        is_dip_history: false,
+        is_suitability: false,
+        is_fees: false,
+        is_compliance: false,
+        is_client_survey: false,
+        is_documents: false,
+        is_health_insurance: false,
+        is_link_cases_together: false,
+      });
+    }
+  }, [isOpen, caseData]);
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target as HTMLInputElement;
     setFormData((prev) => ({
@@ -206,7 +237,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.case_stage) {
+    if (!caseData.case_stage || !formData.case_stage) {
       toast.error("Please select a case stage.");
       return;
     }
@@ -270,7 +301,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
               type="select"
               name="case_stage"
               id="case_stage"
-              value={formData?.case_stage || caseData?.case_stage || ""}
+              value={formData?.case_stage}
               onChange={handleInputChange}
               className="border-primary"
               required
