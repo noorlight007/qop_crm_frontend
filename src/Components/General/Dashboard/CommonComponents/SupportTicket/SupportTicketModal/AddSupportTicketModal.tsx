@@ -105,7 +105,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
       }
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create ticket");
-      console.error("Error:", error);
     }
   };
 

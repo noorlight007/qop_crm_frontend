@@ -27,12 +27,13 @@ const SupportTicket: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
-  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
   const [ticketToDelete, setTicketToDelete] =
     useState<SupportTicketFormData | null>(null);
+    
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
 
   const userType = session?.user?.user_type;
 
@@ -56,7 +57,7 @@ const SupportTicket: React.FC = () => {
 
   const tickets = supportTicketData?.results || [];
   const totalCount = supportTicketData?.count || 0;
-  const ticketsPerPage = 10; // Adjust based on your API
+  const ticketsPerPage = 10;
   const totalPages = Math.ceil(totalCount / ticketsPerPage);
 
   const openUpdateModal = (ticket: SupportTicketFormData) => {

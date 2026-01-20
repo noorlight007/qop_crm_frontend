@@ -15,7 +15,6 @@ const DeleteSupportTicketModal: React.FC<DeleteSupportTicketModalProps> = ({
   useEffect(() => {
     if (isOpen && ticketAlias) {
       setStoredAlias(ticketAlias);
-      console.log("Storing alias in modal:", ticketAlias);
     }
   }, [isOpen, ticketAlias]);
 
@@ -25,16 +24,13 @@ const DeleteSupportTicketModal: React.FC<DeleteSupportTicketModalProps> = ({
       return;
     }
     try {
-      console.log("Deleting ticket with alias:", storedAlias);
       const response = await deleteSupportTicket({
         ticket_alias: storedAlias,
       }).unwrap();
-      console.log("Delete response:", response);
       toast.success("Ticket deleted successfully.");
       setStoredAlias("");
       toggle();
     } catch (error: any) {
-      console.error("Delete error:", error);
       const errorMessage =
         error?.data?.message || "Failed to delete the ticket";
       toast.error(errorMessage);
