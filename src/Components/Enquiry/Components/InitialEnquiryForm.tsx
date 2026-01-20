@@ -716,7 +716,9 @@ const InitialEnquiryForm: React.FC = () => {
                         name="referral_user"
                         type="select"
                         value={formData.referral_user || ""}
-                        onBlur={(e) => handleBlur("referral_user", e.target.value)}
+                        onBlur={(e) =>
+                          handleBlur("referral_user", e.target.value)
+                        }
                         onChange={handleChange}
                       >
                         <option value="">Select...</option>
@@ -770,18 +772,24 @@ const InitialEnquiryForm: React.FC = () => {
                       <div className="border rounded p-3 h-100">
                         <h6 className="fw-bold mb-3">Personal Information</h6>
                         <p>
-                          <strong>Title:</strong>
-                          {formatChoiceFieldValue(formData.title)}
+                          <strong>Title:</strong>{" "}
+                          {formatChoiceFieldValue(formData.title || "Not Set")}
                         </p>
                         <p>
-                          <strong>Name:</strong> {formData.first_name}{" "}
-                          {formData.middle_name} {formData.last_name}
+                          <strong>First Name:</strong>{" "}
+                          {formData.first_name || "Not Set"}
                         </p>
                         <p>
-                          <strong>Email:</strong> {formData.email}
+                          <strong>Middle Name:</strong> {formData.middle_name || "Not Set"}
                         </p>
                         <p>
-                          <strong>Phone:</strong> {formData.phone}
+                          <strong>Last Name:</strong> {formData.last_name || "Not Set"}
+                        </p>
+                        <p>
+                          <strong>Email:</strong> {formData.email || "Not Set"}
+                        </p>
+                        <p>
+                          <strong>Phone:</strong> {formData.phone || "Not Set"}
                         </p>
                       </div>
                     </Col>
@@ -794,6 +802,30 @@ const InitialEnquiryForm: React.FC = () => {
                           <strong>Enquiry Type:</strong>{" "}
                           {formatChoiceFieldValue(formData.enquiry_type)}
                         </p>
+                        {formData.enquiry_type === "OTHER" && (
+                          <p>
+                            <strong>Other Enquiry Type:</strong>{" "}
+                            {formData.other_enquiry_type ||
+                              "Not Specified"}
+                          </p>
+                        )}
+                        <p>
+                          <strong>How did you hear about us?:</strong>{" "}
+                          {formatChoiceFieldValue(formData.source)}
+                        </p>
+                        {formData.source === "OTHER" && (
+                          <p>
+                            <strong>Other Source:</strong>{" "}
+                            {formData.other_source || "Not Specified"}
+                          </p>
+                        )}
+                        {formData.source === "REFERRAL" && (
+                          <p>
+                            <strong>Referral User:</strong>{" "}
+                            {formData.referral_user || "Not Specified"}
+                          </p>
+                        )}
+
                         <p>
                           <strong>Property Value:</strong> £
                           {formData.estimated_property_value || 0}
