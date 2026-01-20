@@ -106,7 +106,7 @@ const SupportTicketDetails: React.FC = () => {
 
   return (
     <Container>
-      <Row className="justify-content-center">
+      <Row>
         <Col>
           <div className="d-flex justify-content-end mb-3">
             <Button
