@@ -5,10 +5,10 @@ const SupportTicketDetailsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Support Tickets"
+        title="Support Ticket Details"
         subTitle="This is the support ticket details page"
         parent="Support Tickets"
-        child="Support Tickets Details"
+        child="Support Ticket Details"
       />
       <SupportTicketDetails />
     </div>
