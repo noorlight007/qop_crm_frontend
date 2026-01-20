@@ -193,6 +193,7 @@ export const baseApi = createApi({
     "UserProfileDetails",
     "ResetPassword",
     "AuthUserList",
+    "SupportTicket",
     // Common components end
 
     // Single case info start
