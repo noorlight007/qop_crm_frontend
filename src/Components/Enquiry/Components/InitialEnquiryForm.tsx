@@ -800,7 +800,7 @@ const InitialEnquiryForm: React.FC = () => {
                         <h6 className="fw-bold mb-3">Enquiry Information</h6>
                         <p>
                           <strong>Enquiry Type:</strong>{" "}
-                          {formatChoiceFieldValue(formData.enquiry_type)}
+                          {formatChoiceFieldValue(formData.enquiry_type || "Not Set")}
                         </p>
                         {formData.enquiry_type === "OTHER" && (
                           <p>
@@ -811,7 +811,7 @@ const InitialEnquiryForm: React.FC = () => {
                         )}
                         <p>
                           <strong>How did you hear about us?:</strong>{" "}
-                          {formatChoiceFieldValue(formData.source)}
+                          {formatChoiceFieldValue(formData.source || "Not Set")}
                         </p>
                         {formData.source === "OTHER" && (
                           <p>
