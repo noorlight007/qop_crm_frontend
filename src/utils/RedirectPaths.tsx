@@ -80,13 +80,39 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
       return "#";
   }
 };
+// Function to generate role-based URL for support-ticket details
+export const getSupportTicketUrl = (
+  supportTicketAlias: string,
+  userType: string,
+) => {
+  switch (userType) {
+    case "ADMIN":
+      return `/dashboard/admin/support-ticket/${supportTicketAlias}`;
+    case "NETWORK_DIRECTOR":
+      return `/dashboard/network/director/support-ticket/${supportTicketAlias}`;
+    case "NETWORK_COMPLIANCE_ASSISTANT":
+      return `/dashboard/network/director/support-ticket/${supportTicketAlias}`;
+    case "NETWORK_ADVISER":
+      return `/dashboard/network/adviser/support-ticket/${supportTicketAlias}`;
+    case "ORGANISATION_DIRECTOR":
+      return `/dashboard/organisation/director/support-ticket/${supportTicketAlias}`;
+    case "ORGANISATION_ADVISER":
+      return `/dashboard/organisation/adviser/support-ticket/${supportTicketAlias}`;
+    case "ORGANISATION_ADMIN":
+      return `/dashboard/organisation/admin/support-ticket/${supportTicketAlias}`;
+    case "CLIENT":
+      return `/dashboard/client/support-ticket/${supportTicketAlias}`;
+    default:
+      return "#";
+  }
+};
 
 export const getOrganisationUrl = (session: Session | null) => {
   if (!session) {
     return "/auth/login";
   }
   const userType = session?.user?.user_type;
-  
+
   switch (userType) {
     case "NETWORK_DIRECTOR":
       return `/dashboard/network/director/organisations`;

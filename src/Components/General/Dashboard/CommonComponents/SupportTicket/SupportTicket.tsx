@@ -1,5 +1,9 @@
 import { useFetchSupportTicketQuery } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/CommonComponents/SupportTicket/SupportTicketTypes";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { getSupportTicketUrl } from "@/utils/RedirectPaths";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 import React, { useState } from "react";
 import { TbCirclePlus } from "react-icons/tb";
 import {
@@ -19,6 +23,7 @@ import DeleteSupportTicketModal from "./SupportTicketModal/DeleteSupportTicketMo
 import UpdateSupportTicketModal from "./SupportTicketModal/UpdateSuppotTicketModal";
 
 const SupportTicket: React.FC = () => {
+  const { data: session } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -28,6 +33,8 @@ const SupportTicket: React.FC = () => {
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
   const [ticketToDelete, setTicketToDelete] =
     useState<SupportTicketFormData | null>(null);
+
+  const userType = session?.user?.user_type;
 
   const { data: supportTicketData, isLoading } = useFetchSupportTicketQuery({
     page: currentPage,
@@ -39,17 +46,6 @@ const SupportTicket: React.FC = () => {
     message: "",
     files: [],
   });
-
-  const formatDateAndTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const formatChoiceFieldValue = (value: string) => {
     return value
@@ -188,14 +184,18 @@ const SupportTicket: React.FC = () => {
 
                         <td>
                           <div className="d-flex justify-content-center gap-2 align-items-center">
-                            <Button
-                              color="success"
-                              size="sm"
-                              title="View Ticket"
-                              // onClick={() => openViewModal(ticket)}
+                            <Link
+                              href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
                             >
-                              <i className="icon-eye"></i>
-                            </Button>
+                              <Button
+                                color="success"
+                                size="sm"
+                                title="View Ticket"
+                                // onClick={() => openViewModal(ticket)}
+                              >
+                                <i className="icon-eye"></i>
+                              </Button>
+                            </Link>
                             <Button
                               color="primary"
                               size="sm"
