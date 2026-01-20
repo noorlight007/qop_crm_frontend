@@ -1,4 +1,8 @@
+import { useParams } from "next/navigation";
+
 const SupportTicketDetails: React.FC = () => {
+  const { supportticketalias } = useParams();
+
   return (
     <div>
       {/* JSX here */}
