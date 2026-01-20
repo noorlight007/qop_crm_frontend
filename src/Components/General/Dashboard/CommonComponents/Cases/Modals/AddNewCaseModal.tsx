@@ -1,7 +1,6 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
 import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -32,7 +31,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   const { data: userLEADListData, refetch: refetchLeads } = useGetUserListQuery(
     {
       role: "LEAD",
-    }
+    },
   );
   const { data: userNetAdviserListData } = useGetUserListQuery({
     role: "NETWORK_ADVISER",
@@ -155,7 +154,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   }, [userLEADListData]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData({
@@ -290,13 +289,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 {userNetAdviserListData?.length > 0 ? (
                   userNetAdviserListData?.map((user: any) => (
                     <option key={user.id} value={user.id}>
-                      {`${
-                        user?.title
-                          ? formatChoiceFieldValue(user.title) + " "
-                          : ""
-                      }${user?.first_name}${
-                        user?.middle_name ? " " + user.middle_name : ""
-                      } ${user?.last_name}`}
+                      {user?.name}
                     </option>
                   ))
                 ) : (

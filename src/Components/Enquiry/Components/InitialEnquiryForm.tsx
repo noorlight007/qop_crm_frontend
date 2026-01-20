@@ -1,3 +1,4 @@
+import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
 import { useSubmitEnquiryMutation } from "@/Redux/Reducers/Enquiry/EnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -51,8 +52,9 @@ const InitialEnquiryForm: React.FC = () => {
   const [formData, setFormData] =
     useState<InitialEnquiryData>(INITIAL_FORM_DATA);
 
-  const [submitEnquiry, { isLoading, isError, isSuccess, error }] =
-    useSubmitEnquiryMutation();
+  const { data: introducerData } = useGetUserListQuery({ role: "INTRODUCER" });
+
+  const [submitEnquiry, { isLoading }] = useSubmitEnquiryMutation();
 
   const initialEnquiryTabTitleData = [
     {
@@ -74,7 +76,7 @@ const InitialEnquiryForm: React.FC = () => {
   ];
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
 
@@ -107,7 +109,7 @@ const InitialEnquiryForm: React.FC = () => {
       if (typeof value === "string") return [value];
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
       if (typeof value === "object") {
         try {
@@ -147,7 +149,7 @@ const InitialEnquiryForm: React.FC = () => {
           formData.first_name &&
           formData.last_name &&
           formData.email &&
-          formData.phone
+          formData.phone,
         );
 
       case 2:
@@ -165,7 +167,7 @@ const InitialEnquiryForm: React.FC = () => {
   };
 
   const validateStepAndCollectErrors = (
-    step: number
+    step: number,
   ): Record<string, string> => {
     const newErrors: Record<string, string> = {};
 
@@ -612,7 +614,7 @@ const InitialEnquiryForm: React.FC = () => {
                           onBlur={(e) =>
                             handleBlur(
                               "estimated_property_value",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           onChange={handleChange}
@@ -635,7 +637,7 @@ const InitialEnquiryForm: React.FC = () => {
                           onBlur={(e) =>
                             handleBlur(
                               "approximate_mortgage_required",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           onChange={handleChange}
@@ -658,7 +660,7 @@ const InitialEnquiryForm: React.FC = () => {
                           onBlur={(e) =>
                             handleBlur(
                               "approximate_deposit_available",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           onChange={handleChange}
@@ -849,7 +851,7 @@ const InitialEnquiryForm: React.FC = () => {
                       !formData.privacy_notice_consent
                     }
                   >
-                    Submit Application
+                    {isLoading ? "Submitting..." : "Submit Application"}
                   </Button>
                 )}
               </div>

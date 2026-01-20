@@ -43,6 +43,9 @@ export const publicBaseApi = createApi({
     "SetPassword",
     "ForgotPassword",
     "Enquiry",
+
+    //Filter list
+    "AuthUserList",
   ],
   endpoints: () => ({}),
 });
