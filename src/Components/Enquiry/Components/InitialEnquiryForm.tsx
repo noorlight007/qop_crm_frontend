@@ -1,3 +1,4 @@
+import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
 import { useSubmitEnquiryMutation } from "@/Redux/Reducers/Enquiry/EnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
@@ -47,8 +48,9 @@ const InitialEnquiryForm: React.FC = () => {
     notes: "",
     contact_consent: false,
     privacy_notice_consent: false,
+    referral_user: "",
   };
-
+  const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   const [formData, setFormData] =
     useState<InitialEnquiryData>(INITIAL_FORM_DATA);
 
@@ -252,8 +254,9 @@ const InitialEnquiryForm: React.FC = () => {
           formData.approximate_mortgage_required || null,
         approximate_deposit_available:
           formData.approximate_deposit_available || null,
-        other_enquiry_type: formData.other_enquiry_type || null,
-        other_source: formData.other_source || null,
+        other_enquiry_type: formData.other_enquiry_type || "",
+        other_source: formData.other_source || "",
+        referral_user: formData.referral_user || "",
       };
 
       await submitEnquiry({ payload: cleanedData }).unwrap();
@@ -695,7 +698,9 @@ const InitialEnquiryForm: React.FC = () => {
                       <option value="">Select...</option>
                       <option value="GOOGLE">Google</option>
                       <option value="SOCIAL_MEDIA">Social Media</option>
-                      <option value="REFERRAL">Referral</option>
+                      {appearanceData?.is_network === false && (
+                        <option value="REFERRAL">Referral</option>
+                      )}
                       <option value="WEBSITE">Website</option>
                       <option value="OTHER">Other</option>
                     </Input>
@@ -703,6 +708,30 @@ const InitialEnquiryForm: React.FC = () => {
                       <small className="text-danger">{errors.source}</small>
                     )}
                   </FormGroup>
+                  {formData.source === "REFERRAL" && (
+                    <FormGroup>
+                      <Label for="referral_user">Referral User</Label>
+                      <Input
+                        id="referral_user"
+                        name="referral_user"
+                        type="select"
+                        value={formData.referral_user || ""}
+                        onBlur={(e) => handleBlur("referral_user", e.target.value)}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select...</option>
+                        {introducerData &&
+                          introducerData?.map((user: any) => (
+                            <option key={user.id} value={user.id}>
+                              {user?.name}
+                            </option>
+                          ))}
+                      </Input>
+                      {errors.source && (
+                        <small className="text-danger">{errors.source}</small>
+                      )}
+                    </FormGroup>
+                  )}
                   {formData.source === "OTHER" && (
                     <FormGroup>
                       <Label for="other_source">Other Source</Label>
