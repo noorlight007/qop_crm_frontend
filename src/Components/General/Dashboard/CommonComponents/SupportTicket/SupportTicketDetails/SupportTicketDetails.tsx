@@ -105,7 +105,7 @@ const SupportTicketDetails: React.FC = () => {
   }
 
   return (
-    <Container>
+    <>
       <Row>
         <Col>
           <div className="d-flex justify-content-end mb-3">
@@ -125,7 +125,7 @@ const SupportTicketDetails: React.FC = () => {
               <Row className="align-items-start">
                 <Col>
                   <div className="d-flex align-items-center gap-2 flex-wrap mb-2">
-                    <h2 className="mb-0">Subject: {ticketDetails.subject}</h2>
+                    <h3 className="mb-0">Subject: {ticketDetails.subject}</h3>
                   </div>
                   <small className="">
                     Ticket Type:{" "}
@@ -146,7 +146,7 @@ const SupportTicketDetails: React.FC = () => {
                     <Badge
                       color="warning"
                       pill
-                      className="d-flex align-items-center gap-1 px-3 py-2"
+                      className="d-flex align-items-center gap-1"
                     >
                       <FaExclamationCircle />
                       Open
@@ -245,7 +245,7 @@ const SupportTicketDetails: React.FC = () => {
         }}
         selected={ticketData}
       />
-    </Container>
+    </>
   );
 };
 
