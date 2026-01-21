@@ -33,7 +33,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
 
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
-  // 🔹 NEW: Add a key to force input remount
   const [fileInputKey, setFileInputKey] = useState(0);
 
   const [updateSupportTicket, { isLoading: updateSupTicketLoading }] =
@@ -80,7 +79,21 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     const files = e.target.files;
     if (!files) return;
 
-    setNewFiles((prev) => [...prev, ...Array.from(files)]);
+    const filesArray = Array.from(files);
+    const MAX_LENGTH = 100;
+
+    // Find if any new file exceeds the limit
+    const oversizedFile = filesArray.find((f) => f.name.length > MAX_LENGTH);
+
+    if (oversizedFile) {
+      toast.error(
+        `Ensure this filename has at most ${MAX_LENGTH} characters (it has ${oversizedFile.name.length}).`,
+      );
+      setFileInputKey((prev) => prev + 1);
+      return;
+    }
+
+    setNewFiles((prev) => [...prev, ...filesArray]);
     setFileInputKey((prev) => prev + 1);
   };
 
@@ -220,6 +233,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               onChange={handleFileChange}
               key={fileInputKey}
             />
+            <small className="text-muted">
+              You can attach multiple files, screenshots or documents (if any)
+            </small>
           </FormGroup>
 
           {/* Existing Files */}

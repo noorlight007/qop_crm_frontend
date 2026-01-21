@@ -55,6 +55,17 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
+
+      const oversizedFile = filesArray.find((f) => f.name.length > 100);
+
+      if (oversizedFile) {
+        toast.error(
+          `Ensure this filename has at most 100 characters (it has ${oversizedFile.name.length}).`,
+        );
+        e.target.value = "";
+        return;
+      }
+
       setFormData((prev) => ({
         ...prev,
         files: [...prev.files, ...filesArray],
