@@ -103,11 +103,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       role:
         pathname === "/dashboard/network/director/advisers"
           ? "NETWORK_ADVISER"
-          : pathname === "/dashboard/network/director/compliance-assistant"
+          : pathname === "/dashboard/network/director/compliance-assistants"
             ? "NETWORK_COMPLIANCE_ASSISTANT"
             : pathname === "/dashboard/organisation/director/advisers"
               ? "ORGANISATION_ADVISER"
-              : pathname === "/dashboard/organisation/director/admin"
+              : pathname === "/dashboard/organisation/director/admins"
                 ? "ORGANISATION_ADMIN"
                 : pathname === "/dashboard/organisation/director/introducers"
                   ? "INTRODUCER"
