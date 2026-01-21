@@ -16,7 +16,7 @@ const CaesSummary: React.FC = () => {
       {isLoading ? (
         <>
           {[...Array(4)].map((_, index) => (
-            <Col md className="mb-2" key={index}>
+            <Col md="3" className="mb-2" key={index}>
               <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
                 <CardBody className="p-2">
                   <div className="d-flex justify-content-between">
@@ -44,7 +44,7 @@ const CaesSummary: React.FC = () => {
         // Actual Content
         <>
           {/* All Cases  */}
-          <Col md>
+          <Col md="3">
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
@@ -67,7 +67,7 @@ const CaesSummary: React.FC = () => {
             </Card>
           </Col>
           {/* Active Cases  */}
-          <Col md>
+          <Col md="3">
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
@@ -92,7 +92,7 @@ const CaesSummary: React.FC = () => {
             </Card>
           </Col>
           {/* Pending Cases  */}
-          <Col md>
+          <Col md="3">
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
@@ -117,7 +117,7 @@ const CaesSummary: React.FC = () => {
             </Card>
           </Col>
           {/* Completed Cases  */}
-          <Col md>
+          <Col md="3">
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">

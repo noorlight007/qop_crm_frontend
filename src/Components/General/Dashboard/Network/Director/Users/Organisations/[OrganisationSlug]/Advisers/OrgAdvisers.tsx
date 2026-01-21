@@ -67,7 +67,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
         search: searchQuery,
       },
     },
-    { skip: !organisationslug }
+    { skip: !organisationslug },
   );
 
   useEffect(() => {
@@ -145,10 +145,10 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Status</th>
                 <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -205,13 +205,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                         "-"
                       )}
                     </td>
-                    <td>
-                      {adviser?.is_active ? (
-                        <Badge color="success">Approved</Badge>
-                      ) : (
-                        <Badge color="danger">Pending</Badge>
-                      )}
-                    </td>
+
                     <td>
                       {adviser?.joining_date ? adviser.joining_date : "-"}
                     </td>
@@ -221,7 +215,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                           ? `${
                               adviser.created_by?.title
                                 ? formatChoiceFieldValue(
-                                    adviser.created_by.title
+                                    adviser.created_by.title,
                                   ).trim() + " "
                                 : ""
                             }${adviser.created_by.first_name || ""} ${
@@ -238,6 +232,13 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                       </p>
                     </td>
                     <td>{formatDateAndTime(adviser?.created_at)}</td>
+                    <td>
+                      {adviser?.is_active ? (
+                        <Badge color="success">Approved</Badge>
+                      ) : (
+                        <Badge color="danger">Pending</Badge>
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -261,7 +262,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                 to{" "}
                 {Math.min(
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
-                  totalCount
+                  totalCount,
                 )}{" "}
                 of {totalCount} Advisers
               </p>
@@ -290,7 +291,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem disabled={currentPage === totalPages}>
