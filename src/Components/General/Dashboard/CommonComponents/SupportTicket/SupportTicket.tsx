@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
+import { TbCirclePlus, TbLink } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -20,9 +20,9 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import AddSupportTicketModal from "./SupportTicketModal/AddSupportTicketModal";
-import DeleteSupportTicketModal from "./SupportTicketModal/DeleteSupportTicketModal";
-import UpdateSupportTicketModal from "./SupportTicketModal/UpdateSuppotTicketModal";
+import AddSupportTicketModal from "./SupportTicketDetails/Modals/AddSupportTicketModal";
+import DeleteSupportTicketModal from "./SupportTicketDetails/Modals/DeleteSupportTicketModal";
+import UpdateSupportTicketModal from "./SupportTicketDetails/Modals/UpdateSuppotTicketModal";
 
 const SupportTicket: React.FC = () => {
   const { data: session } = useSession();
@@ -101,6 +101,7 @@ const SupportTicket: React.FC = () => {
               <Table hover responsive>
                 <thead className="thead-light">
                   <tr className="text-center">
+                    <th>Ticket ID</th>
                     <th>Ticket Type</th>
                     <th>Status</th>
                     <th>Subject</th>
@@ -114,7 +115,7 @@ const SupportTicket: React.FC = () => {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={8} className="text-center">
+                      <td colSpan={9} className="text-center">
                         <div className="d-flex justify-content-center align-items-center">
                           <Spinner color="primary" />
                         </div>
@@ -123,6 +124,7 @@ const SupportTicket: React.FC = () => {
                   ) : tickets.length > 0 ? (
                     tickets.map((ticket: any) => (
                       <tr key={ticket.alias} className="text-center">
+                        <td>{ticket.id}</td>
                         <td>
                           <span
                             className={`badge ${
@@ -141,7 +143,6 @@ const SupportTicket: React.FC = () => {
                             {ticket.is_resolved ? (
                               <Badge
                                 color="success"
-                                pill
                                 className="d-flex align-items-center gap-1"
                               >
                                 <FaCheckCircle />
@@ -150,7 +151,6 @@ const SupportTicket: React.FC = () => {
                             ) : (
                               <Badge
                                 color="warning"
-                                pill
                                 className="d-flex align-items-center gap-1"
                               >
                                 <FaExclamationCircle />
@@ -215,16 +215,15 @@ const SupportTicket: React.FC = () => {
                               href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
                             >
                               <Button
-                                color="success"
+                                color="primary"
                                 size="sm"
                                 title="View Ticket"
-                                // onClick={() => openViewModal(ticket)}
                               >
-                                <i className="icon-eye"></i>
+                                <TbLink size={18} />
                               </Button>
                             </Link>
                             <Button
-                              color="primary"
+                              color="secondary"
                               size="sm"
                               title="View Ticket"
                               onClick={() => openUpdateModal(ticket)}
@@ -246,7 +245,7 @@ const SupportTicket: React.FC = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={8} className="text-center">
+                      <td colSpan={9} className="text-center">
                         No support tickets available.
                       </td>
                     </tr>

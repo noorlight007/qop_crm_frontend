@@ -21,7 +21,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import UpdateSupportTicketModal from "../SupportTicketModal/UpdateSuppotTicketModal";
+import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
 
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();
@@ -127,31 +127,51 @@ const SupportTicketDetails: React.FC = () => {
                   <div className="d-flex align-items-center gap-2 flex-wrap mb-2">
                     <h3 className="mb-0">Subject: {ticketDetails.subject}</h3>
                   </div>
-                  <small className="">
+                  <small>
                     Ticket Type:{" "}
-                    {formatChoiceFieldValue(ticketDetails.ticket_type)}
+                    <Badge
+                      className={`me-1 ${
+                        ticketDetails.ticket_type === "BUG_REPORT"
+                          ? "bg-danger"
+                          : ticketDetails.ticket_type === "FEATURE_REQUEST"
+                          ? "bg-info"
+                          : "bg-success"
+                      }`}
+                    >
+                      {formatChoiceFieldValue(ticketDetails.ticket_type)}
+                    </Badge>
                   </small>
                 </Col>
                 <Col xs="auto">
-                  {ticketDetails.is_resolved ? (
-                    <Badge
-                      color="success"
-                      pill
-                      className="d-flex align-items-center gap-1 px-3 py-2"
-                    >
-                      <FaCheckCircle />
-                      Resolved
-                    </Badge>
-                  ) : (
-                    <Badge
-                      color="warning"
-                      pill
-                      className="d-flex align-items-center gap-1"
-                    >
-                      <FaExclamationCircle />
-                      Open
-                    </Badge>
-                  )}
+                  <div className="d-flex justify-content-end">
+                    {ticketDetails.is_resolved ? (
+                      <span>
+                        <Badge
+                          color="success"
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <FaCheckCircle />
+                          Resolved
+                        </Badge>
+                      </span>
+                    ) : (
+                      <span>
+                        <Badge
+                          color="warning"
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <FaExclamationCircle />
+                          Open
+                        </Badge>
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1 bg-light-primary px-2 py-1 rounded-2">
+                    <div className="small text-end text-muted fw-bold">
+                      Ticket ID
+                    </div>
+                    <div className="text-end small">{ticketDetails?.id}</div>
+                  </div>
                 </Col>
               </Row>
             </CardBody>
