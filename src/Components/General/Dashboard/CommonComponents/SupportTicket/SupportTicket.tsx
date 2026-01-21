@@ -5,8 +5,10 @@ import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -30,7 +32,7 @@ const SupportTicket: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [ticketToDelete, setTicketToDelete] =
     useState<SupportTicketFormData | null>(null);
-    
+
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -100,6 +102,7 @@ const SupportTicket: React.FC = () => {
                 <thead className="thead-light">
                   <tr className="text-center">
                     <th>Ticket Type</th>
+                    <th>Status</th>
                     <th>Subject</th>
                     <th>Message</th>
                     <th>Files</th>
@@ -131,6 +134,29 @@ const SupportTicket: React.FC = () => {
                             }`}
                           >
                             {formatChoiceFieldValue(ticket.ticket_type)}
+                          </span>
+                        </td>
+                        <td>
+                          <span>
+                            {ticket.is_resolved ? (
+                              <Badge
+                                color="success"
+                                pill
+                                className="d-flex align-items-center gap-1"
+                              >
+                                <FaCheckCircle />
+                                Resolved
+                              </Badge>
+                            ) : (
+                              <Badge
+                                color="warning"
+                                pill
+                                className="d-flex align-items-center gap-1"
+                              >
+                                <FaExclamationCircle />
+                                Open
+                              </Badge>
+                            )}
                           </span>
                         </td>
                         <td>
