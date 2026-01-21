@@ -1,4 +1,4 @@
-import { useCreateSupportTicketMutation, useUpdateSupportTicketMutation } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
+import { useUpdateSupportTicketMutation } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
 import {
   SupportTicketFormData,
   UpdateSupportTicketModalProps,
@@ -31,6 +31,10 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     files: [],
   });
 
+  const [existingFiles, setExistingFiles] = useState<any[]>([]);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
+  const [fileInputKey, setFileInputKey] = useState(0);
+
   const [updateSupportTicket, { isLoading: updateSupTicketLoading }] =
     useUpdateSupportTicketMutation();
 
@@ -41,8 +45,11 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
         ticket_type: selected.ticket_type || "",
         subject: selected.subject || "",
         message: selected.message || "",
-        files: selected.files || [],
+        files: [],
       });
+      setExistingFiles(selected.files || []);
+      setNewFiles([]);
+      setFileInputKey(0);
     }
   }, [isOpen, selected]);
 
@@ -55,35 +62,47 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
         message: "",
         files: [],
       });
+      setExistingFiles([]);
+      setNewFiles([]);
+      setFileInputKey(0);
     }
   }, [isOpen]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      setFormData((prev) => ({
-        ...prev,
-        files: [...prev.files, ...filesArray],
-      }));
+    const files = e.target.files;
+    if (!files) return;
+
+    const filesArray = Array.from(files);
+    const MAX_LENGTH = 100;
+
+    // Find if any new file exceeds the limit
+    const oversizedFile = filesArray.find((f) => f.name.length > MAX_LENGTH);
+
+    if (oversizedFile) {
+      toast.error(
+        `Ensure this filename has at most ${MAX_LENGTH} characters (it has ${oversizedFile.name.length}).`,
+      );
+      setFileInputKey((prev) => prev + 1);
+      return;
     }
-    e.target.value = "";
+
+    setNewFiles((prev) => [...prev, ...filesArray]);
+    setFileInputKey((prev) => prev + 1);
   };
 
-  const handleRemoveFile = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      files: prev.files.filter((_, i) => i !== index),
-    }));
+  const removeExistingFile = (index: number) => {
+    setExistingFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeNewFile = (index: number) => {
+    setNewFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,14 +113,46 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       return;
     }
 
-    const submissionData = new FormData();
-    submissionData.append("ticket_type", formData.ticket_type);
-    submissionData.append("subject", formData.subject);
-    submissionData.append("message", formData.message);
+    const totalFilesCount = existingFiles.length + newFiles.length;
+    const originalFilesCount = selected?.files?.length || 0;
+    const shouldReplaceFiles =
+      totalFilesCount !== originalFilesCount || newFiles.length > 0;
 
-    formData.files.forEach((file) => {
-      submissionData.append("upload_files", file);
-    });
+    let submissionData: any;
+
+    // 🔹 CASE 1: Clearing all files
+    if (shouldReplaceFiles && totalFilesCount === 0) {
+      submissionData = {
+        ticket_type: formData.ticket_type,
+        subject: formData.subject,
+        message: formData.message,
+        upload_files: [],
+      };
+    }
+    // 🔹 CASE 2: Uploading or keeping files
+    else {
+      const fd = new FormData();
+      fd.append("ticket_type", formData.ticket_type);
+      fd.append("subject", formData.subject);
+      fd.append("message", formData.message);
+
+      if (shouldReplaceFiles) {
+        // Re-upload remaining existing files
+        for (const file of existingFiles) {
+          const response = await fetch(file.ticket_file);
+          const blob = await response.blob();
+          const fileName = file.ticket_file.split("/").pop() || "file";
+          const realFile = new File([blob], fileName, { type: blob.type });
+          fd.append("upload_files", realFile);
+        }
+
+        // Upload new files
+        newFiles.forEach((file) => {
+          fd.append("upload_files", file);
+        });
+      }
+      submissionData = fd;
+    }
 
     try {
       await updateSupportTicket({
@@ -125,7 +176,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={handleSubmit} id="support-ticket-form">
-          {/* Ticket Type */}
           <FormGroup>
             <Label for="ticket_type">
               Ticket Type<span className="text-danger">*</span>
@@ -145,7 +195,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
             </Input>
           </FormGroup>
 
-          {/* Subject */}
           <FormGroup>
             <Label for="subject">
               Subject<span className="text-danger">*</span>
@@ -154,14 +203,12 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               id="subject"
               name="subject"
               type="text"
-              placeholder="Enter ticket subject"
               value={formData.subject}
               onChange={handleChange}
               required
             />
           </FormGroup>
 
-          {/* Message */}
           <FormGroup>
             <Label for="message">
               Message<span className="text-danger">*</span>
@@ -171,118 +218,114 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               name="message"
               type="textarea"
               rows={10}
-              placeholder="Describe your issue or feedback in detail"
               value={formData.message}
               onChange={handleChange}
               required
             />
           </FormGroup>
 
-          {/* Attachments */}
           <FormGroup>
             <Label for="files">Attachments (optional)</Label>
             <Input
               id="files"
-              name="files"
               type="file"
               multiple
               onChange={handleFileChange}
+              key={fileInputKey}
             />
             <small className="text-muted">
               You can attach multiple files, screenshots or documents (if any)
             </small>
           </FormGroup>
 
-          {/* File Preview Section */}
-          {formData.files.length > 0 && (
+          {/* Existing Files */}
+          {existingFiles.length > 0 && (
             <FormGroup>
-              <Label>Attached Files ({formData.files.length})</Label>
-              <div
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "6px",
-                  padding: "10px",
-                  maxHeight: "200px",
-                  overflowY: "auto",
-                }}
-              >
-                {formData.files.map((file, index) => {
-                  const isFileObject = file instanceof File;
-                  const fileName = isFileObject
-                    ? file.name
-                    : (file as any).ticket_file?.split("/").pop() || "File";
-                  const fileSize = isFileObject ? file.size : undefined;
-                  const key = isFileObject
-                    ? `${file.name}-${index}`
-                    : `${(file as any).alias}-${index}`;
+              <Label>Attached Files ({existingFiles.length})</Label>
 
-                  return (
-                    <div
-                      key={key}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "8px 10px",
-                        borderBottom:
-                          index !== formData.files.length - 1
-                            ? "1px solid #f0f0f0"
-                            : "none",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                          flex: 1,
-                          minWidth: 0,
-                        }}
-                      >
-                        <div style={{ minWidth: 0, flex: 1 }}>
-                          <div
-                            style={{
-                              fontSize: "14px",
-                              fontWeight: "500",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                            title={fileName}
-                          >
-                            {fileName}
-                          </div>
-                          <div style={{ fontSize: "12px", color: "#666" }}>
-                            {fileSize
-                              ? `${(fileSize / 1024).toFixed(2)} KB`
-                              : "Uploaded"}
-                          </div>
+              <div
+                className="border rounded p-2 overflow-auto"
+                style={{ maxHeight: "200px" }}
+              >
+                {existingFiles.map((file, index) => (
+                  <div
+                    key={file.alias}
+                    className={`d-flex justify-content-between align-items-center py-2 px-2 ${
+                      index !== existingFiles.length - 1 ? "border-bottom" : ""
+                    }`}
+                  >
+                    <div className="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <div className="flex-grow-1 min-w-0">
+                        <div
+                          className="fw-medium text-truncate small"
+                          title={file.ticket_file.split("/").pop()}
+                        >
+                          {file.ticket_file.split("/").pop()}
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveFile(index)}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          fontSize: "20px",
-                          cursor: "pointer",
-                          color: "#dc3545",
-                          padding: "0",
-                          marginLeft: "10px",
-                        }}
-                        title="Remove file"
-                      >
-                        ✕
-                      </button>
                     </div>
-                  );
-                })}
+
+                    <button
+                      type="button"
+                      onClick={() => removeExistingFile(index)}
+                      className="btn btn-link text-danger p-0 ms-2 fs-4 text-decoration-none"
+                      title="Remove file"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </FormGroup>
+          )}
+
+          {/* New Files */}
+          {newFiles.length > 0 && (
+            <FormGroup>
+              <Label>New Files ({newFiles.length})</Label>
+
+              <div
+                className="border rounded p-2 overflow-auto"
+                style={{ maxHeight: "200px" }}
+              >
+                {newFiles.map((file, index) => (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className={`d-flex justify-content-between align-items-center py-2 px-2 ${
+                      index !== newFiles.length - 1 ? "border-bottom" : ""
+                    }`}
+                  >
+                    <div className="d-flex align-items-center gap-2 flex-grow-1 min-w-0">
+                      <div className="flex-grow-1 min-w-0">
+                        <div
+                          className="text-truncate fw-medium small"
+                          title={file.name}
+                        >
+                          {file.name}
+                        </div>
+
+                        <div className="text-muted small">
+                          {(file.size / 1024).toFixed(2)} KB
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeNewFile(index)}
+                      className="btn btn-link text-danger p-0 ms-2 fs-4 text-decoration-none"
+                      title="Remove file"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             </FormGroup>
           )}
         </Form>
       </ModalBody>
+
       <ModalFooter>
         <Button
           color="warning"
@@ -297,7 +340,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
           form="support-ticket-form"
           disabled={updateSupTicketLoading}
         >
-          {updateSupTicketLoading ? "Submitting..." : "Submit Ticket"}
+          {updateSupTicketLoading ? "Updating..." : "Update Ticket"}
         </Button>
       </ModalFooter>
     </Modal>

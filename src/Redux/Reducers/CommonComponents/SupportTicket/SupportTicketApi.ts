@@ -21,7 +21,7 @@ export const SupportTicketApi = baseApi.injectEndpoints({
     updateSupportTicket: builder.mutation({
       query: ({ payload, ticket_alias }) => ({
         url: `/support-ticket/${ticket_alias}/`,
-        method: "PUT",
+        method: "PATCH",
         body: payload,
       }),
       invalidatesTags: ["SupportTicket"],
@@ -33,6 +33,13 @@ export const SupportTicketApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["SupportTicket"],
     }),
+    fetchSupportTicketDetails: builder.query({
+      query: ({ ticket_alias }) => ({
+        url: `/support-ticket/${ticket_alias}/`,
+        method: "GET",
+      }),
+      providesTags: ["SupportTicket"],
+    }),
   }),
 });
 
@@ -41,4 +48,5 @@ export const {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
   useDeleteSupportTicketMutation,
+  useFetchSupportTicketDetailsQuery,
 } = SupportTicketApi;
