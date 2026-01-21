@@ -63,13 +63,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   >("save");
   const formRef = useRef<HTMLFormElement>(null);
   const [originalEmail, setOriginalEmail] = useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   // Rtk hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
   const [updateApplicantDetails, { isLoading: isUpdatingApplicant }] =
     useUpdateApplicantDetailsMutation();
@@ -84,13 +84,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     useGetLoanDetailsQuery(
       loandetailsAlias
         ? { case_alias: casealias, loanDetails_alias: loandetailsAlias }
-        : skipToken
+        : skipToken,
     );
 
   const applicationType = loandetailsData?.application_type;
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseDetails.basicTabId,
   );
 
   const [formValues, setFormValues] = useState<ApplicantProps>({
@@ -132,6 +132,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     city: "",
     county: "",
     country: "",
+    latitude: 0,
+    longitude: 0,
     effective_from: "",
     time_at_address_years: 0,
     time_at_address_months: 0,
@@ -184,6 +186,15 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     updated_by: "",
   });
 
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
   // RTK previous address api hooks
   const { data: previousAddressesData, isLoading: isPreviousAddressesLoading } =
     useGetPreviousAddressQuery(
@@ -194,11 +205,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       {
         skip: !casealias || !formValues.alias,
         refetchOnMountOrArgChange: true,
-      }
+      },
     );
 
   const selectedApplicant = applicantsData?.find(
-    (applicant) => applicant.alias === basicTab
+    (applicant) => applicant.alias === basicTab,
   );
 
   useEffect(() => {
@@ -238,33 +249,62 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     }
   }, [formValues.effective_from]);
 
+  useEffect(() => {
+    // Watch local formValues instead of just selectedApplicant
+    if (formValues.latitude && formValues.longitude) {
+      setMapCoords({
+        lat: Number(formValues.latitude),
+        lng: Number(formValues.longitude),
+      });
+    } else {
+      // If lat/lng are 0 or null (manual edit), hide the map
+      setMapCoords(null);
+    }
+  }, [formValues.latitude, formValues.longitude]);
+
   if (!selectedApplicant) {
     return <div>No applicant data available.</div>;
   }
 
   const handleInputChange = (
     name: string,
-    value: string | number | boolean | string[] | null
+    value: string | number | boolean | string[] | null,
   ) => {
     setFormValues((prevValues) => {
-      // Handle nested applicant fields like "applicant.title"
-      if (name.startsWith("applicant.")) {
-        const field = name.split(".")[1] as keyof ApplicantProps["applicant"];
+      const addressFields = [
+        "postcode",
+        "house_number_or_name",
+        "address_line1",
+        "city",
+        "county",
+        "country",
+      ];
 
-        return {
+      let updatedValues = { ...prevValues };
+
+      if (name.startsWith("applicant.")) {
+        const field = name.split(".")[1];
+
+        updatedValues = {
           ...prevValues,
           applicant: {
             ...prevValues.applicant,
             [field]: value,
-          },
-        } as ApplicantProps;
+          } as typeof prevValues.applicant,
+        };
+      } else {
+        updatedValues = {
+          ...prevValues,
+          [name]: value,
+        };
       }
 
-      // Fallback for top-level fields on ApplicantProps
-      return {
-        ...prevValues,
-        [name as keyof ApplicantProps]: value as any,
-      } as ApplicantProps;
+      if (addressFields.includes(name)) {
+        updatedValues.latitude = 0;
+        updatedValues.longitude = 0;
+      }
+
+      return updatedValues;
     });
   };
 
@@ -332,7 +372,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -344,7 +384,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const handleNextApplicantTab = () => {
     // Find the current applicant index
     const currentIndex = applicantsData?.findIndex(
-      (applicant) => applicant.alias === basicTab
+      (applicant) => applicant.alias === basicTab,
     );
 
     // Check if there's a next applicant
@@ -369,7 +409,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const handlePreviousApplicantTab = () => {
     // Find the current applicant index
     const currentIndex = applicantsData?.findIndex(
-      (applicant) => applicant.alias === basicTab
+      (applicant) => applicant.alias === basicTab,
     );
 
     // Check if there's a previous applicant
@@ -389,7 +429,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const handleCopyAddress = () => {
     // Find the current applicant index
     const currentIndex = applicantsData?.findIndex(
-      (applicant) => applicant.alias === basicTab
+      (applicant) => applicant.alias === basicTab,
     );
 
     // Check if there's a previous applicant
@@ -418,14 +458,17 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
   const fetchAddressByPostcode = async (postcode: string) => {
     if (!postcode) return;
+    setIsSearchingPostcode(true);
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
     } catch (err) {
       console.error("Error looking up address:", err);
+    } finally {
+      setIsSearchingPostcode(false);
     }
   };
 
@@ -435,32 +478,50 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
     try {
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
 
       const address = res.data;
+      if (!address) return;
 
-      if (!address) {
-        console.error("❌ No address returned");
-        return;
-      }
+      const latitude =
+        address.latitude !== null && address.latitude !== undefined
+          ? Number(address.latitude)
+          : undefined;
 
-      console.log("address details: ", address);
+      const longitude =
+        address.longitude !== null && address.longitude !== undefined
+          ? Number(address.longitude)
+          : undefined;
 
-      setFormValues((prevValues) => ({
-        ...prevValues,
+      // ✅ SAVE INTO FORM VALUES (THIS IS WHAT YOU WERE MISSING)
+      setFormValues((prev) => ({
+        ...prev,
         house_number_or_name:
           address.building_number || address.building_name || "",
         address_line1: address.line_1 || "",
         city: address.town_or_city || "",
         county: address.county || "",
         country: address.country || "",
+        latitude,
+        longitude,
       }));
+
+      // ✅ MAP IS DERIVED FROM FORM VALUES
+      if (latitude !== undefined && longitude !== undefined) {
+        setMapCoords({ lat: latitude, lng: longitude });
+      } else {
+        setMapCoords(null);
+      }
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
       setIsFetchingAddress(false);
     }
+  };
+
+  const getGoogleMapEmbedUrl:any = (lat: number, lng: number, zoom: number) => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
 
   return (
@@ -490,12 +551,12 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         onChange={(e) => {
                           handleInputChange(
                             "is_company_application",
-                            e.target.value === "yes"
+                            e.target.value === "yes",
                           );
                           // Trigger immediate save on selection
                           setTimeout(() => {
                             formRef.current?.dispatchEvent(
-                              new Event("submit", { bubbles: true })
+                              new Event("submit", { bubbles: true }),
                             );
                           }, 100);
                         }}
@@ -640,7 +701,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         ? Math.floor(
                             (new Date().getTime() -
                               new Date(formValues.date_of_birth).getTime()) /
-                              (1000 * 60 * 60 * 24 * 365.25)
+                              (1000 * 60 * 60 * 24 * 365.25),
                           ) + "y"
                         : "0y"}
                     </InputGroupText>
@@ -661,7 +722,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "is_smoker",
-                                e.target.value === "yes"
+                                e.target.value === "yes",
                               )
                             }
                           />
@@ -685,7 +746,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   onChange={(e) =>
                     handleInputChange(
                       "anticipated_retirement_age",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                   required
@@ -747,7 +808,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         onChange={(e) =>
                           handleInputChange(
                             "is_dual_nationality",
-                            e.target.value === "yes"
+                            e.target.value === "yes",
                           )
                         }
                       />
@@ -844,7 +905,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "indefinite_right_to_reside",
-                              e.target.value === "no"
+                              e.target.value === "no",
                             )
                           }
                         />
@@ -1054,13 +1115,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             : currentValue.filter((item) => item !== type);
                           handleInputChange(
                             "marketing_preferences",
-                            updatedValue
+                            updatedValue,
                           );
                         }}
                       />
                       {formatChoiceFieldValue(type)}
                     </Label>
-                  )
+                  ),
                 )}
               </FormGroup>
             </Col>
@@ -1085,11 +1146,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         onChange={(e) => {
                           handleInputChange(
                             "has_dependants",
-                            e.target.value === "yes"
+                            e.target.value === "yes",
                           );
                           setTimeout(() => {
                             formRef.current?.dispatchEvent(
-                              new Event("submit", { bubbles: true })
+                              new Event("submit", { bubbles: true }),
                             );
                           }, 100);
                         }}
@@ -1117,7 +1178,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             {applicantsData &&
               applicantsData.findIndex(
-                (applicant) => applicant.alias === basicTab
+                (applicant) => applicant.alias === basicTab,
               ) > 0 && (
                 <Col xs="auto">
                   <Button
@@ -1134,6 +1195,39 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               )}
           </Row>
           {/* Current Address */}
+
+          {/* Permanent Address Map Preview */}
+          <Row className="my-4">
+            <Col>
+              <Label className="fw-semibold mb-2">Location Preview</Label>
+              <div
+                className="border rounded overflow-hidden shadow-sm"
+                style={{ backgroundColor: "#f0f0f0" }}
+              >
+                <iframe
+                  src={
+                    mapCoords && mapCoords.lat !== 0
+                      ? getGoogleMapEmbedUrl(
+                          mapCoords.lat,
+                          mapCoords.lng,
+                          DETAIL_ZOOM,
+                        )
+                      : getGoogleMapEmbedUrl(
+                          LONDON_CENTER.lat,
+                          LONDON_CENTER.lng,
+                          DEFAULT_ZOOM,
+                        )
+                  }
+                  width="100%"
+                  height="350"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Address Location Map"
+                />
+              </div>
+            </Col>
+          </Row>
           <Row>
             <Col md={6}>
               <FormGroup>
@@ -1154,8 +1248,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     type="button"
                     className="text-nowrap"
                     onClick={() => fetchAddressByPostcode(formValues.postcode)}
+                    disabled={isSearchingPostcode}
                   >
-                    Lookup
+                    {isSearchingPostcode ? "Loading..." : "Lookup"}
                   </Button>
                 </InputGroup>
               </FormGroup>
@@ -1239,7 +1334,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   {formValues.effective_from &&
                   new Date(formValues.effective_from) <
                     new Date(
-                      new Date().setFullYear(new Date().getFullYear() - 3)
+                      new Date().setFullYear(new Date().getFullYear() - 3),
                     ) ? null : (
                     <small className="text-danger">
                       (Three years address history required)
@@ -1288,7 +1383,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "time_at_address_months",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1304,7 +1399,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               {formValues.effective_from &&
                 new Date(formValues.effective_from) >
                   new Date(
-                    new Date().setFullYear(new Date().getFullYear() - 3)
+                    new Date().setFullYear(new Date().getFullYear() - 3),
                   ) && (
                   <div className="mb-3">
                     <div className="d-flex gap-3 mt-2 mb-2">
@@ -1375,7 +1470,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "current_mortgage_balance",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1406,7 +1501,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "owner_monthly_payment",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1437,7 +1532,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "current_interest_rate",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1538,7 +1633,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "current_interest_type",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     >
@@ -1575,7 +1670,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "early_repayment_charge_applies",
-                                e.target.value === "yes"
+                                e.target.value === "yes",
                               )
                             }
                           />
@@ -1615,7 +1710,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "mortgage_not_to_complete_until_erc_ended",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         >
@@ -1659,7 +1754,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                                 onChange={(e) =>
                                   handleInputChange(
                                     "erc_being_paid",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -1688,7 +1783,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "being_redeemed",
-                                e.target.value === "yes"
+                                e.target.value === "yes",
                               )
                             }
                           />
@@ -1718,7 +1813,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "is_mortgage_portable",
-                                e.target.value === "yes"
+                                e.target.value === "yes",
                               )
                             }
                           />
@@ -1750,7 +1845,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                                 onChange={(e) =>
                                   handleInputChange(
                                     "is_mortgage_being_ported",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -1774,7 +1869,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "mortgage_account_number",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1800,7 +1895,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "mortgage_charter_scheme",
-                                e.target.value === "yes"
+                                e.target.value === "yes",
                               )
                             }
                           />
@@ -1899,7 +1994,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "rental_monthly_payment",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1956,7 +2051,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "landlord_address_postcode",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1972,7 +2067,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "landlord_address_line_one",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -2041,7 +2136,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         onClick={() =>
                           handleInputChange(
                             "intend_to_move_into_the_new_property",
-                            true
+                            true,
                           )
                         }
                       >
@@ -2057,7 +2152,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         onClick={() =>
                           handleInputChange(
                             "intend_to_move_into_the_new_property",
-                            false
+                            false,
                           )
                         }
                       >
@@ -2083,7 +2178,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_house_number_or_name",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2102,7 +2197,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_address_one",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2121,7 +2216,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_address_two",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2138,7 +2233,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_city",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2155,7 +2250,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_county",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2173,7 +2268,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_postcode",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2193,7 +2288,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                                   .map((word) =>
                                     word
                                       .toLowerCase()
-                                      .replace(/\b\w/g, (l) => l.toUpperCase())
+                                      .replace(/\b\w/g, (l) => l.toUpperCase()),
                                   )
                                   .join(" ")
                               : ""
@@ -2201,7 +2296,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_country",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2220,7 +2315,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "new_address_effective_from",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -2280,7 +2375,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   selectedApplicant?.updated_by !== null) ||
                 !applicantsData ||
                 applicantsData.findIndex(
-                  (applicant) => applicant.alias === basicTab
+                  (applicant) => applicant.alias === basicTab,
                 ) <= 0
               }
               onClick={(e) => {
@@ -2300,7 +2395,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   selectedApplicant?.updated_by !== null) ||
                 !applicantsData ||
                 applicantsData.findIndex(
-                  (applicant) => applicant.alias === basicTab
+                  (applicant) => applicant.alias === basicTab,
                 ) >=
                   applicantsData.length - 1
               }
