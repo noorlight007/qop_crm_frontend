@@ -1,10 +1,10 @@
-import { baseApi } from "@/Redux/Api/BaseApi";
+import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
 
-export const UserListApi = baseApi.injectEndpoints({
+export const UserListApi = publicBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserList: builder.query({
       query: (params) => ({
-        url: `/auth/user-filter-list/`,
+        url: `/public/users/`,
         method: "GET",
         params,
       }),

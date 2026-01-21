@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
+import { TbCirclePlus } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -25,6 +26,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import AddAuthUserModal from "./Modals/AddAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
@@ -33,12 +35,14 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 10,
   userRole,
 }) => {
+  const pathname = window.location.pathname;
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
     title: "",
@@ -49,6 +53,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     phone: null,
     gender: "",
     joining_date: "",
+    is_active: false,
+    profile_image: null,
+    company_name: "",
+    company_address: "",
     created_at: "",
     created_by: null,
   });
@@ -61,11 +69,16 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   });
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
 
   const openViewModal = (authUser: AuthUser) => {
     setSelectedAuthUser(authUser);
     toggleViewModal();
+  };
+
+  const openAddUserModal = () => {
+    toggleAddUserModal();
   };
 
   const openUpdateModal = (authUser: AuthUser) => {
@@ -130,7 +143,16 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               />
             </InputGroup>
           </Col>
-          <Col md="3" xs="12" />
+          <Col
+            md="3"
+            xs="12"
+            className="d-flex justify-content-end mt-sm-0 mt-2"
+          >
+            <Button color="primary" onClick={openAddUserModal}>
+              <TbCirclePlus size={18} className="me-1" />
+              Add {title.slice(0, -1)}
+            </Button>
+          </Col>
         </Row>
         <Row>
           <Table hover responsive>
@@ -139,10 +161,20 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Status</th>
                 <th>Joining Date</th>
-                <th>Gender</th>
+                {pathname !==
+                  "/dashboard/organisation/director/introducers" && (
+                  <th>Gender</th>
+                )}
+                {pathname ===
+                  "/dashboard/organisation/director/introducers" && (
+                  <>
+                    <th>Company Name</th>
+                    <th>Company Address</th>
+                  </>
+                )}
                 <th>Created At</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -202,20 +234,31 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         "-"
                       )}
                     </td>
+
+                    <td>{formatDate(admin?.joining_date) || "-"}</td>
+                    {pathname !==
+                      "/dashboard/organisation/director/introducers" && (
+                      <td>
+                        {admin?.gender
+                          ? formatChoiceFieldValue(admin?.gender)
+                          : "-"}
+                      </td>
+                    )}
+                    {pathname ===
+                      "/dashboard/organisation/director/introducers" && (
+                      <>
+                        <td>{admin?.company_name || "-"}</td>
+                        <td>{admin?.company_address || "-"}</td>
+                      </>
+                    )}
+                    <td>{formatDateAndTime(admin?.created_at) || "-"}</td>
                     <td>
                       {admin?.is_active ? (
-                        <Badge color="success">Active</Badge>
+                        <Badge color="success">Approved</Badge>
                       ) : (
-                        <Badge color="danger">Inactive</Badge>
+                        <Badge color="danger">Pending</Badge>
                       )}
                     </td>
-                    <td>{formatDate(admin?.joining_date) || "-"}</td>
-                    <td>
-                      {admin?.gender
-                        ? formatChoiceFieldValue(admin?.gender)
-                        : "-"}
-                    </td>
-                    <td>{formatDateAndTime(admin?.created_at) || "-"}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
@@ -233,7 +276,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               ) : (
                 <tr>
                   <td colSpan={8} className="text-center">
-                    No admins available.
+                    No users available.
                   </td>
                 </tr>
               )}
@@ -243,7 +286,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
         <Row>
           <div className="d-flex justify-content-between align-items-center p-3">
             <div className="px-2">
-              <p className="text-success">
+              <p className="text-primary">
                 Showing{" "}
                 {totalCount === 0
                   ? "0"
@@ -349,12 +392,13 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           toggle={toggleViewModal}
           selectedAuthUser={selectedAuthUser}
         />
+        <AddAuthUserModal
+          isOpen={isAddUserModalOpen}
+          toggle={toggleAddUserModal}
+        />
         <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
-          onSave={() => {
-            toggleUpdateModal();
-          }}
           selectedAuthUser={selectedAuthUser}
         />
         {/* modals end */}

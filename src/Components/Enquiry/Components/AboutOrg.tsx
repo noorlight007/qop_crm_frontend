@@ -29,7 +29,7 @@ const AboutOrg: React.FC = () => {
           ? appearanceData.about
           : "No description available."}
       </p>
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-center mt-4">
         <Image
           src="/assets/images/building.svg"
           alt={appearanceData?.site_title || "Company"}

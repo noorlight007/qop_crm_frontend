@@ -57,6 +57,12 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
           },
           {
+            path: "/dashboard/network/director/compliance-assistants",
+            title: "Compliance Assistants",
+            type: "link",
+            children: [],
+          },
+          {
             path: "/dashboard/network/director/advisers",
             title: "Registered Advisers",
             type: "link",

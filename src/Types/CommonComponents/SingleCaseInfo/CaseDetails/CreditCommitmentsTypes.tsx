@@ -21,6 +21,7 @@ export interface UpdateCreditCommitmentModalProps {
 export interface DeleteCreditCommitmentModalProps {
   isOpen: boolean;
   toggle: () => void;
+  onDelete: () => void;
   casealias: string;
   creditCommitmentAlias: string;
   creditCommitmentName: string;

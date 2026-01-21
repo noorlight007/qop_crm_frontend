@@ -15,4 +15,5 @@ export interface InitialEnquiryData {
   notes: string;
   contact_consent: boolean;
   privacy_notice_consent: boolean;
+  referral_user: string;
 }

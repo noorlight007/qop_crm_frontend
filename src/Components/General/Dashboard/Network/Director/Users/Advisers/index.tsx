@@ -1,18 +1,18 @@
 import Breadcrumbs from "@/Components/General/Dashboard/CommonComponents/Breadcrumbs/Breadcrumbs";
-import Advisers from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Advisers/Advisers";
+import AuthUsers from "@/Components/General/Dashboard/CommonComponents/CommonUsers/AuthUsers/AuthUsers";
 import { Container } from "reactstrap";
 
 const NetworkDirectorAdvisersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Registered Advisers"
-        subTitle="Welcome to the Registered Advisers"
+        title="Adviser Status"
+        subTitle="Welcome to the Adviser Status"
         parent="Users"
         child="Advisers"
       />
       <Container fluid>
-        <Advisers />
+        <AuthUsers userRole="NETWORK_ADVISER" title="Advisers" />
       </Container>
     </>
   );

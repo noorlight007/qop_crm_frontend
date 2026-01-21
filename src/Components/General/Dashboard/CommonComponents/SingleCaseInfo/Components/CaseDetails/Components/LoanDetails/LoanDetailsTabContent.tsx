@@ -47,7 +47,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     useGetLoanDetailsQuery(
       loandetailsAlias
         ? { case_alias: casealias, loanDetails_alias: loandetailsAlias }
-        : skipToken
+        : skipToken,
     );
   const [updateLoanDetails, { isLoading: isUpdating }] =
     useUpdateLoanDetailsMutation();
@@ -55,7 +55,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     useUpdateSectionCompleteStatusMutation();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   // Initialize form states with default values
@@ -289,10 +289,10 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
       tabId === "1"
         ? formRef1.current
         : tabId === "2"
-        ? formRef2.current
-        : tabId === "3"
-        ? formRef3.current
-        : formRef4.current;
+          ? formRef2.current
+          : tabId === "3"
+            ? formRef3.current
+            : formRef4.current;
 
     // If a form exists, use HTML5 validation (reportValidity)
     if (currentForm) {
@@ -350,14 +350,14 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     }
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseDetails.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -610,6 +610,14 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     </option>
                     <option value="INTEREST_ONLY">Interest Only</option>
                     <option value="PART_AND_PART">Part And Part</option>
+                    {formDataTab1.borrower_type === "ISLAMIC_MORTGAGE" && (
+                      <>
+                        <option value="RENT_ONLY">Renet Only</option>
+                        <option value="RENT_AND_ACQUISITION">
+                          Rent And Acquisition
+                        </option>
+                      </>
+                    )}
                   </Input>
                 </FormGroup>
 
@@ -1416,7 +1424,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(
                               4,
                               "accepted_or_declined_by_lender",
-                              e.target.value === "yes"
+                              e.target.value === "yes",
                             )
                           }
                         />

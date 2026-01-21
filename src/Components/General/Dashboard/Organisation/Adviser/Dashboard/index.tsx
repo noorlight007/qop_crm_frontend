@@ -23,7 +23,11 @@ const OrganisationAdviserContainer: React.FC = () => {
 
   return (
     <>
-      <Breadcrumbs title="Dashboard" subTitle="Welcome to your dashboard" />
+      <Breadcrumbs
+        title="Dashboard"
+        subTitle="Welcome to your dashboard"
+        parent="Dashboard"
+      />
       <Container fluid>
         <WelcomeBanner
           isLoading={isSummaryLoading}

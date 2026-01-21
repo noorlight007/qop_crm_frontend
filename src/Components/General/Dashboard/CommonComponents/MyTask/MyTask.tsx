@@ -412,7 +412,8 @@ const MyTask: React.FC = () => {
                   <Label>Clear All Filters</Label>
                   <Button
                     outline
-                    className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
+                    color="danger"
+                    className="w-100 d-flex justify-content-center align-items-center gap-1"
                     onClick={() => {
                       setFilters({
                         task_assigned_to: "",

@@ -17,7 +17,11 @@ const OrganisationDirectorDashboardContainer = () => {
 
   return (
     <>
-      <Breadcrumbs title="Dashboard" subTitle="Hello there! Welcome back" />
+      <Breadcrumbs
+        title="Dashboard"
+        subTitle="Hello there! Welcome back"
+        parent="Dashboard"
+      />
       <Container fluid>
         <WelcomeBanner
           isLoading={isLoading}

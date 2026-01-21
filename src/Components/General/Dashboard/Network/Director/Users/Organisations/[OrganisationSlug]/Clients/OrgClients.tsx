@@ -1,5 +1,4 @@
 "use client";
-import ViewClientModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/ViewClientModal";
 import { useGetOrgClientsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgClientsApi";
 import {
   ClientInfoProps,
@@ -8,8 +7,10 @@ import {
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { User } from "react-feather";
 import { FaSearch } from "react-icons/fa";
 import {
   Card,
@@ -24,6 +25,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
+import ViewOrgClientModals from "./Modals/ViewOrgClientModals";
 
 const OrgClients: React.FC<ClientsProps> = () => {
   const params = useParams();
@@ -73,7 +75,12 @@ const OrgClients: React.FC<ClientsProps> = () => {
     source: "",
   });
 
-  const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleViewModal = (client?: ClientInfoProps) => {
+    if (client) {
+      setSelectedClient(client);
+    }
+    setIsViewModalOpen(!isViewModalOpen);
+  };
 
   useEffect(() => {
     if (clientData) {
@@ -149,7 +156,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
           <Table hover responsive>
             <thead className="thead-light">
               <tr className="text-center">
-                <th>Name</th>
+                <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
@@ -170,20 +177,33 @@ const OrgClients: React.FC<ClientsProps> = () => {
               ) : currentClients.length > 0 ? (
                 currentClients.map((client: any) => (
                   <tr key={client.alias} className="text-center">
-                    <td>
+                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                      <span
+                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                        style={{ width: 40, height: 40 }}
+                      >
+                        {client.user?.profile_image ? (
+                          <Image
+                            src={client.user.profile_image}
+                            alt="Profile"
+                            width={35}
+                            height={35}
+                            className="rounded-circle"
+                          />
+                        ) : (
+                          <User size={30} className="text-primary" />
+                        )}
+                      </span>
                       <span
                         className="text_decoration_hover"
-                        onClick={() => {
-                          setSelectedClient(client);
-                          toggleViewModal();
-                        }}
+                        onClick={() => toggleViewModal(client)}
                         style={{ cursor: "pointer" }}
                       >
                         {client.user?.title
-                          ? formatChoiceFieldValue(client.user?.title)
-                          : ""}{" "}
-                        {client?.user?.first_name} {client?.user?.middle_name}{" "}
-                        {client?.user?.last_name}
+                          ? formatChoiceFieldValue(client.user.title)
+                          : ""}
+                        {"."} {client?.user?.first_name}{" "}
+                        {client?.user?.middle_name} {client?.user?.last_name}
                       </span>
                     </td>
                     <td>{client?.user?.email || "-"}</td>
@@ -295,7 +315,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
         </Row>
 
         {/* modals */}
-        <ViewClientModal
+        <ViewOrgClientModals
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedClient={selectedClient}

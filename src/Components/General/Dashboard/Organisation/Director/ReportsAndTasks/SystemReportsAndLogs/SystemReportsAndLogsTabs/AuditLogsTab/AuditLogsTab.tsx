@@ -163,7 +163,8 @@ const AuditLogsTab: React.FC = () => {
                   <Label>Clear All Filters</Label>
                   <Button
                     outline
-                    className="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-1"
+                    color="danger"
+                    className="w-100 d-flex justify-content-center align-items-center gap-1"
                   >
                     <span>Clear</span>
                     <i className="fa-solid fa-xmark"></i>

@@ -4,7 +4,6 @@ import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
 } from "@/Types/CommonComponents/Cases/CaseTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -38,7 +37,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   };
 
   const [formData, setFormData] = useState<CaseInfoPrpos | null>(
-    getInitialFormData(caseData)
+    getInitialFormData(caseData),
   );
 
   const [updateCaseDetails, { isLoading: isUpdating }] =
@@ -68,7 +67,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   }, [caseData]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => {
@@ -178,13 +177,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                   {userNetAdviserListData?.length > 0 ? (
                     userNetAdviserListData?.map((user: any) => (
                       <option key={user.id} value={user.id}>
-                        {`${
-                          user?.title
-                            ? formatChoiceFieldValue(user.title) + " "
-                            : ""
-                        }${user?.first_name}${
-                          user?.middle_name ? " " + user.middle_name : ""
-                        } ${user?.last_name}`}
+                        {user?.name}
                       </option>
                     ))
                   ) : (

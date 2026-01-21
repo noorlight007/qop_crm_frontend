@@ -1,15 +1,9 @@
 import { ViewClientModalProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import {
-  Button,
-  Col,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import Image from "next/image";
+import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
+import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 const ViewClientModal: React.FC<ViewClientModalProps> = ({
   isOpen,
@@ -18,141 +12,259 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
-      <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Client Details</h3>
+      <ModalHeader toggle={toggle} className="bg-gradient border-0">
+        <span className="fs-5 fw-bold text-primary">Client Information</span>
       </ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col md="4" sm="6" className="d-flex flex-column">
-            <span className="text-muted">Name:</span>
-            <small>
-              {selectedClient.user?.title
-                ? formatChoiceFieldValue(selectedClient.user.title)
-                : ""}{" "}
-              {selectedClient?.user?.first_name}{" "}
-              {selectedClient?.user?.middle_name}{" "}
-              {selectedClient?.user?.last_name}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column">
-            <span className="text-muted">Email:</span>
-            {selectedClient?.user?.email ? (
-              <small>{selectedClient.user?.email}</small>
+      <ModalBody className="p-0">
+        {/* Profile Section */}
+        <div className="bg-light p-4 text-center border-bottom">
+          <div className="mb-3">
+            {selectedClient?.user?.profile_image ? (
+              <Image
+                src={selectedClient.user.profile_image}
+                alt="Profile"
+                width={120}
+                height={120}
+                className="rounded-circle shadow-sm"
+                style={{ border: "3px solid #fff" }}
+              />
             ) : (
-              <span className="text-muted small">Not available</span>
-            )}
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column">
-            <span className="text-muted">Phone:</span>
-
-            {selectedClient?.user?.phone ? (
-              <a
-                className="text-dark text_decoration_hover small"
-                href={`tel:${selectedClient?.user?.phone}`}
+              <div
+                className="rounded-circle bg-white d-flex align-items-center justify-content-center shadow-sm mx-auto"
+                style={{ width: "120px", height: "120px" }}
               >
-                {selectedClient.user?.phone}
-              </a>
-            ) : (
-              <span className="text-muted small">Not available</span>
+                <User size={60} className="text-primary" />
+              </div>
             )}
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Source:</span>
-            <small>
-              {selectedClient?.source === "OTHER" ? (
-                selectedClient?.other_source || "-"
-              ) : selectedClient?.source ? (
-                formatChoiceFieldValue(selectedClient.source)
-              ) : (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">User Type:</span>
-            <small>
-              {selectedClient?.user?.user_type ? (
-                formatChoiceFieldValue(selectedClient.user.user_type)
-              ) : (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">User Role:</span>
-            <small>
-              {selectedClient?.role ? (
-                formatChoiceFieldValue(selectedClient?.role)
-              ) : (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Created At:</span>
-            <small>
-              {(selectedClient?.created_at &&
-                formatDateAndTime(selectedClient?.created_at)) || (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Created By:</span>
-            <small>
-              {selectedClient?.created_by ? (
-                <>
-                  {selectedClient.created_by.title
-                    ? formatChoiceFieldValue(selectedClient.created_by.title)
-                    : ""}{" "}
-                  {selectedClient.created_by.first_name}{" "}
-                  {selectedClient.created_by.middle_name}{" "}
-                  {selectedClient.created_by.last_name}
-                </>
-              ) : (
-                "Not available"
-              )}
-            </small>
-            <small
-              className="text-muted"
-              style={{ marginTop: "-6px", fontSize: "10px" }}
+          </div>
+          <h4 className="mb-1 text-dark fw-bold">
+            {selectedClient?.user?.title
+              ? formatChoiceFieldValue(selectedClient.user.title) + ". "
+              : ""}
+            {selectedClient?.user?.first_name}{" "}
+            {selectedClient?.user?.middle_name &&
+              selectedClient?.user?.middle_name + " "}
+            {selectedClient?.user?.last_name}
+          </h4>
+          <div>
+            <Badge pill className="px-3 py-2 bg-light-primary">
+              👤 {formatChoiceFieldValue(selectedClient.role)}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="p-4">
+          {/* Contact Information */}
+          <div className="mb-4">
+            <h6
+              className="text-uppercase fw-bold text-primary mb-3"
+              style={{ fontSize: "11px", letterSpacing: "0.5px" }}
             >
-              (
-              {selectedClient?.created_by?.user_type
-                ? formatChoiceFieldValue(selectedClient.created_by.user_type)
-                : "Not available"}
-              )
-            </small>
-          </Col>
-          <Col md="4" sm="6" className="d-flex flex-column mt-4">
-            <span className="text-muted">Reason for Enquiry:</span>
-            <small>
-              {selectedClient?.enquiry_type === "OTHER" ? (
-                selectedClient?.other_enquiry_type || "-"
-              ) : selectedClient?.enquiry_type ? (
-                formatChoiceFieldValue(selectedClient.enquiry_type)
-              ) : (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-          <Col sm="12" className="d-flex flex-column mt-4 border rounded pb-2">
-            <span className="text-muted">Note:</span>
-            <small>
-              {selectedClient?.note ? (
-                selectedClient?.note
-              ) : (
-                <span className="text-muted">Not available</span>
-              )}
-            </small>
-          </Col>
-        </Row>
+              Contact Information
+            </h6>
+            <Row>
+              <Col md="6" className="mb-3">
+                <div className="d-flex align-items-start">
+                  <Mail size={18} className="text-primary mt-1 me-2" />
+                  <div>
+                    <small className="text-muted d-block">Email</small>
+                    <p className="m-0 text-dark">
+                      {selectedClient?.user?.email ? (
+                        <a
+                          href={`mailto:${selectedClient.user.email}`}
+                          className="text-decoration-none"
+                        >
+                          {selectedClient.user.email}
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </Col>
+              <Col md="6" className="mb-3">
+                <div className="d-flex align-items-start">
+                  <Phone size={18} className="text-primary mt-1 me-2" />
+                  <div>
+                    <small className="text-muted d-block">Phone</small>
+                    <p className="m-0 text-dark">
+                      {selectedClient?.user?.phone ? (
+                        <a
+                          href={`tel:${selectedClient.user.phone}`}
+                          className="text-decoration-none"
+                        >
+                          {selectedClient.user.phone}
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </div>
+
+          <hr className="my-3" />
+
+          {/* Client Details */}
+          <div className="mb-4">
+            <h6
+              className="text-uppercase fw-bold text-primary mb-3"
+              style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+            >
+              <TrendingUp
+                size={14}
+                className="me-2"
+                style={{ display: "inline" }}
+              />
+              Client Details
+            </h6>
+            <Row>
+              <Col md="6" className="mb-3">
+                <div>
+                  <small className="text-muted d-block fw-500">Source</small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedClient?.source === "OTHER"
+                      ? selectedClient?.other_source || "-"
+                      : selectedClient?.source
+                        ? formatChoiceFieldValue(selectedClient.source)
+                        : "-"}
+                  </p>
+                </div>
+              </Col>
+              <Col md="6" className="mb-3">
+                <div>
+                  <small className="text-muted d-block fw-500">
+                    Enquiry Type
+                  </small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedClient?.enquiry_type === "OTHER"
+                      ? selectedClient?.other_enquiry_type || "-"
+                      : selectedClient?.enquiry_type
+                        ? formatChoiceFieldValue(selectedClient.enquiry_type)
+                        : "-"}
+                  </p>
+                </div>
+              </Col>
+              <Col md="6" className="mb-3">
+                <div>
+                  <small className="text-muted d-block fw-500">User Type</small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedClient?.user?.user_type
+                      ? formatChoiceFieldValue(selectedClient.user.user_type)
+                      : "-"}
+                  </p>
+                </div>
+              </Col>
+              <Col md="6" className="mb-3">
+                <div>
+                  <small className="text-muted d-block fw-500">Role</small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedClient?.role
+                      ? formatChoiceFieldValue(selectedClient.role)
+                      : "-"}
+                  </p>
+                </div>
+              </Col>
+            </Row>
+          </div>
+
+          <hr className="my-3" />
+
+          {/* Notes */}
+          {selectedClient?.note && (
+            <>
+              <div className="mb-4">
+                <h6
+                  className="text-uppercase fw-bold text-primary mb-3"
+                  style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                >
+                  <FileText
+                    size={14}
+                    className="me-2"
+                    style={{ display: "inline" }}
+                  />
+                  Notes
+                </h6>
+                <div
+                  className="p-3 bg-light rounded"
+                  style={{ borderLeft: "3px solid #0d6efd" }}
+                >
+                  <p
+                    className="m-0 text-dark"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    {selectedClient.note}
+                  </p>
+                </div>
+              </div>
+
+              <hr className="my-3" />
+            </>
+          )}
+
+          {/* Metadata */}
+          <div>
+            <h6
+              className="text-uppercase fw-bold text-primary mb-3"
+              style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+            >
+              Additional Information
+            </h6>
+            {selectedClient?.created_by ? (
+              <div className="mb-3 p-3 bg-light rounded">
+                <small className="text-muted d-block fw-500 mb-2">
+                  Created By
+                </small>
+                <p className="m-0 text-dark">
+                  <strong>
+                    {selectedClient.created_by.title
+                      ? formatChoiceFieldValue(
+                          selectedClient.created_by.title
+                        ).trim() + " "
+                      : ""}
+                    {selectedClient.created_by.first_name}{" "}
+                    {selectedClient.created_by.middle_name}{" "}
+                    {selectedClient.created_by.last_name}
+                  </strong>
+                </p>
+                <small className="text-muted">
+                  {selectedClient.created_by.user_type
+                    ? formatChoiceFieldValue(
+                        selectedClient.created_by.user_type
+                      )
+                    : ""}
+                </small>
+              </div>
+            ) : (
+              <div
+                className="mb-3 p-3 bg-light rounded"
+                style={{ borderLeft: "3px solid #ffc107" }}
+              >
+                <small className="text-muted d-block fw-500 mb-2">
+                  Created By
+                </small>
+                <p className="m-0 text-muted fst-italic">
+                  No creator information available
+                </p>
+              </div>
+            )}
+            <div className="mb-3 p-3 bg-light rounded">
+              <small className="text-muted d-block fw-500 mb-2">
+                Created At
+              </small>
+              <p className="m-0 text-dark fw-500">
+                {selectedClient?.created_at &&
+                formatDateAndTime(selectedClient?.created_at)
+                  ? formatDateAndTime(selectedClient?.created_at)
+                  : "-"}
+              </p>
+            </div>
+          </div>
+        </div>
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-end">
-        <Button color="danger" onClick={toggle}>
-          Close
-        </Button>
-      </ModalFooter>
     </Modal>
   );
 };

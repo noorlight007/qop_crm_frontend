@@ -33,7 +33,7 @@ const CreditCommitmentsContent: React.FC = () => {
   const { data: creditCommitments, isLoading } =
     useGetCreditCommitmentsDetailsQuery({ case_alias: casealias });
   const dispatch = useAppDispatch();
-  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+  const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias }
   );
@@ -281,6 +281,7 @@ const CreditCommitmentsContent: React.FC = () => {
       <DeleteCreditCommitmentModal
         isOpen={isDeleteModalOpen}
         toggle={() => setIsDeleteModalOpen(!isDeleteModalOpen)}
+        onDelete={() => setIsDeleteModalOpen(false)}
         casealias={casealias?.toString()}
         creditCommitmentAlias={selectedItemAlias}
         creditCommitmentName={selectedItemName}
