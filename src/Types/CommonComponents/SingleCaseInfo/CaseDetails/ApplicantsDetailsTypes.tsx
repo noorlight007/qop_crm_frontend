@@ -38,6 +38,8 @@ export interface ApplicantProps {
   city: string;
   county: string;
   country: string;
+  latitude?: number;
+  longitude?: number;
   effective_from: string;
   time_at_address_years: number;
   time_at_address_months: number;
