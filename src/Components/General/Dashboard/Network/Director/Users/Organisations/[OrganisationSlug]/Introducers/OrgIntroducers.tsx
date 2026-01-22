@@ -206,10 +206,11 @@ const OrgIntroducers: React.FC = () => {
                         "-"
                       )}
                     </td>
-
                     <td>
                       {introducer?.joining_date ? introducer.joining_date : "-"}
                     </td>
+                    <td>{introducer?.company_name || "-"}</td>
+                    <td>{introducer?.company_address || "-"}</td>
                     <td>
                       <p className="m-0">
                         {introducer.created_by
@@ -234,8 +235,6 @@ const OrgIntroducers: React.FC = () => {
                         )
                       </p>
                     </td>
-                    <td>{introducer?.company_name || "-"}</td>
-                    <td>{introducer?.company_address || "-"}</td>
                     <td>{formatDateAndTime(introducer?.created_at)}</td>
                     <td>
                       {introducer?.is_active ? (
