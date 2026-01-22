@@ -24,7 +24,7 @@ import {
 } from "reactstrap";
 import ViewOrgClientModals from "./Modals/ViewOrgClientModals";
 
-const OrgClients: React.FC<OrgClientInfo> = () => {
+const OrgClients: React.FC = () => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;

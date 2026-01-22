@@ -250,6 +250,8 @@ export const baseApi = createApi({
     "OrgClients",
     "OrgCases",
     "OrgAdvisers",
+    "OrgIntroducers",
+    "OrgAdmins",
     "NetworkDirectorDashboard",
     //Network Director end
 

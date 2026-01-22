@@ -25,7 +25,7 @@ import {
 } from "reactstrap";
 import ViewOrgAdviserModals from "./Modals/ViewOrgAdviserModals";
 
-const OrgAdvisers: React.FC<OrgAdviserInfo> = () => {
+const OrgAdvisers: React.FC = () => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;

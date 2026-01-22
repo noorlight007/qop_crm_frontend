@@ -18,6 +18,7 @@ import DangerZone from "./DangerZone/DangerZone";
 import OrgLeads from "./Leads/OrgLeads";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
+import OrgAdmins from "./Admins/OrgAdmins";
 
 const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
@@ -121,6 +122,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
             <OrgCases />
             <OrgClients />
             <OrgAdvisers />
+            <OrgAdmins />
             <DangerZone singleOrgInfo={singleOrgInfo} />
           </Col>
         </Row>

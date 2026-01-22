@@ -22,7 +22,7 @@ import {
 } from "reactstrap";
 import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
-const OrgLeads: React.FC<OrgLeadInfo> = () => {
+const OrgLeads: React.FC = () => {
   // Correctly extract dynamic route param (folder is [OrganisationSlug])
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
