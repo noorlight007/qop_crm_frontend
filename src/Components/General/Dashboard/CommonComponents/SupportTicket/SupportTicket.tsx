@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
 import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
-import { TbCirclePlus, TbLink } from "react-icons/tb";
+import { TbCirclePlus, TbExternalLink } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -219,7 +219,7 @@ const SupportTicket: React.FC = () => {
                                 size="sm"
                                 title="View Ticket"
                               >
-                                <TbLink size={18} />
+                                <TbExternalLink size={18} />
                               </Button>
                             </Link>
                             <Button
