@@ -1,4 +1,4 @@
-export interface OrgLeadInfo {
+export interface OrgClientInfo {
   alias: string;
   profile_image: string;
   name: string;
@@ -22,8 +22,8 @@ export interface OrgLeadInfo {
   created_at: string;
 }
 
-export interface ViewOrgLeadModalProps {
+export interface ViewOrgClientModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLead?: Partial<OrgLeadInfo>;
+  selectedClient?: Partial<OrgClientInfo>;
 }

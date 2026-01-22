@@ -108,9 +108,11 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.source
-                      ? formatChoiceFieldValue(selectedLead.source)
-                      : "-"}
+                    {selectedLead?.source ? (
+                      formatChoiceFieldValue(selectedLead.source)
+                    ) : (
+                      <small className="text-muted">Not Found</small>
+                    )}
                   </p>
                 </div>
               </Col>
@@ -120,9 +122,11 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                     Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.enquiry_type
-                      ? formatChoiceFieldValue(selectedLead.enquiry_type)
-                      : "-"}
+                    {selectedLead?.enquiry_type ? (
+                      formatChoiceFieldValue(selectedLead.enquiry_type)
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>

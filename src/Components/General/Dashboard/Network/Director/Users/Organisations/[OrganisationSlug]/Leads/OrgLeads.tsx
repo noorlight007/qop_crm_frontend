@@ -1,6 +1,6 @@
 "use client";
 import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgLeadsApi";
-import { OrgLeadsInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
+import { OrgLeadInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -22,7 +22,7 @@ import {
 } from "reactstrap";
 import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
-const OrgLeads: React.FC<OrgLeadsInfo> = () => {
+const OrgLeads: React.FC<OrgLeadInfo> = () => {
   // Correctly extract dynamic route param (folder is [OrganisationSlug])
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
@@ -56,7 +56,7 @@ const OrgLeads: React.FC<OrgLeadsInfo> = () => {
     { skip: !organisationslug },
   );
 
-  const [selectedLead, setSelectedLead] = useState<OrgLeadsInfo>({
+  const [selectedLead, setSelectedLead] = useState<OrgLeadInfo>({
     alias: "",
     profile_image: "",
     name: "",
@@ -80,7 +80,7 @@ const OrgLeads: React.FC<OrgLeadsInfo> = () => {
     created_at: "",
   });
 
-  const toggleViewModal = (lead?: OrgLeadsInfo) => {
+  const toggleViewModal = (lead?: OrgLeadInfo) => {
     if (lead) {
       setSelectedLead(lead);
     }
@@ -161,7 +161,7 @@ const OrgLeads: React.FC<OrgLeadsInfo> = () => {
                   </td>
                 </tr>
               ) : leads.length > 0 ? (
-                leads.map((lead: OrgLeadsInfo) => (
+                leads.map((lead: OrgLeadInfo) => (
                   <tr key={lead.alias} className="text-center">
                     <td className="text-start">
                       <span
