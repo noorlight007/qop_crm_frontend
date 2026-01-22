@@ -9,12 +9,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Col, Container, Row } from "reactstrap";
+import OrgAdmins from "./Admins/OrgAdmins";
 import OrgAdvisers from "./Advisers/OrgAdvisers";
 import OrgCases from "./Cases/OrgCases";
 import OrgLendersChart from "./Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Charts/MortgagesChart/MortgagesChart";
 import OrgClients from "./Clients/OrgClients";
 import DangerZone from "./DangerZone/DangerZone";
+import OrgIntroducers from "./Introducers/OrgIntroducers";
 import OrgLeads from "./Leads/OrgLeads";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
@@ -33,7 +35,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
     { organisationslug },
     {
       skip: !organisationslug,
-    }
+    },
   );
 
   const { data: singleOrgDashboardData, isLoading: isDashboardLoading } =
@@ -41,7 +43,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
       { organisationslug },
       {
         skip: !organisationslug,
-      }
+      },
     );
 
   useEffect(() => {
@@ -84,7 +86,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
       />
       <Container fluid>
         <Row>
-          <Col md="4">
+          <Col lg="4" md="12">
             <OrganisationProfile
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -92,7 +94,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
               isDashboardLoading={isDashboardLoading}
             />
           </Col>
-          <Col md="4">
+          <Col lg="4" md="12">
             <OrgMortgagesChart
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -100,7 +102,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
               isDashboardLoading={isDashboardLoading}
             />
           </Col>
-          <Col md="4">
+          <Col lg="4" md="12">
             <OrgLendersChart
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -121,6 +123,8 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
             <OrgCases />
             <OrgClients />
             <OrgAdvisers />
+            <OrgAdmins />
+            <OrgIntroducers />
             <DangerZone singleOrgInfo={singleOrgInfo} />
           </Col>
         </Row>

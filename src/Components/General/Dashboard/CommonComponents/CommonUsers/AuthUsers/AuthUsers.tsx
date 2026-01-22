@@ -188,16 +188,16 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   </td>
                 </tr>
               ) : currentAuthUsers.length > 0 ? (
-                currentAuthUsers.map((admin) => (
-                  <tr key={admin.alias} className="text-center">
+                currentAuthUsers.map((user) => (
+                  <tr key={user.alias} className="text-center">
                     <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                       <span
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}
                       >
-                        {admin?.profile_image ? (
+                        {user?.profile_image ? (
                           <Image
-                            src={admin.profile_image}
+                            src={user.profile_image}
                             alt="Profile"
                             width={35}
                             height={35}
@@ -210,50 +210,73 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
-                          openViewModal(admin);
+                          openViewModal(user);
                         }}
                         style={{ cursor: "pointer" }}
                       >
-                        {admin?.title
-                          ? formatChoiceFieldValue(admin?.title)
-                          : ""}{" "}
-                        {admin?.first_name} {admin?.middle_name}{" "}
-                        {admin?.last_name}
+                        {user?.title ? formatChoiceFieldValue(user?.title) : ""}{" "}
+                        {user?.first_name} {user?.middle_name} {user?.last_name}
                       </span>
                     </td>
-                    <td>{admin?.email || "-"}</td>
                     <td>
-                      {admin?.phone ? (
+                      {user?.email ? (
+                        user.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {user?.phone ? (
                         <a
-                          href={`tel:${admin?.phone}`}
+                          href={`tel:${user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {admin?.phone}
+                          {user?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
 
-                    <td>{formatDate(admin?.joining_date) || "-"}</td>
+                    <td>
+                      {user.joining_date ? (
+                        formatDate(user?.joining_date)
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     {pathname !==
                       "/dashboard/organisation/director/introducers" && (
                       <td>
-                        {admin?.gender
-                          ? formatChoiceFieldValue(admin?.gender)
-                          : "-"}
+                        {user?.gender ? (
+                          formatChoiceFieldValue(user?.gender)
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </td>
                     )}
                     {pathname ===
                       "/dashboard/organisation/director/introducers" && (
                       <>
-                        <td>{admin?.company_name || "-"}</td>
-                        <td>{admin?.company_address || "-"}</td>
+                        <td>
+                          {user?.company_name || (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </td>
+                        <td>
+                          {user?.company_address || (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </td>
                       </>
                     )}
-                    <td>{formatDateAndTime(admin?.created_at) || "-"}</td>
                     <td>
-                      {admin?.is_active ? (
+                      {formatDateAndTime(user?.created_at) || (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {user?.is_active ? (
                         <Badge color="success">Approved</Badge>
                       ) : (
                         <Badge color="danger">Pending</Badge>
@@ -265,7 +288,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                           color="primary"
                           size="sm"
                           title="Update User"
-                          onClick={() => openUpdateModal(admin)}
+                          onClick={() => openUpdateModal(user)}
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
@@ -323,7 +346,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )
               ) : (
                 <>
@@ -341,7 +364,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
 
                   {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
                     .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
+                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
                     )
                     .map((pageNumber) => (
                       <PaginationItem

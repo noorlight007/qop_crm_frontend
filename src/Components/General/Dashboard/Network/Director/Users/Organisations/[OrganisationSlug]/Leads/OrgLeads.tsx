@@ -1,9 +1,6 @@
 "use client";
-import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgLeadsApi";
-import {
-  LeadsInfo,
-  LeadsProps,
-} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
+import { OrgLeadInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -25,7 +22,7 @@ import {
 } from "reactstrap";
 import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
-const OrgLeads: React.FC<LeadsProps> = () => {
+const OrgLeads: React.FC = () => {
   // Correctly extract dynamic route param (folder is [OrganisationSlug])
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
@@ -47,32 +44,43 @@ const OrgLeads: React.FC<LeadsProps> = () => {
   }, [searchInput]);
 
   // rtk hooks
-  const { data: leadData, isLoading } = useGetOrgLeadsQuery(
+  const { data: leadData, isLoading } = useGetOrgUserListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
+        role: "LEAD",
       },
     },
-    { skip: !organisationslug }
+    { skip: !organisationslug },
   );
 
-  const [selectedLead, setSelectedLead] = useState<Partial<LeadsInfo>>({
-    user: {
+  const [selectedLead, setSelectedLead] = useState<OrgLeadInfo>({
+    alias: "",
+    profile_image: "",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    role: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    source: "",
+    other_source: "",
+    note: "",
+    created_by: {
+      name: "",
       title: "",
       first_name: "",
       middle_name: "",
       last_name: "",
-      email: "",
-      phone: "",
-      profile_image: "",
       user_type: "",
     },
-    source: "",
+    created_at: "",
   });
 
-  const toggleViewModal = (lead?: LeadsInfo) => {
+  const toggleViewModal = (lead?: OrgLeadInfo) => {
     if (lead) {
       setSelectedLead(lead);
     }
@@ -153,7 +161,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                   </td>
                 </tr>
               ) : leads.length > 0 ? (
-                leads.map((lead: LeadsInfo) => (
+                leads.map((lead: OrgLeadInfo) => (
                   <tr key={lead.alias} className="text-center">
                     <td className="text-start">
                       <span
@@ -161,45 +169,66 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                         onClick={() => toggleViewModal(lead)}
                         style={{ cursor: "pointer" }}
                       >
-                        {lead.user?.title
-                          ? formatChoiceFieldValue(lead.user?.title)
-                          : ""}{" "}
-                        {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
-                        {lead?.user?.last_name}
+                        {lead?.name ? (
+                          lead?.name
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </span>
                     </td>
-                    <td>{lead?.user?.email || "-"}</td>
                     <td>
-                      {lead?.user?.phone ? (
-                        <a
-                          href={`tel:${lead?.user?.phone}`}
-                          className="text-black text_decoration_hover"
-                        >
-                          {lead?.user?.phone}
-                        </a>
+                      {lead?.email ? (
+                        lead.email
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {lead?.source ? formatChoiceFieldValue(lead.source) : "-"}
+                      {lead?.phone ? (
+                        <a
+                          href={`tel:${lead?.phone}`}
+                          className="text-black text_decoration_hover"
+                        >
+                          {lead?.phone}
+                        </a>
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </td>
                     <td>
-                      <p className="m-0">
-                        {lead.created_by?.title
-                          ? formatChoiceFieldValue(lead.created_by?.title)
-                          : ""}{" "}
-                        {lead?.created_by?.first_name}{" "}
-                        {lead?.created_by?.middle_name}{" "}
-                        {lead?.created_by?.last_name}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {lead.created_by?.user_type
-                          ? formatChoiceFieldValue(lead.created_by?.user_type)
-                          : ""}
-                        )
-                      </p>
+                      {lead?.source ? (
+                        formatChoiceFieldValue(lead.source)
+                      ) : (
+                        <small className="text-muted">Not Found</small>
+                      )}
+                    </td>
+                    <td>
+                      {lead.created_by == null ? (
+                        <small className="text-muted">Not Available</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {lead.created_by?.title
+                              ? formatChoiceFieldValue(lead.created_by?.title)
+                              : ""}{" "}
+                            {lead?.created_by?.first_name}{" "}
+                            {lead?.created_by?.middle_name}{" "}
+                            {lead?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {lead.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  lead.created_by?.user_type,
+                                )
+                              : ""}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(lead?.created_at)}</td>
                   </tr>
@@ -225,7 +254,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                 to{" "}
                 {Math.min(
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
-                  totalCount
+                  totalCount,
                 )}{" "}
                 of {totalCount} Leads
               </p>
@@ -254,7 +283,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem disabled={currentPage === totalPages}>

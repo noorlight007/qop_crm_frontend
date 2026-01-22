@@ -1,9 +1,6 @@
 "use client";
-import { useGetOrgClientsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgClientsApi";
-import {
-  ClientInfoProps,
-  ClientsProps,
-} from "@/Types/CommonComponents/CommonUsers/ClientTypes";
+import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
+import { OrgClientInfo } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -25,13 +22,13 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import ViewOrgClientModals from "./Modals/ViewOrgClientModals";
+import ViewOrgClientModal from "./Modals/ViewOrgClientModal";
 
-const OrgClients: React.FC<ClientsProps> = () => {
+const OrgClients: React.FC = () => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
-  const [clients, setClients] = useState<ClientInfoProps[]>([]);
+  const [clients, setClients] = useState<OrgClientInfo[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,34 +45,43 @@ const OrgClients: React.FC<ClientsProps> = () => {
   }, [searchInput]);
 
   // rtk query - pass params object to match OrgClientsApi
-  const { data: clientData, isLoading } = useGetOrgClientsQuery(
+  const { data: clientData, isLoading } = useGetOrgUserListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
+        role: "CLIENT",
       },
     },
-    { skip: !organisationslug }
+    { skip: !organisationslug },
   );
 
-  const [selectedClient, setSelectedClient] = useState<
-    Partial<ClientInfoProps>
-  >({
-    user: {
+  const [selectedClient, setSelectedClient] = useState<Partial<OrgClientInfo>>({
+    alias: "",
+    profile_image: "",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    role: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    source: "",
+    other_source: "",
+    note: "",
+    created_by: {
+      name: "",
       title: "",
       first_name: "",
       middle_name: "",
       last_name: "",
-      email: "",
-      phone: "",
-      profile_image: "",
       user_type: "",
     },
-    source: "",
+    created_at: "",
   });
 
-  const toggleViewModal = (client?: ClientInfoProps) => {
+  const toggleViewModal = (client?: OrgClientInfo) => {
     if (client) {
       setSelectedClient(client);
     }
@@ -182,9 +188,9 @@ const OrgClients: React.FC<ClientsProps> = () => {
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}
                       >
-                        {client.user?.profile_image ? (
+                        {client?.profile_image ? (
                           <Image
-                            src={client.user.profile_image}
+                            src={client.profile_image}
                             alt="Profile"
                             width={35}
                             height={35}
@@ -199,47 +205,66 @@ const OrgClients: React.FC<ClientsProps> = () => {
                         onClick={() => toggleViewModal(client)}
                         style={{ cursor: "pointer" }}
                       >
-                        {client.user?.title
-                          ? formatChoiceFieldValue(client.user.title)
+                        {client.title
+                          ? formatChoiceFieldValue(client.title)
                           : ""}
-                        {"."} {client?.user?.first_name}{" "}
-                        {client?.user?.middle_name} {client?.user?.last_name}
+                        {"."} {client?.first_name} {client?.middle_name}{" "}
+                        {client?.last_name}
                       </span>
                     </td>
-                    <td>{client?.user?.email || "-"}</td>
                     <td>
-                      {client?.user?.phone ? (
-                        <a
-                          href={`tel:${client?.user?.phone}`}
-                          className="text-black text_decoration_hover"
-                        >
-                          {client?.user?.phone}
-                        </a>
+                      {client?.email ? (
+                        client.email
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {client?.source
-                        ? formatChoiceFieldValue(client?.source)
-                        : "-"}
+                      {client?.phone ? (
+                        <a
+                          href={`tel:${client?.phone}`}
+                          className="text-black text_decoration_hover"
+                        >
+                          {client?.phone}
+                        </a>
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </td>
                     <td>
-                      <p className="m-0">
-                        {client.created_by?.title
-                          ? formatChoiceFieldValue(client.created_by?.title)
-                          : ""}{" "}
-                        {client?.created_by?.first_name}{" "}
-                        {client?.created_by?.middle_name}{" "}
-                        {client?.created_by?.last_name}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {client.created_by?.user_type
-                          ? formatChoiceFieldValue(client.created_by?.user_type)
-                          : "-"}
-                        )
-                      </p>
+                      {client?.source ? (
+                        formatChoiceFieldValue(client?.source)
+                      ) : (
+                        <small className="text-muted">Not Found</small>
+                      )}
+                    </td>
+                    <td>
+                      {client.created_by == null ? (
+                        <small className="text-muted">Not Available</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {client.created_by?.title
+                              ? formatChoiceFieldValue(client.created_by?.title)
+                              : ""}{" "}
+                            {client?.created_by?.first_name}{" "}
+                            {client?.created_by?.middle_name}{" "}
+                            {client?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {client.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  client.created_by?.user_type,
+                                )
+                              : ""}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(client?.created_at)}</td>
                   </tr>
@@ -265,7 +290,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
                 to{" "}
                 {Math.min(
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
-                  totalCount
+                  totalCount,
                 )}{" "}
                 of {totalCount} Clients
               </p>
@@ -294,7 +319,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem disabled={currentPage === totalPages}>
@@ -315,7 +340,7 @@ const OrgClients: React.FC<ClientsProps> = () => {
         </Row>
 
         {/* modals */}
-        <ViewOrgClientModals
+        <ViewOrgClientModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedClient={selectedClient}

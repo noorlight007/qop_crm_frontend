@@ -29,7 +29,7 @@ type OrganisationListProps = {
 const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
   const { data: session } = useSession();
   const [organisations, setOrganisations] = useState<SingleOrganisationProps[]>(
-    []
+    [],
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,7 +64,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentOrganisations = organisations.slice(
     indexOfFirstItem,
-    indexOfLastItem
+    indexOfLastItem,
   );
 
   return (
@@ -105,7 +105,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
           </Row>
           <Row>
             {isLoading ? (
-              <Row className="pb-4 d-flex justify-content-center">
+              <Row className="pb-4 d-flex justify-content-center min-vh-100">
                 <Spinner color="primary" />
               </Row>
             ) : currentOrganisations && currentOrganisations?.length > 0 ? (
@@ -121,7 +121,6 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                   <Card className="bg-white border organisation_card opacity-100  p-3 position-relative">
                     <Link
                       href={`${getOrganisationUrl(session)}/${item.slug}`}
-                      target="_blank"
                       title="Website"
                       className="text-muted position-absolute top-0 end-0 p-3"
                     >
@@ -219,7 +218,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                             {pageNumber}
                           </PaginationLink>
                         </PaginationItem>
-                      )
+                      ),
                     )
                   ) : (
                     <>
@@ -238,7 +237,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                       {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
                         .filter(
                           (pageNumber) =>
-                            pageNumber > 1 && pageNumber < totalPages
+                            pageNumber > 1 && pageNumber < totalPages,
                         )
                         .map((pageNumber) => (
                           <PaginationItem

@@ -1,6 +1,6 @@
 "use client";
 import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
-import { OrgAdminInfo } from "@/Types/Network/Director/Users/Organisations/OrgAdminTypes";
+import { OrgIntroducerInfo } from "@/Types/Network/Director/Users/Organisations/OrgIntroducerTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -23,25 +23,30 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import ViewOrgAdminModal from "./Modals/ViewOrgAdvminModal";
+import ViewOrgIntroducerModal from "./Modals/ViewOrgIntroducerModal";
 
-const OrgAdmins: React.FC = () => {
+const OrgIntroducers: React.FC = () => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
-  const [admins, setAdmins] = useState<OrgAdminInfo[]>([]);
+  const [introducers, setIntroducers] = useState<OrgIntroducerInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [stablePageSize, setStablePageSize] = useState<number>(0);
-  const [isViewOrgAdminModalOpen, setIsViewOrgAdminModalOpen] = useState(false);
-  const [selectedAdmin, setSelectedAdmin] = useState<Partial<OrgAdminInfo>>({});
+  const [isViewOrgIntroducerModalOpen, setIsViewOrgIntroducerModalOpen] =
+    useState(false);
+  const [selectedIntroducer, setSelectedIntroducer] = useState<
+    Partial<OrgIntroducerInfo>
+  >({});
 
-  const toggleViewOrgAdminModal = (admin?: Partial<OrgAdminInfo>) => {
-    if (admin) {
-      setSelectedAdmin(admin);
+  const toggleViewOrgIntroducerModal = (
+    introducer?: Partial<OrgIntroducerInfo>,
+  ) => {
+    if (introducer) {
+      setSelectedIntroducer(introducer);
     }
-    setIsViewOrgAdminModalOpen(!isViewOrgAdminModalOpen);
+    setIsViewOrgIntroducerModalOpen(!isViewOrgIntroducerModalOpen);
   };
 
   // debounce search input
@@ -53,47 +58,52 @@ const OrgAdmins: React.FC = () => {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  const { data: adminData, isLoading } = useGetOrgUserListQuery(
+  const { data: introducerData, isLoading } = useGetOrgUserListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
-        role: "ORGANISATION_ADMIN",
+        role: "INTRODUCER",
       },
     },
     { skip: !organisationslug },
   );
 
   useEffect(() => {
-    if (adminData) {
-      const adminsArray: OrgAdminInfo[] = Array.isArray(adminData)
-        ? adminData
-        : adminData.results || adminData.admins;
-      setAdmins(adminsArray || []);
+    if (introducerData) {
+      const introducersArray: OrgIntroducerInfo[] = Array.isArray(
+        introducerData,
+      )
+        ? introducerData
+        : introducerData.results || introducerData.admins;
+      setIntroducers(introducersArray || []);
     }
-  }, [adminData]);
+  }, [introducerData]);
 
   // Server-side pagination: use API count and a stable page size
   const totalCount =
-    adminData && !Array.isArray(adminData) ? adminData.count : admins.length;
-
+    introducerData && !Array.isArray(introducerData)
+      ? introducerData.count
+      : introducers.length;
   useEffect(() => {
-    const currentLength = Array.isArray(adminData)
-      ? adminData.length
-      : adminData?.results?.length || 0;
+    const currentLength = Array.isArray(introducerData)
+      ? introducerData.length
+      : introducerData?.results?.length || 0;
     const isLastPage =
-      !Array.isArray(adminData) && adminData && adminData.next === null;
+      !Array.isArray(introducerData) &&
+      introducerData &&
+      introducerData.next === null;
     if (currentLength > 0) {
       if (stablePageSize === 0) setStablePageSize(currentLength);
       else if (!isLastPage && currentLength !== stablePageSize)
         setStablePageSize(currentLength);
     }
-  }, [adminData, stablePageSize]);
+  }, [introducerData, stablePageSize]);
 
-  const effectivePageSize = stablePageSize || admins.length || 1;
+  const effectivePageSize = stablePageSize || introducers.length || 1;
   const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
-  const currentAdmins = admins;
+  const currentIntroducers = introducers;
 
   useEffect(() => {
     if (totalPages > 0 && currentPage > totalPages) setCurrentPage(totalPages);
@@ -112,7 +122,7 @@ const OrgAdmins: React.FC = () => {
       <CardBody>
         <Row className="flex justify-content-between py-4">
           <Col md="3">
-            <h2>Admins</h2>
+            <h2>Introducers</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -139,6 +149,8 @@ const OrgAdmins: React.FC = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Joining Date</th>
+                <th>Company Name</th>
+                <th>Company Address</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Status</th>
@@ -153,17 +165,17 @@ const OrgAdmins: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ) : currentAdmins.length > 0 ? (
-                currentAdmins.map((admin) => (
-                  <tr key={admin.alias} className="text-center">
+              ) : currentIntroducers.length > 0 ? (
+                currentIntroducers.map((introducer) => (
+                  <tr key={introducer.alias} className="text-center">
                     <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                       <span
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}
                       >
-                        {admin?.profile_image ? (
+                        {introducer?.profile_image ? (
                           <Image
-                            src={admin?.profile_image}
+                            src={introducer?.profile_image}
                             alt="Profile"
                             width={35}
                             height={35}
@@ -175,60 +187,75 @@ const OrgAdmins: React.FC = () => {
                       </span>
                       <span
                         className="text_decoration_hover"
-                        onClick={() => toggleViewOrgAdminModal(admin)}
+                        onClick={() => toggleViewOrgIntroducerModal(introducer)}
                         style={{ cursor: "pointer" }}
                       >
-                        {admin?.name}
+                        {introducer?.name}
                       </span>
                     </td>
                     <td>
-                      {admin?.email ? (
-                        admin.email
+                      {introducer?.email ? (
+                        introducer.email
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {admin?.phone ? (
+                      {introducer?.phone ? (
                         <a
-                          href={`tel:${admin?.phone}`}
+                          href={`tel:${introducer?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {admin?.phone}
+                          {introducer?.phone}
                         </a>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-
                     <td>
-                      {admin?.joining_date ? (
-                        admin.joining_date
+                      {introducer?.joining_date ? (
+                        introducer.joining_date
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {admin.created_by == null ? (
+                      {introducer?.company_name ? (
+                        introducer.company_name
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {introducer?.company_address ? (
+                        introducer.company_address
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {introducer.created_by == null ? (
                         <small className="text-muted">Not Available</small>
                       ) : (
                         <>
                           <p className="m-0">
-                            {admin.created_by?.title
-                              ? formatChoiceFieldValue(admin.created_by?.title)
+                            {introducer.created_by?.title
+                              ? formatChoiceFieldValue(
+                                  introducer.created_by?.title,
+                                )
                               : ""}{" "}
-                            {admin?.created_by?.first_name}{" "}
-                            {admin?.created_by?.middle_name}{" "}
-                            {admin?.created_by?.last_name}
+                            {introducer?.created_by?.first_name}{" "}
+                            {introducer?.created_by?.middle_name}{" "}
+                            {introducer?.created_by?.last_name}
                           </p>
                           <p
                             className="m-0 opacity-75"
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {admin.created_by?.user_type
+                            {introducer.created_by?.user_type
                               ? formatChoiceFieldValue(
-                                  admin.created_by?.user_type,
+                                  introducer.created_by?.user_type,
                                 )
                               : ""}
                             )
@@ -236,9 +263,9 @@ const OrgAdmins: React.FC = () => {
                         </>
                       )}
                     </td>
-                    <td>{formatDateAndTime(admin?.created_at)}</td>
+                    <td>{formatDateAndTime(introducer?.created_at)}</td>
                     <td>
-                      {admin?.is_active ? (
+                      {introducer?.is_active ? (
                         <Badge color="success">Approved</Badge>
                       ) : (
                         <Badge color="danger">Pending</Badge>
@@ -249,7 +276,7 @@ const OrgAdmins: React.FC = () => {
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center">
-                    No admins available.
+                    No introducers available.
                   </td>
                 </tr>
               )}
@@ -269,7 +296,7 @@ const OrgAdmins: React.FC = () => {
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
                   totalCount,
                 )}{" "}
-                of {totalCount} Admins
+                of {totalCount} Introducers
               </p>
             </div>
             {totalPages > 1 && (
@@ -319,13 +346,13 @@ const OrgAdmins: React.FC = () => {
         </Row>
       </CardBody>
       {/* Modals */}
-      <ViewOrgAdminModal
-        isOpen={isViewOrgAdminModalOpen}
-        toggle={toggleViewOrgAdminModal}
-        selectedAdmin={selectedAdmin}
+      <ViewOrgIntroducerModal
+        isOpen={isViewOrgIntroducerModalOpen}
+        toggle={toggleViewOrgIntroducerModal}
+        selectedIntroducer={selectedIntroducer}
       />
     </Card>
   );
 };
 
-export default OrgAdmins;
+export default OrgIntroducers;

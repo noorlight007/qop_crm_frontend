@@ -1,32 +1,28 @@
-import { AdviserInfoProps } from "@/Types/Network/Director/AdviserTypes";
+import { ViewOrgIntroducerModalProps } from "@/Types/Network/Director/Users/Organisations/OrgIntroducerTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-interface ViewOrgAdviserModalsProps {
-  isOpen: boolean;
-  toggle: () => void;
-  selectedAdviser?: Partial<AdviserInfoProps>;
-}
-
-const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
+const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
   isOpen,
   toggle,
-  selectedAdviser,
+  selectedIntroducer,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Adviser Information</span>
+        <span className="fs-5 fw-bold text-primary">
+          Introducer Information
+        </span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedAdviser?.user?.profile_image ? (
+            {selectedIntroducer?.profile_image ? (
               <Image
-                src={selectedAdviser.user.profile_image}
+                src={selectedIntroducer.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -42,30 +38,30 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">
-            {selectedAdviser?.user?.title
-              ? formatChoiceFieldValue(selectedAdviser.user.title) + ". "
-              : ""}
-            {selectedAdviser?.user?.first_name}{" "}
-            {selectedAdviser?.user?.middle_name &&
-              selectedAdviser?.user?.middle_name + " "}
-            {selectedAdviser?.user?.last_name}
-          </h4>
+          <h4 className="mb-1 text-dark fw-bold">{selectedIntroducer?.name}</h4>
           <p className="mb-2 text-muted small">
-            {selectedAdviser?.role
-              ? formatChoiceFieldValue(selectedAdviser.role)
-              : "Adviser"}
+            {selectedIntroducer?.role
+              ? formatChoiceFieldValue(selectedIntroducer.role)
+              : "Introducer"}
           </p>
-          <div>
-            {selectedAdviser?.is_active ? (
-              <Badge color="success" pill className="px-3 py-2">
-                ✓ Approved
+
+          <div className="d-flex justify-content-center gap-2">
+            <p>
+              <Badge pill className="px-3 py-2 bg-light-primary">
+                👤 {formatChoiceFieldValue(selectedIntroducer?.role)}
               </Badge>
-            ) : (
-              <Badge color="warning" pill className="px-3 py-2">
-                ⏳ Pending
-              </Badge>
-            )}
+            </p>
+            <p>
+              {selectedIntroducer?.is_active ? (
+                <Badge pill className="px-3 py-2 bg-light-success">
+                  ✓ Approved
+                </Badge>
+              ) : (
+                <Badge pill className="px-3 py-2 bg-light-danger">
+                  ⏳ Pending
+                </Badge>
+              )}
+            </p>
           </div>
         </div>
 
@@ -85,7 +81,11 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedAdviser?.user?.email || "-"}
+                      {selectedIntroducer?.email ? (
+                        selectedIntroducer.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -96,15 +96,15 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedAdviser?.user?.phone ? (
+                      {selectedIntroducer?.phone ? (
                         <a
-                          href={`tel:${selectedAdviser.user.phone}`}
+                          href={`tel:${selectedIntroducer.phone}`}
                           className="text-decoration-none"
                         >
-                          {selectedAdviser.user.phone}
+                          {selectedIntroducer.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </p>
                   </div>
@@ -124,23 +124,45 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
               Personal Details
             </h6>
             <Row>
-              <Col md="6" className="mb-3">
+              <Col md="4" className="mb-3">
                 <div>
-                  <small className="text-muted d-block fw-500">Gender</small>
+                  <small className="text-muted d-block fw-500">
+                    Company Name
+                  </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdviser?.gender
-                      ? formatChoiceFieldValue(selectedAdviser.gender)
-                      : "-"}
+                    {selectedIntroducer?.company_name ? (
+                      selectedIntroducer.company_name
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>
-              <Col md="6" className="mb-3">
+              <Col md="4" className="mb-3">
+                <div>
+                  <small className="text-muted d-block fw-500">
+                    Company Address
+                  </small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedIntroducer?.company_address ? (
+                      selectedIntroducer.company_address
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
+                  </p>
+                </div>
+              </Col>
+              <Col md="4" className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">
                     Joining Date
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdviser?.joining_date || "-"}
+                    {selectedIntroducer?.joining_date ? (
+                      selectedIntroducer.joining_date
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>
@@ -157,27 +179,27 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
             >
               Additional Information
             </h6>
-            {selectedAdviser?.created_by ? (
+            {selectedIntroducer?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
                   <strong>
-                    {selectedAdviser.created_by.title
+                    {selectedIntroducer.created_by.title
                       ? formatChoiceFieldValue(
-                          selectedAdviser.created_by.title
+                          selectedIntroducer.created_by.title,
                         ).trim() + " "
                       : ""}
-                    {selectedAdviser.created_by.first_name}{" "}
-                    {selectedAdviser.created_by.middle_name}{" "}
-                    {selectedAdviser.created_by.last_name}
+                    {selectedIntroducer.created_by.first_name}{" "}
+                    {selectedIntroducer.created_by.middle_name}{" "}
+                    {selectedIntroducer.created_by.last_name}
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedAdviser.created_by.user_type
+                  {selectedIntroducer.created_by.user_type
                     ? formatChoiceFieldValue(
-                        selectedAdviser.created_by.user_type
+                        selectedIntroducer.created_by.user_type,
                       )
                     : ""}
                 </small>
@@ -202,4 +224,4 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalsProps> = ({
   );
 };
 
-export default ViewOrgAdviserModals;
+export default ViewOrgIntroducerModal;

@@ -200,7 +200,11 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         {lead?.user?.last_name}
                       </span>
                     </td>
-                    <td>{lead?.user?.email || "-"}</td>
+                    <td>
+                      {lead?.user?.email || (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {lead?.user?.phone ? (
                         <a
@@ -210,43 +214,58 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                           {lead?.user?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
                       {lead?.source === "OTHER" ? (
-                        lead?.other_source || "-"
+                        lead?.other_source || (
+                          <small className="text-muted">Not Available</small>
+                        )
                       ) : lead?.source ? (
                         formatChoiceFieldValue(lead.source)
                       ) : (
-                        <span className="text-muted">Not specified</span>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
                       {lead?.enquiry_type === "OTHER" ? (
-                        lead?.other_enquiry_type || "-"
+                        lead?.other_enquiry_type || (
+                          <small className="text-muted">Not Available</small>
+                        )
                       ) : lead?.enquiry_type ? (
                         formatChoiceFieldValue(lead.enquiry_type)
                       ) : (
-                        <span className="text-muted">Not specified</span>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
-                      <p className="m-0">
-                        {lead.created_by?.title
-                          ? formatChoiceFieldValue(lead.created_by?.title)
-                          : ""}{" "}
-                        {lead?.created_by?.first_name}{" "}
-                        {lead?.created_by?.middle_name}{" "}
-                        {lead?.created_by?.last_name}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {lead.created_by?.user_type
-                          ? formatChoiceFieldValue(lead.created_by?.user_type)
-                          : "N/A"}
-                        )
-                      </p>
+                      {lead?.created_by === null ? (
+                        <small className="text-muted">Not specified</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {lead.created_by?.title
+                              ? formatChoiceFieldValue(lead.created_by?.title)
+                              : ""}{" "}
+                            {lead?.created_by?.first_name}{" "}
+                            {lead?.created_by?.middle_name}{" "}
+                            {lead?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {lead.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  lead.created_by?.user_type,
+                                )
+                              : "N/A"}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(lead?.created_at)}</td>
 
@@ -325,7 +344,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )
               ) : (
                 <>
@@ -343,7 +362,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
 
                   {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
                     .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
+                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
                     )
                     .map((pageNumber) => (
                       <PaginationItem

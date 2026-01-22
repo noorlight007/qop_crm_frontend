@@ -222,7 +222,7 @@ const OrgCases: React.FC = () => {
                               className="text_decoration_hover text-truncate"
                               href={getCaseUrl(
                                 caseItem.alias,
-                                userType as string
+                                userType as string,
                               )}
                             >
                               {caseItem.is_removed ? (
@@ -239,7 +239,7 @@ const OrgCases: React.FC = () => {
                               <>
                                 {caseItem.lead_user?.title
                                   ? formatChoiceFieldValue(
-                                      caseItem.lead_user?.title
+                                      caseItem.lead_user?.title,
                                     )
                                   : ""}{" "}
                                 {caseItem.lead_user?.first_name}{" "}
@@ -247,7 +247,9 @@ const OrgCases: React.FC = () => {
                                 {caseItem.lead_user?.last_name}
                               </>
                             ) : (
-                              "-"
+                              <small className="text-muted">
+                                Not Available
+                              </small>
                             )}
                           </td>
                           <td>
@@ -259,44 +261,67 @@ const OrgCases: React.FC = () => {
                                 {caseItem.lead_user.phone}
                               </a>
                             ) : (
-                              "-"
-                            )}
-                          </td>
-                          <td>
-                            {caseItem.case_category ? (
-                              <>
-                                {formatChoiceFieldValue(caseItem.case_category)}
-                                {caseItem.case_category === "MORTGAGE" && (
-                                  <p className="small">
-                                    (
-                                    {formatChoiceFieldValue(
-                                      caseItem.application_type || ""
-                                    )}
-                                    {caseItem.mortgage_type ? (
-                                      <>
-                                        {" "}
-                                        <TbArrowsRightLeft />{" "}
-                                        {formatChoiceFieldValue(
-                                          caseItem.mortgage_type || ""
-                                        )}
-                                      </>
-                                    ) : (
-                                      <TbArrowsRightLeft />
-                                    )}
-                                    )
-                                  </p>
-                                )}
-                              </>
-                            ) : (
-                              "-"
+                              <small className="text-muted">
+                                Not Available
+                              </small>
                             )}
                           </td>
                           <td className="text-truncate">
-                            {caseItem.lender
-                              ? formatChoiceFieldValue(caseItem.lender)
-                              : "-"}
+                            {caseItem.case_category ? (
+                              <>
+                                {formatChoiceFieldValue(caseItem.case_category)}
+                                {caseItem.case_category === "MORTGAGE" &&
+                                  ((caseItem.application_type &&
+                                    String(caseItem.application_type).trim() !==
+                                      "") ||
+                                    (caseItem.mortgage_type &&
+                                      String(caseItem.mortgage_type).trim() !==
+                                        "")) && (
+                                    <p className="small">
+                                      (
+                                      {/* If both types exist show arrow between them */}
+                                      {caseItem.application_type
+                                        ? formatChoiceFieldValue(
+                                            caseItem.application_type,
+                                          )
+                                        : null}
+                                      {caseItem.application_type &&
+                                      caseItem.mortgage_type ? (
+                                        <>
+                                          {" "}
+                                          <TbArrowsRightLeft className="text-primary" />{" "}
+                                          {formatChoiceFieldValue(
+                                            caseItem.mortgage_type,
+                                          )}
+                                        </>
+                                      ) : caseItem.mortgage_type ? (
+                                        /* If only mortgage_type exists, show it without arrow */
+                                        <>
+                                          {formatChoiceFieldValue(
+                                            caseItem.mortgage_type,
+                                          )}
+                                        </>
+                                      ) : null}
+                                      )
+                                    </p>
+                                  )}
+                              </>
+                            ) : (
+                              <small className="text-muted">
+                                Not Available
+                              </small>
+                            )}
                           </td>
-                          <td className="text-start ">
+                          <td className="text-truncate">
+                            {caseItem.lender ? (
+                              formatChoiceFieldValue(caseItem.lender)
+                            ) : (
+                              <small className="text-muted">
+                                Not Available
+                              </small>
+                            )}
+                          </td>
+                          <td>
                             {(() => {
                               const pd = caseItem?.property_details;
                               if (!pd) return "N/A";
@@ -315,14 +340,14 @@ const OrgCases: React.FC = () => {
                                 (v) =>
                                   v !== null &&
                                   v !== undefined &&
-                                  String(v).trim() !== ""
+                                  String(v).trim() !== "",
                               );
                               return parts.length ? (
                                 parts.join(", ")
                               ) : (
-                                <span className="text-muted">
+                                <small className="text-muted">
                                   Not available
-                                </span>
+                                </small>
                               );
                             })()}
                           </td>
@@ -341,34 +366,50 @@ const OrgCases: React.FC = () => {
                                 ) : null}
                               </>
                             ) : (
-                              "-"
+                              <small className="text-muted">
+                                Not Available
+                              </small>
                             )}
                           </td>
-                          <td>{formatDate(caseItem?.review_date) || "-"}</td>
+                          <td>
+                            {formatDate(caseItem?.review_date) || (
+                              <small className="text-muted">
+                                Not Available
+                              </small>
+                            )}
+                          </td>
                           <td>{formatDateAndTime(caseItem.created_at)}</td>
                           <td>
-                            <p className="m-0">
-                              {caseItem.created_by?.title
-                                ? formatChoiceFieldValue(
-                                    caseItem.created_by?.title
+                            {caseItem.created_by == null ? (
+                              <small className="text-muted">
+                                Not Available
+                              </small>
+                            ) : (
+                              <>
+                                <p className="m-0">
+                                  {caseItem.created_by?.title
+                                    ? formatChoiceFieldValue(
+                                        caseItem.created_by?.title,
+                                      )
+                                    : ""}{" "}
+                                  {caseItem?.created_by?.first_name}{" "}
+                                  {caseItem?.created_by?.middle_name}{" "}
+                                  {caseItem?.created_by?.last_name}
+                                </p>
+                                <p
+                                  className="m-0 opacity-75"
+                                  style={{ fontSize: "9px" }}
+                                >
+                                  (
+                                  {caseItem.created_by?.user_type
+                                    ? formatChoiceFieldValue(
+                                        caseItem.created_by?.user_type,
+                                      )
+                                    : ""}
                                   )
-                                : ""}
-                              {"."} {caseItem?.created_by?.first_name}{" "}
-                              {caseItem?.created_by?.middle_name}{" "}
-                              {caseItem?.created_by?.last_name}
-                            </p>
-                            <p
-                              className="m-0 opacity-75"
-                              style={{ fontSize: "9px" }}
-                            >
-                              (
-                              {caseItem.created_by?.user_type
-                                ? formatChoiceFieldValue(
-                                    caseItem.created_by?.user_type
-                                  )
-                                : "-"}
-                              )
-                            </p>
+                                </p>
+                              </>
+                            )}
                           </td>
                           <td>
                             {caseItem.assigned_user ? (
@@ -376,7 +417,7 @@ const OrgCases: React.FC = () => {
                                 <p className="m-0">
                                   {caseItem.assigned_user.title
                                     ? formatChoiceFieldValue(
-                                        caseItem.assigned_user.title
+                                        caseItem.assigned_user.title,
                                       ) + " "
                                     : ""}
                                   {caseItem.assigned_user.first_name}{" "}
@@ -392,7 +433,7 @@ const OrgCases: React.FC = () => {
                                   (
                                   {caseItem.assigned_user.user_type
                                     ? formatChoiceFieldValue(
-                                        caseItem.assigned_user.user_type
+                                        caseItem.assigned_user.user_type,
                                       )
                                     : "-"}
                                   )
@@ -425,7 +466,7 @@ const OrgCases: React.FC = () => {
                       to{" "}
                       {Math.min(
                         currentPage * casesPerPage,
-                        caseData?.count || 0
+                        caseData?.count || 0,
                       )}{" "}
                       of {caseData?.count || 0} cases
                     </p>
@@ -459,7 +500,7 @@ const OrgCases: React.FC = () => {
                           <PaginationLink onClick={() => setCurrentPage(1)}>
                             1
                           </PaginationLink>
-                        </PaginationItem>
+                        </PaginationItem>,
                       );
 
                       // Add ellipsis if needed before middle pages
@@ -467,7 +508,7 @@ const OrgCases: React.FC = () => {
                         pages.push(
                           <PaginationItem key="ellipsis-start" disabled>
                             <PaginationLink>...</PaginationLink>
-                          </PaginationItem>
+                          </PaginationItem>,
                         );
                       }
 
@@ -481,7 +522,7 @@ const OrgCases: React.FC = () => {
                             <PaginationLink onClick={() => setCurrentPage(i)}>
                               {i}
                             </PaginationLink>
-                          </PaginationItem>
+                          </PaginationItem>,
                         );
                       }
 
@@ -490,7 +531,7 @@ const OrgCases: React.FC = () => {
                         pages.push(
                           <PaginationItem key="ellipsis-end" disabled>
                             <PaginationLink>...</PaginationLink>
-                          </PaginationItem>
+                          </PaginationItem>,
                         );
                       }
 
@@ -506,7 +547,7 @@ const OrgCases: React.FC = () => {
                             >
                               {total}
                             </PaginationLink>
-                          </PaginationItem>
+                          </PaginationItem>,
                         );
                       }
 

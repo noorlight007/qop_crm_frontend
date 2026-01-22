@@ -42,7 +42,7 @@ const Documents: React.FC = () => {
   const [selectedDocumentForUpdate, setSelectedDocumentForUpdate] =
     useState<CaseDocumentProps | null>(null);
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const [selectAll, setSelectAll] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -105,8 +105,8 @@ const Documents: React.FC = () => {
     const owners = Array.isArray(doc.file_owner_info)
       ? doc.file_owner_info
       : doc.file_owner_info
-      ? [doc.file_owner_info]
-      : [];
+        ? [doc.file_owner_info]
+        : [];
 
     const ownerMatch = owners.some((owner: any) => {
       const first = owner?.first_name?.toLowerCase() || "";
@@ -136,7 +136,7 @@ const Documents: React.FC = () => {
   const indexOfFirstDocument = indexOfLastDocument - filesPerPage;
   const currentDocuments = filteredDocuments.slice(
     indexOfFirstDocument,
-    indexOfLastDocument
+    indexOfLastDocument,
   );
 
   useEffect(() => {
@@ -207,7 +207,7 @@ const Documents: React.FC = () => {
       setSelectedDocuments(new Set());
     } else {
       const allDocumentAliases = new Set(
-        currentDocuments.map((doc) => doc.alias)
+        currentDocuments.map((doc) => doc.alias),
       );
       setSelectedDocuments(allDocumentAliases);
     }
@@ -460,7 +460,7 @@ const Documents: React.FC = () => {
                                   borderWidth: "1px",
                                   accentColor: "#dc3545",
                                   backgroundColor: selectedDocuments.has(
-                                    fileData.alias
+                                    fileData.alias,
                                   )
                                     ? "#dc3545"
                                     : "transparent",
@@ -503,7 +503,7 @@ const Documents: React.FC = () => {
                               <>
                                 {fileData?.file_owner_info?.title
                                   ? formatChoiceFieldValue(
-                                      fileData.file_owner_info.title
+                                      fileData.file_owner_info.title,
                                     ) + " "
                                   : ""}
                                 {fileData?.file_owner_info?.first_name}{" "}
@@ -524,7 +524,7 @@ const Documents: React.FC = () => {
                               ? `${
                                   fileData.created_by.title
                                     ? formatChoiceFieldValue(
-                                        fileData.created_by.title
+                                        fileData.created_by.title,
                                       ) + " "
                                     : ""
                                 }${fileData.created_by.first_name || ""} ${
@@ -545,7 +545,7 @@ const Documents: React.FC = () => {
                                 <FaEye size={16} />
                               </a>
                               <Button
-                                color="warning"
+                                color="primary"
                                 size="sm"
                                 title="Update Info"
                                 onClick={() => handleUpdateClick(fileData)}
