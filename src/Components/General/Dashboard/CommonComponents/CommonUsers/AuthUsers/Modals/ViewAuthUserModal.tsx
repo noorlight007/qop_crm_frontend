@@ -168,7 +168,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
               )}
               {pathname === "/dashboard/organisation/director/introducers" && (
                 <>
-                  <Col md="6" className="mb-3">
+                  <Col md="4" className="mb-3">
                     <div>
                       <small className="text-muted d-block fw-500">
                         Company Name
@@ -178,7 +178,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                       </p>
                     </div>
                   </Col>
-                  <Col md="6" className="mb-3">
+                  <Col md="4" className="mb-3">
                     <div>
                       <small className="text-muted d-block fw-500">
                         Company Address
@@ -188,7 +188,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                       </p>
                     </div>
                   </Col>
-                  <Col md="12" className="mb-3">
+                  <Col md="4" className="mb-3">
                     <div>
                       <small className="text-muted d-block fw-500">
                         Joining Date

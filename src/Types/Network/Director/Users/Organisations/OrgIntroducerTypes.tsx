@@ -8,6 +8,8 @@ export interface OrgIntroducerInfo {
   role: string;
   joining_date: string;
   is_active: boolean;
+  company_name: string;
+  company_address: string;
   note: string;
   created_by: {
     name?: string;

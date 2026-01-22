@@ -149,6 +149,8 @@ const OrgIntroducers: React.FC = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Joining Date</th>
+                <th>Company Name</th>
+                <th>Company Address</th>
                 <th>Created By</th>
                 <th>Created At</th>
                 <th>Status</th>
@@ -232,6 +234,8 @@ const OrgIntroducers: React.FC = () => {
                         )
                       </p>
                     </td>
+                    <td>{introducer?.company_name || "-"}</td>
+                    <td>{introducer?.company_address || "-"}</td>
                     <td>{formatDateAndTime(introducer?.created_at)}</td>
                     <td>
                       {introducer?.is_active ? (

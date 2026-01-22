@@ -120,17 +120,27 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
               Personal Details
             </h6>
             <Row>
-              <Col md="6" className="mb-3">
+              <Col md="4" className="mb-3">
                 <div>
-                  <small className="text-muted d-block fw-500">Gender</small>
+                  <small className="text-muted d-block fw-500">
+                    Company Name
+                  </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedIntroducer?.gender
-                      ? formatChoiceFieldValue(selectedIntroducer.gender)
-                      : "-"}
+                    {selectedIntroducer?.company_name || "-"}
                   </p>
                 </div>
               </Col>
-              <Col md="6" className="mb-3">
+              <Col md="4" className="mb-3">
+                <div>
+                  <small className="text-muted d-block fw-500">
+                    Company Address
+                  </small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedIntroducer?.company_address || "-"}
+                  </p>
+                </div>
+              </Col>
+              <Col md="4" className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">
                     Joining Date
