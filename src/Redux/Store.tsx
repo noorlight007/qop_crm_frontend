@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./Api/BaseApi";
 import { publicBaseApi } from "./Api/PublicBaseApi";
+import appearanceReducer from "./Reducers/Appearance/AppearanceSlice";
 import budgetPlannerReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerFormSlice";
 import CaseDetailsTabIndicatorReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import ComplianceReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceSlice";
@@ -15,6 +16,7 @@ const Store = configureStore({
   reducer: {
     [publicBaseApi.reducerPath]: publicBaseApi.reducer,
     [baseApi.reducerPath]: baseApi.reducer,
+    appearance: appearanceReducer,
     layout: LayoutSlice,
     twoFactor: TwoFactorSlice,
     formWizardTwo: FormWizardTwoSlice,

@@ -1,5 +1,6 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
+import { setSiteTitle } from "./AppearanceSlice";
 
 export const AppearanceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,6 +10,16 @@ export const AppearanceApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["AppearanceSettings"],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.site_title) {
+            dispatch(setSiteTitle(data.site_title));
+          }
+        } catch (err) {
+          // Handle error silently
+        }
+      },
     }),
     updateAppearance: builder.mutation({
       query: ({ payload }) => ({
@@ -31,6 +42,16 @@ export const AppearancePublicApi = publicBaseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["AppearanceSettings"],
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.site_title) {
+            dispatch(setSiteTitle(data.site_title));
+          }
+        } catch (err) {
+          // Handle error silently
+        }
+      },
     }),
   }),
 });
