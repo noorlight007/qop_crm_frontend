@@ -33,8 +33,8 @@ import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { BiSolidErrorCircle } from "react-icons/bi";
 import Swal from "sweetalert2";
-import AddAccountantModal from "../Modals/AddAccountantModal";
 import GetAddressModal from "../../../CommonModals/GetAddressModal";
+import AddAccountantModal from "../Modals/AddAccountantModal";
 
 const Accountant: React.FC = () => {
   const params = useParams();
@@ -75,6 +75,19 @@ const Accountant: React.FC = () => {
     useUnassignAccountantMutation();
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+  const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
 
   const handleAccountantChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedId = e.target.value;
@@ -141,7 +154,25 @@ const Accountant: React.FC = () => {
       const accountantDetails = accountantName?.find(
         (a: any) => a.id === caseAccountants[validIndex]?.accountant_details?.id
       );
-      setFormData(accountantDetails || {});
+      // setFormData(accountantDetails || {});
+      
+      if (accountantDetails) {
+      setFormData(accountantDetails);
+
+      if (accountantDetails.latitude && accountantDetails.longitude) {
+        const lat = Number(accountantDetails.latitude);
+        const lng = Number(accountantDetails.longitude);
+        setMapCoords(lat !== 0 ? { lat, lng } : null);
+      } else {
+        setMapCoords(null);
+      }
+    } else {
+      setFormData({});
+      setMapCoords(null);
+    }
+    } else {
+      setFormData({});
+      setMapCoords(null);
     }
   }, [caseAccountants, accountantName]);
 
@@ -152,6 +183,9 @@ const Accountant: React.FC = () => {
       ...prev,
       [name]: value,
     }));
+
+    setMapCoords(LONDON_CENTER);
+    setCurrentZoom(DEFAULT_ZOOM);
   };
 
   // Update handleUpdateAccountant function
@@ -290,7 +324,17 @@ const Accountant: React.FC = () => {
         city: address.town_or_city || "",
         county: address.county || "",
         country: address.country || "",
+        latitude: address.latitude,
+        longitude: address.longitude,
       }));
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setMapCoords({ lat: address.latitude, lng: address.longitude });
+        setCurrentZoom(DETAIL_ZOOM);
+      } else {
+        setMapCoords(null);
+        setCurrentZoom(DEFAULT_ZOOM);
+      }
 
       console.log("address details: ", address);
     } catch (error) {
@@ -349,11 +393,15 @@ const Accountant: React.FC = () => {
                   disabled={isAccountantAssigned()}
                 >
                   <option value="">Select Accountant...</option>
-                  {accountantName?.map((accountant: any) => (
-                    <option key={accountant?.id} value={accountant?.id}>
-                      {accountant?.name}
-                    </option>
-                  ))}
+                  {accountantName === null ? (
+                    accountantName?.map((accountant: any) => (
+                      <option key={accountant?.id} value={accountant?.id}>
+                        {accountant?.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">No Accountants Available</option>
+                  )}
                 </Input>
                 <small className="text-muted text-danger">
                   {isAccountantAssigned()
@@ -457,9 +505,9 @@ const Accountant: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <strong className="text-danger fs-4">
-                  "Not Selected Yet!"
-                </strong>
+                <em className="text-danger fs-4">
+                  "Not Assigned Yet!"
+                </em>
               )}
             </CardBody>
           </Card>
@@ -474,6 +522,23 @@ const Accountant: React.FC = () => {
         <Card>
           <CardBody>
             <Row>
+              <Col sm={12}>
+                <Label className="fw-semibold mb-2">Location Preview</Label>
+                <div className="border rounded overflow-hidden shadow-sm mb-3">
+                  <iframe
+                    src={
+                      mapCoords 
+                        ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
+                        : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                    }
+                    width="100%"
+                    height="250"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    title="Solicitor Location"
+                  />
+                </div>
+              </Col>
               <Col md={4}>
                 <FormGroup>
                   <Label for="name">Name*</Label>
@@ -522,7 +587,7 @@ const Accountant: React.FC = () => {
                       type="text"
                       name="postcode"
                       className="rounded"
-                      value={formData.postcode}
+                      value={formData.postcode || ""}
                       onChange={handleInputChange}
                       required
                     />

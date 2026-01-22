@@ -64,6 +64,19 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const [county, setCounty] = useState<string>("");
   const [country, setCountry] = useState<string>("");
 
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+  const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
+
   const [getPropertyEPCRating, { isLoading: isEpcLoading }] =
     useGetPropertyEPCRatingMutation();
 
@@ -87,6 +100,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
         city: formData.get("city"),
         county: formData.get("county") || null,
         country: formData.get("country"),
+        latitude: mapCoords?.lat ?? 0,
+        longitude: mapCoords?.lng ?? 0,
         property_value: formData.get("propertyValue"),
         current_mortgage_balance: formData.get("currentMortgageBalance"),
         monthly_rental_income: formData.get("monthlyRental"),
@@ -147,6 +162,19 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     if (!selectedApplicants.includes(id)) {
       setSelectedApplicants([...selectedApplicants, id]);
     }
+  };
+
+  const handleManualAddressChange = (
+    setter: React.Dispatch<React.SetStateAction<string>>,
+    value: string
+  ) => {
+    setter(value);
+    // If any address field is manually touched, reset coordinates to 0
+    setMapCoords({ 
+      lat: LONDON_CENTER.lat, 
+      lng: LONDON_CENTER.lng 
+    });
+    setCurrentZoom(DEFAULT_ZOOM);
   };
 
   const removeApplicant = (id: string) => {
@@ -303,6 +331,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       setCounty(address.county || "");
       setCountry(address.country || "");
 
+      if (address.latitude && address.longitude) {
+        setMapCoords({
+          lat: Number(address.latitude),
+          lng: Number(address.longitude),
+        });
+        setCurrentZoom(DETAIL_ZOOM);
+      }
+
       const fullAddressForEPC = buildFullAddressForEPC({
         address_one: address.line_1,
         address_two: address.line_2,
@@ -326,6 +362,13 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     }
   };
 
+  useEffect(() => {
+      if (!isOpen) {
+        setMapCoords(null);
+        setPostcode("");
+      }
+    }, [isOpen]);
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
       <ModalHeader toggle={toggle}>
@@ -334,6 +377,23 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       <ModalBody className="p-4">
         <Form onSubmit={handleSubmit}>
           <Row>
+            <Col sm={12}>
+              <Label className="fw-semibold mb-2">Location Preview</Label>
+              <div className="border rounded overflow-hidden shadow-sm mb-3">
+                <iframe
+                  src={
+                    mapCoords 
+                      ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
+                      : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                  }
+                  width="100%"
+                  height="250"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Solicitor Location"
+                />
+              </div>
+            </Col>
             <Col md={6}>
               <FormGroup>
                 <Label for="applicants">Applicant/s*</Label>
@@ -420,7 +480,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     name="postcode"
                     className="rounded"
                     value={postcode}
-                    onChange={(e) => setPostcode(e.target.value)}
+                    onChange={(e) => handleManualAddressChange(setPostcode, e.target.value)}
                     required
                   />
                   <Button
@@ -445,7 +505,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="houseNumber"
                   type="text"
                   value={houseNumber}
-                  onChange={(e) => setHouseNumber(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(setHouseNumber, e.target.value)}
                   required
                 />
               </FormGroup>
@@ -458,7 +518,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="address1"
                   type="text"
                   value={address1}
-                  onChange={(e) => setAddress1(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(setAddress1, e.target.value)}
                   required
                 />
               </FormGroup>
@@ -471,7 +531,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="address2"
                   type="text"
                   value={address2}
-                  onChange={(e) => setAddress2(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(setAddress2, e.target.value)}
                 />
               </FormGroup>
             </Col>
@@ -485,7 +545,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="city"
                   type="text"
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(setCity, e.target.value)}
                   required
                 />
               </FormGroup>
@@ -498,7 +558,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="county"
                   type="text"
                   value={county}
-                  onChange={(e) => setCounty(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(setCounty, e.target.value)}
                 />
               </FormGroup>
             </Col>
@@ -510,7 +570,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   name="country"
                   type="text"
                   value={country}
-                  onChange={(e) => setCountry(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(setCountry, e.target.value)}
                   required
                 />
               </FormGroup>

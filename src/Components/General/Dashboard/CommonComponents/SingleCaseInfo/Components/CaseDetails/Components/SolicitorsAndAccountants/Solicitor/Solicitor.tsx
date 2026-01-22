@@ -50,6 +50,8 @@ const Solicitor: React.FC = () => {
   // RTK Hooks
   const { data: solicitorName, isLoading } =
     useGetSolicitorDetailsQuery(undefined);
+
+  console.log("solicitor info: ", solicitorName)
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: caseAlias },
     { skip: !caseAlias }
@@ -66,6 +68,8 @@ const Solicitor: React.FC = () => {
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
 
+  console.log("Solicitors: ", caseSolicitors)
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSolicitor, setSelectedSolicitor] = useState<any>(null);
   const [selectedCaseSolicitor, setSelectedCaseSolicitor] = useState<any>(null);
@@ -79,6 +83,19 @@ const Solicitor: React.FC = () => {
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+  const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
 
   const handleSolicitorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedId = e.target.value;
@@ -118,9 +135,27 @@ const Solicitor: React.FC = () => {
       const solicitorDetails = solicitorName?.find(
         (s: any) => s.id === caseSolicitors[validIndex]?.solicitor_details?.id
       );
-      setFormData(solicitorDetails || {});
+      
+      if (solicitorDetails) {
+      setFormData(solicitorDetails);
+
+      if (solicitorDetails.latitude && solicitorDetails.longitude) {
+        const lat = Number(solicitorDetails.latitude);
+        const lng = Number(solicitorDetails.longitude);
+        setMapCoords(lat !== 0 ? { lat, lng } : null);
+      } else {
+        setMapCoords(null);
+      }
+    } else {
+      setFormData({});
+      setMapCoords(null);
     }
-  }, [caseSolicitors, solicitorName]);
+    } else {
+    setSelectedCaseSolicitor(null);
+    setFormData({});
+    setMapCoords(null);
+  }
+  }, [caseSolicitors, solicitorName, activeTab]);
 
   // Handle form input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +164,9 @@ const Solicitor: React.FC = () => {
       ...prev,
       [name]: value,
     }));
+
+    setMapCoords(LONDON_CENTER);
+    setCurrentZoom(DEFAULT_ZOOM);
   };
 
   const handleAssignSolicitor = async () => {
@@ -303,7 +341,17 @@ const Solicitor: React.FC = () => {
         city: address.town_or_city || "",
         county: address.county || "",
         country: address.country || "",
+        latitude: address.latitude,
+        longitude: address.longitude,        
       }));
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setMapCoords({ lat: address.latitude, lng: address.longitude });
+        setCurrentZoom(DETAIL_ZOOM);
+      } else {
+        setMapCoords(null);
+        setCurrentZoom(DEFAULT_ZOOM);
+      }
 
       console.log("address details: ", address);
     } catch (error) {
@@ -388,16 +436,20 @@ const Solicitor: React.FC = () => {
                           }
                           onChange={handleSolicitorChange}
                         >
-                          <option value="">Select Solicitor...</option>
-                          {solicitorName?.map((solicitor: any) => (
-                            <option key={solicitor?.id} value={solicitor?.id}>
-                              {solicitor?.name}
-                              {solicitor?.id ===
-                              selectedCaseSolicitor?.solicitor_details?.id
-                                ? " (Currently Assigned)"
-                                : ""}
-                            </option>
-                          ))}
+                         <option value="">Select Solicitor...</option>
+                          {solicitorName === null ? (
+                            solicitorName?.map((solicitor: any) => (
+                              <option key={solicitor?.id} value={solicitor?.id}>
+                                {solicitor?.name}
+                                {solicitor?.id ===
+                                selectedCaseSolicitor?.solicitor_details?.id
+                                  ? " (Currently Assigned)"
+                                  : ""}
+                              </option>
+                            ))
+                          ) : (
+                            <option value="">No Solicitors Available</option>
+                          )}
                         </Input>
                         <small className="text-muted text-danger">
                           Note: Please select and assigned a solicitor from the
@@ -507,9 +559,9 @@ const Solicitor: React.FC = () => {
                           </div>
                         </>
                       ) : (
-                        <strong className="text-danger fs-4">
-                          "Not Selected Yet!"
-                        </strong>
+                        <em className="text-danger fs-4">
+                          "Not Assigned Yet!"
+                        </em>
                       )}
                     </CardBody>
                   </Card>
@@ -527,6 +579,23 @@ const Solicitor: React.FC = () => {
               onSubmit={handleUpdateSolicitorDetails}
             >
               <Row>
+                <Col sm={12}>
+                  <Label className="fw-semibold mb-2">Location Preview</Label>
+                  <div className="border rounded overflow-hidden shadow-sm mb-3">
+                    <iframe
+                      src={
+                        mapCoords 
+                          ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
+                          : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                      }
+                      width="100%"
+                      height="250"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      title="Solicitor Location"
+                    />
+                  </div>
+                </Col>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="qualifications">Qualification*</Label>
@@ -563,7 +632,7 @@ const Solicitor: React.FC = () => {
                         type="text"
                         name="postcode"
                         className="rounded"
-                        value={formData.postcode}
+                        value={formData.postcode || ""}
                         onChange={handleInputChange}
                         required
                       />
