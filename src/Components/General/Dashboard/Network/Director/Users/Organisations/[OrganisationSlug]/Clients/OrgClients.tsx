@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgClientsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgClientsApi";
+import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
 import { OrgClientInfo } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -45,7 +45,7 @@ const OrgClients: React.FC = () => {
   }, [searchInput]);
 
   // rtk query - pass params object to match OrgClientsApi
-  const { data: clientData, isLoading } = useGetOrgClientsQuery(
+  const { data: clientData, isLoading } = useGetOrgUserListQuery(
     {
       organisationslug,
       params: {

@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgIntroducersQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgIntroducersApi";
+import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
 import { OrgIntroducerInfo } from "@/Types/Network/Director/Users/Organisations/OrgIntroducerTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -58,7 +58,7 @@ const OrgIntroducers: React.FC = () => {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  const { data: introducerData, isLoading } = useGetOrgIntroducersQuery(
+  const { data: introducerData, isLoading } = useGetOrgUserListQuery(
     {
       organisationslug,
       params: {

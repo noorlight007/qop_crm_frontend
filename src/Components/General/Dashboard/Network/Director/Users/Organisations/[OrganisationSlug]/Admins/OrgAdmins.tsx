@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgAdvisersApi";
+import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
 import { OrgAdminInfo } from "@/Types/Network/Director/Users/Organisations/OrgAdminTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -53,7 +53,7 @@ const OrgAdmins: React.FC = () => {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  const { data: adminData, isLoading } = useGetOrgAdvisersQuery(
+  const { data: adminData, isLoading } = useGetOrgUserListQuery(
     {
       organisationslug,
       params: {

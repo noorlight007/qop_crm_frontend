@@ -1,16 +1,16 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const OrgClientsApi = baseApi.injectEndpoints({
+export const OrgUserListApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getOrgClients: builder.query({
+    getOrgUserList: builder.query({
       query: ({ organisationslug, params }) => ({
         url: `/organization/${organisationslug}/user-list/`,
         method: "GET",
-        params,
+        params: params,
       }),
-      providesTags: ["OrgClients"],
+      providesTags: ["OrgUserList"],
     }),
   }),
 });
 
-export const { useGetOrgClientsQuery } = OrgClientsApi;
+export const { useGetOrgUserListQuery } = OrgUserListApi;
