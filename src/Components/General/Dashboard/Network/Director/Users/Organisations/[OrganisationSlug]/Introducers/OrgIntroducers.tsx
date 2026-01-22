@@ -23,7 +23,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import ViewOrgIntroducerModals from "./Modals/ViewOrgIntroducerModal";
+import ViewOrgIntroducerModal from "./Modals/ViewOrgIntroducerModal";
 
 const OrgIntroducers: React.FC = () => {
   const params = useParams();
@@ -315,7 +315,7 @@ const OrgIntroducers: React.FC = () => {
         </Row>
       </CardBody>
       {/* Modals */}
-      <ViewOrgIntroducerModals
+      <ViewOrgIntroducerModal
         isOpen={isViewOrgIntroducerModalOpen}
         toggle={toggleViewOrgIntroducerModal}
         selectedIntroducer={selectedIntroducer}

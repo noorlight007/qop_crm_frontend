@@ -1,11 +1,10 @@
-import { ViewOrgAdminModalProps } from "@/Types/Network/Director/Users/Organisations/OrgAdminTypes";
 import { ViewOrgIntroducerModalProps } from "@/Types/Network/Director/Users/Organisations/OrgIntroducerTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgIntroducerModals: React.FC<ViewOrgIntroducerModalProps> = ({
+const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
   isOpen,
   toggle,
   selectedIntroducer,
@@ -13,7 +12,9 @@ const ViewOrgIntroducerModals: React.FC<ViewOrgIntroducerModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Introducer Information</span>
+        <span className="fs-5 fw-bold text-primary">
+          Introducer Information
+        </span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
@@ -171,7 +172,9 @@ const ViewOrgIntroducerModals: React.FC<ViewOrgIntroducerModalProps> = ({
                 </p>
                 <small className="text-muted">
                   {selectedIntroducer.created_by.user_type
-                    ? formatChoiceFieldValue(selectedIntroducer.created_by.user_type)
+                    ? formatChoiceFieldValue(
+                        selectedIntroducer.created_by.user_type,
+                      )
                     : ""}
                 </small>
               </div>
@@ -195,4 +198,4 @@ const ViewOrgIntroducerModals: React.FC<ViewOrgIntroducerModalProps> = ({
   );
 };
 
-export default ViewOrgIntroducerModals;
+export default ViewOrgIntroducerModal;

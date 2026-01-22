@@ -22,7 +22,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import ViewOrgClientModals from "./Modals/ViewOrgClientModals";
+import ViewOrgClientModal from "./Modals/ViewOrgClientModal";
 
 const OrgClients: React.FC = () => {
   const params = useParams();
@@ -334,7 +334,7 @@ const OrgClients: React.FC = () => {
         </Row>
 
         {/* modals */}
-        <ViewOrgClientModals
+        <ViewOrgClientModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedClient={selectedClient}

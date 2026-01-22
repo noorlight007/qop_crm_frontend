@@ -23,7 +23,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import ViewOrgAdviserModals from "./Modals/ViewOrgAdviserModals";
+import ViewOrgAdviserModal from "./Modals/ViewOrgAdviserModal";
 
 const OrgAdvisers: React.FC = () => {
   const params = useParams();
@@ -308,7 +308,7 @@ const OrgAdvisers: React.FC = () => {
         </Row>
       </CardBody>
       {/* Modals */}
-      <ViewOrgAdviserModals
+      <ViewOrgAdviserModal
         isOpen={isViewOrgAdviserModalOpen}
         toggle={toggleViewOrgAdviserModal}
         selectedAdviser={selectedAdviser}

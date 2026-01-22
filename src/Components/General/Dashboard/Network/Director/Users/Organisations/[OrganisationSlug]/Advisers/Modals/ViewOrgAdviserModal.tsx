@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalProps> = ({
+const ViewOrgAdviserModal: React.FC<ViewOrgAdviserModalProps> = ({
   isOpen,
   toggle,
   selectedAdviser,
@@ -196,4 +196,4 @@ const ViewOrgAdviserModals: React.FC<ViewOrgAdviserModalProps> = ({
   );
 };
 
-export default ViewOrgAdviserModals;
+export default ViewOrgAdviserModal;
