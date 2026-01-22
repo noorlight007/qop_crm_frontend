@@ -1,9 +1,6 @@
 "use client";
 import { useGetOrgLeadsQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgLeadsApi";
-import {
-  LeadsInfo,
-  LeadsProps,
-} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+import { OrgLeadsInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -25,7 +22,7 @@ import {
 } from "reactstrap";
 import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
-const OrgLeads: React.FC<LeadsProps> = () => {
+const OrgLeads: React.FC<OrgLeadsInfo> = () => {
   // Correctly extract dynamic route param (folder is [OrganisationSlug])
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
@@ -53,26 +50,37 @@ const OrgLeads: React.FC<LeadsProps> = () => {
       params: {
         page: currentPage,
         search: searchQuery,
+        role: "LEAD",
       },
     },
     { skip: !organisationslug },
   );
 
-  const [selectedLead, setSelectedLead] = useState<Partial<LeadsInfo>>({
-    user: {
+  const [selectedLead, setSelectedLead] = useState<OrgLeadsInfo>({
+    alias: "",
+    profile_image: "",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    role: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    source: "",
+    other_source: "",
+    note: "",
+    created_by: {
+      name: "",
       title: "",
       first_name: "",
       middle_name: "",
       last_name: "",
-      email: "",
-      phone: "",
-      profile_image: "",
       user_type: "",
     },
-    source: "",
+    created_at: "",
   });
 
-  const toggleViewModal = (lead?: LeadsInfo) => {
+  const toggleViewModal = (lead?: OrgLeadsInfo) => {
     if (lead) {
       setSelectedLead(lead);
     }
@@ -153,7 +161,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                   </td>
                 </tr>
               ) : leads.length > 0 ? (
-                leads.map((lead: LeadsInfo) => (
+                leads.map((lead: OrgLeadsInfo) => (
                   <tr key={lead.alias} className="text-center">
                     <td className="text-start">
                       <span
@@ -161,28 +169,28 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                         onClick={() => toggleViewModal(lead)}
                         style={{ cursor: "pointer" }}
                       >
-                        {lead.user?.title
-                          ? formatChoiceFieldValue(lead.user?.title)
-                          : ""}{" "}
-                        {lead?.user?.first_name} {lead?.user?.middle_name}{" "}
-                        {lead?.user?.last_name}
+                        {lead?.name || "-"}
                       </span>
                     </td>
-                    <td>{lead?.user?.email || "-"}</td>
+                    <td>{lead?.email || "-"}</td>
                     <td>
-                      {lead?.user?.phone ? (
+                      {lead?.phone ? (
                         <a
-                          href={`tel:${lead?.user?.phone}`}
+                          href={`tel:${lead?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {lead?.user?.phone}
+                          {lead?.phone}
                         </a>
                       ) : (
                         "-"
                       )}
                     </td>
                     <td>
-                      {lead?.source ? formatChoiceFieldValue(lead.source) : "-"}
+                      {lead?.source ? (
+                        formatChoiceFieldValue(lead.source)
+                      ) : (
+                        <small className="text-muted">Not Found</small>
+                      )}
                     </td>
                     <td>
                       {lead.created_by == null ? (

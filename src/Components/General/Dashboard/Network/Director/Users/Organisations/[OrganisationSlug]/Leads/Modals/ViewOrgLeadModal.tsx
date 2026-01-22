@@ -1,14 +1,8 @@
-import { LeadsInfo } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+import { ViewOrgLeadModalProps } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
-
-interface ViewOrgLeadModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  selectedLead?: Partial<LeadsInfo>;
-}
 
 const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
   isOpen,
@@ -24,9 +18,9 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedLead?.user?.profile_image ? (
+            {selectedLead?.profile_image ? (
               <Image
-                src={selectedLead.user.profile_image}
+                src={selectedLead.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -42,25 +36,12 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">
-            {selectedLead?.user?.title
-              ? formatChoiceFieldValue(selectedLead.user.title) + ". "
-              : ""}
-            {selectedLead?.user?.first_name}{" "}
-            {selectedLead?.user?.middle_name &&
-              selectedLead?.user?.middle_name + " "}
-            {selectedLead?.user?.last_name}
-          </h4>
-          <p className="mb-2 text-muted small">
-            {selectedLead?.role
-              ? formatChoiceFieldValue(selectedLead.role)
-              : "Lead"}
-          </p>
-          <div>
-            <Badge color="warning" pill className="px-3 py-2">
-              🔥 Hot Lead
+          <h4 className="mb-1 text-dark fw-bold">{selectedLead?.name}</h4>
+          <p>
+            <Badge pill className="px-3 py-2 bg-light-primary">
+              👤 {formatChoiceFieldValue(selectedLead?.role)}
             </Badge>
-          </div>
+          </p>
         </div>
 
         <div className="p-4">
@@ -79,7 +60,7 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedLead?.user?.email || "-"}
+                      {selectedLead?.email || "-"}
                     </p>
                   </div>
                 </div>
@@ -90,12 +71,12 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedLead?.user?.phone ? (
+                      {selectedLead?.phone ? (
                         <a
-                          href={`tel:${selectedLead.user.phone}`}
+                          href={`tel:${selectedLead.phone}`}
                           className="text-decoration-none"
                         >
-                          {selectedLead.user.phone}
+                          {selectedLead.phone}
                         </a>
                       ) : (
                         "-"
@@ -228,7 +209,7 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                   <strong>
                     {selectedLead.created_by.title
                       ? formatChoiceFieldValue(
-                          selectedLead.created_by.title
+                          selectedLead.created_by.title,
                         ).trim() + " "
                       : ""}
                     {selectedLead.created_by.first_name}{" "}
