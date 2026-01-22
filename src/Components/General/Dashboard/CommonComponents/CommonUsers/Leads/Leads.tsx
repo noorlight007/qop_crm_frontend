@@ -200,7 +200,11 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                         {lead?.user?.last_name}
                       </span>
                     </td>
-                    <td>{lead?.user?.email || "-"}</td>
+                    <td>
+                      {lead?.user?.email || (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {lead?.user?.phone ? (
                         <a
@@ -210,12 +214,14 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                           {lead?.user?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
                       {lead?.source === "OTHER" ? (
-                        lead?.other_source || "-"
+                        lead?.other_source || (
+                          <small className="text-muted">Not Available</small>
+                        )
                       ) : lead?.source ? (
                         formatChoiceFieldValue(lead.source)
                       ) : (
@@ -224,7 +230,9 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                     </td>
                     <td>
                       {lead?.enquiry_type === "OTHER" ? (
-                        lead?.other_enquiry_type || "-"
+                        lead?.other_enquiry_type || (
+                          <small className="text-muted">Not Available</small>
+                        )
                       ) : lead?.enquiry_type ? (
                         formatChoiceFieldValue(lead.enquiry_type)
                       ) : (

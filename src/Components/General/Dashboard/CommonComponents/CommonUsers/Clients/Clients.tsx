@@ -237,7 +237,11 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                         {client?.user?.last_name}
                       </span>
                     </td>
-                    <td>{client?.user?.email || "-"}</td>
+                    <td>
+                      {client?.user?.email || (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {client?.user?.phone ? (
                         <a
@@ -247,12 +251,14 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                           {client?.user?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
                       {client?.source === "OTHER" ? (
-                        client?.other_source || "-"
+                        client?.other_source || (
+                          <small className="text-muted">Not Available</small>
+                        )
                       ) : client?.source ? (
                         formatChoiceFieldValue(client.source)
                       ) : (
@@ -261,7 +267,9 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                     </td>
                     <td>
                       {client?.enquiry_type === "OTHER" ? (
-                        client?.other_enquiry_type || "-"
+                        client?.other_enquiry_type || (
+                          <small className="text-muted">Not Available</small>
+                        )
                       ) : client?.enquiry_type ? (
                         formatChoiceFieldValue(client.enquiry_type)
                       ) : (
