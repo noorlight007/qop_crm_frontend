@@ -218,7 +218,13 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         {user?.first_name} {user?.middle_name} {user?.last_name}
                       </span>
                     </td>
-                    <td>{user?.email || "-"}</td>
+                    <td>
+                      {user?.email ? (
+                        user.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {user?.phone ? (
                         <a
@@ -228,7 +234,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                           {user?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
 
@@ -242,19 +248,33 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     {pathname !==
                       "/dashboard/organisation/director/introducers" && (
                       <td>
-                        {user?.gender
-                          ? formatChoiceFieldValue(user?.gender)
-                          : "-"}
+                        {user?.gender ? (
+                          formatChoiceFieldValue(user?.gender)
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </td>
                     )}
                     {pathname ===
                       "/dashboard/organisation/director/introducers" && (
                       <>
-                        <td>{user?.company_name || "-"}</td>
-                        <td>{user?.company_address || "-"}</td>
+                        <td>
+                          {user?.company_name || (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </td>
+                        <td>
+                          {user?.company_address || (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </td>
                       </>
                     )}
-                    <td>{formatDateAndTime(user?.created_at) || "-"}</td>
+                    <td>
+                      {formatDateAndTime(user?.created_at) || (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {user?.is_active ? (
                         <Badge color="success">Approved</Badge>
