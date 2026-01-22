@@ -9,16 +9,17 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Col, Container, Row } from "reactstrap";
+import OrgAdmins from "./Admins/OrgAdmins";
 import OrgAdvisers from "./Advisers/OrgAdvisers";
 import OrgCases from "./Cases/OrgCases";
 import OrgLendersChart from "./Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Charts/MortgagesChart/MortgagesChart";
 import OrgClients from "./Clients/OrgClients";
 import DangerZone from "./DangerZone/DangerZone";
+import OrgIntroducers from "./Introducers/OrgIntroducers";
 import OrgLeads from "./Leads/OrgLeads";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
-import OrgAdmins from "./Admins/OrgAdmins";
 
 const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
@@ -34,7 +35,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
     { organisationslug },
     {
       skip: !organisationslug,
-    }
+    },
   );
 
   const { data: singleOrgDashboardData, isLoading: isDashboardLoading } =
@@ -42,7 +43,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
       { organisationslug },
       {
         skip: !organisationslug,
-      }
+      },
     );
 
   useEffect(() => {
@@ -123,6 +124,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
             <OrgClients />
             <OrgAdvisers />
             <OrgAdmins />
+            <OrgIntroducers />
             <DangerZone singleOrgInfo={singleOrgInfo} />
           </Col>
         </Row>
