@@ -19,6 +19,8 @@ export interface SecurityPropertyFormStateProps {
     county: string; // "IL"
     region: string | null; // "SOUTH_EAST"
     country: string | null; // "SCOTLAND"
+    latitude?: number | null;
+    longitude?: number | null;
 
     // Property Characteristics
     property_type: string; // "SELECT"
@@ -128,6 +130,9 @@ export interface PropertyData {
   county: string;
   region: string | null;
   country: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+
   property_type: string;
   house_type: string;
   flat_type: string;

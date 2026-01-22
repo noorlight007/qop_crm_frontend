@@ -1,6 +1,6 @@
 import { useAddAccountantDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
 import { apiAddress } from "@/services/third-party-api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -49,12 +49,25 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
 
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+  const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
+  const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(LONDON_CENTER);
+
+  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    setMapCoords(LONDON_CENTER);
+    setCurrentZoom(DEFAULT_ZOOM);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,7 +199,17 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
         city: address.town_or_city || "",
         county: address.county || "",
         country: address.country || "",
+        latitude: address.latitude,
+        longitude: address.longitude, 
       }));
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setMapCoords({ lat: address.latitude, lng: address.longitude });
+        setCurrentZoom(DETAIL_ZOOM);
+      } else {
+        setMapCoords(null);
+        setCurrentZoom(DEFAULT_ZOOM);
+      }
 
       console.log("address details: ", address);
     } catch (error) {
@@ -195,6 +218,13 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
       setIsFetchingAddress(false);
     }
   };
+  
+  useEffect(() => {
+  if (!isOpen) {
+    setMapCoords(LONDON_CENTER);
+    setCurrentZoom(DEFAULT_ZOOM);
+  }
+}, [isOpen]);
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg">
@@ -202,6 +232,23 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
       <ModalBody>
         <Form onSubmit={handleSubmit}>
           <Row>
+            <Col sm={12}>
+              <Label className="fw-semibold mb-2">Location Preview</Label>
+              <div className="border rounded overflow-hidden shadow-sm mb-3">
+                <iframe
+                  src={
+                    mapCoords 
+                      ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom) // Use the dynamic state!
+                      : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                  }
+                  width="100%"
+                  height="250"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Location Preview"
+                />
+              </div>
+            </Col>
             <Col md={6}>
               <FormGroup>
                 <Label for="name">Accountant Full Name*</Label>

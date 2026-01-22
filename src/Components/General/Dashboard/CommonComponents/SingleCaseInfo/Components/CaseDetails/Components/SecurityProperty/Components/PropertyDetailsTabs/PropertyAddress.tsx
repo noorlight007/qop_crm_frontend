@@ -31,6 +31,15 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+  const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
   // Fetch applicants data
   const { data: applicantsData, isLoading } = useGetApplicantsQuery({
     case_alias: casealias,
@@ -49,6 +58,9 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
   useEffect(() => {
     if (propertyData) {
+      const lat = Number(propertyData.latitude);
+      const lng = Number(propertyData.longitude);
+
       dispatch(
         updateProperty({
           postcode: propertyData.postcode || "",
@@ -61,10 +73,32 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           county: propertyData.county || "",
           region: propertyData.region || null,
           country: propertyData.country || null,
+          latitude: lat || null,
+          longitude: lng || null,
         })
       );
+
+      if (lat && lng) {
+        setMapCoords({ lat, lng });
+      }
     }
   }, [propertyData, dispatch]);
+
+  useEffect(() => {
+    const { latitude, longitude } = propertyState;
+
+    if (latitude && longitude && Number(latitude) !== 0) {
+      setMapCoords({
+        lat: Number(latitude),
+        lng: Number(longitude),
+      });
+      setCurrentZoom(DETAIL_ZOOM);
+    } else {
+      setMapCoords(LONDON_CENTER);
+      setCurrentZoom(DEFAULT_ZOOM);
+    }
+  }, [propertyState.latitude, propertyState.longitude]);
+
 
   // Helper to get error message for each field
   const getErrorMessage = (name: string) => {
@@ -101,7 +135,10 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   ) => {
     const { name, value } = e.target;
     dispatch(updateProperty({ [name]: value }));
-    // Live validation: show error if field is empty, clear if not
+
+    setMapCoords(LONDON_CENTER);
+    setCurrentZoom(DEFAULT_ZOOM);
+    
     setErrors((prev) => ({
       ...prev,
       [name]: value.trim() === "" ? getErrorMessage(name) : "",
@@ -272,8 +309,18 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           city: address.town_or_city,
           county: address.county,
           country: mapCountryToFormValue(address.country),
+          latitude: address.latitude,
+          longitude: address.longitude,
         })
       );
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setMapCoords({ lat: address.latitude, lng: address.longitude });
+        setCurrentZoom(DETAIL_ZOOM);
+      } else {
+        setMapCoords(LONDON_CENTER);
+        setCurrentZoom(DEFAULT_ZOOM);
+      }
 
       const fullAddressForEPC = buildFullAddressForEPC({
         address_one: address.line_1,
@@ -324,6 +371,12 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     return null;
   };
 
+  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+    // We use maps.google.com/maps with 'q' for the pin and 't' for map type
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
+
+
   return (
     <div>
       {isFetchingAddress && (
@@ -334,6 +387,31 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
       <Row>
         <Col sm={12}>
+          <Row className="my-4">
+            <Col>
+              <Label className="fw-semibold mb-2">Location Preview</Label>
+              <div
+                className="border rounded overflow-hidden shadow-sm mb-2"
+                style={{ backgroundColor: "#f0f0f0" }}
+              >
+               <iframe
+                  src={
+                    // Check if mapCoords is valid and not at 0,0
+                    mapCoords && mapCoords.lat !== 0 && mapCoords.lng !== 0
+                      ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
+                      : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                  }
+                  width="100%"
+                  height="350"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Address Location Map"
+                />
+              </div>
+            </Col>
+          </Row>
           <Row>
             <Col sm={12}>
               <FormGroup>
