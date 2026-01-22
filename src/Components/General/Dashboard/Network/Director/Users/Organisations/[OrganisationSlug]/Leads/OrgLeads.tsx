@@ -55,7 +55,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
         search: searchQuery,
       },
     },
-    { skip: !organisationslug }
+    { skip: !organisationslug },
   );
 
   const [selectedLead, setSelectedLead] = useState<Partial<LeadsInfo>>({
@@ -185,21 +185,32 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                       {lead?.source ? formatChoiceFieldValue(lead.source) : "-"}
                     </td>
                     <td>
-                      <p className="m-0">
-                        {lead.created_by?.title
-                          ? formatChoiceFieldValue(lead.created_by?.title)
-                          : ""}{" "}
-                        {lead?.created_by?.first_name}{" "}
-                        {lead?.created_by?.middle_name}{" "}
-                        {lead?.created_by?.last_name}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {lead.created_by?.user_type
-                          ? formatChoiceFieldValue(lead.created_by?.user_type)
-                          : ""}
-                        )
-                      </p>
+                      {lead.created_by == null ? (
+                        <small className="text-muted">Not Available</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {lead.created_by?.title
+                              ? formatChoiceFieldValue(lead.created_by?.title)
+                              : ""}{" "}
+                            {lead?.created_by?.first_name}{" "}
+                            {lead?.created_by?.middle_name}{" "}
+                            {lead?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {lead.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  lead.created_by?.user_type,
+                                )
+                              : ""}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(lead?.created_at)}</td>
                   </tr>
@@ -225,7 +236,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                 to{" "}
                 {Math.min(
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
-                  totalCount
+                  totalCount,
                 )}{" "}
                 of {totalCount} Leads
               </p>
@@ -254,7 +265,7 @@ const OrgLeads: React.FC<LeadsProps> = () => {
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem disabled={currentPage === totalPages}>
