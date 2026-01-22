@@ -45,7 +45,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false);
   const [clientToDelete, setClientToDelete] = useState<ClientInfoProps | null>(
-    null
+    null,
   );
 
   const { data: clientData, isLoading } = useGetClientDetailsQuery({
@@ -269,21 +269,32 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                       )}
                     </td>
                     <td>
-                      <p className="m-0">
-                        {client.created_by?.title
-                          ? formatChoiceFieldValue(client.created_by?.title)
-                          : ""}{" "}
-                        {client?.created_by?.first_name}{" "}
-                        {client?.created_by?.middle_name}{" "}
-                        {client?.created_by?.last_name}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {client.created_by?.user_type
-                          ? formatChoiceFieldValue(client.created_by?.user_type)
-                          : "Not available"}
-                        )
-                      </p>
+                      {client?.created_by === null ? (
+                        <small className="text-muted">Not specified</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {client.created_by?.title
+                              ? formatChoiceFieldValue(client.created_by?.title)
+                              : ""}{" "}
+                            {client?.created_by?.first_name}{" "}
+                            {client?.created_by?.middle_name}{" "}
+                            {client?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {client.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  client.created_by?.user_type,
+                                )
+                              : "N/A"}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(client?.created_at)}</td>
                     <td>
@@ -375,7 +386,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                         {pageNumber}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )
               ) : (
                 <>
@@ -393,7 +404,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
 
                   {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
                     .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages
+                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
                     )
                     .map((pageNumber) => (
                       <PaginationItem
