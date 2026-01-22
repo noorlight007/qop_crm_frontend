@@ -1,3 +1,4 @@
+import LoadingSpinner from "@/app/loading";
 import { useFetchSupportTicketDetailsQuery } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/CommonComponents/SupportTicket/SupportTicketTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -8,6 +9,7 @@ import {
   FaDownload,
   FaExclamationCircle,
   FaFileAlt,
+  FaHammer,
 } from "react-icons/fa";
 import {
   Alert,
@@ -19,7 +21,6 @@ import {
   Col,
   Container,
   Row,
-  Spinner,
 } from "reactstrap";
 import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
 
@@ -64,12 +65,9 @@ const SupportTicketDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container className="d-flex align-items-center justify-content-center min-vh-100">
-        <div className="text-center">
-          <Spinner color="primary" style={{ width: "3rem", height: "3rem" }} />
-          <p className="mt-3 text-muted">Loading ticket details...</p>
-        </div>
-      </Container>
+      <div className="d-flex align-items-center justify-content-center min-vh-100">
+        <LoadingSpinner />
+      </div>
     );
   }
 
@@ -134,8 +132,8 @@ const SupportTicketDetails: React.FC = () => {
                         ticketDetails.ticket_type === "BUG_REPORT"
                           ? "bg-danger"
                           : ticketDetails.ticket_type === "FEATURE_REQUEST"
-                          ? "bg-info"
-                          : "bg-success"
+                            ? "bg-info"
+                            : "bg-success"
                       }`}
                     >
                       {formatChoiceFieldValue(ticketDetails.ticket_type)}
@@ -160,7 +158,7 @@ const SupportTicketDetails: React.FC = () => {
                           color="warning"
                           className="d-flex align-items-center gap-1"
                         >
-                          <FaExclamationCircle />
+                          <FaHammer />
                           Open
                         </Badge>
                       </span>

@@ -5,7 +5,7 @@ import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationCircle, FaHammer } from "react-icons/fa";
 import { TbCirclePlus, TbExternalLink } from "react-icons/tb";
 import {
   Badge,
@@ -153,7 +153,7 @@ const SupportTicket: React.FC = () => {
                                 color="warning"
                                 className="d-flex align-items-center gap-1"
                               >
-                                <FaExclamationCircle />
+                                <FaHammer />
                                 Open
                               </Badge>
                             )}
