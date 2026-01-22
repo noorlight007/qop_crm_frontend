@@ -116,11 +116,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               </div>
             </div>
             {/* Follower Count */}
-            <Row className="mt-4 px-4">
+            <Row className="mt-4 px-2">
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgDashboardData?.counters?.total_cases
+                    singleOrgDashboardData?.counters?.total_cases,
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Cases</strong>
@@ -128,7 +128,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgDashboardData?.counters?.total_leads
+                    singleOrgDashboardData?.counters?.total_leads,
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Leads</strong>
@@ -136,7 +136,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgDashboardData?.counters?.total_clients
+                    singleOrgDashboardData?.counters?.total_clients,
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Clients</strong>
@@ -144,7 +144,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgDashboardData?.counters?.total_advisers
+                    singleOrgDashboardData?.counters?.total_advisers,
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Advisers</strong>
@@ -152,7 +152,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
               <Col>
                 <h6 className="fw-bold">
                   {Number(
-                    singleOrgDashboardData?.counters?.total_introducers
+                    singleOrgDashboardData?.counters?.total_introducers,
                   ).toLocaleString() || 0}
                 </h6>
                 <strong className="small opacity-50">Introducers</strong>

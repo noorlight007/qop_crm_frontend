@@ -86,7 +86,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
       />
       <Container fluid>
         <Row>
-          <Col md="4">
+          <Col lg="4" md="12">
             <OrganisationProfile
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -94,7 +94,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
               isDashboardLoading={isDashboardLoading}
             />
           </Col>
-          <Col md="4">
+          <Col lg="4" md="12">
             <OrgMortgagesChart
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -102,7 +102,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
               isDashboardLoading={isDashboardLoading}
             />
           </Col>
-          <Col md="4">
+          <Col lg="4" md="12">
             <OrgLendersChart
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
