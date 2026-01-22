@@ -1,6 +1,6 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
-import { setSiteTitle } from "./AppearanceSlice";
+import { setFavIcon, setSiteTitle } from "./AppearanceSlice";
 
 export const AppearanceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -15,6 +15,9 @@ export const AppearanceApi = baseApi.injectEndpoints({
           const { data } = await queryFulfilled;
           if (data?.site_title) {
             dispatch(setSiteTitle(data.site_title));
+          }
+          if (data?.fav_icon) {
+            dispatch(setFavIcon(data.fav_icon));
           }
         } catch (err) {
           // Handle error silently
@@ -47,6 +50,9 @@ export const AppearancePublicApi = publicBaseApi.injectEndpoints({
           const { data } = await queryFulfilled;
           if (data?.site_title) {
             dispatch(setSiteTitle(data.site_title));
+          }
+          if (data?.fav_icon) {
+            dispatch(setFavIcon(data.fav_icon));
           }
         } catch (err) {
           // Handle error silently
