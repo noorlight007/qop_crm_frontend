@@ -262,7 +262,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                       ) : client?.source ? (
                         formatChoiceFieldValue(client.source)
                       ) : (
-                        <span className="text-muted">Not specified</span>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
@@ -273,7 +273,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
                       ) : client?.enquiry_type ? (
                         formatChoiceFieldValue(client.enquiry_type)
                       ) : (
-                        <span className="text-muted">Not specified</span>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>

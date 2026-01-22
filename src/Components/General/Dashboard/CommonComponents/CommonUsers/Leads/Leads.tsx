@@ -225,7 +225,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                       ) : lead?.source ? (
                         formatChoiceFieldValue(lead.source)
                       ) : (
-                        <span className="text-muted">Not specified</span>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
@@ -236,7 +236,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                       ) : lead?.enquiry_type ? (
                         formatChoiceFieldValue(lead.enquiry_type)
                       ) : (
-                        <span className="text-muted">Not specified</span>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>

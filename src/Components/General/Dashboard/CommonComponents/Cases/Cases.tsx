@@ -454,7 +454,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      <td className="text-start">
+                      <td>
                         {(() => {
                           const pd = caseItem?.property_details;
                           if (!pd) return "N/A";
@@ -478,7 +478,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           return parts.length ? (
                             parts.join(", ")
                           ) : (
-                            <span className="text-muted">Not available</span>
+                            <small className="text-muted">Not available</small>
                           );
                         })()}
                       </td>
