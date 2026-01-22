@@ -4,7 +4,7 @@ export const OrgAdvisersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgAdvisers: builder.query({
       query: ({ organisationslug, params }) => ({
-        url: `/dashboard/organization/${organisationslug}/advisers/`,
+        url: `/organization/${organisationslug}/user-list/`,
         method: "GET",
         params,
       }),

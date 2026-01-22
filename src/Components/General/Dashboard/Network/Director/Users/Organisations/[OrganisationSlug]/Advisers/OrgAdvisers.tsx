@@ -1,9 +1,6 @@
 "use client";
 import { useGetOrgAdvisersQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgAdvisersApi";
-import {
-  AdviserInfoProps,
-  AdvisersProps,
-} from "@/Types/Network/Director/AdviserTypes";
+import { OrgAdviserInfo } from "@/Types/Network/Director/Users/Organisations/OrgAdviserType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -28,11 +25,11 @@ import {
 } from "reactstrap";
 import ViewOrgAdviserModals from "./Modals/ViewOrgAdviserModals";
 
-const OrgAdvisers: React.FC<AdvisersProps> = () => {
+const OrgAdvisers: React.FC<OrgAdviserInfo> = () => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
-  const [advisers, setAdvisers] = useState<AdviserInfoProps[]>([]);
+  const [advisers, setAdvisers] = useState<OrgAdviserInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,10 +37,10 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
   const [isViewOrgAdviserModalOpen, setIsViewOrgAdviserModalOpen] =
     useState(false);
   const [selectedAdviser, setSelectedAdviser] = useState<
-    Partial<AdviserInfoProps>
+    Partial<OrgAdviserInfo>
   >({});
 
-  const toggleViewOrgAdviserModal = (adviser?: AdviserInfoProps) => {
+  const toggleViewOrgAdviserModal = (adviser?: Partial<OrgAdviserInfo>) => {
     if (adviser) {
       setSelectedAdviser(adviser);
     }
@@ -65,6 +62,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
       params: {
         page: currentPage,
         search: searchQuery,
+        role: "ORGANISATION_ADVISER",
       },
     },
     { skip: !organisationslug },
@@ -72,7 +70,7 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
 
   useEffect(() => {
     if (adviserData) {
-      const advisersArray: AdviserInfoProps[] = Array.isArray(adviserData)
+      const advisersArray: OrgAdviserInfo[] = Array.isArray(adviserData)
         ? adviserData
         : adviserData.results || adviserData.advisers;
       setAdvisers(advisersArray || []);
@@ -168,9 +166,9 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                         className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                         style={{ width: 40, height: 40 }}
                       >
-                        {adviser.user?.profile_image ? (
+                        {adviser?.profile_image ? (
                           <Image
-                            src={adviser.user.profile_image}
+                            src={adviser?.profile_image}
                             alt="Profile"
                             width={35}
                             height={35}
@@ -185,21 +183,17 @@ const OrgAdvisers: React.FC<AdvisersProps> = () => {
                         onClick={() => toggleViewOrgAdviserModal(adviser)}
                         style={{ cursor: "pointer" }}
                       >
-                        {adviser.user?.title
-                          ? formatChoiceFieldValue(adviser.user.title)
-                          : ""}
-                        {"."} {adviser?.user?.first_name}{" "}
-                        {adviser?.user?.middle_name} {adviser?.user?.last_name}
+                        {adviser?.name}
                       </span>
                     </td>
-                    <td>{adviser?.user?.email || "-"}</td>
+                    <td>{adviser?.email || "-"}</td>
                     <td>
-                      {adviser?.user?.phone ? (
+                      {adviser?.phone ? (
                         <a
-                          href={`tel:${adviser?.user?.phone}`}
+                          href={`tel:${adviser?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {adviser?.user?.phone}
+                          {adviser?.phone}
                         </a>
                       ) : (
                         "-"
