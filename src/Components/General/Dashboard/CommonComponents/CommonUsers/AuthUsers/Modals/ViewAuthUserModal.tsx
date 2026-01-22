@@ -97,7 +97,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                           {selectedAuthUser.email}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </p>
                   </div>
@@ -117,7 +117,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                           {selectedAuthUser.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </p>
                   </div>
@@ -145,9 +145,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                         Gender
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {selectedAuthUser?.gender
-                          ? formatChoiceFieldValue(selectedAuthUser.gender)
-                          : "-"}
+                        {selectedAuthUser?.gender ? (
+                          formatChoiceFieldValue(selectedAuthUser.gender)
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </p>
                     </div>
                   </Col>
@@ -158,9 +160,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                       </small>
                       <p className="m-0 text-dark fw-500">
                         {selectedAuthUser?.joining_date &&
-                        !isNaN(Date.parse(selectedAuthUser.joining_date))
-                          ? formatDate(selectedAuthUser.joining_date)
-                          : "-"}
+                        !isNaN(Date.parse(selectedAuthUser.joining_date)) ? (
+                          formatDate(selectedAuthUser.joining_date)
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </p>
                     </div>
                   </Col>
@@ -174,7 +178,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                         Company Name
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {(selectedAuthUser as any)?.company_name || "-"}
+                        {(selectedAuthUser as any)?.company_name ? (
+                          (selectedAuthUser as any)?.company_name
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </p>
                     </div>
                   </Col>
@@ -184,7 +192,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                         Company Address
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {(selectedAuthUser as any)?.company_address || "-"}
+                        {(selectedAuthUser as any)?.company_address ? (
+                          (selectedAuthUser as any)?.company_address
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </p>
                     </div>
                   </Col>
@@ -195,9 +207,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                       </small>
                       <p className="m-0 text-dark fw-500">
                         {selectedAuthUser?.joining_date &&
-                        !isNaN(Date.parse(selectedAuthUser.joining_date))
-                          ? formatDate(selectedAuthUser.joining_date)
-                          : "-"}
+                        !isNaN(Date.parse(selectedAuthUser.joining_date)) ? (
+                          formatDate(selectedAuthUser.joining_date)
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </p>
                     </div>
                   </Col>
@@ -227,9 +241,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
               </small>
               <p className="m-0 text-dark fw-500">
                 {selectedAuthUser?.created_at &&
-                formatDateAndTime(selectedAuthUser?.created_at)
-                  ? formatDateAndTime(selectedAuthUser?.created_at)
-                  : "-"}
+                formatDateAndTime(selectedAuthUser?.created_at) ? (
+                  formatDateAndTime(selectedAuthUser?.created_at)
+                ) : (
+                  <small className="text-muted">Not Available</small>
+                )}
               </p>
             </div>
           </div>

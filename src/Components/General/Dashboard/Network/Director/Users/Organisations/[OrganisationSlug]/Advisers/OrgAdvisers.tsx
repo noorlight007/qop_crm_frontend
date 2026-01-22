@@ -186,7 +186,13 @@ const OrgAdvisers: React.FC = () => {
                         {adviser?.name}
                       </span>
                     </td>
-                    <td>{adviser?.email || "-"}</td>
+                    <td>
+                      {adviser?.email ? (
+                        adviser.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {adviser?.phone ? (
                         <a
@@ -196,34 +202,46 @@ const OrgAdvisers: React.FC = () => {
                           {adviser?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
 
                     <td>
-                      {adviser?.joining_date ? adviser.joining_date : "-"}
+                      {adviser?.joining_date ? (
+                        adviser.joining_date
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </td>
                     <td>
-                      <p className="m-0">
-                        {adviser.created_by
-                          ? `${
-                              adviser.created_by?.title
-                                ? formatChoiceFieldValue(
-                                    adviser.created_by.title,
-                                  ).trim() + " "
-                                : ""
-                            }${adviser.created_by.first_name || ""} ${
-                              adviser.created_by.middle_name || ""
-                            } ${adviser.created_by.last_name || ""}`.trim()
-                          : "Not found"}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {adviser.created_by?.user_type
-                          ? formatChoiceFieldValue(adviser.created_by.user_type)
-                          : "Not found"}
-                        )
-                      </p>
+                      {adviser.created_by == null ? (
+                        <small className="text-muted">Not Available</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {adviser.created_by?.title
+                              ? formatChoiceFieldValue(
+                                  adviser.created_by?.title,
+                                )
+                              : ""}{" "}
+                            {adviser?.created_by?.first_name}{" "}
+                            {adviser?.created_by?.middle_name}{" "}
+                            {adviser?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {adviser.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  adviser.created_by?.user_type,
+                                )
+                              : ""}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(adviser?.created_at)}</td>
                     <td>

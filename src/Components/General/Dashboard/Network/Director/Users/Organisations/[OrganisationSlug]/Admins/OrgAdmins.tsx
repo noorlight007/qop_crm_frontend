@@ -181,7 +181,13 @@ const OrgAdmins: React.FC = () => {
                         {admin?.name}
                       </span>
                     </td>
-                    <td>{admin?.email || "-"}</td>
+                    <td>
+                      {admin?.email ? (
+                        admin.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {admin?.phone ? (
                         <a
@@ -191,32 +197,44 @@ const OrgAdmins: React.FC = () => {
                           {admin?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
 
-                    <td>{admin?.joining_date ? admin.joining_date : "-"}</td>
                     <td>
-                      <p className="m-0">
-                        {admin.created_by
-                          ? `${
-                              admin.created_by?.title
-                                ? formatChoiceFieldValue(
-                                    admin.created_by.title,
-                                  ).trim() + " "
-                                : ""
-                            }${admin.created_by.first_name || ""} ${
-                              admin.created_by.middle_name || ""
-                            } ${admin.created_by.last_name || ""}`.trim()
-                          : "Not found"}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {admin.created_by?.user_type
-                          ? formatChoiceFieldValue(admin.created_by.user_type)
-                          : "Not found"}
-                        )
-                      </p>
+                      {admin?.joining_date ? (
+                        admin.joining_date
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {admin.created_by == null ? (
+                        <small className="text-muted">Not Available</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {admin.created_by?.title
+                              ? formatChoiceFieldValue(admin.created_by?.title)
+                              : ""}{" "}
+                            {admin?.created_by?.first_name}{" "}
+                            {admin?.created_by?.middle_name}{" "}
+                            {admin?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {admin.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  admin.created_by?.user_type,
+                                )
+                              : ""}
+                            )
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(admin?.created_at)}</td>
                     <td>

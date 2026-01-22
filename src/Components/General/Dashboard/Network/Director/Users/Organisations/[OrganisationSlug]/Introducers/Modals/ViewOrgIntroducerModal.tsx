@@ -81,7 +81,11 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedIntroducer?.email || "-"}
+                      {selectedIntroducer?.email ? (
+                        selectedIntroducer.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -100,7 +104,7 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                           {selectedIntroducer.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </p>
                   </div>
@@ -126,7 +130,11 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                     Company Name
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedIntroducer?.company_name || "-"}
+                    {selectedIntroducer?.company_name ? (
+                      selectedIntroducer.company_name
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>
@@ -136,7 +144,11 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                     Company Address
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedIntroducer?.company_address || "-"}
+                    {selectedIntroducer?.company_address ? (
+                      selectedIntroducer.company_address
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>
@@ -146,7 +158,11 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                     Joining Date
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedIntroducer?.joining_date || "-"}
+                    {selectedIntroducer?.joining_date ? (
+                      selectedIntroducer.joining_date
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>

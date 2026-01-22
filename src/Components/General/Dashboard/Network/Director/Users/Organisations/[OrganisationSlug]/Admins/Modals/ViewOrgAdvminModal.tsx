@@ -79,7 +79,11 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedAdmin?.email || "-"}
+                      {selectedAdmin?.email ? (
+                        selectedAdmin.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -98,7 +102,7 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                           {selectedAdmin.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </p>
                   </div>
@@ -122,9 +126,11 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Gender</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdmin?.gender
-                      ? formatChoiceFieldValue(selectedAdmin.gender)
-                      : "-"}
+                    {selectedAdmin?.gender ? (
+                      formatChoiceFieldValue(selectedAdmin.gender)
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>
@@ -134,7 +140,11 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                     Joining Date
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdmin?.joining_date || "-"}
+                    {selectedAdmin?.joining_date ? (
+                      selectedAdmin.joining_date
+                    ) : (
+                      <small className="text-muted">Not Available</small>
+                    )}
                   </p>
                 </div>
               </Col>

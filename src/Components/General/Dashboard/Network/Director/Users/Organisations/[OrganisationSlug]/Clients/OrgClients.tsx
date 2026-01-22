@@ -212,7 +212,13 @@ const OrgClients: React.FC = () => {
                         {client?.last_name}
                       </span>
                     </td>
-                    <td>{client?.email || "-"}</td>
+                    <td>
+                      {client?.email ? (
+                        client.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {client?.phone ? (
                         <a
@@ -222,7 +228,7 @@ const OrgClients: React.FC = () => {
                           {client?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>

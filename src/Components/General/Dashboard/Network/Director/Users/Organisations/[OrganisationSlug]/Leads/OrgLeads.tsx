@@ -169,10 +169,20 @@ const OrgLeads: React.FC = () => {
                         onClick={() => toggleViewModal(lead)}
                         style={{ cursor: "pointer" }}
                       >
-                        {lead?.name || "-"}
+                        {lead?.name ? (
+                          lead?.name
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </span>
                     </td>
-                    <td>{lead?.email || "-"}</td>
+                    <td>
+                      {lead?.email ? (
+                        lead.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {lead?.phone ? (
                         <a
@@ -182,7 +192,7 @@ const OrgLeads: React.FC = () => {
                           {lead?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>

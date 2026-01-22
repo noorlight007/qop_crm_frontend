@@ -193,7 +193,13 @@ const OrgIntroducers: React.FC = () => {
                         {introducer?.name}
                       </span>
                     </td>
-                    <td>{introducer?.email || "-"}</td>
+                    <td>
+                      {introducer?.email ? (
+                        introducer.email
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
                     <td>
                       {introducer?.phone ? (
                         <a
@@ -203,37 +209,59 @@ const OrgIntroducers: React.FC = () => {
                           {introducer?.phone}
                         </a>
                       ) : (
-                        "-"
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {introducer?.joining_date ? introducer.joining_date : "-"}
+                      {introducer?.joining_date ? (
+                        introducer.joining_date
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
                     </td>
-                    <td>{introducer?.company_name || "-"}</td>
-                    <td>{introducer?.company_address || "-"}</td>
                     <td>
-                      <p className="m-0">
-                        {introducer.created_by
-                          ? `${
-                              introducer.created_by?.title
-                                ? formatChoiceFieldValue(
-                                    introducer.created_by.title,
-                                  ).trim() + " "
-                                : ""
-                            }${introducer.created_by.first_name || ""} ${
-                              introducer.created_by.middle_name || ""
-                            } ${introducer.created_by.last_name || ""}`.trim()
-                          : "Not found"}
-                      </p>
-                      <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-                        (
-                        {introducer.created_by?.user_type
-                          ? formatChoiceFieldValue(
-                              introducer.created_by.user_type,
+                      {introducer?.company_name ? (
+                        introducer.company_name
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {introducer?.company_address ? (
+                        introducer.company_address
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {introducer.created_by == null ? (
+                        <small className="text-muted">Not Available</small>
+                      ) : (
+                        <>
+                          <p className="m-0">
+                            {introducer.created_by?.title
+                              ? formatChoiceFieldValue(
+                                  introducer.created_by?.title,
+                                )
+                              : ""}{" "}
+                            {introducer?.created_by?.first_name}{" "}
+                            {introducer?.created_by?.middle_name}{" "}
+                            {introducer?.created_by?.last_name}
+                          </p>
+                          <p
+                            className="m-0 opacity-75"
+                            style={{ fontSize: "9px" }}
+                          >
+                            (
+                            {introducer.created_by?.user_type
+                              ? formatChoiceFieldValue(
+                                  introducer.created_by?.user_type,
+                                )
+                              : ""}
                             )
-                          : "Not found"}
-                        )
-                      </p>
+                          </p>
+                        </>
+                      )}
                     </td>
                     <td>{formatDateAndTime(introducer?.created_at)}</td>
                     <td>
