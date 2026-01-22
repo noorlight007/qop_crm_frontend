@@ -366,7 +366,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                                 {caseItem.lead_user.last_name}
                               </>
                             ) : (
-                              "-"
+                              <small className="text-muted">
+                                Not Available
+                              </small>
                             )}
                           </li>
                           {caseItem.joint_users &&
@@ -398,7 +400,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             {caseItem.lead_user.phone}
                           </a>
                         ) : (
-                          "-"
+                          <small className="text-muted">Not Available</small>
                         )}
                       </td>
                       <td className="text-truncate">
@@ -442,13 +444,15 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               )}
                           </>
                         ) : (
-                          "-"
+                          <small className="text-muted">Not Available</small>
                         )}
                       </td>
                       <td className="text-truncate">
-                        {caseItem.lender
-                          ? formatChoiceFieldValue(caseItem.lender)
-                          : "-"}
+                        {caseItem.lender ? (
+                          formatChoiceFieldValue(caseItem.lender)
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </td>
                       <td className="text-start">
                         {(() => {
@@ -493,28 +497,30 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             ) : null}
                           </>
                         ) : (
-                          "-"
+                          <small className="text-muted">Not Available</small>
                         )}
                       </td>
                       <td className="text-truncate">
-                        {formatDate(caseItem?.review_date) || "-"}
+                        {formatDate(caseItem?.review_date) || (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </td>
                       <td className="text-truncate">
                         {formatDateAndTime(caseItem.created_at)}
                       </td>
                       <td className="text-truncate">
                         {userType === "NETWORK_DIRECTOR" ||
-                        userType === "NETWORK_ADVISER"
-                          ? (caseItem.organization?.name ?? (
-                              <span className="text-muted">
-                                Owned by Network
-                              </span>
-                            ))
-                          : userType === "ORGANISATION_DIRECTOR" ||
-                              userType === "ORGANISATION_ADVISER" ||
-                              userType === "ORGANISATION_ADMIN"
-                            ? (caseItem.network?.name ?? "Self")
-                            : "-"}
+                        userType === "NETWORK_ADVISER" ? (
+                          (caseItem.organization?.name ?? (
+                            <span className="text-muted">Owned by Network</span>
+                          ))
+                        ) : userType === "ORGANISATION_DIRECTOR" ||
+                          userType === "ORGANISATION_ADVISER" ||
+                          userType === "ORGANISATION_ADMIN" ? (
+                          (caseItem.network?.name ?? "Self")
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
                       </td>
                       <td className="text-truncate">
                         <p className="m-0">

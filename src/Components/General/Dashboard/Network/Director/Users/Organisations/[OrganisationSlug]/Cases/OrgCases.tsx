@@ -266,30 +266,45 @@ const OrgCases: React.FC = () => {
                               </small>
                             )}
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {caseItem.case_category ? (
                               <>
                                 {formatChoiceFieldValue(caseItem.case_category)}
-                                {caseItem.case_category === "MORTGAGE" && (
-                                  <p className="small">
-                                    (
-                                    {formatChoiceFieldValue(
-                                      caseItem.application_type || "",
-                                    )}
-                                    {caseItem.mortgage_type ? (
-                                      <>
-                                        {" "}
-                                        <TbArrowsRightLeft />{" "}
-                                        {formatChoiceFieldValue(
-                                          caseItem.mortgage_type || "",
-                                        )}
-                                      </>
-                                    ) : (
-                                      <TbArrowsRightLeft />
-                                    )}
-                                    )
-                                  </p>
-                                )}
+                                {caseItem.case_category === "MORTGAGE" &&
+                                  ((caseItem.application_type &&
+                                    String(caseItem.application_type).trim() !==
+                                      "") ||
+                                    (caseItem.mortgage_type &&
+                                      String(caseItem.mortgage_type).trim() !==
+                                        "")) && (
+                                    <p className="small">
+                                      (
+                                      {/* If both types exist show arrow between them */}
+                                      {caseItem.application_type
+                                        ? formatChoiceFieldValue(
+                                            caseItem.application_type,
+                                          )
+                                        : null}
+                                      {caseItem.application_type &&
+                                      caseItem.mortgage_type ? (
+                                        <>
+                                          {" "}
+                                          <TbArrowsRightLeft className="text-primary" />{" "}
+                                          {formatChoiceFieldValue(
+                                            caseItem.mortgage_type,
+                                          )}
+                                        </>
+                                      ) : caseItem.mortgage_type ? (
+                                        /* If only mortgage_type exists, show it without arrow */
+                                        <>
+                                          {formatChoiceFieldValue(
+                                            caseItem.mortgage_type,
+                                          )}
+                                        </>
+                                      ) : null}
+                                      )
+                                    </p>
+                                  )}
                               </>
                             ) : (
                               <small className="text-muted">
