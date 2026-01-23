@@ -165,8 +165,21 @@ const Solicitor: React.FC = () => {
       [name]: value,
     }));
 
-    setMapCoords(LONDON_CENTER);
-    setCurrentZoom(DEFAULT_ZOOM);
+    const addressFields = [
+      "postcode",
+      "building_name_or_number",
+      "street",
+      "address_line1",
+      "city",
+      "county",
+      "country",
+    ];
+
+    if (addressFields.includes(name)) {
+      setMapCoords(LONDON_CENTER);
+      setCurrentZoom(DEFAULT_ZOOM);
+    }
+
   };
 
   const handleAssignSolicitor = async () => {

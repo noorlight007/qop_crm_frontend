@@ -1,11 +1,12 @@
 import { useAddEmploymentDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import { apiAddress } from "@/services/third-party-api";
 import {
   AddEmploymentDetailsModalProps,
   EmploymentDetailsProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
 import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -14,6 +15,7 @@ import {
   FormGroup,
   FormText,
   Input,
+  InputGroup,
   InputGroupText,
   Label,
   Modal,
@@ -21,6 +23,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import GetAddressModal from "../../../CommonModals/GetAddressModal";
 
 const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
   isOpen,
@@ -35,12 +38,56 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
     useAddEmploymentDetailsMutation();
 
   const [formValues, setFormValues] = useState<EmploymentDetailsProps | null>(
-    null
+    null,
   );
+
+  const [addressType, setAddressType] = useState<"employer" | "business">(
+    "employer",
+  );
+  const [addressList, setAddressList] = useState<any[]>([]);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+
+  const [employerMapCoords, setEmployerMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const [businessMapCoords, setBusinessMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const [employerZoom, setEmployerZoom] = useState(DEFAULT_ZOOM);
+  const [businessZoom, setBusinessZoom] = useState(DEFAULT_ZOOM);
+
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Reset form when modal opens
+      setFormValues(null);
+      setEmployerMapCoords(LONDON_CENTER);
+      setBusinessMapCoords(LONDON_CENTER);
+      setEmployerZoom(DEFAULT_ZOOM);
+      setBusinessZoom(DEFAULT_ZOOM);
+    }
+  }, [isOpen]);
 
   const handleInputChange = (
     name: string,
-    value: string | number | boolean | string[] | null
+    value: string | number | boolean | string[] | null,
   ) => {
     if (name === "employment_commenced" || name === "employment_ended") {
       setFormValues((prevValues) => ({
@@ -52,6 +99,28 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         ...prevValues!,
         [name]: value,
       }));
+    }
+    const addressFields = [
+      "employer_postcode",
+      "employer_house_name_or_number",
+      "employer_address_line_1",
+      "employer_address_line_2",
+      "employer_city",
+      "employer_county",
+      "employer_country",
+      "business_postcode",
+      "business_address_line_1",
+      "business_address_line_2",
+      "business_city",
+      "business_county",
+      "business_country",
+    ];
+
+    if (addressFields.includes(name)) {
+      setEmployerMapCoords(LONDON_CENTER);
+      setBusinessMapCoords(LONDON_CENTER);
+      setEmployerZoom(DEFAULT_ZOOM);
+      setBusinessZoom(DEFAULT_ZOOM);
     }
   };
 
@@ -65,6 +134,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
     toggle(); // Close the modal
     if (res.data) {
       toast.success("Employment details added successfully!");
+      setFormValues(null);
     } else if (res.error) {
       const errorMessage =
         (res.error as any)?.data?.detail || "Failed to add employment details.";
@@ -83,7 +153,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
 
     // Get the first SELF_EMPLOYED record
     const firstSelfEmployedRecord = allEmploymentRecords.find(
-      (employment) => employment.employment_status === "SELF_EMPLOYED"
+      (employment) => employment.employment_status === "SELF_EMPLOYED",
     );
 
     if (!firstSelfEmployedRecord) {
@@ -129,8 +199,209 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         emp.employment_status === "SELF_EMPLOYED" &&
         (emp.business_postcode ||
           emp.business_address_line_1 ||
-          emp.business_city)
+          emp.business_city),
     );
+  };
+
+  const getAddressErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+
+    if (typeof err === "string") return err;
+
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+
+      if (typeof value === "string") return [value];
+
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
+  const fetchAddressByPostcode = async (
+    postcode: string | null,
+    type: "employer" | "business",
+  ) => {
+    if (!postcode) return;
+    setAddressType(type);
+    setIsSearchingPostcode(true);
+    try {
+      const response = await apiAddress.get(
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
+      );
+      setAddressList(response.data.suggestions || []);
+      setIsAddressModalOpen(true);
+    } catch (err: any) {
+      console.log("Raw Axios Error:", err);
+      const message = getAddressErrorMessage(err.response || err);
+      toast.error(message);
+    } finally {
+      setIsSearchingPostcode(false);
+    }
+  };
+
+  const handleSelectAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    setIsAddressModalOpen(false);
+
+    try {
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      const updatedFields = {
+        employer_postcode: address.postcode || formValues?.employer_postcode,
+        employer_house_name_or_number: [
+          address.building_name,
+          address.building_number,
+        ]
+          .filter(Boolean)
+          .join(" "),
+        employer_address_line_1: address.line_1 || "",
+        employer_address_line_2: address.line_2 || "",
+        employer_city: address.town_or_city || "",
+        employer_county: address.county || "",
+        employer_country: address.country || "",
+        employer_latitude: address.latitude,
+        employer_longitude: address.longitude,
+      };
+
+      setFormValues((prev: any) => ({
+        ...prev,
+        ...updatedFields,
+      }));
+
+      // Update draft to prevent losing changes
+      // if (formValues?.alias) {
+      //   const alias = formValues.alias as string;
+      //   draftsRef.current[alias] = {
+      //     ...(draftsRef.current[alias] ?? formValues),
+      //     ...updatedFields,
+      //     alias,
+      //   } as EmploymentDetailsProps;
+      // }
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setEmployerMapCoords({ lat: address.latitude, lng: address.longitude });
+        setEmployerZoom(DETAIL_ZOOM);
+      } else {
+        setEmployerMapCoords(null);
+        setEmployerZoom(DEFAULT_ZOOM);
+      }
+
+      console.log("address details: ", address);
+    } catch (error) {
+      console.error("Error fetching detailed address:", error);
+    } finally {
+      setIsFetchingAddress(false);
+    }
+  };
+
+  const handleSelectBusinessAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    setIsAddressModalOpen(false);
+
+    try {
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      const updatedFields = {
+        business_postcode: address.postcode || formValues?.business_postcode,
+        business_house_name_or_number: [
+          address.building_name,
+          address.building_number,
+        ]
+          .filter(Boolean)
+          .join(" "),
+        business_address_line_1: address.line_1 || "",
+        business_address_line_2: address.line_2 || "",
+        business_city: address.town_or_city || "",
+        business_county: address.county || "",
+        business_country: address.country || "",
+        business_latitude: address.latitude,
+        business_longitude: address.longitude,
+      };
+
+      setFormValues((prev: any) => ({
+        ...prev,
+        ...updatedFields,
+      }));
+
+      // Update draft to prevent losing changes
+      // if (formValues?.alias) {
+      //   const alias = formValues.alias as string;
+      //   draftsRef.current[alias] = {
+      //     ...(draftsRef.current[alias] ?? formValues),
+      //     ...updatedFields,
+      //     alias,
+      //   } as EmploymentDetailsProps;
+      // }
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setBusinessMapCoords({ lat: address.latitude, lng: address.longitude });
+        setBusinessZoom(DETAIL_ZOOM);
+      } else {
+        setBusinessMapCoords(null);
+        setBusinessZoom(DEFAULT_ZOOM);
+      }
+
+      console.log("business address details: ", address);
+    } catch (error) {
+      console.error("Error fetching detailed business address:", error);
+    } finally {
+      setIsFetchingAddress(false);
+    }
   };
 
   return (
@@ -279,7 +550,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "employers_name_for_reference",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -299,7 +570,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "employer_email_for_reference",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -310,19 +581,69 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
           <Row>
             {(formValues?.employment_status === "EMPLOYED" ||
               formValues?.employment_status === "CONTRACTOR") && (
+              <Col sm={12}>
+                <Label className="fw-semibold mb-2">Location Preview</Label>
+                <div className="border rounded overflow-hidden shadow-sm mb-3">
+                  <iframe
+                    src={
+                      employerMapCoords
+                        ? getGoogleMapEmbedUrl(
+                            employerMapCoords.lat,
+                            employerMapCoords.lng,
+                            employerZoom,
+                          )
+                        : getGoogleMapEmbedUrl(
+                            LONDON_CENTER.lat,
+                            LONDON_CENTER.lng,
+                            DEFAULT_ZOOM,
+                          )
+                    }
+                    width="100%"
+                    height="250"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    title="Employer Location"
+                  />
+                </div>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
               <>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="employerPostcode">Employer's Postcode</Label>
-                    <Input
-                      type="text"
-                      id="employerPostcode"
-                      className="border-primary"
-                      value={formValues?.employer_postcode || ""}
-                      onChange={(e) =>
-                        handleInputChange("employer_postcode", e.target.value)
-                      }
-                    />
+                    <InputGroup className="d-flex align-items-center gap-2">
+                      <Input
+                        type="text"
+                        id="employerPostcode"
+                        className="border-primary rounded"
+                        value={formValues?.employer_postcode || ""}
+                        onChange={(e) =>
+                          handleInputChange("employer_postcode", e.target.value)
+                        }
+                      />
+                      <Button
+                        color="primary"
+                        type="button"
+                        className="text-nowrap"
+                        style={{
+                          paddingTop: "0.4rem",
+                          paddingBottom: "0.4rem",
+                        }}
+                        onClick={() =>
+                          fetchAddressByPostcode(
+                            formValues.employer_postcode,
+                            "employer",
+                          )
+                        }
+                        disabled={isFetchingAddress || isSearchingPostcode}
+                      >
+                        {isSearchingPostcode ? "Loading..." : "Lookup"}
+                      </Button>
+                    </InputGroup>
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -337,7 +658,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "employer_house_name_or_number",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -362,7 +683,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "employer_address_line_1",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -380,7 +701,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "employer_address_line_2",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -449,7 +770,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "employment_commenced",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       required
@@ -459,7 +780,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       style={{ padding: "6px 16px" }}
                     >
                       {calculateMonthsDuration(
-                        formValues?.employment_commenced
+                        formValues?.employment_commenced,
                       )}
                     </InputGroupText>
                   </FormGroup>
@@ -806,7 +1127,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "employment_time_year",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -823,7 +1144,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "employment_time_month",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -850,20 +1171,65 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
           </Row>
           <Row>
             {formValues?.employment_status === "SELF_EMPLOYED" && (
+              <Col sm={12}>
+                <Label className="fw-semibold mb-2">Location Preview</Label>
+                <div className="border rounded overflow-hidden shadow-sm mb-3">
+                  <iframe
+                    src={
+                      businessMapCoords
+                        ? getGoogleMapEmbedUrl(
+                            businessMapCoords.lat,
+                            businessMapCoords.lng,
+                            businessZoom,
+                          )
+                        : getGoogleMapEmbedUrl(
+                            LONDON_CENTER.lat,
+                            LONDON_CENTER.lng,
+                            DEFAULT_ZOOM,
+                          )
+                    }
+                    width="100%"
+                    height="250"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    title="Business Location"
+                  />
+                </div>
+              </Col>
+            )}
+          </Row>
+          <Row>
+            {formValues?.employment_status === "SELF_EMPLOYED" && (
               <>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="business_postcode">Business Postcode</Label>
-                    <Input
-                      type="text"
-                      id="business_postcode"
-                      placeholder="Enter Business Postcode"
-                      className="border-primary"
-                      value={formValues?.business_postcode || ""}
-                      onChange={(e) =>
-                        handleInputChange("business_postcode", e.target.value)
-                      }
-                    />
+                    <InputGroup className="d-flex align-items-center gap-2">
+                      <Input
+                        type="text"
+                        id="business_postcode"
+                        placeholder="Enter Business Postcode"
+                        className="border-primary rounded"
+                        value={formValues?.business_postcode || ""}
+                        onChange={(e) =>
+                          handleInputChange("business_postcode", e.target.value)
+                        }
+                      />
+                      <Button
+                        color="primary"
+                        type="button"
+                        className="text-nowrap"
+                        onClick={() =>
+                          fetchAddressByPostcode(
+                            formValues.business_postcode,
+                            "business",
+                          )
+                        }
+                        disabled={isFetchingAddress || isSearchingPostcode}
+                      >
+                        {isSearchingPostcode ? "Loading..." : "Lookup"}
+                      </Button> 
+                    </InputGroup>                    
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -878,7 +1244,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "business_house_name_or_number",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -896,7 +1262,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "business_address_line_1",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -914,7 +1280,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "business_address_line_2",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1050,7 +1416,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "percentage_of_business_owned",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1111,7 +1477,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "year1_net_profit",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             required
@@ -1145,7 +1511,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "year2_net_profit",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                           />
@@ -1178,7 +1544,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                             onChange={(e) =>
                               handleInputChange(
                                 "year3_net_profit",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                           />
@@ -1218,7 +1584,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "accountant_qualifications",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1371,7 +1737,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "other_income_start_date",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1408,7 +1774,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "current_contract_start",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       required
@@ -1427,7 +1793,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       onChange={(e) =>
                         handleInputChange(
                           "current_contract_end",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       required
@@ -1507,6 +1873,16 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
           </Row>
         </Form>
       </ModalBody>
+      <GetAddressModal
+        isOpen={isAddressModalOpen}
+        toggle={toggleAddressModal}
+        addresses={addressList}
+        onSelect={
+          addressType === "employer"
+            ? handleSelectAddress
+            : handleSelectBusinessAddress
+        }
+      />
     </Modal>
   );
 };

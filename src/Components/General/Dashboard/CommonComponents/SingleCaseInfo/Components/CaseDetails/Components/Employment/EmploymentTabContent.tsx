@@ -7,6 +7,7 @@ import {
   EmploymentDetailsProps,
   EmploymentTabContentProps,
 } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+import { apiAddress } from "@/services/third-party-api";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
@@ -20,10 +21,12 @@ import {
   FormGroup,
   FormText,
   Input,
+  InputGroup,
   InputGroupText,
   Label,
   Row,
 } from "reactstrap";
+import GetAddressModal from "../../CommonModals/GetAddressModal";
 import AddEmploymentDetailsModal from "./EmploymentModals/AddEmploymentDetailsModal";
 
 export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
@@ -32,7 +35,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   groupedData,
 }) => {
   const [formValues, setFormValues] = useState<EmploymentDetailsProps | null>(
-    null
+    null,
   );
   // UseParams with type assertion
   const params = useParams();
@@ -55,21 +58,90 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
+
+  const [addressType, setAddressType] = useState<"employer" | "business">(
+    "employer",
+  );
+  const [addressList, setAddressList] = useState<any[]>([]);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
+  const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
+  const DEFAULT_ZOOM = 10;
+  const DETAIL_ZOOM = 16;
+
+  const [employerMapCoords, setEmployerMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const [businessMapCoords, setBusinessMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+
+  const [employerZoom, setEmployerZoom] = useState(DEFAULT_ZOOM);
+  const [businessZoom, setBusinessZoom] = useState(DEFAULT_ZOOM);
+
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
+  };
+
   // `useEffect` to reset `formValues` when `activeTab` or `activeUser` changes
   useEffect(() => {
     if (activeTab && activeUser !== null) {
       const userEmploymentRecords = groupedData[activeUser];
       const activeEmploymentRecord = userEmploymentRecords?.find(
-        (employment) => employment.alias === activeTab
+        (employment) => employment.alias === activeTab,
       );
+
       // If there's a draft for this alias use it; otherwise use the record
       // coming from props. This preserves unsaved input when switching tabs.
       const draft = draftsRef.current[activeTab as string];
-      setFormValues(draft ?? activeEmploymentRecord ?? null);
+
+      // Only update if we're actually switching to a different employment record
+      if (formValues?.alias !== activeTab) {
+        setFormValues(draft ?? activeEmploymentRecord ?? null);
+
+        const employmentData = draft ?? activeEmploymentRecord;
+
+        if (
+          employmentData?.employer_latitude &&
+          employmentData?.employer_longitude
+        ) {
+          setEmployerMapCoords({
+            lat: employmentData.employer_latitude,
+            lng: employmentData.employer_longitude,
+          });
+          setEmployerZoom(DETAIL_ZOOM);
+        } else {
+          setEmployerMapCoords(null);
+          setEmployerZoom(DEFAULT_ZOOM);
+        }
+
+        if (
+          employmentData?.business_latitude &&
+          employmentData?.business_longitude
+        ) {
+          setBusinessMapCoords({
+            lat: employmentData.business_latitude,
+            lng: employmentData.business_longitude,
+          });
+          setBusinessZoom(DETAIL_ZOOM);
+        } else {
+          setBusinessMapCoords(null);
+          setBusinessZoom(DEFAULT_ZOOM);
+        }
+      }
     }
-  }, [activeTab, activeUser, groupedData]);
+  }, [activeTab, activeUser, groupedData]); // Remove formValues from dependencies
 
   if (!activeTab || activeUser === null) {
     return <div>No employment data available.</div>;
@@ -77,7 +149,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
 
   const userEmploymentRecords = groupedData[activeUser];
   const activeEmploymentRecord = userEmploymentRecords?.find(
-    (employment) => employment.alias === activeTab
+    (employment) => employment.alias === activeTab,
   );
 
   if (!activeEmploymentRecord) {
@@ -86,12 +158,36 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
 
   const handleInputChange = (
     name: keyof EmploymentDetailsProps, // Use your type instead of `Applicant`
-    value: string | number | boolean | string[] | null
+    value: string | number | boolean | string[] | null,
   ) => {
     setFormValues((prevValues) => ({
       ...prevValues!,
       [name]: value,
     }));
+
+    const addressFields = [
+      "employer_postcode",
+      "employer_house_name_or_number",
+      "employer_address_line_1",
+      "employer_address_line_2",
+      "employer_city",
+      "employer_county",
+      "employer_country",
+      "business_postcode",
+      "business_address_line_1",
+      "business_address_line_2",
+      "business_city",
+      "business_county",
+      "business_country",
+    ];
+
+    if (addressFields.includes(name)) {
+      setEmployerMapCoords(LONDON_CENTER);
+      setBusinessMapCoords(LONDON_CENTER);
+      setEmployerZoom(DEFAULT_ZOOM);
+      setBusinessZoom(DEFAULT_ZOOM);
+    }
+    
     // Save a draft copy for the currently active alias so edits aren't lost
     // when the user switches tabs. If there's no activeTab yet, skip.
     if (formValues?.alias) {
@@ -139,14 +235,14 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     }
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseDetails.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -158,7 +254,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   const handleCopyAddress = () => {
     // Get the first SELF_EMPLOYED record from the grouped data
     const firstSelfEmployedRecord = userEmploymentRecords?.find(
-      (employment) => employment.employment_status === "SELF_EMPLOYED"
+      (employment) => employment.employment_status === "SELF_EMPLOYED",
     );
 
     if (!firstSelfEmployedRecord) {
@@ -210,8 +306,209 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         emp.alias !== activeTab &&
         (emp.business_postcode ||
           emp.business_address_line_1 ||
-          emp.business_city)
+          emp.business_city),
     );
+
+  const getAddressErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+
+    if (typeof err === "string") return err;
+
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+
+      if (typeof value === "string") return [value];
+
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
+  const fetchAddressByPostcode = async (
+    postcode: string | null,
+    type: "employer" | "business",
+  ) => {
+    if (!postcode) return;
+    setAddressType(type);
+    setIsSearchingPostcode(true);
+    try {
+      const response = await apiAddress.get(
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
+      );
+      setAddressList(response.data.suggestions || []);
+      setIsAddressModalOpen(true);
+    } catch (err: any) {
+      console.log("Raw Axios Error:", err);
+      const message = getAddressErrorMessage(err.response || err);
+      toast.error(message);
+    } finally {
+      setIsSearchingPostcode(false);
+    }
+  };
+
+  const handleSelectAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    setIsAddressModalOpen(false);
+
+    try {
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      const updatedFields = {
+        employer_postcode: address.postcode || formValues?.employer_postcode,
+        employer_house_name_or_number: [
+          address.building_name,
+          address.building_number,
+        ]
+          .filter(Boolean)
+          .join(" "),
+        employer_address_line_1: address.line_1 || "",
+        employer_address_line_2: address.line_2 || "",
+        employer_city: address.town_or_city || "",
+        employer_county: address.county || "",
+        employer_country: address.country || "",
+        employer_latitude: address.latitude,
+        employer_longitude: address.longitude,
+      };
+
+      setFormValues((prev: any) => ({
+        ...prev,
+        ...updatedFields,
+      }));
+
+      // Update draft to prevent losing changes
+      if (formValues?.alias) {
+        const alias = formValues.alias as string;
+        draftsRef.current[alias] = {
+          ...(draftsRef.current[alias] ?? formValues),
+          ...updatedFields,
+          alias,
+        } as EmploymentDetailsProps;
+      }
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setEmployerMapCoords({ lat: address.latitude, lng: address.longitude });
+        setEmployerZoom(DETAIL_ZOOM);
+      } else {
+        setEmployerMapCoords(null);
+        setEmployerZoom(DEFAULT_ZOOM);
+      }
+
+      console.log("address details: ", address);
+    } catch (error) {
+      console.error("Error fetching detailed address:", error);
+    } finally {
+      setIsFetchingAddress(false);
+    }
+  };
+
+  const handleSelectBusinessAddress = async (id: string) => {
+    setIsFetchingAddress(true);
+    setIsAddressModalOpen(false);
+
+    try {
+      const res = await apiAddress.get(
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
+      );
+
+      const address = res.data;
+
+      if (!address) {
+        console.error("❌ No address returned");
+        return;
+      }
+
+      const updatedFields = {
+        business_postcode: address.postcode || formValues?.business_postcode,
+        business_house_name_or_number: [
+          address.building_name,
+          address.building_number,
+        ]
+          .filter(Boolean)
+          .join(" "),
+        business_address_line_1: address.line_1 || "",
+        business_address_line_2: address.line_2 || "",
+        business_city: address.town_or_city || "",
+        business_county: address.county || "",
+        business_country: address.country || "",
+        business_latitude: address.latitude,
+        business_longitude: address.longitude,
+      };
+
+      setFormValues((prev: any) => ({
+        ...prev,
+        ...updatedFields,
+      }));
+
+      // Update draft to prevent losing changes
+      if (formValues?.alias) {
+        const alias = formValues.alias as string;
+        draftsRef.current[alias] = {
+          ...(draftsRef.current[alias] ?? formValues),
+          ...updatedFields,
+          alias,
+        } as EmploymentDetailsProps;
+      }
+
+      if (address.latitude !== undefined && address.longitude !== undefined) {
+        setBusinessMapCoords({ lat: address.latitude, lng: address.longitude });
+        setBusinessZoom(DETAIL_ZOOM);
+      } else {
+        setBusinessMapCoords(null);
+        setBusinessZoom(DEFAULT_ZOOM);
+      }
+
+      console.log("business address details: ", address);
+    } catch (error) {
+      console.error("Error fetching detailed business address:", error);
+    } finally {
+      setIsFetchingAddress(false);
+    }
+  };
 
   return (
     <CardBody className="px-0 pb-0">
@@ -353,7 +650,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   onChange={(e) =>
                     handleInputChange(
                       "employers_name_for_reference",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -373,7 +670,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   onChange={(e) =>
                     handleInputChange(
                       "employer_email_for_reference",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -381,6 +678,36 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             </Col>
           )}
         </Row>
+        {(formValues?.employment_status === "EMPLOYED" ||
+          formValues?.employment_status === "CONTRACTOR") && (
+          <Row>
+            <Col sm={12}>
+              <Label className="fw-semibold mb-2">Location Preview</Label>
+              <div className="border rounded overflow-hidden shadow-sm mb-3">
+                <iframe
+                  src={
+                    employerMapCoords
+                      ? getGoogleMapEmbedUrl(
+                          employerMapCoords.lat,
+                          employerMapCoords.lng,
+                          employerZoom,
+                        )
+                      : getGoogleMapEmbedUrl(
+                          LONDON_CENTER.lat,
+                          LONDON_CENTER.lng,
+                          DEFAULT_ZOOM,
+                        )
+                  }
+                  width="100%"
+                  height="250"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Employer Location"
+                />
+              </div>
+            </Col>
+          </Row>
+        )}
         <Row>
           {(formValues?.employment_status === "EMPLOYED" ||
             formValues?.employment_status === "CONTRACTOR") && (
@@ -388,15 +715,32 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="employerPostcode">Employer's Postcode</Label>
-                  <Input
-                    type="text"
-                    id="employerPostcode"
-                    className="border-primary"
-                    value={formValues?.employer_postcode || ""}
-                    onChange={(e) =>
-                      handleInputChange("employer_postcode", e.target.value)
-                    }
-                  />
+                  <InputGroup className="d-flex align-items-center gap-2">
+                    <Input
+                      type="text"
+                      id="employerPostcode"
+                      className="border-primary rounded"
+                      value={formValues.employer_postcode || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_postcode", e.target.value)
+                      }
+                    />
+                    <Button
+                      color="primary"
+                      type="button"
+                      className="text-nowrap"
+                      style={{ paddingTop: "0.7rem", paddingBottom: "0.7rem" }}
+                      onClick={() =>
+                        fetchAddressByPostcode(
+                          formValues.employer_postcode,
+                          "employer",
+                        )
+                      }
+                      disabled={isFetchingAddress || isSearchingPostcode}
+                    >
+                      {isSearchingPostcode ? "Loading..." : "Lookup"}
+                    </Button>
+                  </InputGroup>
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -411,7 +755,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "employer_house_name_or_number",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -436,7 +780,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "employer_address_line_1",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -454,7 +798,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "employer_address_line_2",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -871,7 +1215,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         onChange={(e) =>
                           handleInputChange(
                             "employment_time_year",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       />
@@ -888,7 +1232,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         onChange={(e) =>
                           handleInputChange(
                             "employment_time_month",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       />
@@ -915,19 +1259,65 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         </Row>
         <Row>
           {formValues?.employment_status === "SELF_EMPLOYED" && (
+            <Col sm={12}>
+              <Label className="fw-semibold mb-2">Location Preview</Label>
+              <div className="border rounded overflow-hidden shadow-sm mb-3">
+                <iframe
+                  src={
+                    businessMapCoords
+                      ? getGoogleMapEmbedUrl(
+                          businessMapCoords.lat,
+                          businessMapCoords.lng,
+                          businessZoom,
+                        )
+                      : getGoogleMapEmbedUrl(
+                          LONDON_CENTER.lat,
+                          LONDON_CENTER.lng,
+                          DEFAULT_ZOOM,
+                        )
+                  }
+                  width="100%"
+                  height="250"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Business Location"
+                />
+              </div>
+            </Col>
+          )}
+        </Row>
+        <Row>
+          {formValues?.employment_status === "SELF_EMPLOYED" && (
             <>
               <Col md={6}>
                 <FormGroup>
                   <Label for="business_postcode">Business Postcode</Label>
-                  <Input
-                    type="text"
-                    id="business_postcode"
-                    className="border-primary"
-                    value={formValues?.business_postcode || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_postcode", e.target.value)
-                    }
-                  />
+                  <InputGroup className="d-flex align-items-center gap-2">
+                    <Input
+                      type="text"
+                      id="business_postcode"
+                      className="border-primary rounded"
+                      value={formValues?.business_postcode || ""}
+                      onChange={(e) =>
+                        handleInputChange("business_postcode", e.target.value)
+                      }
+                    />
+                    <Button
+                      color="primary"
+                      type="button"
+                      className="text-nowrap"
+                      style={{ paddingTop: "0.7rem", paddingBottom: "0.7rem" }}
+                      onClick={() =>
+                        fetchAddressByPostcode(
+                          formValues.business_postcode,
+                          "business",
+                        )
+                      }
+                      disabled={isFetchingAddress || isSearchingPostcode}
+                    >
+                      {isSearchingPostcode ? "Loading..." : "Lookup"}
+                    </Button>
+                  </InputGroup>
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -942,7 +1332,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "business_house_name_or_number",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -980,7 +1370,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "business_address_line_1",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -998,7 +1388,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "business_address_line_2",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1124,7 +1514,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "percentage_of_business_owned",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1185,7 +1575,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "year1_net_profit",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           required
@@ -1219,7 +1609,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "year2_net_profit",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -1252,7 +1642,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                           onChange={(e) =>
                             handleInputChange(
                               "year3_net_profit",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -1292,7 +1682,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "accountant_qualifications",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1439,7 +1829,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "other_income_start_date",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1476,7 +1866,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     onChange={(e) =>
                       handleInputChange(
                         "current_contract_start",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                     required
@@ -1611,6 +2001,17 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         toggle={() => setAddEmploymentModalOpen(!isAddEmploymentModalOpen)}
         employmentData={formValues}
         groupedData={groupedData}
+      />
+
+      <GetAddressModal
+        isOpen={isAddressModalOpen}
+        toggle={toggleAddressModal}
+        addresses={addressList}
+        onSelect={
+          addressType === "employer"
+            ? handleSelectAddress
+            : handleSelectBusinessAddress
+        }
       />
     </CardBody>
   );
