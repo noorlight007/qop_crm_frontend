@@ -27,13 +27,53 @@ import {
 } from "reactstrap";
 import ExtraAnswerModal from "./Modals/ExtraAnswerModal";
 
+const getErrorMessage = (err: any) => {
+  if (!err) return "Unknown error";
+  if (typeof err === "string") return err;
+  if (typeof err?.data === "string") return err.data;
+
+  const collect = (value: any): string[] => {
+    if (value == null) return [];
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value))
+      return value.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
+    if (typeof value === "object") {
+      try {
+        return Object.values(value).flatMap((v) => collect(v));
+      } catch {
+        return [String(value)];
+      }
+    }
+    return [String(value)];
+  };
+
+  if (err?.data?.message) return String(err.data.message);
+
+  if (err?.data && typeof err.data === "object") {
+    const msgs = collect(err.data);
+    if (msgs.length) return msgs.join(", ");
+  }
+
+  if (err?.error) return String(err.error);
+  if (err?.message) {
+    if (/status code/i.test(err.message)) return "Server returned an error";
+    return String(err.message);
+  }
+
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+};
+
 const SuitabilityContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
   const [defaultAnswers, setDefaultAnswers] = useState(defaultAnswersData);
   // Modal State
@@ -495,7 +535,7 @@ const SuitabilityContent: React.FC = () => {
   const handleChange = <T extends keyof typeof formValue>(
     section: T,
     field: keyof (typeof formValue)[T],
-    value: string
+    value: string,
   ) => {
     setFormValue((prev) => ({
       ...prev,
@@ -571,26 +611,28 @@ const SuitabilityContent: React.FC = () => {
         }
       } else if (res.error) {
         const errorMessage =
-          (res.error as any)?.data?.detail || "Failed to save changes";
+          getErrorMessage(res.error) || "Failed to save changes";
         toast.error(errorMessage);
       } else {
         toast.error("Failed to save changes. Please try again!");
       }
     } catch (error) {
       console.error("Failed to update suitability:", error);
-      toast.error("Failed to save changes. Please try again.");
+      const errorMessage =
+        getErrorMessage(error) || "Failed to save changes. Please try again.";
+      toast.error(errorMessage);
     }
   };
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseDetails.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav: string | null = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -626,7 +668,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "circumstances_objectives",
                       "circumstances_type",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -653,7 +695,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "circumstances_objectives",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -671,7 +713,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "circumstances_objectives",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -689,7 +731,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "circumstances_objectives",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -712,7 +754,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "circumstances_objectives",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -730,7 +772,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "circumstances_objectives",
                         "question_two_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -758,7 +800,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "budget_affordability",
                       "budget_affordability_type",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -783,7 +825,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "budget_affordability",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -799,7 +841,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "budget_affordability",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -820,7 +862,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "budget_affordability",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -836,7 +878,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "budget_affordability",
                         "question_two_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -863,7 +905,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "new_mortgage_details",
                       "new_mortgage_details_type",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -888,7 +930,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "new_mortgage_details",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -904,7 +946,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "new_mortgage_details",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -925,7 +967,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "new_mortgage_details",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -941,7 +983,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "new_mortgage_details",
                         "question_two_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -969,7 +1011,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_repayment_method",
                       "recommending_repayment_method_type",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -997,7 +1039,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_repayment_method",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1016,7 +1058,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_repayment_method",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1035,7 +1077,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_repayment_method",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1054,7 +1096,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_repayment_method",
                         "question_four_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1078,7 +1120,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_repayment_method",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1097,7 +1139,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_repayment_method",
                         "question_two_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1125,7 +1167,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_mortgage_type",
                       "recommending_mortgage_type",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -1152,7 +1194,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_type",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1170,7 +1212,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_type",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1188,7 +1230,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_type",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1206,7 +1248,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_type",
                         "question_four_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1229,7 +1271,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_type",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1247,7 +1289,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_type",
                         "question_two_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1272,7 +1314,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_term",
                       "recommending_term",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -1295,7 +1337,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_term",
                       "question_one_answer",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -1313,7 +1355,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_term",
                       "question_one",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -1340,7 +1382,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_mortgage_lender",
                       "recommending_mortgage_lender_type",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -1367,7 +1409,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_lender",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1385,7 +1427,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_lender",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1404,7 +1446,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_lender",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1426,7 +1468,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_mortgage_lender",
                       "question_one_sharia",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -1453,7 +1495,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_mortgage_amount",
                       "recommending_mortgage_amount",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -1480,7 +1522,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_amount",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1498,7 +1540,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_amount",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1517,7 +1559,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "recommending_mortgage_amount",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1539,7 +1581,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "recommending_mortgage_amount",
                       "question_one_sharia",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -1583,7 +1625,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "costs_fees",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1599,7 +1641,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "costs_fees",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1615,7 +1657,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "costs_fees",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1634,7 +1676,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "costs_fees",
                       "question_one_sharia",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -1658,7 +1700,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "disadvantage_risks",
                       "disadvantage_risks",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -1682,7 +1724,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1698,7 +1740,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1714,7 +1756,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1730,7 +1772,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_four_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1746,7 +1788,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_five_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1762,7 +1804,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_six_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1778,7 +1820,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_seven_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1794,7 +1836,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_eight_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1810,7 +1852,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_nine_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1831,7 +1873,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1847,7 +1889,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "disadvantage_risks",
                         "question_two",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1892,7 +1934,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "cost_advice",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1908,7 +1950,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "cost_advice",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1928,7 +1970,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "cost_advice",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1944,7 +1986,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "cost_advice",
                         "question_two_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -1989,7 +2031,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2005,7 +2047,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2021,7 +2063,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2037,7 +2079,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_four_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2057,7 +2099,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_one_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2085,7 +2127,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_three_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2101,7 +2143,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "protection",
                         "question_four_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2126,7 +2168,7 @@ const SuitabilityContent: React.FC = () => {
                     handleChange(
                       "buildings_insurance",
                       "buildings_insurance",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 >
@@ -2151,7 +2193,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2167,7 +2209,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2183,7 +2225,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2199,7 +2241,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_four_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2219,7 +2261,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_one",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2235,7 +2277,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_two",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2251,7 +2293,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_three_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2267,7 +2309,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "buildings_insurance",
                         "question_five_sharia",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2312,7 +2354,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "wills",
                         "question_one_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2328,7 +2370,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "wills",
                         "question_two_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />
@@ -2344,7 +2386,7 @@ const SuitabilityContent: React.FC = () => {
                       handleChange(
                         "wills",
                         "question_three_answer",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />

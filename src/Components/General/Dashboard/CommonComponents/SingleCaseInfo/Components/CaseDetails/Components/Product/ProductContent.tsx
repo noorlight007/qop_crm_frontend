@@ -15,6 +15,46 @@ import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Col, FormGroup, Input, Label, Row } from "reactstrap";
 
+const getErrorMessage = (err: any) => {
+  if (!err) return "Unknown error";
+  if (typeof err === "string") return err;
+  if (typeof err?.data === "string") return err.data;
+
+  const collect = (value: any): string[] => {
+    if (value == null) return [];
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value))
+      return value.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
+    if (typeof value === "object") {
+      try {
+        return Object.values(value).flatMap((v) => collect(v));
+      } catch {
+        return [String(value)];
+      }
+    }
+    return [String(value)];
+  };
+
+  if (err?.data?.message) return String(err.data.message);
+
+  if (err?.data && typeof err.data === "object") {
+    const msgs = collect(err.data);
+    if (msgs.length) return msgs.join(", ");
+  }
+
+  if (err?.error) return String(err.error);
+  if (err?.message) {
+    if (/status code/i.test(err.message)) return "Server returned an error";
+    return String(err.message);
+  }
+
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+};
+
 const ProductContent: React.FC = () => {
   const params = useParams();
   const { casealias } = params;
@@ -54,11 +94,10 @@ const ProductContent: React.FC = () => {
     application_review: false,
     note: "",
   });
-  const {
-    data: caseData,
-    isLoading: isCaseFetching,
-    isError,
-  } = useGetSingleCaseQuery({ case_alias: casealias }, { skip: !casealias });
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
   const { data: productDetails, isLoading } = useGetProductDetailsQuery({
     case_alias: casealias,
   });
@@ -156,7 +195,7 @@ const ProductContent: React.FC = () => {
           }
         } else if (response.error) {
           const errorMessage =
-            (response.error as any)?.data?.detail ||
+            getErrorMessage((response as any).error) ||
             "Failed to update product details";
           toast.error(errorMessage);
         } else {
@@ -165,7 +204,8 @@ const ProductContent: React.FC = () => {
       }
     } catch (error: any) {
       // Handle any unexpected errors
-      const errorMessage = error?.message || "An unexpected error occurred";
+      const errorMessage =
+        getErrorMessage(error) || "An unexpected error occurred";
       toast.error(errorMessage);
     }
   };
@@ -186,14 +226,14 @@ const ProductContent: React.FC = () => {
     }));
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseDetails.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -389,9 +429,7 @@ const ProductContent: React.FC = () => {
             <Input
               id="earlyRepaymentCharge"
               name="early_repayment_charge"
-              type="number"
-              min="0"
-              step="1"
+              type="text"
               value={formData.early_repayment_charge || ""}
               onChange={handleChange}
             />
