@@ -51,7 +51,7 @@ export const getAllCasesUrl = (session: Session | null) => {
     case "ORGANISATION_ADMIN":
       return `/organisation/admin/cases`;
     case "CLIENT":
-      return `/client/cases`;
+      return `/client/dashboard`;
     default:
       return `url not found`;
   }
