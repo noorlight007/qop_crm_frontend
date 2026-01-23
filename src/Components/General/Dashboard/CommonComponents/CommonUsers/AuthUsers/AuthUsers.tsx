@@ -163,11 +163,11 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Phone</th>
                 <th>Joining Date</th>
                 {pathname !==
-                  "/dashboard/organisation/director/introducers" && (
+                  "/organisation/director/introducers" && (
                   <th>Gender</th>
                 )}
                 {pathname ===
-                  "/dashboard/organisation/director/introducers" && (
+                  "/organisation/director/introducers" && (
                   <>
                     <th>Company Name</th>
                     <th>Company Address</th>
@@ -246,7 +246,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
                     {pathname !==
-                      "/dashboard/organisation/director/introducers" && (
+                      "/organisation/director/introducers" && (
                       <td>
                         {user?.gender ? (
                           formatChoiceFieldValue(user?.gender)
@@ -256,7 +256,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       </td>
                     )}
                     {pathname ===
-                      "/dashboard/organisation/director/introducers" && (
+                      "/organisation/director/introducers" && (
                       <>
                         <td>
                           {user?.company_name || (

@@ -137,7 +137,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
               Personal Details
             </h6>
             <Row>
-              {pathname !== "/dashboard/organisation/director/introducers" && (
+              {pathname !== "/organisation/director/introducers" && (
                 <>
                   <Col md="6" className="mb-3">
                     <div>
@@ -170,7 +170,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                   </Col>
                 </>
               )}
-              {pathname === "/dashboard/organisation/director/introducers" && (
+              {pathname === "/organisation/director/introducers" && (
                 <>
                   <Col md="4" className="mb-3">
                     <div>

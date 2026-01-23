@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Case: ${caseData.name}`,
     description: `Manage case ${caseData.name} with QOP CRM`,
     keywords: ["case management", caseData.category],
-    canonical: `/dashboard/cases/${params.casealias}`,
+    canonical: `/cases/${params.casealias}`,
   });
 }
 ```

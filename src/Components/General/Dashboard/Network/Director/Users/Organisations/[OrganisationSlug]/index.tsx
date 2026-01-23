@@ -49,13 +49,13 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
   useEffect(() => {
     if (!isLoading) {
       if (isError || !singleOrgData) {
-        router.push("/dashboard/network");
+        router.push("/network");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
 
       if (singleOrgData?.slug !== organisationslug) {
-        router.push("/dashboard/network");
+        router.push("/network");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }

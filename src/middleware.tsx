@@ -15,14 +15,14 @@ export default withAuth(
     }
 
     // Role-based path protection
-    if (path.startsWith("/dashboard/admin") && token.user_type !== "ADMIN") {
+    if (path.startsWith("/admin") && token.user_type !== "ADMIN") {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
     }
 
     if (
-      path.startsWith("/dashboard/network/director") &&
+      path.startsWith("/network/director") &&
       !["NETWORK_DIRECTOR", "NETWORK_COMPLIANCE_ASSISTANT"].includes(
         token.user_type as string
       )
@@ -33,7 +33,7 @@ export default withAuth(
     }
 
     if (
-      path.startsWith("/dashboard/network/adviser") &&
+      path.startsWith("/network/adviser") &&
       token.user_type !== "NETWORK_ADVISER"
     ) {
       const loginUrl = new URL("/auth/login", req.url);
@@ -42,7 +42,7 @@ export default withAuth(
     }
 
     if (
-      path.startsWith("/dashboard/organisation/director") &&
+      path.startsWith("/organisation/director") &&
       token.user_type !== "ORGANISATION_DIRECTOR"
     ) {
       const loginUrl = new URL("/auth/login", req.url);
@@ -51,7 +51,7 @@ export default withAuth(
     }
 
     if (
-      path.startsWith("/dashboard/organisation/adviser") &&
+      path.startsWith("/organisation/adviser") &&
       token.user_type !== "ORGANISATION_ADVISER"
     ) {
       const loginUrl = new URL("/auth/login", req.url);
@@ -59,7 +59,7 @@ export default withAuth(
       return NextResponse.redirect(loginUrl);
     }
     if (
-      path.startsWith("/dashboard/organisation/admin") &&
+      path.startsWith("/organisation/admin") &&
       token.user_type !== "ORGANISATION_ADMIN"
     ) {
       const loginUrl = new URL("/auth/login", req.url);
@@ -67,7 +67,7 @@ export default withAuth(
       return NextResponse.redirect(loginUrl);
     }
 
-    if (path.startsWith("/dashboard/client") && token.user_type !== "CLIENT") {
+    if (path.startsWith("/client") && token.user_type !== "CLIENT") {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -85,11 +85,11 @@ export default withAuth(
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/dashboard/network/director/:path*",
-    "/dashboard/network/adviser/:path*",
-    "/dashboard/organisation/director/:path*",
-    "/dashboard/organisation/adviser/:path*",
-    "/dashboard/organisation/admin/:path*",
-    "/dashboard/client/:path*",
+    "/network/director/:path*",
+    "/network/adviser/:path*",
+    "/organisation/director/:path*",
+    "/organisation/adviser/:path*",
+    "/organisation/admin/:path*",
+    "/client/:path*",
   ],
 };

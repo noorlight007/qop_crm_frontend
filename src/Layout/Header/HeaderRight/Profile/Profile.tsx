@@ -71,7 +71,7 @@ const Profile = () => {
         >
           <ul className="profile-body">
             <li className="d-flex">
-              <Link href="/dashboard/user-profile" className="d-flex gap-2">
+              <Link href="/user-profile" className="d-flex gap-2">
                 <i className="fa-solid fa-user-gear"></i>
                 Profile
               </Link>
@@ -80,7 +80,7 @@ const Profile = () => {
             session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
             session?.user?.user_type === "ORGANISATION_DIRECTOR" ? (
               <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
-                <Link href="/dashboard/appearance" className="d-flex gap-2">
+                <Link href="/appearance" className="d-flex gap-2">
                   <TbSettings />
                   Appearance
                 </Link>

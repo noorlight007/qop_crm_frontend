@@ -39,7 +39,7 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
               </Badge>
             </div>
             <Link
-              href="/dashboard/network/director/advisers-status"
+              href="/network/director/advisers-status"
               className="ms-3 text_decoration_hover"
             >
               <TbEye size={18} className="me-1" />

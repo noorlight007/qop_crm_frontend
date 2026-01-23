@@ -110,7 +110,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
         toast.success("Organisation updated successfully!");
         // Redirect if name changed
         if (formData.name !== oldName) {
-          router.push("/dashboard/network/director/organisations");
+          router.push("/network/director/organisations");
           toast.warning(
             "Due to the name change, redirected to the Organisations page."
           );

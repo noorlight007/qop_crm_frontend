@@ -4,8 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Container } from "reactstrap";
-import CaseDetails from "../../CommonComponents/SingleCaseInfo/Components/CaseDetails/CaseDetails";
-import ClientBreadcrumbs from "../Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../../../CommonComponents/Breadcrumbs/Breadcrumbs";
+import CaseDetails from "../../../CommonComponents/SingleCaseInfo/Components/CaseDetails/CaseDetails";
 
 const ClientSingleCaseContainer: React.FC = () => {
   const router = useRouter();
@@ -19,13 +19,13 @@ const ClientSingleCaseContainer: React.FC = () => {
   useEffect(() => {
     if (!isLoading) {
       if (isError || !caseData) {
-        router.push("/dashboard/client");
+        router.push("/client/dashboard");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
 
       if (caseData.alias !== casealias) {
-        router.push("/dashboard/client");
+        router.push("/client/dashboard");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
@@ -46,11 +46,11 @@ const ClientSingleCaseContainer: React.FC = () => {
 
   return (
     <>
-      <ClientBreadcrumbs
-        mainTitle="Client Dashboard"
-        title="Welcome back! Let’s start from where you left."
-        parent="Dashboard"
-        activePage="Client"
+      <Breadcrumbs
+        title="Client Dashboard"
+        subTitle="Welcome back! Let’s start from where you left."
+        parent="Client"
+        child="Dashboard"
       />
       <Container fluid>
         <CaseDetails

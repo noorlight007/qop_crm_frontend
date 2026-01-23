@@ -50,7 +50,7 @@ const OrganisationCards = () => {
               className="text-md-end text-center mt-2 mt-md-0"
             >
               <Link
-                href="/dashboard/network/organisations"
+                href="/network/organisations"
                 className="text-decoration-none"
               >
                 <Button color="primary">
@@ -76,7 +76,7 @@ const OrganisationCards = () => {
                 >
                   <Card className="bg-white border organisation_card opacity-100  p-3 position-relative">
                     {/* <Link
-                      href={`/dashboard/network/organisations/${item.slug}`}
+                      href={`/network/organisations/${item.slug}`}
                       href="#"
                       target="_blank"
                       className="text-muted position-absolute top-0 end-0 p-3"

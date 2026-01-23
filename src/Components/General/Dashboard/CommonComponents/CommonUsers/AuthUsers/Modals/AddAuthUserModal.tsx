@@ -35,6 +35,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     company_name: "",
     company_address: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const getErrorMessage = (err: any) => {
     if (!err) return "Unknown error";
@@ -46,7 +47,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       if (typeof value === "string") return [value];
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
       if (typeof value === "object") {
         try {
@@ -57,6 +58,13 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       }
       return [String(value)];
     };
+
+    // If the error itself is an object mapping fields to messages/arrays,
+    // collect and return those messages directly (e.g. { email: ["..."] }).
+    if (err && typeof err === "object") {
+      const msgs = collect(err);
+      if (msgs.length) return msgs.join(", ");
+    }
 
     if (err?.data?.message) return String(err.data.message);
 
@@ -78,14 +86,31 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     }
   };
 
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[name];
+      delete copy[camelToSnake(name)];
+      return copy;
+    });
   };
   const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,15 +126,15 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       gender: formData.gender ? formData.gender : null,
       joining_date: formData.joining_date ? formData.joining_date : null,
       role:
-        pathname === "/dashboard/network/director/advisers"
+        pathname === "/network/director/advisers"
           ? "NETWORK_ADVISER"
-          : pathname === "/dashboard/network/director/compliance-assistants"
+          : pathname === "/network/director/compliance-assistants"
             ? "NETWORK_COMPLIANCE_ASSISTANT"
-            : pathname === "/dashboard/organisation/director/advisers"
+            : pathname === "/organisation/director/advisers"
               ? "ORGANISATION_ADVISER"
-              : pathname === "/dashboard/organisation/director/admins"
+              : pathname === "/organisation/director/admins"
                 ? "ORGANISATION_ADMIN"
-                : pathname === "/dashboard/organisation/director/introducers"
+                : pathname === "/organisation/director/introducers"
                   ? "INTRODUCER"
                   : "",
       company_name: formData.company_name,
@@ -134,10 +159,44 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
           company_name: "",
           company_address: "",
         });
+        setErrors({});
         toggle();
       } else if ("error" in result) {
-        const errorMessage = getErrorMessage((result.error as any)?.data);
-        toast.error(errorMessage);
+        const errData = (result.error as any)?.data;
+        if (errData && typeof errData === "object") {
+          const collect = (value: any): string[] => {
+            if (value == null) return [];
+            if (typeof value === "string") return [value];
+            if (Array.isArray(value))
+              return value.map((v) =>
+                typeof v === "string" ? v : JSON.stringify(v),
+              );
+            if (typeof value === "object") {
+              try {
+                return Object.values(value).flatMap((v) => collect(v));
+              } catch {
+                return [String(value)];
+              }
+            }
+            return [String(value)];
+          };
+          const fieldErrors: Record<string, string> = {};
+          Object.entries(errData).forEach(([k, v]) => {
+            const msgs = collect(v);
+            if (msgs.length) fieldErrors[k] = msgs.join(", ");
+          });
+          if (Object.keys(fieldErrors).length) {
+            setErrors(fieldErrors);
+            const firstMsg = Object.values(fieldErrors)[0];
+            toast.error(firstMsg);
+          } else {
+            const errorMessage = getErrorMessage(errData);
+            toast.error(errorMessage);
+          }
+        } else {
+          const errorMessage = getErrorMessage(result.error as any);
+          toast.error(errorMessage);
+        }
       } else {
         toast.error("Invalid request. Please try again.");
       }
@@ -183,6 +242,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     <option value="PROFESSOR">Professor</option>
                     <option value="DOCTOR">Doctor</option>
                   </Input>
+                  {getFieldError("title") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("title")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -198,6 +262,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("firstName") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("firstName")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -210,6 +279,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     value={formData.middleName || ""}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("middleName") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("middleName")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -225,6 +299,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("lastName") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("lastName")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -240,6 +319,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("email") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("email")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -252,10 +336,15 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     value={formData.phone}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("phone") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("phone")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
 
-              {pathname !== "/dashboard/organisation/director/introducers" && (
+              {pathname !== "/organisation/director/introducers" && (
                 <Col md={6}>
                   <FormGroup>
                     <Label for="gender">
@@ -274,10 +363,15 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                       <option value="FEMALE">Female</option>
                       <option value="OTHER">Other</option>
                     </Input>
+                    {getFieldError("gender") && (
+                      <div className="text-danger small mt-1">
+                        {getFieldError("gender")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               )}
-              {pathname === "/dashboard/organisation/director/introducers" && (
+              {pathname === "/organisation/director/introducers" && (
                 <>
                   <Col md={6}>
                     <FormGroup>
@@ -292,6 +386,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                         onChange={handleInputChange}
                         required
                       />
+                      {getFieldError("company_name") && (
+                        <div className="text-danger small mt-1">
+                          {getFieldError("company_name")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -307,6 +406,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                         onChange={handleInputChange}
                         required
                       />
+                      {getFieldError("company_address") && (
+                        <div className="text-danger small mt-1">
+                          {getFieldError("company_address")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 </>
@@ -321,6 +425,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     value={formData.joining_date}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("joining_date") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("joining_date")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>

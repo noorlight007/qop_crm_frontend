@@ -8,21 +8,21 @@ export const getDashboardHomeUrl = (session: Session | null) => {
   const userType = session?.user?.user_type;
   switch (userType) {
     case "ADMIN":
-      return "/dashboard/admin";
+      return "/admin";
     case "NETWORK_DIRECTOR":
-      return "/dashboard/network/director";
+      return "/network/director/dashboard";
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return "/dashboard/network/director";
+      return "/network/director/dashboard";
     case "NETWORK_ADVISER":
-      return "/dashboard/network/adviser";
+      return "/network/adviser/dashboard";
     case "ORGANISATION_DIRECTOR":
-      return "/dashboard/organisation/director";
+      return "/organisation/director/dashboard";
     case "ORGANISATION_ADVISER":
-      return "/dashboard/organisation/adviser";
+      return "/organisation/adviser/dashboard";
     case "ORGANISATION_ADMIN":
-      return "/dashboard/organisation/admin";
+      return "/organisation/admin/dashboard";
     case "CLIENT":
-      return "/dashboard/client";
+      return "/client/dashboard";
     default:
       return "/auth/login";
   }
@@ -37,21 +37,21 @@ export const getAllCasesUrl = (session: Session | null) => {
 
   switch (userType) {
     case "ADMIN":
-      return `/dashboard/admin`;
+      return `/admin`;
     case "NETWORK_DIRECTOR":
-      return `/dashboard/network/director/cases`;
+      return `/network/director/cases`;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return `/dashboard/network/director/cases`;
+      return `/network/director/cases`;
     case "NETWORK_ADVISER":
-      return `/dashboard/network/adviser/cases`;
+      return `/network/adviser/cases`;
     case "ORGANISATION_DIRECTOR":
-      return `/dashboard/organisation/director/cases`;
+      return `/organisation/director/cases`;
     case "ORGANISATION_ADVISER":
-      return `/dashboard/organisation/adviser/cases`;
+      return `/organisation/adviser/cases`;
     case "ORGANISATION_ADMIN":
-      return `/dashboard/organisation/admin/cases`;
+      return `/organisation/admin/cases`;
     case "CLIENT":
-      return `/dashboard/client/cases`;
+      return `/client/dashboard`;
     default:
       return `url not found`;
   }
@@ -61,21 +61,21 @@ export const getAllCasesUrl = (session: Session | null) => {
 export const getCaseUrl = (caseAlias: string, userType: string) => {
   switch (userType) {
     case "ADMIN":
-      return `/dashboard/admin/cases/${caseAlias}`;
+      return `/admin/cases/${caseAlias}`;
     case "NETWORK_DIRECTOR":
-      return `/dashboard/network/director/cases/${caseAlias}`;
+      return `/network/director/cases/${caseAlias}`;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return `/dashboard/network/director/cases/${caseAlias}`;
+      return `/network/director/cases/${caseAlias}`;
     case "NETWORK_ADVISER":
-      return `/dashboard/network/adviser/cases/${caseAlias}`;
+      return `/network/adviser/cases/${caseAlias}`;
     case "ORGANISATION_DIRECTOR":
-      return `/dashboard/organisation/director/cases/${caseAlias}`;
+      return `/organisation/director/cases/${caseAlias}`;
     case "ORGANISATION_ADVISER":
-      return `/dashboard/organisation/adviser/cases/${caseAlias}`;
+      return `/organisation/adviser/cases/${caseAlias}`;
     case "ORGANISATION_ADMIN":
-      return `/dashboard/organisation/admin/cases/${caseAlias}`;
+      return `/organisation/admin/cases/${caseAlias}`;
     case "CLIENT":
-      return `/dashboard/client/cases/${caseAlias}`;
+      return `/client/cases/${caseAlias}`;
     default:
       return "#";
   }
@@ -87,21 +87,21 @@ export const getSupportTicketUrl = (
 ) => {
   switch (userType) {
     case "ADMIN":
-      return `/dashboard/admin/support-ticket/${supportTicketAlias}`;
+      return `/admin/support-ticket/${supportTicketAlias}`;
     case "NETWORK_DIRECTOR":
-      return `/dashboard/network/director/support-ticket/${supportTicketAlias}`;
+      return `/network/director/support-ticket/${supportTicketAlias}`;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return `/dashboard/network/director/support-ticket/${supportTicketAlias}`;
+      return `/network/director/support-ticket/${supportTicketAlias}`;
     case "NETWORK_ADVISER":
-      return `/dashboard/network/adviser/support-ticket/${supportTicketAlias}`;
+      return `/network/adviser/support-ticket/${supportTicketAlias}`;
     case "ORGANISATION_DIRECTOR":
-      return `/dashboard/organisation/director/support-ticket/${supportTicketAlias}`;
+      return `/organisation/director/support-ticket/${supportTicketAlias}`;
     case "ORGANISATION_ADVISER":
-      return `/dashboard/organisation/adviser/support-ticket/${supportTicketAlias}`;
+      return `/organisation/adviser/support-ticket/${supportTicketAlias}`;
     case "ORGANISATION_ADMIN":
-      return `/dashboard/organisation/admin/support-ticket/${supportTicketAlias}`;
+      return `/organisation/admin/support-ticket/${supportTicketAlias}`;
     case "CLIENT":
-      return `/dashboard/client/support-ticket/${supportTicketAlias}`;
+      return `/client/support-ticket/${supportTicketAlias}`;
     default:
       return "#";
   }
@@ -115,11 +115,11 @@ export const getOrganisationUrl = (session: Session | null) => {
 
   switch (userType) {
     case "NETWORK_DIRECTOR":
-      return `/dashboard/network/director/organisations`;
+      return `/network/director/organisations`;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return `/dashboard/network/director/organisations`;
+      return `/network/director/organisations`;
     case "NETWORK_ADVISER":
-      return `/dashboard/network/adviser/organisations`;
+      return `/network/adviser/organisations`;
     default:
       return `url not found`;
   }

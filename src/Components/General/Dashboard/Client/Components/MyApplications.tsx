@@ -43,7 +43,7 @@ const MyApplications: React.FC = () => {
                 <td>
                   <Link
                     className="text_decoration_hover"
-                    href={`client/${app.alias}`}
+                    href={`/client/cases/${app.alias}`}
                   >
                     {app.name}
                   </Link>
