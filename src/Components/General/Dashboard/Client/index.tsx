@@ -1,16 +1,16 @@
 import { Container, Row } from "reactstrap";
-import ClientBreadcrumbs from "./Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../CommonComponents/Breadcrumbs/Breadcrumbs";
 import MyApplications from "./Components/MyApplications";
 import WelcomeMessage from "./Components/WelcomeMessage";
 
 const ClientContainer: React.FC = () => {
   return (
     <>
-      <ClientBreadcrumbs
-        mainTitle="Client Dashboard"
-        title="Welcome back! Let’s start from where you left."
-        parent="Dashboard"
-        activePage="Client"
+      <Breadcrumbs
+        title="Client Dashboard"
+        subTitle="Welcome back! Let’s start from where you left."
+        parent="Client"
+        child="Dashboard"
       />
       <Container fluid>
         <Row>

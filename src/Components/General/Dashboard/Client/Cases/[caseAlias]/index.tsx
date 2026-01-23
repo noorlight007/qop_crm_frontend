@@ -49,8 +49,8 @@ const ClientSingleCaseContainer: React.FC = () => {
       <Breadcrumbs
         title="Client Dashboard"
         subTitle="Welcome back! Let’s start from where you left."
-        parent="Dashboard"
-        child="Client"
+        parent="Client"
+        child="Dashboard"
       />
       <Container fluid>
         <CaseDetails
