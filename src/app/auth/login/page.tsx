@@ -13,22 +13,22 @@ const UserLogin = () => {
     if (!session) return;
 
     if (session.user?.user_type === "ADMIN") {
-      router.push("/dashboard/admin");
+      router.push("/admin");
     } else if (
       session.user?.user_type === "NETWORK_DIRECTOR" ||
       session.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
     ) {
-      router.push("/dashboard/network/director");
+      router.push("/network/director");
     } else if (session.user?.user_type === "NETWORK_ADVISER") {
-      router.push("/dashboard/network/adviser");
+      router.push("/network/adviser");
     } else if (session.user?.user_type === "ORGANISATION_DIRECTOR") {
-      router.push("/dashboard/organisation/director");
+      router.push("/organisation/director");
     } else if (session.user?.user_type === "ORGANISATION_ADVISER") {
-      router.push("/dashboard/organisation/adviser");
+      router.push("/organisation/adviser");
     } else if (session.user?.user_type === "ORGANISATION_ADMIN") {
-      router.push("/dashboard/organisation/admin");
+      router.push("/organisation/admin");
     } else if (session.user?.user_type === "CLIENT") {
-      router.push("/dashboard/client");
+      router.push("/client");
     } else if (session.user?.accessToken) {
       // Unknown role but still have a session; force sign-out
       // without relying on redirects to avoid loops.

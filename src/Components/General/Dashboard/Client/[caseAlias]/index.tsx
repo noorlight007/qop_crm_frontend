@@ -19,13 +19,13 @@ const ClientSingleCaseContainer: React.FC = () => {
   useEffect(() => {
     if (!isLoading) {
       if (isError || !caseData) {
-        router.push("/dashboard/client");
+        router.push("/client");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
 
       if (caseData.alias !== casealias) {
-        router.push("/dashboard/client");
+        router.push("/client");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }

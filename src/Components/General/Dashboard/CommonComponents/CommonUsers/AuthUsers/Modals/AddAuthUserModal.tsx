@@ -101,15 +101,15 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       gender: formData.gender ? formData.gender : null,
       joining_date: formData.joining_date ? formData.joining_date : null,
       role:
-        pathname === "/dashboard/network/director/advisers"
+        pathname === "/network/director/advisers"
           ? "NETWORK_ADVISER"
-          : pathname === "/dashboard/network/director/compliance-assistants"
+          : pathname === "/network/director/compliance-assistants"
             ? "NETWORK_COMPLIANCE_ASSISTANT"
-            : pathname === "/dashboard/organisation/director/advisers"
+            : pathname === "/organisation/director/advisers"
               ? "ORGANISATION_ADVISER"
-              : pathname === "/dashboard/organisation/director/admins"
+              : pathname === "/organisation/director/admins"
                 ? "ORGANISATION_ADMIN"
-                : pathname === "/dashboard/organisation/director/introducers"
+                : pathname === "/organisation/director/introducers"
                   ? "INTRODUCER"
                   : "",
       company_name: formData.company_name,
@@ -255,7 +255,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
 
-              {pathname !== "/dashboard/organisation/director/introducers" && (
+              {pathname !== "/organisation/director/introducers" && (
                 <Col md={6}>
                   <FormGroup>
                     <Label for="gender">
@@ -277,7 +277,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                   </FormGroup>
                 </Col>
               )}
-              {pathname === "/dashboard/organisation/director/introducers" && (
+              {pathname === "/organisation/director/introducers" && (
                 <>
                   <Col md={6}>
                     <FormGroup>

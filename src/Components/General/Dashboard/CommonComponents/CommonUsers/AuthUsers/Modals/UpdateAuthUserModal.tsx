@@ -274,7 +274,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 />
               </FormGroup>
             </Col>
-            {pathname !== "/dashboard/organisation/director/introducers" && (
+            {pathname !== "/organisation/director/introducers" && (
               <Col md={6} xs={6}>
                 <FormGroup>
                   <Label for="gender">Gender</Label>
@@ -293,7 +293,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
             )}
-            {pathname === "/dashboard/organisation/director/introducers" && (
+            {pathname === "/organisation/director/introducers" && (
               <>
                 <Col md={6}>
                   <FormGroup>

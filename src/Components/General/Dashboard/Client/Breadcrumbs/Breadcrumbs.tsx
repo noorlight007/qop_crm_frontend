@@ -24,7 +24,7 @@ const ClientBreadcrumbs: React.FC<ClientBreadcrumbsProps> = ({
         <Col sm="6">
           <Breadcrumb className="justify-content-sm-end align-items-center">
             <BreadcrumbItem>
-              <Link href={`/dashboard/client`}>
+              <Link href={`/client`}>
                 <i className="iconly-Home icli svg-color" />
               </Link>
             </BreadcrumbItem>
