@@ -5,12 +5,12 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import {
-  FaCheckCircle,
   FaDownload,
   FaExclamationCircle,
   FaFileAlt,
-  FaHammer,
+  FaSpinner,
 } from "react-icons/fa";
+import { TbCheck } from "react-icons/tb";
 import {
   Alert,
   Badge,
@@ -102,6 +102,20 @@ const SupportTicketDetails: React.FC = () => {
     );
   }
 
+  type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
+
+  const statusColorMap: Record<TicketStatus, string> = {
+    OPEN: "danger",
+    IN_REVIEW: "warning",
+    RESOLVED: "success",
+  };
+
+  const statusIconMap: Record<TicketStatus, JSX.Element> = {
+    OPEN: <FaExclamationCircle />,
+    IN_REVIEW: <FaSpinner />,
+    RESOLVED: <TbCheck />,
+  };
+
   return (
     <>
       <Row>
@@ -142,33 +156,31 @@ const SupportTicketDetails: React.FC = () => {
                 </Col>
                 <Col xs="auto">
                   <div className="d-flex justify-content-end">
-                    {ticketDetails.is_resolved ? (
+                    {ticketDetails.status ? (
                       <span>
                         <Badge
-                          color="success"
-                          className="d-flex align-items-center gap-1"
+                          color={
+                            statusColorMap[
+                              ticketDetails?.status as TicketStatus
+                            ] ?? "dark"
+                          }
+                          className="d-flex justify-content-center align-items-center gap-1"
                         >
-                          <FaCheckCircle />
-                          Resolved
+                          {statusIconMap[ticketDetails?.status as TicketStatus]}{" "}
+                          {formatChoiceFieldValue(ticketDetails?.status)}
                         </Badge>
                       </span>
                     ) : (
-                      <span>
-                        <Badge
-                          color="warning"
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <FaHammer />
-                          Open
-                        </Badge>
-                      </span>
+                      <small className="text-muted">Not Found</small>
                     )}
                   </div>
                   <div className="mt-1 bg-light-primary px-2 py-1 rounded-2">
                     <div className="small text-end text-muted fw-bold">
                       Ticket ID
                     </div>
-                    <div className="text-end small">{ticketDetails?.id}</div>
+                    <div className="text-end small">
+                      {ticketDetails?.ticket_id}
+                    </div>
                   </div>
                 </Col>
               </Row>

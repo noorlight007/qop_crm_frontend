@@ -5,8 +5,8 @@ import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import { FaCheckCircle, FaExclamationCircle, FaHammer } from "react-icons/fa";
-import { TbCirclePlus, TbExternalLink } from "react-icons/tb";
+import { FaExclamationCircle, FaSpinner } from "react-icons/fa";
+import { TbCheck, TbCirclePlus, TbExternalLink } from "react-icons/tb";
 import {
   Badge,
   Button,
@@ -72,6 +72,19 @@ const SupportTicket: React.FC = () => {
     toggleDeleteModal();
   };
 
+  type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
+
+  const statusColorMap: Record<TicketStatus, string> = {
+    OPEN: "danger",
+    IN_REVIEW: "warning",
+    RESOLVED: "success",
+  };
+  const statusIconMap: Record<TicketStatus, JSX.Element> = {
+    OPEN: <FaExclamationCircle />,
+    IN_REVIEW: <FaSpinner />,
+    RESOLVED: <TbCheck />,
+  };
+
   return (
     <Row>
       <Col>
@@ -124,7 +137,7 @@ const SupportTicket: React.FC = () => {
                   ) : tickets.length > 0 ? (
                     tickets.map((ticket: any) => (
                       <tr key={ticket.alias} className="text-center">
-                        <td>{ticket.id}</td>
+                        <td className="text-truncate">{ticket.ticket_id}</td>
                         <td>
                           <span
                             className={`badge ${
@@ -140,22 +153,22 @@ const SupportTicket: React.FC = () => {
                         </td>
                         <td>
                           <span>
-                            {ticket.is_resolved ? (
+                            {ticket.status ? (
                               <Badge
-                                color="success"
-                                className="d-flex align-items-center gap-1"
+                                color={
+                                  statusColorMap[
+                                    ticket?.status as TicketStatus
+                                  ] ?? "dark"
+                                }
+                                className="d-flex justify-content-center align-items-center gap-1"
                               >
-                                <FaCheckCircle />
-                                Resolved
+                                {statusIconMap[ticket?.status as TicketStatus]}{" "}
+                                {formatChoiceFieldValue(ticket?.status)}
                               </Badge>
                             ) : (
-                              <Badge
-                                color="warning"
-                                className="d-flex align-items-center gap-1"
-                              >
-                                <FaHammer />
-                                Open
-                              </Badge>
+                              <small className="text-text-muted">
+                                Not Founds
+                              </small>
                             )}
                           </span>
                         </td>
