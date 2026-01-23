@@ -35,6 +35,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     company_name: "",
     company_address: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const getErrorMessage = (err: any) => {
     if (!err) return "Unknown error";
@@ -85,6 +86,17 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     }
   };
 
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -93,6 +105,12 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       ...prevData,
       [name]: value,
     }));
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[name];
+      delete copy[camelToSnake(name)];
+      return copy;
+    });
   };
   const handleSaveUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,10 +159,44 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
           company_name: "",
           company_address: "",
         });
+        setErrors({});
         toggle();
       } else if ("error" in result) {
-        const errorMessage = getErrorMessage((result.error as any)?.data);
-        toast.error(errorMessage);
+        const errData = (result.error as any)?.data;
+        if (errData && typeof errData === "object") {
+          const collect = (value: any): string[] => {
+            if (value == null) return [];
+            if (typeof value === "string") return [value];
+            if (Array.isArray(value))
+              return value.map((v) =>
+                typeof v === "string" ? v : JSON.stringify(v),
+              );
+            if (typeof value === "object") {
+              try {
+                return Object.values(value).flatMap((v) => collect(v));
+              } catch {
+                return [String(value)];
+              }
+            }
+            return [String(value)];
+          };
+          const fieldErrors: Record<string, string> = {};
+          Object.entries(errData).forEach(([k, v]) => {
+            const msgs = collect(v);
+            if (msgs.length) fieldErrors[k] = msgs.join(", ");
+          });
+          if (Object.keys(fieldErrors).length) {
+            setErrors(fieldErrors);
+            const firstMsg = Object.values(fieldErrors)[0];
+            toast.error(firstMsg);
+          } else {
+            const errorMessage = getErrorMessage(errData);
+            toast.error(errorMessage);
+          }
+        } else {
+          const errorMessage = getErrorMessage(result.error as any);
+          toast.error(errorMessage);
+        }
       } else {
         toast.error("Invalid request. Please try again.");
       }
@@ -190,6 +242,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     <option value="PROFESSOR">Professor</option>
                     <option value="DOCTOR">Doctor</option>
                   </Input>
+                  {getFieldError("title") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("title")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -205,6 +262,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("firstName") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("firstName")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -217,6 +279,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     value={formData.middleName || ""}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("middleName") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("middleName")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -232,6 +299,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("lastName") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("lastName")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -247,6 +319,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("email") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("email")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -259,6 +336,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     value={formData.phone}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("phone") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("phone")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
 
@@ -281,6 +363,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                       <option value="FEMALE">Female</option>
                       <option value="OTHER">Other</option>
                     </Input>
+                    {getFieldError("gender") && (
+                      <div className="text-danger small mt-1">
+                        {getFieldError("gender")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -299,6 +386,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                         onChange={handleInputChange}
                         required
                       />
+                      {getFieldError("company_name") && (
+                        <div className="text-danger small mt-1">
+                          {getFieldError("company_name")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -314,6 +406,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                         onChange={handleInputChange}
                         required
                       />
+                      {getFieldError("company_address") && (
+                        <div className="text-danger small mt-1">
+                          {getFieldError("company_address")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 </>
@@ -328,6 +425,11 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                     value={formData.joining_date}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("joining_date") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("joining_date")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
