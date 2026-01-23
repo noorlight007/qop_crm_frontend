@@ -267,7 +267,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -303,8 +302,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       );
 
       const address = res.data;
-
-      console.log("address details: ", address)
 
       if (!address) {
         console.error("❌ No address returned");

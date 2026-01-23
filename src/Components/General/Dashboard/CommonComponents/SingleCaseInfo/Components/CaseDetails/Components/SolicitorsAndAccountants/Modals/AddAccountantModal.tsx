@@ -174,7 +174,6 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -223,7 +222,6 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
         setCurrentZoom(DEFAULT_ZOOM);
       }
 
-      console.log("address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {

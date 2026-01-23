@@ -374,7 +374,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -438,7 +437,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         setEmployerZoom(DEFAULT_ZOOM);
       }
 
-      console.log("address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -502,7 +500,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         setBusinessZoom(DEFAULT_ZOOM);
       }
 
-      console.log("business address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed business address:", error);
     } finally {

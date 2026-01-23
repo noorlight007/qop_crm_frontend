@@ -268,7 +268,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -331,8 +330,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         setEmployerMapCoords(null);
         setEmployerZoom(DEFAULT_ZOOM);
       }
-
-      console.log("address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -396,7 +393,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         setBusinessZoom(DEFAULT_ZOOM);
       }
 
-      console.log("business address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed business address:", error);
     } finally {
