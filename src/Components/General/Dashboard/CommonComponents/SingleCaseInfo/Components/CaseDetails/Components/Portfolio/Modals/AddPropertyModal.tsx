@@ -280,7 +280,6 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -320,10 +319,6 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
         return;
       }
 
-      console.log("address details: ", address);
-
-      // setAddress1(address.line_1);
-
       setHouseNumber(address.building_number || address.building_name || "");
       setAddress1(address.line_1 || "");
       setAddress2(address.line_2 || "");
@@ -346,15 +341,12 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
         address_four: address.line_4,
       });
 
-      console.log("📍 EPC request address:", fullAddressForEPC);
-
       const epcResponse = await getPropertyEPCRating({
         case_alias: casealias as string,
         property_postcode: address.postcode,
         property_address: fullAddressForEPC,
       }).unwrap();
       setFetchedEpcRating(epcResponse.epc_rating);
-      console.log("✅ EPC Rating received:", epcResponse.epc_rating);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {

@@ -51,14 +51,13 @@ const Solicitor: React.FC = () => {
   const { data: solicitorName, isLoading } =
     useGetSolicitorDetailsQuery(undefined);
 
-  console.log("solicitor info: ", solicitorName)
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: caseAlias },
     { skip: !caseAlias }
   );
   const { data: caseSolicitors, isLoading: isCaseSolicitorLoading } =
     useGetCaseSolicitorDetailsQuery({ case_alias: caseAlias });
-  console.log("caseSolicitors length:", caseSolicitors?.length);
+
   const [assignCaseSolicitor, { isLoading: isAssignedLoading }] =
     useAssignCaseSolicitorMutation();
   const [unassignSolicitor, { isLoading: isUnassigning }] =
@@ -67,8 +66,6 @@ const Solicitor: React.FC = () => {
     useUpdateSolicitorDetailsMutation();
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
-
-  console.log("Solicitors: ", caseSolicitors)
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSolicitor, setSelectedSolicitor] = useState<any>(null);
@@ -165,8 +162,21 @@ const Solicitor: React.FC = () => {
       [name]: value,
     }));
 
-    setMapCoords(LONDON_CENTER);
-    setCurrentZoom(DEFAULT_ZOOM);
+    const addressFields = [
+      "postcode",
+      "building_name_or_number",
+      "street",
+      "address_line1",
+      "city",
+      "county",
+      "country",
+    ];
+
+    if (addressFields.includes(name)) {
+      setMapCoords(LONDON_CENTER);
+      setCurrentZoom(DEFAULT_ZOOM);
+    }
+
   };
 
   const handleAssignSolicitor = async () => {
@@ -304,7 +314,6 @@ const Solicitor: React.FC = () => {
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -353,7 +362,6 @@ const Solicitor: React.FC = () => {
         setCurrentZoom(DEFAULT_ZOOM);
       }
 
-      console.log("address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {

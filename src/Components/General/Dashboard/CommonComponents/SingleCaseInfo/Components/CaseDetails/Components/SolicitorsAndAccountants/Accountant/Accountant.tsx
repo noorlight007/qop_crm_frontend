@@ -184,8 +184,20 @@ const Accountant: React.FC = () => {
       [name]: value,
     }));
 
-    setMapCoords(LONDON_CENTER);
-    setCurrentZoom(DEFAULT_ZOOM);
+    const addressFields = [
+      "postcode",
+      "building_name_or_number",
+      "street",
+      "address_line1",
+      "city",
+      "county",
+      "country",
+    ];
+
+    if (addressFields.includes(name)) {
+      setMapCoords(LONDON_CENTER);
+      setCurrentZoom(DEFAULT_ZOOM);
+    }
   };
 
   // Update handleUpdateAccountant function
@@ -287,7 +299,6 @@ const Accountant: React.FC = () => {
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
@@ -336,7 +347,6 @@ const Accountant: React.FC = () => {
         setCurrentZoom(DEFAULT_ZOOM);
       }
 
-      console.log("address details: ", address);
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {

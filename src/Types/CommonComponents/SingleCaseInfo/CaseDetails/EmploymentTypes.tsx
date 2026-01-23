@@ -27,6 +27,8 @@ export interface EmploymentDetailsProps {
   employer_city: string | null;
   employer_county: string | null;
   employer_country: string | null;
+  employer_latitude?: number | null;
+  employer_longitude?: number | null;
   employment_commenced: string | null;
   employment_ended: string | null;
   gross_monthly_income: number | null;
@@ -53,6 +55,8 @@ export interface EmploymentDetailsProps {
   business_city: string | null;
   business_county: string | null;
   business_country: string | null;
+  business_latitude?: number | null;
+  business_longitude?: number | null;
   job_title: string | null;
   business_name: string | null;
   business_type: string | null;

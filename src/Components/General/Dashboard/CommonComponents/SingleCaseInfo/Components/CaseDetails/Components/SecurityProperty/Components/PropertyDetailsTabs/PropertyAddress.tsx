@@ -136,8 +136,20 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     const { name, value } = e.target;
     dispatch(updateProperty({ [name]: value }));
 
-    setMapCoords(LONDON_CENTER);
-    setCurrentZoom(DEFAULT_ZOOM);
+    const addressFields = [
+      "postcode",
+      "house_name_or_number",
+      "address_one",
+      "address_two",
+      "city",
+      "county",
+      "country",
+    ];
+
+    if (addressFields.includes(name)) {
+      setMapCoords(LONDON_CENTER);
+      setCurrentZoom(DEFAULT_ZOOM);
+    }
     
     setErrors((prev) => ({
       ...prev,
@@ -255,7 +267,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
     } catch (err: any) {
-      console.log("Raw Axios Error:", err);
       const message = getAddressErrorMessage(err.response || err);
       toast.error(message);
     } finally {
