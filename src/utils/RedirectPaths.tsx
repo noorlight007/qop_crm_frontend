@@ -10,19 +10,19 @@ export const getDashboardHomeUrl = (session: Session | null) => {
     case "ADMIN":
       return "/admin";
     case "NETWORK_DIRECTOR":
-      return "/network/director";
+      return "/network/director/dashboard";
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return "/network/director";
+      return "/network/director/dashboard";
     case "NETWORK_ADVISER":
-      return "/network/adviser";
+      return "/network/adviser/dashboard";
     case "ORGANISATION_DIRECTOR":
-      return "/organisation/director";
+      return "/organisation/director/dashboard";
     case "ORGANISATION_ADVISER":
-      return "/organisation/adviser";
+      return "/organisation/adviser/dashboard";
     case "ORGANISATION_ADMIN":
-      return "/organisation/admin";
+      return "/organisation/admin/dashboard";
     case "CLIENT":
-      return "/client";
+      return "/client/dashboard";
     default:
       return "/auth/login";
   }

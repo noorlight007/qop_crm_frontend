@@ -12,7 +12,7 @@ const NetworkDirectorMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/network/director",
+        path: "/network/director/dashboard",
       },
       {
         title: "Cases",
@@ -126,7 +126,7 @@ const NetworkAdviserMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/network/adviser",
+        path: "/network/adviser/dashboard",
       },
       {
         title: "Cases",
@@ -200,7 +200,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/organisation/director",
+        path: "/organisation/director/dashboard",
       },
       {
         title: "Cases",
@@ -301,7 +301,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
         title: "Dashboard",
         icon: "Chart",
         lanClass: "lan-3",
-        path: "/organisation/adviser",
+        path: "/organisation/adviser/dashboard",
         type: "link",
       },
       {
@@ -378,7 +378,7 @@ const OrganisationAdminMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/organisation/admin",
+        path: "/organisation/admin/dashboard",
       },
       {
         title: "Cases",
@@ -467,7 +467,7 @@ const ClientMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/client",
+        path: "/client/dashboard",
       },
     ],
   },
