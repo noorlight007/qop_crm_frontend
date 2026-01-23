@@ -55,6 +55,17 @@ const getErrorMessage = (err: any) => {
   }
 };
 
+const camelToSnake = (s: string) =>
+  s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+const getFieldError = (errors: Record<string, string>, name: string) => {
+  if (!errors) return undefined;
+  if (errors[name]) return errors[name];
+  const snake = camelToSnake(name);
+  if (errors[snake]) return errors[snake];
+  return undefined;
+};
+
 const ProductContent: React.FC = () => {
   const params = useParams();
   const { casealias } = params;
@@ -94,6 +105,7 @@ const ProductContent: React.FC = () => {
     application_review: false,
     note: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias },
@@ -181,6 +193,7 @@ const ProductContent: React.FC = () => {
 
         if (response.data) {
           toast.success("Product details updated successfully!");
+          setErrors({});
           // Only go to next tab if this was a Save & Next action
           try {
             await updateSectionCompleteStatus({
@@ -194,10 +207,45 @@ const ProductContent: React.FC = () => {
             handleNextTab();
           }
         } else if (response.error) {
-          const errorMessage =
-            getErrorMessage((response as any).error) ||
-            "Failed to update product details";
-          toast.error(errorMessage);
+          const errData = (response as any).error?.data;
+          if (errData && typeof errData === "object") {
+            const collect = (value: any): string[] => {
+              if (value == null) return [];
+              if (typeof value === "string") return [value];
+              if (Array.isArray(value))
+                return value.map((v) =>
+                  typeof v === "string" ? v : JSON.stringify(v),
+                );
+              if (typeof value === "object") {
+                try {
+                  return Object.values(value).flatMap((v) => collect(v));
+                } catch {
+                  return [String(value)];
+                }
+              }
+              return [String(value)];
+            };
+            const fieldErrors: Record<string, string> = {};
+            Object.entries(errData).forEach(([k, v]) => {
+              const msgs = collect(v);
+              if (msgs.length) fieldErrors[k] = msgs.join(", ");
+            });
+            if (Object.keys(fieldErrors).length) {
+              setErrors(fieldErrors);
+              const firstMsg = Object.values(fieldErrors)[0];
+              toast.error(firstMsg);
+            } else {
+              const errorMessage =
+                getErrorMessage((response as any).error) ||
+                "Failed to update product details";
+              toast.error(errorMessage);
+            }
+          } else {
+            const errorMessage =
+              getErrorMessage((response as any).error) ||
+              "Failed to update product details";
+            toast.error(errorMessage);
+          }
         } else {
           toast.error("Failed to update product details");
         }
@@ -224,6 +272,12 @@ const ProductContent: React.FC = () => {
       ...prev,
       [name]: processedValue,
     }));
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[name];
+      delete copy[camelToSnake(name)];
+      return copy;
+    });
   };
   const currentTab: string | null = useAppSelector(
     (state) => state.caseDetails.basicTabId,
@@ -269,6 +323,11 @@ const ProductContent: React.FC = () => {
               onChange={handleChange}
               required
             />
+            {getFieldError(errors, "product_description") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "product_description")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -285,6 +344,11 @@ const ProductContent: React.FC = () => {
               onChange={handleChange}
               required
             />
+            {getFieldError(errors, "initial_rate") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "initial_rate")}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -306,6 +370,11 @@ const ProductContent: React.FC = () => {
               <option value="DISCOUNTED">Discounted</option>
               <option value="ALL">All</option>
             </Input>
+            {getFieldError(errors, "initial_rate_type") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "initial_rate_type")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -324,6 +393,11 @@ const ProductContent: React.FC = () => {
               <option value="FIXED_DATE">Fixed Date</option>
               <option value="END_OF_MORTGAGE_TERM">End of Mortgage Term</option>
             </Input>
+            {getFieldError(errors, "initial_rate_period_type") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "initial_rate_period_type")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         {formData.initial_rate_period_type === "MONTHS" && (
@@ -339,6 +413,11 @@ const ProductContent: React.FC = () => {
                 value={formData.initial_rate_period || ""}
                 onChange={handleChange}
               />
+              {getFieldError(errors, "initial_rate_period") && (
+                <div className="text-danger small mt-1">
+                  {getFieldError(errors, "initial_rate_period")}
+                </div>
+              )}
             </FormGroup>
           </Col>
         )}
@@ -353,6 +432,11 @@ const ProductContent: React.FC = () => {
                 value={formData.initial_rate_date_period || ""}
                 onChange={handleChange}
               />
+              {getFieldError(errors, "initial_rate_date_period") && (
+                <div className="text-danger small mt-1">
+                  {getFieldError(errors, "initial_rate_date_period")}
+                </div>
+              )}
             </FormGroup>
           </Col>
         )}
@@ -369,6 +453,11 @@ const ProductContent: React.FC = () => {
               value={formData.reversion_rate || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "reversion_rate") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "reversion_rate")}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -385,6 +474,11 @@ const ProductContent: React.FC = () => {
               value={formData.max_ltv || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "max_ltv") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "max_ltv")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -400,6 +494,11 @@ const ProductContent: React.FC = () => {
               value={formData.annual_percentage_rate || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "annual_percentage_rate") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "annual_percentage_rate")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -420,6 +519,11 @@ const ProductContent: React.FC = () => {
               <option value="COMMERCIAL">Commercial</option>
               <option value="LET_TO_BUY">Let To Buy</option>
             </Input>
+            {getFieldError(errors, "product_class") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "product_class")}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -433,6 +537,11 @@ const ProductContent: React.FC = () => {
               value={formData.early_repayment_charge || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "early_repayment_charge") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "early_repayment_charge")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -447,6 +556,11 @@ const ProductContent: React.FC = () => {
               value={formData.early_repayment_charge_end_date || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "early_repayment_charge_end_date") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "early_repayment_charge_end_date")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -464,6 +578,11 @@ const ProductContent: React.FC = () => {
               value={formData.initial_monthly_payment}
               onChange={handleChange}
             />
+            {getFieldError(errors, "initial_monthly_payment") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "initial_monthly_payment")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -481,6 +600,17 @@ const ProductContent: React.FC = () => {
               value={formData.initial_monthly_payment_including_fees || ""}
               onChange={handleChange}
             />
+            {getFieldError(
+              errors,
+              "initial_monthly_payment_including_fees",
+            ) && (
+              <div className="text-danger small mt-1">
+                {getFieldError(
+                  errors,
+                  "initial_monthly_payment_including_fees",
+                )}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -499,6 +629,11 @@ const ProductContent: React.FC = () => {
               value={formData.monthly_payment_after_initial_period || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "monthly_payment_after_initial_period") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "monthly_payment_after_initial_period")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -516,6 +651,11 @@ const ProductContent: React.FC = () => {
               value={formData.true_cost_over_initial_period || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "true_cost_over_initial_period") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "true_cost_over_initial_period")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -531,6 +671,11 @@ const ProductContent: React.FC = () => {
               value={formData.true_cost_over_term || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "true_cost_over_term") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "true_cost_over_term")}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -547,6 +692,11 @@ const ProductContent: React.FC = () => {
               value={formData.true_cost_without_fees || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "true_cost_without_fees") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "true_cost_without_fees")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -564,6 +714,11 @@ const ProductContent: React.FC = () => {
               value={formData.loan_required_including_fees || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "loan_required_including_fees") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "loan_required_including_fees")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -579,6 +734,11 @@ const ProductContent: React.FC = () => {
               value={formData.lender_product_fee || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "lender_product_fee") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "lender_product_fee")}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -598,6 +758,11 @@ const ProductContent: React.FC = () => {
               <option value="YES">Yes</option>
               <option value="NO">No</option>
             </Input>
+            {getFieldError(errors, "arrangement_fee_added_to_loan") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "arrangement_fee_added_to_loan")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -613,6 +778,11 @@ const ProductContent: React.FC = () => {
               value={formData.lender_solicitor_fee || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "lender_solicitor_fee") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "lender_solicitor_fee")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -628,6 +798,11 @@ const ProductContent: React.FC = () => {
               value={formData.valuation_fee || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "valuation_fee") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "valuation_fee")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -643,6 +818,11 @@ const ProductContent: React.FC = () => {
               value={formData.booking_fee || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "booking_fee") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "booking_fee")}
+              </div>
+            )}
           </FormGroup>
         </Col>
 
@@ -661,6 +841,11 @@ const ProductContent: React.FC = () => {
               <option value="NO">No</option>
               <option value="NA">N/A</option>
             </Input>
+            {getFieldError(errors, "booking_fee_added_to_loan") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "booking_fee_added_to_loan")}
+              </div>
+            )}
           </FormGroup>
         </Col>
         <Col md={4}>
@@ -676,6 +861,11 @@ const ProductContent: React.FC = () => {
               value={formData.procuration_fee || ""}
               onChange={handleChange}
             />
+            {getFieldError(errors, "procuration_fee") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "procuration_fee")}
+              </div>
+            )}
           </FormGroup>
         </Col>
       </Row>
@@ -780,6 +970,11 @@ const ProductContent: React.FC = () => {
               value={formData.note}
               onChange={handleChange}
             />
+            {getFieldError(errors, "note") && (
+              <div className="text-danger small mt-1">
+                {getFieldError(errors, "note")}
+              </div>
+            )}
           </FormGroup>
         </Col>
       </Row>
