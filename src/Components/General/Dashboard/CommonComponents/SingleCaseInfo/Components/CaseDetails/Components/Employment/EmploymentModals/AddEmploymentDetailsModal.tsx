@@ -313,16 +313,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         ...updatedFields,
       }));
 
-      // Update draft to prevent losing changes
-      // if (formValues?.alias) {
-      //   const alias = formValues.alias as string;
-      //   draftsRef.current[alias] = {
-      //     ...(draftsRef.current[alias] ?? formValues),
-      //     ...updatedFields,
-      //     alias,
-      //   } as EmploymentDetailsProps;
-      // }
-
       if (address.latitude !== undefined && address.longitude !== undefined) {
         setEmployerMapCoords({ lat: address.latitude, lng: address.longitude });
         setEmployerZoom(DETAIL_ZOOM);
@@ -374,16 +364,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         ...prev,
         ...updatedFields,
       }));
-
-      // Update draft to prevent losing changes
-      // if (formValues?.alias) {
-      //   const alias = formValues.alias as string;
-      //   draftsRef.current[alias] = {
-      //     ...(draftsRef.current[alias] ?? formValues),
-      //     ...updatedFields,
-      //     alias,
-      //   } as EmploymentDetailsProps;
-      // }
 
       if (address.latitude !== undefined && address.longitude !== undefined) {
         setBusinessMapCoords({ lat: address.latitude, lng: address.longitude });
@@ -625,10 +605,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                         color="primary"
                         type="button"
                         className="text-nowrap"
-                        style={{
-                          paddingTop: "0.4rem",
-                          paddingBottom: "0.4rem",
-                        }}
                         onClick={() =>
                           fetchAddressByPostcode(
                             formValues.employer_postcode,
