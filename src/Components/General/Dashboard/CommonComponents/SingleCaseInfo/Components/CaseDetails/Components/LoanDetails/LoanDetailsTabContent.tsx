@@ -612,7 +612,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="PART_AND_PART">Part And Part</option>
                     {formDataTab1.borrower_type === "ISLAMIC_MORTGAGE" && (
                       <>
-                        <option value="RENT_ONLY">Renet Only</option>
+                        <option value="RENT_ONLY">Rent Only</option>
                         <option value="RENT_AND_ACQUISITION">
                           Rent And Acquisition
                         </option>
