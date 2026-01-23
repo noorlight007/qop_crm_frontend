@@ -46,7 +46,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       if (typeof value === "string") return [value];
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
       if (typeof value === "object") {
         try {
@@ -57,6 +57,13 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       }
       return [String(value)];
     };
+
+    // If the error itself is an object mapping fields to messages/arrays,
+    // collect and return those messages directly (e.g. { email: ["..."] }).
+    if (err && typeof err === "object") {
+      const msgs = collect(err);
+      if (msgs.length) return msgs.join(", ");
+    }
 
     if (err?.data?.message) return String(err.data.message);
 
@@ -79,7 +86,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
