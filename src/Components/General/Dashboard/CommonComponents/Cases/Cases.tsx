@@ -512,7 +512,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         {userType === "NETWORK_DIRECTOR" ||
                         userType === "NETWORK_ADVISER" ? (
                           (caseItem.organization?.name ?? (
-                            <span className="text-muted">Owned by Network</span>
+                            <small className="text-muted">Owned by Network</small>
                           ))
                         ) : userType === "ORGANISATION_DIRECTOR" ||
                           userType === "ORGANISATION_ADVISER" ||
@@ -577,7 +577,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             </p>
                           </>
                         ) : (
-                          <span className="text-muted">Not Assigned</span>
+                          <small className="text-muted">Not Assigned</small>
                         )}
                       </td>
                       <td>
