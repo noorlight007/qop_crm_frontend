@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import AuthUsers from "@/Components/General/Dashboard/CommonComponents/CommonUsers/AuthUsers/AuthUsers";
+import AuthUsers from "@/Components/Common/CommonUsers/AuthUsers/AuthUsers";
 import { Container } from "reactstrap";
 
 const OrganisationAdminsContainer: React.FC = () => {

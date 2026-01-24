@@ -1,6 +1,5 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container, Row } from "reactstrap";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
-
 import AdviserClientFilterBar from "./ClientLists/AdviserClientFilterBar/AdviserClientFilterBar";
 import ClientLists from "./ClientLists/ClientLists";
 

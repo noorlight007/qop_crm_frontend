@@ -1,4 +1,4 @@
-import { ComplianceState } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ComplianceTypes";
+import { ComplianceState } from "@/Types/Common/Cases/CaseDetails/CaseSections/ComplianceTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ComplianceState = {
@@ -200,7 +200,7 @@ const complianceSlice = createSlice({
       action: PayloadAction<{
         field: keyof ComplianceState;
         value: string | null | boolean;
-      }>
+      }>,
     ) => {
       const { field, value } = action.payload;
       (state[field] as string | null | undefined | boolean) = value;
@@ -210,7 +210,7 @@ const complianceSlice = createSlice({
       action: PayloadAction<{
         field: keyof ComplianceState;
         value: string | null | boolean;
-      }>
+      }>,
     ) => {
       const { field, value } = action.payload;
       (state[field] as string | null | undefined | boolean) = value;

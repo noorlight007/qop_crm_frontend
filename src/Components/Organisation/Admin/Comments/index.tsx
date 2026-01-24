@@ -1,5 +1,5 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
 import AddNewComment from "./AddNewComment/AddNewComment";
 import CommentCards from "./CommentCards/CommentCards";
 import InternalComments from "./InternalComments/InternalComments";

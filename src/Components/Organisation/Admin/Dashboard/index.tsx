@@ -1,8 +1,7 @@
-import { Col, Container, Row } from "reactstrap";
-
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import MyTask from "@/Components/Common/MyTask/MyTask";
 import { useGetAdminDashboardDataQuery } from "@/Redux/Reducers/Organisation/Admin/Dashboard/AdminDashboardApi";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
-import MyTask from "../../../CommonComponents/MyTask/MyTask";
+import { Col, Container, Row } from "reactstrap";
 import AdviserTaskOverview from "./AdviserTaskOverview/AdviserTaskOverview";
 import CaseProgress from "./CaseProgress/CaseProgress";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";

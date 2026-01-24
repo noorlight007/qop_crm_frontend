@@ -1,5 +1,5 @@
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
-import SupportTicket from "../../../CommonComponents/SupportTicket/SupportTicket";
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import SupportTicket from "@/Components/Common/SupportTicket/SupportTicket";
 
 const SupportTicketContainer: React.FC = () => {
   return (

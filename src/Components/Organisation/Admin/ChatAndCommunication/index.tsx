@@ -1,5 +1,5 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
 import ChatBoard from "./ChatBoard/ChatBoard";
 
 const OrganisationAdminChatAndCommunicationContainer: React.FC = () => {

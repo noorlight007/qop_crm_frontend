@@ -1,5 +1,5 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
 import TasksAndCalendarTabs from "./TasksAndCalendarTabs/TasksAndCalendarTabs";
 import TasksAndRemindersOverview from "./TasksAndRemindersOverview/TasksAndRemindersOverview";
 

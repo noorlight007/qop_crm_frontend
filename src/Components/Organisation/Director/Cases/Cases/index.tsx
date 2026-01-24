@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import Cases from "@/Components/General/Dashboard/CommonComponents/Cases/Cases";
+import Cases from "@/Components/Common/Cases/Cases";
 import { Container } from "reactstrap";
 
 const OrganisationDirectorCasesContainer: React.FC = () => {

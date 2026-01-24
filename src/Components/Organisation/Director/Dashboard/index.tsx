@@ -1,8 +1,8 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import LoginHistory from "@/Components/Common/LoginHistory/LoginHistory";
+import MyTask from "@/Components/Common/MyTask/MyTask";
 import { useGetOrganisationDirectorDashboardQuery } from "@/Redux/Reducers/Network/Director/Dashboard/DashdoardApi";
 import { Col, Container, Row } from "reactstrap";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
-import LoginHistory from "../../../CommonComponents/LoginHistory/LoginHistory";
-import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyClients from "./MonthlyClients/MonthlyClients";

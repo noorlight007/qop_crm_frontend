@@ -11,7 +11,7 @@ import { Container, Row } from "reactstrap";
 import CaseInfo from "./Components/CaseInfo/CaseInfo";
 import CaseSections from "./Components/CaseSections/CaseSections";
 
-const SingleCaseInfo: React.FC = () => {
+const CaseDetails: React.FC = () => {
   const { data: session } = useSession();
   const [caseInfo, setCaseInfo] = useState<CaseInfoPrpos>();
   const params = useParams();
@@ -84,4 +84,4 @@ const SingleCaseInfo: React.FC = () => {
   );
 };
 
-export default SingleCaseInfo;
+export default CaseDetails;

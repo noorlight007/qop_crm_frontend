@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import SingleCaseInfo from "@/Components/General/Dashboard/CommonComponents/SingleCaseInfo/SingleCaseInfo";
+import CaseDetails from "@/Components/Common/Cases/CaseDetails/CaseDetails";
 
 const OrganisationDirectorCaseDetailsContainer: React.FC = () => {
   return (
@@ -10,7 +10,7 @@ const OrganisationDirectorCaseDetailsContainer: React.FC = () => {
         parent="Cases"
         child="Case"
       />
-      <SingleCaseInfo />
+      <CaseDetails />
     </>
   );
 };
