@@ -1,5 +1,5 @@
-import { useCopyCaseMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseCopy/CaseCopyApi";
-import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
+import { useCopyCaseMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseCopy/CaseCopyApi";
+import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {

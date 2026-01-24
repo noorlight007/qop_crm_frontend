@@ -1,6 +1,5 @@
-import { useDeleteJointApplicantInfoMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantApi";
-import { DeleteJointApplicantModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
-
+import { useDeleteJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
+import { DeleteJointApplicantModalProps } from "@/Types/Common/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

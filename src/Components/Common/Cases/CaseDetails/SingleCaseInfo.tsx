@@ -1,15 +1,15 @@
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantApi";
-import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
 import LoadingSpinner from "@/app/loading";
+import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { getAllCasesUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
-import CaseDetails from "./Components/CaseDetails/CaseDetails";
 import CaseInfo from "./Components/CaseInfo/CaseInfo";
+import CaseSections from "./Components/CaseSections/CaseSections";
 
 const SingleCaseInfo: React.FC = () => {
   const { data: session } = useSession();
@@ -22,7 +22,7 @@ const SingleCaseInfo: React.FC = () => {
   const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
     useGetJointApplicantInfoQuery(
       { case_alias: casealias },
-      { skip: !casealias }
+      { skip: !casealias },
     );
 
   const {
@@ -73,7 +73,7 @@ const SingleCaseInfo: React.FC = () => {
           />
         </Row>
         <Row>
-          <CaseDetails
+          <CaseSections
             caseCategory={caseInfo?.case_category || ""}
             caseStage={caseInfo?.case_stage || ""}
           />

@@ -1,4 +1,4 @@
-import { useGetCasesSummaryQuery } from "@/Redux/Reducers/CommonComponents/Cases/CaesSummaryApi";
+import { useGetCasesSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaesSummaryApi";
 import { TbFileDescription } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 

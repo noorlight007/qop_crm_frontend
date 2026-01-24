@@ -1,4 +1,4 @@
-import { JointApplicantViewModalProps } from "@/Types/CommonComponents/SingleCaseInfo/JointApplicant/JointApplicantTypes";
+import { JointApplicantViewModalProps } from "@/Types/Common/SingleCaseInfo/JointApplicant/JointApplicantTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useState } from "react";
@@ -52,7 +52,7 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             <small>
               {displayApplicant.joint_user_details?.title
                 ? formatChoiceFieldValue(
-                    displayApplicant.joint_user_details?.title
+                    displayApplicant.joint_user_details?.title,
                   )
                 : ""}{" "}
               {displayApplicant.joint_user_details?.first_name}{" "}
@@ -113,7 +113,7 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
               (
               {displayApplicant?.created_by?.user_type
                 ? formatChoiceFieldValue(
-                    displayApplicant?.created_by?.user_type
+                    displayApplicant?.created_by?.user_type,
                   )
                 : "Not available"}
               )
@@ -124,7 +124,7 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             <small>
               {displayApplicant?.relationship === "OTHER"
                 ? formatChoiceFieldValue(
-                    displayApplicant?.other_relationship || ""
+                    displayApplicant?.other_relationship || "",
                   ) || <span className="text-muted">Not specified</span>
                 : formatChoiceFieldValue(displayApplicant?.relationship) || (
                     <span className="text-muted">Not specified</span>

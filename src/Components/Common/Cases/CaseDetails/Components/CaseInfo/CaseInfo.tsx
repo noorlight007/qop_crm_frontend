@@ -1,11 +1,7 @@
-import UpdateCaseModal from "@/Components/General/Dashboard/CommonComponents/Cases/Modals/UpdateCaseModal";
-import ClientInvitationModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/ClientInvitationModal";
-import UpdateClientModal from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Clients/Modals/UpdateClientModal";
-import {
-  CaseInfoPrpos,
-  SingleCaseProps,
-} from "@/Types/CommonComponents/Cases/CaseTypes";
-import { ClientInfoProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
+import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
+import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
+import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
+import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -32,7 +28,8 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import DeleteCaseModal from "../../../Cases/Modals/DeleteCaseModal";
+import DeleteCaseModal from "../../../Modals/DeleteCaseModal";
+import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
