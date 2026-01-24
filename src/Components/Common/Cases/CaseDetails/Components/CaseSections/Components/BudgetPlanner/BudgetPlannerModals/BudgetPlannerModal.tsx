@@ -1,11 +1,11 @@
 "use client";
-import { useUpdateBudgetPlannerMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
+import { useUpdateBudgetPlannerMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
 import {
   initializeBudgetPlannerForm,
   updateBudgetPlannerSection,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerFormSlice";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { BudgetPlannerModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { BudgetPlannerModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { FC, useCallback, useState } from "react";
@@ -98,12 +98,12 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
         const next = { ...prev, [field]: value };
         // Update only the affected section to avoid heavy reflows
         dispatch(
-          updateBudgetPlannerSection({ section: field as any, data: value })
+          updateBudgetPlannerSection({ section: field as any, data: value }),
         );
         return next;
       });
     },
-    [dispatch]
+    [dispatch],
   );
 
   return (
@@ -137,7 +137,7 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
                 setTabId={setBasicTab}
                 updateField={useCallback(
                   (field: string, value: any) => updateField(field, value),
-                  [updateField]
+                  [updateField],
                 )}
               />
             </CardBody>

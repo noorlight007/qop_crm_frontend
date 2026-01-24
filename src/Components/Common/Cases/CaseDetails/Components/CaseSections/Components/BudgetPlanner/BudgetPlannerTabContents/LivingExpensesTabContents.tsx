@@ -1,5 +1,5 @@
-import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
-import { LivingExpensesTabContentsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
+import { LivingExpensesTabContentsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
@@ -20,14 +20,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   updateField,
 }) => {
   const { casealias } = useParams();
-  const { data, isLoading, error, refetch } = useGetCaseBudgetPlannerQuery(
+  const { data, isLoading, refetch } = useGetCaseBudgetPlannerQuery(
     { case_alias: casealias as string },
     {
       skip: !casealias,
       refetchOnMountOrArgChange: true, // Force refetch on component mount
       refetchOnReconnect: true,
       refetchOnFocus: true,
-    }
+    },
   );
 
   // Use the first item from the API data array - SAME AS HOUSEHOLD INCOME
@@ -39,10 +39,10 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   };
 
   const [visibleNotes, setVisibleNotes] = useState<{ [key: string]: boolean }>(
-    {}
+    {},
   );
   const [currentValues, setCurrentValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [postValues, setPostValues] = useState<Record<string, string>>({});
 
@@ -134,7 +134,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         "->",
         initialCurrentValues[
           `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ]
+        ],
       );
     });
 
@@ -154,7 +154,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         "->",
         initialPostValues[
           `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ]
+        ],
       );
     });
 
@@ -174,7 +174,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         "->",
         initialCurrentValues[
           `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ]
+        ],
       );
     });
 
@@ -194,7 +194,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         "->",
         initialPostValues[
           `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ]
+        ],
       );
     });
 
@@ -213,27 +213,30 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     const formatValues = (
       values: Record<string, string>,
       mappings: Record<string, string>,
-      section: string
+      section: string,
     ) => {
       const formatted = Object.entries(values)
         .filter(
           ([key]) =>
-            key.startsWith("CurrentBudgetPlanner") && !key.includes("_Notes")
+            key.startsWith("CurrentBudgetPlanner") && !key.includes("_Notes"),
         )
-        .reduce((acc, [key, value]) => {
-          const fieldName = key.split(".")[1];
-          // fieldName is a sanitized id (spaces/& removed). Find the API key by matching sanitized label.
-          const reduxFieldName = Object.entries(mappings).find(
-            ([label]) => label.replace(/[\s/&]/g, "") === fieldName
-          )?.[1] as string | undefined;
-          if (reduxFieldName) {
-            acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
-          }
-          return acc;
-        }, {} as Record<string, number | 0>);
+        .reduce(
+          (acc, [key, value]) => {
+            const fieldName = key.split(".")[1];
+            // fieldName is a sanitized id (spaces/& removed). Find the API key by matching sanitized label.
+            const reduxFieldName = Object.entries(mappings).find(
+              ([label]) => label.replace(/[\s/&]/g, "") === fieldName,
+            )?.[1] as string | undefined;
+            if (reduxFieldName) {
+              acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
+            }
+            return acc;
+          },
+          {} as Record<string, number | 0>,
+        );
       formatted.total_living_expenses =
         parseFloat(
-          calculateTotal(values, Object.keys(mappings), "CurrentBudgetPlanner")
+          calculateTotal(values, Object.keys(mappings), "CurrentBudgetPlanner"),
         ) || 0;
       updateField(section, formatted);
     };
@@ -247,32 +250,35 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     const formatValues = (
       values: Record<string, string>,
       mappings: Record<string, string>,
-      section: string
+      section: string,
     ) => {
       const formatted = Object.entries(values)
         .filter(
           ([key]) =>
             key.startsWith("PostCompletionBudgetPlanner") &&
-            !key.includes("_Notes")
+            !key.includes("_Notes"),
         )
-        .reduce((acc, [key, value]) => {
-          const fieldName = key.split(".")[1];
-          // fieldName is a sanitized id (spaces/& removed). Find the API key by matching sanitized label.
-          const reduxFieldName = Object.entries(mappings).find(
-            ([label]) => label.replace(/[\s/&]/g, "") === fieldName
-          )?.[1] as string | undefined;
-          if (reduxFieldName) {
-            acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
-          }
-          return acc;
-        }, {} as Record<string, number | 0>);
+        .reduce(
+          (acc, [key, value]) => {
+            const fieldName = key.split(".")[1];
+            // fieldName is a sanitized id (spaces/& removed). Find the API key by matching sanitized label.
+            const reduxFieldName = Object.entries(mappings).find(
+              ([label]) => label.replace(/[\s/&]/g, "") === fieldName,
+            )?.[1] as string | undefined;
+            if (reduxFieldName) {
+              acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
+            }
+            return acc;
+          },
+          {} as Record<string, number | 0>,
+        );
       formatted.total_living_expenses =
         parseFloat(
           calculateTotal(
             values,
             Object.keys(mappings),
-            "PostCompletionBudgetPlanner"
-          )
+            "PostCompletionBudgetPlanner",
+          ),
         ) || 0;
       updateField(section, formatted);
     };
@@ -290,15 +296,15 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         calculateTotal(
           currentValues,
           Object.keys(livingCostFieldMappings),
-          "CurrentBudgetPlanner"
-        )
+          "CurrentBudgetPlanner",
+        ),
       ) +
       parseFloat(
         calculateTotal(
           currentValues,
           Object.keys(insuranceFieldMappings),
-          "CurrentBudgetPlanner"
-        )
+          "CurrentBudgetPlanner",
+        ),
       );
     if (!isNaN(currentTotal)) {
       updateField("current_sub_total", {
@@ -315,15 +321,15 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         calculateTotal(
           postValues,
           Object.keys(livingCostFieldMappings),
-          "PostCompletionBudgetPlanner"
-        )
+          "PostCompletionBudgetPlanner",
+        ),
       ) +
       parseFloat(
         calculateTotal(
           postValues,
           Object.keys(insuranceFieldMappings),
-          "PostCompletionBudgetPlanner"
-        )
+          "PostCompletionBudgetPlanner",
+        ),
       );
     if (!isNaN(postTotal)) {
       updateField("post_sub_total", {
@@ -340,7 +346,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   const renderFields = (
     prefix: string,
     fields: string[],
-    mappings: Record<string, string>
+    mappings: Record<string, string>,
   ) => (
     <Form>
       {fields.map((field) => {
@@ -394,7 +400,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                         e,
                         `${
                           prefix === "CurrentBudgetPlanner" ? "" : "Post_"
-                        }${reduxFieldName}_Notes`
+                        }${reduxFieldName}_Notes`,
                       )
                     }
                     style={{ cursor: "pointer" }}
@@ -458,7 +464,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   const calculateTotal = (
     values: Record<string, string>,
     fields: string[],
-    prefix: string
+    prefix: string,
   ) => {
     return fields
       .reduce((sum, field) => {
@@ -473,7 +479,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     Object.keys(currentValues).forEach((key) => {
       const newKey = key.replace(
         "CurrentBudgetPlanner",
-        "PostCompletionBudgetPlanner"
+        "PostCompletionBudgetPlanner",
       );
       newPostValues[newKey] = currentValues[key];
     });
@@ -485,7 +491,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     prefix: string,
     fields?: string[],
     mappings?: Record<string, string>,
-    isTotal?: boolean
+    isTotal?: boolean,
   ) => (
     <div className="col-md-6">
       {!isTotal && <h4 className="text-center mb-3">{title}</h4>}
@@ -542,15 +548,15 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                               calculateTotal(
                                 currentValues,
                                 Object.keys(livingCostFieldMappings),
-                                prefix
-                              )
+                                prefix,
+                              ),
                             ) +
                             parseFloat(
                               calculateTotal(
                                 currentValues,
                                 Object.keys(insuranceFieldMappings),
-                                prefix
-                              )
+                                prefix,
+                              ),
                             )
                           ).toFixed(2)
                         : (
@@ -558,15 +564,15 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                               calculateTotal(
                                 postValues,
                                 Object.keys(livingCostFieldMappings),
-                                prefix
-                              )
+                                prefix,
+                              ),
                             ) +
                             parseFloat(
                               calculateTotal(
                                 postValues,
                                 Object.keys(insuranceFieldMappings),
-                                prefix
-                              )
+                                prefix,
+                              ),
                             )
                           ).toFixed(2)
                     }
@@ -578,7 +584,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                         e,
                         `${
                           prefix === "CurrentBudgetPlanner" ? "" : "Post_"
-                        }TotalHome_Notes`
+                        }TotalHome_Notes`,
                       )
                     }
                     style={{ cursor: "pointer" }}
@@ -668,13 +674,13 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
               "Current",
               "CurrentBudgetPlanner",
               Object.keys(livingCostFieldMappings),
-              livingCostFieldMappings
+              livingCostFieldMappings,
             )}
             {renderSection(
               "Post Completion",
               "PostCompletionBudgetPlanner",
               Object.keys(livingCostFieldMappings),
-              livingCostFieldMappings
+              livingCostFieldMappings,
             )}
           </Row>
           <Row className="mt-4">
@@ -682,13 +688,13 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
               "Current",
               "CurrentBudgetPlanner",
               Object.keys(insuranceFieldMappings),
-              insuranceFieldMappings
+              insuranceFieldMappings,
             )}
             {renderSection(
               "Post Completion",
               "PostCompletionBudgetPlanner",
               Object.keys(insuranceFieldMappings),
-              insuranceFieldMappings
+              insuranceFieldMappings,
             )}
           </Row>
           <Row className="mt-4">

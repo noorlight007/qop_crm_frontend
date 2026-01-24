@@ -1,5 +1,5 @@
-import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
-import { DebtRepaymentTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
+import { DebtRepaymentTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
@@ -19,14 +19,14 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
   updateField,
 }) => {
   const { casealias } = useParams();
-  const { data, isLoading, error, refetch } = useGetCaseBudgetPlannerQuery(
+  const { data, isLoading, refetch } = useGetCaseBudgetPlannerQuery(
     { case_alias: casealias as string },
     {
       skip: !casealias,
       refetchOnMountOrArgChange: true, // Force refetch on component mount
       refetchOnReconnect: true,
       refetchOnFocus: true,
-    }
+    },
   );
 
   // Use the first item from the API data array - SAME AS HOUSEHOLD INCOME
@@ -40,7 +40,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
   };
 
   const [currentValues, setCurrentValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [postValues, setPostValues] = useState<Record<string, string>>({});
 
@@ -117,7 +117,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         `Current ${field} (${key}):`,
         value,
         "->",
-        initialCurrentValues[`CurrentBudgetPlanner.${field}`]
+        initialCurrentValues[`CurrentBudgetPlanner.${field}`],
       );
     });
 
@@ -134,7 +134,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         `Post ${field} (${key}):`,
         value,
         "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`]
+        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
       );
     });
 
@@ -151,7 +151,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         `Current Priority ${field} (${key}):`,
         value,
         "->",
-        initialCurrentValues[`CurrentBudgetPlanner.${field}`]
+        initialCurrentValues[`CurrentBudgetPlanner.${field}`],
       );
     });
 
@@ -168,7 +168,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         `Post Priority ${field} (${key}):`,
         value,
         "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`]
+        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
       );
     });
 
@@ -185,7 +185,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         `Current Unsecured ${field} (${key}):`,
         value,
         "->",
-        initialCurrentValues[`CurrentBudgetPlanner.${field}`]
+        initialCurrentValues[`CurrentBudgetPlanner.${field}`],
       );
     });
 
@@ -202,7 +202,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         `Post Unsecured ${field} (${key}):`,
         value,
         "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`]
+        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
       );
     });
 
@@ -221,25 +221,28 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
     const formatValues = (
       values: Record<string, string>,
       mappings: Record<string, string>,
-      section: string
+      section: string,
     ) => {
       const formatted = Object.entries(values)
         .filter(([key]) => key.startsWith("CurrentBudgetPlanner"))
-        .reduce((acc, [key, value]) => {
-          const fieldName = key.split(".")[1];
-          const reduxFieldName = mappings[fieldName as keyof typeof mappings];
-          if (reduxFieldName) {
-            acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
-          }
-          return acc;
-        }, {} as Record<string, number | 0>);
+        .reduce(
+          (acc, [key, value]) => {
+            const fieldName = key.split(".")[1];
+            const reduxFieldName = mappings[fieldName as keyof typeof mappings];
+            if (reduxFieldName) {
+              acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
+            }
+            return acc;
+          },
+          {} as Record<string, number | 0>,
+        );
       formatted.total_debt_repayment =
         parseFloat(
           calculateSectionTotal(
             values,
             Object.keys(mappings),
-            "CurrentBudgetPlanner"
-          )
+            "CurrentBudgetPlanner",
+          ),
         ) || 0;
       updateField(section, formatted);
     };
@@ -247,17 +250,17 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
     formatValues(
       currentValues,
       debtRepaymentFieldMappings,
-      "current_debt_repayments"
+      "current_debt_repayments",
     );
     formatValues(
       currentValues,
       priorityDebtFieldMappings,
-      "current_priority_debt"
+      "current_priority_debt",
     );
     formatValues(
       currentValues,
       unsecuredBorrowingFieldMappings,
-      "current_unsecured_borrowing"
+      "current_unsecured_borrowing",
     );
   }, [currentValues, updateField]);
 
@@ -266,25 +269,28 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
     const formatValues = (
       values: Record<string, string>,
       mappings: Record<string, string>,
-      section: string
+      section: string,
     ) => {
       const formatted = Object.entries(values)
         .filter(([key]) => key.startsWith("PostCompletionBudgetPlanner"))
-        .reduce((acc, [key, value]) => {
-          const fieldName = key.split(".")[1];
-          const reduxFieldName = mappings[fieldName as keyof typeof mappings];
-          if (reduxFieldName) {
-            acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
-          }
-          return acc;
-        }, {} as Record<string, number | 0>);
+        .reduce(
+          (acc, [key, value]) => {
+            const fieldName = key.split(".")[1];
+            const reduxFieldName = mappings[fieldName as keyof typeof mappings];
+            if (reduxFieldName) {
+              acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
+            }
+            return acc;
+          },
+          {} as Record<string, number | 0>,
+        );
       formatted.total_debt_repayment =
         parseFloat(
           calculateSectionTotal(
             values,
             Object.keys(mappings),
-            "PostCompletionBudgetPlanner"
-          )
+            "PostCompletionBudgetPlanner",
+          ),
         ) || 0;
       updateField(section, formatted);
     };
@@ -292,13 +298,13 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
     formatValues(
       postValues,
       debtRepaymentFieldMappings,
-      "post_debt_repayments"
+      "post_debt_repayments",
     );
     formatValues(postValues, priorityDebtFieldMappings, "post_priority_debt");
     formatValues(
       postValues,
       unsecuredBorrowingFieldMappings,
-      "post_unsecured_borrowing"
+      "post_unsecured_borrowing",
     );
   }, [postValues, updateField]);
 
@@ -311,22 +317,22 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         calculateSectionTotal(
           currentValues,
           Object.keys(debtRepaymentFieldMappings),
-          "CurrentBudgetPlanner"
-        )
+          "CurrentBudgetPlanner",
+        ),
       ) +
       parseFloat(
         calculateSectionTotal(
           currentValues,
           Object.keys(priorityDebtFieldMappings),
-          "CurrentBudgetPlanner"
-        )
+          "CurrentBudgetPlanner",
+        ),
       ) +
       parseFloat(
         calculateSectionTotal(
           currentValues,
           Object.keys(unsecuredBorrowingFieldMappings),
-          "CurrentBudgetPlanner"
-        )
+          "CurrentBudgetPlanner",
+        ),
       );
     if (!isNaN(currentTotal)) {
       updateField("current_sub_total", {
@@ -343,22 +349,22 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
         calculateSectionTotal(
           postValues,
           Object.keys(debtRepaymentFieldMappings),
-          "PostCompletionBudgetPlanner"
-        )
+          "PostCompletionBudgetPlanner",
+        ),
       ) +
       parseFloat(
         calculateSectionTotal(
           postValues,
           Object.keys(priorityDebtFieldMappings),
-          "PostCompletionBudgetPlanner"
-        )
+          "PostCompletionBudgetPlanner",
+        ),
       ) +
       parseFloat(
         calculateSectionTotal(
           postValues,
           Object.keys(unsecuredBorrowingFieldMappings),
-          "PostCompletionBudgetPlanner"
-        )
+          "PostCompletionBudgetPlanner",
+        ),
       );
     if (!isNaN(postTotal)) {
       updateField("post_sub_total", {
@@ -370,7 +376,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
   const renderForm = (
     prefix: string,
     fields: string[],
-    mappings: Record<string, string>
+    mappings: Record<string, string>,
   ) => (
     <Form>
       {fields.map((field) => {
@@ -426,7 +432,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
   const calculateSectionTotal = (
     values: Record<string, string>,
     fields: string[],
-    prefix: string
+    prefix: string,
   ) => {
     return fields
       .reduce((sum, field) => {
@@ -438,22 +444,22 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
 
   const calculateOverallTotal = (
     values: Record<string, string>,
-    prefix: string
+    prefix: string,
   ) => {
     const debtTotal = calculateSectionTotal(
       values,
       Object.keys(debtRepaymentFieldMappings),
-      prefix
+      prefix,
     );
     const priorityTotal = calculateSectionTotal(
       values,
       Object.keys(priorityDebtFieldMappings),
-      prefix
+      prefix,
     );
     const unsecuredTotal = calculateSectionTotal(
       values,
       Object.keys(unsecuredBorrowingFieldMappings),
-      prefix
+      prefix,
     );
     return (
       parseFloat(debtTotal) +
@@ -479,7 +485,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
     fields: string[],
     mappings: Record<string, string>,
     hasCalculate?: boolean,
-    showCopyButton?: boolean
+    showCopyButton?: boolean,
   ) => (
     <div className="col-md-6">
       <h4 className="text-center mb-3">
@@ -502,8 +508,8 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               {title === "Debt Repayments"
                 ? "Debt Repayments"
                 : title === "Priority Debt"
-                ? "Priority Debt"
-                : "Unsecured Borrowing"}
+                  ? "Priority Debt"
+                  : "Unsecured Borrowing"}
             </span>
           )}
           {showCopyButton && (
@@ -540,7 +546,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
                       prefix === "CurrentBudgetPlanner"
                         ? currentValues
                         : postValues,
-                      prefix
+                      prefix,
                     )}
                   />
                 </InputGroup>
@@ -576,7 +582,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
                         ? currentValues
                         : postValues,
                       fields,
-                      prefix
+                      prefix,
                     )}
                   />
                 </InputGroup>
@@ -613,7 +619,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               "CurrentBudgetPlanner",
               Object.keys(debtRepaymentFieldMappings),
               debtRepaymentFieldMappings,
-              true
+              true,
             )}
             {renderSection(
               "Post Completion",
@@ -621,7 +627,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               Object.keys(debtRepaymentFieldMappings),
               debtRepaymentFieldMappings,
               true,
-              true
+              true,
             )}
           </Row>
           <Row className="mt-4">
@@ -629,7 +635,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               "Priority Debt",
               "CurrentBudgetPlanner",
               Object.keys(priorityDebtFieldMappings),
-              priorityDebtFieldMappings
+              priorityDebtFieldMappings,
             )}
             {renderSection(
               "Priority Debt",
@@ -637,7 +643,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               Object.keys(priorityDebtFieldMappings),
               priorityDebtFieldMappings,
               false,
-              true
+              true,
             )}
           </Row>
           <Row className="mt-4">
@@ -646,7 +652,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               "CurrentBudgetPlanner",
               Object.keys(unsecuredBorrowingFieldMappings),
               unsecuredBorrowingFieldMappings,
-              true
+              true,
             )}
             {renderSection(
               "Unsecured Borrowing",
@@ -654,7 +660,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               Object.keys(unsecuredBorrowingFieldMappings),
               unsecuredBorrowingFieldMappings,
               true,
-              true
+              true,
             )}
           </Row>
           <Row className="mt-4">
@@ -662,13 +668,13 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               "Total Debt Repayment",
               "CurrentBudgetPlanner",
               [],
-              {}
+              {},
             )}
             {renderSection(
               "Total Debt Repayment",
               "PostCompletionBudgetPlanner",
               [],
-              {}
+              {},
             )}
           </Row>
         </>

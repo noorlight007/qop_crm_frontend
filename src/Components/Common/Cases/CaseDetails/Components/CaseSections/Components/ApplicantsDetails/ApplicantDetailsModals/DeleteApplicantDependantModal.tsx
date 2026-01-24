@@ -1,4 +1,4 @@
-import { useDeleteDependantsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
+import { useDeleteDependantsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import { useParams } from "next/navigation";
 import React from "react";
 import { toast } from "react-toastify";

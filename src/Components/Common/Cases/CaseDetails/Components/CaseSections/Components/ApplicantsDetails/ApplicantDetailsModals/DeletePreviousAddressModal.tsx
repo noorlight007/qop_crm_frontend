@@ -1,4 +1,4 @@
-import { useDeletePreviousAddressMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantPreviousAddressApi";
+import { useDeletePreviousAddressMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi";
 import { useParams } from "next/navigation";
 import React from "react";
 import { toast } from "react-toastify";
@@ -7,7 +7,6 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 export interface DeletePreviousAddressModalProps {
   isOpen: boolean;
   toggle: () => void;
-  // casealias: string;
   applicantDetails_alias: string;
   previousAddress_alias: string;
 }

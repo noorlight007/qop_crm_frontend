@@ -1,5 +1,5 @@
-import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
-import { HouseHoldIncomeTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
+import { HouseHoldIncomeTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
@@ -26,7 +26,7 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
       refetchOnMountOrArgChange: true, // Force refetch on component mount
       refetchOnReconnect: true,
       refetchOnFocus: true,
-    }
+    },
   );
 
   // Use the first item from the API data array
@@ -36,7 +36,7 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
   };
 
   const [currentValues, setCurrentValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [postValues, setPostValues] = useState<Record<string, string>>({});
 
@@ -114,7 +114,7 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
         `Post ${field} (${key}):`,
         value,
         "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`]
+        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
       );
     });
 
@@ -133,15 +133,18 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
     if (Object.keys(currentValues).length === 0) return;
 
     const formattedCurrentValues = {
-      ...Object.entries(currentValues).reduce((acc, [key, value]) => {
-        const fieldName = key.split(".")[1];
-        const reduxFieldName =
-          incomeFieldMappings[fieldName as keyof typeof incomeFieldMappings];
-        if (reduxFieldName) {
-          acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
-        }
-        return acc;
-      }, {} as Record<string, number>),
+      ...Object.entries(currentValues).reduce(
+        (acc, [key, value]) => {
+          const fieldName = key.split(".")[1];
+          const reduxFieldName =
+            incomeFieldMappings[fieldName as keyof typeof incomeFieldMappings];
+          if (reduxFieldName) {
+            acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
+          }
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
       total_income: parseFloat(calculateTotal(currentValues)) || 0,
     };
 
@@ -158,15 +161,18 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
     if (Object.keys(postValues).length === 0) return;
 
     const formattedPostValues = {
-      ...Object.entries(postValues).reduce((acc, [key, value]) => {
-        const fieldName = key.split(".")[1];
-        const reduxFieldName =
-          incomeFieldMappings[fieldName as keyof typeof incomeFieldMappings];
-        if (reduxFieldName) {
-          acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
-        }
-        return acc;
-      }, {} as Record<string, number>),
+      ...Object.entries(postValues).reduce(
+        (acc, [key, value]) => {
+          const fieldName = key.split(".")[1];
+          const reduxFieldName =
+            incomeFieldMappings[fieldName as keyof typeof incomeFieldMappings];
+          if (reduxFieldName) {
+            acc[reduxFieldName] = value === "" ? 0 : parseFloat(value);
+          }
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
       total_income: parseFloat(calculateTotal(postValues)) || 0,
     };
 
@@ -235,7 +241,7 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
     Object.keys(currentValues).forEach((key) => {
       const newKey = key.replace(
         "CurrentBudgetPlanner",
-        "PostCompletionBudgetPlanner"
+        "PostCompletionBudgetPlanner",
       );
       newPostValues[newKey] = currentValues[key];
     });
@@ -322,7 +328,7 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
                 <div className="p-3">
                   {renderForm(
                     "PostCompletionBudgetPlanner",
-                    "living-expensePC"
+                    "living-expensePC",
                   )}
                 </div>
                 <div className="p-3 bg-light border-top">

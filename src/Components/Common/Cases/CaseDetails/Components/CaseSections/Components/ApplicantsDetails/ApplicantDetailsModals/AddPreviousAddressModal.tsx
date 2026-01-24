@@ -1,5 +1,5 @@
-import { useAddPreviousAddressMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantPreviousAddressApi";
-import { AddPreviousAddressModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
+import { useAddPreviousAddressMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi";
+import { AddPreviousAddressModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -31,7 +31,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
   const [timeAtAddress, setTimeAtAddress] = useState({ years: 0, months: 0 });
   const [effectiveFrom, setEffectiveFrom] = useState("");
   const [effectiveTo, setEffectiveTo] = useState(
-    effectiveFromDate || lastEffectiveFromDate || ""
+    effectiveFromDate || lastEffectiveFromDate || "",
   );
 
   // RTK Hooks
@@ -59,7 +59,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
       } else {
         setTimeAtAddress({ years: 0, months: 0 });
         toast.error(
-          "Effective From date cannot be later than Effective To date."
+          "Effective From date cannot be later than Effective To date.",
         );
       }
     } else {
@@ -77,7 +77,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
     const previousAddressInfo = {
       postcode: formDataFromForm.get("postcode") as string,
       house_name_or_number: formDataFromForm.get(
-        "house_name_or_number"
+        "house_name_or_number",
       ) as string,
       address_line1: formDataFromForm.get("address_line1") as string,
       city: formDataFromForm.get("city") as string,
@@ -201,18 +201,18 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                     effectiveFromDate
                       ? new Date(
                           new Date(effectiveFromDate).getTime() -
-                            24 * 60 * 60 * 1000
+                            24 * 60 * 60 * 1000,
                         )
                           .toISOString()
                           .split("T")[0]
                       : lastEffectiveFromDate
-                      ? new Date(
-                          new Date(lastEffectiveFromDate).getTime() -
-                            24 * 60 * 60 * 1000
-                        )
-                          .toISOString()
-                          .split("T")[0]
-                      : new Date().toISOString().split("T")[0]
+                        ? new Date(
+                            new Date(lastEffectiveFromDate).getTime() -
+                              24 * 60 * 60 * 1000,
+                          )
+                            .toISOString()
+                            .split("T")[0]
+                        : new Date().toISOString().split("T")[0]
                   }
                   required
                 />

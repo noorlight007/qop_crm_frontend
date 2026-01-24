@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetApplicantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
-import { ApplicantProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
+import { useGetApplicantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
+import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
@@ -93,8 +93,8 @@ export const ApplicantsDetailsTab = () => {
                           !isPreviousValid
                             ? "Please complete the previous applicant's required fields first"
                             : isCurrentValid
-                            ? "Applicant details completed"
-                            : "Required fields incomplete"
+                              ? "Applicant details completed"
+                              : "Required fields incomplete"
                         }
                       >
                         {`${
@@ -117,7 +117,7 @@ export const ApplicantsDetailsTab = () => {
                       </NavLink>
                     </NavItem>
                   );
-                }
+                },
               )}
             </Nav>
           </CardHeader>

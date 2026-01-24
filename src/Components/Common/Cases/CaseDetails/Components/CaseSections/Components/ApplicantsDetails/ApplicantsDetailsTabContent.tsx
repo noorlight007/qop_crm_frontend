@@ -1,16 +1,16 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetPreviousAddressQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantPreviousAddressApi";
-import { useUpdateApplicantDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { useGetPreviousAddressQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi";
+import { useUpdateApplicantDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetCaseLoanDetailsQuery,
   useGetLoanDetailsQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetails/LoanDetailsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { ApplicantProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
-import { ApplicantsUsersProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsUserTypes";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/LoanDetails/LoanDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
+import { ApplicantsUsersProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsUserTypes";
 import LoadingSpinner from "@/app/loading";
 import { apiAddress } from "@/services/third-party-api";
 import { countries } from "@/utils/Countries";
@@ -90,7 +90,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const applicationType = loandetailsData?.application_type;
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId,
+    (state) => state.caseSections.basicTabId,
   );
 
   const [formValues, setFormValues] = useState<ApplicantProps>({
@@ -520,7 +520,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     }
   };
 
-  const getGoogleMapEmbedUrl:any = (lat: number, lng: number, zoom: number) => {
+  const getGoogleMapEmbedUrl: any = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ) => {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
 

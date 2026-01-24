@@ -1,13 +1,13 @@
 import Loading from "@/app/loading";
+
 import {
   useAddDependantsMutation,
   useGetDependantsQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import {
   ApplicantDependantsProps,
   ApplicantDependantsViewModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
-
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -47,7 +47,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
           applicantDetails_alias: firstApplicant.alias,
         }
       : null,
-    { skip: !shouldFetchFirstApplicantDependants }
+    { skip: !shouldFetchFirstApplicantDependants },
   );
 
   const [addDependants] = useAddDependantsMutation();
@@ -94,7 +94,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
       }
 
       toast.success(
-        `Successfully copied ${firstApplicantDependants.length} dependant(s)`
+        `Successfully copied ${firstApplicantDependants.length} dependant(s)`,
       );
     } catch (error: any) {
       const errorMessage = error?.message || "Failed to copy dependants";
@@ -162,9 +162,8 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                       <td>
                         {dependant.relationship === "OTHER"
                           ? dependant.other_relationship || "-"
-                          : formatChoiceFieldValue(
-                              dependant.relationship
-                            ) || "-"}
+                          : formatChoiceFieldValue(dependant.relationship) ||
+                            "-"}
                       </td>
                       <td>{dependant.date_of_birth || "-"}</td>
                       <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
@@ -177,7 +176,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                             setIsDependantDeleteModalOpen(
                               dependant?.id != null
                                 ? String(dependant.id)
-                                : null
+                                : null,
                             )
                           }
                           title="Delete dependant"
@@ -186,7 +185,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                         </Button>
                       </td>
                     </tr>
-                  )
+                  ),
                 )
               ) : (
                 <tr>

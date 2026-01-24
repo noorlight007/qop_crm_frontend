@@ -1,9 +1,9 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetPreviousAddressQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantPreviousAddressApi";
+import { useGetPreviousAddressQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi";
 import {
   PreviousAddressProps,
   ViewPreviousAddressModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -37,7 +37,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
     {
       skip: !isOpen || !casealias || !applicantAlias,
       refetchOnMountOrArgChange: true,
-    }
+    },
   );
 
   return (

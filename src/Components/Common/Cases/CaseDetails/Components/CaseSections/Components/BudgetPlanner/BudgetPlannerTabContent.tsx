@@ -1,7 +1,7 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerApi";
-import { initializeBudgetPlannerForm } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerFormSlice";
-import { BudgetPlannerTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
+import { initializeBudgetPlannerForm } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
+import { BudgetPlannerTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -29,7 +29,7 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
   const dispatch = useDispatch();
   const { data, isLoading } = useGetCaseBudgetPlannerQuery(
     { case_alias: casealias as string },
-    { skip: !casealias }
+    { skip: !casealias },
   );
   const initializedRef = useRef<string | null>(null);
 

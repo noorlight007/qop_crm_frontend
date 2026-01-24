@@ -4,11 +4,11 @@ import {
   useGetCompanyDetailsByRegistrationQuery,
   useGetCompanyDetailsQuery,
   useUpdateCompanyDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import {
   AddCompanyDetailsFormModalProps,
   ApplicantCompanyProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetailsTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -69,7 +69,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
       applicantDetails_alias,
       company_registration_number: formData.company_registration_number,
     },
-    { skip: !shouldFetch || !formData.company_registration_number }
+    { skip: !shouldFetch || !formData.company_registration_number },
   );
 
   useEffect(() => {
@@ -137,7 +137,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   }, [numberOfDirectors]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target as HTMLInputElement;
     const checked = (e.target as HTMLInputElement).checked;
@@ -154,7 +154,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
 
   const handleDirectorChange = (
     index: number,
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target as HTMLInputElement;
     setFormData((prev) => {
@@ -229,7 +229,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
 
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
 
       if (typeof value === "object") {
@@ -361,14 +361,14 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   }, [companyDetails, shouldFetch]);
 
   useEffect(() => {
-  if (error && shouldFetch) {
-    console.error("Error detected:", error);
-    const errMessage = getErrorMessage(error);
-    toast.error(errMessage);
+    if (error && shouldFetch) {
+      console.error("Error detected:", error);
+      const errMessage = getErrorMessage(error);
+      toast.error(errMessage);
 
-    setShouldFetch(false);
-  }
-}, [error, shouldFetch]);
+      setShouldFetch(false);
+    }
+  }, [error, shouldFetch]);
 
   if (isLoading)
     return (

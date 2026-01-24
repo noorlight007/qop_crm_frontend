@@ -1,5 +1,5 @@
 import { RootState } from "@/Redux/Store";
-import { DisclaimerTabContentsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { DisclaimerTabContentsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -15,13 +15,13 @@ const DisclaimerTabContents: FC<DisclaimerTabContentsProps> = ({
   updateField,
 }) => {
   const budgetPlannerData = useSelector(
-    (state: RootState) => state.budgetPlanner
+    (state: RootState) => state.budgetPlanner,
   );
   const [isChecked, setIsChecked] = useState(
-    budgetPlannerData.disclaimer || false
+    budgetPlannerData.disclaimer || false,
   );
   const [details, setDetails] = useState(
-    budgetPlannerData.disclaimer_details || ""
+    budgetPlannerData.disclaimer_details || "",
   );
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {

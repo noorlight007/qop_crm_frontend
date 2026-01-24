@@ -1,5 +1,5 @@
 import { RootState } from "@/Redux/Store";
-import { MonthlyBudgetTabContentsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { MonthlyBudgetTabContentsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -15,10 +15,10 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
   updateField,
 }) => {
   const budgetPlannerData = useSelector(
-    (state: RootState) => state.budgetPlanner
+    (state: RootState) => state.budgetPlanner,
   );
   const [currentValues, setCurrentValues] = useState<Record<string, string>>(
-    {}
+    {},
   );
   const [postValues, setPostValues] = useState<Record<string, string>>({});
 
@@ -72,7 +72,7 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
 
     const computed =
       parseFloat(
-        calculateAvailableIncome(currentValues, "CurrentBudgetPlanner")
+        calculateAvailableIncome(currentValues, "CurrentBudgetPlanner"),
       ) || 0;
     const prev = budgetPlannerData?.current_sub_total?.available_income || 0;
 
@@ -100,7 +100,7 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
 
     const computed =
       parseFloat(
-        calculateAvailableIncome(postValues, "PostCompletionBudgetPlanner")
+        calculateAvailableIncome(postValues, "PostCompletionBudgetPlanner"),
       ) || 0;
     const prev = budgetPlannerData?.post_sub_total?.available_income || 0;
 
@@ -144,7 +144,7 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
   // Calculate Available Income using store values if local values are empty
   const calculateAvailableIncome = (
     values: Record<string, string>,
-    prefix: string
+    prefix: string,
   ) => {
     const isPost = prefix.includes("PostCompletion");
     const storeData = isPost
@@ -169,7 +169,7 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
 
   const renderColumn = (
     title: string,
-    prefix: string
+    prefix: string,
     // showCopyButton?: boolean
   ) => (
     <div className="col-md-6">
