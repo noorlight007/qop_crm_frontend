@@ -1,0 +1,21 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import AuthUsers from "@/Components/Common/CommonUsers/AuthUsers/AuthUsers";
+import { Container } from "reactstrap";
+
+const OrganisationAdminsContainer: React.FC = () => {
+  return (
+    <div>
+      <Breadcrumbs
+        title="Admin Status"
+        subTitle="Manage organisation admins"
+        parent="Users"
+        child="Admins"
+      />
+      <Container fluid>
+        <AuthUsers title="Admins" userRole="ORGANISATION_ADMIN" />
+      </Container>
+    </div>
+  );
+};
+
+export default OrganisationAdminsContainer;

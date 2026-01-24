@@ -7,9 +7,7 @@ const OrganisationAdminDashboard = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Organisation/Admin/Dashboard"
-          )
+          await import("@/Components/Organisation/Admin/Dashboard")
         ).default;
         setClient(() => newClient);
       }

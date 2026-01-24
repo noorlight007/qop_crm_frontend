@@ -7,9 +7,7 @@ const OrganisationAdminComments = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Organisation/Admin/Comments"
-          )
+          await import("@/Components/Organisation/Admin/Comments")
         ).default;
         setClient(() => newClient);
       }

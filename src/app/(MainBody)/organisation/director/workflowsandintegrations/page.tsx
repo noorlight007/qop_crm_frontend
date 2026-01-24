@@ -7,9 +7,7 @@ const OrganisationDirectorWorkflowsAndIntegrations = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Organisation/Director/ReportsAndTasks/WorkflowsAndIntegrations"
-          )
+          await import("@/Components/Organisation/Director/ReportsAndTasks/WorkflowsAndIntegrations")
         ).default;
         setClient(() => newClient);
       }

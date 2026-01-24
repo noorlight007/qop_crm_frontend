@@ -7,9 +7,7 @@ const OrganisationAdminDocumentManagement = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Organisation/Admin/DocumentManagement"
-          )
+          await import("@/Components/Organisation/Admin/DocumentManagement")
         ).default;
         setClient(() => newClient);
       }

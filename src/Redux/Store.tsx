@@ -2,10 +2,10 @@ import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./Api/BaseApi";
 import { publicBaseApi } from "./Api/PublicBaseApi";
 import appearanceReducer from "./Reducers/Appearance/AppearanceSlice";
-import budgetPlannerReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlanner/BudgetPlannerFormSlice";
-import CaseDetailsTabIndicatorReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import ComplianceReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceSlice";
-import propertyFormReducer from "./Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
+import budgetPlannerReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
+import CaseSectionsTabIndicatorReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import ComplianceReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceSlice";
+import propertyFormReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import FormWizardOne from "./Reducers/FormLayout/FormWizardOneSlice";
 import FormWizardTwoSlice from "./Reducers/FormLayout/FormWizardTwoSlice";
 import TwoFactorSlice from "./Reducers/FormLayout/TwoFactorSlice";
@@ -22,7 +22,7 @@ const Store = configureStore({
     formWizardTwo: FormWizardTwoSlice,
     formWizardOne: FormWizardOne,
     themeCustomizer: ThemeCustomizerReducer,
-    caseDetails: CaseDetailsTabIndicatorReducer,
+    caseSections: CaseSectionsTabIndicatorReducer,
     propertyForm: propertyFormReducer,
     budgetPlanner: budgetPlannerReducer,
     compliance: ComplianceReducer,

@@ -7,9 +7,7 @@ const NetworkDirectorSecurityPolicy = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Director/ReportsAndTasks/SecurityPolicy"
-          )
+          await import("@/Components/Network/Director/ReportsAndTasks/SecurityPolicy")
         ).default;
         setClient(() => newClient);
       }

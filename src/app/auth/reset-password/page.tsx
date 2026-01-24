@@ -1,6 +1,6 @@
 "use client";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useResetUserPasswordMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/ResetUserPasswordApi";
+import { useResetUserPasswordMutation } from "@/Redux/Reducers/Common/UserProfile/ResetUserPasswordApi";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";

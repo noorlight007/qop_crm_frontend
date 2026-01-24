@@ -7,9 +7,7 @@ const OrganisationAdviserTasksAndReminders = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Organisation/Adviser/Users/TasksAndReminders"
-          )
+          await import("@/Components/Organisation/Adviser/Users/TasksAndReminders")
         ).default;
         setClient(() => newClient);
       }

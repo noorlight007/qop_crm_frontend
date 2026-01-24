@@ -7,9 +7,7 @@ const NetworkDirectorAuditLog = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Director/ReportsAndTasks/AuditLog"
-          )
+          await import("@/Components/Network/Director/ReportsAndTasks/AuditLog")
         ).default;
         setClient(() => newClient);
       }

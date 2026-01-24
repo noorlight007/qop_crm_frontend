@@ -7,9 +7,7 @@ const NetworkDirectorUserManagement = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Director/ReportsAndTasks/UserManagement"
-          )
+          await import("@/Components/Network/Director/ReportsAndTasks/UserManagement")
         ).default;
         setClient(() => newClient);
       }

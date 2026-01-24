@@ -1,0 +1,65 @@
+import LoadingSpinner from "@/app/loading";
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseSections/CaseSections";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { toast } from "react-toastify";
+import { Container } from "reactstrap";
+
+const ClientSingleCaseContainer: React.FC = () => {
+  const router = useRouter();
+  const { casealias } = useParams();
+  const {
+    data: caseData,
+    isLoading,
+    isError,
+  } = useGetSingleCaseQuery({ case_alias: casealias }, { skip: !casealias });
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (isError || !caseData) {
+        router.push("/client/dashboard");
+        toast.error("Find Wrong URL! Redirecting...");
+        return;
+      }
+
+      if (caseData.alias !== casealias) {
+        router.push("/client/dashboard");
+        toast.error("Find Wrong URL! Redirecting...");
+        return;
+      }
+    }
+  }, [caseData, casealias, router, isLoading, isError]);
+
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (isError || !caseData) {
+    return null; // Will redirect in useEffect
+  }
+
+  return (
+    <>
+      <Breadcrumbs
+        title="Client Dashboard"
+        subTitle="Welcome back! Let’s start from where you left."
+        parent="Client"
+        child="Dashboard"
+      />
+      <Container fluid>
+        <CaseSections
+          caseCategory={caseData?.case_category || ""}
+          caseStage={caseData?.case_stage || ""}
+        />
+      </Container>
+    </>
+  );
+};
+
+export default ClientSingleCaseContainer;

@@ -7,9 +7,7 @@ const NetworkAdviserActiveCases = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Adviser/Cases/ActiveCases"
-          )
+          await import("@/Components/Network/Adviser/Cases/ActiveCases")
         ).default;
         setClient(() => newClient);
       }
