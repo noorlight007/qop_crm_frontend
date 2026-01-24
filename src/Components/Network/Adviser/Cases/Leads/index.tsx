@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import Leads from "@/Components/General/Dashboard/CommonComponents/CommonUsers/Leads/Leads";
+import Leads from "@/Components/Common/CommonUsers/Leads/Leads";
 import { Container } from "reactstrap";
 
 const NetworkAdviserLeadsContainer: React.FC = () => {

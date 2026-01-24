@@ -1,4 +1,4 @@
-import { JointApplicantViewModalProps } from "@/Types/Common/SingleCaseInfo/JointApplicant/JointApplicantTypes";
+import { JointApplicantViewModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useState } from "react";
