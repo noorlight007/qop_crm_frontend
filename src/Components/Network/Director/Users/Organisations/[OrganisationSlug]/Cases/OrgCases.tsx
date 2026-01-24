@@ -4,7 +4,7 @@ import {
   mortgageStages,
 } from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgCasesApi";
-import { CaseInfoPrpos } from "@/Types/CommonComponents/Cases/CaseTypes";
+import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";

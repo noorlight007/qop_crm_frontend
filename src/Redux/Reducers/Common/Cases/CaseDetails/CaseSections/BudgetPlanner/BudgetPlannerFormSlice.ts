@@ -1,4 +1,4 @@
-import { BudgetPlanner } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/BudgetPlannerTypes";
+import { BudgetPlanner } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Initial state matching your data structure
@@ -188,7 +188,7 @@ const budgetPlannerSlice = createSlice({
       action: PayloadAction<{
         section: keyof BudgetPlanner;
         data: any;
-      }>
+      }>,
     ) => {
       const { section, data } = action.payload;
       if (typeof data === "object" && data !== null) {
@@ -225,7 +225,7 @@ const budgetPlannerSlice = createSlice({
     // Initialize entire form with new data
     initializeBudgetPlannerForm: (
       state,
-      action: PayloadAction<BudgetPlanner>
+      action: PayloadAction<BudgetPlanner>,
     ) => {
       return { ...state, ...action.payload };
     },
@@ -240,7 +240,7 @@ const budgetPlannerSlice = createSlice({
         section: keyof BudgetPlanner;
         field: string;
         value: number | null | boolean | string;
-      }>
+      }>,
     ) => {
       const { section, field, value } = action.payload;
       if (section === "disclaimer") {

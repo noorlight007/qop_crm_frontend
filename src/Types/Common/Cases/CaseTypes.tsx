@@ -1,4 +1,4 @@
-import { JointApplicantProps } from "../SingleCaseInfo/JointApplicant/JointApplicantTypes";
+import { JointApplicantProps } from "./CaseDetails/JointApplicant/JointApplicantTypes";
 
 export interface CaseInfoPrpos {
   alias: string;
