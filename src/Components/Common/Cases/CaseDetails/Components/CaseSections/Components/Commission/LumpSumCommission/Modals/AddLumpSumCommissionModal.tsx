@@ -1,5 +1,5 @@
-import { useAddLumpSumCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
-import { AddLumpSumAndTrailModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
+import { useAddLumpSumCommissionMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Commission/CommissionApi";
+import { AddLumpSumAndTrailModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";

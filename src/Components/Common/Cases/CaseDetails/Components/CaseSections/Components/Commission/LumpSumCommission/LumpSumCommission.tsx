@@ -2,15 +2,15 @@ import LoadingSpinner from "@/app/loading";
 import {
   useGetLumpSumCommissionQuery,
   useUpdateLumpSumCommissionMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Commission/CommissionApi";
 import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
 import {
   CommissionProps,
   LumpSumProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -42,7 +42,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
     isError,
   } = useGetLumpSumCommissionQuery(
     { case_alias, commission_alias },
-    { skip: !case_alias || !commission_alias }
+    { skip: !case_alias || !commission_alias },
   );
 
   const [updateLumpSumCommission, { isLoading: isUpdatingLump }] =
@@ -62,14 +62,14 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
         case_alias,
         insurance_overview_alias: overview?.alias,
       },
-      { skip: !case_alias || !overview?.alias }
+      { skip: !case_alias || !overview?.alias },
     );
 
   const [policies, setPolicies] = useState<any[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedLumpId, setSelectedLumpId] = useState<string | null>(null);
   const [selectedLumpIndex, setSelectedLumpIndex] = useState<number | null>(
-    null
+    null,
   );
 
   // Move update logic out of JSX: re-usable handler
@@ -215,7 +215,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                   {lump.policy
                     ? `- ${formatChoiceFieldValue(
                         policies.find((p: any) => p.alias === lump.policy)
-                          ?.policy_type || "Policy"
+                          ?.policy_type || "Policy",
                       )}`
                     : ""}
                 </NavLink>

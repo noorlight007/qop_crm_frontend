@@ -1,14 +1,13 @@
-import React, { FC } from "react";
-
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetComplianceQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceApi";
+import { useGetComplianceQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceApi";
 import {
   updateComplianceAnswer,
   updateComplianceComment,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceSlice";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceSlice";
 import { RootState } from "@/Redux/Store";
-import { ComplianceState } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ComplianceTypes";
+import { ComplianceState } from "@/Types/Common/Cases/CaseDetails/CaseSections/ComplianceTypes";
 import { useParams } from "next/navigation";
+import React, { FC } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -50,7 +49,7 @@ export const ComplianceRatingCard: FC = () => {
   });
   const dispatch = useAppDispatch();
   const updatedComplianceData = useAppSelector(
-    (state: RootState) => state.compliance
+    (state: RootState) => state.compliance,
   );
 
   const formData: Partial<ComplianceState> = {
@@ -124,7 +123,7 @@ export const ComplianceRatingCard: FC = () => {
           onClick={onClick}
         />
       </div>
-    )
+    ),
   );
 
   return (
@@ -148,7 +147,6 @@ export const ComplianceRatingCard: FC = () => {
               onChange={(date: Date) =>
                 handleAnswerChange("date_file_checked", date)
               }
-            
               dateFormat="dd/MM/yyyy"
               customInput={<CustomInput />}
             />
@@ -268,8 +266,8 @@ export const ComplianceRatingCard: FC = () => {
                     rating === "green"
                       ? "#198754"
                       : rating === "yellow"
-                      ? "#ffd63a"
-                      : "#dc3545",
+                        ? "#ffd63a"
+                        : "#dc3545",
                 }}
               >
                 {rating === "green" ? "G" : rating === "yellow" ? "A" : "R"}

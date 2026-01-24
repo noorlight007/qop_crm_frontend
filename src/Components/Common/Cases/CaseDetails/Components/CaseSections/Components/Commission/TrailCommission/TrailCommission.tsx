@@ -2,12 +2,12 @@ import LoadingSpinner from "@/app/loading";
 import {
   useGetTrailCommissionQuery,
   useUpdateTrailCommissionMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Commission/CommissionApi";
 import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
-import { CommissionProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { CommissionProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -44,7 +44,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
 
   const { data: trailCommissionData, isLoading } = useGetTrailCommissionQuery(
     { case_alias, commission_alias },
-    { skip: !case_alias || !commission_alias }
+    { skip: !case_alias || !commission_alias },
   );
 
   const [updateTrailCommission, { isLoading: isUpdating }] =
@@ -52,7 +52,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
 
   const { data: insuranceOverviewData } = useGetInsuranceOverviewQuery(
     { case_alias },
-    { skip: !case_alias }
+    { skip: !case_alias },
   );
 
   const overview = Array.isArray(insuranceOverviewData)
@@ -61,14 +61,14 @@ const TrailCommission: React.FC<CommissionProps> = ({
 
   const { data: insurancePoliciesData } = useGetInsurancePoliciesQuery(
     { case_alias, insurance_overview_alias: overview?.alias },
-    { skip: !case_alias || !overview?.alias }
+    { skip: !case_alias || !overview?.alias },
   );
 
   const [policies, setPolicies] = useState<any[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTrailId, setSelectedTrailId] = useState<string | null>(null);
   const [selectedTrailIndex, setSelectedTrailIndex] = useState<number | null>(
-    null
+    null,
   );
 
   const handleUpdateTrail = async (trail: Trail) => {
@@ -215,7 +215,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
                   {trail.policy
                     ? `- ${formatChoiceFieldValue(
                         policies.find((p: any) => p.alias === trail.policy)
-                          ?.policy_type || "Policy"
+                          ?.policy_type || "Policy",
                       )}`
                     : ""}
                 </NavLink>

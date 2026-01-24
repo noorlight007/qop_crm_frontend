@@ -1,5 +1,5 @@
-import { useDeleteTrailCommissionMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
-import { DeleteLumpSumAndTrailModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/CommissionTypes";
+import { useDeleteTrailCommissionMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Commission/CommissionApi";
+import { DeleteLumpSumAndTrailModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { toast } from "react-toastify";

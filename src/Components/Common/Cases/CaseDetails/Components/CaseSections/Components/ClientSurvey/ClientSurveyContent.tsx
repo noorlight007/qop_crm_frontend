@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetClientSurveyQuery,
   useUpdateClientSurveyMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ClientSurvey/ClientSurveyApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -43,7 +43,7 @@ const ClientSurveyContent: React.FC = () => {
   // RTK Queries
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   const {
@@ -102,7 +102,7 @@ const ClientSurveyContent: React.FC = () => {
     // Sort by creation date: newest first
     const sorted = [...clientSurveyList].sort(
       (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
     );
 
     return sorted[0];
@@ -117,7 +117,7 @@ const ClientSurveyContent: React.FC = () => {
       setClientSurvey(selectedSurvey.client_survey || false);
       setAdviserName(selectedSurvey.adviser_name || "");
       setQuestion2(
-        selectedSurvey.is_clarification_explanation_of_the_service_firm || ""
+        selectedSurvey.is_clarification_explanation_of_the_service_firm || "",
       );
       setQuestion3(selectedSurvey.is_timely_service_delivery || "");
       setQuestion4(selectedSurvey.is_helpfulness_representative || "");
@@ -126,58 +126,59 @@ const ClientSurveyContent: React.FC = () => {
       setQuestion7(selectedSurvey.is_clarification_explanation_paid || "");
       setQuestion8(selectedSurvey.is_raising_queries_relating_service || "");
       setQuestion9(
-        selectedSurvey.is_clarification_explanation_protection_review || ""
+        selectedSurvey.is_clarification_explanation_protection_review || "",
       );
       setQuestion10(
-        selectedSurvey.is_understanding_of_financial_objectives || ""
+        selectedSurvey.is_understanding_of_financial_objectives || "",
       );
       setQuestion11(
-        selectedSurvey.is_explanation_consideration_of_attitude_risk || ""
+        selectedSurvey.is_explanation_consideration_of_attitude_risk || "",
       );
       setQuestion12(
         selectedSurvey.is_explanation_consideration_capacity_loss_of_capital ||
-          ""
+          "",
       );
       setQuestion13(selectedSurvey.is_explanation_adviser_product || "");
       setQuestion14(selectedSurvey.is_interaction_adviser_professionals || "");
       setQuestion15(selectedSurvey.is_suitable_advice_for_your_needs || "");
       setQuestion16(
-        selectedSurvey.is_ability_of_the_adviser_undue_pressure_commit || ""
+        selectedSurvey.is_ability_of_the_adviser_undue_pressure_commit || "",
       );
       setQuestion17(selectedSurvey.is_timing_deliver_review_by_adviser || "");
       setQuestion18(selectedSurvey.the_broker_fee_paid_represents || "");
       setQuestion19(
-        selectedSurvey.explanation_broker_fees_including_refund_policy || ""
+        selectedSurvey.explanation_broker_fees_including_refund_policy || "",
       );
       setQuestion20(
-        selectedSurvey.is_receive_the_value_expected_broker_fee || ""
+        selectedSurvey.is_receive_the_value_expected_broker_fee || "",
       );
       setQuestion21(
-        selectedSurvey.is_any_other_documentation_provided_to_you || ""
+        selectedSurvey.is_any_other_documentation_provided_to_you || "",
       );
       setQuestion22(
-        selectedSurvey.is_timing_arrangements_made_conduct_review_with_you || ""
+        selectedSurvey.is_timing_arrangements_made_conduct_review_with_you ||
+          "",
       );
       setQuestion23(
-        selectedSurvey.is_frequency_communications_receive_from_firm || ""
+        selectedSurvey.is_frequency_communications_receive_from_firm || "",
       );
       setQuestion24(
-        selectedSurvey.is_relevance_communications_sent_to_the_firm || ""
+        selectedSurvey.is_relevance_communications_sent_to_the_firm || "",
       );
       setQuestion25(
-        selectedSurvey.is_raising_any_queries_on_communications || ""
+        selectedSurvey.is_raising_any_queries_on_communications || "",
       );
       setQuestion26(
         selectedSurvey.is_overall_standard_communications_received_from_firm ||
-          ""
+          "",
       );
       setQuestion27(
         selectedSurvey.is_timely_manner_of_receiving_letter_confirming_recommendation ||
-          ""
+          "",
       );
       setQuestion28(selectedSurvey.do_we_better_serve_next_time || "");
       setQuestion29(
-        selectedSurvey.have_any_further_comments_on_the_service_received || ""
+        selectedSurvey.have_any_further_comments_on_the_service_received || "",
       );
       setQuestion30(selectedSurvey.do_you_like_someone_to_contact_you || "");
       setName(selectedSurvey.name || "");
@@ -261,7 +262,7 @@ const ClientSurveyContent: React.FC = () => {
         | "name"
         | "email"
         | "phoneNumber"
-        | "note"
+        | "note",
     ) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -494,14 +495,14 @@ const ClientSurveyContent: React.FC = () => {
 
   // === STEP 6: Navigation ===
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav: string | null = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));

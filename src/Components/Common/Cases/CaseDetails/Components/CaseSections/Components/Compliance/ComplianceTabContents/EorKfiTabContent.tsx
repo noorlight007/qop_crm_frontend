@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetComplianceQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceApi";
+import { useGetComplianceQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceApi";
 import {
   updateComplianceAnswer,
   updateComplianceComment,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceSlice";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceSlice";
 import { RootState } from "@/Redux/Store";
-import { ComplianceState } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ComplianceTypes";
+import { ComplianceState } from "@/Types/Common/Cases/CaseDetails/CaseSections/ComplianceTypes";
 import { useParams } from "next/navigation";
 import { FC } from "react";
 import { DisclosureItem } from "./components/DisclosureItem";
@@ -17,7 +17,7 @@ const EorKfiTabContent: FC = () => {
   });
   const dispatch = useAppDispatch();
   const updatedComplianceData = useAppSelector(
-    (state: RootState) => state.compliance
+    (state: RootState) => state.compliance,
   );
 
   const eorKfiData = [
@@ -225,13 +225,13 @@ const EorKfiTabContent: FC = () => {
 
   const handleAnswerChange = (name: string, value: string) => {
     dispatch(
-      updateComplianceAnswer({ field: name as keyof ComplianceState, value })
+      updateComplianceAnswer({ field: name as keyof ComplianceState, value }),
     );
   };
 
   const handleCommentChange = (name: string, value: string | null) => {
     dispatch(
-      updateComplianceComment({ field: name as keyof ComplianceState, value })
+      updateComplianceComment({ field: name as keyof ComplianceState, value }),
     );
   };
   return (

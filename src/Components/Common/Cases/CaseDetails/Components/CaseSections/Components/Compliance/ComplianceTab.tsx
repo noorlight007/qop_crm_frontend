@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useUpdateComplianceMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Compliance/ComplianceApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateComplianceMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { RootState } from "@/Redux/Store";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -28,11 +28,11 @@ export const ComplianceTab = () => {
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
   const [basicTab, setBasicTab] = useState("1");
   const complianceState = useAppSelector(
-    (state: RootState) => state.compliance
+    (state: RootState) => state.compliance,
   );
   const [updateCompliance, { isLoading: isUpdating }] =
     useUpdateComplianceMutation();
@@ -49,7 +49,7 @@ export const ComplianceTab = () => {
           }
           return acc;
         },
-        {}
+        {},
       );
 
       if (Object.keys(changedFields).length > 0) {
@@ -82,14 +82,14 @@ export const ComplianceTab = () => {
   };
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));

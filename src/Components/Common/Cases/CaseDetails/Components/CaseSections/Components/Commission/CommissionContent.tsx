@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useAddCommissionMutation,
   useGetCommissionQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Commission/CommissionApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Commission/CommissionApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -27,7 +27,7 @@ const CommissionContent: React.FC = () => {
     useUpdateSectionCompleteStatusMutation();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   // API may return an array (e.g. [{...}]) — normalize to single object
@@ -40,7 +40,7 @@ const CommissionContent: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const CommissionContent: React.FC = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -173,8 +173,8 @@ const CommissionContent: React.FC = () => {
                 {isAdding
                   ? "Saving..."
                   : session?.user?.user_type === "CLIENT"
-                  ? "Go To Next"
-                  : "Save & Next"}
+                    ? "Go To Next"
+                    : "Save & Next"}
               </Button>
             </div>
           </Form>
