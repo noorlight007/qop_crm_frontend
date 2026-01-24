@@ -1,8 +1,8 @@
-import { useUpdateClientDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
+import { useUpdateClientDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/ClientsApi";
 import {
   ClientInfoProps,
   UpdateClientModalProps,
-} from "@/Types/CommonComponents/CommonUsers/ClientTypes";
+} from "@/Types/Common/CommonUsers/ClientTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -39,7 +39,7 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     const keys = name.split(".");
@@ -65,7 +65,7 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
 
       // Deep clone and sanitize payload
       let payload: Partial<ClientInfoProps> = JSON.parse(
-        JSON.stringify(clientData)
+        JSON.stringify(clientData),
       );
 
       // Remove invalid empty choice fields to satisfy backend validators

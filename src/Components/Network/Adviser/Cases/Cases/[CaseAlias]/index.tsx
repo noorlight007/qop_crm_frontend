@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import SingleCaseInfo from "@/Components/General/Dashboard/CommonComponents/SingleCaseInfo/SingleCaseInfo";
+import SingleCaseInfo from "@/Components/Common/Cases/CaseDetails/SingleCaseInfo";
 
 const CaseContainer: React.FC = () => {
   return (

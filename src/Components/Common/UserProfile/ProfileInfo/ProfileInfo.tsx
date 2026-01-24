@@ -1,8 +1,8 @@
 import {
   useGetUserDetailsQuery,
   useUpdateUserDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
-import { UserProfileData } from "@/Types/CommonComponents/UserProfile/UserProfileType";
+} from "@/Redux/Reducers/Common/UserProfile/UserProfileApi";
+import { UserProfileData } from "@/Types/Common/UserProfile/UserProfileType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";

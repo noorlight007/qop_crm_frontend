@@ -1,9 +1,6 @@
-import { useGetLeadDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
-import {
-  LeadsInfo,
-  LeadsProps,
-} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
 import LoadingSpinner from "@/app/loading";
+import { useGetLeadDetailsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
+import { LeadsInfo, LeadsProps } from "@/Types/Common/CommonUsers/LeadTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";

@@ -1,8 +1,8 @@
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/ClientsApi";
+import { useGetClientDetailsQuery } from "@/Redux/Reducers/Common/CommonUsers/ClientsApi";
 import {
   ClientInfoProps,
   ClientsProps,
-} from "@/Types/CommonComponents/CommonUsers/ClientTypes";
+} from "@/Types/Common/CommonUsers/ClientTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

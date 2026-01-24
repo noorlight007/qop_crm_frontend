@@ -1,4 +1,4 @@
-import { ViewClientModalProps } from "@/Types/CommonComponents/CommonUsers/ClientTypes";
+import { ViewClientModalProps } from "@/Types/Common/CommonUsers/ClientTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -222,7 +222,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
                   <strong>
                     {selectedClient.created_by.title
                       ? formatChoiceFieldValue(
-                          selectedClient.created_by.title
+                          selectedClient.created_by.title,
                         ).trim() + " "
                       : ""}
                     {selectedClient.created_by.first_name}{" "}
@@ -233,7 +233,7 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
                 <small className="text-muted">
                   {selectedClient.created_by.user_type
                     ? formatChoiceFieldValue(
-                        selectedClient.created_by.user_type
+                        selectedClient.created_by.user_type,
                       )
                     : ""}
                 </small>

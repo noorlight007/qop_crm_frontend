@@ -1,5 +1,5 @@
-import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/CommonComponents/UserProfile/UserProfileApi";
-import { UserProfileModalProps } from "@/Types/CommonComponents/UserProfile/UserProfileType";
+import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/Common/UserProfile/UserProfileApi";
+import { UserProfileModalProps } from "@/Types/Common/UserProfile/UserProfileType";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -56,7 +56,7 @@ const EditProfileModal: React.FC<UserProfileModalProps> = ({
   }, [initialData, isOpen]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target as HTMLInputElement;
     setForm((s) => ({ ...s, [name]: value }));

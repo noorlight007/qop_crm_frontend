@@ -1,5 +1,5 @@
-import { useAddAuthUserMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
-import { AddAuthUserModalProps } from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
+import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { AddAuthUserModalProps } from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {

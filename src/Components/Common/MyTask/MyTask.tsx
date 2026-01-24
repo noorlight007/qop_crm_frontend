@@ -1,7 +1,7 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
-import { useGetMyTasksQuery } from "@/Redux/Reducers/CommonComponents/MyTask/MyTasksApi";
-import { MyTaskProps } from "@/Types/CommonComponents/MyTask/MyTaskTypes";
+import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
+import { useGetMyTasksQuery } from "@/Redux/Reducers/Common/MyTask/MyTasksApi";
+import { MyTaskProps } from "@/Types/Common/MyTask/MyTaskTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
@@ -117,7 +117,7 @@ const MyTask: React.FC = () => {
             status: (item.status as MyTaskProps["status"]) || "Unknown",
             created_by: item.created_by || "",
           } as MyTaskProps;
-        }
+        },
       );
       // For server-side pagination, the API already returns only the current page results
       setAllTasks(mapped);
@@ -176,7 +176,7 @@ const MyTask: React.FC = () => {
         if (existingTo && new Date(newFrom) > new Date(existingTo)) {
           // Auto-clamp: set both to newFrom so from <= to
           setDateError(
-            "Due Date From was after Due Date To — adjusted to match."
+            "Due Date From was after Due Date To — adjusted to match.",
           );
           return { ...prev, dueDateFrom: newFrom, dueDateTo: newFrom };
         }
@@ -195,7 +195,7 @@ const MyTask: React.FC = () => {
         if (existingFrom && new Date(newTo) < new Date(existingFrom)) {
           // Auto-clamp: set both to newTo so from <= to
           setDateError(
-            "Due Date To was before Due Date From — adjusted to match."
+            "Due Date To was before Due Date From — adjusted to match.",
           );
           return { ...prev, dueDateFrom: newTo, dueDateTo: newTo };
         }
@@ -568,7 +568,7 @@ const MyTask: React.FC = () => {
                         <PaginationLink onClick={() => setCurrentPage(1)}>
                           1
                         </PaginationLink>
-                      </PaginationItem>
+                      </PaginationItem>,
                     );
                   }
 
@@ -577,7 +577,7 @@ const MyTask: React.FC = () => {
                     pages.push(
                       <PaginationItem key="ellipsis-start" disabled>
                         <PaginationLink>...</PaginationLink>
-                      </PaginationItem>
+                      </PaginationItem>,
                     );
                   }
 
@@ -588,7 +588,7 @@ const MyTask: React.FC = () => {
                         <PaginationLink onClick={() => setCurrentPage(i)}>
                           {i}
                         </PaginationLink>
-                      </PaginationItem>
+                      </PaginationItem>,
                     );
                   }
 
@@ -597,7 +597,7 @@ const MyTask: React.FC = () => {
                     pages.push(
                       <PaginationItem key="ellipsis-end" disabled>
                         <PaginationLink>...</PaginationLink>
-                      </PaginationItem>
+                      </PaginationItem>,
                     );
                   }
 
@@ -611,7 +611,7 @@ const MyTask: React.FC = () => {
                         <PaginationLink onClick={() => setCurrentPage(total)}>
                           {total}
                         </PaginationLink>
-                      </PaginationItem>
+                      </PaginationItem>,
                     );
                   }
 

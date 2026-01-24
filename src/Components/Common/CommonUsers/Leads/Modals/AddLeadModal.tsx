@@ -1,5 +1,5 @@
-import { useAddLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
-import { AddLeadModalProps } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+import { useAddLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
+import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

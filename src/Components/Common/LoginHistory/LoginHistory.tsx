@@ -1,5 +1,5 @@
-import { useGetLoginHistoryQuery } from "@/Redux/Reducers/CommonComponents/LoginHistory/LoginHistoryApi";
-import { LoginHistoryItem } from "@/Types/CommonComponents/LoginHistory/LoginHistoryTypes";
+import { useGetLoginHistoryQuery } from "@/Redux/Reducers/Common/LoginHistory/LoginHistoryApi";
+import { LoginHistoryItem } from "@/Types/Common/LoginHistory/LoginHistoryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
@@ -27,7 +27,7 @@ const LoginHistory: React.FC = () => {
     { page: currentPage },
     {
       pollingInterval: 20000,
-    }
+    },
   );
 
   const getStatusBadge = (status: string) => {
@@ -349,7 +349,7 @@ const LoginHistory: React.FC = () => {
                           {pageNumber}
                         </PaginationLink>
                       </PaginationItem>
-                    )
+                    ),
                   )
                 ) : (
                   <>
@@ -368,7 +368,7 @@ const LoginHistory: React.FC = () => {
                     {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
                       .filter(
                         (pageNumber) =>
-                          pageNumber > 1 && pageNumber < totalPages
+                          pageNumber > 1 && pageNumber < totalPages,
                       )
                       .map((pageNumber) => (
                         <PaginationItem

@@ -1,5 +1,5 @@
-import { useFetchSupportTicketQuery } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
-import { SupportTicketFormData } from "@/Types/CommonComponents/SupportTicket/SupportTicketTypes";
+import { useFetchSupportTicketQuery } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";

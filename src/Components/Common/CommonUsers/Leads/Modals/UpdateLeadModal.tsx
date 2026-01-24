@@ -1,8 +1,8 @@
-import { useUpdateLeadDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/LeadsApi";
+import { useUpdateLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
 import {
   LeadsInfo,
   UpdateLeadModalProps,
-} from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+} from "@/Types/Common/CommonUsers/LeadTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -37,7 +37,7 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
   }, [selectedLead]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     // Clear any existing error for this specific field when user edits it

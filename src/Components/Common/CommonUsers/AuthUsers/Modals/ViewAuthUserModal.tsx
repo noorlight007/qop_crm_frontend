@@ -1,4 +1,4 @@
-import { ViewAuthUserModalProps } from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
+import { ViewAuthUserModalProps } from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";

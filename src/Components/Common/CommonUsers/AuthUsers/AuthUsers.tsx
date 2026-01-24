@@ -1,8 +1,4 @@
-import { useGetAuthUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
-import {
-  AuthUser,
-  AuthUsersProps,
-} from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
+
 import LoadingSpinner from "@/app/loading";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -29,6 +25,8 @@ import {
 import AddAuthUserModal from "./Modals/AddAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
+import { AuthUser, AuthUsersProps } from "@/Types/Common/CommonUsers/AuthUsersTypes";
+import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,

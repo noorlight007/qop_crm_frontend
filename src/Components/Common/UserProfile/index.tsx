@@ -1,5 +1,5 @@
 import { Col, Row } from "reactstrap";
-import Breadcrumbs from "../../../../Common/Breadcrumbs/Breadcrumbs";
+import Breadcrumbs from "../Breadcrumbs/Breadcrumbs";
 import ProfileInfo from "./ProfileInfo/ProfileInfo";
 
 const UserProfileContainer: React.FC = () => {

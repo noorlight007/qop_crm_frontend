@@ -1,4 +1,4 @@
-import { ViewLeadModalProps } from "@/Types/CommonComponents/CommonUsers/LeadTypes";
+import { ViewLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -225,7 +225,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                   <strong>
                     {selectedLead.created_by.title
                       ? formatChoiceFieldValue(
-                          selectedLead.created_by.title
+                          selectedLead.created_by.title,
                         ).trim() + " "
                       : ""}
                     {selectedLead.created_by.first_name}{" "}

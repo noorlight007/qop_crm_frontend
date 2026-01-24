@@ -1,11 +1,11 @@
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import MyTask from "@/Components/Common/MyTask/MyTask";
 import {
   useGetAdviserDashboardClientDataQuery,
   useGetAdviserDashboardDocumentDataQuery,
   useGetAdviserDashboardSummaryDataQuery,
-} from "@/Redux/Reducers/CommonComponents/CommonAdviserDashboard/CommonAdviserDashboardApi";
+} from "@/Redux/Reducers/Common/CommonAdviserDashboard/CommonAdviserDashboardApi";
 import { Col, Container, Row } from "reactstrap";
-import Breadcrumbs from "../../../../../Common/Breadcrumbs/Breadcrumbs";
-import MyTask from "../../../CommonComponents/MyTask/MyTask";
 import OrganisationList from "../../Director/Users/Organisations/OrganisationList/OrganisationList";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";

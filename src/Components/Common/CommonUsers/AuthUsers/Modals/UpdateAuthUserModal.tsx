@@ -1,8 +1,8 @@
-import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/CommonComponents/CommonUsers/AuthUsersApi";
+import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import {
   AuthUser,
   UpdateAuthUserModalProps,
-} from "@/Types/CommonComponents/CommonUsers/AuthUsersTypes";
+} from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {

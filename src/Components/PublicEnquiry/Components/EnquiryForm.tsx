@@ -1,6 +1,6 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
-import { useSubmitEnquiryMutation } from "@/Redux/Reducers/Enquiry/EnquiryApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import { useSubmitEnquiryMutation } from "@/Redux/Reducers/PublicEnquiry/PublicEnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useRef, useState } from "react";
@@ -780,10 +780,12 @@ const InitialEnquiryForm: React.FC = () => {
                           {formData.first_name || "Not Set"}
                         </p>
                         <p>
-                          <strong>Middle Name:</strong> {formData.middle_name || "Not Set"}
+                          <strong>Middle Name:</strong>{" "}
+                          {formData.middle_name || "Not Set"}
                         </p>
                         <p>
-                          <strong>Last Name:</strong> {formData.last_name || "Not Set"}
+                          <strong>Last Name:</strong>{" "}
+                          {formData.last_name || "Not Set"}
                         </p>
                         <p>
                           <strong>Email:</strong> {formData.email || "Not Set"}
@@ -800,13 +802,14 @@ const InitialEnquiryForm: React.FC = () => {
                         <h6 className="fw-bold mb-3">Enquiry Information</h6>
                         <p>
                           <strong>Enquiry Type:</strong>{" "}
-                          {formatChoiceFieldValue(formData.enquiry_type || "Not Set")}
+                          {formatChoiceFieldValue(
+                            formData.enquiry_type || "Not Set",
+                          )}
                         </p>
                         {formData.enquiry_type === "OTHER" && (
                           <p>
                             <strong>Other Enquiry Type:</strong>{" "}
-                            {formData.other_enquiry_type ||
-                              "Not Specified"}
+                            {formData.other_enquiry_type || "Not Specified"}
                           </p>
                         )}
                         <p>

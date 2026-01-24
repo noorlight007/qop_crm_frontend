@@ -1,5 +1,5 @@
-import { useDeleteSupportTicketMutation } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
-import { DeleteSupportTicketModalProps } from "@/Types/CommonComponents/SupportTicket/SupportTicketTypes";
+import { useDeleteSupportTicketMutation } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import { DeleteSupportTicketModalProps } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -42,7 +42,8 @@ const DeleteSupportTicketModal: React.FC<DeleteSupportTicketModalProps> = ({
         <h3 className="text-danger">Delete Ticket</h3>
       </ModalHeader>
       <ModalBody className="text-center">
-        Are you sure you want to delete the Support Ticket? <br />This action cannot be undone.
+        Are you sure you want to delete the Support Ticket? <br />
+        This action cannot be undone.
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle}>

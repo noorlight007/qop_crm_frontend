@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useFetchSupportTicketDetailsQuery } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
-import { SupportTicketFormData } from "@/Types/CommonComponents/SupportTicket/SupportTicketTypes";
+import { useFetchSupportTicketDetailsQuery } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useState } from "react";

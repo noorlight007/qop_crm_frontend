@@ -1,8 +1,8 @@
-import { useUpdateSupportTicketMutation } from "@/Redux/Reducers/CommonComponents/SupportTicket/SupportTicketApi";
+import { useUpdateSupportTicketMutation } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import {
   SupportTicketFormData,
   UpdateSupportTicketModalProps,
-} from "@/Types/CommonComponents/SupportTicket/SupportTicketTypes";
+} from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
