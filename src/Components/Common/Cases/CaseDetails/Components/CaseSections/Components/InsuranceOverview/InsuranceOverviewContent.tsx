@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsuranceOverviewQuery,
-  useGetInsurancePoliciesQuery,
   useUpdateInsuranceOverviewMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
@@ -36,14 +35,6 @@ const InsuranceOverviewContent: React.FC = () => {
     useGetInsuranceOverviewQuery({ case_alias: casealias });
   const [updateInsuranceOverview, { isLoading: isUpdating }] =
     useUpdateInsuranceOverviewMutation();
-  const { data: insurancePoliciesData, isLoading: isLoadingPolicies } =
-    useGetInsurancePoliciesQuery(
-      {
-        case_alias: casealias,
-        insurance_overview_alias: insuranceOverviewData?.alias,
-      },
-      { skip: !insuranceOverviewData?.alias },
-    );
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
