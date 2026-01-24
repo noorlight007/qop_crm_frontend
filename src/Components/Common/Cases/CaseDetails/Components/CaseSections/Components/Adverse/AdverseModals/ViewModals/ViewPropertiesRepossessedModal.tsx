@@ -1,5 +1,5 @@
-import { useGetPropertyRepossessedQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
-import { ViewPropertiesRepossessedModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+import { useGetPropertyRepossessedQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
+import { ViewPropertiesRepossessedModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
 import React from "react";
 import {

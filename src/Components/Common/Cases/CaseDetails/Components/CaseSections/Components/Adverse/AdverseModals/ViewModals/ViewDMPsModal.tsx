@@ -1,8 +1,8 @@
-import { useGetDMPsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
+import { useGetDMPsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import {
   DMPItemProps,
   ViewDMPsModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -60,7 +60,7 @@ const ViewDMPsModal: React.FC<ViewDMPsModalProps> = ({
                           {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
-                          }
+                          },
                         )}`
                       : "-"}
                   </td>

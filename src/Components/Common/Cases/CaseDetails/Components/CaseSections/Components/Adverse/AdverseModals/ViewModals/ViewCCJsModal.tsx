@@ -1,8 +1,8 @@
-import { useGetCCJsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
+import { useGetCCJsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import {
   CCJProps,
   ViewCCJsModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
 import React from "react";
 import {

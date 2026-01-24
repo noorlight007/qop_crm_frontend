@@ -1,5 +1,5 @@
-import { useAddDefaultsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
-import { AddNewDefaultsModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+import { useAddDefaultsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
+import { AddNewDefaultsModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";

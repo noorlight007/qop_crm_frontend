@@ -1,4 +1,4 @@
-import { Props } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { GetAddressModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import React from "react";
 import {
   ListGroup,
@@ -8,7 +8,7 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-const GetAddressModal: React.FC<Props> = ({
+const GetAddressModal: React.FC<GetAddressModalProps> = ({
   isOpen,
   toggle,
   addresses,

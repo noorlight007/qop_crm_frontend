@@ -229,7 +229,7 @@ export interface AddressItem {
   url: string;
   [key: string]: any;
 }
-export interface Props {
+export interface GetAddressModalProps {
   isOpen: boolean;
   toggle: () => void;
   addresses: AddressItem[];

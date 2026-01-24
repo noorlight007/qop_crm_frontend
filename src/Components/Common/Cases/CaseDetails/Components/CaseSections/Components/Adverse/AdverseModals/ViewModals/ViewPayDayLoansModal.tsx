@@ -1,8 +1,8 @@
-import { useGetPayDayLoansQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/AdverseDetails/AdverseDetailsApi";
+import { useGetPayDayLoansQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import {
   PayDayLoanProps,
   ViewPayDayLoansModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/AdverseTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -56,7 +56,7 @@ const ViewPayDayLoansModal: React.FC<ViewPayDayLoansModalProps> = ({
                           {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
-                          }
+                          },
                         )}`
                       : "-"}
                   </td>
