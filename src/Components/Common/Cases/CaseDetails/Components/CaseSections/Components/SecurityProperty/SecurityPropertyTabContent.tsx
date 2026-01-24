@@ -1,5 +1,5 @@
-import { initializeForm } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
-import { PropertyData } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { initializeForm } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import { PropertyData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import { FC, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Button, Form, TabContent, TabPane } from "reactstrap";
@@ -31,10 +31,10 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
       tabId === "1"
         ? formRef1.current
         : tabId === "2"
-        ? formRef2.current
-        : tabId === "3"
-        ? formRef3.current
-        : formRef4.current;
+          ? formRef2.current
+          : tabId === "3"
+            ? formRef3.current
+            : formRef4.current;
     if (current) {
       try {
         const ok = current.reportValidity();
@@ -52,7 +52,7 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
         initializeForm({
           ...propertyData,
           other_new_build_warranty_provider: "",
-        })
+        }),
       );
     }
   }, [propertyData, dispatch]);

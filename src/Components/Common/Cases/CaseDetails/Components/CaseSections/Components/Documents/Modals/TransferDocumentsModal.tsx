@@ -1,5 +1,5 @@
-import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useUploadCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
+import { useUploadCaseDocumentMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
+import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -87,7 +87,7 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
 
     // Get target case details
     const targetCase = caseData?.results.find(
-      (c: any) => c.alias === targetCaseAlias
+      (c: any) => c.alias === targetCaseAlias,
     );
 
     if (!targetCase || !targetCase.lead_user?.email) {
@@ -112,7 +112,7 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
         try {
           // Find the document object
           const document = allDocuments.find(
-            (doc) => doc.alias === documentAlias
+            (doc) => doc.alias === documentAlias,
           );
 
           if (!document || !document.file) {
@@ -125,12 +125,12 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
           const hasMatchingOwner =
             Array.isArray(document.file_owner_info) &&
             document.file_owner_info.some(
-              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail
+              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
             );
 
           if (!hasMatchingOwner) {
             console.log(
-              `Document ${documentAlias} skipped - no matching owner for target case`
+              `Document ${documentAlias} skipped - no matching owner for target case`,
             );
             skippedCount++;
             setTransferProgress(((i + 1) / documentArray.length) * 100);
@@ -146,7 +146,7 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
 
           if (!proxyResponse.ok) {
             throw new Error(
-              `Failed to fetch file: ${proxyResponse.statusText}`
+              `Failed to fetch file: ${proxyResponse.statusText}`,
             );
           }
 
@@ -168,7 +168,7 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
             document.file_owner_info.length > 0
           ) {
             const matchingOwners = document.file_owner_info.filter(
-              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail
+              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
             );
 
             matchingOwners.forEach((owner: any) => {
@@ -188,7 +188,7 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
           ) {
             // Generate name from matching owner
             const matchingOwner = document.file_owner_info.find(
-              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail
+              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
             );
 
             if (matchingOwner) {
@@ -239,11 +239,11 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
             skippedCount > 0
               ? `, ${skippedCount} skipped (no matching owner)`
               : ""
-          }${failCount > 0 ? `, ${failCount} failed` : ""}`
+          }${failCount > 0 ? `, ${failCount} failed` : ""}`,
         );
       } else if (skippedCount > 0) {
         toast.warning(
-          `All ${skippedCount} document(s) were skipped - no matching owners for target case`
+          `All ${skippedCount} document(s) were skipped - no matching owners for target case`,
         );
       } else {
         toast.error("Failed to transfer documents");

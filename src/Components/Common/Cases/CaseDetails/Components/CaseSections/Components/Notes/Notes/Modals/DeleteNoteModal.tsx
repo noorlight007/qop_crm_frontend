@@ -1,5 +1,5 @@
-import { useDeleteNoteMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
-import { DeleteNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { useDeleteNoteMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/NotesApi";
+import { DeleteNoteModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 

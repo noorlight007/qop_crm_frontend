@@ -1,4 +1,4 @@
-import { useGetCreditCommitmentsSummaryQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/CreditCommitmentsSummaryApi";
+import { useGetCreditCommitmentsSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/CreditCommitmentsSummaryApi";
 import { useParams } from "next/navigation";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 

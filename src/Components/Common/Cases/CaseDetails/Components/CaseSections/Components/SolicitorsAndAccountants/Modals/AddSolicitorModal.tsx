@@ -1,6 +1,6 @@
-import { useAddSolicitorDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
+import { useAddSolicitorDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountant/SolicitorAndAccountantApi";
 import { apiAddress } from "@/services/third-party-api";
-import { AddSolicitorModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountantTypes";
+import { AddSolicitorModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountantTypes";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -49,13 +49,17 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
     lng: number;
   } | null>(null);
 
-  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
 
   const handleManualAddressChange = (
     setter: React.Dispatch<React.SetStateAction<string>>,
-    value: string
+    value: string,
   ) => {
     setter(value);
     setMapCoords(LONDON_CENTER);
@@ -66,7 +70,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    try {    
+    try {
       const payload = {
         name: formData.get("solicitorName"),
         user_type: "SOLICITOR",
@@ -122,7 +126,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
 
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
 
       if (typeof value === "object") {
@@ -164,7 +168,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
     setIsSearchingPostcode(true);
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
@@ -183,7 +187,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
 
     try {
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
 
       const address = res.data;
@@ -246,9 +250,17 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                   <div className="border rounded overflow-hidden shadow-sm mb-3">
                     <iframe
                       src={
-                        mapCoords 
-                          ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
-                          : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                        mapCoords
+                          ? getGoogleMapEmbedUrl(
+                              mapCoords.lat,
+                              mapCoords.lng,
+                              currentZoom,
+                            )
+                          : getGoogleMapEmbedUrl(
+                              LONDON_CENTER.lat,
+                              LONDON_CENTER.lng,
+                              DEFAULT_ZOOM,
+                            )
                       }
                       width="100%"
                       height="250"
@@ -274,7 +286,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                     <Label for="sraNumber">SRA Number</Label>
                     <Input id="sraNumber" name="sraNumber" type="text" />
                   </FormGroup>
-                </Col>                
+                </Col>
                 <Col md={4}>
                   <FormGroup>
                     <Label for="qualifications">Qualification</Label>
@@ -297,7 +309,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                         name="postcode"
                         className="rounded"
                         value={postcode}
-                        onChange={(e) => handleManualAddressChange(setPostcode, e.target.value)}
+                        onChange={(e) =>
+                          handleManualAddressChange(setPostcode, e.target.value)
+                        }
                         required
                       />
                       <Button
@@ -320,7 +334,12 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       name="buildingName"
                       type="text"
                       value={buildingName}
-                      onChange={(e) => handleManualAddressChange(setBuildingName, e.target.value)}
+                      onChange={(e) =>
+                        handleManualAddressChange(
+                          setBuildingName,
+                          e.target.value,
+                        )
+                      }
                     />
                   </FormGroup>
                 </Col>
@@ -340,7 +359,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       name="city"
                       type="text"
                       value={city}
-                      onChange={(e) => handleManualAddressChange(setCity, e.target.value)}
+                      onChange={(e) =>
+                        handleManualAddressChange(setCity, e.target.value)
+                      }
                     />
                   </FormGroup>
                 </Col>
@@ -354,7 +375,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       name="county"
                       type="text"
                       value={county}
-                      onChange={(e) => handleManualAddressChange(setCounty, e.target.value)}
+                      onChange={(e) =>
+                        handleManualAddressChange(setCounty, e.target.value)
+                      }
                     />
                   </FormGroup>
                 </Col>
@@ -366,7 +389,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       name="country"
                       type="text"
                       value={country}
-                      onChange={(e) => handleManualAddressChange(setCountry, e.target.value)}
+                      onChange={(e) =>
+                        handleManualAddressChange(setCountry, e.target.value)
+                      }
                     />
                   </FormGroup>
                 </Col>

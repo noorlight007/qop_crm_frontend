@@ -1,4 +1,4 @@
-import { useDeletePropertyDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
+import { useDeletePropertyDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
 import { useParams } from "next/navigation";
 import React from "react";
 import { toast } from "react-toastify";

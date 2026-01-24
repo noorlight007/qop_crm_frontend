@@ -1,9 +1,9 @@
-import { useGetApplicantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ApplicantsDetails/ApplicantsDetailsApi";
-import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Common/PropertyEPCRating";
-import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
+import { useGetApplicantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
+import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Common/PropertyEPCRating";
+import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
 import { apiAddress } from "@/services/third-party-api";
-import { AddressDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { AddressDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -47,7 +47,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
   const dispatch = useDispatch();
   const propertyState = useSelector(
-    (state: RootState) => state.propertyForm.Properties
+    (state: RootState) => state.propertyForm.Properties,
   );
 
   // Add local error state
@@ -75,7 +75,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           country: propertyData.country || null,
           latitude: lat || null,
           longitude: lng || null,
-        })
+        }),
       );
 
       if (lat && lng) {
@@ -98,7 +98,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setCurrentZoom(DEFAULT_ZOOM);
     }
   }, [propertyState.latitude, propertyState.longitude]);
-
 
   // Helper to get error message for each field
   const getErrorMessage = (name: string) => {
@@ -131,7 +130,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     dispatch(updateProperty({ [name]: value }));
@@ -150,7 +149,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       setMapCoords(LONDON_CENTER);
       setCurrentZoom(DEFAULT_ZOOM);
     }
-    
+
     setErrors((prev) => ({
       ...prev,
       [name]: value.trim() === "" ? getErrorMessage(name) : "",
@@ -170,7 +169,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           city: firstApplicant.city || "",
           county: firstApplicant.county || "",
           // country: firstApplicant.country || null,
-        })
+        }),
       );
 
       // Clear errors for fields that now have values
@@ -219,7 +218,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
 
       if (typeof value === "object") {
@@ -262,7 +261,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
       setAddressList(response.data.suggestions || []);
       setIsModalOpen(true);
@@ -298,7 +297,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
 
     try {
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
 
       const address = res.data;
@@ -322,7 +321,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
           country: mapCountryToFormValue(address.country),
           latitude: address.latitude,
           longitude: address.longitude,
-        })
+        }),
       );
 
       if (address.latitude !== undefined && address.longitude !== undefined) {
@@ -349,7 +348,7 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
       dispatch(
         updateProperty({
           epc_rating: epcResponse.epc_rating,
-        })
+        }),
       );
 
       setErrors((prev) => {
@@ -382,11 +381,14 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     return null;
   };
 
-  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
     // We use maps.google.com/maps with 'q' for the pin and 't' for map type
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
-
 
   return (
     <div>
@@ -405,12 +407,20 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                 className="border rounded overflow-hidden shadow-sm mb-2"
                 style={{ backgroundColor: "#f0f0f0" }}
               >
-               <iframe
+                <iframe
                   src={
                     // Check if mapCoords is valid and not at 0,0
                     mapCoords && mapCoords.lat !== 0 && mapCoords.lng !== 0
-                      ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
-                      : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                      ? getGoogleMapEmbedUrl(
+                          mapCoords.lat,
+                          mapCoords.lng,
+                          currentZoom,
+                        )
+                      : getGoogleMapEmbedUrl(
+                          LONDON_CENTER.lat,
+                          LONDON_CENTER.lng,
+                          DEFAULT_ZOOM,
+                        )
                   }
                   width="100%"
                   height="350"

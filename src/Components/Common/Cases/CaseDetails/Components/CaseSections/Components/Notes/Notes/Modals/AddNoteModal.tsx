@@ -1,6 +1,6 @@
-import { useAddNotesMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { AddNoteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { useAddNotesMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/NotesApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { AddNoteModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import DOMPurify from "isomorphic-dompurify";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useRef, useState } from "react";
@@ -21,7 +21,7 @@ import {
 
 const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
-  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [brokerVisible, setBrokerVisible] = useState(false);
   const [clientVisible, setClientVisible] = useState(false);
   const [category, setCategory] = useState("");

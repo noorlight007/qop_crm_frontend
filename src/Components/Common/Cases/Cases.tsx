@@ -3,14 +3,10 @@ import {
   insuranceCaseStages,
   mortgageStages,
 } from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
-import { useGetCasesQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-
-import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
-import {
-  CaseInfoPrpos,
-  CaseUser,
-} from "@/Types/CommonComponents/Cases/CaseTypes";
+import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
+import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -512,7 +508,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         {userType === "NETWORK_DIRECTOR" ||
                         userType === "NETWORK_ADVISER" ? (
                           (caseItem.organization?.name ?? (
-                            <small className="text-muted">Owned by Network</small>
+                            <small className="text-muted">
+                              Owned by Network
+                            </small>
                           ))
                         ) : userType === "ORGANISATION_DIRECTOR" ||
                           userType === "ORGANISATION_ADVISER" ||

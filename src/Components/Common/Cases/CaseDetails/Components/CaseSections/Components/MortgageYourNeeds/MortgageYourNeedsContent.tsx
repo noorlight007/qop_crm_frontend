@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetMortgageYourNeedsQuery,
   useUpdateMortgageYourNeedsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/MortgageYourNeeds/MortgageYourNeedsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/MortgageYourNeeds/MortgageYourNeedsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -31,7 +31,7 @@ const MortgageYourNeedsContent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   // rtk hooks
@@ -60,7 +60,7 @@ const MortgageYourNeedsContent: React.FC = () => {
   };
 
   const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>
+    e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
     const formValues = {
@@ -150,14 +150,14 @@ const MortgageYourNeedsContent: React.FC = () => {
   };
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -1669,7 +1669,7 @@ const MortgageYourNeedsContent: React.FC = () => {
                     handleNextTab();
                   } else {
                     const success = await handleSubmit(
-                      new Event("click") as any
+                      new Event("click") as any,
                     );
                     if (success) {
                       handleNextTab();

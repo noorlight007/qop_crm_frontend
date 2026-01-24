@@ -1,12 +1,11 @@
-import { useUploadCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
-import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
+import { useUploadCaseDocumentMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import {
   DocumentOwnerProps,
   DocumentUploadModalProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/DocumentsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
-
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -36,7 +35,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const params = useParams();
   const { casealias } = params;
   const [fileOwners, setfileOwners] = useState<DocumentOwnerProps[] | null>(
-    null
+    null,
   );
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [fileErrors, setFileErrors] = useState<{ [key: number]: string[] }>({});
@@ -81,15 +80,15 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
         if (file.size > maxSize) {
           fileErrors.push(
             `File size exceeds 10MB limit (${(file.size / 1024 / 1024).toFixed(
-              2
-            )}MB)`
+              2,
+            )}MB)`,
           );
         }
 
         // Check filename length (max 100 characters)
         if (file.name.length > 100) {
           fileErrors.push(
-            `Ensure this filename has at most 100 characters (it has ${file.name.length}).`
+            `Ensure this filename has at most 100 characters (it has ${file.name.length}).`,
           );
         }
 
@@ -133,13 +132,14 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   const selectedOwners = Array.isArray(fileOwners)
     ? fileOwners.filter(
         (u: any) =>
-          Array.isArray(formData.fileOwner) && formData.fileOwner.includes(u.id)
+          Array.isArray(formData.fileOwner) &&
+          formData.fileOwner.includes(u.id),
       )
     : [];
 
   const removeFile = (indexToRemove: number) => {
     const newDocuments = documents.filter(
-      (_, index) => index !== indexToRemove
+      (_, index) => index !== indexToRemove,
     );
     const newErrors = { ...fileErrors };
     delete newErrors[indexToRemove];
@@ -165,7 +165,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target as HTMLInputElement & HTMLSelectElement;
     setFormData({ ...formData, [name]: value } as any);
@@ -223,7 +223,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
             // fallback to single owner or empty
             uploadData.append(
               "file_owner",
-              (formData.fileOwner as any).toString()
+              (formData.fileOwner as any).toString(),
             );
           }
 
@@ -270,8 +270,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       } else if (successCount > 0) {
         toast.warning(
           `${successCount} documents uploaded successfully. Failed: ${failedFiles.join(
-            ", "
-          )}`
+            ", ",
+          )}`,
         );
         try {
           await updateSectionCompleteStatus({
@@ -284,7 +284,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
         toggle();
       } else {
         toast.error(
-          `Failed to upload all documents: ${failedFiles.join(", ")}`
+          `Failed to upload all documents: ${failedFiles.join(", ")}`,
         );
       }
     } catch (error) {
@@ -387,7 +387,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
                                         <i className="fa fa-exclamation-triangle me-1"></i>
                                         {error}
                                       </div>
-                                    )
+                                    ),
                                   )}
                                 </div>
                               )}
@@ -589,10 +589,10 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
             {isUploading
               ? `Uploading... (${uploadProgress}%)`
               : Object.keys(fileErrors).length > 0
-              ? "Fix errors to upload"
-              : `Upload ${
-                  documents.length > 0 ? documents.length : ""
-                } Document${documents.length !== 1 ? "s" : ""}`}
+                ? "Fix errors to upload"
+                : `Upload ${
+                    documents.length > 0 ? documents.length : ""
+                  } Document${documents.length !== 1 ? "s" : ""}`}
           </Button>
         </ModalFooter>
       </Form>

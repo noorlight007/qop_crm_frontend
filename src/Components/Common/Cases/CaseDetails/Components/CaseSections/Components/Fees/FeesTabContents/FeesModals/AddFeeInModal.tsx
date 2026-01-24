@@ -1,9 +1,9 @@
-import { useAddFeesInDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { useAddFeesInDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import {
   AddFeeInModalProps,
   FeeDataProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/FeeTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { FC, useState } from "react";
 import { toast } from "react-toastify";

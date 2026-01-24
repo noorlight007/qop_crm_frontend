@@ -1,4 +1,4 @@
-import { useDeleteEmploymentDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import { useDeleteEmploymentDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -48,7 +48,7 @@ const DeleteEmploymentModal: React.FC<Props> = ({
                 const vals = Object.values(d.errors)
                   .flat()
                   .map((v: any) =>
-                    typeof v === "string" ? v : JSON.stringify(v)
+                    typeof v === "string" ? v : JSON.stringify(v),
                   );
                 return vals.join(", ");
               } catch (e) {

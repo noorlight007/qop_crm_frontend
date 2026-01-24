@@ -1,5 +1,5 @@
-import { useDeleteInsurancePolicyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
-import { DeleteInsurancePolicyModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
+import { useDeleteInsurancePolicyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { DeleteInsurancePolicyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/InsuranceOverviewTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

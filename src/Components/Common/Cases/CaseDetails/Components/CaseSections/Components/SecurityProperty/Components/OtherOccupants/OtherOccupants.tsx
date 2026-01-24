@@ -1,5 +1,5 @@
-import { useGetOtherOccupantsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
-import { OtherOccupantsTypes } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
+import { useGetOtherOccupantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/OtherOccupantsApi";
+import { OtherOccupantsTypes } from "@/Types/Common/Cases/CaseDetails/CaseSections/OtherOccupantsTypes";
 import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue, { calculateAge } from "@/utils/formatters";
 import { useParams } from "next/navigation";

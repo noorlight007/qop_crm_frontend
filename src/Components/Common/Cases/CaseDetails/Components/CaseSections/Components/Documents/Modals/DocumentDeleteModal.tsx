@@ -1,5 +1,5 @@
-import { useDeleteCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
-import { DocumentDeleteModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+import { useDeleteCaseDocumentMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
+import { DocumentDeleteModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/DocumentsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React from "react";
 import { toast } from "react-toastify";

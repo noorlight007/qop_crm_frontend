@@ -1,6 +1,6 @@
-import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
+import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
-import { PropertyDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { PropertyDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +9,7 @@ import { Col, FormGroup, Input, InputGroup, Label, Row } from "reactstrap";
 const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
   const dispatch = useDispatch();
   const propertyState = useSelector(
-    (state: RootState) => state.propertyForm.Properties
+    (state: RootState) => state.propertyForm.Properties,
   );
 
   useEffect(() => {
@@ -41,37 +41,37 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
           flats: propertyData.flats || null,
           number_of_units: propertyData.number_of_units || null,
           charge_type: propertyData.charge_type || null,
-        })
+        }),
       );
     }
   }, [propertyData, dispatch]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     const updatedValue =
       value === ""
         ? null
         : [
-            "number_of_storeys_in_the_building",
-            "year_built",
-            "property_lease_term",
-            "service_charge_per_month",
-            "ground_rent_per_annum",
-            "estimated_value",
-            "bedrooms",
-            "bathrooms",
-            "reception_rooms",
-            "kitchens",
-            "garages",
-            "parking_spaces",
-            "floor",
-            "flats",
-            "number_of_units",
-          ].includes(name)
-        ? Number(value)
-        : value;
+              "number_of_storeys_in_the_building",
+              "year_built",
+              "property_lease_term",
+              "service_charge_per_month",
+              "ground_rent_per_annum",
+              "estimated_value",
+              "bedrooms",
+              "bathrooms",
+              "reception_rooms",
+              "kitchens",
+              "garages",
+              "parking_spaces",
+              "floor",
+              "flats",
+              "number_of_units",
+            ].includes(name)
+          ? Number(value)
+          : value;
     dispatch(updateProperty({ [name]: updatedValue }));
   };
 
@@ -519,11 +519,13 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   className=""
                   value={propertyState.epc_rating || ""}
                   onChange={handleChange}
-                >
-                </Input>
+                ></Input>
               </InputGroup>
               {propertyState.address_one && !propertyState.epc_rating && (
-                <small className="text-danger" style={{ marginTop: "5px", display: "block" }}>
+                <small
+                  className="text-danger"
+                  style={{ marginTop: "5px", display: "block" }}
+                >
                   No EPC rating found for this address.
                 </small>
               )}

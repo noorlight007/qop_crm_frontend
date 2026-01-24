@@ -1,5 +1,5 @@
-import { useCalculateFeesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
-import { FeesTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/FeeTypes";
+import { useCalculateFeesQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import { FeesTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import { useParams } from "next/navigation";
 import { FC } from "react";
 import { Col, Row } from "reactstrap";

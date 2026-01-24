@@ -1,7 +1,7 @@
-import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
-import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
+import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { RootState } from "@/Redux/Store";
-import { ValuationInfoProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { ValuationInfoProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -12,7 +12,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
   const { casealias } = useParams();
   const dispatch = useDispatch();
   const propertyState = useSelector(
-    (state: RootState) => state.propertyForm.Properties
+    (state: RootState) => state.propertyForm.Properties,
   );
 
   const [autoFilled, setAutoFilled] = useState<boolean>(false);
@@ -37,7 +37,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
   }, [propertyData, dispatch]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
 
@@ -53,7 +53,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
             contacts_name: "",
             contacts_mobile_telephone: "",
             contacts_email_address: "",
-          })
+          }),
         );
         setAutoFilled(false);
         return;
@@ -78,7 +78,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
             contacts_name,
             contacts_mobile_telephone,
             contacts_email_address,
-          })
+          }),
         );
         setAutoFilled(true);
         return;
@@ -139,7 +139,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                             key={type.value}
                             onClick={() => {
                               dispatch(
-                                updateProperty({ valuation_type: type.value })
+                                updateProperty({ valuation_type: type.value }),
                               );
                             }}
                           >

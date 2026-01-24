@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsuranceHealthDetailsQuery,
   useUpdateInsuranceHealthDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceHealth/InsuranceHealthApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceHealth/InsuranceHealthApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -21,7 +21,7 @@ const InsuranceHealthContent: React.FC = () => {
 
   const [
     updateInsuranceHealthDetails,
-    { isLoading: isUpdating, isSuccess, isError: isUpdateError },
+    { isLoading: isUpdating, isError: isUpdateError },
   ] = useUpdateInsuranceHealthDetailsMutation();
 
   const [updateSectionCompleteStatus] =
@@ -32,12 +32,12 @@ const InsuranceHealthContent: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   // Initialize local form state when data is fetched
@@ -92,7 +92,7 @@ const InsuranceHealthContent: React.FC = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -141,9 +141,7 @@ const InsuranceHealthContent: React.FC = () => {
         <div className="d-flex justify-content-end gap-2">
           <Button
             color="primary"
-            disabled={
-              isUpdating || session?.user?.user_type === "CLIENT"
-            }
+            disabled={isUpdating || session?.user?.user_type === "CLIENT"}
             onClick={handleSubmit}
           >
             {isUpdating ? <Spinner size="sm" /> : "Save changes"}

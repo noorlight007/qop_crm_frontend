@@ -1,14 +1,14 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetCaseLoanDetailsQuery,
   useGetLoanDetailsQuery,
   useUpdateLoanDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetails/LoanDetailsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { LoanDetailsTabContentProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetailsTypes";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/LoanDetails/LoanDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { LoanDetailsTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/LoanDetailsTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import LenderList from "@/utils/LenderList";
@@ -350,7 +350,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     }
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId,
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {

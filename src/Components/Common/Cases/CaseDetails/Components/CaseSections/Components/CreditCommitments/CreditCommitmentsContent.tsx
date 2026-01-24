@@ -1,8 +1,8 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useGetCreditCommitmentsDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
-import { useExportCreditCommitmentsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CreditCommitmentsDetails/ExportCreditCommitmentsApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useGetCreditCommitmentsDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
+import { useExportCreditCommitmentsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/ExportCreditCommitmentsApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -35,21 +35,21 @@ const CreditCommitmentsContent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
   const [exportCreditCommitmentsCSV, { isLoading: isExporting }] =
     useExportCreditCommitmentsMutation();
   // rtk hooks end
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -174,7 +174,7 @@ const CreditCommitmentsContent: React.FC = () => {
                             setSelectedItemName(
                               `${item.applicant_details?.first_name || ""} ${
                                 item.applicant_details?.last_name || ""
-                              }`
+                              }`,
                             );
                             setIsDeleteModalOpen(true);
                           }}

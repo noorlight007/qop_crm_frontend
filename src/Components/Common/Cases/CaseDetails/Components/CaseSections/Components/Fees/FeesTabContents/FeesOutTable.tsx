@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetFeesOutDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
+import { useGetFeesOutDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -169,7 +169,7 @@ const FeeOutTable = () => {
                           </td>
                           <td className="text-center align-middle">
                             {methods.find(
-                              (method) => method.value === fee.method
+                              (method) => method.value === fee.method,
                             )?.title || "-"}
                           </td>
                           <td className="text-center align-middle">
@@ -190,7 +190,7 @@ const FeeOutTable = () => {
                             </Button>
                           </td>
                         </tr>
-                      )
+                      ),
                   )
                 )}
               </tbody>

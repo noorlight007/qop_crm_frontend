@@ -1,6 +1,6 @@
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
-import { useEditTaskMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
-import { TaskProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { useEditTaskMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/TasksApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
+import { TaskProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -75,7 +75,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));

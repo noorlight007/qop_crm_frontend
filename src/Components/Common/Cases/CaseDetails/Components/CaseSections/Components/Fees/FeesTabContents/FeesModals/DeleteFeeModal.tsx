@@ -1,5 +1,5 @@
-import { useDeleteFeesInOutMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
-import { DeleteFeeModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/FeeTypes";
+import { useDeleteFeesInOutMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import { DeleteFeeModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalHeader } from "reactstrap";

@@ -1,9 +1,9 @@
-import { useUpdateCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
+import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
-} from "@/Types/CommonComponents/Cases/CaseTypes";
+} from "@/Types/Common/Cases/CaseTypes";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";

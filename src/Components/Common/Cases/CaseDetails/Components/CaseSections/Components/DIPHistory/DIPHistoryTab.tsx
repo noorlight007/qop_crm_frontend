@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetDIPHistoryDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/DIPHistoryDetails/DIPHistoryDetailsApi";
+import { useGetDIPHistoryDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/DIPHistoryDetails/DIPHistoryDetailsApi";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -72,7 +72,9 @@ const DIPHistoryTab: React.FC = () => {
             color="success"
             onClick={() => setModalIsOpen(true)}
             type="button"
-            disabled={session?.user?.user_type === "CLIENT" && dipHistories.length > 0}
+            disabled={
+              session?.user?.user_type === "CLIENT" && dipHistories.length > 0
+            }
           >
             Add New Lender History
           </Button>

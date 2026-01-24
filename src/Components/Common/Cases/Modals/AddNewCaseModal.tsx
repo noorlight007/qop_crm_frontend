@@ -1,6 +1,6 @@
-import { useAddCaseMutation } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/CommonComponents/Cases/UserListApi";
-import { AddNewCaseModalProps } from "@/Types/CommonComponents/Cases/CaseTypes";
+import { useAddCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import { AddNewCaseModalProps } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

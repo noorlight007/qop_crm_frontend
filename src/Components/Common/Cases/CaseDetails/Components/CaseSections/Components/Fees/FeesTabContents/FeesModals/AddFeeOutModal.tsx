@@ -1,8 +1,8 @@
-import { useAddFeesOutDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
+import { useAddFeesOutDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import {
   AddFeeOutModalProps,
   FeeDataProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/FeeTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { FC, useState } from "react";
 import { toast } from "react-toastify";

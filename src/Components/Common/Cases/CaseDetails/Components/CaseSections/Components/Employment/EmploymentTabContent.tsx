@@ -1,12 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useUpdateEmploymentDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateEmploymentDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   EmploymentDetailsProps,
   EmploymentTabContentProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
 import { apiAddress } from "@/services/third-party-api";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
@@ -187,7 +187,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       setEmployerZoom(DEFAULT_ZOOM);
       setBusinessZoom(DEFAULT_ZOOM);
     }
-    
+
     // Save a draft copy for the currently active alias so edits aren't lost
     // when the user switches tabs. If there's no activeTab yet, skip.
     if (formValues?.alias) {
@@ -235,7 +235,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     }
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId,
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
@@ -436,7 +436,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         setEmployerMapCoords(null);
         setEmployerZoom(DEFAULT_ZOOM);
       }
-
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -499,7 +498,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         setBusinessMapCoords(null);
         setBusinessZoom(DEFAULT_ZOOM);
       }
-
     } catch (error) {
       console.error("Error fetching detailed business address:", error);
     } finally {

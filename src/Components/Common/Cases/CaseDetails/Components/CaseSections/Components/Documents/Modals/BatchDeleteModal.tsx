@@ -1,4 +1,4 @@
-import { useDeleteCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
+import { useDeleteCaseDocumentMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -68,8 +68,8 @@ const BatchDeleteModal: React.FC<BatchDeleteModalProps> = ({
     } else if (successCount > 0) {
       toast.warning(
         `${successCount} documents deleted successfully. Failed to delete: ${failedDocuments.join(
-          ", "
-        )}`
+          ", ",
+        )}`,
       );
     } else {
       toast.error(`Failed to delete documents: ${failedDocuments.join(", ")}`);

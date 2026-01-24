@@ -1,14 +1,14 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import {
   useAssignCaseSolicitorMutation,
   useGetCaseSolicitorDetailsQuery,
   useGetSolicitorDetailsQuery,
   useUnassignSolicitorMutation,
   useUpdateSolicitorDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountant/SolicitorAndAccountantApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { apiAddress } from "@/services/third-party-api";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -53,7 +53,7 @@ const Solicitor: React.FC = () => {
 
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: caseAlias },
-    { skip: !caseAlias }
+    { skip: !caseAlias },
   );
   const { data: caseSolicitors, isLoading: isCaseSolicitorLoading } =
     useGetCaseSolicitorDetailsQuery({ case_alias: caseAlias });
@@ -90,7 +90,11 @@ const Solicitor: React.FC = () => {
     lng: number;
   } | null>(null);
 
-  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
 
@@ -113,7 +117,7 @@ const Solicitor: React.FC = () => {
 
       // Update form data when tab changes
       const solicitorDetails = solicitorName?.find(
-        (s: any) => s.id === caseSolicitor?.solicitor_details?.id
+        (s: any) => s.id === caseSolicitor?.solicitor_details?.id,
       );
       setFormData(solicitorDetails || {});
     }
@@ -130,28 +134,28 @@ const Solicitor: React.FC = () => {
       setSelectedCaseSolicitor(caseSolicitors[validIndex]);
 
       const solicitorDetails = solicitorName?.find(
-        (s: any) => s.id === caseSolicitors[validIndex]?.solicitor_details?.id
+        (s: any) => s.id === caseSolicitors[validIndex]?.solicitor_details?.id,
       );
-      
-      if (solicitorDetails) {
-      setFormData(solicitorDetails);
 
-      if (solicitorDetails.latitude && solicitorDetails.longitude) {
-        const lat = Number(solicitorDetails.latitude);
-        const lng = Number(solicitorDetails.longitude);
-        setMapCoords(lat !== 0 ? { lat, lng } : null);
+      if (solicitorDetails) {
+        setFormData(solicitorDetails);
+
+        if (solicitorDetails.latitude && solicitorDetails.longitude) {
+          const lat = Number(solicitorDetails.latitude);
+          const lng = Number(solicitorDetails.longitude);
+          setMapCoords(lat !== 0 ? { lat, lng } : null);
+        } else {
+          setMapCoords(null);
+        }
       } else {
+        setFormData({});
         setMapCoords(null);
       }
     } else {
+      setSelectedCaseSolicitor(null);
       setFormData({});
       setMapCoords(null);
     }
-    } else {
-    setSelectedCaseSolicitor(null);
-    setFormData({});
-    setMapCoords(null);
-  }
   }, [caseSolicitors, solicitorName, activeTab]);
 
   // Handle form input changes
@@ -176,7 +180,6 @@ const Solicitor: React.FC = () => {
       setMapCoords(LONDON_CENTER);
       setCurrentZoom(DEFAULT_ZOOM);
     }
-
   };
 
   const handleAssignSolicitor = async () => {
@@ -267,7 +270,7 @@ const Solicitor: React.FC = () => {
 
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
 
       if (typeof value === "object") {
@@ -309,7 +312,7 @@ const Solicitor: React.FC = () => {
     setIsSearchingPostcode(true);
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
@@ -327,7 +330,7 @@ const Solicitor: React.FC = () => {
 
     try {
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
 
       const address = res.data;
@@ -351,7 +354,7 @@ const Solicitor: React.FC = () => {
         county: address.county || "",
         country: address.country || "",
         latitude: address.latitude,
-        longitude: address.longitude,        
+        longitude: address.longitude,
       }));
 
       if (address.latitude !== undefined && address.longitude !== undefined) {
@@ -361,7 +364,6 @@ const Solicitor: React.FC = () => {
         setMapCoords(null);
         setCurrentZoom(DEFAULT_ZOOM);
       }
-
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -370,14 +372,14 @@ const Solicitor: React.FC = () => {
   };
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -444,7 +446,7 @@ const Solicitor: React.FC = () => {
                           }
                           onChange={handleSolicitorChange}
                         >
-                         <option value="">Select Solicitor...</option>
+                          <option value="">Select Solicitor...</option>
                           {solicitorName === null ? (
                             solicitorName?.map((solicitor: any) => (
                               <option key={solicitor?.id} value={solicitor?.id}>
@@ -511,7 +513,7 @@ const Solicitor: React.FC = () => {
                           <div>
                             <strong>Type: </strong>
                             {formatChoiceFieldValue(
-                              selectedCaseSolicitor.solicitor_details.user_type
+                              selectedCaseSolicitor.solicitor_details.user_type,
                             ) || "N/A"}
                           </div>
                           <div>
@@ -542,7 +544,7 @@ const Solicitor: React.FC = () => {
                                     Swal.fire(
                                       "Unassigned!",
                                       "Solicitor has been unassigned.",
-                                      "success"
+                                      "success",
                                     );
                                     // Clear selection and reset active tab
                                     setSelectedCaseSolicitor(null);
@@ -550,12 +552,12 @@ const Solicitor: React.FC = () => {
                                   } catch (err) {
                                     console.error(
                                       "Failed to unassign solicitor:",
-                                      err
+                                      err,
                                     );
                                     Swal.fire(
                                       "Error",
                                       "Failed to unassign solicitor. Please try again.",
-                                      "error"
+                                      "error",
                                     );
                                   }
                                 }
@@ -592,9 +594,17 @@ const Solicitor: React.FC = () => {
                   <div className="border rounded overflow-hidden shadow-sm mb-3">
                     <iframe
                       src={
-                        mapCoords 
-                          ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
-                          : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                        mapCoords
+                          ? getGoogleMapEmbedUrl(
+                              mapCoords.lat,
+                              mapCoords.lng,
+                              currentZoom,
+                            )
+                          : getGoogleMapEmbedUrl(
+                              LONDON_CENTER.lat,
+                              LONDON_CENTER.lng,
+                              DEFAULT_ZOOM,
+                            )
                       }
                       width="100%"
                       height="250"
@@ -648,7 +658,10 @@ const Solicitor: React.FC = () => {
                         color="primary"
                         type="button"
                         className="text-nowrap"
-                        style={{ paddingTop: '0.7rem', paddingBottom: '0.7rem' }}
+                        style={{
+                          paddingTop: "0.7rem",
+                          paddingBottom: "0.7rem",
+                        }}
                         onClick={() =>
                           fetchAddressByPostcode(formData.postcode)
                         }

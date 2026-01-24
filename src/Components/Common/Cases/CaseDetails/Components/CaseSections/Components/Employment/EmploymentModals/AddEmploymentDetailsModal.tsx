@@ -1,9 +1,9 @@
-import { useAddEmploymentDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
+import { useAddEmploymentDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
 import { apiAddress } from "@/services/third-party-api";
 import {
   AddEmploymentDetailsModalProps,
   EmploymentDetailsProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
 import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -372,7 +372,6 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
         setBusinessMapCoords(null);
         setBusinessZoom(DEFAULT_ZOOM);
       }
-
     } catch (error) {
       console.error("Error fetching detailed business address:", error);
     } finally {
@@ -1200,8 +1199,8 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                         disabled={isFetchingAddress || isSearchingPostcode}
                       >
                         {isSearchingPostcode ? "Loading..." : "Lookup"}
-                      </Button> 
-                    </InputGroup>                    
+                      </Button>
+                    </InputGroup>
                   </FormGroup>
                 </Col>
                 <Col md={6}>

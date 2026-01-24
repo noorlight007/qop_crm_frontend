@@ -1,5 +1,5 @@
-import { useAddExtraAnswerMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Suitability/SuitabilityApi";
-import { ExtraAnswerModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SuitabilityTypes";
+import { useAddExtraAnswerMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
+import { ExtraAnswerModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -31,7 +31,7 @@ const ExtraAnswerModal: React.FC<ExtraAnswerModalProps> = ({
     useAddExtraAnswerMutation();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     e.preventDefault();
     const { name, value } = e.target;

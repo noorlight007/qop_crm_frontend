@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetTasksQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
-import { TaskProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { useGetTasksQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/TasksApi";
+import { TaskProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -24,7 +24,7 @@ const Tasks: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { data: session } = useSession();
   const { casealias } = useParams();
-  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number | undefined>(undefined);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
@@ -180,7 +180,7 @@ const Tasks: React.FC = () => {
               const pageSizeInferred = pageSize ?? 1;
               const totalPages = Math.max(
                 1,
-                Math.ceil(count / pageSizeInferred)
+                Math.ceil(count / pageSizeInferred),
               );
               const leadsPerPage = 5;
               return (
@@ -206,7 +206,7 @@ const Tasks: React.FC = () => {
                             {pageNumber}
                           </PaginationLink>
                         </PaginationItem>
-                      )
+                      ),
                     )
                   ) : (
                     <>
@@ -225,7 +225,7 @@ const Tasks: React.FC = () => {
                       {Array.from({ length: 3 }, (_, i) => page - 1 + i)
                         .filter(
                           (pageNumber) =>
-                            pageNumber > 1 && pageNumber < totalPages
+                            pageNumber > 1 && pageNumber < totalPages,
                         )
                         .map((pageNumber) => (
                           <PaginationItem

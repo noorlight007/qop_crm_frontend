@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentDetails/EmploymentDetailsApi";
-import { EmploymentDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/EmploymentTypes";
+import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
+import { EmploymentDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -43,7 +43,7 @@ export const EmploymentTab = () => {
   const openDeleteModal = (
     e: React.MouseEvent,
     employmentAlias: string | undefined,
-    userId: number
+    userId: number,
   ) => {
     e.stopPropagation();
     setModalEmploymentAlias(employmentAlias);
@@ -56,14 +56,14 @@ export const EmploymentTab = () => {
     const userId = modalUserId as number;
 
     const remainingForUser = (employmentData || []).filter(
-      (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias
+      (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias,
     );
 
     if (remainingForUser.length > 0) {
       setActiveTab(remainingForUser[0].alias || null);
     } else {
       const remainingAny = (employmentData || []).filter(
-        (emp: any) => emp.alias !== employmentAlias
+        (emp: any) => emp.alias !== employmentAlias,
       );
       if (remainingAny.length > 0) {
         setActiveUser(remainingAny[0].user.id);
@@ -103,17 +103,17 @@ export const EmploymentTab = () => {
                 ?.reduce(
                   (
                     uniqueUsers: EmploymentDetailsProps[],
-                    employment: EmploymentDetailsProps
+                    employment: EmploymentDetailsProps,
                   ) => {
                     const userExists = uniqueUsers.some(
-                      (item) => item.user.id === employment.user.id
+                      (item) => item.user.id === employment.user.id,
                     );
                     if (!userExists) {
                       uniqueUsers.push(employment);
                     }
                     return uniqueUsers;
                   },
-                  []
+                  [],
                 )
                 .map((employment: EmploymentDetailsProps, idx: number) => {
                   const user = employment.user;
@@ -164,28 +164,28 @@ export const EmploymentTab = () => {
                   const userEmps =
                     employmentData?.filter(
                       (emp: EmploymentDetailsProps) =>
-                        emp.user.id === activeUser
+                        emp.user.id === activeUser,
                     ) || [];
 
                   const selfEmps = userEmps.filter(
-                    (e: any) => e.employment_status === "SELF_EMPLOYED"
+                    (e: any) => e.employment_status === "SELF_EMPLOYED",
                   );
                   const employedEmps = userEmps.filter(
-                    (e: any) => e.employment_status === "EMPLOYED"
+                    (e: any) => e.employment_status === "EMPLOYED",
                   );
 
                   return userEmps.map((employment: EmploymentDetailsProps) => {
                     const selfIndex =
                       employment.employment_status === "SELF_EMPLOYED"
                         ? selfEmps.findIndex(
-                            (e: any) => e.alias === employment.alias
+                            (e: any) => e.alias === employment.alias,
                           ) + 1
                         : null;
 
                     const employedIndex =
                       employment.employment_status === "EMPLOYED"
                         ? employedEmps.findIndex(
-                            (e: any) => e.alias === employment.alias
+                            (e: any) => e.alias === employment.alias,
                           ) + 1
                         : null;
 
@@ -201,19 +201,19 @@ export const EmploymentTab = () => {
                           <span>
                             {employment?.employment_status
                               ? formatChoiceFieldValue(
-                                  employment.employment_status
+                                  employment.employment_status,
                                 ) +
                                 (employment.employment_status ===
                                 "SELF_EMPLOYED"
                                   ? ` (Business-${selfIndex})`
                                   : employment.employment_status === "EMPLOYED"
-                                  ? ` (Job-${employedIndex})`
-                                  : "")
+                                    ? ` (Job-${employedIndex})`
+                                    : "")
                               : "(N/A)"}
                           </span>
                           {(() => {
                             const indexForUser = userEmps.findIndex(
-                              (e: any) => e.alias === employment.alias
+                              (e: any) => e.alias === employment.alias,
                             );
 
                             if (indexForUser === 0) {
@@ -231,7 +231,7 @@ export const EmploymentTab = () => {
                                   openDeleteModal(
                                     e,
                                     employment.alias,
-                                    employment.user.id
+                                    employment.user.id,
                                   )
                                 }
                                 aria-label="Delete employment"
@@ -267,7 +267,7 @@ export const EmploymentTab = () => {
                 employmentData?.reduce(
                   (
                     acc: Record<number, EmploymentDetailsProps[]>,
-                    emp: EmploymentDetailsProps
+                    emp: EmploymentDetailsProps,
                   ) => {
                     if (!acc[emp.user.id]) {
                       acc[emp.user.id] = [];
@@ -275,7 +275,7 @@ export const EmploymentTab = () => {
                     acc[emp.user.id].push(emp);
                     return acc;
                   },
-                  {} as Record<number, EmploymentDetailsProps[]>
+                  {} as Record<number, EmploymentDetailsProps[]>,
                 ) || {}
               }
             />

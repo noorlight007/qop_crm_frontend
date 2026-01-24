@@ -1,9 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { useUpdatePropertyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyApi";
-import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useUpdatePropertyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyApi";
+import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { RootState } from "@/Redux/Store";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -29,7 +29,7 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
   const { data: session } = useSession();
 
   const formData = useSelector(
-    (state: RootState) => state.propertyForm.Properties
+    (state: RootState) => state.propertyForm.Properties,
   );
   const propertyAlias = property_alias;
 
@@ -44,7 +44,7 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   const handleSubmit = async () => {
@@ -73,14 +73,14 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
     }
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -114,7 +114,7 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
                 value={formData.notes || ""}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleChange(
-                    e as unknown as React.ChangeEvent<HTMLTextAreaElement>
+                    e as unknown as React.ChangeEvent<HTMLTextAreaElement>,
                   )
                 }
                 style={{

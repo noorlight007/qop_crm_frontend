@@ -1,12 +1,11 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsurancePoliciesQuery,
   useUpdateInsurancePolicyMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
-import { PolicyTabProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { PolicyTabProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/InsuranceOverviewTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
@@ -31,6 +30,7 @@ import {
 } from "reactstrap";
 import AddnewInsurancePolicyModal from "./Modals/AddnewInsurancePolicyModal";
 import DeleteInsurancePolicyModal from "./Modals/DeleteInsurancePolicyModal";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
@@ -42,7 +42,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   const { data: insurancePoliciesData, isLoading } =
@@ -51,7 +51,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
         case_alias: casealias,
         insurance_overview_alias: insuranceOverviewAlias,
       },
-      { skip: !insuranceOverviewAlias }
+      { skip: !insuranceOverviewAlias },
     );
 
   const [updateInsurancePolicy, { isLoading: isUpdating }] =
@@ -61,7 +61,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
-    (state: any) => state.caseDetails.basicTabId
+    (state: any) => state.caseDetails.basicTabId,
   );
   const { data: session } = useSession();
 
@@ -119,7 +119,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     const nextTabNav: string | null = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -369,7 +369,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           min="0"
                           value={policy.cover_period ?? ""}
                           onKeyDown={(
-                            e: React.KeyboardEvent<HTMLInputElement>
+                            e: React.KeyboardEvent<HTMLInputElement>,
                           ) => {
                             if (e.key === "." || e.key === ",") {
                               e.preventDefault();
@@ -390,7 +390,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           min="0"
                           value={policy.deferred_period ?? ""}
                           onKeyDown={(
-                            e: React.KeyboardEvent<HTMLInputElement>
+                            e: React.KeyboardEvent<HTMLInputElement>,
                           ) => {
                             if (e.key === "." || e.key === ",") {
                               e.preventDefault();
@@ -400,7 +400,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "deferred_period",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -464,7 +464,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           step="1"
                           min="0"
                           onKeyDown={(
-                            e: React.KeyboardEvent<HTMLInputElement>
+                            e: React.KeyboardEvent<HTMLInputElement>,
                           ) => {
                             if (e.key === "." || e.key === ",") {
                               e.preventDefault();
@@ -475,7 +475,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "deferred_period",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -491,7 +491,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "deferred_period_type",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         >
@@ -514,7 +514,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "monthly_sum_assured",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -528,7 +528,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           step="1"
                           min="0"
                           onKeyDown={(
-                            e: React.KeyboardEvent<HTMLInputElement>
+                            e: React.KeyboardEvent<HTMLInputElement>,
                           ) => {
                             if (e.key === "." || e.key === ",") {
                               e.preventDefault();
@@ -539,7 +539,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "number_of_dependents",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -560,7 +560,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "sick_pay_provision",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -578,7 +578,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                               handleChange(
                                 index,
                                 "sick_pay_provision_notes",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                           />
@@ -609,7 +609,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "buildings_insured_accidental_damage",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -641,7 +641,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(
                             index,
                             "valuables_outside_home_protection",
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                       />
@@ -674,7 +674,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "contents_insured_accidental_damage",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -706,7 +706,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "accidental_damage",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -730,7 +730,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(
                             index,
                             "full_rebuild_value_of_home",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       />
@@ -757,7 +757,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "high_value_items_over_1500",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -788,7 +788,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "personal_possessions",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -837,7 +837,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "premium_payment_type",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     >
@@ -942,7 +942,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           "policy_term",
                           e.target.value === ""
                             ? ""
-                            : String(Math.trunc(Number(e.target.value)))
+                            : String(Math.trunc(Number(e.target.value))),
                         )
                       }
                       required
@@ -960,7 +960,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "policy_term_validity",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     >
@@ -1037,7 +1037,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "part_of_menu_plan",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -1063,7 +1063,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(
                               index,
                               "budget_plan_sold",
-                              e.target.checked
+                              e.target.checked,
                             )
                           }
                         />
@@ -1080,7 +1080,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                               step="1"
                               min="0"
                               onKeyDown={(
-                                e: React.KeyboardEvent<HTMLInputElement>
+                                e: React.KeyboardEvent<HTMLInputElement>,
                               ) => {
                                 if (e.key === "." || e.key === ",") {
                                   e.preventDefault();
@@ -1091,7 +1091,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                                 handleChange(
                                   index,
                                   "budget_plan_benefit_period",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                             />
@@ -1109,7 +1109,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                                 handleChange(
                                   index,
                                   "budget_plan_benefit_period_type",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                             >
@@ -1134,7 +1134,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "case_submitted_date",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1151,7 +1151,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "case_underwritten_date",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1218,7 +1218,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "not_proceeding_date",
-                          e.target.value
+                          e.target.value,
                         )
                       }
                     />
@@ -1240,7 +1240,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "waiver_of_premium",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -1299,7 +1299,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(
                             index,
                             "total_permanent_disability_cover",
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                       />
@@ -1323,7 +1323,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "client_accepted_recommendation",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -1348,7 +1348,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(
                           index,
                           "non_standard_terms_issued",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -1369,7 +1369,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(
                             index,
                             "non_standard_terms_from_lender",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       />
@@ -1410,7 +1410,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(
                             index,
                             "fracture_cover",
-                            e.target.checked
+                            e.target.checked,
                           )
                         }
                       />
@@ -1501,7 +1501,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
         insuranceOverviewAlias={insuranceOverviewAlias}
         policyAlias={selectedPolicyForDelete?.alias}
         policyType={formatChoiceFieldValue(
-          selectedPolicyForDelete?.policy_type
+          selectedPolicyForDelete?.policy_type,
         )}
       />
     </div>

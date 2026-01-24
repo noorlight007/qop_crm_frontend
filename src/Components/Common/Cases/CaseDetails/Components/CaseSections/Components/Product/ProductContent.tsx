@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetProductDetailsQuery,
   useUpdateProductDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ProductDetails/ProductDetailsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ProductDetails/ProductDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useSession } from "next-auth/react";
@@ -280,7 +280,7 @@ const ProductContent: React.FC = () => {
     });
   };
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId,
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {

@@ -1,4 +1,4 @@
-import { useGetPortfolioSummaryQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioSummaryApi";
+import { useGetPortfolioSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioSummaryApi";
 import { useParams } from "next/navigation";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 

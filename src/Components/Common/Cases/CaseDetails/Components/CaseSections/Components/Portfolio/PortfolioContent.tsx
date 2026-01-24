@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useExportPropertiesCSVMutation,
   useGetPortfolioDetailsQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Portfolio/PortfolioApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { formatDate } from "@/utils/dateAndTimeFormatter";
@@ -39,7 +39,7 @@ const PortfolioContent: React.FC = () => {
   // RTK Hooks for API calls
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
   const { data, isLoading } = useGetPortfolioDetailsQuery({
     case_alias: casealias,
@@ -48,13 +48,13 @@ const PortfolioContent: React.FC = () => {
     useExportPropertiesCSVMutation();
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -231,7 +231,7 @@ const PortfolioContent: React.FC = () => {
                                               app?.last_name || ""
                                             }`.trim() || "-"}
                                           </li>
-                                        )
+                                        ),
                                       )}
                                     </ul>
                                   ) : (
@@ -242,26 +242,26 @@ const PortfolioContent: React.FC = () => {
                                 <td>
                                   £
                                   {Number(
-                                    item?.property_value
+                                    item?.property_value,
                                   ).toLocaleString()}
                                 </td>
                                 <td>
                                   £
                                   {Number(
-                                    item?.monthly_rental_income
+                                    item?.monthly_rental_income,
                                   ).toLocaleString()}
                                 </td>
                                 <td>{item?.mortgage_lender || "-"}</td>
                                 <td>
                                   £
                                   {Number(
-                                    item?.current_mortgage_balance
+                                    item?.current_mortgage_balance,
                                   ).toLocaleString()}
                                 </td>
                                 <td>
                                   £
                                   {Number(
-                                    item?.value_at_purchase
+                                    item?.value_at_purchase,
                                   ).toLocaleString()}
                                 </td>
                                 <td>
@@ -272,7 +272,7 @@ const PortfolioContent: React.FC = () => {
                                 <td>
                                   £
                                   {Number(
-                                    item?.monthly_mortgage_payment
+                                    item?.monthly_mortgage_payment,
                                   ).toLocaleString()}
                                 </td>
                                 <td>{item?.ltv}%</td>
@@ -353,7 +353,7 @@ const PortfolioContent: React.FC = () => {
                               >
                                 {`Property ${index + 1} has no note.`}
                               </li>
-                            )
+                            ),
                           )}
                         </ul>
                       </div>

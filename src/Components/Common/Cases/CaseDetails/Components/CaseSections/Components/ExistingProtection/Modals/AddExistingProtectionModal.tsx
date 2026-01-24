@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useAddExistingProtectionDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtection/ExistingProtectionDetailsApi";
-import { AddExistingProtectionModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtectionTypes";
+import { useAddExistingProtectionDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
+import { AddExistingProtectionModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -61,7 +61,7 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({

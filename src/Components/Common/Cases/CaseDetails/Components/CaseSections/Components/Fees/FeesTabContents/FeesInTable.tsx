@@ -1,5 +1,5 @@
-import { useGetFeesInDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Fees/FeesApi";
 import LoadingSpinner from "@/app/loading";
+import { useGetFeesInDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -172,7 +172,7 @@ const FeeInTable = () => {
                           </td>
                           <td className="text-center align-middle">
                             {methods.find(
-                              (method) => method.value === fee.method
+                              (method) => method.value === fee.method,
                             )?.title || "-"}
                           </td>
                           <td className="text-center align-middle">
@@ -193,7 +193,7 @@ const FeeInTable = () => {
                             </Button>
                           </td>
                         </tr>
-                      )
+                      ),
                   )
                 )}
               </tbody>

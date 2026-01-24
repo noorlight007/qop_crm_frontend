@@ -18,15 +18,15 @@ import {
 } from "reactstrap";
 
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useAssignCaseAccountantMutation,
   useGetAccountantDetailsQuery,
   useGetCaseAccountantDetailsQuery,
   useUnassignAccountantMutation,
   useUpdateAccountantDetailsMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountant/SolicitorAndAccountantApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { apiAddress } from "@/services/third-party-api";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -60,7 +60,7 @@ const Accountant: React.FC = () => {
   // RTK Hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: caseAlias },
-    { skip: !caseAlias }
+    { skip: !caseAlias },
   );
 
   const { data: accountantName, isLoading: isAccountantLoading } =
@@ -85,7 +85,11 @@ const Accountant: React.FC = () => {
     lng: number;
   } | null>(null);
 
-  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
 
@@ -135,7 +139,7 @@ const Accountant: React.FC = () => {
   const getSelectedAccountantValue = () => {
     if (selectedCaseAccountant?.accountant_details?.id && accountantName) {
       const matchingAccountant = accountantName.find(
-        (a: any) => a.id === selectedCaseAccountant.accountant_details.id
+        (a: any) => a.id === selectedCaseAccountant.accountant_details.id,
       );
       return matchingAccountant?.id || "";
     }
@@ -152,24 +156,25 @@ const Accountant: React.FC = () => {
       setSelectedCaseAccountant(caseAccountants[validIndex]);
 
       const accountantDetails = accountantName?.find(
-        (a: any) => a.id === caseAccountants[validIndex]?.accountant_details?.id
+        (a: any) =>
+          a.id === caseAccountants[validIndex]?.accountant_details?.id,
       );
       // setFormData(accountantDetails || {});
-      
-      if (accountantDetails) {
-      setFormData(accountantDetails);
 
-      if (accountantDetails.latitude && accountantDetails.longitude) {
-        const lat = Number(accountantDetails.latitude);
-        const lng = Number(accountantDetails.longitude);
-        setMapCoords(lat !== 0 ? { lat, lng } : null);
+      if (accountantDetails) {
+        setFormData(accountantDetails);
+
+        if (accountantDetails.latitude && accountantDetails.longitude) {
+          const lat = Number(accountantDetails.latitude);
+          const lng = Number(accountantDetails.longitude);
+          setMapCoords(lat !== 0 ? { lat, lng } : null);
+        } else {
+          setMapCoords(null);
+        }
       } else {
+        setFormData({});
         setMapCoords(null);
       }
-    } else {
-      setFormData({});
-      setMapCoords(null);
-    }
     } else {
       setFormData({});
       setMapCoords(null);
@@ -252,7 +257,7 @@ const Accountant: React.FC = () => {
 
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
 
       if (typeof value === "object") {
@@ -294,7 +299,7 @@ const Accountant: React.FC = () => {
     setIsSearchingPostcode(true);
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
@@ -312,7 +317,7 @@ const Accountant: React.FC = () => {
 
     try {
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
 
       const address = res.data;
@@ -346,7 +351,6 @@ const Accountant: React.FC = () => {
         setMapCoords(null);
         setCurrentZoom(DEFAULT_ZOOM);
       }
-
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
@@ -355,14 +359,14 @@ const Accountant: React.FC = () => {
   };
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -463,7 +467,7 @@ const Accountant: React.FC = () => {
                   <div>
                     <strong>Type: </strong>
                     {formatChoiceFieldValue(
-                      selectedCaseAccountant.accountant_details.user_type
+                      selectedCaseAccountant.accountant_details.user_type,
                     ) || "N/A"}
                   </div>
                   <div className="mt-2">
@@ -491,19 +495,19 @@ const Accountant: React.FC = () => {
                             Swal.fire(
                               "Unassigned!",
                               "Accountant has been unassigned.",
-                              "success"
+                              "success",
                             );
                             // Clear selection; RTK invalidation will refetch data
                             setSelectedCaseAccountant(null);
                           } catch (err) {
                             console.error(
                               "Failed to unassign accountant:",
-                              err
+                              err,
                             );
                             Swal.fire(
                               "Error",
                               "Failed to unassign accountant. Please try again.",
-                              "error"
+                              "error",
                             );
                           }
                         }
@@ -515,9 +519,7 @@ const Accountant: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <em className="text-danger fs-4">
-                  "Not Assigned Yet!"
-                </em>
+                <em className="text-danger fs-4">"Not Assigned Yet!"</em>
               )}
             </CardBody>
           </Card>
@@ -537,9 +539,17 @@ const Accountant: React.FC = () => {
                 <div className="border rounded overflow-hidden shadow-sm mb-3">
                   <iframe
                     src={
-                      mapCoords 
-                        ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom)
-                        : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                      mapCoords
+                        ? getGoogleMapEmbedUrl(
+                            mapCoords.lat,
+                            mapCoords.lng,
+                            currentZoom,
+                          )
+                        : getGoogleMapEmbedUrl(
+                            LONDON_CENTER.lat,
+                            LONDON_CENTER.lng,
+                            DEFAULT_ZOOM,
+                          )
                     }
                     width="100%"
                     height="250"

@@ -1,6 +1,6 @@
-import { updateProperty } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyFormSlice";
+import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
-import { AdditionalInfoProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { AdditionalInfoProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, FormGroup, Input, InputGroup, Label, Row } from "reactstrap";
@@ -8,7 +8,7 @@ import { Col, FormGroup, Input, InputGroup, Label, Row } from "reactstrap";
 const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
   const dispatch = useDispatch();
   const propertyState = useSelector(
-    (state: RootState) => state.propertyForm.Properties
+    (state: RootState) => state.propertyForm.Properties,
   );
 
   useEffect(() => {
@@ -27,8 +27,7 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
       date_of_purchase: null,
       discounted_price: 0.0,
       is_the_property_ex_local_authority: false,
-      is_this_property_being_purchased_from_the_council_with_this_application:
-        false,
+      is_this_property_being_purchased_from_the_council_with_this_application: false,
       is_there_an_annexe_within_the_property: false,
       will_the_property_be_owner_occupied: false,
       please_provide_further_details: null,
@@ -47,7 +46,7 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value, type } = e.target;
     let updatedValue: any = value;

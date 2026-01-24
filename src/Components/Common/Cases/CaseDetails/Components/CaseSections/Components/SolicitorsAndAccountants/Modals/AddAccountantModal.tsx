@@ -1,4 +1,4 @@
-import { useAddAccountantDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SolicitorAndAccountant/SolicitorAndAccountantApi";
+import { useAddAccountantDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountant/SolicitorAndAccountantApi";
 import { apiAddress } from "@/services/third-party-api";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -53,9 +53,16 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
   const DEFAULT_ZOOM = 10;
   const DETAIL_ZOOM = 16;
   const [currentZoom, setCurrentZoom] = useState(DEFAULT_ZOOM);
-  const [mapCoords, setMapCoords] = useState<{ lat: number; lng: number } | null>(LONDON_CENTER);
+  const [mapCoords, setMapCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(LONDON_CENTER);
 
-  const getGoogleMapEmbedUrl = (lat: number, lng: number, zoom: number): string => {
+  const getGoogleMapEmbedUrl = (
+    lat: number,
+    lng: number,
+    zoom: number,
+  ): string => {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
   };
 
@@ -127,7 +134,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
 
       if (Array.isArray(value))
         return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v)
+          typeof v === "string" ? v : JSON.stringify(v),
         );
 
       if (typeof value === "object") {
@@ -169,7 +176,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
     setIsSearchingPostcode(true);
     try {
       const response = await apiAddress.get(
-        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
       setAddressList(response.data.suggestions || []);
       setIsAddressModalOpen(true);
@@ -187,7 +194,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
 
     try {
       const res = await apiAddress.get(
-        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`
+        `/get/${id}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
 
       const address = res.data;
@@ -211,7 +218,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
         county: address.county || "",
         country: address.country || "",
         latitude: address.latitude,
-        longitude: address.longitude, 
+        longitude: address.longitude,
       }));
 
       if (address.latitude !== undefined && address.longitude !== undefined) {
@@ -221,20 +228,19 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
         setMapCoords(null);
         setCurrentZoom(DEFAULT_ZOOM);
       }
-
     } catch (error) {
       console.error("Error fetching detailed address:", error);
     } finally {
       setIsFetchingAddress(false);
     }
   };
-  
+
   useEffect(() => {
-  if (!isOpen) {
-    setMapCoords(LONDON_CENTER);
-    setCurrentZoom(DEFAULT_ZOOM);
-  }
-}, [isOpen]);
+    if (!isOpen) {
+      setMapCoords(LONDON_CENTER);
+      setCurrentZoom(DEFAULT_ZOOM);
+    }
+  }, [isOpen]);
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg">
@@ -247,9 +253,17 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
               <div className="border rounded overflow-hidden shadow-sm mb-3">
                 <iframe
                   src={
-                    mapCoords 
-                      ? getGoogleMapEmbedUrl(mapCoords.lat, mapCoords.lng, currentZoom) // Use the dynamic state!
-                      : getGoogleMapEmbedUrl(LONDON_CENTER.lat, LONDON_CENTER.lng, DEFAULT_ZOOM)
+                    mapCoords
+                      ? getGoogleMapEmbedUrl(
+                          mapCoords.lat,
+                          mapCoords.lng,
+                          currentZoom,
+                        ) // Use the dynamic state!
+                      : getGoogleMapEmbedUrl(
+                          LONDON_CENTER.lat,
+                          LONDON_CENTER.lng,
+                          DEFAULT_ZOOM,
+                        )
                   }
                   width="100%"
                   height="250"

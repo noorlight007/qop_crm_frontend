@@ -1,6 +1,6 @@
-import { useGetUsersQuery } from "@/Redux/Reducers/CommonComponents/CommonUsers/UsersApi";
-import { useAddTasksMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/TasksApi";
-import { AddTaskModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { useAddTasksMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/TasksApi";
+import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
+import { AddTaskModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -20,7 +20,7 @@ import {
 
 const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const { casealias } = useParams();
-  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [name, setName] = useState("");
   const [priority, setPriority] = useState("LOW");
   const [dueDate, setDueDate] = useState("");

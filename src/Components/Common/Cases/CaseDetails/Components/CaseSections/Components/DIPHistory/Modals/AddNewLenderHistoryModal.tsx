@@ -1,7 +1,7 @@
 import LoadingSpinner from "@/app/loading";
-import { useAddDIPHistoryDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/DIPHistoryDetails/DIPHistoryDetailsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { AddNewLenderHistoryModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DIPHistoryTypes";
+import { useAddDIPHistoryDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/DIPHistoryDetails/DIPHistoryDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { AddNewLenderHistoryModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/DIPHistoryTypes";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";

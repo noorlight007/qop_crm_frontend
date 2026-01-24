@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
   useUpdateInsuranceOverviewMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -42,17 +42,17 @@ const InsuranceOverviewContent: React.FC = () => {
         case_alias: casealias,
         insurance_overview_alias: insuranceOverviewData?.alias,
       },
-      { skip: !insuranceOverviewData?.alias }
+      { skip: !insuranceOverviewData?.alias },
     );
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
-    (state: any) => state.caseDetails.basicTabId
+    (state: any) => state.caseDetails.basicTabId,
   );
   const { data: session } = useSession();
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   // API may return an array; prefer the first item when that is the case.
@@ -112,7 +112,7 @@ const InsuranceOverviewContent: React.FC = () => {
     const nextTabNav: string | null = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -323,7 +323,7 @@ const InsuranceOverviewContent: React.FC = () => {
                     } catch (err) {
                       console.error(
                         "Failed to save and navigate to next tab:",
-                        err
+                        err,
                       );
                     }
                   }

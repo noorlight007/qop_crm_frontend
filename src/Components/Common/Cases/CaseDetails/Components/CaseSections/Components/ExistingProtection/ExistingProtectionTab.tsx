@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetExistingProtectionDetailsQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtection/ExistingProtectionDetailsApi";
-import { ExistingProtectionDetailsProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtectionTypes";
+import { useGetExistingProtectionDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
+import { ExistingProtectionDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -35,30 +35,33 @@ const ExistingProtectionTab: React.FC = () => {
   // Add this function after groupByUserId
   // Calculate sum assured for each user
   const calculateUserSumAssured = (
-    existingProtections: ExistingProtectionDetailsProps[]
+    existingProtections: ExistingProtectionDetailsProps[],
   ) => {
-    const userSums = existingProtections.reduce((acc, existingProtection) => {
-      const userId = existingProtection.user.id;
-      // Convert to number and handle null/undefined
-      const sumAssured = Number(existingProtection.sum_assured) || 0;
+    const userSums = existingProtections.reduce(
+      (acc, existingProtection) => {
+        const userId = existingProtection.user.id;
+        // Convert to number and handle null/undefined
+        const sumAssured = Number(existingProtection.sum_assured) || 0;
 
-      if (!acc[userId]) {
-        acc[userId] = {
-          total: 0,
-          name: `${existingProtection.user.first_name} ${existingProtection.user.last_name}`,
-        };
-      }
-      // Add the current existingProtection's sum_assured to the user's total
-      acc[userId].total = acc[userId].total + sumAssured;
-      return acc;
-    }, {} as Record<number, { total: number; name: string }>);
+        if (!acc[userId]) {
+          acc[userId] = {
+            total: 0,
+            name: `${existingProtection.user.first_name} ${existingProtection.user.last_name}`,
+          };
+        }
+        // Add the current existingProtection's sum_assured to the user's total
+        acc[userId].total = acc[userId].total + sumAssured;
+        return acc;
+      },
+      {} as Record<number, { total: number; name: string }>,
+    );
 
     return userSums;
   };
 
   // Get all user sums
   const userSumAssured = calculateUserSumAssured(
-    existingProtectionDetails || []
+    existingProtectionDetails || [],
   );
 
   // Set the first user and their first existingProtection as default when data is fetched
@@ -74,7 +77,7 @@ const ExistingProtectionTab: React.FC = () => {
   const handleCacheUpdate = (
     alias: string | null,
     name: keyof ExistingProtectionDetailsProps,
-    value: any
+    value: any,
   ) => {
     if (!alias) return;
     setEditsCache((prev) => ({
@@ -134,7 +137,7 @@ const ExistingProtectionTab: React.FC = () => {
                         } (£${
                           userSumAssured[user.id]?.total
                             ? parseFloat(
-                                userSumAssured[user.id].total.toString()
+                                userSumAssured[user.id].total.toString(),
                               ).toLocaleString("en-GB", {
                                 minimumFractionDigits: 2,
                                 maximumFractionDigits: 2,
@@ -145,7 +148,7 @@ const ExistingProtectionTab: React.FC = () => {
                       </NavLink>
                     </NavItem>
                   );
-                }
+                },
               )}
             </Nav>
           </CardHeader>
@@ -160,12 +163,12 @@ const ExistingProtectionTab: React.FC = () => {
                 {existingProtectionDetails
                   ?.filter(
                     (ep: ExistingProtectionDetailsProps) =>
-                      ep.user.id === activeUser
+                      ep.user.id === activeUser,
                   )
                   .map(
                     (
                       existingProtection: ExistingProtectionDetailsProps,
-                      index: number
+                      index: number,
                     ) => (
                       <NavItem key={existingProtection.alias}>
                         <NavLink
@@ -182,7 +185,7 @@ const ExistingProtectionTab: React.FC = () => {
                           Security {index + 1}
                         </NavLink>
                       </NavItem>
-                    )
+                    ),
                   )}
               </Nav>
             </CardHeader>
@@ -197,7 +200,7 @@ const ExistingProtectionTab: React.FC = () => {
                 existingProtectionDetails?.reduce(
                   (
                     acc: Record<number, ExistingProtectionDetailsProps[]>,
-                    ep: ExistingProtectionDetailsProps
+                    ep: ExistingProtectionDetailsProps,
                   ) => {
                     if (!acc[ep.user.id]) {
                       acc[ep.user.id] = [];
@@ -205,7 +208,7 @@ const ExistingProtectionTab: React.FC = () => {
                     acc[ep.user.id].push(ep);
                     return acc;
                   },
-                  {} as Record<number, ExistingProtectionDetailsProps[]>
+                  {} as Record<number, ExistingProtectionDetailsProps[]>,
                 ) || {}
               }
               // pass cached edits for the active tab so the inner component can merge unsaved changes
@@ -213,7 +216,7 @@ const ExistingProtectionTab: React.FC = () => {
               // handler for inner component to update the cache
               onCacheUpdate={(
                 name: keyof ExistingProtectionDetailsProps,
-                value: any
+                value: any,
               ) => handleCacheUpdate(activeTab, name, value)}
               // clear cached edits for alias after save
               clearCachedEdits={(alias: string) => clearCacheForAlias(alias)}

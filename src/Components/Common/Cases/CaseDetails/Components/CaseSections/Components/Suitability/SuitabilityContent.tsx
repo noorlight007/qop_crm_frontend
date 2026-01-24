@@ -1,13 +1,13 @@
 import { defaultAnswersData } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/SuitabilityData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import {
   useGetExtraAnswerQuery,
   useGetSuitabilityQuery,
   useUpdateSuitabilityMutation,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Suitability/SuitabilityApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
@@ -625,7 +625,7 @@ const SuitabilityContent: React.FC = () => {
   };
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId,
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {

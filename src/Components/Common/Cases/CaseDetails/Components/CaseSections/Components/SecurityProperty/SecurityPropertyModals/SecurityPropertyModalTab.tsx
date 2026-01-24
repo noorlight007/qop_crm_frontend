@@ -1,4 +1,4 @@
-import { PropertyDetailsModalTabProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { PropertyDetailsModalTabProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import { FC, useState } from "react";
 import {
   Card,

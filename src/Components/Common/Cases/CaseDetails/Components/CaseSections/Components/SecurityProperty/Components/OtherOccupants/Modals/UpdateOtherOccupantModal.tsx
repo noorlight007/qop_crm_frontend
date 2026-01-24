@@ -1,5 +1,5 @@
-import { useUpdateOtherOccupantMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
-import { OtherOccupantModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
+import { useUpdateOtherOccupantMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/OtherOccupantsApi";
+import { OtherOccupantModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/OtherOccupantsTypes";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -42,7 +42,7 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
 
@@ -72,7 +72,7 @@ const UpdateOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
       try {
         console.error(
           "Full error (stringified):",
-          JSON.stringify(err, Object.getOwnPropertyNames(err), 2)
+          JSON.stringify(err, Object.getOwnPropertyNames(err), 2),
         );
       } catch (loggingErr) {
         console.error("Error while logging error", loggingErr);

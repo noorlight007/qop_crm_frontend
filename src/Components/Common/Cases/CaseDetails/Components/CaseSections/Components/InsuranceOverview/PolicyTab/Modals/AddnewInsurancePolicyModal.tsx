@@ -1,6 +1,6 @@
-import { useAddNewInsurancePolicyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverview/InsuranceOverviewApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
-import { AddNewInsurancePolicyModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/InsuranceOverviewTypes";
+import { useAddNewInsurancePolicyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { AddNewInsurancePolicyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/InsuranceOverviewTypes";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -512,7 +512,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         onChange={(e) =>
                           handleChange(
                             "sick_pay_provision_notes",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                       />
@@ -541,7 +541,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       onChange={(e) =>
                         handleChange(
                           "buildings_insured_accidental_damage",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -571,7 +571,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     onChange={(e) =>
                       handleChange(
                         "valuables_outside_home_protection",
-                        e.target.checked
+                        e.target.checked,
                       )
                     }
                   />
@@ -602,7 +602,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       onChange={(e) =>
                         handleChange(
                           "contents_insured_accidental_damage",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -673,7 +673,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       onChange={(e) =>
                         handleChange(
                           "high_value_items_over_1500",
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -838,7 +838,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       "policy_term",
                       e.target.value === ""
                         ? ""
-                        : String(Math.trunc(Number(e.target.value)))
+                        : String(Math.trunc(Number(e.target.value))),
                     )
                   }
                   required
@@ -962,7 +962,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           step="1"
                           min="0"
                           onKeyDown={(
-                            e: React.KeyboardEvent<HTMLInputElement>
+                            e: React.KeyboardEvent<HTMLInputElement>,
                           ) => {
                             if (e.key === "." || e.key === ",") {
                               e.preventDefault();
@@ -972,7 +972,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           onChange={(e) =>
                             handleChange(
                               "budget_plan_benefit_period",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -987,7 +987,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           onChange={(e) =>
                             handleChange(
                               "budget_plan_benefit_period_type",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         >
@@ -1149,7 +1149,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     onChange={(e) =>
                       handleChange(
                         "total_permanent_disability_cover",
-                        e.target.checked
+                        e.target.checked,
                       )
                     }
                   />
@@ -1172,7 +1172,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   onChange={(e) =>
                     handleChange(
                       "client_accepted_recommendation",
-                      e.target.checked
+                      e.target.checked,
                     )
                   }
                 />
@@ -1209,7 +1209,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     onChange={(e) =>
                       handleChange(
                         "non_standard_terms_from_lender",
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />

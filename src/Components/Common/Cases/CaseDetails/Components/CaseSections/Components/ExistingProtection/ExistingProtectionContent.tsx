@@ -1,12 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/CommonComponents/Cases/CasesApi";
-import { basicTabIndicator } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/CaseDetailsTabIndicatorSlice";
-import { useUpdateExistingProtectionDetailsMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtection/ExistingProtectionDetailsApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SectionCompleteApi";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateExistingProtectionDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   ExistingProtectionDetailsProps,
   ExistingProtectionTabContentProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/ExistingProtectionTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -42,18 +42,18 @@ const ExistingProtectionContent: React.FC<
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
-    { skip: !casealias }
+    { skip: !casealias },
   );
 
   const currentTab: string | null = useAppSelector(
-    (state) => state.caseDetails.basicTabId
+    (state) => state.caseSections.basicTabId,
   );
 
   const handleNextTab = () => {
     const nextTabNav = getNextTabNav(
       caseData?.case_stage,
       caseData?.case_category,
-      currentTab!
+      currentTab!,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -83,7 +83,7 @@ const ExistingProtectionContent: React.FC<
       const userExistingProtectionRecords = groupedData[activeUser];
       const activeExistingProtectionRecord =
         userExistingProtectionRecords?.find(
-          (existingProtection) => existingProtection.alias === activeTab
+          (existingProtection) => existingProtection.alias === activeTab,
         );
       // Merge any cached unsaved edits for this alias so user input is preserved
       const merged = {
@@ -100,7 +100,7 @@ const ExistingProtectionContent: React.FC<
 
   const userExistingProtectionRecords = groupedData[activeUser];
   const activeExistingProtectionRecord = userExistingProtectionRecords?.find(
-    (existingProtection) => existingProtection.alias === activeTab
+    (existingProtection) => existingProtection.alias === activeTab,
   );
 
   if (!activeExistingProtectionRecord) {
@@ -109,7 +109,7 @@ const ExistingProtectionContent: React.FC<
 
   const handleInputChange = (
     name: keyof ExistingProtectionDetailsProps, // Use your type instead of `Applicant`
-    value: string | number | boolean | string[] | null
+    value: string | number | boolean | string[] | null,
   ) => {
     setFormValues((prevValues) => ({
       ...prevValues!,
@@ -179,7 +179,7 @@ const ExistingProtectionContent: React.FC<
                         onChange={(e) =>
                           handleInputChange(
                             "have_any_existing_Protection_policies_in_place",
-                            e.target.value === "yes"
+                            e.target.value === "yes",
                           )
                         }
                       />
@@ -259,7 +259,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "insurers_reference",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -308,7 +308,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "premium_payment_type",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         >
@@ -367,7 +367,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "guaranteed_reviewable",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         >
@@ -397,7 +397,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "remaining_policy_term",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -415,7 +415,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "cancelled_lapsed_date",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -446,7 +446,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "date_policy_started",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                         />
@@ -473,7 +473,7 @@ const ExistingProtectionContent: React.FC<
                                 onChange={(e) =>
                                   handleInputChange(
                                     "waiver_of_premium",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -503,7 +503,7 @@ const ExistingProtectionContent: React.FC<
                                 onChange={(e) =>
                                   handleInputChange(
                                     "indexation",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -534,7 +534,7 @@ const ExistingProtectionContent: React.FC<
                                 onChange={(e) =>
                                   handleInputChange(
                                     "death_in_service_provision",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -568,7 +568,7 @@ const ExistingProtectionContent: React.FC<
                                 onChange={(e) =>
                                   handleInputChange(
                                     "have_non_standard_terms_been_issued",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -598,7 +598,7 @@ const ExistingProtectionContent: React.FC<
                             onChange={(e) =>
                               handleInputChange(
                                 "copy_and_paste_non_standard_terms_from_lender",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             rows={3}
@@ -626,7 +626,7 @@ const ExistingProtectionContent: React.FC<
                                 onChange={(e) =>
                                   handleInputChange(
                                     "will_this_policy_be_cancelled",
-                                    e.target.value === "yes"
+                                    e.target.value === "yes",
                                   )
                                 }
                               />
@@ -652,7 +652,7 @@ const ExistingProtectionContent: React.FC<
                             onChange={(e) =>
                               handleInputChange(
                                 "reason_for_policy_cancellation",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                           >
@@ -680,7 +680,7 @@ const ExistingProtectionContent: React.FC<
                             onChange={(e) =>
                               handleInputChange(
                                 "policy_cancellation_notes",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             rows={4}
@@ -703,7 +703,7 @@ const ExistingProtectionContent: React.FC<
                           onChange={(e) =>
                             handleInputChange(
                               "why_did_you_take_out_this_policy",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           rows={4}

@@ -1,5 +1,5 @@
-import { useDeleteOtherOccupantMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/OtherOccupantsApi";
-import { OtherOccupantModalProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/OtherOccupantsTypes";
+import { useDeleteOtherOccupantMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/OtherOccupantsApi";
+import { OtherOccupantModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/OtherOccupantsTypes";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -22,7 +22,7 @@ const DeleteOtherOccupantModal: React.FC<OtherOccupantModalProps> = ({
       toggle();
     } catch (error) {
       console.error("Failed to delete Occupant:", error);
-      toast.error("Failed to delete  Occupant");
+      toast.error("Failed to delete Occupant");
     }
   };
 

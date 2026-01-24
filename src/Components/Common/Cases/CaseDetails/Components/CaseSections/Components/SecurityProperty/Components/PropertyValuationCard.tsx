@@ -1,7 +1,7 @@
 import {
   useGetCaseLoanDetailsQuery,
   useGetLoanDetailsQuery,
-} from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/LoanDetails/LoanDetailsApi";
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/LoanDetails/LoanDetailsApi";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useParams } from "next/navigation";
 import { FC } from "react";
@@ -19,17 +19,20 @@ import {
 
 const PropertyValuationCard: FC = () => {
   const { casealias } = useParams();
-  const { data, isLoading } = useGetCaseLoanDetailsQuery(casealias);
+  const { data: caseLoanDetails, isLoading } =
+    useGetCaseLoanDetailsQuery(casealias);
 
   // Ensure data exists and has elements before accessing [0]
   const loandetailsAlias =
-    Array.isArray(data) && data.length > 0 ? data[0].alias : null;
+    Array.isArray(caseLoanDetails) && caseLoanDetails.length > 0
+      ? caseLoanDetails[0].alias
+      : null;
 
   const { data: loandetailsData, isLoading: isLoandetailsDataLoading } =
     useGetLoanDetailsQuery(
       loandetailsAlias
         ? { case_alias: casealias, loanDetails_alias: loandetailsAlias }
-        : skipToken
+        : skipToken,
     );
 
   // Extract values from API if available, otherwise use props fallback

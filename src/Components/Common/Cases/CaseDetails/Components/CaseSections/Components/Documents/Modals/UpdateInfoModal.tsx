@@ -1,9 +1,9 @@
-import { useUpdateCaseDocumentMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Documents/DocumentsApi";
-import { useGetCaseUsersQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseUsers/CaseUsersApi";
+import { useUpdateCaseDocumentMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import {
   CaseDocumentProps,
   DocumentOwnerProps,
-} from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/DocumentsTypes";
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/DocumentsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
   const params = useParams();
   const { casealias } = params;
   const [fileOwners, setfileOwners] = useState<DocumentOwnerProps[] | null>(
-    null
+    null,
   );
   const { data: caseUsers, isLoading: isLoadingCaseUsers } =
     useGetCaseUsersQuery({
@@ -104,10 +104,10 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
         > = Array.isArray(documentData.file_owner_info)
           ? (documentData.file_owner_info as any)
           : Array.isArray(documentData.file_owners_info)
-          ? (documentData.file_owners_info as any)
-          : documentData.file_owner_info
-          ? [documentData.file_owner_info]
-          : [];
+            ? (documentData.file_owners_info as any)
+            : documentData.file_owner_info
+              ? [documentData.file_owner_info]
+              : [];
 
         if (ownersArray.length > 0) {
           // Map owner infos to user ids by matching email or name
@@ -145,7 +145,7 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
 
   // Handle input changes
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

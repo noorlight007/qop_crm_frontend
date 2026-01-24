@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetNotesQuery } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/Notes/NotesApi";
-import { NoteProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/NotesAndTaskTypes";
+import { useGetNotesQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/NotesApi";
+import { NoteProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -37,7 +37,7 @@ const CATEGORIES = [
 const Notes: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
-  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias ?? "";
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [isOpenAddNoteModal, setIsOpenAddNoteModal] = useState(false);
   const [isDeleteNoteModalOpen, setIsDeleteNoteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<NoteProps | null>(null);
@@ -243,8 +243,8 @@ const Notes: React.FC = () => {
                         <td className="text-center">
                           {
                             // support both old and new API boolean fields
-                            (note as any).note_visible_to_introducer ??
-                            (note as any).is_visible_to_introducer ? (
+                            ((note as any).note_visible_to_introducer ??
+                            (note as any).is_visible_to_introducer) ? (
                               <FaRegCheckCircle
                                 size={16}
                                 className="text-primary"
@@ -258,8 +258,8 @@ const Notes: React.FC = () => {
                           }
                         </td>
                         <td className="text-center">
-                          {(note as any).note_visible_to_client ??
-                          (note as any).is_visible_to_client ? (
+                          {((note as any).note_visible_to_client ??
+                          (note as any).is_visible_to_client) ? (
                             <FaRegCheckCircle
                               size={16}
                               className="text-primary"
@@ -317,7 +317,7 @@ const Notes: React.FC = () => {
               const pageSizeInferred = pageSize ?? 1;
               const totalPages = Math.max(
                 1,
-                Math.ceil(count / pageSizeInferred)
+                Math.ceil(count / pageSizeInferred),
               );
               const leadsPerPage = 5; // max page links to show in compact mode
 
@@ -344,7 +344,7 @@ const Notes: React.FC = () => {
                             {pageNumber}
                           </PaginationLink>
                         </PaginationItem>
-                      )
+                      ),
                     )
                   ) : (
                     <>
@@ -363,7 +363,7 @@ const Notes: React.FC = () => {
                       {Array.from({ length: 3 }, (_, i) => page - 1 + i)
                         .filter(
                           (pageNumber) =>
-                            pageNumber > 1 && pageNumber < totalPages
+                            pageNumber > 1 && pageNumber < totalPages,
                         )
                         .map((pageNumber) => (
                           <PaginationItem

@@ -1,5 +1,5 @@
-import { useUpdatePropertyMutation } from "@/Redux/Reducers/CommonComponents/SingleCaseInfo/CaseDetails/SecurityProperty/SecurityPropertyApi";
-import { FoundPropertyProps } from "@/Types/CommonComponents/SingleCaseInfo/CaseDetails/SecurityPropertyTypes";
+import { useUpdatePropertyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyApi";
+import { FoundPropertyProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
   const [updateSingleProperty, { isLoading }] = useUpdatePropertyMutation();
 
   const [foundProperty, setFoundProperty] = useState<boolean>(
-    Boolean(property.have_you_found_a_property_yet)
+    Boolean(property.have_you_found_a_property_yet),
   );
 
   useEffect(() => {
