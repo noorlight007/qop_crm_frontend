@@ -297,7 +297,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Phone</th>
                   <th>Case Category</th>
                   <th>Lender</th>
-                  <th className="text-truncate">Security property</th>
+                  <th>Security property</th>
                   <th>Case Stage</th>
                   <th>Review Date</th>
                   <th>Created At</th>
@@ -450,7 +450,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      <td>
+                      <td className="text-truncate">
                         {(() => {
                           const pd = caseItem?.property_details;
                           if (!pd) return "N/A";

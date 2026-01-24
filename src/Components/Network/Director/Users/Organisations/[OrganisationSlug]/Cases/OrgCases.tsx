@@ -4,7 +4,7 @@ import {
   mortgageStages,
 } from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgCasesApi";
-import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
+import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
@@ -195,7 +195,7 @@ const OrgCases: React.FC = () => {
                   <thead className="thead-light text-center">
                     <tr>
                       <th>Case Name</th>
-                      <th>Lead User</th>
+                      <th>Applicants</th>
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Lender</th>
@@ -234,23 +234,55 @@ const OrgCases: React.FC = () => {
                               )}
                             </Link>
                           </td>
-                          <td>
-                            {caseItem.lead_user ? (
-                              <>
-                                {caseItem.lead_user?.title
-                                  ? formatChoiceFieldValue(
-                                      caseItem.lead_user?.title,
-                                    )
-                                  : ""}{" "}
-                                {caseItem.lead_user?.first_name}{" "}
-                                {caseItem.lead_user?.middle_name}{" "}
-                                {caseItem.lead_user?.last_name}
-                              </>
-                            ) : (
-                              <small className="text-muted">
-                                Not Available
-                              </small>
-                            )}
+                          <td className="text-start text-truncate">
+                            <ul
+                              style={{
+                                listStyleType: "disc",
+                                paddingLeft: "40px",
+                              }}
+                            >
+                              <li>
+                                {caseItem.lead_user ? (
+                                  <>
+                                    {caseItem.lead_user.title
+                                      ? formatChoiceFieldValue(
+                                          caseItem.lead_user.title,
+                                        ) + " "
+                                      : ""}
+                                    {caseItem.lead_user.first_name}{" "}
+                                    {caseItem.lead_user.middle_name
+                                      ? caseItem.lead_user.middle_name + " "
+                                      : ""}
+                                    {caseItem.lead_user.last_name}
+                                  </>
+                                ) : (
+                                  <small className="text-muted">
+                                    Not Available
+                                  </small>
+                                )}
+                              </li>
+                              {caseItem.joint_users &&
+                              caseItem.joint_users.length > 0 ? (
+                                caseItem.joint_users.map((joint: CaseUser) => (
+                                  <li key={joint.alias || joint.id}>
+                                    {joint.title
+                                      ? formatChoiceFieldValue(joint.title) +
+                                        " "
+                                      : ""}
+                                    {joint.first_name}{" "}
+                                    {joint.middle_name
+                                      ? joint.middle_name + " "
+                                      : ""}
+                                    {joint.last_name}
+                                    <small style={{ fontSize: "9px" }}>
+                                      (JA)
+                                    </small>
+                                  </li>
+                                ))
+                              ) : (
+                                <></>
+                              )}
+                            </ul>
                           </td>
                           <td>
                             {caseItem.lead_user.phone ? (
@@ -321,7 +353,7 @@ const OrgCases: React.FC = () => {
                               </small>
                             )}
                           </td>
-                          <td>
+                          <td className="text-truncate">
                             {(() => {
                               const pd = caseItem?.property_details;
                               if (!pd) return "N/A";
