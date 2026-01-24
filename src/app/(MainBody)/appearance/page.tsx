@@ -6,9 +6,7 @@ const AppearancePage = () => {
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const newClient = (
-          await import("@/Components/General/Dashboard/Appearance")
-        ).default;
+        const newClient = (await import("@/Components/Appearance")).default;
         setClient(() => newClient);
       }
     })();

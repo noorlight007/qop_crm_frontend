@@ -7,9 +7,7 @@ const SupportTicketDetailsPage = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Director/SupportTicket/[SupportTicketAlias]"
-          )
+          await import("@/Components/Network/Director/SupportTicket/[SupportTicketAlias]")
         ).default;
         setClient(() => newClient);
       }

@@ -7,9 +7,7 @@ const NetworkAdviserTasksAndReminders = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Adviser/Users/TasksAndReminders"
-          )
+          await import("@/Components/Network/Adviser/Users/TasksAndReminders")
         ).default;
         setClient(() => newClient);
       }

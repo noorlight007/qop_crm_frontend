@@ -7,9 +7,7 @@ const NetworkAdviser = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Network/Adviser/Dashboard"
-          )
+          await import("@/Components/Network/Adviser/Dashboard")
         ).default;
         setClient(() => newClient);
       }

@@ -7,9 +7,7 @@ const OrganisationAdminChatAndCommunication = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import(
-            "@/Components/General/Dashboard/Organisation/Admin/ChatAndCommunication"
-          )
+          await import("@/Components/Organisation/Admin/ChatAndCommunication")
         ).default;
         setClient(() => newClient);
       }
