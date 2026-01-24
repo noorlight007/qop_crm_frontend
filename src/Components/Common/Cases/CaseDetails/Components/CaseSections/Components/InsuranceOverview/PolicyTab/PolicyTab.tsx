@@ -1,5 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
   useGetInsurancePoliciesQuery,
   useUpdateInsurancePolicyMutation,
@@ -30,7 +31,6 @@ import {
 } from "reactstrap";
 import AddnewInsurancePolicyModal from "./Modals/AddnewInsurancePolicyModal";
 import DeleteInsurancePolicyModal from "./Modals/DeleteInsurancePolicyModal";
-import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
@@ -61,7 +61,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
-    (state: any) => state.caseDetails.basicTabId,
+    (state: any) => state.caseSections.basicTabId,
   );
   const { data: session } = useSession();
 

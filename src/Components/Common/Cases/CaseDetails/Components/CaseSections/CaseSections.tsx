@@ -43,7 +43,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
   caseCategory,
 }) => {
   const { casealias } = useParams();
-  const basicTab = useAppSelector((state: any) => state.caseDetails.basicTabId);
+  const basicTab = useAppSelector((state: any) => state.caseSections.basicTabId);
   const dispatch = useAppDispatch();
 
   const { data: SectionCompleteStatusData } = useGetSectionCompleteStatusQuery({
