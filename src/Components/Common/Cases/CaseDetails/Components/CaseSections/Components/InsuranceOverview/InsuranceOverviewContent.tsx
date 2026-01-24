@@ -47,7 +47,7 @@ const InsuranceOverviewContent: React.FC = () => {
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
-    (state: any) => state.caseDetails.basicTabId,
+    (state: any) => state.caseSections.basicTabId,
   );
   const { data: session } = useSession();
   const { data: caseData } = useGetSingleCaseQuery(
