@@ -45,6 +45,46 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
     source: "",
     has_the_unsecured_credit_mounted_up: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const sanitize = (m: string) => String(m).replace(/^\d+[,\s]*/, "");
+
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = sanitize(value);
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? sanitize(v) : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
   // rtk hooks
   const { data: caseUsers, isLoading } = useGetCaseUsersQuery({
     case_alias: casealias,
@@ -102,9 +142,10 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
           has_the_unsecured_credit_mounted_up: "",
         });
       } else if (res.error) {
-        const errorMessage =
-          (res.error as any)?.data?.detail || "Failed to add credit commitment";
-        toast.error(errorMessage);
+        const parsed = parseApiErrors(res.error as any);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0];
+        toast.error(first || "Failed to add credit commitment");
       } else {
         toast.error("Error adding credit commitment");
       }
@@ -140,6 +181,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     </option>
                   ))}
                 </Input>
+                {getFieldError("applicant") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -155,6 +201,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                   <option value="YES">Yes</option>
                   <option value="NO">No</option>
                 </Input>
+                {getFieldError("joint") && (
+                  <div className="text-danger small">
+                    {getFieldError("joint")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -190,6 +241,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                   <option value="CREDIT_COMMITMENT">Credit Commitment</option>
                   <option value="DMP">DMP</option>
                 </Input>
+                {getFieldError("type") && (
+                  <div className="text-danger small">
+                    {getFieldError("type")}
+                  </div>
+                )}
                 <small className="text-danger" style={{ fontSize: "9px" }}>
                   Select the "Type" correctly, as it cannot be updated later.
                 </small>
@@ -224,6 +280,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("company") && (
+                    <div className="text-danger small">
+                      {getFieldError("company")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -249,6 +310,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     value={formData.account_no || ""}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("account_no") && (
+                    <div className="text-danger small">
+                      {getFieldError("account_no")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -279,6 +345,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     onInput={limitDecimalPlaces}
                     required
                   />
+                  {getFieldError("os_balance") && (
+                    <div className="text-danger small">
+                      {getFieldError("os_balance")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -315,6 +386,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("settlement_balance") && (
+                    <div className="text-danger small">
+                      {getFieldError("settlement_balance")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -349,6 +425,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("monthly_repayment") && (
+                    <div className="text-danger small">
+                      {getFieldError("monthly_repayment")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -376,6 +457,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("interest_rate") && (
+                    <div className="text-danger small">
+                      {getFieldError("interest_rate")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -395,6 +481,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("card_limit") && (
+                    <div className="text-danger small">
+                      {getFieldError("card_limit")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -417,6 +508,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     value={formData.term_remaining}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("term_remaining") && (
+                    <div className="text-danger small">
+                      {getFieldError("term_remaining")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}{" "}
@@ -433,6 +529,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("balloon_payment") && (
+                    <div className="text-danger small">
+                      {getFieldError("balloon_payment")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -451,6 +552,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     <option value="YES">Yes</option>
                     <option value="NO">No</option>
                   </Input>
+                  {getFieldError("court_ordered") && (
+                    <div className="text-danger small">
+                      {getFieldError("court_ordered")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -478,6 +584,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     onChange={handleInputChange}
                     step="0.01"
                   />
+                  {getFieldError("cost_of_credit") && (
+                    <div className="text-danger small">
+                      {getFieldError("cost_of_credit")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -509,6 +620,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                       <option value="YES">Yes</option>
                       <option value="NO">No</option>
                     </Input>
+                    {getFieldError("paid_on_completion") && (
+                      <div className="text-danger small">
+                        {getFieldError("paid_on_completion")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 {formData.paid_on_completion === "YES" && (
@@ -521,6 +637,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                         value={formData.source}
                         onChange={handleInputChange}
                       />
+                      {getFieldError("source") && (
+                        <div className="text-danger small">
+                          {getFieldError("source")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 )}
@@ -535,6 +656,11 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                   value={formData.has_the_unsecured_credit_mounted_up}
                   onChange={handleInputChange}
                 />
+                {getFieldError("has_the_unsecured_credit_mounted_up") && (
+                  <div className="text-danger small">
+                    {getFieldError("has_the_unsecured_credit_mounted_up")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>

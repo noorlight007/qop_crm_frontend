@@ -73,6 +73,7 @@ const Solicitor: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>("0");
   // Add state for form fields
   const [formData, setFormData] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
   const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
@@ -237,6 +238,7 @@ const Solicitor: React.FC = () => {
       };
 
       setSelectedCaseSolicitor(updatedSolicitor);
+      setErrors({});
       toast.success("Solicitor details updated successfully!");
       try {
         await updateSectionCompleteStatus({
@@ -252,7 +254,14 @@ const Solicitor: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to update solicitor details:", error);
-      toast.error("Failed to update solicitor details. Please try again.");
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any)?.response || error,
+      );
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] ||
+        "Failed to update solicitor details. Please try again.";
+      toast.error(String(first));
     }
   };
 
@@ -371,6 +380,50 @@ const Solicitor: React.FC = () => {
     }
   };
 
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
+  };
+
   const currentTab: string | null = useAppSelector(
     (state) => state.caseSections.basicTabId,
   );
@@ -447,19 +500,15 @@ const Solicitor: React.FC = () => {
                           onChange={handleSolicitorChange}
                         >
                           <option value="">Select Solicitor...</option>
-                          {solicitorName === null ? (
-                            solicitorName?.map((solicitor: any) => (
-                              <option key={solicitor?.id} value={solicitor?.id}>
-                                {solicitor?.name}
-                                {solicitor?.id ===
-                                selectedCaseSolicitor?.solicitor_details?.id
-                                  ? " (Currently Assigned)"
-                                  : ""}
-                              </option>
-                            ))
-                          ) : (
-                            <option value="">No Solicitors Available</option>
-                          )}
+                          {solicitorName?.map((solicitor: any) => (
+                            <option key={solicitor?.id} value={solicitor?.id}>
+                              {solicitor?.name}
+                              {solicitor?.id ===
+                              selectedCaseSolicitor?.solicitor_details?.id
+                                ? " (Currently Assigned)"
+                                : ""}
+                            </option>
+                          ))}
                         </Input>
                         <small className="text-muted text-danger">
                           Note: Please select and assigned a solicitor from the
@@ -625,6 +674,9 @@ const Solicitor: React.FC = () => {
                       onChange={handleInputChange}
                       required
                     />
+                    {errors.qualifications && (
+                      <div className="text-danger">{errors.qualifications}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -637,6 +689,11 @@ const Solicitor: React.FC = () => {
                       value={formData.sra_number || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.sra_number || errors.sraNumber) && (
+                      <div className="text-danger">
+                        {errors.sra_number || errors.sraNumber}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -670,6 +727,9 @@ const Solicitor: React.FC = () => {
                         {isSearchingPostcode ? "Loading..." : "Lookup"}
                       </Button>
                     </InputGroup>
+                    {errors.postcode && (
+                      <div className="text-danger mt-1">{errors.postcode}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -682,6 +742,12 @@ const Solicitor: React.FC = () => {
                       value={formData.building_name_or_number || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.building_name_or_number ||
+                      errors.buildingName) && (
+                      <div className="text-danger">
+                        {errors.building_name_or_number || errors.buildingName}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -696,6 +762,9 @@ const Solicitor: React.FC = () => {
                       value={formData.street || ""}
                       onChange={handleInputChange}
                     />
+                    {errors.street && (
+                      <div className="text-danger">{errors.street}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -708,6 +777,9 @@ const Solicitor: React.FC = () => {
                       value={formData.city || ""}
                       onChange={handleInputChange}
                     />
+                    {errors.city && (
+                      <div className="text-danger">{errors.city}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -722,6 +794,9 @@ const Solicitor: React.FC = () => {
                       value={formData.county || ""}
                       onChange={handleInputChange}
                     />
+                    {errors.county && (
+                      <div className="text-danger">{errors.county}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -734,6 +809,9 @@ const Solicitor: React.FC = () => {
                       value={formData.country || ""}
                       onChange={handleInputChange}
                     />
+                    {errors.country && (
+                      <div className="text-danger">{errors.country}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -748,6 +826,11 @@ const Solicitor: React.FC = () => {
                       value={formData.phone_number || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.phone_number || errors.phoneNumber) && (
+                      <div className="text-danger">
+                        {errors.phone_number || errors.phoneNumber}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -760,6 +843,11 @@ const Solicitor: React.FC = () => {
                       value={formData.fax_number || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.fax_number || errors.faxNumber) && (
+                      <div className="text-danger">
+                        {errors.fax_number || errors.faxNumber}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -774,6 +862,11 @@ const Solicitor: React.FC = () => {
                       value={formData.dx_number || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.dx_number || errors.dxNumber) && (
+                      <div className="text-danger">
+                        {errors.dx_number || errors.dxNumber}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -786,6 +879,11 @@ const Solicitor: React.FC = () => {
                       value={formData.contact_name || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.contact_name || errors.contactName) && (
+                      <div className="text-danger">
+                        {errors.contact_name || errors.contactName}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -800,6 +898,11 @@ const Solicitor: React.FC = () => {
                       value={formData.email_address || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.email_address || errors.emailAddress) && (
+                      <div className="text-danger">
+                        {errors.email_address || errors.emailAddress}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -814,6 +917,13 @@ const Solicitor: React.FC = () => {
                       value={formData.number_of_partners_in_firm || ""}
                       onChange={handleInputChange}
                     />
+                    {(errors.number_of_partners_in_firm ||
+                      errors.numberOfPartners) && (
+                      <div className="text-danger">
+                        {errors.number_of_partners_in_firm ||
+                          errors.numberOfPartners}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>

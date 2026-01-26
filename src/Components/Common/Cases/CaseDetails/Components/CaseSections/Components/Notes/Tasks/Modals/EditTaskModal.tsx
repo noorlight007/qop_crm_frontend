@@ -55,6 +55,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
     note: selectedTask?.note || null,
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   React.useEffect(() => {
     if (isOpen && selectedTask) {
       setForm({
@@ -70,6 +72,7 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
         note: selectedTask?.note || null,
       });
     }
+    if (!isOpen) setErrors({});
   }, [isOpen, selectedTask]);
 
   const handleChange = (
@@ -79,6 +82,50 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
   ) => {
     const { name, value } = e.target;
     setForm((s) => ({ ...s, [name]: value }));
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -100,14 +147,27 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
         task_alias: selectedTask.alias,
         taskPayload: taskPayload,
       });
-      if (res.data) {
+      if ((res as any)?.data) {
+        setErrors({});
         toast.success("Task updated successfully");
         toggle();
+        if (onSave) onSave({ ...(selectedTask as any), ...taskPayload } as any);
+      } else if ((res as any)?.error) {
+        const errData = (res as any).error?.data || (res as any).error || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0] || "Failed to update task";
+        toast.error(String(first));
       } else {
         toast.error("Failed to update task");
       }
     } catch (error) {
-      toast.error("Failed to update task");
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
+      setErrors(parsed);
+      const first = Object.values(parsed)[0] || "Failed to update task";
+      toast.error(String(first));
     }
   };
 
@@ -135,6 +195,9 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
                   <option value="HIGH">High</option>
                   <option value="URGENT">Urgent</option>
                 </Input>
+                {errors.task_priority && (
+                  <div className="text-danger">{errors.task_priority}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -148,6 +211,9 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
                   value={form.due_date ?? ""}
                   onChange={handleChange}
                 />
+                {errors.due_date && (
+                  <div className="text-danger">{errors.due_date}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -170,6 +236,9 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
                       ))
                     : null}
                 </Input>
+                {errors.task_assigned_to && (
+                  <div className="text-danger">{errors.task_assigned_to}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -184,6 +253,9 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
                   onChange={handleChange}
                   rows={4}
                 />
+                {errors.note && (
+                  <div className="text-danger">{errors.note}</div>
+                )}
               </FormGroup>
             </Col>
 

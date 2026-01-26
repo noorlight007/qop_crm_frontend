@@ -38,6 +38,47 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
   const [addPreviousAddress, { isLoading: isSaving }] =
     useAddPreviousAddressMutation();
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const sanitize = (m: string) => String(m).replace(/^\d+[,\s]*/, "");
+
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = sanitize(value);
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? sanitize(v) : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
+
   useEffect(() => {
     setEffectiveTo(effectiveFromDate || lastEffectiveFromDate || "");
   }, [effectiveFromDate, lastEffectiveFromDate]);
@@ -97,14 +138,23 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
         applicantDetails_alias: applicantAlias || applicantDetailsAlias,
         previousAddressInfo,
       });
-      if (res.data) {
+      if ((res as any).data) {
+        setErrors({});
         toast.success("Previous address added successfully");
         toggle();
+      } else if ((res as any).error) {
+        const parsed = parseApiErrors((res as any).error);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0];
+        toast.error(first || "Failed to add previous address");
       } else {
         toast.error("Failed to add previous address");
       }
-    } catch (error) {
-      toast.error("Failed to add previous address");
+    } catch (error: any) {
+      const parsed = parseApiErrors(error);
+      setErrors(parsed);
+      const first = Object.values(parsed)[0];
+      toast.error(first || error?.message || "Failed to add previous address");
     }
   };
 
@@ -127,6 +177,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   placeholder="Enter postcode"
                   required
                 />
+                {getFieldError("postcode") && (
+                  <div className="text-danger small">
+                    {getFieldError("postcode")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -139,6 +194,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   placeholder="Enter house name or number"
                   required
                 />
+                {getFieldError("house_name_or_number") && (
+                  <div className="text-danger small">
+                    {getFieldError("house_name_or_number")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -151,6 +211,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   placeholder="Enter address line 1"
                   required
                 />
+                {getFieldError("address_line1") && (
+                  <div className="text-danger small">
+                    {getFieldError("address_line1")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -163,6 +228,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   placeholder="Enter city"
                   required
                 />
+                {getFieldError("city") && (
+                  <div className="text-danger small">
+                    {getFieldError("city")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -174,6 +244,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   type="text"
                   placeholder="Enter county"
                 />
+                {getFieldError("county") && (
+                  <div className="text-danger small">
+                    {getFieldError("county")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -186,6 +261,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   placeholder="Enter country"
                   required
                 />
+                {getFieldError("country") && (
+                  <div className="text-danger small">
+                    {getFieldError("country")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -216,6 +296,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   }
                   required
                 />
+                {getFieldError("pre_effective_from") && (
+                  <div className="text-danger small">
+                    {getFieldError("pre_effective_from")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -230,6 +315,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   onChange={(e) => setEffectiveTo(e.target.value)}
                   required
                 />
+                {getFieldError("pre_effective_to") && (
+                  <div className="text-danger small">
+                    {getFieldError("pre_effective_to")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -286,6 +376,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                     Living with Friends/Family
                   </option>
                 </Input>
+                {getFieldError("residential_status") && (
+                  <div className="text-danger small">
+                    {getFieldError("residential_status")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="12">
@@ -297,6 +392,11 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
                   type="textarea"
                   placeholder="Enter any additional notes"
                 />
+                {getFieldError("notes") && (
+                  <div className="text-danger small">
+                    {getFieldError("notes")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>

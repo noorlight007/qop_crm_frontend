@@ -66,6 +66,51 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     undefined,
   );
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = value.replace(/^\d+[,\s]*/, "");
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) =>
+            typeof v === "string"
+              ? v.replace(/^\d+[,\s]*/, "")
+              : JSON.stringify(v),
+          )
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) {
+          recurse(value[k], path.concat(k));
+        }
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
+
   // Rtk hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -118,6 +163,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     ni_number: "",
     country_of_birth: "",
     bank_name: "",
+    banking_years: 0,
+    banking_months: 0,
     home_phone: "",
     work_phone: "",
     has_dependants: false,
@@ -332,6 +379,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
       if (response.data) {
         toast.success("Applicant details updated successfully!");
+        setErrors({});
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias as string,
@@ -351,10 +399,12 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         // Reset to default save action after handling
         submitActionRef.current = "save";
       } else if (response.error) {
-        // Extract backend error message - prioritize details field
+        const parsed = parseApiErrors(response.error);
+        setErrors(parsed);
+        const detail = (response.error as any)?.data?.detail;
+        const firstFieldMsg = Object.values(parsed)[0];
         const errorMessage =
-          (response.error as any)?.data?.detail ||
-          "Error updating applicant details!";
+          detail || firstFieldMsg || "Error updating applicant details!";
         toast.error(errorMessage);
       } else {
         toast.error("Error updating applicant details!");
@@ -609,6 +659,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
+                {getFieldError("applicant.title") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant.title")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -623,6 +678,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("applicant.first_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant.first_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -636,6 +696,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     handleInputChange("applicant.middle_name", e.target.value)
                   }
                 />
+                {getFieldError("applicant.middle_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant.middle_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -650,6 +715,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("applicant.last_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant.last_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -663,6 +733,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     handleInputChange("maiden_name", e.target.value)
                   }
                 />
+                {getFieldError("maiden_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("maiden_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             {formValues?.maiden_name && (
@@ -679,6 +754,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       handleInputChange("date_of_name_change", e.target.value)
                     }
                   />
+                  {getFieldError("date_of_name_change") && (
+                    <div className="text-danger small">
+                      {getFieldError("date_of_name_change")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -697,6 +777,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       }
                       required
                     />
+                    {getFieldError("date_of_birth") && (
+                      <div className="text-danger small">
+                        {getFieldError("date_of_birth")}
+                      </div>
+                    )}
                     <InputGroupText
                       className="border-start-0 rounded-start-0"
                       style={{ padding: "11px 20px" }}
@@ -734,6 +819,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         </Label>
                       </div>
                     ))}
+                    {getFieldError("is_smoker") && (
+                      <div className="text-danger small">
+                        {getFieldError("is_smoker")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -755,6 +845,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("anticipated_retirement_age") && (
+                  <div className="text-danger small">
+                    {getFieldError("anticipated_retirement_age")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -768,6 +863,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     handleInputChange("state_retirement_age", e.target.value)
                   }
                 />
+                {getFieldError("state_retirement_age") && (
+                  <div className="text-danger small">
+                    {getFieldError("state_retirement_age")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
 
@@ -791,6 +891,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     </option>
                   ))}
                 </Input>
+                {getFieldError("nationality") && (
+                  <div className="text-danger small">
+                    {getFieldError("nationality")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -820,6 +925,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     </Label>
                   </div>
                 ))}
+                {getFieldError("is_dual_nationality") && (
+                  <div className="text-danger small">
+                    {getFieldError("is_dual_nationality")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -846,6 +956,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     Religiously Married
                   </option>
                 </Input>
+                {getFieldError("marital_status") && (
+                  <div className="text-danger small">
+                    {getFieldError("marital_status")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             {formValues.is_dual_nationality && (
@@ -868,6 +983,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </option>
                     ))}
                   </Input>
+                  {getFieldError("dual_nationality") && (
+                    <div className="text-danger small">
+                      {getFieldError("dual_nationality")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -887,6 +1007,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       handleInputChange("date_of_arrival_uk", e.target.value)
                     }
                   />
+                  {getFieldError("date_of_arrival_uk") && (
+                    <div className="text-danger small">
+                      {getFieldError("date_of_arrival_uk")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -917,6 +1042,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </Label>
                     </div>
                   ))}
+                  {getFieldError("indefinite_right_to_reside") && (
+                    <div className="text-danger small">
+                      {getFieldError("indefinite_right_to_reside")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -938,6 +1068,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("visa_details", e.target.value)
                       }
                     />
+                    {getFieldError("visa_details") && (
+                      <div className="text-danger small">
+                        {getFieldError("visa_details")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -951,6 +1086,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("visa_expiry_date", e.target.value)
                       }
                     />
+                    {getFieldError("visa_expiry_date") && (
+                      <div className="text-danger small">
+                        {getFieldError("visa_expiry_date")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -969,6 +1109,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     handleInputChange("ni_number", e.target.value)
                   }
                 />
+                {getFieldError("ni_number") && (
+                  <div className="text-danger small">
+                    {getFieldError("ni_number")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -989,6 +1134,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     </option>
                   ))}
                 </Input>
+                {getFieldError("country_of_birth") && (
+                  <div className="text-danger small">
+                    {getFieldError("country_of_birth")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1004,6 +1154,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     handleInputChange("bank_name", e.target.value)
                   }
                 />
+                {getFieldError("bank_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("bank_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -1012,23 +1167,33 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               </Label>
               <FormGroup className="d-flex justify-content-center align-items-center gap-3">
                 <Input
-                  id="how_long_banked"
+                  id="banking_years"
                   type="number"
                   placeholder="Years"
-                  // value={formValues.how_long_banked || ""}
-                  // onChange={(e) =>
-                  //   handleInputChange("how_long_banked", e.target.value)
-                  // }
+                  value={formValues.banking_years || ""}
+                  onChange={(e) =>
+                    handleInputChange("banking_years", e.target.value)
+                  }
                 />
+                {getFieldError("banking_years") && (
+                  <div className="text-danger small">
+                    {getFieldError("banking_years")}
+                  </div>
+                )}
                 <Input
-                  id="how_long_banked"
+                  id="banking_months"
                   type="number"
                   placeholder="Months"
-                  // value={formValues.how_long_banked || ""}
-                  // onChange={(e) =>
-                  //   handleInputChange("how_long_banked", e.target.value)
-                  // }
+                  value={formValues.banking_months || ""}
+                  onChange={(e) =>
+                    handleInputChange("banking_months", e.target.value)
+                  }
                 />
+                {getFieldError("banking_months") && (
+                  <div className="text-danger small">
+                    {getFieldError("banking_months")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1044,6 +1209,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     handleInputChange("home_phone", e.target.value)
                   }
                 />
+                {getFieldError("home_phone") && (
+                  <div className="text-danger small">
+                    {getFieldError("home_phone")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -1058,6 +1228,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("applicant.phone") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant.phone")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1090,6 +1265,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     }
                   }}
                 />
+                {getFieldError("applicant.email") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant.email")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1127,6 +1307,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     </Label>
                   ),
                 )}
+                {getFieldError("marketing_preferences") && (
+                  <div className="text-danger small">
+                    {getFieldError("marketing_preferences")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1163,6 +1348,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     </Label>
                   </div>
                 ))}
+                {getFieldError("has_dependants") && (
+                  <div className="text-danger small">
+                    {getFieldError("has_dependants")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1247,6 +1437,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     }
                     required
                   />
+                  {getFieldError("postcode") && (
+                    <div className="text-danger small">
+                      {getFieldError("postcode")}
+                    </div>
+                  )}
                   <Button
                     color="primary"
                     type="button"
@@ -1257,6 +1452,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     {isSearchingPostcode ? "Loading..." : "Lookup"}
                   </Button>
                 </InputGroup>
+                {getFieldError("postcode") && (
+                  <div className="text-danger small">
+                    {getFieldError("postcode")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -1271,6 +1471,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("house_number_or_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("house_number_or_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1288,6 +1493,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("address_line1") && (
+                  <div className="text-danger small">
+                    {getFieldError("address_line1")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -1300,6 +1510,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   onChange={(e) => handleInputChange("city", e.target.value)}
                   required
                 />
+                {getFieldError("city") && (
+                  <div className="text-danger small">
+                    {getFieldError("city")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1314,6 +1529,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   value={formValues.county || ""}
                   onChange={(e) => handleInputChange("county", e.target.value)}
                 />
+                {getFieldError("county") && (
+                  <div className="text-danger small">
+                    {getFieldError("county")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -1326,6 +1546,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   onChange={(e) => handleInputChange("country", e.target.value)}
                   required
                 />
+                {getFieldError("country") && (
+                  <div className="text-danger small">
+                    {getFieldError("country")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1354,6 +1579,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   }
                   required
                 />
+                {getFieldError("effective_from") && (
+                  <div className="text-danger small">
+                    {getFieldError("effective_from")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -1396,6 +1626,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   </InputGroupText>
                 </InputGroup>
               </FormGroup>
+              {getFieldError("effective_from") && (
+                <div className="text-danger small">
+                  {getFieldError("effective_from")}
+                </div>
+              )}
             </Col>
           </Row>
           <Row>
@@ -1456,6 +1691,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                     Living with Friends/Family
                   </option>
                 </Input>
+                {getFieldError("residential_status") && (
+                  <div className="text-danger small">
+                    {getFieldError("residential_status")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -1478,6 +1718,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("current_mortgage_balance") && (
+                      <div className="text-danger small">
+                        {getFieldError("current_mortgage_balance")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1491,6 +1736,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("property_value", e.target.value)
                       }
                     />
+                    {getFieldError("property_value") && (
+                      <div className="text-danger small">
+                        {getFieldError("property_value")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1509,6 +1759,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("owner_monthly_payment") && (
+                      <div className="text-danger small">
+                        {getFieldError("owner_monthly_payment")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1522,6 +1777,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("lender", e.target.value)
                       }
                     />
+                    {getFieldError("lender") && (
+                      <div className="text-danger small">
+                        {getFieldError("lender")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1540,6 +1800,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("current_interest_rate") && (
+                      <div className="text-danger small">
+                        {getFieldError("current_interest_rate")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1553,6 +1818,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("mortgage_start_date", e.target.value)
                       }
                     />
+                    {getFieldError("mortgage_start_date") && (
+                      <div className="text-danger small">
+                        {getFieldError("mortgage_start_date")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1566,6 +1836,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("remaining_term", e.target.value)
                       }
                     />
+                    {getFieldError("remaining_term") && (
+                      <div className="text-danger small">
+                        {getFieldError("remaining_term")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1599,6 +1874,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         Commercial Investment (Applicant Mortgage Details)
                       </option>
                     </Input>
+                    {getFieldError("mortgage_type") && (
+                      <div className="text-danger small">
+                        {getFieldError("mortgage_type")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1623,6 +1903,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <option value="RETAINED">Retained</option>
                       <option value="OTHER">Other</option>
                     </Input>
+                    {getFieldError("repayment_type") && (
+                      <div className="text-danger small">
+                        {getFieldError("repayment_type")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1652,6 +1937,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <option value="LIFETIME">Lifetime</option>
                       <option value="OTHER">Other</option>
                     </Input>
+                    {getFieldError("current_interest_type") && (
+                      <div className="text-danger small">
+                        {getFieldError("current_interest_type")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1683,6 +1973,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </div>
                     ))}
                   </FormGroup>
+                  {getFieldError("early_repayment_charge_applies") && (
+                    <div className="text-danger small">
+                      {getFieldError("early_repayment_charge_applies")}
+                    </div>
+                  )}
                 </Col>
                 {formValues.early_repayment_charge_applies === true && (
                   <>
@@ -1690,13 +1985,18 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <FormGroup>
                         <Label for="erc_expiry_date">ERC Expiry Date</Label>
                         <Input
-                          id="early_repayment_charge"
-                          type="number"
+                          id="erc_expiry_date"
+                          type="date"
                           value={formValues.erc_expiry_date || ""}
                           onChange={(e) =>
                             handleInputChange("erc_expiry_date", e.target.value)
                           }
                         />
+                        {getFieldError("erc_expiry_date") && (
+                          <div className="text-danger small">
+                            {getFieldError("erc_expiry_date")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1723,6 +2023,15 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           <option value="YES">Yes</option>
                           <option value="NO">No</option>
                         </Input>
+                        {getFieldError(
+                          "mortgage_not_to_complete_until_erc_ended",
+                        ) && (
+                          <div className="text-danger small">
+                            {getFieldError(
+                              "mortgage_not_to_complete_until_erc_ended",
+                            )}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1736,6 +2045,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             handleInputChange("erc_amount", e.target.value)
                           }
                         />
+                        {getFieldError("erc_amount") && (
+                          <div className="text-danger small">
+                            {getFieldError("erc_amount")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1745,11 +2059,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         </Label>
                         {["yes", "no"].map((value) => (
                           <div key={value}>
-                            <Label className="me-2 text-success">
+                            <Label className="me-2">
                               <Input
                                 type="radio"
                                 name="erc_being_paid"
-                                className="border-success me-1"
+                                className="me-1"
                                 value={value}
                                 checked={
                                   formValues.erc_being_paid ===
@@ -1767,6 +2081,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           </div>
                         ))}
                       </FormGroup>
+                      {getFieldError("erc_being_paid") && (
+                        <div className="text-danger small">
+                          {getFieldError("erc_being_paid")}
+                        </div>
+                      )}
                     </Col>
                   </>
                 )}
@@ -1796,6 +2115,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </div>
                     ))}
                   </FormGroup>
+                  {getFieldError("being_redeemed") && (
+                    <div className="text-danger small">
+                      {getFieldError("being_redeemed")}
+                    </div>
+                  )}
                 </Col>
                 <Col md={6}>
                   <FormGroup>
@@ -1826,6 +2150,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </div>
                     ))}
                   </FormGroup>
+                  {getFieldError("is_mortgage_portable") && (
+                    <div className="text-danger small">
+                      {getFieldError("is_mortgage_portable")}
+                    </div>
+                  )}
                 </Col>
                 {formValues.is_mortgage_portable === true && (
                   <>
@@ -1859,6 +2188,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         ))}
                       </FormGroup>
                     </Col>
+                    {getFieldError("is_mortgage_being_ported") && (
+                      <div className="text-danger small">
+                        {getFieldError("is_mortgage_being_ported")}
+                      </div>
+                    )}
                   </>
                 )}
                 <Col md={6}>
@@ -1877,6 +2211,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("mortgage_account_number") && (
+                      <div className="text-danger small">
+                        {getFieldError("mortgage_account_number")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1908,6 +2247,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </div>
                     ))}
                   </FormGroup>
+                  {getFieldError("mortgage_charter_scheme") && (
+                    <div className="text-danger small">
+                      {getFieldError("mortgage_charter_scheme")}
+                    </div>
+                  )}
                 </Col>
                 <Col md={6}>
                   <FormGroup>
@@ -1934,6 +2278,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </option>
                       <option value="HMO">HMO</option>
                     </Input>
+                    {getFieldError("property_type") && (
+                      <div className="text-danger small">
+                        {getFieldError("property_type")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1947,6 +2296,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("bedrooms", e.target.value)
                       }
                     />
+                    {getFieldError("bedrooms") && (
+                      <div className="text-danger small">
+                        {getFieldError("bedrooms")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1966,6 +2320,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <option value="COMMONHOLD">Commonhold</option>
                       <option value="FEUDAL">Feudal</option>
                     </Input>
+                    {getFieldError("tenure") && (
+                      <div className="text-danger small">
+                        {getFieldError("tenure")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -1979,6 +2338,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("year_built", e.target.value)
                       }
                     />
+                    {getFieldError("year_built") && (
+                      <div className="text-danger small">
+                        {getFieldError("year_built")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -2002,6 +2366,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("rental_monthly_payment") && (
+                      <div className="text-danger small">
+                        {getFieldError("rental_monthly_payment")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2015,6 +2384,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("landlord_name", e.target.value)
                       }
                     />
+                    {getFieldError("landlord_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_name")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2028,6 +2402,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("landlord_telephone", e.target.value)
                       }
                     />
+                    {getFieldError("landlord_telephone") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_telephone")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2041,6 +2420,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("landlord_email", e.target.value)
                       }
                     />
+                    {getFieldError("landlord_email") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_email")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <h3 className="mb-2 mt-2">Landlord Address</h3>
@@ -2059,6 +2443,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("landlord_address_postcode") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_address_postcode")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2075,6 +2464,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         )
                       }
                     />
+                    {getFieldError("landlord_address_line_one") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_address_line_one")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2088,6 +2482,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("landlord_city", e.target.value)
                       }
                     />
+                    {getFieldError("landlord_city") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_city")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2101,6 +2500,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("landlord_country", e.target.value)
                       }
                     />
+                    {getFieldError("landlord_country") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_country")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -2114,6 +2518,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         handleInputChange("landlord_county", e.target.value)
                       }
                     />
+                    {getFieldError("landlord_county") && (
+                      <div className="text-danger small">
+                        {getFieldError("landlord_county")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -2164,6 +2573,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </Button>
                     </div>
                   </FormGroup>
+                  {getFieldError("intend_to_move_into_the_new_property") && (
+                    <div className="text-danger small">
+                      {getFieldError("intend_to_move_into_the_new_property")}
+                    </div>
+                  )}
                 </Col>
                 {formValues.intend_to_move_into_the_new_property === true ? (
                   <>
@@ -2186,6 +2600,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_house_number_or_name") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_house_number_or_name")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2205,6 +2624,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_address_one") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_address_one")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2224,6 +2648,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_address_two") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_address_two")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2241,6 +2670,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_city") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_city")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2258,6 +2692,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_county") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_county")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2276,6 +2715,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_postcode") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_postcode")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2304,6 +2748,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_country") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_country")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2323,6 +2772,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                             )
                           }
                         />
+                        {getFieldError("new_address_effective_from") && (
+                          <div className="text-danger small">
+                            {getFieldError("new_address_effective_from")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -2351,6 +2805,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   value={formValues.notes || ""}
                   onChange={(e) => handleInputChange("notes", e.target.value)}
                 />
+                {getFieldError("notes") && (
+                  <div className="text-danger small">
+                    {getFieldError("notes")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>

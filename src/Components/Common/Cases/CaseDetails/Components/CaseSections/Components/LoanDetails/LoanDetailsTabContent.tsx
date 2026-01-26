@@ -38,6 +38,46 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   const { casealias } = useParams();
   const { data, isLoading, isError } = useGetCaseLoanDetailsQuery(casealias);
   const dispatch = useAppDispatch();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = value;
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) {
+          recurse(value[k], path.concat(k));
+        }
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
 
   // Ensure `data` exists and has elements before accessing `[0]`
   const loandetailsAlias =
@@ -325,6 +365,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
       });
 
       if (response.data) {
+        setErrors({});
         toast.success("Loan details updated successfully");
         try {
           await updateSectionCompleteStatus({
@@ -335,10 +376,13 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
           console.error("Failed to update section complete status:", err);
         }
       } else if (response.error) {
-        // Extract backend error message - prioritize details field
+        const parsed = parseApiErrors(response.error);
+        setErrors(parsed);
+        // Prioritize a detail message if present
+        const detail = (response.error as any)?.data?.detail;
+        const firstFieldMsg = Object.values(parsed)[0];
         const errorMessage =
-          (response.error as any)?.data?.detail ||
-          "Failed to update loan details!";
+          detail || firstFieldMsg || "Failed to update loan details!";
         toast.error(errorMessage);
       } else {
         toast.error("Failed to update loan details!!!!");
@@ -404,6 +448,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       Second Charge Mortgage
                     </option>
                   </Input>
+                  {getFieldError("application_type") && (
+                    <FormText className="text-danger">
+                      {getFieldError("application_type")}
+                    </FormText>
+                  )}
                 </FormGroup>
 
                 <FormGroup>
@@ -429,6 +478,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     </option>
                     <option value="ASSET_FINANCE">Asset Finance</option>
                   </Input>
+                  {getFieldError("mortgage_type") && (
+                    <FormText className="text-danger">
+                      {getFieldError("mortgage_type")}
+                    </FormText>
+                  )}
                 </FormGroup>
 
                 <FormGroup>
@@ -464,6 +518,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     </option>
                     <option value="TAX_BILL">Tax Bill</option>
                   </Input>
+                  {getFieldError("loan_purpose") && (
+                    <FormText className="text-danger">
+                      {getFieldError("loan_purpose")}
+                    </FormText>
+                  )}
                 </FormGroup>
 
                 <FormGroup>
@@ -499,6 +558,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="SHARED_EQUITY">Shared Equity</option>
                     <option value="ISLAMIC_MORTGAGE">Islamic Mortgage</option>
                   </Input>
+                  {getFieldError("borrower_type") && (
+                    <FormText className="text-danger">
+                      {getFieldError("borrower_type")}
+                    </FormText>
+                  )}
                 </FormGroup>
 
                 <FormGroup>
@@ -520,6 +584,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="CAPPED">Capped</option>
                     <option value="ALL">All</option>
                   </Input>
+                  {getFieldError("interest_rate_type") && (
+                    <FormText className="text-danger">
+                      {getFieldError("interest_rate_type")}
+                    </FormText>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Label>
@@ -538,6 +607,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(1, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("interest_rate") && (
+                    <FormText className="text-danger">
+                      {getFieldError("interest_rate")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
 
@@ -560,6 +634,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="FIVE_PLUS_YEARS">5+ Years</option>
                     <option value="FULL_TERM">Full Term</option>
                   </Input>
+                  {getFieldError("product_term") && (
+                    <FormText className="text-danger">
+                      {getFieldError("product_term")}
+                    </FormText>
+                  )}
                 </FormGroup>
 
                 <FormGroup>
@@ -579,6 +658,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       </option>
                     ))}
                   </Input>
+                  {getFieldError("lender") && (
+                    <FormText className="text-danger">
+                      {getFieldError("lender")}
+                    </FormText>
+                  )}
                 </FormGroup>
                 {formDataTab1.lender === "OTHER" && (
                   <FormGroup>
@@ -669,6 +753,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(1, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("lenders_reference") && (
+                    <FormText className="text-danger">
+                      {getFieldError("lenders_reference")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -697,6 +786,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("purchase_price") && (
+                      <FormText className="text-danger">
+                        {getFieldError("purchase_price")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               ) : (
@@ -718,6 +812,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("property_valuation") && (
+                      <FormText className="text-danger">
+                        {getFieldError("property_valuation")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -746,6 +845,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         }*`
                       : ""}
                   </FormText>
+                  {getFieldError("loan_amount") && (
+                    <FormText className="text-danger">
+                      {getFieldError("loan_amount")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -764,6 +868,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(2, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("estimated_value") && (
+                    <FormText className="text-danger">
+                      {getFieldError("estimated_value")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -776,6 +885,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     value={calculateLTV()}
                     readOnly
                   />
+                  {getFieldError("ltv") && (
+                    <FormText className="text-danger">
+                      {getFieldError("ltv")}
+                    </FormText>
+                  )}
                   <FormText>Calculated automatically</FormText>
                 </FormGroup>
               </Col>
@@ -795,6 +909,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
+                      {getFieldError("term_years") && (
+                        <FormText className="text-danger">
+                          {getFieldError("term_years")}
+                        </FormText>
+                      )}
                       <FormText>*In years</FormText>
                     </FormGroup>
                   </Col>
@@ -812,6 +931,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
+                      {getFieldError("term_months") && (
+                        <FormText className="text-danger">
+                          {getFieldError("term_months")}
+                        </FormText>
+                      )}
                       <FormText>*In months (0-11)</FormText>
                     </FormGroup>
                   </Col>
@@ -832,6 +956,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(2, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("interest_only_amount") && (
+                    <FormText className="text-danger">
+                      {getFieldError("interest_only_amount")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
 
@@ -851,6 +980,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("deposit_amount") && (
+                      <FormText className="text-danger">
+                        {getFieldError("deposit_amount")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -867,6 +1001,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("deposit_source") && (
+                      <FormText className="text-danger">
+                        {getFieldError("deposit_source")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -888,6 +1027,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("outstanding_balance") && (
+                      <FormText className="text-danger">
+                        {getFieldError("outstanding_balance")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -911,6 +1055,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("current_monthly_payment") && (
+                      <FormText className="text-danger">
+                        {getFieldError("current_monthly_payment")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -937,6 +1086,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         </option>
                       ))}
                     </Input>
+                    {getFieldError("current_lender") && (
+                      <FormText className="text-danger">
+                        {getFieldError("current_lender")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -954,6 +1108,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("current_lender_other_note") && (
+                      <FormText className="text-danger">
+                        {getFieldError("current_lender_other_note")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -977,6 +1136,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("original_purchase_price") && (
+                      <FormText className="text-danger">
+                        {getFieldError("original_purchase_price")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -992,6 +1156,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("date_of_purchase") && (
+                      <FormText className="text-danger">
+                        {getFieldError("date_of_purchase")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -1010,6 +1179,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="ADVISING">Advising</option>
                     <option value="EXECUTION_ONLY">Execution Only</option>
                   </Input>
+                  {getFieldError("repayment_method") && (
+                    <FormText className="text-danger">
+                      {getFieldError("repayment_method")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1042,6 +1216,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(3, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("dip_accept_date") && (
+                    <FormText className="text-danger">
+                      {getFieldError("dip_accept_date")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
               {caseData?.case_stage !== "COMPLETION" &&
@@ -1062,6 +1241,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(3, e.target.name, e.target.value)
                         }
                       />
+                      {getFieldError("dip_expiry_date") && (
+                        <FormText className="text-danger">
+                          {getFieldError("dip_expiry_date")}
+                        </FormText>
+                      )}
                     </FormGroup>
                   </Col>
                 )}
@@ -1081,6 +1265,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("case_submitted") && (
+                          <FormText className="text-danger">
+                            {getFieldError("case_submitted")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1096,6 +1285,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("valuation_instructed_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("valuation_instructed_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1111,6 +1305,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("valuation_booked_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("valuation_booked_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1126,6 +1325,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("valuation_received_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("valuation_received_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1141,6 +1345,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("valuation_expiry_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("valuation_expiry_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1154,6 +1363,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("case_offered_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("case_offered_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1167,6 +1381,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("stage_expiry_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("stage_expiry_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1182,6 +1401,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("legals_instructed_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("legals_instructed_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -1197,6 +1421,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                             handleFormChange(3, e.target.name, e.target.value)
                           }
                         />
+                        {getFieldError("exchange_of_contracts_date") && (
+                          <FormText className="text-danger">
+                            {getFieldError("exchange_of_contracts_date")}
+                          </FormText>
+                        )}
                       </FormGroup>
                     </Col>
                   </>
@@ -1214,6 +1443,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(3, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("expected_completion_date") && (
+                    <FormText className="text-danger">
+                      {getFieldError("expected_completion_date")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
               {caseData?.case_stage !== "ENQUIRY" &&
@@ -1233,6 +1467,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(3, e.target.name, e.target.value)
                         }
                       />
+                      {getFieldError("case_completed_date") && (
+                        <FormText className="text-danger">
+                          {getFieldError("case_completed_date")}
+                        </FormText>
+                      )}
                     </FormGroup>
                   </Col>
                 )}
@@ -1247,6 +1486,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(3, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("product_expiry_date") && (
+                    <FormText className="text-danger">
+                      {getFieldError("product_expiry_date")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
               {(caseData?.case_stage === "COMPLETION" ||
@@ -1266,6 +1510,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(3, e.target.name, e.target.value)
                       }
                     />
+                    {getFieldError("review_date") && (
+                      <FormText className="text-danger">
+                        {getFieldError("review_date")}
+                      </FormText>
+                    )}
                   </FormGroup>
                 </Col>
               )}
@@ -1301,6 +1550,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="INTERNET">Internet</option>
                     <option value="OTHER">Other</option>
                   </Input>
+                  {getFieldError("sale_type") && (
+                    <FormText className="text-danger">
+                      {getFieldError("sale_type")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
 
@@ -1319,6 +1573,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="DIRECT">Direct</option>
                     <option value="RDI">RDI</option>
                   </Input>
+                  {getFieldError("introduction_type") && (
+                    <FormText className="text-danger">
+                      {getFieldError("introduction_type")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1344,6 +1603,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="REFERRALS">Referrals</option>
                     <option value="WEBSITE">Website</option>
                   </Input>
+                  {getFieldError("lead_source") && (
+                    <FormText className="text-danger">
+                      {getFieldError("lead_source")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
 
@@ -1366,6 +1630,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="ON_OFFER">On Offer</option>
                     <option value="ON_COMPLETION">On Completion</option>
                   </Input>
+                  {getFieldError("introducer_payment_terms") && (
+                    <FormText className="text-danger">
+                      {getFieldError("introducer_payment_terms")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1382,6 +1651,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(4, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("introducer_fee") && (
+                    <FormText className="text-danger">
+                      {getFieldError("introducer_fee")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
 
@@ -1398,6 +1672,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(4, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("reasons_for_capital_raising") && (
+                    <FormText className="text-danger">
+                      {getFieldError("reasons_for_capital_raising")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1430,6 +1709,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         />
                         {value.charAt(0).toUpperCase() + value.slice(1)}
                       </Label>
+                      {getFieldError("accepted_or_declined_by_lender") && (
+                        <FormText className="text-danger">
+                          {getFieldError("accepted_or_declined_by_lender")}
+                        </FormText>
+                      )}
                     </div>
                   ))}
                 </FormGroup>
@@ -1445,6 +1729,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(4, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("case_summary") && (
+                    <FormText className="text-danger">
+                      {getFieldError("case_summary")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
               <Col sm={12}>
@@ -1458,6 +1747,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(4, e.target.name, e.target.value)
                     }
                   />
+                  {getFieldError("note") && (
+                    <FormText className="text-danger">
+                      {getFieldError("note")}
+                    </FormText>
+                  )}
                 </FormGroup>
               </Col>
             </Row>

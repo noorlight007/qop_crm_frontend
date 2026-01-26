@@ -32,6 +32,12 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isOpen) setErrors({});
+  }, [isOpen]);
+
   const [postcode, setPostcode] = useState<string>("");
   const [buildingName, setBuildingName] = useState<string>("");
   const [address1, setAddress1] = useState<string>("");
@@ -98,18 +104,71 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
 
       if (response.data) {
         toast.success("Solicitor added successfully!");
+        setErrors({});
         toggle();
       } else if (response.error) {
-        const errorMessage =
-          (response.error as any)?.data?.detail || "Failed to add solicitor";
-        toast.error(errorMessage);
+        const errData =
+          (response.error as any)?.data || (response.error as any) || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0] || "Failed to add solicitor";
+        toast.error(String(first));
       } else {
         toast.error("Failed to add solicitor. Please try again!");
       }
     } catch (error) {
       console.error("Failed to add solicitor:", error);
-      toast.error("Failed to add solicitor. Please try again!");
+      const parsed = parseApiErrors((error as any)?.response || error);
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] ||
+        "Failed to add solicitor. Please try again!";
+      toast.error(String(first));
     }
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
   };
 
   const getAddressErrorMessage = (err: any) => {
@@ -279,12 +338,22 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       type="text"
                       required
                     />
+                    {(errors.solicitorName || errors.name) && (
+                      <div className="text-danger">
+                        {errors.solicitorName || errors.name}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
                   <FormGroup>
                     <Label for="sraNumber">SRA Number</Label>
                     <Input id="sraNumber" name="sraNumber" type="text" />
+                    {(errors.sraNumber || errors.sra_number) && (
+                      <div className="text-danger">
+                        {errors.sraNumber || errors.sra_number}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -295,6 +364,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       name="qualifications"
                       type="text"
                     />
+                    {errors.qualifications && (
+                      <div className="text-danger">{errors.qualifications}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -324,6 +396,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                         {isSearchingPostcode ? "Loading..." : "Lookup"}
                       </Button>
                     </InputGroup>
+                    {errors.postcode && (
+                      <div className="text-danger mt-1">{errors.postcode}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -341,6 +416,12 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                         )
                       }
                     />
+                    {(errors.buildingName ||
+                      errors.building_name_or_number) && (
+                      <div className="text-danger">
+                        {errors.buildingName || errors.building_name_or_number}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -349,6 +430,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                   <FormGroup>
                     <Label for="street">Street</Label>
                     <Input id="street" name="street" type="text" />
+                    {errors.street && (
+                      <div className="text-danger">{errors.street}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -363,6 +447,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                         handleManualAddressChange(setCity, e.target.value)
                       }
                     />
+                    {errors.city && (
+                      <div className="text-danger">{errors.city}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -379,6 +466,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                         handleManualAddressChange(setCounty, e.target.value)
                       }
                     />
+                    {errors.county && (
+                      <div className="text-danger">{errors.county}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -393,6 +483,9 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                         handleManualAddressChange(setCountry, e.target.value)
                       }
                     />
+                    {errors.country && (
+                      <div className="text-danger">{errors.country}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -401,12 +494,22 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                   <FormGroup>
                     <Label for="phoneNumber">Phone Number</Label>
                     <Input id="phoneNumber" name="phoneNumber" type="tel" />
+                    {(errors.phoneNumber || errors.phone_number) && (
+                      <div className="text-danger">
+                        {errors.phoneNumber || errors.phone_number}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="faxNumber">Fax Number</Label>
                     <Input id="faxNumber" name="faxNumber" type="tel" />
+                    {(errors.faxNumber || errors.fax_number) && (
+                      <div className="text-danger">
+                        {errors.faxNumber || errors.fax_number}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -415,12 +518,22 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                   <FormGroup>
                     <Label for="dxNumber">DX Number</Label>
                     <Input id="dxNumber" name="dxNumber" type="text" />
+                    {(errors.dxNumber || errors.dx_number) && (
+                      <div className="text-danger">
+                        {errors.dxNumber || errors.dx_number}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
                     <Label for="contactName">Contact Name</Label>
                     <Input id="contactName" name="contactName" type="text" />
+                    {(errors.contactName || errors.contact_name) && (
+                      <div className="text-danger">
+                        {errors.contactName || errors.contact_name}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -429,6 +542,11 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                   <FormGroup>
                     <Label for="emailAddress">Email Address</Label>
                     <Input id="emailAddress" name="emailAddress" type="email" />
+                    {(errors.emailAddress || errors.email_address) && (
+                      <div className="text-danger">
+                        {errors.emailAddress || errors.email_address}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -441,6 +559,13 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                       name="numberOfPartners"
                       type="number"
                     />
+                    {(errors.numberOfPartners ||
+                      errors.number_of_partners_in_firm) && (
+                      <div className="text-danger">
+                        {errors.numberOfPartners ||
+                          errors.number_of_partners_in_firm}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>

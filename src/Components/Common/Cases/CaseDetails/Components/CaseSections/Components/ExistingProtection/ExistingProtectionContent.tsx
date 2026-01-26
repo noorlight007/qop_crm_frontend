@@ -65,6 +65,12 @@ const ExistingProtectionContent: React.FC<
   const [formValues, setFormValues] =
     useState<ExistingProtectionDetailsProps | null>(null);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setErrors({});
+  }, [activeTab, activeUser]);
+
   // Add this state for modal
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -121,6 +127,50 @@ const ExistingProtectionContent: React.FC<
     }
   };
 
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
+  };
+
   // Add save handler
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,11 +193,14 @@ const ExistingProtectionContent: React.FC<
       if (clearCachedEdits && formValues?.alias) {
         clearCachedEdits(formValues.alias);
       }
+      setErrors({});
     } else if (res.error) {
-      const errorMessage =
-        (res.error as any)?.data?.detail ||
-        "Failed to update Property details!";
-      toast.error(errorMessage);
+      const errData = (res.error as any)?.data || (res.error as any) || {};
+      const parsed = parseApiErrors(errData);
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] || "Failed to update Property details!";
+      toast.error(String(first));
     } else {
       toast.error("Failed to update Property details!");
     }
@@ -232,6 +285,11 @@ const ExistingProtectionContent: React.FC<
                           </option>
                           <option value="OTHER">Other</option>
                         </Input>
+                        {errors.policy_type && (
+                          <div className="text-danger">
+                            {errors.policy_type}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -245,6 +303,11 @@ const ExistingProtectionContent: React.FC<
                             handleInputChange("policy_provider", e.target.value)
                           }
                         />
+                        {errors.policy_provider && (
+                          <div className="text-danger">
+                            {errors.policy_provider}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -263,6 +326,11 @@ const ExistingProtectionContent: React.FC<
                             )
                           }
                         />
+                        {errors.insurers_reference && (
+                          <div className="text-danger">
+                            {errors.insurers_reference}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -280,6 +348,11 @@ const ExistingProtectionContent: React.FC<
                             handleInputChange("sum_assured", e.target.value)
                           }
                         />
+                        {errors.sum_assured && (
+                          <div className="text-danger">
+                            {errors.sum_assured}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -294,6 +367,9 @@ const ExistingProtectionContent: React.FC<
                             handleInputChange("premium", e.target.value)
                           }
                         />
+                        {errors.premium && (
+                          <div className="text-danger">{errors.premium}</div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -316,6 +392,11 @@ const ExistingProtectionContent: React.FC<
                           <option value="MONTHLY">Monthly</option>
                           <option value="ANNUALLY">Annually</option>
                         </Input>
+                        {errors.premium_payment_type && (
+                          <div className="text-danger">
+                            {errors.premium_payment_type}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -332,6 +413,11 @@ const ExistingProtectionContent: React.FC<
                             handleInputChange("person_assured", e.target.value)
                           }
                         />
+                        {errors.person_assured && (
+                          <div className="text-danger">
+                            {errors.person_assured}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -353,6 +439,9 @@ const ExistingProtectionContent: React.FC<
                             Client to Ascertain
                           </option>
                         </Input>
+                        {errors.in_trust && (
+                          <div className="text-danger">{errors.in_trust}</div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={4}>
@@ -380,6 +469,11 @@ const ExistingProtectionContent: React.FC<
                           </option>
                           <option value="AGE_COSTED">Age Costed</option>
                         </Input>
+                        {errors.guaranteed_reviewable && (
+                          <div className="text-danger">
+                            {errors.guaranteed_reviewable}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -401,6 +495,11 @@ const ExistingProtectionContent: React.FC<
                             )
                           }
                         />
+                        {errors.remaining_policy_term && (
+                          <div className="text-danger">
+                            {errors.remaining_policy_term}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -419,6 +518,11 @@ const ExistingProtectionContent: React.FC<
                             )
                           }
                         />
+                        {errors.cancelled_lapsed_date && (
+                          <div className="text-danger">
+                            {errors.cancelled_lapsed_date}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -432,6 +536,11 @@ const ExistingProtectionContent: React.FC<
                             handleInputChange("renewal_date", e.target.value)
                           }
                         />
+                        {errors.renewal_date && (
+                          <div className="text-danger">
+                            {errors.renewal_date}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -450,6 +559,11 @@ const ExistingProtectionContent: React.FC<
                             )
                           }
                         />
+                        {errors.date_policy_started && (
+                          <div className="text-danger">
+                            {errors.date_policy_started}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -485,6 +599,11 @@ const ExistingProtectionContent: React.FC<
                           ))}
                         </div>
                       </FormGroup>
+                      {errors.waiver_of_premium && (
+                        <div className="text-danger">
+                          {errors.waiver_of_premium}
+                        </div>
+                      )}
                     </Col>
                     <Col md={4}>
                       <FormGroup>
@@ -515,6 +634,9 @@ const ExistingProtectionContent: React.FC<
                           ))}
                         </div>
                       </FormGroup>
+                      {errors.indexation && (
+                        <div className="text-danger">{errors.indexation}</div>
+                      )}
                     </Col>
                     <Col md={4}>
                       <FormGroup>
@@ -546,6 +668,11 @@ const ExistingProtectionContent: React.FC<
                           ))}
                         </div>
                       </FormGroup>
+                      {errors.death_in_service_provision && (
+                        <div className="text-danger">
+                          {errors.death_in_service_provision}
+                        </div>
+                      )}
                     </Col>
                   </Row>
 
@@ -603,6 +730,13 @@ const ExistingProtectionContent: React.FC<
                             }
                             rows={3}
                           />
+                          {errors.copy_and_paste_non_standard_terms_from_lender && (
+                            <div className="text-danger">
+                              {
+                                errors.copy_and_paste_non_standard_terms_from_lender
+                              }
+                            </div>
+                          )}
                         </FormGroup>
                       )}
                     </Col>
@@ -661,6 +795,11 @@ const ExistingProtectionContent: React.FC<
                               Not Values Yet
                             </option>
                           </Input>
+                          {errors.reason_for_policy_cancellation && (
+                            <div className="text-danger">
+                              {errors.reason_for_policy_cancellation}
+                            </div>
+                          )}
                         </FormGroup>
                       )}
                     </Col>
@@ -685,6 +824,11 @@ const ExistingProtectionContent: React.FC<
                             }
                             rows={4}
                           />
+                          {errors.policy_cancellation_notes && (
+                            <div className="text-danger">
+                              {errors.policy_cancellation_notes}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -708,6 +852,11 @@ const ExistingProtectionContent: React.FC<
                           }
                           rows={4}
                         />
+                        {errors.why_did_you_take_out_this_policy && (
+                          <div className="text-danger">
+                            {errors.why_did_you_take_out_this_policy}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>

@@ -38,8 +38,10 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
     notes: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -55,16 +57,18 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
         case_alias: casealias,
         payload: formData,
       });
-      // Clear form data after successful submission
-      setFormData({
-        is_this_application_had_a_decision_in_principle: true,
-        lender: "",
-        dip_date: Date,
-        dip_decision: "",
-        dip_reference_number: "",
-        notes: "",
-      });
-      if (res.data) {
+
+      if ((res as any)?.data) {
+        setErrors({});
+        // Clear form data after successful submission
+        setFormData({
+          is_this_application_had_a_decision_in_principle: true,
+          lender: "",
+          dip_date: Date,
+          dip_decision: "",
+          dip_reference_number: "",
+          notes: "",
+        });
         toast.success("DIP History added successfully");
         toggle();
         try {
@@ -75,16 +79,67 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
-      } else if (res.error) {
-        const errorMessage =
-          (res.error as any)?.data?.detail || "Failed to add DIP History";
-        toast.error(errorMessage);
+      } else if ((res as any)?.error) {
+        const errData = (res as any).error?.data || (res as any).error || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0] || "Failed to add DIP History";
+        toast.error(String(first));
       } else {
         toast.error("Failed to add DIP History");
       }
     } catch (error) {
-      toast.error("Failed to add DIP History");
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
+      setErrors(parsed);
+      const first = Object.values(parsed)[0] || "Failed to add DIP History";
+      toast.error(String(first));
     }
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
   };
 
   if (isLoading) {
@@ -275,6 +330,9 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
                   </option>
                   <option value="WEST_ONE_LOANS">West One Loans</option>
                 </Input>
+                {errors.lender && (
+                  <div className="text-danger">{errors.lender}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -286,6 +344,9 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
                   value={formData.dip_date as unknown as string}
                   onChange={handleInputChange}
                 />
+                {errors.dip_date && (
+                  <div className="text-danger">{errors.dip_date}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -305,6 +366,9 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
                   <option value="DECLINED">Declined</option>
                   <option value="REFERED">Referred</option>
                 </Input>
+                {errors.dip_decision && (
+                  <div className="text-danger">{errors.dip_decision}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -316,6 +380,11 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
                   value={formData.dip_reference_number}
                   onChange={handleInputChange}
                 />
+                {errors.dip_reference_number && (
+                  <div className="text-danger">
+                    {errors.dip_reference_number}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -330,6 +399,9 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
                   onChange={handleInputChange}
                   rows={3}
                 />
+                {errors.notes && (
+                  <div className="text-danger">{errors.notes}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
