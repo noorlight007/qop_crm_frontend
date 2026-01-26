@@ -111,7 +111,9 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
     return newErrors;
   };
 
-  const handleUpdateLead = async (leadData: Partial<LeadsInfo>) => {
+  const handleUpdateLead = async (
+    leadData: Partial<LeadsInfo>,
+  ): Promise<boolean> => {
     try {
       if (leadData.alias) {
         // Only include email if it has changed
@@ -134,6 +136,7 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
           toast.success("Lead update successfully.");
           // Clear errors on success
           setErrors({});
+          return true;
         } else if ("error" in result) {
           const normalized = normalizeApiErrors(result);
           setErrors(normalized);
@@ -148,10 +151,13 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
           } else {
             toast.error(firstMsg as string);
           }
+          return false;
         } else {
           toast.error("Invalid Request...");
+          return false;
         }
       }
+      return false;
     } catch (error) {
       const normalized = normalizeApiErrors(error);
       setErrors(normalized);
@@ -159,14 +165,17 @@ const UpdateLeadModal: React.FC<UpdateLeadModalProps> = ({
         Object.values(normalized).flat()[0] || "An error occurred";
       toast.error(firstMsg as string);
       console.error("Error saving lead:", error);
+      return false;
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleUpdateLead(leadData); // Pass the updated data to the server
-    onSave(leadData); // Pass the updated data to the parent component
-    toggle();
+    const success = await handleUpdateLead(leadData);
+    if (success) {
+      onSave(leadData); // Pass the updated data to the parent component
+      toggle();
+    }
   };
 
   return (
