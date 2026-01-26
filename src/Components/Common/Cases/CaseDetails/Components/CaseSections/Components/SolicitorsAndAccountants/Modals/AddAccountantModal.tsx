@@ -49,6 +49,12 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isOpen) setErrors({});
+  }, [isOpen]);
+
   const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
   const DEFAULT_ZOOM = 10;
   const DETAIL_ZOOM = 16;
@@ -95,6 +101,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
       const res = await accountantDetails({ accountantDetails: formData });
       if (res.data) {
         toast.success("Accountant added successfully!");
+        setErrors({});
         toggle();
         setFormData({
           name: "",
@@ -111,13 +118,67 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
           email_address: "",
         });
       } else if (res.error) {
-        const errorMessage =
-          (res.error as any)?.data?.detail || "Failed to add accountant";
-        toast.error(errorMessage);
+        const errData = (res.error as any)?.data || (res.error as any) || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0] || "Failed to add accountant";
+        toast.error(String(first));
       }
     } catch (error) {
-      toast.error("Failed to add accountant. Please try again.");
+      const parsed = parseApiErrors((error as any)?.response || error);
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] ||
+        "Failed to add accountant. Please try again.";
+      toast.error(String(first));
     }
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      // Common shapes: { field: ["msg"] } or { detail: "msg" }
+      if (err.detail) {
+        out["non_field_errors"] = sanitize(err.detail);
+      }
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
   };
 
   const getAddressErrorMessage = (err: any) => {
@@ -284,6 +345,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   onChange={handleInputChange}
                   required
                 />
+                {errors.name && (
+                  <div className="text-danger">{errors.name}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -296,6 +360,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.qualifications}
                   onChange={handleInputChange}
                 />
+                {errors.qualifications && (
+                  <div className="text-danger">{errors.qualifications}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -310,6 +377,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.company_name}
                   onChange={handleInputChange}
                 />
+                {errors.company_name && (
+                  <div className="text-danger">{errors.company_name}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -335,6 +405,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                     {isSearchingPostcode ? "Loading..." : "Lookup"}
                   </Button>
                 </InputGroup>
+                {errors.postcode && (
+                  <div className="text-danger mt-1">{errors.postcode}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -351,6 +424,11 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.building_name_or_number}
                   onChange={handleInputChange}
                 />
+                {errors.building_name_or_number && (
+                  <div className="text-danger">
+                    {errors.building_name_or_number}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -363,6 +441,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.street}
                   onChange={handleInputChange}
                 />
+                {errors.street && (
+                  <div className="text-danger">{errors.street}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -377,6 +458,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.city}
                   onChange={handleInputChange}
                 />
+                {errors.city && (
+                  <div className="text-danger">{errors.city}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -389,6 +473,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.county}
                   onChange={handleInputChange}
                 />
+                {errors.county && (
+                  <div className="text-danger">{errors.county}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -403,6 +490,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.country}
                   onChange={handleInputChange}
                 />
+                {errors.country && (
+                  <div className="text-danger">{errors.country}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -415,6 +505,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.phone_number}
                   onChange={handleInputChange}
                 />
+                {errors.phone_number && (
+                  <div className="text-danger">{errors.phone_number}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -429,6 +522,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.fax_number}
                   onChange={handleInputChange}
                 />
+                {errors.fax_number && (
+                  <div className="text-danger">{errors.fax_number}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -441,6 +537,9 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
                   value={formData.email_address}
                   onChange={handleInputChange}
                 />
+                {errors.email_address && (
+                  <div className="text-danger">{errors.email_address}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>

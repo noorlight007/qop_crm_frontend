@@ -49,6 +49,7 @@ const Accountant: React.FC = () => {
     useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<any>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<string>("0");
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
@@ -65,6 +66,7 @@ const Accountant: React.FC = () => {
 
   const { data: accountantName, isLoading: isAccountantLoading } =
     useGetAccountantDetailsQuery(undefined);
+  console.log("TEST::", accountantName);
   const { data: caseAccountants, isLoading: isCaseAccountantLoading } =
     useGetCaseAccountantDetailsQuery({ case_alias: caseAlias });
   const [assignCaseAccountant, { isLoading: isAssigningLoading }] =
@@ -205,6 +207,50 @@ const Accountant: React.FC = () => {
     }
   };
 
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
+  };
+
   // Update handleUpdateAccountant function
   const handleUpdateAccountant = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,6 +278,7 @@ const Accountant: React.FC = () => {
       };
 
       setSelectedCaseAccountant(updatedAccountant);
+      setErrors({});
       toast.success("Accountant details updated successfully!");
       // Only go to next tab if this was a Save & Next action
       if (submitActionRef.current === "next") {
@@ -239,7 +286,14 @@ const Accountant: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to update accountant details:", error);
-      toast.error("Failed to update accountant details. Please try again.");
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any)?.response || error,
+      );
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] ||
+        "Failed to update accountant details. Please try again.";
+      toast.error(String(first));
     }
   };
 
@@ -407,15 +461,11 @@ const Accountant: React.FC = () => {
                   disabled={isAccountantAssigned()}
                 >
                   <option value="">Select Accountant...</option>
-                  {accountantName === null ? (
-                    accountantName?.map((accountant: any) => (
-                      <option key={accountant?.id} value={accountant?.id}>
-                        {accountant?.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="">No Accountants Available</option>
-                  )}
+                  {accountantName?.map((accountant: any) => (
+                    <option key={accountant?.id} value={accountant?.id}>
+                      {accountant?.name}
+                    </option>
+                  ))}
                 </Input>
                 <small className="text-muted text-danger">
                   {isAccountantAssigned()
@@ -570,6 +620,9 @@ const Accountant: React.FC = () => {
                     onChange={handleInputChange}
                     required
                   />
+                  {errors.name && (
+                    <div className="text-danger">{errors.name}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -582,6 +635,9 @@ const Accountant: React.FC = () => {
                     value={formData.qualifications || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.qualifications && (
+                    <div className="text-danger">{errors.qualifications}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -594,6 +650,9 @@ const Accountant: React.FC = () => {
                     value={formData.company_name || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.company_name && (
+                    <div className="text-danger">{errors.company_name}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -622,6 +681,9 @@ const Accountant: React.FC = () => {
                       {isSearchingPostcode ? "Loading..." : "Lookup"}
                     </Button>
                   </InputGroup>
+                  {errors.postcode && (
+                    <div className="text-danger mt-1">{errors.postcode}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -636,6 +698,11 @@ const Accountant: React.FC = () => {
                     value={formData.building_name_or_number || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.building_name_or_number && (
+                    <div className="text-danger">
+                      {errors.building_name_or_number}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -650,6 +717,9 @@ const Accountant: React.FC = () => {
                     value={formData.city || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.city && (
+                    <div className="text-danger">{errors.city}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -662,6 +732,9 @@ const Accountant: React.FC = () => {
                     value={formData.street || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.street && (
+                    <div className="text-danger">{errors.street}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -676,6 +749,9 @@ const Accountant: React.FC = () => {
                     value={formData.county || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.county && (
+                    <div className="text-danger">{errors.county}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -688,6 +764,9 @@ const Accountant: React.FC = () => {
                     value={formData.country || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.country && (
+                    <div className="text-danger">{errors.country}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -702,6 +781,9 @@ const Accountant: React.FC = () => {
                     value={formData.phone_number || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.phone_number && (
+                    <div className="text-danger">{errors.phone_number}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -714,6 +796,9 @@ const Accountant: React.FC = () => {
                     value={formData.fax_number || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.fax_number && (
+                    <div className="text-danger">{errors.fax_number}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -728,6 +813,9 @@ const Accountant: React.FC = () => {
                     value={formData.email_address || ""}
                     onChange={handleInputChange}
                   />
+                  {errors.email_address && (
+                    <div className="text-danger">{errors.email_address}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
