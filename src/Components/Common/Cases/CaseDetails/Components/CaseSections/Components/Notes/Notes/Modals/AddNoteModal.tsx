@@ -26,6 +26,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
   const [clientVisible, setClientVisible] = useState(false);
   const [category, setCategory] = useState("");
   const [comments, setComments] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [addNotes, { isLoading }] = useAddNotesMutation();
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
@@ -36,6 +37,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
     setClientVisible(false);
     setCategory("");
     setComments("");
+    setErrors({});
   };
 
   useEffect(() => {
@@ -45,6 +47,54 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
       editorRef.current.innerHTML = comments || "";
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) setErrors({});
+  }, [isOpen]);
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
+  };
 
   const categories = [
     "Uncategorised",
@@ -282,29 +332,42 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
       note: sanitized,
     };
 
-    const response = await addNotes({
-      case_alias: caseAlias,
-      note: apiPayload,
-    });
-    if (response.data) {
-      try {
-        await updateSectionCompleteStatus({
-          case_alias: caseAlias,
-          section_data: { is_notes: true },
-        });
-      } catch (err) {
-        console.error("Failed to update section complete status:", err);
+    try {
+      const response = await addNotes({
+        case_alias: caseAlias,
+        note: apiPayload,
+      });
+
+      if ((response as any)?.data) {
+        setErrors({});
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: caseAlias,
+            section_data: { is_notes: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        toast.success("Note added successfully");
+        resetForm();
+        toggle();
+      } else if ((response as any)?.error) {
+        const errData =
+          (response as any).error?.data || (response as any).error || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0] || "Failed to add note";
+        toast.error(String(first));
+      } else {
+        toast.error("Something went wrong");
       }
-      toast.success("Note added successfully");
-      // reset form then close modal
-      resetForm();
-      toggle();
-    } else if (response.error) {
-      const errorMessage =
-        (response.error as any)?.data?.detail || "Failed to add note";
-      toast.error(errorMessage);
-    } else {
-      toast.error("Something went wrong");
+    } catch (error) {
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
+      setErrors(parsed);
+      const first = Object.values(parsed)[0] || "Failed to add note";
+      toast.error(String(first));
     }
   };
 
@@ -331,6 +394,11 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                       onChange={(e) => setBrokerVisible(e.target.checked)}
                     />
                   </FormGroup>
+                  {errors.is_visible_to_introducer && (
+                    <div className="text-danger">
+                      {errors.is_visible_to_introducer}
+                    </div>
+                  )}
                 </Col>
                 <Col md={12}>
                   <FormGroup className="d-flex justify-content-between align-items-center">
@@ -342,6 +410,11 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                       onChange={(e) => setClientVisible(e.target.checked)}
                     />
                   </FormGroup>
+                  {errors.is_visible_to_client && (
+                    <div className="text-danger">
+                      {errors.is_visible_to_client}
+                    </div>
+                  )}
                 </Col>
               </Row>
             </Col>
@@ -364,6 +437,9 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
                     </option>
                   ))}
                 </Input>
+                {errors.category && (
+                  <div className="text-danger">{errors.category}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -499,6 +575,7 @@ const AddNoteModal: FC<AddNoteModalProps> = ({ isOpen, toggle }) => {
               suppressContentEditableWarning
               aria-label="Rich text editor"
             />
+            {errors.note && <div className="text-danger">{errors.note}</div>}
           </FormGroup>
         </ModalBody>
         <ModalFooter>

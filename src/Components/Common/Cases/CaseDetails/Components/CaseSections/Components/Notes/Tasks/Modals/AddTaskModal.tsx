@@ -26,6 +26,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
   const [dueDate, setDueDate] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
   const [comments, setComments] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // rtk hooks
   const [addTask, { isLoading }] = useAddTasksMutation();
@@ -41,21 +42,35 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
       task_assigned_to: assignedTo || null,
       note: comments || null,
     };
-    const response = await addTask({
-      case_alias: caseAlias,
-      task: apiPayload,
-    });
-    if (response.data) {
-      toast.success("Task added successfully");
-      // reset form and close
-      resetForm();
-      toggle();
-    } else if (response.error) {
-      const errorMessage =
-        (response.error as any)?.data?.detail || "Failed to add task";
-      toast.error(errorMessage);
-    } else {
-      toast.error("Something went wrong");
+    try {
+      const response = await addTask({
+        case_alias: caseAlias,
+        task: apiPayload,
+      });
+
+      if ((response as any)?.data) {
+        setErrors({});
+        toast.success("Task added successfully");
+        // reset form and close
+        resetForm();
+        toggle();
+      } else if ((response as any)?.error) {
+        const errData =
+          (response as any).error?.data || (response as any).error || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0] || "Failed to add task";
+        toast.error(String(first));
+      } else {
+        toast.error("Something went wrong");
+      }
+    } catch (error) {
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
+      setErrors(parsed);
+      const first = Object.values(parsed)[0] || "Failed to add task";
+      toast.error(String(first));
     }
   };
 
@@ -65,12 +80,57 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
     setDueDate("");
     setAssignedTo("");
     setComments("");
+    setErrors({});
   };
 
   // Reset form when modal is closed so next open starts fresh
   useEffect(() => {
     if (!isOpen) resetForm();
   }, [isOpen]);
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
+  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -96,6 +156,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   placeholder="Enter task name"
                   required
                 />
+                {errors.name && (
+                  <div className="text-danger">{errors.name}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -115,6 +178,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   <option value="HIGH">High</option>
                   <option value="URGENT">Urgent</option>
                 </Input>
+                {errors.task_priority && (
+                  <div className="text-danger">{errors.task_priority}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -129,6 +195,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                   onChange={(e) => setDueDate(e.target.value)}
                   required
                 />
+                {errors.due_date && (
+                  <div className="text-danger">{errors.due_date}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -151,6 +220,9 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
                       </option>
                     ))}
                 </Input>
+                {errors.task_assigned_to && (
+                  <div className="text-danger">{errors.task_assigned_to}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -168,6 +240,7 @@ const AddTaskModal: FC<AddTaskModalProps> = ({ isOpen, toggle }) => {
               placeholder="Enter your comments here..."
               required
             />
+            {errors.note && <div className="text-danger">{errors.note}</div>}
           </FormGroup>
         </ModalBody>
         <ModalFooter>
