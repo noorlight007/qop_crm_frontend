@@ -13,7 +13,7 @@ const UserLogin = () => {
     if (!session) return;
 
     if (session.user?.user_type === "ADMIN") {
-      router.push("/admin");
+      router.push("/admin/dashboard");
     } else if (
       session.user?.user_type === "NETWORK_DIRECTOR" ||
       session.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
