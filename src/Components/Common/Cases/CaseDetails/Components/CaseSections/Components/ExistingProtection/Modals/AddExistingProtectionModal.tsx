@@ -2,7 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useAddExistingProtectionDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
 import { AddExistingProtectionModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -57,6 +57,12 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
     why_did_you_take_out_this_policy: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isOpen) setErrors({});
+  }, [isOpen]);
+
   // Handle input changes
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -84,16 +90,15 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const res = await addExistingProtectionDetails({
         case_alias: casealias,
         existingProtection_id: existingProtectionData?.user?.id,
         existingProtectionDetailsPayload: formData,
-      }).unwrap();
-      console.log(res);
+      });
 
-      if (res) {
+      if (res?.data) {
+        setErrors({});
         toast.success("Security Property Added Successfully!");
         toggle(); // Close the modal
         // Reset form data to initial values
@@ -126,11 +131,66 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
         // Reset additional state variables
         setHasNonStandardTerms(false);
         setWillBeCancelled(false);
+      } else if (res?.error) {
+        const errData = (res.error as any)?.data || (res.error as any) || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first =
+          Object.values(parsed)[0] || "Error Adding Security Property!";
+        toast.error(String(first));
       }
     } catch (error) {
-      toast.error("Error Adding Security Property!");
+      const parsed = parseApiErrors((error as any)?.response || error);
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] || "Error Adding Security Property!";
+      toast.error(String(first));
       console.error("Error:", error);
     }
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
   };
 
   if (isLoading) {
@@ -184,6 +244,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   </option>
                   <option value="OTHER">Other</option>
                 </Input>
+                {errors.policy_type && (
+                  <div className="text-danger">{errors.policy_type}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -196,6 +259,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   value={formData.policy_provider}
                   onChange={handleInputChange}
                 />
+                {errors.policy_provider && (
+                  <div className="text-danger">{errors.policy_provider}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -208,6 +274,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   value={formData.insurers_reference}
                   onChange={handleInputChange}
                 />
+                {errors.insurers_reference && (
+                  <div className="text-danger">{errors.insurers_reference}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -224,6 +293,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   onChange={handleInputChange}
                   placeholder="£"
                 />
+                {errors.sum_assured && (
+                  <div className="text-danger">{errors.sum_assured}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -237,6 +309,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   onChange={handleInputChange}
                   placeholder="£"
                 />
+                {errors.premium && (
+                  <div className="text-danger">{errors.premium}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -253,6 +328,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   <option value="MONTHLY">Monthly</option>
                   <option value="ANNUALLY">Annually</option>
                 </Input>
+                {errors.premium_payment_type && (
+                  <div className="text-danger">
+                    {errors.premium_payment_type}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -268,6 +348,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   value={formData.person_assured}
                   onChange={handleInputChange}
                 />
+                {errors.person_assured && (
+                  <div className="text-danger">{errors.person_assured}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -288,6 +371,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     Client to Ascertain
                   </option>
                 </Input>
+                {errors.in_trust && (
+                  <div className="text-danger">{errors.in_trust}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -311,6 +397,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   </option>
                   <option value="AGE_COSTED">Age Costed</option>
                 </Input>
+                {errors.guaranteed_reviewable && (
+                  <div className="text-danger">
+                    {errors.guaranteed_reviewable}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -326,6 +417,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   value={formData.remaining_policy_term}
                   onChange={handleInputChange}
                 />
+                {errors.remaining_policy_term && (
+                  <div className="text-danger">
+                    {errors.remaining_policy_term}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -338,6 +434,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   value={formData.cancelled_lapsed_date || ""}
                   onChange={handleInputChange}
                 />
+                {errors.cancelled_lapsed_date && (
+                  <div className="text-danger">
+                    {errors.cancelled_lapsed_date}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -350,6 +451,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   value={formData.date_policy_started || ""}
                   onChange={handleInputChange}
                 />
+                {errors.date_policy_started && (
+                  <div className="text-danger">
+                    {errors.date_policy_started}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -377,6 +483,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     </FormGroup>
                   ))}
                 </div>
+                {errors.waiver_of_premium && (
+                  <div className="text-danger">{errors.waiver_of_premium}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -399,6 +508,9 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     </FormGroup>
                   ))}
                 </div>
+                {errors.indexation && (
+                  <div className="text-danger">{errors.indexation}</div>
+                )}
               </FormGroup>
             </Col>
             <Col md={4}>
@@ -424,6 +536,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     </FormGroup>
                   ))}
                 </div>
+                {errors.death_in_service_provision && (
+                  <div className="text-danger">
+                    {errors.death_in_service_provision}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -473,6 +590,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     onChange={handleInputChange}
                     rows={3}
                   />
+                  {errors.copy_and_paste_non_standard_terms_from_lender && (
+                    <div className="text-danger">
+                      {errors.copy_and_paste_non_standard_terms_from_lender}
+                    </div>
+                  )}
                 </FormGroup>
               )}
             </Col>
@@ -522,6 +644,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     <option value="">Select...</option>
                     <option value="NOT_VALUES_YET">Not Values Yet</option>
                   </Input>
+                  {errors.reason_for_policy_cancellation && (
+                    <div className="text-danger">
+                      {errors.reason_for_policy_cancellation}
+                    </div>
+                  )}
                 </FormGroup>
               )}
             </Col>
@@ -542,6 +669,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                     onChange={handleInputChange}
                     rows={4}
                   />
+                  {errors.policy_cancellation_notes && (
+                    <div className="text-danger">
+                      {errors.policy_cancellation_notes}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -561,6 +693,11 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   onChange={handleInputChange}
                   rows={4}
                 />
+                {errors.why_did_you_take_out_this_policy && (
+                  <div className="text-danger">
+                    {errors.why_did_you_take_out_this_policy}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
