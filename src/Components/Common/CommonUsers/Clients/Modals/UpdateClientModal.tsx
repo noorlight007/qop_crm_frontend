@@ -28,6 +28,7 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
   const [clientData, setClientData] =
     useState<Partial<ClientInfoProps>>(selectedClient);
   const [isModified, setIsModified] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [updateClientDetails, { isLoading }] = useUpdateClientDetailsMutation();
 
@@ -63,6 +64,102 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
     try {
       if (!clientData.alias) return;
 
+      const sanitizeMessage = (msg: any) => {
+        if (msg == null) return "";
+        let s = String(msg).trim();
+        // Remove leading numeric codes like "400, ", "400 -", "400:"
+        s = s.replace(/^\s*\d+\s*[,\-:]\s*/, "");
+        s = s.replace(/^\s*\d+\s+/, "");
+        // Remove any leading punctuation/spaces and isolated numeric codes
+        s = s.replace(/^[^A-Za-z0-9]*\d+[^A-Za-z0-9]*/, "");
+        s = s.replace(/^[^A-Za-z0-9]+/, "");
+        // Remove bracketed codes or metadata
+        s = s.replace(/\s*\(.*?\)/g, "");
+        s = s.replace(/\s*\[.*?\]/g, "");
+        // Collapse multiple spaces
+        s = s.replace(/\s{2,}/g, " ").trim();
+        return s;
+      };
+
+      const getErrorMessage = (err: any) => {
+        if (!err) return sanitizeMessage("Unknown error");
+        if (typeof err === "string") return sanitizeMessage(err);
+        if (typeof err?.data === "string") return sanitizeMessage(err.data);
+
+        const collect = (value: any): string[] => {
+          if (value == null) return [];
+          if (typeof value === "string") return [value];
+          if (Array.isArray(value))
+            return value.map((v) =>
+              typeof v === "string" ? v : JSON.stringify(v),
+            );
+          if (typeof value === "object") {
+            try {
+              return Object.values(value).flatMap((v) => collect(v));
+            } catch {
+              return [String(value)];
+            }
+          }
+          return [String(value)];
+        };
+
+        if (err && typeof err === "object") {
+          const msgs = collect(err).map((m) => sanitizeMessage(m));
+          if (msgs.length) return msgs.join("");
+        }
+
+        if (err?.data?.message) return sanitizeMessage(err.data.message);
+
+        if (err?.data && typeof err.data === "object") {
+          const msgs = collect(err.data).map((m) => sanitizeMessage(m));
+          if (msgs.length) return msgs.join("");
+        }
+
+        if (err?.error) return sanitizeMessage(err.error);
+        if (err?.message) {
+          if (/status code/i.test(err.message))
+            return "Server returned an error";
+          return sanitizeMessage(err.message);
+        }
+
+        try {
+          return sanitizeMessage(JSON.stringify(err));
+        } catch {
+          return sanitizeMessage(String(err));
+        }
+      };
+
+      const parseApiErrors = (err: any): Record<string, string> => {
+        const out: Record<string, string> = {};
+        const recurse = (value: any, path: string[] = []) => {
+          if (value == null) return;
+          if (typeof value === "string") {
+            out[path.join(".")] = sanitizeMessage(value);
+            return;
+          }
+          if (Array.isArray(value)) {
+            const joined = value
+              .map((v) =>
+                sanitizeMessage(typeof v === "string" ? v : JSON.stringify(v)),
+              )
+              .join(", ");
+            out[path.join(".")] = sanitizeMessage(joined);
+            return;
+          }
+          if (typeof value === "object") {
+            for (const k of Object.keys(value)) {
+              recurse(value[k], path.concat(k));
+            }
+            return;
+          }
+          out[path.join(".")] = sanitizeMessage(String(value));
+        };
+
+        if (err?.data) recurse(err.data, []);
+        else recurse(err, []);
+        return out;
+      };
+
       // Deep clone and sanitize payload
       let payload: Partial<ClientInfoProps> = JSON.parse(
         JSON.stringify(clientData),
@@ -96,14 +193,15 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
       });
 
       if ((result as any)?.data) {
+        setErrors({});
         toast.success("Client updated successfully.");
+        return true;
       } else if ("error" in result) {
+        const parsed = parseApiErrors(result.error);
+        setErrors(parsed);
+
         const errorMessage =
-          (result.error as any)?.data?.user?.email?.[0] ||
-          (result.error as any)?.data?.user?.nid?.[0] ||
-          (result.error as any)?.data?.detail ||
-          "Invalid Request...";
-        // Custom error for duplicate email
+          getErrorMessage(result.error) || "Invalid Request...";
         if (
           typeof errorMessage === "string" &&
           errorMessage.toLowerCase().includes("email") &&
@@ -113,20 +211,26 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
         } else {
           toast.error(errorMessage);
         }
+        return false;
       } else {
         toast.error("Failed to update client.");
+        return false;
       }
     } catch (error) {
+      setErrors({});
       toast.error("An error occurred while updating the client.");
       console.error("Error saving client:", error);
+      return false;
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleUpdateClient(clientData); // Pass the updated data to the server
-    onSave(clientData); // Pass the updated data to the parent component
-    toggle();
+    const success = await handleUpdateClient(clientData);
+    if (success) {
+      onSave(clientData);
+      toggle();
+    }
   };
 
   return (
@@ -159,6 +263,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
+                {errors["user.title"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.title"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -174,6 +283,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   className="mb-2"
                   required
                 />
+                {errors["user.first_name"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.first_name"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -188,6 +302,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["user.middle_name"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.middle_name"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -203,6 +322,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   className="mb-2"
                   required
                 />
+                {errors["user.last_name"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.last_name"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -218,6 +342,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["user.email"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.email"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -232,6 +361,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                   className="mb-2"
                 />
+                {errors["user.phone"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["user.phone"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -251,6 +385,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   <option value="WEBSITE">Website</option>
                   <option value="OTHER">Other</option>
                 </Input>
+                {errors["source"] && (
+                  <div className="text-danger small mt-1">
+                    {errors["source"]}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             {clientData.source === "OTHER" && (
@@ -264,6 +403,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                     value={clientData.other_source || ""}
                     onChange={handleChange}
                   />
+                  {errors["other_source"] && (
+                    <div className="text-danger small mt-1">
+                      {errors["other_source"]}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -290,6 +434,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>
+              {errors["enquiry_type"] && (
+                <div className="text-danger small mt-1">
+                  {errors["enquiry_type"]}
+                </div>
+              )}
             </Col>
             {clientData.enquiry_type === "OTHER" && (
               <Col md={6}>
@@ -302,6 +451,11 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                     value={clientData.other_enquiry_type || ""}
                     onChange={handleChange}
                   />
+                  {errors["other_enquiry_type"] && (
+                    <div className="text-danger small mt-1">
+                      {errors["other_enquiry_type"]}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -316,6 +470,9 @@ const UpdateClientModal: React.FC<UpdateClientModalProps> = ({
                   onChange={handleChange}
                   placeholder="Additional information about the lead..."
                 />
+                {errors["note"] && (
+                  <div className="text-danger small mt-1">{errors["note"]}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
