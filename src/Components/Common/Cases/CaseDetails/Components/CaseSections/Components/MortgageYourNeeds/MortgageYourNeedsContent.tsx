@@ -50,6 +50,56 @@ const MortgageYourNeedsContent: React.FC = () => {
     }
   }, [mortgageData]);
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!mortgageData) setErrors({});
+  }, [mortgageData]);
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (!err) return out;
+
+    const sanitize = (msg: any) => {
+      if (msg == null) return "";
+      let s = String(msg);
+      s = s.replace(/^\s*\d+,\s*/g, "");
+      return s;
+    };
+
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
+
+    if (err && typeof err === "object") {
+      if (err.detail) out["non_field_errors"] = sanitize(err.detail);
+      for (const [k, v] of Object.entries(err)) {
+        if (v == null) continue;
+        if (typeof v === "string") out[k] = sanitize(v);
+        else if (Array.isArray(v))
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
+        else if (typeof v === "object") {
+          const vals: string[] = [];
+          for (const vv of Object.values(v)) {
+            if (vv == null) continue;
+            if (Array.isArray(vv)) vals.push(...vv.map((x) => String(x)));
+            else vals.push(String(vv));
+          }
+          if (vals.length) out[k] = sanitize(vals.join(", "));
+        } else out[k] = sanitize(String(v));
+      }
+      return out;
+    }
+
+    out["non_field_errors"] = sanitize(String(err));
+    return out;
+  };
+
   // Add handleInputChange function
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -125,6 +175,7 @@ const MortgageYourNeedsContent: React.FC = () => {
         payload: formValues,
       });
       if (res.data) {
+        setErrors({});
         toast.success("Mortgage needs updated successfully!");
         try {
           await updateSectionCompleteStatus({
@@ -134,17 +185,29 @@ const MortgageYourNeedsContent: React.FC = () => {
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
+        return true;
       } else if (res.error) {
-        const errorMessage =
-          (res.error as any)?.data?.detail ||
-          "Failed to update mortgage needs.";
-        toast.error(errorMessage);
+        const errData = (res.error as any)?.data || (res.error as any) || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        const first =
+          Object.values(parsed)[0] || "Failed to update mortgage needs.";
+        toast.error(String(first));
+        return false;
       } else {
         toast.error("Something went wrong");
+        return false;
       }
     } catch (error) {
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
+      setErrors(parsed);
+      const first =
+        Object.values(parsed)[0] ||
+        "Failed to update mortgage needs. Please try again.";
+      toast.error(String(first));
       console.error("Failed to update mortgage needs:", error);
-      toast.error("Failed to update mortgage needs. Please try again.");
       return false;
     }
   };
@@ -194,6 +257,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.repayment_method || ""}
                 onChange={handleInputChange}
               />
+              {errors.repayment_method && (
+                <div className="text-danger">{errors.repayment_method}</div>
+              )}
               <small className="text-muted">
                 Note: Explanation of Repayment mortgage /Interest Only/Part &
                 part Mortgage provided and ask sufficient questions to recommend
@@ -214,6 +280,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.monthly_mortgage_payments || ""}
                 onChange={handleInputChange}
               />
+              {errors.monthly_mortgage_payments && (
+                <div className="text-danger">
+                  {errors.monthly_mortgage_payments}
+                </div>
+              )}
               <small className="text-muted">
                 Note: Explain the advantage and disadvantages of the various
                 rate types and what effect they could have for the client. E.g
@@ -234,6 +305,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.specific_mortgage_deal || ""}
                 onChange={handleInputChange}
               />
+              {errors.specific_mortgage_deal && (
+                <div className="text-danger">
+                  {errors.specific_mortgage_deal}
+                </div>
+              )}
               <small className="text-muted">
                 Note: Establishes the most appropriate length of deal period for
                 client based on their personal circumstances and establish how
@@ -255,6 +331,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.referred_monthly_budget || ""}
                 onChange={handleInputChange}
               />
+              {errors.referred_monthly_budget && (
+                <div className="text-danger">
+                  {errors.referred_monthly_budget}
+                </div>
+              )}
               <small className="text-muted">
                 Note: Check and confirm the client understanding, e.g longer
                 term will incur further interest and be more expensive. If there
@@ -272,6 +353,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.retirement_age || ""}
                 onChange={handleInputChange}
               />
+              {errors.retirement_age && (
+                <div className="text-danger">{errors.retirement_age}</div>
+              )}
               <small className="text-muted">
                 Note: Is it important the term finishes before state retirement
                 age or selected retirement age? If chosen retirement age is over
@@ -316,6 +400,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.front_costs && (
+                      <div className="text-danger">{errors.front_costs}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -351,6 +438,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.is_ability_to_make_overpayments && (
+                      <div className="text-danger">
+                        {errors.is_ability_to_make_overpayments}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -387,6 +479,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.is_early_repayment_charges && (
+                      <div className="text-danger">
+                        {errors.is_early_repayment_charges}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -425,6 +522,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.is_minimise_any_lender_arrangement_costs && (
+                      <div className="text-danger">
+                        {errors.is_minimise_any_lender_arrangement_costs}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -460,6 +562,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.is_ability_to_add_fees_to_the_mortgage && (
+                      <div className="text-danger">
+                        {errors.is_ability_to_add_fees_to_the_mortgage}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -496,6 +603,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.is_ability_to_add_fees_mortgage && (
+                      <div className="text-danger">
+                        {errors.is_ability_to_add_fees_mortgage}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -524,6 +636,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.cashback && (
+                      <div className="text-danger">{errors.cashback}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -550,6 +665,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.portability && (
+                      <div className="text-danger">{errors.portability}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -580,6 +698,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.guarantor_jbsp && (
+                      <div className="text-danger">{errors.guarantor_jbsp}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -612,6 +733,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.offset_mortgage && (
+                      <div className="text-danger">
+                        {errors.offset_mortgage}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -644,6 +770,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.scheme_specific && (
+                      <div className="text-danger">
+                        {errors.scheme_specific}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -674,6 +805,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.speed_of_completion && (
+                      <div className="text-danger">
+                        {errors.speed_of_completion}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -711,6 +847,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.sharia_compliant_mortgages && (
+                      <div className="text-danger">
+                        {errors.sharia_compliant_mortgages}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -741,6 +882,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.ltd_company_btl && (
+                      <div className="text-danger">
+                        {errors.ltd_company_btl}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -771,6 +917,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.any_incentives && (
+                      <div className="text-danger">{errors.any_incentives}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -786,6 +935,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                       }
                       onChange={handleInputChange}
                     />
+                    {errors.what_suitable_mortgage_features_are_important && (
+                      <div className="text-danger">
+                        {errors.what_suitable_mortgage_features_are_important}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -803,6 +957,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.considering_debt_consolidation || ""}
                 onChange={handleInputChange}
               />
+              {errors.considering_debt_consolidation && (
+                <div className="text-danger">
+                  {errors.considering_debt_consolidation}
+                </div>
+              )}
               <small className="text-muted">
                 Note: If you have previously consolidated, please explain why
                 you are re-consolidating and will this reoccur again in the
@@ -839,6 +998,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                   </FormGroup>
                 ))}
               </div>
+              {errors.anticipate_any_changes && (
+                <div className="text-danger">
+                  {errors.anticipate_any_changes}
+                </div>
+              )}
               <Input
                 type="textarea"
                 rows={4}
@@ -846,6 +1010,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.anticipate_any_changes_notes || ""}
                 onChange={handleInputChange}
               />
+              {errors.anticipate_any_changes_notes && (
+                <div className="text-danger">
+                  {errors.anticipate_any_changes_notes}
+                </div>
+              )}
               <small className="text-muted">
                 Note: are they expecting a pay rise/ new baby / new job /
                 inheritance etc
@@ -892,6 +1061,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_life_cover && (
+                          <div className="text-danger">
+                            {errors.app_one_life_cover}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -926,6 +1100,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_critical_illness && (
+                          <div className="text-danger">
+                            {errors.app_one_critical_illness}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -960,6 +1139,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_income_protection && (
+                          <div className="text-danger">
+                            {errors.app_one_income_protection}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -991,6 +1175,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_asu && (
+                          <div className="text-danger">
+                            {errors.app_one_asu}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1024,6 +1213,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_pmi && (
+                          <div className="text-danger">
+                            {errors.app_one_pmi}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1058,6 +1252,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_family_income_benefit && (
+                          <div className="text-danger">
+                            {errors.app_one_family_income_benefit}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1094,6 +1293,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_one_buildings_and_contents && (
+                          <div className="text-danger">
+                            {errors.app_one_buildings_and_contents}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1134,6 +1338,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_life_cover && (
+                          <div className="text-danger">
+                            {errors.app_two_life_cover}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1168,6 +1377,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_critical_illness && (
+                          <div className="text-danger">
+                            {errors.app_two_critical_illness}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1202,6 +1416,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_income_protection && (
+                          <div className="text-danger">
+                            {errors.app_two_income_protection}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1233,6 +1452,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_asu && (
+                          <div className="text-danger">
+                            {errors.app_two_asu}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1266,6 +1490,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_pmi && (
+                          <div className="text-danger">
+                            {errors.app_two_pmi}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1300,6 +1529,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_family_income_benefit && (
+                          <div className="text-danger">
+                            {errors.app_two_family_income_benefit}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -1336,6 +1570,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                             </FormGroup>
                           ))}
                         </div>
+                        {errors.app_two_buildings_and_contents && (
+                          <div className="text-danger">
+                            {errors.app_two_buildings_and_contents}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1373,6 +1612,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.buildings && (
+                      <div className="text-danger">{errors.buildings}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -1399,6 +1641,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.contents && (
+                      <div className="text-danger">{errors.contents}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -1429,6 +1674,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.accidental_damage && (
+                      <div className="text-danger">
+                        {errors.accidental_damage}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -1461,6 +1711,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.landlords_cover && (
+                      <div className="text-danger">
+                        {errors.landlords_cover}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -1491,6 +1746,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.home_emergency_cover && (
+                      <div className="text-danger">
+                        {errors.home_emergency_cover}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={4}>
@@ -1526,6 +1786,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.personal_possessions_cover && (
+                      <div className="text-danger">
+                        {errors.personal_possessions_cover}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -1563,6 +1828,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                         </FormGroup>
                       ))}
                     </div>
+                    {errors.personal_possessions_confirm && (
+                      <div className="text-danger">
+                        {errors.personal_possessions_confirm}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -1594,6 +1864,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                   </FormGroup>
                 ))}
               </div>
+              {errors.have_you_a_will_in_place && (
+                <div className="text-danger">
+                  {errors.have_you_a_will_in_place}
+                </div>
+              )}
               <Input
                 type="textarea"
                 rows={4}
@@ -1601,6 +1876,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.have_you_a_will_in_place_note || ""}
                 onChange={handleInputChange}
               />
+              {errors.have_you_a_will_in_place_note && (
+                <div className="text-danger">
+                  {errors.have_you_a_will_in_place_note}
+                </div>
+              )}
               <small className="text-muted">
                 Note: when was it last reviewed? Would you like us to refer you
                 to someone who can draft and update your will?
@@ -1636,6 +1916,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                   </FormGroup>
                 ))}
               </div>
+              {errors.mortgage_requirements && (
+                <div className="text-danger">
+                  {errors.mortgage_requirements}
+                </div>
+              )}
               <Input
                 type="textarea"
                 rows={4}
@@ -1643,6 +1928,11 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.mortgage_requirements_note || ""}
                 onChange={handleInputChange}
               />
+              {errors.mortgage_requirements_note && (
+                <div className="text-danger">
+                  {errors.mortgage_requirements_note}
+                </div>
+              )}
             </FormGroup>
             <FormGroup>
               <Label>Notes</Label>
@@ -1653,6 +1943,9 @@ const MortgageYourNeedsContent: React.FC = () => {
                 value={formData?.notes || ""}
                 onChange={handleInputChange}
               />
+              {errors.notes && (
+                <div className="text-danger">{errors.notes}</div>
+              )}
             </FormGroup>
 
             <div className="d-flex justify-content-end gap-2 mt-3">
