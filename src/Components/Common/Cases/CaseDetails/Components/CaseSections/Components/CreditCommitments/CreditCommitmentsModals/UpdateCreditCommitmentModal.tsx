@@ -47,6 +47,47 @@ const UpdateCreditCommitmentModal: React.FC<
       creditData?.has_the_unsecured_credit_mounted_up || "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const sanitize = (m: string) => String(m).replace(/^\d+[,\s]*/, "");
+
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = sanitize(value);
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? sanitize(v) : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
+
   const [updateCreditCommitmentsDetails, { isLoading: isUpdating }] =
     useUpdateCreditCommitmentsDetailsMutation();
 
@@ -74,14 +115,21 @@ const UpdateCreditCommitmentModal: React.FC<
         creditCommitment_alias: creditData.alias,
         payload: formData,
       }).unwrap();
+
+      setErrors({});
       if (res) {
         toast.success("Credit Commitment updated successfully!");
+        toggle();
       } else {
         toast.error("Failed to update Credit Commitment");
       }
-      toggle();
-    } catch (error) {
-      toast.error("Failed to update Credit Commitment");
+    } catch (error: any) {
+      const parsed = parseApiErrors(error);
+      setErrors(parsed);
+      const first = Object.values(parsed)[0];
+      toast.error(
+        first || error?.message || "Failed to update Credit Commitment",
+      );
     }
   };
 
@@ -114,6 +162,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     ))
                   )}
                 </Input>
+                {getFieldError("applicant") && (
+                  <div className="text-danger small">
+                    {getFieldError("applicant")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -129,6 +182,11 @@ const UpdateCreditCommitmentModal: React.FC<
                   <option value="YES">Yes</option>
                   <option value="NO">No</option>
                 </Input>
+                {getFieldError("joint") && (
+                  <div className="text-danger small">
+                    {getFieldError("joint")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             {/* <Col md={4}>
@@ -141,6 +199,9 @@ const UpdateCreditCommitmentModal: React.FC<
                   onChange={handleInputChange}
                   required
                 >
+                {getFieldError("term_remaining") && (
+                  <div className="text-danger small">{getFieldError("term_remaining")}</div>
+                )}
                   <option value="">Select...</option>
                   <option value="CREDIT_CARD">Credit Card</option>
                   <option value="STORE_CARD">Store Card</option>
@@ -157,6 +218,9 @@ const UpdateCreditCommitmentModal: React.FC<
                   <option value="INSURANCE">Insurance</option>
                   <option value="SECURED">Secured</option>
                   <option value="PCP">PCP</option>
+                {getFieldError("balloon_payment") && (
+                  <div className="text-danger small">{getFieldError("balloon_payment")}</div>
+                )}
                   <option value="MAIL_ORDER">Mail Order</option>
                   <option value="CHILDCARE">Childcare</option>
                   <option value="CAR_FINANCE">Car Finance</option>
@@ -195,6 +259,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     onChange={handleInputChange}
                     required
                   />
+                  {getFieldError("company") && (
+                    <div className="text-danger small">
+                      {getFieldError("company")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -220,6 +289,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.account_no || null}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("account_no") && (
+                    <div className="text-danger small">
+                      {getFieldError("account_no")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -250,6 +324,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     onInput={limitDecimalPlaces}
                     required
                   />
+                  {getFieldError("os_balance") && (
+                    <div className="text-danger small">
+                      {getFieldError("os_balance")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -286,6 +365,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("settlement_balance") && (
+                    <div className="text-danger small">
+                      {getFieldError("settlement_balance")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -320,6 +404,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("monthly_repayment") && (
+                    <div className="text-danger small">
+                      {getFieldError("monthly_repayment")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -347,6 +436,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("interest_rate") && (
+                    <div className="text-danger small">
+                      {getFieldError("interest_rate")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -366,6 +460,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("card_limit") && (
+                    <div className="text-danger small">
+                      {getFieldError("card_limit")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -388,6 +487,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     value={formData.term_remaining}
                     onChange={handleInputChange}
                   />
+                  {getFieldError("term_remaining") && (
+                    <div className="text-danger small">
+                      {getFieldError("term_remaining")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -404,6 +508,11 @@ const UpdateCreditCommitmentModal: React.FC<
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {getFieldError("balloon_payment") && (
+                    <div className="text-danger small">
+                      {getFieldError("balloon_payment")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -422,6 +531,16 @@ const UpdateCreditCommitmentModal: React.FC<
                     <option value="YES">Yes</option>
                     <option value="NO">No</option>
                   </Input>
+                  {getFieldError("court_ordered") && (
+                    <div className="text-danger small">
+                      {getFieldError("court_ordered")}
+                    </div>
+                  )}
+                  {getFieldError("balloon_payment") && (
+                    <div className="text-danger small">
+                      {getFieldError("balloon_payment")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -449,6 +568,16 @@ const UpdateCreditCommitmentModal: React.FC<
                     onChange={handleInputChange}
                     step="0.01"
                   />
+                  {getFieldError("cost_of_credit") && (
+                    <div className="text-danger small">
+                      {getFieldError("cost_of_credit")}
+                    </div>
+                  )}
+                  {getFieldError("balloon_payment") && (
+                    <div className="text-danger small">
+                      {getFieldError("balloon_payment")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -480,6 +609,11 @@ const UpdateCreditCommitmentModal: React.FC<
                       <option value="YES">Yes</option>
                       <option value="NO">No</option>
                     </Input>
+                    {getFieldError("paid_on_completion") && (
+                      <div className="text-danger small">
+                        {getFieldError("paid_on_completion")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 {formData.paid_on_completion === "YES" && (
@@ -492,6 +626,11 @@ const UpdateCreditCommitmentModal: React.FC<
                         value={formData.source}
                         onChange={handleInputChange}
                       />
+                      {getFieldError("source") && (
+                        <div className="text-danger small">
+                          {getFieldError("source")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 )}
@@ -506,6 +645,11 @@ const UpdateCreditCommitmentModal: React.FC<
                   value={formData.has_the_unsecured_credit_mounted_up}
                   onChange={handleInputChange}
                 />
+                {getFieldError("has_the_unsecured_credit_mounted_up") && (
+                  <div className="text-danger small">
+                    {getFieldError("has_the_unsecured_credit_mounted_up")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
