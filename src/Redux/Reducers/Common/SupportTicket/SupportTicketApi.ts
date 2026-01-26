@@ -11,10 +11,10 @@ export const SupportTicketApi = baseApi.injectEndpoints({
       invalidatesTags: ["SupportTicket"],
     }),
     fetchSupportTicket: builder.query({
-      query: (params) => ({
+      query: ({ params }) => ({
         url: `/support-ticket/`,
         method: "GET",
-        params: params || {},
+        params
       }),
       providesTags: ["SupportTicket"],
     }),

@@ -1,11 +1,15 @@
-
 import LoadingSpinner from "@/app/loading";
+import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import {
+  AuthUser,
+  AuthUsersProps,
+} from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
-import { FaSearch } from "react-icons/fa";
+import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
   Badge,
@@ -18,15 +22,15 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  PopoverBody,
   Row,
   Spinner,
   Table,
+  UncontrolledPopover,
 } from "reactstrap";
 import AddAuthUserModal from "./Modals/AddAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
-import { AuthUser, AuthUsersProps } from "@/Types/Common/CommonUsers/AuthUsersTypes";
-import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
@@ -139,6 +143,22 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 }}
                 style={{ padding: "10px 10px 10px 25px" }}
               />
+              <FaInfoCircle
+                id="complianceAssistantSearch"
+                className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
+                style={{ cursor: "pointer", zIndex: 10 }}
+              />
+
+              <UncontrolledPopover
+                placement="right"
+                target="complianceAssistantSearch"
+                trigger="hover"
+              >
+                <PopoverBody className="bg-white rounded text-dark p-3 small">
+                  🔍 You can search using Title(e.g., Mr, Ms), First Name,
+                  Middle Name, Last Name, Email Address or Phone Number.
+                </PopoverBody>
+              </UncontrolledPopover>
             </InputGroup>
           </Col>
           <Col
@@ -160,12 +180,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Joining Date</th>
-                {pathname !==
-                  "/organisation/director/introducers" && (
+                {pathname !== "/organisation/director/introducers" && (
                   <th>Gender</th>
                 )}
-                {pathname ===
-                  "/organisation/director/introducers" && (
+                {pathname === "/organisation/director/introducers" && (
                   <>
                     <th>Company Name</th>
                     <th>Company Address</th>
@@ -243,8 +261,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {pathname !==
-                      "/organisation/director/introducers" && (
+                    {pathname !== "/organisation/director/introducers" && (
                       <td>
                         {user?.gender ? (
                           formatChoiceFieldValue(user?.gender)
@@ -253,8 +270,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         )}
                       </td>
                     )}
-                    {pathname ===
-                      "/organisation/director/introducers" && (
+                    {pathname === "/organisation/director/introducers" && (
                       <>
                         <td>
                           {user?.company_name || (

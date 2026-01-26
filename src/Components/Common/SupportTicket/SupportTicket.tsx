@@ -4,8 +4,13 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useState } from "react";
-import { FaExclamationCircle, FaSpinner } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import {
+  FaExclamationCircle,
+  FaInfoCircle,
+  FaSearch,
+  FaSpinner,
+} from "react-icons/fa";
 import { TbCheck, TbCirclePlus, TbExternalLink } from "react-icons/tb";
 import {
   Badge,
@@ -13,12 +18,16 @@ import {
   Card,
   CardBody,
   Col,
+  Input,
+  InputGroup,
   Pagination,
   PaginationItem,
   PaginationLink,
+  PopoverBody,
   Row,
   Spinner,
   Table,
+  UncontrolledPopover,
 } from "reactstrap";
 import AddSupportTicketModal from "./SupportTicketDetails/Modals/AddSupportTicketModal";
 import DeleteSupportTicketModal from "./SupportTicketDetails/Modals/DeleteSupportTicketModal";
@@ -26,7 +35,10 @@ import UpdateSupportTicketModal from "./SupportTicketDetails/Modals/UpdateSuppot
 
 const SupportTicket: React.FC = () => {
   const { data: session } = useSession();
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [casesPerPage] = useState(10);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -40,7 +52,11 @@ const SupportTicket: React.FC = () => {
   const userType = session?.user?.user_type;
 
   const { data: supportTicketData, isLoading } = useFetchSupportTicketQuery({
-    page: currentPage,
+    params: {
+      search: debouncedSearch || undefined,
+      page: currentPage,
+      page_size: casesPerPage,
+    },
   });
 
   const [ticketData, setTicketData] = useState<Partial<SupportTicketFormData>>({
@@ -85,18 +101,58 @@ const SupportTicket: React.FC = () => {
     RESOLVED: <TbCheck />,
   };
 
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   return (
     <Row>
       <Col>
         <Card className="shadow-sm">
           <CardBody>
             <Row className="d-flex justify-content-between align-items-center py-4">
-              <Col md="3" xs="6">
+              <Col md="3" xs="12">
                 <h2 className="mb-0 h4 h2-md">Support Tickets</h2>
+              </Col>
+              <Col md={3} xs="12">
+                <InputGroup className="position-relative">
+                  <FaSearch
+                    className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                    style={{ zIndex: 10, pointerEvents: "none" }}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Search... "
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    style={{ padding: "10px 27px 10px 25px" }}
+                  />
+                  <FaInfoCircle
+                    id="ticketSearchSuggestion"
+                    className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
+                    style={{ cursor: "pointer", zIndex: 10 }}
+                  />
+
+                  <UncontrolledPopover
+                    placement="right"
+                    target="ticketSearchSuggestion"
+                    trigger="hover"
+                  >
+                    <PopoverBody className="bg-white rounded text-dark p-3 small">
+                      🔍 You can search using Ticket ID, Creator's Name (First
+                      Name, Middle Name, Last Name), Creator's Email Address or
+                      Phone Number.
+                    </PopoverBody>
+                  </UncontrolledPopover>
+                </InputGroup>
               </Col>
               <Col
                 md="3"
-                xs="6"
+                xs="12"
                 className="d-flex justify-content-end mt-sm-0 mt-2"
               >
                 <Button
