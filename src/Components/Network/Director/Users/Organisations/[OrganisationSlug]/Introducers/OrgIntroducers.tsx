@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
-import { FaSearch } from "react-icons/fa";
+import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import {
   Badge,
   Card,
@@ -19,9 +19,11 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  PopoverBody,
   Row,
   Spinner,
   Table,
+  UncontrolledPopover,
 } from "reactstrap";
 import ViewOrgIntroducerModal from "./Modals/ViewOrgIntroducerModal";
 
@@ -135,8 +137,24 @@ const OrgIntroducers: React.FC = () => {
                 placeholder="Search... "
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                style={{ padding: "10px 10px 10px 25px" }}
+                style={{ padding: "10px 27px 10px 25px" }}
               />
+              <FaInfoCircle
+                id="orgIntoducerSearch"
+                className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
+                style={{ cursor: "pointer", zIndex: 10 }}
+              />
+
+              <UncontrolledPopover
+                placement="right"
+                target="orgIntoducerSearch"
+                trigger="hover"
+              >
+                <PopoverBody className="bg-white rounded text-dark p-3 small">
+                  🔍 You can search using Title(e.g., Mr, Ms), First Name,
+                  Middle Name, Last Name, Email Address or Phone Number.
+                </PopoverBody>
+              </UncontrolledPopover>
             </InputGroup>
           </Col>
           <Col md="3" xs="12" />

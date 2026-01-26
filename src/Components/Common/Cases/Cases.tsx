@@ -13,7 +13,7 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import { TbArrowsRightLeft, TbCirclePlus } from "react-icons/tb";
 import {
   Button,
@@ -27,9 +27,11 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  PopoverBody,
   Row,
   Spinner,
   Table,
+  UncontrolledPopover,
 } from "reactstrap";
 import CaesSummary from "./CaesSummary/CaesSummary";
 import AddNewCaseModal from "./Modals/AddNewCaseModal";
@@ -149,8 +151,23 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     setSearchQuery(e.target.value);
                     setCurrentPage(1);
                   }}
-                  style={{ padding: "10px 10px 10px 25px" }}
+                  style={{ padding: "10px 27px 10px 25px" }}
                 />
+                <FaInfoCircle
+                  id="caseSearchSuggestion"
+                  className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
+                  style={{ cursor: "pointer", zIndex: 10  }}
+                />
+  
+                <UncontrolledPopover
+                  placement="right"
+                  target="caseSearchSuggestion"
+                  trigger="hover"
+                >
+                  <PopoverBody className="bg-white rounded text-dark p-3 small">
+                    🔍 You Can Search Using The Lead’s Name, Title, Phone Number, Email Address, Case Category, Case Status or Assigned User’s Name.
+                  </PopoverBody>
+                </UncontrolledPopover>
               </InputGroup>
             </Col>
             <Col
