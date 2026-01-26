@@ -69,6 +69,46 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   const [isSearchingPostcode, setIsSearchingPostcode] = useState(false);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const sanitize = (m: string) => String(m).replace(/^\d+[,\s]*/, "");
+
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = sanitize(value);
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? sanitize(v) : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
   const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
   const DEFAULT_ZOOM = 10;
   const DETAIL_ZOOM = 16;
@@ -210,6 +250,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     });
 
     if (res.data) {
+      setErrors({});
       toast.success("Employment details updated successfully.");
       try {
         await updateSectionCompleteStatus({
@@ -226,10 +267,10 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         handleNextTab();
       }
     } else if (res.error) {
-      const errorMessage =
-        (res.error as any)?.data?.detail ||
-        "Failed to update employment details.";
-      toast.error(errorMessage);
+      const parsed = parseApiErrors(res.error as any);
+      setErrors(parsed);
+      const first = Object.values(parsed)[0];
+      toast.error(first || "Failed to update employment details.");
     } else {
       toast.error("Failed to update employment details.");
     }
@@ -534,6 +575,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                 <option value="HOUSEPERSON">Houseperson</option>
                 <option value="CONTRACTOR">Contractor</option>
               </Input>
+              {getFieldError("employment_status") && (
+                <div className="text-danger small">
+                  {getFieldError("employment_status")}
+                </div>
+              )}
             </FormGroup>
           </Col>
         </Row>
@@ -576,6 +622,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   }
                   required
                 />
+                {getFieldError("occupation") && (
+                  <div className="text-danger small">
+                    {getFieldError("occupation")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -592,6 +643,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     handleInputChange("industry", e.target.value)
                   }
                 />
+                {getFieldError("industry") && (
+                  <div className="text-danger small">
+                    {getFieldError("industry")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -611,6 +667,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   }
                   required
                 />
+                {getFieldError("employer_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("employer_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -627,6 +688,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     handleInputChange("employer_telephone", e.target.value)
                   }
                 />
+                {getFieldError("employer_telephone") && (
+                  <div className="text-danger small">
+                    {getFieldError("employer_telephone")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -649,6 +715,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     )
                   }
                 />
+                {getFieldError("employers_name_for_reference") && (
+                  <div className="text-danger small">
+                    {getFieldError("employers_name_for_reference")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -669,6 +740,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     )
                   }
                 />
+                {getFieldError("employer_email_for_reference") && (
+                  <div className="text-danger small">
+                    {getFieldError("employer_email_for_reference")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -736,6 +812,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       {isSearchingPostcode ? "Loading..." : "Lookup"}
                     </Button>
                   </InputGroup>
+                  {getFieldError("employer_postcode") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_postcode")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -754,6 +835,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("employer_house_name_or_number") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_house_name_or_number")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -779,6 +865,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("employer_address_line_1") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_address_line_1")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -797,6 +888,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("employer_address_line_2") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_address_line_2")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -817,6 +913,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("employer_city", e.target.value)
                     }
                   />
+                  {getFieldError("employer_city") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_city")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -830,6 +931,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("employer_county", e.target.value)
                     }
                   />
+                  {getFieldError("employer_county") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_county")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -843,6 +949,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("employer_country", e.target.value)
                     }
                   />
+                  {getFieldError("employer_country") && (
+                    <div className="text-danger small">
+                      {getFieldError("employer_country")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -870,6 +981,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   >
                     {calculateMonthsDuration(formValues?.employment_commenced)}
                   </InputGroupText>
+                  {getFieldError("employment_commenced") && (
+                    <div className="text-danger small">
+                      {getFieldError("employment_commenced")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -883,6 +999,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("employment_ended", e.target.value)
                     }
                   />
+                  {getFieldError("employment_ended") && (
+                    <div className="text-danger small">
+                      {getFieldError("employment_ended")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -909,6 +1030,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   }
                   required
                 />
+                {getFieldError("gross_monthly_income") && (
+                  <div className="text-danger small">
+                    {getFieldError("gross_monthly_income")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -925,6 +1051,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     handleInputChange("net_monthly_income", e.target.value)
                   }
                 />
+                {getFieldError("net_monthly_income") && (
+                  <div className="text-danger small">
+                    {getFieldError("net_monthly_income")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -940,6 +1071,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     handleInputChange("income_source", e.target.value)
                   }
                 />
+                {getFieldError("income_source") && (
+                  <div className="text-danger small">
+                    {getFieldError("income_source")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -962,6 +1098,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   />
                   Are you on a probationary period?
                 </Label>
+                {getFieldError("is_probationary_period") && (
+                  <div className="text-danger small">
+                    {getFieldError("is_probationary_period")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -991,6 +1132,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     />
                     Is any income paid in a foreign currency?
                   </Label>
+                  {getFieldError("is_income_in_foreign_currency") && (
+                    <div className="text-danger small">
+                      {getFieldError("is_income_in_foreign_currency")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -1006,6 +1152,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       }
                       required
                     />
+                    {getFieldError("further_details") && (
+                      <div className="text-danger small">
+                        {getFieldError("further_details")}
+                      </div>
+                    )}
                   </FormGroup>
                 )}
               </Col>
@@ -1025,6 +1176,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     value={formValues?.bonus || ""}
                     onChange={(e) => handleInputChange("bonus", e.target.value)}
                   />
+                  {getFieldError("bonus") && (
+                    <div className="text-danger small">
+                      {getFieldError("bonus")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1046,6 +1202,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     />
                     Bonus Guaranteed?
                   </Label>
+                  {getFieldError("is_bonus_guaranteed") && (
+                    <div className="text-danger small">
+                      {getFieldError("is_bonus_guaranteed")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1069,6 +1230,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <option value="BI_ANNUALLY">Bi Annually</option>
                     <option value="ANNUALLY">Annually</option>
                   </Input>
+                  {getFieldError("bonus_frequency") && (
+                    <div className="text-danger small">
+                      {getFieldError("bonus_frequency")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1085,6 +1251,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("overtime", e.target.value)
                     }
                   />
+                  {getFieldError("overtime") && (
+                    <div className="text-danger small">
+                      {getFieldError("overtime")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1106,6 +1277,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     />
                     Overtime Guaranteed?
                   </Label>
+                  {getFieldError("is_overtime_guaranteed") && (
+                    <div className="text-danger small">
+                      {getFieldError("is_overtime_guaranteed")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1129,6 +1305,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <option value="BI_ANNUALLY">Bi Annually</option>
                     <option value="ANNUALLY">Annually</option>
                   </Input>
+                  {getFieldError("overtime_frequency") && (
+                    <div className="text-danger small">
+                      {getFieldError("overtime_frequency")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1145,6 +1326,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("allowance", e.target.value)
                     }
                   />
+                  {getFieldError("allowance") && (
+                    <div className="text-danger small">
+                      {getFieldError("allowance")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1166,6 +1352,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     />
                     Allowance Guaranteed?
                   </Label>
+                  {getFieldError("is_allowance_guaranteed") && (
+                    <div className="text-danger small">
+                      {getFieldError("is_allowance_guaranteed")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1189,6 +1380,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <option value="BI_ANNUALLY">Bi Annually</option>
                     <option value="ANNUALLY">Annually</option>
                   </Input>
+                  {getFieldError("allowance_frequency") && (
+                    <div className="text-danger small">
+                      {getFieldError("allowance_frequency")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1215,6 +1411,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         }
                       />
                       <FormText>Years</FormText>
+                      {getFieldError("employment_time_year") && (
+                        <div className="text-danger small">
+                          {getFieldError("employment_time_year")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md={6}>
@@ -1232,6 +1433,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         }
                       />
                       <FormText>Months</FormText>
+                      {getFieldError("employment_time_month") && (
+                        <div className="text-danger small">
+                          {getFieldError("employment_time_month")}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -1247,6 +1453,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("business_telephone", e.target.value)
                     }
                   />
+                  {getFieldError("business_telephone") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_telephone")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1313,6 +1524,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       {isSearchingPostcode ? "Loading..." : "Lookup"}
                     </Button>
                   </InputGroup>
+                  {getFieldError("business_postcode") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_postcode")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -1331,6 +1547,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("business_house_name_or_number") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_house_name_or_number")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1369,6 +1590,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("business_address_line_1") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_address_line_1")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -1387,6 +1613,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("business_address_line_2") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_address_line_2")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1406,6 +1637,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("business_city", e.target.value)
                     }
                   />
+                  {getFieldError("business_city") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_city")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1419,6 +1655,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("business_county", e.target.value)
                     }
                   />
+                  {getFieldError("business_county") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_county")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1432,6 +1673,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("business_country", e.target.value)
                     }
                   />
+                  {getFieldError("business_country") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_country")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1451,6 +1697,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("job_title", e.target.value)
                     }
                   />
+                  {getFieldError("job_title") && (
+                    <div className="text-danger small">
+                      {getFieldError("job_title")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -1464,6 +1715,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("business_name", e.target.value)
                     }
                   />
+                  {getFieldError("business_name") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_name")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1495,6 +1751,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <option value="LLP">LLP</option>
                     <option value="INDIVIDUAL">Individual</option>
                   </Input>
+                  {getFieldError("business_type") && (
+                    <div className="text-danger small">
+                      {getFieldError("business_type")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -1513,6 +1774,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("percentage_of_business_owned") && (
+                    <div className="text-danger small">
+                      {getFieldError("percentage_of_business_owned")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1537,6 +1803,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     />
                     Accounts Available?
                   </Label>
+                  {getFieldError("is_accounts_available") && (
+                    <div className="text-danger small">
+                      {getFieldError("is_accounts_available")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={12}>
@@ -1555,6 +1826,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                           }
                           required
                         />
+                        {getFieldError("year1") && (
+                          <div className="text-danger small">
+                            {getFieldError("year1")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1575,6 +1851,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                           }
                           required
                         />
+                        {getFieldError("year1_net_profit") && (
+                          <div className="text-danger small">
+                            {getFieldError("year1_net_profit")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1589,6 +1870,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                             handleInputChange("year2", e.target.value)
                           }
                         />
+                        {getFieldError("year2") && (
+                          <div className="text-danger small">
+                            {getFieldError("year2")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1608,6 +1894,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                             )
                           }
                         />
+                        {getFieldError("year2_net_profit") && (
+                          <div className="text-danger small">
+                            {getFieldError("year2_net_profit")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1622,6 +1913,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                             handleInputChange("year3", e.target.value)
                           }
                         />
+                        {getFieldError("year3") && (
+                          <div className="text-danger small">
+                            {getFieldError("year3")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
@@ -1641,6 +1937,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                             )
                           }
                         />
+                        {getFieldError("year3_net_profit") && (
+                          <div className="text-danger small">
+                            {getFieldError("year3_net_profit")}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1663,6 +1964,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("accountant_name", e.target.value)
                     }
                   />
+                  {getFieldError("accountant_name") && (
+                    <div className="text-danger small">
+                      {getFieldError("accountant_name")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -1681,6 +1987,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("accountant_qualifications") && (
+                    <div className="text-danger small">
+                      {getFieldError("accountant_qualifications")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1702,6 +2013,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     }
                     required
                   />
+                  {getFieldError("salary") && (
+                    <div className="text-danger small">
+                      {getFieldError("salary")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1717,6 +2033,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     }
                     required
                   />
+                  {getFieldError("dividends") && (
+                    <div className="text-danger small">
+                      {getFieldError("dividends")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1731,6 +2052,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("turnover", e.target.value)
                     }
                   />
+                  {getFieldError("turnover") && (
+                    <div className="text-danger small">
+                      {getFieldError("turnover")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -1751,6 +2077,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("other_income", e.target.value)
                     }
                   />
+                  {getFieldError("other_income") && (
+                    <div className="text-danger small">
+                      {getFieldError("other_income")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1795,6 +2126,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     </option>
                     <option value="OTHER">Other</option>
                   </Input>
+                  {getFieldError("other_income_source") && (
+                    <div className="text-danger small">
+                      {getFieldError("other_income_source")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               {formValues?.other_income_source === "OTHER" && (
@@ -1809,6 +2145,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         handleInputChange("other", e.target.value)
                       }
                     />
+                  {getFieldError("other") && (
+                    <div className="text-danger small">
+                      {getFieldError("other")}
+                    </div>
+                  )}
                   </FormGroup>
                 </Col>
               )}
@@ -1828,6 +2169,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       )
                     }
                   />
+                  {getFieldError("other_income_start_date") && (
+                    <div className="text-danger small">
+                      {getFieldError("other_income_start_date")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1847,6 +2193,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("contractor_industry", e.target.value)
                     }
                   />
+                  {getFieldError("contractor_industry") && (
+                    <div className="text-danger small">
+                      {getFieldError("contractor_industry")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1866,6 +2217,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     }
                     required
                   />
+                  {getFieldError("current_contract_start") && (
+                    <div className="text-danger small">
+                      {getFieldError("current_contract_start")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1882,6 +2238,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     }
                     required
                   />
+                  {getFieldError("current_contract_end") && (
+                    <div className="text-danger small">
+                      {getFieldError("current_contract_end")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1898,6 +2259,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     }
                     required
                   />
+                  {getFieldError("time_contracting") && (
+                    <div className="text-danger small">
+                      {getFieldError("time_contracting")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1913,6 +2279,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     }
                     required
                   />
+                  {getFieldError("day_rate") && (
+                    <div className="text-danger small">
+                      {getFieldError("day_rate")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col md={4}>
@@ -1927,6 +2298,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                       handleInputChange("hourly_rate", e.target.value)
                     }
                   />
+                  {getFieldError("hourly_rate") && (
+                    <div className="text-danger small">
+                      {getFieldError("hourly_rate")}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -1942,6 +2318,9 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                 value={formValues?.note || ""}
                 onChange={(e) => handleInputChange("note", e.target.value)}
               />
+              {getFieldError("note") && (
+                <div className="text-danger small">{getFieldError("note")}</div>
+              )}
             </FormGroup>
           </Col>
         </Row>
