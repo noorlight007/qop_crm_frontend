@@ -27,6 +27,8 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
     notes: dipData?.notes || "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   // Add useEffect to update form data when dipData changes
   useEffect(() => {
     setFormData({
@@ -50,13 +52,62 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
   );
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    setErrors((prev) => {
+      if (!prev || !name) return prev;
+      const copy = { ...prev };
+      if (copy[name]) delete copy[name];
+      return copy;
+    });
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const src = err?.data || err || {};
+
+    const sanitize = (s: any) => String(s ?? "").replace(/^\s*\d+,\s*/g, "");
+
+    const walk = (obj: any) => {
+      if (!obj) return;
+      if (typeof obj === "string") {
+        out.detail = sanitize(obj);
+        return;
+      }
+      if (Array.isArray(obj)) {
+        obj.forEach((item) => {
+          if (typeof item === "string") out.detail = sanitize(item);
+          else walk(item);
+        });
+        return;
+      }
+      if (typeof obj === "object") {
+        Object.entries(obj).forEach(([k, v]) => {
+          if (typeof v === "string" || typeof v === "number") {
+            out[k] = sanitize(v);
+          } else if (Array.isArray(v)) {
+            out[k] = v.map((it) => sanitize(it)).join(" ");
+          } else if (typeof v === "object") {
+            // flatten nested objects one level: key.subkey
+            Object.entries(v as any).forEach(([k2, v2]) => {
+              if (Array.isArray(v2))
+                out[`${k}.${k2}`] = v2.map(sanitize).join(" ");
+              else out[`${k}.${k2}`] = sanitize(v2);
+            });
+          }
+        });
+      }
+    };
+
+    walk(src);
+    return out;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,19 +119,26 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
         payload: formData,
       });
       if (res.data) {
+        setErrors({});
         toast.success("DIP History updated successfully!");
         // Only go to next tab if this was a Save & Next action
         if (submitActionRef.current === "next") {
           handleNextTab();
         }
       } else if (res.error) {
-        const errorMessage =
-          (res.error as any)?.data?.detail || "Failed to update DIP History";
-        toast.error(errorMessage);
+        const parsed = parseApiErrors(res.error);
+        setErrors(parsed);
+        const firstMsg =
+          Object.values(parsed)[0] ||
+          (res.error as any)?.data?.detail ||
+          "Failed to update DIP History";
+        toast.error(firstMsg);
       } else {
         toast.error("Failed to update DIP History");
       }
     } catch (error) {
+      const parsed = parseApiErrors(error);
+      if (Object.keys(parsed).length) setErrors(parsed);
       toast.error("Failed to update DIP History");
     }
   };
@@ -132,13 +190,20 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                             ? formData.is_this_application_had_a_decision_in_principle
                             : !formData.is_this_application_had_a_decision_in_principle
                         }
-                        onChange={() =>
+                        onChange={() => {
                           setFormData((prev) => ({
                             ...prev,
                             is_this_application_had_a_decision_in_principle:
                               option === "yes",
-                          }))
-                        }
+                          }));
+                          setErrors((prev) => {
+                            const copy = { ...prev };
+                            delete copy[
+                              "is_this_application_had_a_decision_in_principle"
+                            ];
+                            return copy;
+                          });
+                        }}
                       />
                       <Label check for={`radio-${option}`}>
                         {option.charAt(0).toUpperCase() +
@@ -146,6 +211,11 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                       </Label>
                     </FormGroup>
                   ))}
+                  {errors.is_this_application_had_a_decision_in_principle && (
+                    <div className="text-danger">
+                      {errors.is_this_application_had_a_decision_in_principle}
+                    </div>
+                  )}
                 </div>
               </FormGroup>
             </Col>
@@ -331,6 +401,9 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                       </option>
                       <option value="WEST_ONE_LOANS">West One Loans</option>
                     </Input>
+                    {errors.lender && (
+                      <div className="text-danger">{errors.lender}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -342,6 +415,9 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                       value={formData.dip_date}
                       onChange={handleInputChange}
                     />
+                    {errors.dip_date && (
+                      <div className="text-danger">{errors.dip_date}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -361,6 +437,9 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                       <option value="DECLINED">Declined</option>
                       <option value="REFERED">Refered</option>
                     </Input>
+                    {errors.dip_decision && (
+                      <div className="text-danger">{errors.dip_decision}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
@@ -372,6 +451,11 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                       value={formData.dip_reference_number}
                       onChange={handleInputChange}
                     />
+                    {errors.dip_reference_number && (
+                      <div className="text-danger">
+                        {errors.dip_reference_number}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -386,6 +470,9 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                       onChange={handleInputChange}
                       rows={3}
                     />
+                    {errors.notes && (
+                      <div className="text-danger">{errors.notes}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
