@@ -163,6 +163,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     ni_number: "",
     country_of_birth: "",
     bank_name: "",
+    banking_years: 0,
+    banking_months: 0,
     home_phone: "",
     work_phone: "",
     has_dependants: false,
@@ -1165,26 +1167,31 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               </Label>
               <FormGroup className="d-flex justify-content-center align-items-center gap-3">
                 <Input
-                  id="how_long_banked"
+                  id="banking_years"
                   type="number"
                   placeholder="Years"
-                  // value={formValues.how_long_banked || ""}
-                  // onChange={(e) =>
-                  //   handleInputChange("how_long_banked", e.target.value)
-                  // }
+                  value={formValues.banking_years || ""}
+                  onChange={(e) =>
+                    handleInputChange("banking_years", e.target.value)
+                  }
                 />
+                {getFieldError("banking_years") && (
+                  <div className="text-danger small">
+                    {getFieldError("banking_years")}
+                  </div>
+                )}
                 <Input
-                  id="how_long_banked"
+                  id="banking_months"
                   type="number"
                   placeholder="Months"
-                  // value={formValues.how_long_banked || ""}
-                  // onChange={(e) =>
-                  //   handleInputChange("how_long_banked", e.target.value)
-                  // }
+                  value={formValues.banking_months || ""}
+                  onChange={(e) =>
+                    handleInputChange("banking_months", e.target.value)
+                  }
                 />
-                {getFieldError("how_long_banked") && (
+                {getFieldError("banking_months") && (
                   <div className="text-danger small">
-                    {getFieldError("how_long_banked")}
+                    {getFieldError("banking_months")}
                   </div>
                 )}
               </FormGroup>

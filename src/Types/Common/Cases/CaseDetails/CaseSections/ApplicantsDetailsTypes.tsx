@@ -24,6 +24,8 @@ export interface ApplicantProps {
   ni_number: string;
   country_of_birth: string;
   bank_name: string;
+  banking_years: number;
+  banking_months: number;
   home_phone: string;
   work_phone: string;
   has_dependants: boolean;
