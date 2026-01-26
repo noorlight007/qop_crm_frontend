@@ -102,6 +102,48 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
 
   const [numberOfDirectors, setNumberOfDirectors] = useState<string>("0");
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+
+    const sanitize = (msg: string) => msg.replace(/^\d+[,\s]*/, "");
+
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = sanitize(value);
+        return;
+      }
+      if (Array.isArray(value)) {
+        value.forEach((v, idx) => recurse(v, path.concat(String(idx))));
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) {
+          recurse(value[k], path.concat(k));
+        }
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
+
   useEffect(() => {
     // if existing data has directors_shareholders, reflect that count
     if (data && data[0] && Array.isArray(data[0].directors_shareholders)) {
@@ -187,10 +229,16 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
       if (returnedName) {
         setFormData((prev) => ({ ...prev, company_name: returnedName }));
       }
+      setErrors({});
       toast.success("Company details added successfully");
       toggle();
     } catch (error) {
-      toast.error("Failed to add company details");
+      const parsed = parseApiErrors(error);
+      setErrors(parsed);
+      const first = Object.values(parsed)[0];
+      const message =
+        first || getErrorMessage(error) || "Failed to add company details";
+      toast.error(message);
     }
   };
 
@@ -208,10 +256,16 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         company_name: targetName,
         CompanyDetails: formData,
       }).unwrap();
+      setErrors({});
       toast.success("Company details updated successfully");
       toggle();
     } catch (error) {
-      toast.error("Failed to update company details");
+      const parsed = parseApiErrors(error);
+      setErrors(parsed);
+      const first = Object.values(parsed)[0];
+      const message =
+        first || getErrorMessage(error) || "Failed to update company details";
+      toast.error(message);
     }
   };
 
@@ -410,6 +464,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                     {isFetchingCompanyDetails ? "Fetching..." : "Get Details"}
                   </Button>
                 </InputGroup>
+                {getFieldError("company_registration_number") && (
+                  <div className="text-danger small">
+                    {getFieldError("company_registration_number")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -422,6 +481,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   onChange={handleChange}
                   required
                 />
+                {getFieldError("company_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("company_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -435,6 +499,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={formData.date_of_incorporation || ""}
                   onChange={handleChange}
                 />
+                {getFieldError("date_of_incorporation") && (
+                  <div className="text-danger small">
+                    {getFieldError("date_of_incorporation")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -457,6 +526,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   </option>
                   <option value="OTHER">Other</option>
                 </Input>
+                {getFieldError("company_type") && (
+                  <div className="text-danger small">
+                    {getFieldError("company_type")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -470,6 +544,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={formData.trade_business_type}
                   onChange={handleChange}
                 />
+                {getFieldError("trade_business_type") && (
+                  <div className="text-danger small">
+                    {getFieldError("trade_business_type")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -481,6 +560,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={formData.sic_code}
                   onChange={handleChange}
                 />
+                {getFieldError("sic_code") && (
+                  <div className="text-danger small">
+                    {getFieldError("sic_code")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -495,6 +579,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
               />
               Is SPV
             </Label>
+            {getFieldError("is_spv") && (
+              <div className="text-danger small">
+                {getFieldError("is_spv")}
+              </div>
+            )}
           </FormGroup>
           <Row>
             <Col md={6}>
@@ -507,6 +596,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={formData.postcode}
                   onChange={handleChange}
                 />
+                {getFieldError("postcode") && (
+                  <div className="text-danger small">
+                    {getFieldError("postcode")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={6}>
@@ -518,6 +612,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={formData.house_number_or_name}
                   onChange={handleChange}
                 />
+                {getFieldError("house_number_or_name") && (
+                  <div className="text-danger small">
+                    {getFieldError("house_number_or_name")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -531,6 +630,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={formData.address_line1}
                   onChange={handleChange}
                 />
+                {getFieldError("address_line1") && (
+                  <div className="text-danger small">
+                    {getFieldError("address_line1")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col md={7}>
@@ -544,6 +648,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                       value={formData.city}
                       onChange={handleChange}
                     />
+                    {getFieldError("city") && (
+                      <div className="text-danger small">
+                        {getFieldError("city")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md="4">
@@ -555,6 +664,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                       value={formData.county}
                       onChange={handleChange}
                     />
+                    {getFieldError("county") && (
+                      <div className="text-danger small">
+                        {getFieldError("county")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col md="4">
@@ -566,6 +680,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                       value={formData.country}
                       onChange={handleChange}
                     />
+                    {getFieldError("country") && (
+                      <div className="text-danger small">
+                        {getFieldError("country")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </Row>
@@ -586,6 +705,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                   value={numberOfDirectors}
                   onChange={handleNumberChange}
                 />
+                {getFieldError("numberOfDirectors") && (
+                  <div className="text-danger small">
+                    {getFieldError("numberOfDirectors")}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           </Row>
@@ -603,6 +727,15 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                           value={d.full_name}
                           onChange={(e) => handleDirectorChange(i, e)}
                         />
+                        {getFieldError(
+                          `directors_shareholders.${i}.full_name`,
+                        ) && (
+                          <div className="text-danger small">
+                            {getFieldError(
+                              `directors_shareholders.${i}.full_name`,
+                            )}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>
@@ -619,6 +752,15 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                           <div className="input-group-append ms-1 align-self-center">
                             %
                           </div>
+                          {getFieldError(
+                            `directors_shareholders.${i}.percentage_share`,
+                          ) && (
+                            <div className="text-danger small ms-2">
+                              {getFieldError(
+                                `directors_shareholders.${i}.percentage_share`,
+                              )}
+                            </div>
+                          )}
                         </div>
                       </FormGroup>
                     </Col>
@@ -631,6 +773,11 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                           value={d.role}
                           onChange={(e) => handleDirectorChange(i, e)}
                         />
+                        {getFieldError(`directors_shareholders.${i}.role`) && (
+                          <div className="text-danger small">
+                            {getFieldError(`directors_shareholders.${i}.role`)}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>

@@ -31,6 +31,46 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
     date_of_birth: "",
   });
   const [age, setAge] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    const snake = camelToSnake(name);
+    if (errors[snake]) return errors[snake];
+    return undefined;
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const sanitize = (m: string) => String(m).replace(/^\d+[,\s]*/, "");
+
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = sanitize(value);
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? sanitize(v) : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,21 +97,35 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    const response = await addDependants({
-      case_alias,
-      applicantDetails_alias,
-      dependantsInfo: formData,
-    });
-    if (response.data) {
-      toast.success("Dependant added successfully");
-      setFormData({
-        name: "",
-        relationship: "",
-        other_relationship: "",
-        date_of_birth: "",
+    try {
+      const response = await addDependants({
+        case_alias,
+        applicantDetails_alias,
+        dependantsInfo: formData,
       });
-      setAge("");
-      toggle();
+
+      if ((response as any).data) {
+        setErrors({});
+        toast.success("Dependant added successfully");
+        setFormData({
+          name: "",
+          relationship: "",
+          other_relationship: "",
+          date_of_birth: "",
+        });
+        setAge("");
+        toggle();
+      } else if ((response as any).error) {
+        const parsed = parseApiErrors((response as any).error);
+        setErrors(parsed);
+        const first = Object.values(parsed)[0];
+        toast.error(first || "Failed to add dependant");
+      }
+    } catch (err: any) {
+      const parsed = parseApiErrors(err);
+      setErrors(parsed);
+      const first = Object.values(parsed)[0];
+      toast.error(first || err?.message || "Failed to add dependant");
     }
   };
 
@@ -96,6 +150,9 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 placeholder="Enter name"
                 required
               />
+              {getFieldError("name") && (
+                <div className="text-danger small">{getFieldError("name")}</div>
+              )}
             </FormGroup>
 
             <FormGroup>
@@ -114,6 +171,11 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 <option value="SIBLING">Sibling</option>
                 <option value="OTHER">Other</option>
               </Input>
+              {getFieldError("relationship") && (
+                <div className="text-danger small">
+                  {getFieldError("relationship")}
+                </div>
+              )}
             </FormGroup>
 
             {formData.relationship === "OTHER" && (
@@ -129,6 +191,11 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                   onChange={handleChange}
                   placeholder="Specify other relationship"
                 />
+                {getFieldError("other_relationship") && (
+                  <div className="text-danger small">
+                    {getFieldError("other_relationship")}
+                  </div>
+                )}
               </FormGroup>
             )}
 
@@ -146,6 +213,11 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                     onChange={handleChange}
                     required
                   />
+                  {getFieldError("date_of_birth") && (
+                    <div className="text-danger small">
+                      {getFieldError("date_of_birth")}
+                    </div>
+                  )}
                 </Col>
                 <Col
                   xs="auto"
