@@ -1,7 +1,7 @@
 /* OrganizationBanner css */
 .org-profile-container {
   position: absolute;
-  top: 140px;
+  top: 120px;
   left: 80px;
   transform: translateX(-50%);
   text-align: center;
@@ -9,7 +9,7 @@
 
 .profile-pic {
   border-radius: 50%;
-  border: 1px solid var(--primary-color);
+  border: 2px solid var(--primary-color);
   background: transparent;
 }
 

@@ -29,7 +29,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       {isLoading ? (
         <Card
           className="d-flex justify-content-center align-items-center w-100"
-          style={{ height: "400px" }}
+          style={{ height: "450px" }}
         >
           <Spinner color="primary" />
         </Card>

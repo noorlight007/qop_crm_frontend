@@ -17,6 +17,7 @@ export interface SingleOrganisationProps {
       phone?: string;
       profile_image?: string | null;
       user_type?: string;
+      is_active?: boolean;
     };
   }[];
   name?: string;
