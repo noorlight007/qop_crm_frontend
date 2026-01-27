@@ -4,7 +4,7 @@ import {
   AddOrganisationProps,
   UserDataProps,
 } from "@/Types/Network/Director/OrganisationsTypes";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -76,30 +76,38 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("organisation");
+  // form ref for native validity/reporting
+  const formRef = useRef<HTMLFormElement | null>(null);
   const toggleTab = (tab: string) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
   // Validate required organisation fields
   const validateOrganisation = () => {
-    const missing: string[] = [];
-    if (!((formData as any).name || "").toString().trim())
-      missing.push("Organisation Name");
-    if (!((formData as any).primary_mobile || "").toString().trim())
-      missing.push("Primary Mobile");
-    if (!((formData as any).email || "").toString().trim())
-      missing.push("Email");
-    if (missing.length) {
-      toast.error(`Please fill required fields: ${missing.join(", ")}`);
-      return false;
-    }
-    return true;
+    // Return true if required organisation fields are non-empty.
+    const name = ((formData as any).name || "").toString().trim();
+    const primary = ((formData as any).primary_mobile || "").toString().trim();
+    const email = ((formData as any).email || "").toString().trim();
+    return !!(name && primary && email);
   };
 
   const onNext = () => {
-    if (validateOrganisation()) {
-      toggleTab("user_data");
+    if (!validateOrganisation()) {
+      // show native browser validation on the first invalid organisation field
+      if (formRef.current) {
+        const ids = ["name", "primary_mobile", "email"];
+        for (const id of ids) {
+          const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
+          if (el && !el.checkValidity()) {
+            el.reportValidity();
+            el.focus();
+            break;
+          }
+        }
+      }
+      return;
     }
+    toggleTab("user_data");
   };
 
   const onBack = () => {
@@ -108,8 +116,27 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // final validation
-    if (!validateOrganisation()) return;
+    // final validation: ensure organisation required fields
+    if (!validateOrganisation()) {
+      if (formRef.current) {
+        const ids = ["name", "primary_mobile", "email"];
+        for (const id of ids) {
+          const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
+          if (el && !el.checkValidity()) {
+            el.reportValidity();
+            el.focus();
+            break;
+          }
+        }
+      }
+      return;
+    }
+
+    // ensure entire form validity (includes user_data fields)
+    if (formRef.current && !formRef.current.checkValidity()) {
+      formRef.current.reportValidity();
+      return;
+    }
 
     try {
       // Build JSON payload. Convert File -> base64 string when present.
@@ -185,7 +212,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       <ModalHeader toggle={toggleModal}>
         <h3 className="text-primary">Add New Organisation</h3>{" "}
       </ModalHeader>
-      <Form onSubmit={handleSubmit}>
+      <Form innerRef={formRef} onSubmit={handleSubmit}>
         <ModalBody>
           <Nav pills className="d-flex justify-content-center gap-2">
             <NavItem>
@@ -201,7 +228,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             <NavItem>
               <NavLink
                 active={activeTab === "user_data"}
-                onClick={() => toggleTab("user_data")}
+                onClick={onNext}
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "user_data" ? "bg-primary" : "text-primary border-primary"}`}
               >
@@ -446,23 +473,28 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             </TabPane>
           </TabContent>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={toggleModal}>
-            Cancel
-          </Button>
-          {activeTab === "organisation" ? (
-            <Button
-              color="primary"
-              type="button"
-              onClick={() => toggleTab("user_data")}
-            >
-              Next
+        <ModalFooter className="d-flex justify-content-between">
+          <div>
+            {activeTab === "user_data" ? (
+              <Button color="secondary" type="button" onClick={onBack}>
+                Back
+              </Button>
+            ) : null}
+          </div>
+          <div className="d-flex gap-1">
+            <Button color="warning" onClick={toggleModal}>
+              Cancel
             </Button>
-          ) : (
-            <Button color="primary" type="submit">
-              {isLoading ? "Saving..." : "Save Organisation"}
-            </Button>
-          )}
+            {activeTab === "organisation" ? (
+              <Button color="primary" type="button" onClick={onNext}>
+                Go Next
+              </Button>
+            ) : (
+              <Button color="primary" type="submit">
+                {isLoading ? "Saving..." : "Save Organisation"}
+              </Button>
+            )}
+          </div>
         </ModalFooter>
       </Form>
     </Modal>
