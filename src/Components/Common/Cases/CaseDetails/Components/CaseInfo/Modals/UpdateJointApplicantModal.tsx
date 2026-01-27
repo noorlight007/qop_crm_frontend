@@ -41,6 +41,66 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
     notes: "",
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
+  const flattenErrors = (value: any, path = ""): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (value == null) return out;
+    if (typeof value === "string") {
+      out[path || ""] = sanitize(value);
+      return out;
+    }
+    if (Array.isArray(value)) {
+      out[path || ""] = sanitize(
+        value
+          .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+          .join(", "),
+      );
+      return out;
+    }
+    if (typeof value === "object") {
+      for (const k of Object.keys(value)) {
+        const v = value[k];
+        const newPath = path ? `${path}.${k}` : k;
+        if (typeof v === "string" || Array.isArray(v)) {
+          out[newPath] = sanitize(
+            (Array.isArray(v)
+              ? v
+                  .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+                  .join(", ")
+              : v) as string,
+          );
+        } else {
+          Object.assign(out, flattenErrors(v, newPath));
+        }
+      }
+    }
+    return out;
+  };
+
+  const clearFieldError = (field: string) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+    try {
+      if (err?.data?.message) return String(err.data.message);
+      if (err?.message) return String(err.message);
+    } catch {}
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   // Populate formData when user changes
   useEffect(() => {
     if (user) {
@@ -61,6 +121,7 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    clearFieldError(name);
   };
 
   const handleSave = async () => {
@@ -91,6 +152,8 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
     const res = await updateJointApplicantInfo(payload);
 
     if (res.data) {
+      // clear errors and succeed
+      setErrors({});
       toast.success("Applicant updated successfully!");
       if (onUpdateSuccess) {
         onUpdateSuccess(res.data);
@@ -98,10 +161,30 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
       toggle();
       console.log("Update successful:", res.data);
     } else if ("error" in res) {
-      const errorMessage =
-        (res.error as any)?.data?.joint_user?.email?.[0] ||
-        "Failed to update user information.";
-      toast.error(errorMessage);
+      const e: any = res.error;
+      const dataErrors = e?.data?.errors ?? e?.data ?? e;
+      try {
+        const flat = flattenErrors(dataErrors);
+        const normalized: Record<string, string> = {};
+        Object.entries(flat).forEach(([k, v]) => {
+          const parts = k.split(".").filter(Boolean);
+          const last = parts[parts.length - 1];
+          // use last segment as field key which matches formData snake_case
+          normalized[last] = v;
+        });
+        if (Object.keys(normalized).length) {
+          setErrors(normalized);
+          const first = Object.values(normalized)[0];
+          toast.error(getErrorMessage(first));
+          return; // keep modal open
+        }
+      } catch (e2) {
+        console.error("Error parsing validation errors", e2);
+      }
+
+      toast.error(
+        getErrorMessage(res.error) || "Failed to update user information.",
+      );
     }
   };
 
@@ -149,6 +232,9 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
+                {errors.title && (
+                  <div className="text-danger small mt-1">{errors.title}</div>
+                )}
               </FormGroup>
             </Col>
             <Col xl={6} md={12}>
@@ -160,6 +246,11 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   value={formData.first_name}
                   onChange={handleInputChange}
                 />
+                {errors.first_name && (
+                  <div className="text-danger small mt-1">
+                    {errors.first_name}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col xl={6} md={12}>
@@ -171,6 +262,11 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   value={formData.middle_name}
                   onChange={handleInputChange}
                 />
+                {errors.middle_name && (
+                  <div className="text-danger small mt-1">
+                    {errors.middle_name}
+                  </div>
+                )}
               </FormGroup>
             </Col>
 
@@ -183,6 +279,11 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   value={formData.last_name}
                   onChange={handleInputChange}
                 />
+                {errors.last_name && (
+                  <div className="text-danger small mt-1">
+                    {errors.last_name}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col xl={6} md={12}>
@@ -195,6 +296,9 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   value={formData.email}
                   onChange={handleInputChange}
                 />
+                {errors.email && (
+                  <div className="text-danger small mt-1">{errors.email}</div>
+                )}
               </FormGroup>
             </Col>
             <Col xl={6} md={12}>
@@ -207,6 +311,9 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
+                {errors.phone && (
+                  <div className="text-danger small mt-1">{errors.phone}</div>
+                )}
               </FormGroup>
             </Col>
             <Col xs={12} md={6}>
@@ -226,6 +333,11 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   <option value="SIBLING">Sibling</option>
                   <option value="OTHER">Other</option>
                 </Input>
+                {errors.relationship && (
+                  <div className="text-danger small mt-1">
+                    {errors.relationship}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             {formData.relationship === "OTHER" && (
@@ -242,6 +354,11 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                     onChange={handleInputChange}
                     placeholder="Specify other relationship"
                   />
+                  {errors.other_relationship && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_relationship}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -255,6 +372,9 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
                   value={formData.notes}
                   onChange={handleInputChange}
                 />
+                {errors.notes && (
+                  <div className="text-danger small mt-1">{errors.notes}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>
