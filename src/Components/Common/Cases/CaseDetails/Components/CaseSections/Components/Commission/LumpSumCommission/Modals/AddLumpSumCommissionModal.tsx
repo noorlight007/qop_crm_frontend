@@ -32,6 +32,70 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
   const [dateReceived, setDateReceived] = useState<string>("");
   const [clawbackAmount, setClawbackAmount] = useState<string>("");
   const [clawbackDate, setClawbackDate] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
+  const toCamel = (key: string) =>
+    key.replace(/_([a-z])/g, (_, c) => (c ? c.toUpperCase() : ""));
+
+  const flattenErrors = (value: any, path = ""): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (value == null) return out;
+    if (typeof value === "string") {
+      out[path || ""] = sanitize(value);
+      return out;
+    }
+    if (Array.isArray(value)) {
+      out[path || ""] = sanitize(
+        value
+          .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+          .join(", "),
+      );
+      return out;
+    }
+    if (typeof value === "object") {
+      for (const k of Object.keys(value)) {
+        const v = value[k];
+        const newPath = path ? `${path}.${k}` : k;
+        if (typeof v === "string" || Array.isArray(v)) {
+          out[newPath] = sanitize(
+            (Array.isArray(v)
+              ? v
+                  .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+                  .join(", ")
+              : v) as string,
+          );
+        } else {
+          Object.assign(out, flattenErrors(v, newPath));
+        }
+      }
+    }
+    return out;
+  };
+
+  const clearFieldError = (field: string) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[field];
+      const snake = field.replace(/([A-Z])/g, (m) => `_${m.toLowerCase()}`);
+      delete copy[snake];
+      return copy;
+    });
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+    try {
+      if (err?.data?.message) return String(err.data.message);
+      if (err?.message) return String(err.message);
+    } catch {}
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -65,11 +129,36 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
         lumpSumData: payload,
       }).unwrap();
       if (onAdded) onAdded();
+      // clear errors and close modal on success
+      setErrors({});
       toggle();
       toast.success("Lump sum commission added successfully");
     } catch (err) {
       console.error("Failed to add lump sum", err);
-      toast.error("Failed to add lump sum commission");
+      // Try to parse validation errors and show per-field messages
+      const e: any = err;
+      const dataErrors = e?.data?.errors ?? e?.data ?? e;
+      try {
+        const flat = flattenErrors(dataErrors);
+        const normalized: Record<string, string> = {};
+        Object.entries(flat).forEach(([k, v]) => {
+          // map snake_case keys to camelCase used in UI
+          const parts = k.split(".").filter(Boolean);
+          const last = parts[parts.length - 1];
+          const camel = toCamel(last);
+          normalized[camel] = v;
+        });
+        if (Object.keys(normalized).length) {
+          setErrors(normalized);
+          const first = Object.values(normalized)[0];
+          toast.error(getErrorMessage(first));
+          return; // keep modal open
+        }
+      } catch (e2) {
+        console.error("Error parsing validation errors", e2);
+      }
+
+      toast.error(getErrorMessage(err) || "Failed to add lump sum commission");
     }
   };
 
@@ -86,7 +175,10 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
               <Input
                 type="select"
                 value={policy ?? ""}
-                onChange={(e) => setPolicy(e.target.value || null)}
+                onChange={(e) => {
+                  setPolicy(e.target.value || null);
+                  clearFieldError("policy");
+                }}
                 required
               >
                 <option value="">Select...</option>
@@ -103,9 +195,17 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
                 type="number"
                 min={0}
                 value={commissionAmount}
-                onChange={(e) => setCommissionAmount(e.target.value)}
+                onChange={(e) => {
+                  setCommissionAmount(e.target.value);
+                  clearFieldError("commissionAmount");
+                }}
                 placeholder="e.g. 1000"
               />
+              {errors["commissionAmount"] && (
+                <div className="text-danger small mt-1">
+                  {errors["commissionAmount"]}
+                </div>
+              )}
             </Col>
 
             <Col md={6}>
@@ -113,8 +213,16 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
               <Input
                 type="date"
                 value={dateReceived}
-                onChange={(e) => setDateReceived(e.target.value)}
+                onChange={(e) => {
+                  setDateReceived(e.target.value);
+                  clearFieldError("dateReceived");
+                }}
               />
+              {errors["dateReceived"] && (
+                <div className="text-danger small mt-1">
+                  {errors["dateReceived"]}
+                </div>
+              )}
             </Col>
 
             <Col md={6}>
@@ -123,9 +231,17 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
                 type="number"
                 min={0}
                 value={clawbackAmount}
-                onChange={(e) => setClawbackAmount(e.target.value)}
+                onChange={(e) => {
+                  setClawbackAmount(e.target.value);
+                  clearFieldError("clawbackAmount");
+                }}
                 placeholder="e.g. 500"
               />
+              {errors["clawbackAmount"] && (
+                <div className="text-danger small mt-1">
+                  {errors["clawbackAmount"]}
+                </div>
+              )}
             </Col>
 
             <Col md={6}>
@@ -133,8 +249,16 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
               <Input
                 type="date"
                 value={clawbackDate}
-                onChange={(e) => setClawbackDate(e.target.value)}
+                onChange={(e) => {
+                  setClawbackDate(e.target.value);
+                  clearFieldError("clawbackDate");
+                }}
               />
+              {errors["clawbackDate"] && (
+                <div className="text-danger small mt-1">
+                  {errors["clawbackDate"]}
+                </div>
+              )}
             </Col>
           </Row>
         </ModalBody>

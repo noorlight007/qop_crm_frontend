@@ -18,7 +18,21 @@ import { ArrowUpCircle } from "react-feather";
 import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
-import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import {
+  Button,
+  Col,
+  Form,
+  FormGroup,
+  Input,
+  InputGroupText,
+  Label,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  TabContent,
+  TabPane,
+} from "reactstrap";
 import AddLumpSumCommissionModal from "./Modals/AddLumpSumCommissionModal";
 import DeleteLumpSumCommissionModal from "./Modals/DeleteLumpSumCommissionModal";
 
@@ -72,8 +86,125 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
     null,
   );
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // sanitize server messages like "400, ..."
+  const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
+
+  const toCamel = (key: string) =>
+    key.replace(/_([a-z])/g, (_, c) => (c ? c.toUpperCase() : ""));
+
+  const flattenErrors = (value: any, path = ""): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (value == null) return out;
+    if (typeof value === "string") {
+      out[path || ""] = sanitize(value);
+      return out;
+    }
+    if (Array.isArray(value)) {
+      const msgs = value
+        .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+        .join(", ");
+      out[path || ""] = sanitize(msgs);
+      return out;
+    }
+    if (typeof value === "object") {
+      for (const k of Object.keys(value)) {
+        const v = value[k];
+        const newPath = path ? `${path}.${k}` : k;
+        if (typeof v === "string" || Array.isArray(v)) {
+          const msgs = Array.isArray(v)
+            ? v
+                .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+                .join(", ")
+            : v;
+          out[newPath] = sanitize(msgs as string);
+        } else {
+          const child = flattenErrors(v, newPath);
+          Object.assign(out, child);
+        }
+      }
+    }
+    return out;
+  };
+
+  const normalizeKeyWithIndex = (rawKey: string, idx: number) => {
+    const parts = rawKey.split(".").filter(Boolean);
+    // if first part is numeric, replace with current index
+    if (/^\d+$/.test(parts[0])) parts[0] = String(idx);
+    else parts.unshift(String(idx));
+    const norm = parts.map((p) => (/^\d+$/.test(p) ? p : toCamel(p))).join(".");
+    return norm;
+  };
+
+  const clearRowErrors = (index: number) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      Object.keys(copy).forEach((k) => {
+        if (k.startsWith(`${index}.`)) delete copy[k];
+      });
+      return copy;
+    });
+
+  const clearFieldError = (index: number, field: string) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[`${index}.${field}`];
+      // also try snake_case -> camelCase variant removal
+      const snake = field.replace(/([A-Z])/g, (m) => `_${m.toLowerCase()}`);
+      delete copy[`${index}.${snake}`];
+      return copy;
+    });
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    if (err && typeof err === "object") {
+      const msgs = collect(err);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   // Move update logic out of JSX: re-usable handler
-  const handleUpdateLump = async (lump: LumpSumProps) => {
+  const handleUpdateLump = async (lump: LumpSumProps, idx: number) => {
     try {
       const payload = {
         policy: lump.policy || null,
@@ -89,10 +220,34 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
         lump_sum_alias: lump.id,
         lumpSumData: payload,
       }).unwrap();
+      // Clear any row errors on success
+      clearRowErrors(idx);
       toast.success("Lump sum commission updated successfully");
     } catch (err) {
       console.error("Failed to update lump sum", err);
-      toast.error("Failed to update lump sum commission");
+      // Try to parse structured validation errors
+      const e: any = err;
+      const dataErrors = e?.data?.errors ?? e?.data ?? e;
+      try {
+        const flat = flattenErrors(dataErrors);
+        const normalized: Record<string, string> = {};
+        Object.entries(flat).forEach(([k, v]) => {
+          const keyWithIndex = normalizeKeyWithIndex(k, idx);
+          normalized[keyWithIndex] = v;
+        });
+        if (Object.keys(normalized).length) {
+          setErrors((prev) => ({ ...prev, ...normalized }));
+          const first = Object.values(normalized)[0];
+          toast.error(getErrorMessage(first));
+          return;
+        }
+      } catch (e2) {
+        console.error("Error parsing validation errors", e2);
+      }
+
+      // Fallback general message
+      const msg = getErrorMessage(err);
+      toast.error(msg || "Failed to update lump sum commission");
     }
   };
 
@@ -226,62 +381,76 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
           <TabContent activeTab={activeTab}>
             {lumps.map((lump, idx) => (
               <TabPane tabId={String(idx)} key={lump.id}>
-                <div className="border border-primary p-3 mb-3 rounded-1">
-                  <div className="row g-3 align-items-center">
-                    <div className="col-md-4">
-                      <label className="form-label">Policy</label>
-                      <select
-                        className="form-select"
-                        value={lump.policy}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setLumps((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], policy: val };
-                            return copy;
-                          });
-                        }}
-                      >
-                        <option value="">Select...</option>
-                        {policies.map((policy: any) => (
-                          <option key={policy.alias} value={policy.alias}>
-                            {formatChoiceFieldValue(policy.policy_type) ||
-                              "Policy"}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="col-md-4">
-                      <label className="form-label">Commission Amount</label>
-                      <div className="input-group">
-                        <span className="input-group-text">£</span>
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={lump.commissionAmount}
-                          min={0}
+                <Form className="border border-primary p-3 mb-3 rounded-1">
+                  <Row className="g-3 align-items-start">
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Policy</Label>
+                        <Input
+                          type="select"
+                          value={lump.policy}
                           onChange={(e) => {
                             const val = e.target.value;
                             setLumps((prev) => {
                               const copy = [...prev];
-                              copy[idx] = {
-                                ...copy[idx],
-                                commissionAmount: val,
-                              };
+                              copy[idx] = { ...copy[idx], policy: val };
                               return copy;
                             });
+                            clearFieldError(idx, "policy");
                           }}
-                        />
-                      </div>
-                    </div>
+                        >
+                          <option value="">Select...</option>
+                          {policies.map((policy: any) => (
+                            <option key={policy.alias} value={policy.alias}>
+                              {formatChoiceFieldValue(policy.policy_type) ||
+                                "Policy"}
+                            </option>
+                          ))}
+                        </Input>
+                        {errors[`${idx}.policy`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.policy`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
 
-                    <div className="col-md-4">
-                      <label className="form-label">Date Received</label>
-                      <div className="d-flex">
-                        <input
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Commission Amount</Label>
+                        <div className="input-group">
+                          <InputGroupText>£</InputGroupText>
+                          <Input
+                            type="number"
+                            value={lump.commissionAmount}
+                            min={0}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setLumps((prev) => {
+                                const copy = [...prev];
+                                copy[idx] = {
+                                  ...copy[idx],
+                                  commissionAmount: val,
+                                };
+                                return copy;
+                              });
+                              clearFieldError(idx, "commissionAmount");
+                            }}
+                          />
+                        </div>
+                        {errors[`${idx}.commissionAmount`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.commissionAmount`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Date Received</Label>
+                        <Input
                           type="date"
-                          className="form-control"
                           value={lump.dateReceived}
                           onChange={(e) => {
                             const val = e.target.value;
@@ -290,67 +459,89 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                               copy[idx] = { ...copy[idx], dateReceived: val };
                               return copy;
                             });
+                            clearFieldError(idx, "dateReceived");
                           }}
                         />
-                      </div>
-                    </div>
-                  </div>
+                        {errors[`${idx}.dateReceived`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.dateReceived`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
 
-                  <div className="row g-3 align-items-center mt-3">
-                    <div className="col-md-4">
-                      <label className="form-label">Clawback Amount</label>
-                      <div className="input-group">
-                        <span className="input-group-text">£</span>
-                        <input
-                          type="number"
-                          className="form-control"
-                          value={lump.clawbackAmount}
-                          min={0}
+                  <Row className="g-3 align-items-start mt-3">
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Clawback Amount</Label>
+                        <div className="input-group">
+                          <InputGroupText>£</InputGroupText>
+                          <Input
+                            type="number"
+                            value={lump.clawbackAmount}
+                            min={0}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setLumps((prev) => {
+                                const copy = [...prev];
+                                copy[idx] = {
+                                  ...copy[idx],
+                                  clawbackAmount: val,
+                                };
+                                return copy;
+                              });
+                              clearFieldError(idx, "clawbackAmount");
+                            }}
+                          />
+                        </div>
+                        {errors[`${idx}.clawbackAmount`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.clawbackAmount`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Clawback Date</Label>
+                        <Input
+                          type="date"
+                          value={lump.clawbackDate}
                           onChange={(e) => {
                             const val = e.target.value;
                             setLumps((prev) => {
                               const copy = [...prev];
-                              copy[idx] = {
-                                ...copy[idx],
-                                clawbackAmount: val,
-                              };
+                              copy[idx] = { ...copy[idx], clawbackDate: val };
                               return copy;
                             });
+                            clearFieldError(idx, "clawbackDate");
                           }}
                         />
-                      </div>
-                    </div>
+                        {errors[`${idx}.clawbackDate`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.clawbackDate`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
 
-                    <div className="col-md-4">
-                      <label className="form-label">Clawback Date</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        value={lump.clawbackDate}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setLumps((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], clawbackDate: val };
-                            return copy;
-                          });
-                        }}
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <label className="form-label">Reconciled Amount</label>
-                      <div className="input-group">
-                        <span className="input-group-text">£</span>
-                        <input
-                          type="text"
-                          readOnly
-                          className="form-control bg-light-dark"
-                          value={Number(lump.reconciledAmount).toFixed(2)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label>Reconciled Amount</Label>
+                        <div className="input-group">
+                          <InputGroupText>£</InputGroupText>
+                          <Input
+                            type="text"
+                            readOnly
+                            className="bg-light-dark"
+                            value={Number(lump.reconciledAmount).toFixed(2)}
+                          />
+                        </div>
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   <div className="d-flex justify-content-end gap-2 mt-2">
                     <Button
                       outline
@@ -368,13 +559,13 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       disabled={
                         isUpdatingLump || session?.user?.user_type === "CLIENT"
                       }
-                      onClick={() => handleUpdateLump(lump)}
+                      onClick={() => handleUpdateLump(lump, idx)}
                     >
                       <ArrowUpCircle size={16} />{" "}
                       {isUpdatingLump ? "Updating..." : "Update"}
                     </button>
                   </div>
-                </div>
+                </Form>
               </TabPane>
             ))}
           </TabContent>

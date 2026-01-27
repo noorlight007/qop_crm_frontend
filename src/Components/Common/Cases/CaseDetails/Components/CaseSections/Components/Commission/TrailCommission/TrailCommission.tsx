@@ -15,7 +15,20 @@ import { ArrowUpCircle } from "react-feather";
 import { FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
-import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import {
+  Button,
+  Col,
+  FormGroup,
+  Input,
+  InputGroupText,
+  Label,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  TabContent,
+  TabPane,
+} from "reactstrap";
 import AddTrailCommissionModal from "./Modals/AddTrailCommissionModal";
 import DeleteTrailCommissionModal from "./Modals/DeleteTrailCommissionModal";
 
@@ -71,7 +84,112 @@ const TrailCommission: React.FC<CommissionProps> = ({
     null,
   );
 
-  const handleUpdateTrail = async (trail: Trail) => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
+  const toCamel = (key: string) =>
+    key.replace(/_([a-z])/g, (_, c) => (c ? c.toUpperCase() : ""));
+
+  const flattenErrors = (value: any, path = ""): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (value == null) return out;
+    if (typeof value === "string") {
+      out[path || ""] = sanitize(value);
+      return out;
+    }
+    if (Array.isArray(value)) {
+      out[path || ""] = sanitize(
+        value
+          .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+          .join(", "),
+      );
+      return out;
+    }
+    if (typeof value === "object") {
+      for (const k of Object.keys(value)) {
+        const v = value[k];
+        const newPath = path ? `${path}.${k}` : k;
+        if (typeof v === "string" || Array.isArray(v)) {
+          out[newPath] = sanitize(
+            (Array.isArray(v)
+              ? v
+                  .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+                  .join(", ")
+              : v) as string,
+          );
+        } else {
+          Object.assign(out, flattenErrors(v, newPath));
+        }
+      }
+    }
+    return out;
+  };
+
+  const normalizeKeyWithIndex = (rawKey: string, idx: number) => {
+    const parts = rawKey.split(".").filter(Boolean);
+    if (/^\d+$/.test(parts[0])) parts[0] = String(idx);
+    else parts.unshift(String(idx));
+    const norm = parts.map((p) => (/^\d+$/.test(p) ? p : toCamel(p))).join(".");
+    return norm;
+  };
+
+  const clearRowErrors = (index: number) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      Object.keys(copy).forEach((k) => {
+        if (k.startsWith(`${index}.`)) delete copy[k];
+      });
+      return copy;
+    });
+
+  const clearFieldError = (index: number, field: string) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[`${index}.${field}`];
+      const snake = field.replace(/([A-Z])/g, (m) => `_${m.toLowerCase()}`);
+      delete copy[`${index}.${snake}`];
+      return copy;
+    });
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+    if (err && typeof err === "object") {
+      const msgs = collect(err);
+      if (msgs.length) return msgs.join(", ");
+    }
+    if (err?.data?.message) return String(err.data.message);
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+    if (err?.error) return String(err.error);
+    if (err?.message) return String(err.message);
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
+  const handleUpdateTrail = async (trail: Trail, idx: number) => {
     try {
       const payload = {
         policy: trail.policy || null,
@@ -95,10 +213,31 @@ const TrailCommission: React.FC<CommissionProps> = ({
         trail_commission_alias: trail.id,
         trailCommissionData: payload,
       }).unwrap();
+      // clear any row errors on success
+      clearRowErrors(idx);
       toast.success("Trail commission updated successfully");
     } catch (err) {
       console.error("Failed to update trail commission", err);
-      toast.error("Failed to update trail commission");
+      const e: any = err;
+      const dataErrors = e?.data?.errors ?? e?.data ?? e;
+      try {
+        const flat = flattenErrors(dataErrors);
+        const normalized: Record<string, string> = {};
+        Object.entries(flat).forEach(([k, v]) => {
+          const keyWithIndex = normalizeKeyWithIndex(k, idx);
+          normalized[keyWithIndex] = v;
+        });
+        if (Object.keys(normalized).length) {
+          setErrors((prev) => ({ ...prev, ...normalized }));
+          const first = Object.values(normalized)[0];
+          toast.error(getErrorMessage(first));
+          return;
+        }
+      } catch (e2) {
+        console.error("Error parsing validation errors", e2);
+      }
+
+      toast.error(getErrorMessage(err) || "Failed to update trail commission");
     }
   };
 
@@ -227,121 +366,160 @@ const TrailCommission: React.FC<CommissionProps> = ({
             {trails.map((trail, idx) => (
               <TabPane tabId={String(idx)} key={trail.id}>
                 <div className="border border-primary p-3 mb-3 rounded-1">
-                  <div className="row g-3 align-items-center">
-                    <div className="col-md-4">
-                      <label className="form-label">Policy</label>
-                      <select
-                        className="form-select"
-                        value={trail.policy}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setTrails((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], policy: val };
-                            return copy;
-                          });
-                        }}
-                      >
-                        <option value="">Select...</option>
-                        {policies.map((policy: any) => (
-                          <option key={policy.alias} value={policy.alias}>
-                            {formatChoiceFieldValue(policy.policy_type) ||
-                              "Policy"}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <Row className="g-3 align-items-start">
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Policy</Label>
+                        <Input
+                          type="select"
+                          value={trail.policy}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setTrails((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = { ...copy[idx], policy: val };
+                              return copy;
+                            });
+                            clearFieldError(idx, "policy");
+                          }}
+                        >
+                          <option value="">Select...</option>
+                          {policies.map((policy: any) => (
+                            <option key={policy.alias} value={policy.alias}>
+                              {formatChoiceFieldValue(policy.policy_type) ||
+                                "Policy"}
+                            </option>
+                          ))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
 
-                    <div className="col-md-4">
-                      <label className="form-label">Monthly Payment</label>
-                      <div className="input-group">
-                        <span className="input-group-text">£</span>
-                        <input
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Monthly Payment</Label>
+                        <div className="input-group">
+                          <InputGroupText>£</InputGroupText>
+                          <Input
+                            type="number"
+                            value={trail.monthlyPayment}
+                            min={0}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setTrails((prev) => {
+                                const copy = [...prev];
+                                copy[idx] = {
+                                  ...copy[idx],
+                                  monthlyPayment: val,
+                                };
+                                return copy;
+                              });
+                              clearFieldError(idx, "monthlyPayment");
+                            }}
+                          />
+                        </div>
+                        {errors[`${idx}.monthlyPayment`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.monthlyPayment`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Number Of Payments</Label>
+                        <Input
                           type="number"
-                          className="form-control"
-                          value={trail.monthlyPayment}
+                          value={trail.numberOfPayments}
                           min={0}
                           onChange={(e) => {
                             const val = e.target.value;
                             setTrails((prev) => {
                               const copy = [...prev];
-                              copy[idx] = { ...copy[idx], monthlyPayment: val };
+                              copy[idx] = {
+                                ...copy[idx],
+                                numberOfPayments: val,
+                              };
                               return copy;
                             });
+                            clearFieldError(idx, "numberOfPayments");
                           }}
                         />
-                      </div>
-                    </div>
+                        {errors[`${idx}.numberOfPayments`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.numberOfPayments`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
 
-                    <div className="col-md-4">
-                      <label className="form-label">Number Of Payments</label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={trail.numberOfPayments}
-                        min={0}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setTrails((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], numberOfPayments: val };
-                            return copy;
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="row g-3 align-items-center mt-3">
-                    <div className="col-md-4">
-                      <label className="form-label">Start Date</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        value={trail.startDate}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setTrails((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], startDate: val };
-                            return copy;
-                          });
-                        }}
-                      />
-                    </div>
-
-                    <div className="col-md-4">
-                      <label className="form-label">End Date</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        value={trail.endDate}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setTrails((prev) => {
-                            const copy = [...prev];
-                            copy[idx] = { ...copy[idx], endDate: val };
-                            return copy;
-                          });
-                        }}
-                      />
-                    </div>
-
-                    <div className="col-md-3">
-                      <label className="form-label">
-                        Total Trail Commission
-                      </label>
-                      <div className="input-group">
-                        <span className="input-group-text">£</span>
-                        <input
-                          type="text"
-                          readOnly
-                          className="form-control bg-light-dark"
-                          value={Number(trail.totalTrailCommission).toFixed(2)}
+                  <Row className="g-3 align-items-center mt-3">
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Start Date</Label>
+                        <Input
+                          type="date"
+                          value={trail.startDate}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setTrails((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = { ...copy[idx], startDate: val };
+                              return copy;
+                            });
+                            clearFieldError(idx, "startDate");
+                          }}
                         />
-                      </div>
-                    </div>
-                  </div>
+                        {errors[`${idx}.startDate`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.startDate`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>End Date</Label>
+                        <Input
+                          type="date"
+                          value={trail.endDate}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setTrails((prev) => {
+                              const copy = [...prev];
+                              copy[idx] = { ...copy[idx], endDate: val };
+                              return copy;
+                            });
+                            clearFieldError(idx, "endDate");
+                          }}
+                        />
+                        {errors[`${idx}.endDate`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.endDate`]}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label>Total Trail Commission</Label>
+                        <div className="input-group">
+                          <InputGroupText>£</InputGroupText>
+                          <Input
+                            type="text"
+                            readOnly
+                            className="bg-light-dark"
+                            value={Number(trail.totalTrailCommission).toFixed(
+                              2,
+                            )}
+                          />
+                        </div>
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   <div className="d-flex justify-content-end gap-2 mt-2">
                     <Button
                       outline
@@ -359,7 +537,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
                       disabled={
                         isUpdating || session?.user?.user_type === "CLIENT"
                       }
-                      onClick={() => handleUpdateTrail(trail)}
+                      onClick={() => handleUpdateTrail(trail, idx)}
                     >
                       <ArrowUpCircle size={16} />{" "}
                       {isUpdating ? "Updating..." : "Update"}

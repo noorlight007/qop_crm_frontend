@@ -15,7 +15,10 @@ const ViewClientModal: React.FC<ViewClientModalProps> = ({
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
         <span className="fs-5 fw-bold text-primary">Client Information</span>
       </ModalHeader>
-      <ModalBody className="p-0">
+      <ModalBody
+        className="p-0"
+        style={{ maxHeight: "60vh", overflowY: "auto" }}
+      >
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
