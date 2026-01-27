@@ -26,42 +26,17 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
   return (
     <>
       {isLoading ? (
-        <Card
-          className="d-flex justify-content-center align-items-center w-100 border-0 shadow-lg"
-          style={{
-            height: 450,
-            borderRadius: "20px",
-            background: "var(--bs-secondary)",
-          }}
-        >
-          <Spinner style={{ width: "3rem", height: "3rem", color: "white" }} />
+        <Card className="organisation-director-loading d-flex justify-content-center align-items-center w-100 border-0 shadow-lg">
+          <Spinner className="organisation-spinner" />
         </Card>
       ) : (
-        <Card
-          className="border-0 overflow-hidden position-relative shadow-lg"
-          style={{
-            height: "450px",
-          }}
-        >
+        <Card className="organisation-director-card border-0 overflow-hidden position-relative shadow-lg">
           {/* Gradient header background */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: "190px",
-              background: "var(--bs-secondary)",
-              zIndex: 0,
-            }}
-          ></div>
+          <div className="organisation-gradient-header" />
 
-          <CardBody className="p-4 position-relative" style={{ zIndex: 1 }}>
+          <CardBody className="organisation-card-body p-4 position-relative">
             {/* Avatar section - positioned to overlap gradient */}
-            <div
-              className="d-flex justify-content-center"
-              style={{ marginTop: "120px" }}
-            >
+            <div className="d-flex justify-content-center organisation-avatar-container">
               <div className="position-relative">
                 {directorUser?.profile_image ? (
                   <div className="position-relative">
@@ -70,25 +45,10 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                       alt={directorUser?.name ?? "Director"}
                       width={90}
                       height={90}
-                      className="rounded-circle"
-                      style={{
-                        border: "2px solid white",
-                        objectFit: "cover",
-                        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
-                      }}
+                      className="rounded-circle organisation-avatar-img"
                     />
                     {directorUser?.is_active && (
-                      <div
-                        className="position-absolute bg-success rounded-circle d-flex align-items-center justify-content-center"
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          bottom: "4px",
-                          right: "4px",
-                          border: "2px solid white",
-                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                        }}
-                      >
+                      <div className="organisation-active-badge position-absolute bg-success rounded-circle d-flex align-items-center justify-content-center">
                         <i
                           className="fa fa-check"
                           style={{ fontSize: "10px", color: "white" }}
@@ -98,32 +58,11 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                   </div>
                 ) : (
                   <div className="position-relative">
-                    <div
-                      className="rounded-circle d-flex justify-content-center align-items-center text-white"
-                      style={{
-                        width: 90,
-                        height: 90,
-                        fontSize: 28,
-                        fontWeight: 700,
-                        background: "var(--bs-secondary)",
-                        border: "2px solid white",
-                        boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)",
-                      }}
-                    >
+                    <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
                       {initials(directorUser?.name)}
                     </div>
                     {directorUser?.is_active && (
-                      <div
-                        className="position-absolute bg-success rounded-circle d-flex align-items-center justify-content-center"
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          bottom: "4px",
-                          right: "4px",
-                          border: "2px solid white",
-                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                        }}
-                      >
+                      <div className="organisation-active-badge position-absolute bg-success rounded-circle d-flex align-items-center justify-content-center">
                         <i
                           className="fa fa-check"
                           style={{ fontSize: "10px", color: "white" }}
