@@ -1,5 +1,58 @@
 import { MenuItem } from "@/Types/LayoutTypes";
 
+//Admin
+const AdminMenu: MenuItem[] = [
+  {
+    title: "Admin",
+    lanClass: "lan-1",
+    type: "group",
+    Items: [
+      {
+        title: "Dashboard",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/dashboard",
+      },
+      {
+        title: "Networks",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/networks",
+      },
+      {
+        title: "Organisations",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/organisations",
+      },
+      {
+        title: "Directors",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/directors",
+      },
+      {
+        title: "Compliance Assistants",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/compliance-assistants",
+      },
+      {
+        title: "Support Ticket",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/support-ticket",
+      },
+    ],
+  },
+];
+
 //NetworkDirectorMenu
 const NetworkDirectorMenu: MenuItem[] = [
   {
@@ -475,6 +528,7 @@ const ClientMenu: MenuItem[] = [
 
 // Export all menus
 export {
+  AdminMenu,
   ClientMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
@@ -485,6 +539,8 @@ export {
 
 export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
+    case "ADMIN":
+      return AdminMenu;
     case "NETWORK_DIRECTOR":
       return NetworkDirectorMenu;
     case "NETWORK_COMPLIANCE_ASSISTANT":
