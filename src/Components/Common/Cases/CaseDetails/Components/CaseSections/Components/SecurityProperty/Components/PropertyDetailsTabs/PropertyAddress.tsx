@@ -476,8 +476,10 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                     Copy Main Address
                   </Button>
                 </InputGroup>
-                {errors.postcode && (
-                  <div className="text-danger">{errors.postcode}</div>
+                {(propertyState?.api_errors?.postcode || errors.postcode) && (
+                  <div className="text-danger">
+                    {propertyState?.api_errors?.postcode || errors.postcode}
+                  </div>
                 )}
               </FormGroup>
             </Col>
@@ -499,9 +501,11 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   required
                   disabled={isFetchingAddress}
                 />
-                {errors.house_name_or_number && (
+                {(propertyState?.api_errors?.house_name_or_number ||
+                  errors.house_name_or_number) && (
                   <div className="text-danger">
-                    {errors.house_name_or_number}
+                    {propertyState?.api_errors?.house_name_or_number ||
+                      errors.house_name_or_number}
                   </div>
                 )}
               </FormGroup>
@@ -521,8 +525,12 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   required
                   disabled={isFetchingAddress}
                 />
-                {errors.address_one && (
-                  <div className="text-danger">{errors.address_one}</div>
+                {(propertyState?.api_errors?.address_one ||
+                  errors.address_one) && (
+                  <div className="text-danger">
+                    {propertyState?.api_errors?.address_one ||
+                      errors.address_one}
+                  </div>
                 )}
               </FormGroup>
             </Col>
@@ -557,8 +565,10 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
                   required
                   disabled={isFetchingAddress}
                 />
-                {errors.city && (
-                  <div className="text-danger">{errors.city}</div>
+                {(propertyState?.api_errors?.city || errors.city) && (
+                  <div className="text-danger">
+                    {propertyState?.api_errors?.city || errors.city}
+                  </div>
                 )}
               </FormGroup>
             </Col>

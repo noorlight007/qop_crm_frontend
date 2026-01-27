@@ -87,6 +87,7 @@ export interface SecurityPropertyFormStateProps {
     contacts_mobile_telephone: string; // ""
     contacts_email_address: string; // ""
     estimated_value: number | null; // null
+    api_errors?: Record<string, string>;
   };
 }
 
