@@ -72,8 +72,125 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
     null,
   );
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // sanitize server messages like "400, ..."
+  const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
+
+  const toCamel = (key: string) =>
+    key.replace(/_([a-z])/g, (_, c) => (c ? c.toUpperCase() : ""));
+
+  const flattenErrors = (value: any, path = ""): Record<string, string> => {
+    const out: Record<string, string> = {};
+    if (value == null) return out;
+    if (typeof value === "string") {
+      out[path || ""] = sanitize(value);
+      return out;
+    }
+    if (Array.isArray(value)) {
+      const msgs = value
+        .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+        .join(", ");
+      out[path || ""] = sanitize(msgs);
+      return out;
+    }
+    if (typeof value === "object") {
+      for (const k of Object.keys(value)) {
+        const v = value[k];
+        const newPath = path ? `${path}.${k}` : k;
+        if (typeof v === "string" || Array.isArray(v)) {
+          const msgs = Array.isArray(v)
+            ? v
+                .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+                .join(", ")
+            : v;
+          out[newPath] = sanitize(msgs as string);
+        } else {
+          const child = flattenErrors(v, newPath);
+          Object.assign(out, child);
+        }
+      }
+    }
+    return out;
+  };
+
+  const normalizeKeyWithIndex = (rawKey: string, idx: number) => {
+    const parts = rawKey.split(".").filter(Boolean);
+    // if first part is numeric, replace with current index
+    if (/^\d+$/.test(parts[0])) parts[0] = String(idx);
+    else parts.unshift(String(idx));
+    const norm = parts.map((p) => (/^\d+$/.test(p) ? p : toCamel(p))).join(".");
+    return norm;
+  };
+
+  const clearRowErrors = (index: number) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      Object.keys(copy).forEach((k) => {
+        if (k.startsWith(`${index}.`)) delete copy[k];
+      });
+      return copy;
+    });
+
+  const clearFieldError = (index: number, field: string) =>
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[`${index}.${field}`];
+      // also try snake_case -> camelCase variant removal
+      const snake = field.replace(/([A-Z])/g, (m) => `_${m.toLowerCase()}`);
+      delete copy[`${index}.${snake}`];
+      return copy;
+    });
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    if (err && typeof err === "object") {
+      const msgs = collect(err);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
   // Move update logic out of JSX: re-usable handler
-  const handleUpdateLump = async (lump: LumpSumProps) => {
+  const handleUpdateLump = async (lump: LumpSumProps, idx: number) => {
     try {
       const payload = {
         policy: lump.policy || null,
@@ -89,10 +206,34 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
         lump_sum_alias: lump.id,
         lumpSumData: payload,
       }).unwrap();
+      // Clear any row errors on success
+      clearRowErrors(idx);
       toast.success("Lump sum commission updated successfully");
     } catch (err) {
       console.error("Failed to update lump sum", err);
-      toast.error("Failed to update lump sum commission");
+      // Try to parse structured validation errors
+      const e: any = err;
+      const dataErrors = e?.data?.errors ?? e?.data ?? e;
+      try {
+        const flat = flattenErrors(dataErrors);
+        const normalized: Record<string, string> = {};
+        Object.entries(flat).forEach(([k, v]) => {
+          const keyWithIndex = normalizeKeyWithIndex(k, idx);
+          normalized[keyWithIndex] = v;
+        });
+        if (Object.keys(normalized).length) {
+          setErrors((prev) => ({ ...prev, ...normalized }));
+          const first = Object.values(normalized)[0];
+          toast.error(getErrorMessage(first));
+          return;
+        }
+      } catch (e2) {
+        console.error("Error parsing validation errors", e2);
+      }
+
+      // Fallback general message
+      const msg = getErrorMessage(err);
+      toast.error(msg || "Failed to update lump sum commission");
     }
   };
 
@@ -240,6 +381,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                             copy[idx] = { ...copy[idx], policy: val };
                             return copy;
                           });
+                          clearFieldError(idx, "policy");
                         }}
                       >
                         <option value="">Select...</option>
@@ -250,6 +392,11 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                           </option>
                         ))}
                       </select>
+                      {errors[`${idx}.policy`] && (
+                        <div className="text-danger small mt-1">
+                          {errors[`${idx}.policy`]}
+                        </div>
+                      )}
                     </div>
 
                     <div className="col-md-4">
@@ -271,8 +418,14 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                               };
                               return copy;
                             });
+                            clearFieldError(idx, "commissionAmount");
                           }}
                         />
+                        {errors[`${idx}.commissionAmount`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.commissionAmount`]}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -290,8 +443,14 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                               copy[idx] = { ...copy[idx], dateReceived: val };
                               return copy;
                             });
+                            clearFieldError(idx, "dateReceived");
                           }}
                         />
+                        {errors[`${idx}.dateReceived`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.dateReceived`]}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -316,8 +475,14 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                               };
                               return copy;
                             });
+                            clearFieldError(idx, "clawbackAmount");
                           }}
                         />
+                        {errors[`${idx}.clawbackAmount`] && (
+                          <div className="text-danger small mt-1">
+                            {errors[`${idx}.clawbackAmount`]}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -334,8 +499,14 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                             copy[idx] = { ...copy[idx], clawbackDate: val };
                             return copy;
                           });
+                          clearFieldError(idx, "clawbackDate");
                         }}
                       />
+                      {errors[`${idx}.clawbackDate`] && (
+                        <div className="text-danger small mt-1">
+                          {errors[`${idx}.clawbackDate`]}
+                        </div>
+                      )}
                     </div>
 
                     <div className="col-md-3">
@@ -368,7 +539,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       disabled={
                         isUpdatingLump || session?.user?.user_type === "CLIENT"
                       }
-                      onClick={() => handleUpdateLump(lump)}
+                      onClick={() => handleUpdateLump(lump, idx)}
                     >
                       <ArrowUpCircle size={16} />{" "}
                       {isUpdatingLump ? "Updating..." : "Update"}

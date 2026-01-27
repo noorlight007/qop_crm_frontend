@@ -37,6 +37,7 @@ const CommissionContent: React.FC = () => {
   const [addCommission, { isLoading: isAdding }] = useAddCommissionMutation();
 
   const [note, setNote] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
@@ -69,6 +70,7 @@ const CommissionContent: React.FC = () => {
       });
       if (res.data) {
         toast.success("Commission notes updated successfully");
+        setErrors({});
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias,
@@ -81,8 +83,36 @@ const CommissionContent: React.FC = () => {
       }
       return false;
     } catch (err) {
+      // parse API validation errors and show per-field
+      const parsed: Record<string, string> = {};
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+      const data: any = (err && (err as any).data) || err;
+
+      if (data?.errors && typeof data.errors === "object") {
+        Object.keys(data.errors).forEach((k) => {
+          const v = data.errors[k];
+          if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
+          else parsed[k] = sanitize(String(v));
+        });
+      } else if (data?.message && typeof data.message === "string") {
+        parsed.non_field_error = sanitize(data.message);
+      } else if (typeof data === "string") {
+        parsed.non_field_error = sanitize(data);
+      }
+
+      const flattened: Record<string, string> = {};
+      Object.keys(parsed).forEach((k) => {
+        const base = k.split(".")[0];
+        if (!flattened[base]) flattened[base] = parsed[k];
+      });
+
+      setErrors(flattened);
+      const firstMsg =
+        Object.values(flattened)[0] ||
+        parsed.non_field_error ||
+        "Failed to update commission notes";
+      toast.error(firstMsg);
       console.error(err);
-      toast.error("Failed to update commission notes");
       return false;
     }
   };
@@ -147,6 +177,7 @@ const CommissionContent: React.FC = () => {
                 onChange={(e) => setNote(e.target.value)}
                 rows={5}
               />
+              {errors.note && <div className="text-danger">{errors.note}</div>}
             </FormGroup>
             <div className="d-flex justify-content-end gap-2">
               <Button
