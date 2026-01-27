@@ -18,6 +18,7 @@ import OrgClients from "./Clients/OrgClients";
 import DangerZone from "./DangerZone/DangerZone";
 import OrgIntroducers from "./Introducers/OrgIntroducers";
 import OrgLeads from "./Leads/OrgLeads";
+import OrganisationDirectorInfo from "./OrganisationDirectorInfo/OrganisationDirectorInfo";
 import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
 import Overview from "./Overview/Overview";
 
@@ -86,7 +87,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
       />
       <Container fluid>
         <Row>
-          <Col lg="4" md="12">
+          <Col lg="6" md="12">
             <OrganisationProfile
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -94,7 +95,15 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
               isDashboardLoading={isDashboardLoading}
             />
           </Col>
-          <Col lg="4" md="12">
+          <Col lg="6" md="12">
+            <OrganisationDirectorInfo
+              singleOrgInfo={singleOrgInfo}
+              isLoading={isLoading}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col lg="6" md="12">
             <OrgMortgagesChart
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}
@@ -102,7 +111,7 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
               isDashboardLoading={isDashboardLoading}
             />
           </Col>
-          <Col lg="4" md="12">
+          <Col lg="6" md="12">
             <OrgLendersChart
               singleOrgInfo={singleOrgInfo}
               singleOrgDashboardData={singleOrgDashboardData}

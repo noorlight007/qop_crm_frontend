@@ -9,6 +9,16 @@ export interface SingleOrganisationProps {
     hero_image?: string | null;
     primary_mobile?: string;
   };
+  users?: {
+    user?: {
+      id?: number;
+      name?: string;
+      email?: string;
+      phone?: string;
+      profile_image?: string | null;
+      user_type?: string;
+    };
+  }[];
   name?: string;
   email?: string;
   logo?: string | null;
