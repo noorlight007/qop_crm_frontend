@@ -1,4 +1,4 @@
-import { defaultAnswersData } from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/SuitabilityData";
+import { defaultAnswersData } from "@/Data/Cases/SuitabilityData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";

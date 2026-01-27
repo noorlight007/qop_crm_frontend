@@ -16,7 +16,7 @@ import {
   MortgageOFBTabTitleData,
   MortgageRCCTabTitleData,
   MortgageSubmissionTabTitleData,
-} from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsTabTitleData";
+} from "@/Data/Cases/CaseDetailsTabTitleData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
   basicTabIndicator,
@@ -43,7 +43,9 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
   caseCategory,
 }) => {
   const { casealias } = useParams();
-  const basicTab = useAppSelector((state: any) => state.caseSections.basicTabId);
+  const basicTab = useAppSelector(
+    (state: any) => state.caseSections.basicTabId,
+  );
   const dispatch = useAppDispatch();
 
   const { data: SectionCompleteStatusData } = useGetSectionCompleteStatusQuery({

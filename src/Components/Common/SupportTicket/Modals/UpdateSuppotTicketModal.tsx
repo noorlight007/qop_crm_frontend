@@ -31,6 +31,8 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     files: [],
   });
 
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [fileInputKey, setFileInputKey] = useState(0);
@@ -69,9 +71,17 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
   }, [isOpen]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const copy = { ...prev };
+      delete copy[name];
+      return copy;
+    });
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -93,16 +103,33 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       return;
     }
 
+    // clear any file upload related errors
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy.upload_files;
+      return copy;
+    });
+
     setNewFiles((prev) => [...prev, ...filesArray]);
     setFileInputKey((prev) => prev + 1);
   };
 
   const removeExistingFile = (index: number) => {
     setExistingFiles((prev) => prev.filter((_, i) => i !== index));
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy.upload_files;
+      return copy;
+    });
   };
 
   const removeNewFile = (index: number) => {
     setNewFiles((prev) => prev.filter((_, i) => i !== index));
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy.upload_files;
+      return copy;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -162,9 +189,38 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
 
       toast.success("Ticket Updated Successfully!!!");
       onSave(formData);
+      setErrors({});
       toggle();
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to update ticket");
+      // parse API validation errors and set per-field messages
+      const parsed: Record<string, string> = {};
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+      const data = error?.data || error;
+
+      if (data?.errors && typeof data.errors === "object") {
+        Object.keys(data.errors).forEach((k) => {
+          const v = data.errors[k];
+          if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
+          else parsed[k] = sanitize(String(v));
+        });
+      } else if (data?.message && typeof data.message === "string") {
+        parsed.non_field_error = sanitize(data.message);
+      } else if (typeof data === "string") {
+        parsed.non_field_error = sanitize(data);
+      }
+
+      const flattened: Record<string, string> = {};
+      Object.keys(parsed).forEach((k) => {
+        const base = k.split(".")[0];
+        if (!flattened[base]) flattened[base] = parsed[k];
+      });
+
+      setErrors(flattened);
+      const firstMsg =
+        Object.values(flattened)[0] ||
+        parsed.non_field_error ||
+        "Failed to update ticket";
+      toast.error(firstMsg);
       console.error("Error:", error);
     }
   };
@@ -193,6 +249,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               <option value="BUG_REPORT">Bug Report</option>
               <option value="FEATURE_REQUEST">Feature Request</option>
             </Input>
+            {errors.ticket_type && (
+              <div className="text-danger">{errors.ticket_type}</div>
+            )}
           </FormGroup>
 
           <FormGroup>
@@ -207,6 +266,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               onChange={handleChange}
               required
             />
+            {errors.subject && (
+              <div className="text-danger">{errors.subject}</div>
+            )}
           </FormGroup>
 
           <FormGroup>
@@ -222,6 +284,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               onChange={handleChange}
               required
             />
+            {errors.message && (
+              <div className="text-danger">{errors.message}</div>
+            )}
           </FormGroup>
 
           <FormGroup>
@@ -233,6 +298,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               onChange={handleFileChange}
               key={fileInputKey}
             />
+            {errors.upload_files && (
+              <div className="text-danger">{errors.upload_files}</div>
+            )}
             <small className="text-muted">
               You can attach multiple files, screenshots or documents (if any)
             </small>

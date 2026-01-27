@@ -27,6 +27,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
     message: "",
     files: [],
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [createSupportTicket, { isLoading: createSupTicketLoading }] =
     useCreateSupportTicketMutation();
@@ -43,9 +44,18 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
   }, [isOpen]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
+    // clear per-field API error on change
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const copy = { ...prev };
+      delete copy[name];
+      return copy;
+    });
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -65,6 +75,13 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
         e.target.value = "";
         return;
       }
+
+      // clear file related api errors
+      setErrors((prev) => {
+        const copy = { ...prev };
+        delete copy.upload_files;
+        return copy;
+      });
 
       setFormData((prev) => ({
         ...prev,
@@ -112,10 +129,43 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
           message: "",
           files: [],
         });
+        setErrors({});
         toggle();
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to create ticket");
+      // parse API validation errors and show under fields
+      const parsed: Record<string, string> = {};
+
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+
+      const data = error?.data || error;
+
+      if (data?.errors && typeof data.errors === "object") {
+        Object.keys(data.errors).forEach((k) => {
+          const v = data.errors[k];
+          if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
+          else parsed[k] = sanitize(String(v));
+        });
+      } else if (data?.message && typeof data.message === "string") {
+        parsed.non_field_error = sanitize(data.message);
+      } else if (typeof data === "string") {
+        parsed.non_field_error = sanitize(data);
+      }
+
+      // If there are nested field keys like upload_files.0, flatten to upload_files
+      const flattened: Record<string, string> = {};
+      Object.keys(parsed).forEach((k) => {
+        const base = k.split(".")[0];
+        if (!flattened[base]) flattened[base] = parsed[k];
+      });
+
+      setErrors(flattened);
+
+      const firstMsg =
+        Object.values(flattened)[0] ||
+        parsed.non_field_error ||
+        "Failed to create ticket";
+      toast.error(firstMsg);
     }
   };
 
@@ -144,6 +194,9 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
               <option value="BUG_REPORT">Bug Report</option>
               <option value="FEATURE_REQUEST">Feature Request</option>
             </Input>
+            {errors.ticket_type && (
+              <div className="text-danger">{errors.ticket_type}</div>
+            )}
           </FormGroup>
 
           {/* Subject */}
@@ -160,6 +213,9 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
               onChange={handleChange}
               required
             />
+            {errors.subject && (
+              <div className="text-danger">{errors.subject}</div>
+            )}
           </FormGroup>
 
           {/* Message */}
@@ -177,6 +233,9 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
               onChange={handleChange}
               required
             />
+            {errors.message && (
+              <div className="text-danger">{errors.message}</div>
+            )}
           </FormGroup>
 
           {/* Attachments */}
@@ -189,6 +248,9 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
               multiple
               onChange={handleFileChange}
             />
+            {errors.upload_files && (
+              <div className="text-danger">{errors.upload_files}</div>
+            )}
             <small className="text-muted">
               You can attach multiple files, screenshots or documents (if any)
             </small>

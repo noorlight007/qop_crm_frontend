@@ -29,9 +29,9 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
-import AddSupportTicketModal from "./SupportTicketDetails/Modals/AddSupportTicketModal";
-import DeleteSupportTicketModal from "./SupportTicketDetails/Modals/DeleteSupportTicketModal";
-import UpdateSupportTicketModal from "./SupportTicketDetails/Modals/UpdateSuppotTicketModal";
+import AddSupportTicketModal from "./Modals/AddSupportTicketModal";
+import DeleteSupportTicketModal from "./Modals/DeleteSupportTicketModal";
+import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
 
 const SupportTicket: React.FC = () => {
   const { data: session } = useSession();

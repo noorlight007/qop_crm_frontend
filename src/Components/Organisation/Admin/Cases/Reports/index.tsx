@@ -6,7 +6,7 @@ import {
   insuranceCaseStages,
   mortgageStages,
   reportTypes,
-} from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
+} from "@/Data/Common/FilterChoiceFields";
 import {
   useGetOrgAdminReportsMutation,
   useGetOrgAdminReportsViewQuery,

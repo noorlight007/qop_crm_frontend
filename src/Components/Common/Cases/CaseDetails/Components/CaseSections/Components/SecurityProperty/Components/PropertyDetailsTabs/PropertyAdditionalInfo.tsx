@@ -156,6 +156,15 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                             <option value="GRADE_B">Grade B</option>
                             <option value="GRADE_C">Grade C</option>
                           </Input>
+                          {propertyState.api_errors
+                            ?.listed_status_of_the_building && (
+                            <div className="text-danger">
+                              {
+                                propertyState.api_errors
+                                  .listed_status_of_the_building
+                              }
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                       <Col sm={12}>
@@ -170,6 +179,11 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                             value={propertyState.listed_building_notes || ""}
                             onChange={handleChange}
                           />
+                          {propertyState.api_errors?.listed_building_notes && (
+                            <div className="text-danger">
+                              {propertyState.api_errors.listed_building_notes}
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     </Row>
@@ -393,6 +407,15 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                             </option>
                           ))}
                         </Input>
+                        {propertyState.api_errors
+                          ?.new_build_warranty_provider && (
+                          <div className="text-danger">
+                            {
+                              propertyState.api_errors
+                                .new_build_warranty_provider
+                            }
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     {propertyState.new_build_warranty_provider === "Other" && (
@@ -411,6 +434,15 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                             }
                             onChange={handleChange}
                           />
+                          {propertyState.api_errors
+                            ?.other_new_build_warranty_provider && (
+                            <div className="text-danger">
+                              {
+                                propertyState.api_errors
+                                  .other_new_build_warranty_provider
+                              }
+                            </div>
+                          )}
                         </FormGroup>
                       </Col>
                     )}
@@ -477,6 +509,11 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                           value={propertyState.date_of_purchase || ""}
                           onChange={handleChange}
                         />
+                        {propertyState.api_errors?.date_of_purchase && (
+                          <div className="text-danger">
+                            {propertyState.api_errors.date_of_purchase}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col sm={6}>
@@ -493,6 +530,11 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                             step="0.01"
                           />
                         </InputGroup>
+                        {propertyState.api_errors?.discounted_price && (
+                          <div className="text-danger">
+                            {propertyState.api_errors.discounted_price}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -706,6 +748,15 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                         }
                         onChange={handleChange}
                       />
+                      {propertyState.api_errors
+                        ?.please_provide_further_details && (
+                        <div className="text-danger">
+                          {
+                            propertyState.api_errors
+                              .please_provide_further_details
+                          }
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 )}

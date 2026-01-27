@@ -22,7 +22,7 @@ import {
   Container,
   Row,
 } from "reactstrap";
-import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
+import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
 
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();

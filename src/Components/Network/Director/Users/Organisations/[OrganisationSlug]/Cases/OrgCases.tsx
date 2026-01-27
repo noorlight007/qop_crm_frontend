@@ -2,7 +2,7 @@ import {
   caseCategories,
   insuranceCaseStages,
   mortgageStages,
-} from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
+} from "@/Data/Common/FilterChoiceFields";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgCasesApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";

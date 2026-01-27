@@ -75,6 +75,7 @@ const initialState: SecurityPropertyFormStateProps = {
     contacts_email_address: "",
     estimated_value: null,
     other_new_build_warranty_provider: "",
+    api_errors: {} as Record<string, string>,
   },
 };
 
@@ -90,6 +91,15 @@ const propertyFormSlice = createSlice({
     ) => {
       state.Properties = { ...state.Properties, ...action.payload };
     },
+    setPropertyErrors: (
+      state,
+      action: PayloadAction<Record<string, string>>,
+    ) => {
+      state.Properties = { ...state.Properties, api_errors: action.payload };
+    },
+    clearPropertyErrors: (state) => {
+      state.Properties = { ...state.Properties, api_errors: {} };
+    },
     initializeForm: (
       state,
       action: PayloadAction<SecurityPropertyFormStateProps["Properties"]>,
@@ -100,6 +110,11 @@ const propertyFormSlice = createSlice({
   },
 });
 
-export const { updateProperty, resetForm, initializeForm } =
-  propertyFormSlice.actions;
+export const {
+  updateProperty,
+  resetForm,
+  initializeForm,
+  setPropertyErrors,
+  clearPropertyErrors,
+} = propertyFormSlice.actions;
 export default propertyFormSlice.reducer;

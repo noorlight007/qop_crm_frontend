@@ -2,7 +2,7 @@ import {
   caseCategories,
   insuranceCaseStages,
   mortgageStages,
-} from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
+} from "@/Data/Common/FilterChoiceFields";
 import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
@@ -156,16 +156,18 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 <FaInfoCircle
                   id="caseSearchSuggestion"
                   className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
-                  style={{ cursor: "pointer", zIndex: 10  }}
+                  style={{ cursor: "pointer", zIndex: 10 }}
                 />
-  
+
                 <UncontrolledPopover
                   placement="right"
                   target="caseSearchSuggestion"
                   trigger="hover"
                 >
                   <PopoverBody className="bg-white rounded text-dark p-3 small">
-                    🔍 You Can Search Using The Lead’s Name, Title, Phone Number, Email Address, Case Category, Case Status or Assigned User’s Name.
+                    🔍 You Can Search Using The Lead’s Name, Title, Phone
+                    Number, Email Address, Case Category, Case Status or
+                    Assigned User’s Name.
                   </PopoverBody>
                 </UncontrolledPopover>
               </InputGroup>

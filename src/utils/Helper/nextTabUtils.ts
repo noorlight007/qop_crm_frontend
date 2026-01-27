@@ -16,12 +16,12 @@ import {
   MortgageOFBTabTitleData,
   MortgageRCCTabTitleData,
   MortgageSubmissionTabTitleData,
-} from "@/Data/CommonComponentsData/SingleCaseInfo/CaseDetailsData/CaseDetailsTabTitleData";
+} from "@/Data/Cases/CaseDetailsTabTitleData";
 
 export const getNextTabNav = (
   caseStage: string,
   caseCategory: string,
-  currentTabNav: string
+  currentTabNav: string,
 ): string | null => {
   console.log(caseStage);
   // Map case stages to corresponding tab title data
@@ -69,7 +69,7 @@ export const getNextTabNav = (
 
   // Find the index of the current tab by its nav name
   const currentIndex = currentTabData.findIndex(
-    (tab) => tab.nav === currentTabNav
+    (tab) => tab.nav === currentTabNav,
   );
 
   // If current tab is not found or it's the last tab, return null

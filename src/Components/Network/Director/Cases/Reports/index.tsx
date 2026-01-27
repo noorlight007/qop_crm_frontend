@@ -7,7 +7,7 @@ import {
   mortgageStages,
   reportCategories,
   reportTypes,
-} from "@/Data/General/Dashboard/CommonData/FilterChoiceFields";
+} from "@/Data/Common/FilterChoiceFields";
 import {
   useGetNetworkDirectorReportsMutation,
   useGetNetworkDirectorReportsViewQuery,

@@ -169,6 +169,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   </option>
                 ))}
               </Input>
+              {propertyState?.api_errors?.property_type && (
+                <div className="text-danger">
+                  {propertyState.api_errors.property_type}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -193,6 +198,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     </option>
                   ))}
                 </Input>
+                {propertyState?.api_errors?.house_type && (
+                  <div className="text-danger">
+                    {propertyState.api_errors.house_type}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -215,6 +225,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     </option>
                   ))}
                 </Input>
+                {propertyState?.api_errors?.flat_type && (
+                  <div className="text-danger">
+                    {propertyState.api_errors.flat_type}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}
@@ -238,6 +253,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   </option>
                 ))}
               </Input>
+              {propertyState?.api_errors?.construction_of_walls && (
+                <div className="text-danger">
+                  {propertyState.api_errors.construction_of_walls}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -258,6 +278,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   </option>
                 ))}
               </Input>
+              {propertyState?.api_errors?.construction_of_roof && (
+                <div className="text-danger">
+                  {propertyState.api_errors.construction_of_roof}
+                </div>
+              )}
             </FormGroup>
           </Col>
         </Row>
@@ -277,6 +302,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.number_of_storeys_in_the_building || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.number_of_storeys_in_the_building && (
+                <div className="text-danger">
+                  {propertyState.api_errors.number_of_storeys_in_the_building}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -292,6 +322,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 onChange={handleChange}
                 maxLength={4}
               />
+              {propertyState?.api_errors?.year_built && (
+                <div className="text-danger">
+                  {propertyState.api_errors.year_built}
+                </div>
+              )}
             </FormGroup>
           </Col>
         </Row>
@@ -313,6 +348,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 <option value="COMMONHOLD">Commonhold</option>
                 <option value="FEUDAL">Feudal</option>
               </Input>
+              {propertyState?.api_errors?.tenure && (
+                <div className="text-danger">
+                  {propertyState.api_errors.tenure}
+                </div>
+              )}
             </FormGroup>
           </Col>
         </Row>
@@ -333,6 +373,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     value={propertyState.property_lease_term || ""}
                     onChange={handleChange}
                   />
+                  {propertyState?.api_errors?.property_lease_term && (
+                    <div className="text-danger">
+                      {propertyState.api_errors.property_lease_term}
+                    </div>
+                  )}
                   <span className="input-group-text">Years</span>
                 </InputGroup>
               </FormGroup>
@@ -356,6 +401,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {propertyState?.api_errors?.service_charge_per_month && (
+                    <div className="text-danger">
+                      {propertyState.api_errors.service_charge_per_month}
+                    </div>
+                  )}
                 </InputGroup>
               </FormGroup>
             </Col>
@@ -376,6 +426,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     inputMode="decimal"
                     onInput={limitDecimalPlaces}
                   />
+                  {propertyState?.api_errors?.ground_rent_per_annum && (
+                    <div className="text-danger">
+                      {propertyState.api_errors.ground_rent_per_annum}
+                    </div>
+                  )}
                 </InputGroup>
               </FormGroup>
             </Col>
@@ -399,6 +454,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                 />
+                {propertyState?.api_errors?.estimated_value && (
+                  <div className="text-danger">
+                    {propertyState.api_errors.estimated_value}
+                  </div>
+                )}
               </InputGroup>
             </FormGroup>
           </Col>
@@ -416,6 +476,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.bedrooms || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.bedrooms && (
+                <div className="text-danger">
+                  {propertyState.api_errors.bedrooms}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -430,6 +495,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.bathrooms || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.bathrooms && (
+                <div className="text-danger">
+                  {propertyState.api_errors.bathrooms}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -444,6 +514,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.reception_rooms || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.reception_rooms && (
+                <div className="text-danger">
+                  {propertyState.api_errors.reception_rooms}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -458,6 +533,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.kitchens || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.kitchens && (
+                <div className="text-danger">
+                  {propertyState.api_errors.kitchens}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -472,6 +552,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.garages || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.garages && (
+                <div className="text-danger">
+                  {propertyState.api_errors.garages}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -486,6 +571,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                 value={propertyState.parking_spaces || ""}
                 onChange={handleChange}
               />
+              {propertyState?.api_errors?.parking_spaces && (
+                <div className="text-danger">
+                  {propertyState.api_errors.parking_spaces}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -505,6 +595,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   </option>
                 ))}
               </Input>
+              {propertyState?.api_errors?.charge_type && (
+                <div className="text-danger">
+                  {propertyState.api_errors.charge_type}
+                </div>
+              )}
             </FormGroup>
           </Col>
 
@@ -520,6 +615,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   value={propertyState.epc_rating || ""}
                   onChange={handleChange}
                 ></Input>
+                {propertyState?.api_errors?.epc_rating && (
+                  <div className="text-danger">
+                    {propertyState.api_errors.epc_rating}
+                  </div>
+                )}
               </InputGroup>
               {propertyState.address_one && !propertyState.epc_rating && (
                 <small
@@ -545,6 +645,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     value={propertyState.floor || ""}
                     onChange={handleChange}
                   />
+                  {propertyState?.api_errors?.floor && (
+                    <div className="text-danger">
+                      {propertyState.api_errors.floor}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col sm={6}>
@@ -558,6 +663,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                     value={propertyState.flats || ""}
                     onChange={handleChange}
                   />
+                  {propertyState?.api_errors?.flats && (
+                    <div className="text-danger">
+                      {propertyState.api_errors.flats}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             </>
@@ -575,6 +685,11 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   value={propertyState.number_of_units || ""}
                   onChange={handleChange}
                 />
+                {propertyState?.api_errors?.number_of_units && (
+                  <div className="text-danger">
+                    {propertyState.api_errors.number_of_units}
+                  </div>
+                )}
               </FormGroup>
             </Col>
           )}

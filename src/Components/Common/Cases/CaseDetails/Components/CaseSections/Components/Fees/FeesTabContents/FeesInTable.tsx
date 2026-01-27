@@ -22,7 +22,6 @@ const FeeInTable = () => {
       const formattedFees = feesInDetails.map((fee: any, index: number) => ({
         alias: fee.alias || "",
         index: index,
-        isDeleted: false,
         feeInFeeOutId: fee.case?.alias || "",
         caseType: fee.case?.case_category || "",
         propertyName: "List_Fees_In",
@@ -33,15 +32,14 @@ const FeeInTable = () => {
         notes: fee.notes || "",
         feeDate: fee.date_received || "",
       }));
-      setFees(formattedFees);
+      setFeesIn(formattedFees);
     }
   }, [feesInDetails]);
 
-  const [fees, setFees] = useState([
+  const [feesIn, setFeesIn] = useState([
     {
       alias: "",
       index: 0,
-      isDeleted: false,
       feeInFeeOutId: "",
       caseType: "",
       propertyName: "List_Fees_In",
@@ -77,7 +75,7 @@ const FeeInTable = () => {
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const handleAddFee = (newFee: any) => {
-    setFees([...fees, { ...newFee, index: fees.length }]);
+    setFeesIn([...feesIn, { ...newFee, index: feesIn.length }]);
     toggleModal();
   };
   const handleFeeDelete = (fee: any) => {
@@ -153,48 +151,44 @@ const FeeInTable = () => {
                     </td>
                   </tr>
                 ) : (
-                  fees.map(
-                    (fee, index) =>
-                      !fee.isDeleted && (
-                        <tr
-                          key={fee.alias || index}
-                          className="feeTableRow feeRowIn"
+                  feesIn?.map((feeIn, index) => (
+                    <tr
+                      key={feeIn.alias || index}
+                      className="feeTableRow feeRowIn"
+                    >
+                      <td className="text-center align-middle">
+                        <span className="fw-bold">{index + 1}</span>
+                      </td>
+                      <td className="text-center align-middle">
+                        £{feeIn.fee || "0.00"}
+                      </td>
+                      <td className="text-center align-middle">
+                        {feeTypes.find((type) => type.value === feeIn.feeType)
+                          ?.title || "-"}
+                      </td>
+                      <td className="text-center align-middle">
+                        {methods.find((method) => method.value === feeIn.method)
+                          ?.title || "-"}
+                      </td>
+                      <td className="text-center align-middle">
+                        {feeIn.notes || "-"}
+                      </td>
+                      <td className="text-center align-middle">
+                        {feeIn.feeDate || "-"}
+                      </td>
+                      <td className="text-center align-middle">
+                        <Button
+                          color="danger"
+                          size="sm"
+                          outline
+                          className="removeFee"
+                          onClick={() => handleFeeDelete(feeIn)}
                         >
-                          <td className="text-center align-middle">
-                            <span className="fw-bold">{index + 1}</span>
-                          </td>
-                          <td className="text-center align-middle">
-                            £{fee.fee || "0.00"}
-                          </td>
-                          <td className="text-center align-middle">
-                            {feeTypes.find((type) => type.value === fee.feeType)
-                              ?.title || "-"}
-                          </td>
-                          <td className="text-center align-middle">
-                            {methods.find(
-                              (method) => method.value === fee.method,
-                            )?.title || "-"}
-                          </td>
-                          <td className="text-center align-middle">
-                            {fee.notes || "-"}
-                          </td>
-                          <td className="text-center align-middle">
-                            {fee.feeDate || "-"}
-                          </td>
-                          <td className="text-center align-middle">
-                            <Button
-                              color="danger"
-                              size="sm"
-                              outline
-                              className="removeFee"
-                              onClick={() => handleFeeDelete(fee)}
-                            >
-                              <i className="fa fa-trash"></i>
-                            </Button>
-                          </td>
-                        </tr>
-                      ),
-                  )
+                          <i className="fa fa-trash"></i>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </Table>

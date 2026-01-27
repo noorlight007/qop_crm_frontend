@@ -37,12 +37,12 @@ const DeleteFeeModal: React.FC<DeleteFeeModalProps> = ({
         <p>
           Are you sure you want to delete{" "}
           <b className="text-danger">
-            £{feeData?.fee ?? feeData?.amount ?? "-"}
+            £{feeData?.fee ?? feeData?.amount ?? "0.00"}
           </b>{" "}
           fee?
         </p>
         <div className="d-flex justify-content-end gap-2">
-          <Button color="secondary" onClick={toggle} disabled={isLoading}>
+          <Button color="primary" onClick={toggle} disabled={isLoading}>
             Cancel
           </Button>
           <Button

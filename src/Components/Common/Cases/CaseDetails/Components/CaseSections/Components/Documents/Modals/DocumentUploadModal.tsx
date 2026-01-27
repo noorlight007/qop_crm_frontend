@@ -58,6 +58,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
     description: "",
     specialNotes: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (caseUsers) {
@@ -169,11 +170,74 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
   ) => {
     const { name, value } = e.target as HTMLInputElement & HTMLSelectElement;
     setFormData({ ...formData, [name]: value } as any);
+    setErrors((prev) => {
+      if (!prev) return prev;
+      const copy = { ...prev };
+      if (copy[name]) delete copy[name];
+      return copy;
+    });
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const src = err?.data || err || {};
+    const sanitize = (s: any) => String(s ?? "").replace(/^\s*\d+,\s*/g, "");
+
+    const mapKey = (k: string) => {
+      const mappings: Record<string, string> = {
+        file_type: "fileType",
+        fileType: "fileType",
+        file_owner: "fileOwner",
+        fileOwner: "fileOwner",
+        name: "DocumentName",
+        DocumentName: "DocumentName",
+        description: "description",
+        special_notes: "specialNotes",
+        specialNotes: "specialNotes",
+        file: "file",
+      };
+      return mappings[k] || k;
+    };
+
+    const walk = (obj: any) => {
+      if (!obj) return;
+      if (typeof obj === "string") {
+        out.detail = sanitize(obj);
+        return;
+      }
+      if (Array.isArray(obj)) {
+        obj.forEach((it) => {
+          if (typeof it === "string") out.detail = sanitize(it);
+          else walk(it);
+        });
+        return;
+      }
+      if (typeof obj === "object") {
+        Object.entries(obj).forEach(([k, v]) => {
+          const fk = mapKey(k);
+          if (typeof v === "string" || typeof v === "number") {
+            out[fk] = sanitize(v);
+          } else if (Array.isArray(v)) {
+            out[fk] = v.map(sanitize).join(" ");
+          } else if (typeof v === "object") {
+            Object.entries(v as any).forEach(([k2, v2]) => {
+              const fk2 = mapKey(k2);
+              if (Array.isArray(v2)) out[fk2] = v2.map(sanitize).join(" ");
+              else out[fk2] = sanitize(v2);
+            });
+          }
+        });
+      }
+    };
+
+    walk(src);
+    return out;
   };
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (documents.length === 0) {
+      setErrors({ file: "Please select at least one file to upload." });
       toast.error("Please select at least one file to upload.");
       return;
     }
@@ -184,6 +248,10 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       : !!formData.fileOwner;
 
     if (!formData.fileType || !hasOwnerSelected) {
+      const newErr: Record<string, string> = {};
+      if (!formData.fileType) newErr.fileType = "This field is required.";
+      if (!hasOwnerSelected) newErr.fileOwner = "Select at least one owner.";
+      setErrors(newErr);
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -240,6 +308,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
         } catch (fileError) {
           console.error(`Error uploading ${file.name}:`, fileError);
           failedFiles.push(file.name);
+          const parsed = parseApiErrors(fileError);
+          setErrors((prev) => ({ ...(prev || {}), ...parsed }));
         }
       }
 
@@ -290,6 +360,8 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
     } catch (error) {
       console.error("Error uploading files:", error);
       setUploadProgress(0);
+      const parsed = parseApiErrors(error);
+      if (Object.keys(parsed).length) setErrors(parsed);
       toast.error("Failed to upload documents.");
     }
   };

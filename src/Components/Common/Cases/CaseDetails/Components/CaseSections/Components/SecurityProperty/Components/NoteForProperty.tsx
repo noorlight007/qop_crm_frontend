@@ -2,7 +2,11 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useUpdatePropertyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyApi";
-import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import {
+  clearPropertyErrors,
+  setPropertyErrors,
+  updateProperty,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { RootState } from "@/Redux/Store";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -39,7 +43,50 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
     useUpdateSectionCompleteStatusMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    dispatch(updateProperty({ notes: e.target.value }));
+    const value = e.target.value;
+    dispatch(updateProperty({ notes: value }));
+    const newErrors = { ...(formData.api_errors || {}) };
+    if (newErrors["notes"]) delete newErrors["notes"];
+    dispatch(setPropertyErrors(newErrors));
+  };
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const src = err?.data || err || {};
+    const sanitize = (s: any) => String(s ?? "").replace(/^\s*\d+,\s*/g, "");
+
+    const walk = (obj: any) => {
+      if (!obj) return;
+      if (typeof obj === "string") {
+        out.detail = sanitize(obj);
+        return;
+      }
+      if (Array.isArray(obj)) {
+        obj.forEach((it) => {
+          if (typeof it === "string") out.detail = sanitize(it);
+          else walk(it);
+        });
+        return;
+      }
+      if (typeof obj === "object") {
+        Object.entries(obj).forEach(([k, v]) => {
+          if (typeof v === "string" || typeof v === "number") {
+            out[k] = sanitize(v);
+          } else if (Array.isArray(v)) {
+            out[k] = v.map(sanitize).join(" ");
+          } else if (typeof v === "object") {
+            Object.entries(v as any).forEach(([k2, v2]) => {
+              if (Array.isArray(v2))
+                out[`${k}.${k2}`] = v2.map(sanitize).join(" ");
+              else out[`${k}.${k2}`] = sanitize(v2);
+            });
+          }
+        });
+      }
+    };
+
+    walk(src);
+    return out;
   };
   const dispatch = useAppDispatch();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -55,6 +102,7 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
     });
 
     if (response.data) {
+      dispatch(clearPropertyErrors());
       try {
         await updateSectionCompleteStatus({
           case_alias: casealias,
@@ -65,9 +113,13 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
       }
       toast.success("Property Details Updated Successfully");
     } else if (response.error) {
-      const errorMessage =
-        (response.error as any)?.data?.detail || "Failed to update property";
-      toast.error(errorMessage);
+      const parsed = parseApiErrors(response.error);
+      dispatch(setPropertyErrors(parsed));
+      const firstMsg =
+        Object.values(parsed)[0] ||
+        (response.error as any)?.data?.detail ||
+        "Failed to update property";
+      toast.error(firstMsg);
     } else {
       toast.error("Something went wrong");
     }
@@ -125,6 +177,9 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
                 }}
                 className="mb-3"
               />
+              {formData?.api_errors?.notes && (
+                <div className="text-danger">{formData.api_errors.notes}</div>
+              )}
             </FormGroup>
           </Col>
         </Row>
