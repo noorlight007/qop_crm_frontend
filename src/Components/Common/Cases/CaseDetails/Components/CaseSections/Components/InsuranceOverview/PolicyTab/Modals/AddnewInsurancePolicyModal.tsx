@@ -81,8 +81,15 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
     fracture_cover: false,
     notes: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (field: string, value: any) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -104,6 +111,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
         payload: formData,
       }).unwrap();
       toast.success("Insurance policy added successfully");
+      setErrors({});
       try {
         await updateSectionCompleteStatus({
           case_alias: caseAlias,
@@ -167,8 +175,36 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
         notes: "",
       });
     } catch (err) {
+      // parse API validation errors and show per-field
+      const parsed: Record<string, string> = {};
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+      const data: any = (err && (err as any).data) || err;
+
+      if (data?.errors && typeof data.errors === "object") {
+        Object.keys(data.errors).forEach((k) => {
+          const v = data.errors[k];
+          if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
+          else parsed[k] = sanitize(String(v));
+        });
+      } else if (data?.message && typeof data.message === "string") {
+        parsed.non_field_error = sanitize(data.message);
+      } else if (typeof data === "string") {
+        parsed.non_field_error = sanitize(data);
+      }
+
+      const flattened: Record<string, string> = {};
+      Object.keys(parsed).forEach((k) => {
+        const base = k.split(".")[0];
+        if (!flattened[base]) flattened[base] = parsed[k];
+      });
+
+      setErrors(flattened);
+      const firstMsg =
+        Object.values(flattened)[0] ||
+        parsed.non_field_error ||
+        "Failed to add insurance policy";
+      toast.error(firstMsg);
       console.error("Failed to add insurance policy", err);
-      toast.error("Failed to add insurance policy");
     }
   };
 
@@ -256,6 +292,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   </option>
                   <option value="RELEVANT_LIFE">Relevant Life</option>
                 </Input>
+                {errors.premium_payment_type && (
+                  <div className="text-danger">
+                    {errors.premium_payment_type}
+                  </div>
+                )}
               </FormGroup>
             </Col>
             <Col sm={12} md={6} lg={4}>
@@ -296,6 +337,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="VITALITY_LIFE">Vitality Life</option>
                   <option value="ZURICH">Zurich</option>
                 </Input>
+                {errors.applicant && (
+                  <div className="text-danger">{errors.applicant}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -309,6 +353,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("insurer_reference", e.target.value)
                   }
                 />
+                {errors.insurer_reference && (
+                  <div className="text-danger">{errors.insurer_reference}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -325,6 +372,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       handleChange("sum_assured", e.target.value)
                     }
                   />
+                  {errors.sum_assured && (
+                    <div className="text-danger">{errors.sum_assured}</div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -348,6 +398,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         handleChange("cover_period", e.target.value)
                       }
                     />
+                    {errors.cover_period && (
+                      <div className="text-danger">{errors.cover_period}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
@@ -367,6 +420,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         handleChange("deferred_period", e.target.value)
                       }
                     />
+                    {errors.deferred_period && (
+                      <div className="text-danger">
+                        {errors.deferred_period}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -410,6 +468,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="CANCELLED">Cancelled</option>
                   <option value="NOT_PROCEEDING">Not Proceeding</option>
                 </Input>
+                {errors.provider && (
+                  <div className="text-danger">{errors.provider}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -432,6 +493,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         handleChange("deferred_period", e.target.value)
                       }
                     />
+                    {errors.deferred_period && (
+                      <div className="text-danger">
+                        {errors.deferred_period}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
@@ -448,6 +514,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       <option value="WEEKS">Weeks</option>
                       <option value="MONTHS">Months</option>
                     </Input>
+                    {errors.deferred_period_type && (
+                      <div className="text-danger">
+                        {errors.deferred_period_type}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
 
@@ -463,6 +534,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         handleChange("monthly_sum_assured", e.target.value)
                       }
                     />
+                    {errors.monthly_sum_assured && (
+                      <div className="text-danger">
+                        {errors.monthly_sum_assured}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
@@ -482,6 +558,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                         handleChange("number_of_dependents", e.target.value)
                       }
                     />
+                    {errors.number_of_dependents && (
+                      <div className="text-danger">
+                        {errors.number_of_dependents}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col
@@ -500,6 +581,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }
                     />
                     <Label check>Sick Pay Provision</Label>
+                    {errors.sick_pay_provision && (
+                      <div className="text-danger">{errors.sick_pay_provision}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 {formData.sick_pay_provision && (
@@ -516,6 +600,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           )
                         }
                       />
+                      {errors.sick_pay_provision_notes && (
+                        <div className="text-danger">
+                          {errors.sick_pay_provision_notes}
+                        </div>
+                      )}
                     </FormGroup>
                   </Col>
                 )}
@@ -549,6 +638,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       Is it important to you that your buildings are insured
                       against accidental damage?
                     </Label>
+                    {errors.buildings_insured_accidental_damage && (
+                      <div className="text-danger">
+                        {errors.buildings_insured_accidental_damage}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -579,6 +673,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     Is it important that your valuables are protected against
                     all risks when they are outside the home?
                   </Label>
+                  {errors.valuables_outside_home_protection && (
+                    <div className="text-danger">
+                      {errors.valuables_outside_home_protection}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -610,6 +709,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       Is it important to you that your contents are insured
                       against accidental damage?
                     </Label>
+                    {errors.contents_insured_accidental_damage && (
+                      <div className="text-danger">
+                        {errors.contents_insured_accidental_damage}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -634,6 +738,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }
                     />
                     <Label check>Accidental Damage</Label>
+                    {errors.accidental_damage && (
+                      <div className="text-danger">{errors.accidental_damage}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -652,6 +759,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       handleChange("full_rebuild_value_of_home", e.target.value)
                     }
                   />
+                  {errors.full_rebuild_value_of_home && (
+                    <div className="text-danger">{errors.full_rebuild_value_of_home}</div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -680,7 +790,10 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     <Label check>
                       Do you have any specific item of contents worth more than
                       £1500 to replace?
-                    </Label>
+                    </Label>  
+                    {errors.high_value_items_over_1500 && (
+                      <div className="text-danger">{errors.high_value_items_over_1500}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -704,6 +817,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }
                     />
                     <Label check>Personal Possessions</Label>
+                    {errors.personal_possessions && (
+                      <div className="text-danger">{errors.personal_possessions}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
@@ -716,6 +832,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       value={formData.contents ?? ""}
                       onChange={(e) => handleChange("contents", e.target.value)}
                     />
+                    {errors.contents && (
+                      <div className="text-danger">{errors.contents}</div>
+                    )}
                   </FormGroup>
                 </Col>
               </>
@@ -731,6 +850,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   value={formData.premium ?? ""}
                   onChange={(e) => handleChange("premium", e.target.value)}
                 />
+                {errors.premium && (
+                  <div className="text-danger">{errors.premium}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -753,6 +875,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="BI_ANNUALLY">Bi Annually</option>
                   <option value="ANNUALLY">Annually</option>
                 </Input>
+                {errors.premium_payment_type && (
+                  <div className="text-danger">{errors.premium_payment_type}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -771,6 +896,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="APPLICANT_4">Applicant 4</option>
                   <option value="JOINT">Joint</option>
                 </Input>
+                {errors.applicant && (
+                  <div className="text-danger">{errors.applicant}</div>
+                )}
               </FormGroup>
             </Col>
             <Col sm={12} md={6} lg={4}>
@@ -786,6 +914,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="YES">Yes</option>
                   <option value="NO">No</option>
                 </Input>
+                {errors.in_trust && (
+                  <div className="text-danger">{errors.in_trust}</div>
+                )}
               </FormGroup>
             </Col>
             {formData.in_trust === "YES" && (
@@ -799,6 +930,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       handleChange("in_trust_date", e.target.value)
                     }
                   />
+                  {errors.in_trust_date && (
+                    <div className="text-danger">{errors.in_trust_date}</div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -817,6 +951,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="REVIEWABLE">Reviewable</option>
                   <option value="AGE_COSTED">Age Costed</option>
                 </Input>
+                {errors.guaranteed && (
+                  <div className="text-danger">{errors.guaranteed}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -843,6 +980,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   }
                   required
                 />
+                {errors.policy_term && (
+                  <div className="text-danger">{errors.policy_term}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -860,6 +1000,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   <option value="MONTHS">Months</option>
                   <option value="YEARS">Years</option>
                 </Input>
+                {errors.policy_term_validity && (
+                  <div className="text-danger">{errors.policy_term_validity}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -878,6 +1021,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     <option value="FIVE_YEARS">5 Years</option>
                     <option value="FULL_TERM">Full Term</option>
                   </Input>
+                  {errors.pays_out && (
+                    <div className="text-danger">{errors.pays_out}</div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -894,6 +1040,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("final_premium", e.target.value)
                   }
                 />
+                {errors.final_premium && (
+                  <div className="text-danger">{errors.final_premium}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -909,6 +1058,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("premium_quoted", e.target.value)
                   }
                 />
+                {errors.premium_quoted && (
+                  <div className="text-danger">{errors.premium_quoted}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -928,6 +1080,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   }
                 />
                 <Label check>Part of a Menu Plan</Label>
+                {errors.part_of_menu_plan && (
+                  <div className="text-danger">{errors.part_of_menu_plan}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -950,6 +1105,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       }
                     />
                     <Label check>Budget Plan Sold</Label>
+                    {errors.budget_plan_sold && (
+                      <div className="text-danger">{errors.budget_plan_sold}</div>
+                    )}
                   </FormGroup>
                 </Col>
                 {formData.budget_plan_sold && (
@@ -976,6 +1134,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                             )
                           }
                         />
+                        {errors.budget_plan_benefit_period && (
+                          <div className="text-danger">{errors.budget_plan_benefit_period}</div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col sm={12} md={6} lg={4}>
@@ -994,6 +1155,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                           <option value="MONTHS">Months</option>
                           <option value="YEARS">Years</option>
                         </Input>
+                        {errors.budget_plan_benefit_period_type && (
+                          <div className="text-danger">{errors.budget_plan_benefit_period_type}</div>
+                        )}
                       </FormGroup>
                     </Col>
                   </>
@@ -1011,6 +1175,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("case_submitted_date", e.target.value)
                   }
                 />
+                {errors.case_submitted_date && (
+                  <div className="text-danger">{errors.case_submitted_date}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1024,6 +1191,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("case_underwritten_date", e.target.value)
                   }
                 />
+                {errors.case_underwritten_date && (
+                  <div className="text-danger">{errors.case_underwritten_date}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1037,6 +1207,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("terms_expiry_date", e.target.value)
                   }
                 />
+                {errors.terms_expiry_date && (
+                  <div className="text-danger">{errors.terms_expiry_date}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1048,6 +1221,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   value={formData.on_risk_date ?? ""}
                   onChange={(e) => handleChange("on_risk_date", e.target.value)}
                 />
+                {errors.on_risk_date && (
+                  <div className="text-danger">{errors.on_risk_date}</div>
+                )}
               </FormGroup>
             </Col>
             <Col sm={12} md={6} lg={4}>
@@ -1060,6 +1236,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("cancelled_date", e.target.value)
                   }
                 />
+                {errors.cancelled_date && (
+                  <div className="text-danger">{errors.cancelled_date}</div>
+                )}
               </FormGroup>
             </Col>
             <Col sm={12} md={6} lg={4}>
@@ -1070,6 +1249,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   value={formData.renewal_date ?? ""}
                   onChange={(e) => handleChange("renewal_date", e.target.value)}
                 />
+                {errors.renewal_date && (
+                  <div className="text-danger">{errors.renewal_date}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1083,6 +1265,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     handleChange("not_proceeding_date", e.target.value)
                   }
                 />
+                {errors.not_proceeding_date && (
+                  <div className="text-danger">{errors.not_proceeding_date}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1102,6 +1287,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   }
                 />
                 <Label check>Waiver of Premium</Label>
+                {errors.waiver_of_premium && (
+                  <div className="text-danger">{errors.waiver_of_premium}</div>
+                )}
               </FormGroup>
             </Col>
             <Col
@@ -1118,6 +1306,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   onChange={(e) => handleChange("indexation", e.target.checked)}
                 />
                 <Label check>Indexation</Label>
+                {errors.indexation && (
+                  <div className="text-danger">{errors.indexation}</div>
+                )}
               </FormGroup>
             </Col>
             {(formData.policy_type === "LIFE_LEVEL" ||
@@ -1154,6 +1345,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     }
                   />
                   <Label check>Total & Permanent Disability Cover</Label>
+                  {errors.total_permanent_disability_cover && (
+                    <div className="text-danger">{errors.total_permanent_disability_cover}</div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -1177,6 +1371,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   }
                 />
                 <Label check>Have clients accepted this recommendation?</Label>
+                {errors.client_accepted_recommendation && (
+                  <div className="text-danger">{errors.client_accepted_recommendation}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1196,6 +1393,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   }
                 />
                 <Label check>Have non-standard terms been issued?</Label>
+                {errors.non_standard_terms_issued && (
+                  <div className="text-danger">{errors.non_standard_terms_issued}</div>
+                )}
               </FormGroup>
             </Col>
 
@@ -1213,6 +1413,11 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                       )
                     }
                   />
+                  {errors.non_standard_terms_from_lender && (
+                    <div className="text-danger">
+                      {errors.non_standard_terms_from_lender}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -1249,6 +1454,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     }
                   />
                   <Label check>Fracture Cover</Label>
+                  {errors.fracture_cover && (
+                    <div className="text-danger">{errors.fracture_cover}</div>
+                  )}
                 </FormGroup>
               </Col>
             )}
@@ -1266,6 +1474,9 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                   value={formData.notes}
                   onChange={(e) => handleChange("notes", e.target.value)}
                 />
+                {errors.notes && (
+                  <div className="text-danger">{errors.notes}</div>
+                )}
               </FormGroup>
             </Col>
           </Row>

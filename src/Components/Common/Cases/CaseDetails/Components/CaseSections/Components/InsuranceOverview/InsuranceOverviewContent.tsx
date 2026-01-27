@@ -52,6 +52,7 @@ const InsuranceOverviewContent: React.FC = () => {
     : insuranceOverviewData;
 
   const [formState, setFormState] = useState<any>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (overview) {
@@ -61,6 +62,12 @@ const InsuranceOverviewContent: React.FC = () => {
   }, [overview]);
 
   const handleChange = (field: string, value: any) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const copy = { ...prev };
+      delete copy[field];
+      return copy;
+    });
     setFormState((prev: any) => ({ ...prev, [field]: value }));
   };
 
@@ -92,10 +99,39 @@ const InsuranceOverviewContent: React.FC = () => {
         insurance_overview_alias,
         payload: editablePayload,
       }).unwrap();
+      setErrors({});
       toast.success("Insurance overview updated successfully");
     } catch (err) {
+      // parse API validation errors and set per-field messages
+      const parsed: Record<string, string> = {};
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+      const data: any = (err && (err as any).data) || err;
+
+      if (data?.errors && typeof data.errors === "object") {
+        Object.keys(data.errors).forEach((k) => {
+          const v = data.errors[k];
+          if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
+          else parsed[k] = sanitize(String(v));
+        });
+      } else if (data?.message && typeof data.message === "string") {
+        parsed.non_field_error = sanitize(data.message);
+      } else if (typeof data === "string") {
+        parsed.non_field_error = sanitize(data);
+      }
+
+      const flattened: Record<string, string> = {};
+      Object.keys(parsed).forEach((k) => {
+        const base = k.split(".")[0];
+        if (!flattened[base]) flattened[base] = parsed[k];
+      });
+
+      setErrors(flattened);
+      const firstMsg =
+        Object.values(flattened)[0] ||
+        parsed.non_field_error ||
+        "Failed to update insurance overview";
+      toast.error(firstMsg);
       console.error("Failed to update insurance overview", err);
-      toast.error("Failed to update insurance overview");
     }
   };
 
@@ -197,6 +233,11 @@ const InsuranceOverviewContent: React.FC = () => {
                     <option value="DIRECT">Direct</option>
                     <option value="RDI">RDI</option>
                   </Input>
+                  {errors.introduction_type && (
+                    <div className="text-danger">
+                      {errors.introduction_type}
+                    </div>
+                  )}
                 </FormGroup>
               </Col>
               <Col sm={12} md={4}>
@@ -213,6 +254,9 @@ const InsuranceOverviewContent: React.FC = () => {
                     <option value="ADVISING">Advising</option>
                     <option value="EXECUTION_ONLY">Execution Only</option>
                   </Input>
+                  {errors.advise_level && (
+                    <div className="text-danger">{errors.advise_level}</div>
+                  )}
                 </FormGroup>
               </Col>
               <Col sm={12} md={4}>
@@ -236,6 +280,9 @@ const InsuranceOverviewContent: React.FC = () => {
                     <option value="FRIENDS">Friends</option>
                     <option value="REFERRALS">Referrals</option>
                   </Input>
+                  {errors.lead_source && (
+                    <div className="text-danger">{errors.lead_source}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>
@@ -282,6 +329,9 @@ const InsuranceOverviewContent: React.FC = () => {
                     value={formState?.summary ?? ""}
                     onChange={(e) => handleChange("summary", e.target.value)}
                   />
+                  {errors.summary && (
+                    <div className="text-danger">{errors.summary}</div>
+                  )}
                 </FormGroup>
               </Col>
             </Row>

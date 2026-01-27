@@ -58,6 +58,17 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     useUpdateInsurancePolicyMutation();
 
   const [formStates, setFormStates] = useState<any[]>([]);
+  const [errorsByIndex, setErrorsByIndex] = useState<
+    Record<number, Record<string, string>>
+  >({});
+
+  const FieldError: React.FC<{ idx: number; name: string }> = ({
+    idx,
+    name,
+  }) =>
+    errorsByIndex[idx]?.[name] ? (
+      <div className="text-danger">{errorsByIndex[idx][name]}</div>
+    ) : null;
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
@@ -84,6 +95,16 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   }, [insurancePoliciesData]);
 
   const handleChange = (index: number, field: string, value: any) => {
+    setErrorsByIndex((prev) => {
+      const copy = { ...prev };
+      if (copy[index]) {
+        const c = { ...copy[index] };
+        delete c[field];
+        copy[index] = c;
+      }
+      return copy;
+    });
+
     setFormStates((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
@@ -104,14 +125,48 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
         payload: policy,
       }).unwrap();
       toast.success("Insurance policy updated successfully");
+      setErrorsByIndex((prev) => {
+        const copy = { ...prev };
+        delete copy[index];
+        return copy;
+      });
       // If the submit was triggered by a 'next' action, navigate to next tab
       if (submitActionRef.current === "next") {
         submitActionRef.current = null;
         handleNextTab();
       }
     } catch (err) {
+      // parse API validation errors and attach to this policy index
+      const parsed: Record<string, string> = {};
+      const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
+      const data: any = (err && (err as any).data) || err;
+
+      if (data?.errors && typeof data.errors === "object") {
+        Object.keys(data.errors).forEach((k) => {
+          const v = data.errors[k];
+          if (Array.isArray(v)) parsed[k] = sanitize(String(v[0]));
+          else parsed[k] = sanitize(String(v));
+        });
+      } else if (data?.message && typeof data.message === "string") {
+        parsed.non_field_error = sanitize(data.message);
+      } else if (typeof data === "string") {
+        parsed.non_field_error = sanitize(data);
+      }
+
+      const flattened: Record<string, string> = {};
+      Object.keys(parsed).forEach((k) => {
+        const base = k.split(".")[0];
+        if (!flattened[base]) flattened[base] = parsed[k];
+      });
+
+      setErrorsByIndex((prev) => ({ ...prev, [index]: flattened }));
+
+      const firstMsg =
+        Object.values(flattened)[0] ||
+        parsed.non_field_error ||
+        "Failed to update insurance policy";
+      toast.error(firstMsg);
       console.error("Failed to update insurance policy", err);
-      toast.error("Failed to update insurance policy");
     }
   };
 
@@ -276,6 +331,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       </option>
                       <option value="RELEVANT_LIFE">Relevant Life</option>
                     </Input>
+                    <FieldError idx={index} name="policy_type" />
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
@@ -325,6 +381,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       <option value="VITALITY_LIFE">Vitality Life</option>
                       <option value="ZURICH">Zurich</option>
                     </Input>
+                    <FieldError idx={index} name="provider" />
                   </FormGroup>
                 </Col>
 
@@ -338,6 +395,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(index, "insurer_reference", e.target.value)
                       }
                     />
+                    <FieldError idx={index} name="insurer_reference" />
                   </FormGroup>
                 </Col>
 
@@ -354,6 +412,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(index, "sum_assured", e.target.value)
                         }
                       />
+                      <FieldError idx={index} name="sum_assured" />
                     </FormGroup>
                   </Col>
                 )}
@@ -379,6 +438,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(index, "cover_period", e.target.value)
                           }
                         />
+                        <FieldError idx={index} name="cover_period" />
                       </FormGroup>
                     </Col>
                     <Col sm={12} md={6} lg={4}>
@@ -404,6 +464,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             )
                           }
                         />
+                        <FieldError idx={index} name="deferred_period" />
                       </FormGroup>
                     </Col>
                   </>
@@ -451,6 +512,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       <option value="CANCELLED">Cancelled</option>
                       <option value="NOT_PROCEEDING">Not Proceeding</option>
                     </Input>
+                    <FieldError idx={index} name="status" />
                   </FormGroup>
                 </Col>
 
@@ -518,6 +580,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             )
                           }
                         />
+                        <FieldError idx={index} name="monthly_sum_assured" />
                       </FormGroup>
                     </Col>
                     <Col sm={12} md={6} lg={4}>
@@ -807,6 +870,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                             handleChange(index, "contents", e.target.value)
                           }
                         />
+                        <FieldError idx={index} name="contents" />
                       </FormGroup>
                     </Col>
                   </>
@@ -824,6 +888,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(index, "premium", e.target.value)
                       }
                     />
+                    <FieldError idx={index} name="premium" />
                   </FormGroup>
                 </Col>
 
@@ -850,6 +915,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       <option value="BI_ANNUALLY">Bi Annually</option>
                       <option value="ANNUALLY">Annually</option>
                     </Input>
+                    <FieldError idx={index} name="premium_payment_type" />
                   </FormGroup>
                 </Col>
 
@@ -870,6 +936,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       <option value="APPLICANT_4">Applicant 4</option>
                       <option value="JOINT">Joint</option>
                     </Input>
+                    <FieldError idx={index} name="applicant" />
                   </FormGroup>
                 </Col>
                 <Col sm={12} md={6} lg={4}>
@@ -900,6 +967,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                           handleChange(index, "in_trust_date", e.target.value)
                         }
                       />
+                      <FieldError idx={index} name="in_trust_date" />
                     </FormGroup>
                   </Col>
                 )}
@@ -947,6 +1015,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       }
                       required
                     />
+                    <FieldError idx={index} name="policy_term" />
                   </FormGroup>
                 </Col>
 
@@ -1004,6 +1073,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(index, "final_premium", e.target.value)
                       }
                     />
+                    <FieldError idx={index} name="final_premium" />
                   </FormGroup>
                 </Col>
 
@@ -1019,6 +1089,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(index, "premium_quoted", e.target.value)
                       }
                     />
+                    <FieldError idx={index} name="premium_quoted" />
                   </FormGroup>
                 </Col>
 
@@ -1432,6 +1503,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         handleChange(index, "notes", e.target.value)
                       }
                     />
+                    <FieldError idx={index} name="notes" />
                   </FormGroup>
                 </Col>
               </Row>
