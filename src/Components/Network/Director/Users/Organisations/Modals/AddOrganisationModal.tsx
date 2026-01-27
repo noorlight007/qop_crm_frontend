@@ -304,7 +304,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             ? [...map[field], ...entry.messages]
             : [...entry.messages];
           const body = entry.messages.join(", ");
-          toast.error(`${field}: ${body}`);
+          toast.error(`${body}`);
         });
         setApiErrors(map);
         return;
