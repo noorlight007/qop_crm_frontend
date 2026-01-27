@@ -25,6 +25,51 @@ import {
   TabPane,
 } from "reactstrap";
 
+const getErrorMessage = (err: any) => {
+  if (!err) return "Unknown error";
+  if (typeof err === "string") return err;
+  if (typeof err?.data === "string") return err.data;
+
+  const collect = (value: any): string[] => {
+    if (value == null) return [];
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value))
+      return value.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
+    if (typeof value === "object") {
+      try {
+        return Object.values(value).flatMap((v) => collect(v));
+      } catch {
+        return [String(value)];
+      }
+    }
+    return [String(value)];
+  };
+
+  if (err && typeof err === "object") {
+    const msgs = collect(err);
+    if (msgs.length) return msgs.join(", ");
+  }
+
+  if (err?.data?.message) return String(err.data.message);
+
+  if (err?.data && typeof err.data === "object") {
+    const msgs = collect(err.data);
+    if (msgs.length) return msgs.join(", ");
+  }
+
+  if (err?.error) return String(err.error);
+  if (err?.message) {
+    if (/status code/i.test(err.message)) return "Server returned an error";
+    return String(err.message);
+  }
+
+  try {
+    return JSON.stringify(err);
+  } catch {
+    return String(err);
+  }
+};
+
 const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   isOpen,
   toggleModal,
@@ -47,6 +92,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     website: "",
     license_no: "",
   });
+  // API validation errors keyed by dot-notated field paths
+  const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
   // rtk hooks
   const [addOrganisation, { isLoading }] = useAddOrganisationMutation();
 
@@ -199,11 +246,75 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
         toggleModal();
       }
     } catch (error: any) {
-      if (error?.data?.email?.[0]) {
-        toast.error(error.data.email[0]);
-      } else {
-        toast.error("Failed to add organisation. Please try again.");
+      console.error("Add organisation error:", error);
+
+      // If API returned a field->messages object, flatten nested fields and show each specific field's messages.
+      const flattenErrors = (
+        value: any,
+        prefix = "",
+      ): Array<{ field: string; messages: string[] }> => {
+        const out: Array<{ field: string; messages: string[] }> = [];
+
+        const pushMessages = (fieldPath: string, msgs: any) => {
+          if (msgs == null) return;
+          if (typeof msgs === "string")
+            out.push({ field: fieldPath, messages: [msgs] });
+          else if (Array.isArray(msgs))
+            out.push({
+              field: fieldPath,
+              messages: msgs.map((m) =>
+                typeof m === "string" ? m : JSON.stringify(m),
+              ),
+            });
+          else if (typeof msgs === "object") {
+            // object with nested fields -> recurse
+            Object.entries(msgs).forEach(([k, v]) => {
+              const next = fieldPath ? `${fieldPath}.${k}` : k;
+              out.push(...flattenErrors(v, next));
+            });
+          } else out.push({ field: fieldPath, messages: [String(msgs)] });
+        };
+
+        // If incoming value is an object representing multiple fields
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+          Object.entries(value).forEach(([k, v]) => {
+            const next = prefix ? `${prefix}.${k}` : k;
+            out.push(...flattenErrors(v, next));
+          });
+          return out;
+        }
+
+        // Otherwise push messages for the prefix path
+        if (prefix) pushMessages(prefix, value);
+        else if (Array.isArray(value) || typeof value === "string")
+          pushMessages("error", value);
+
+        return out;
+      };
+
+      const source =
+        error?.data && typeof error.data === "object" ? error.data : error;
+      const flattened = flattenErrors(source);
+      if (flattened.length) {
+        // Build a map for rendering under inputs
+        const map: Record<string, string[]> = {};
+        flattened.forEach((entry) => {
+          const field = entry.field || "error";
+          map[field] = map[field]
+            ? [...map[field], ...entry.messages]
+            : [...entry.messages];
+          const body = entry.messages.join(", ");
+          toast.error(`${field}: ${body}`);
+        });
+        setApiErrors(map);
+        return;
       }
+
+      // Fallback: show aggregated message
+      const msg =
+        getErrorMessage(error) ||
+        "Failed to add organisation. Please try again.";
+      toast.error(msg);
     }
   };
 
@@ -255,6 +366,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       placeholder="Enter organisation name"
                       required
                     />
+                    {apiErrors.name ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.name.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -271,6 +387,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       placeholder="Enter primary mobile number"
                       required
                     />
+                    {apiErrors.primary_mobile ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.primary_mobile.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -284,6 +405,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter other contact person's phone"
                     />
+                    {apiErrors.other_contact ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.other_contact.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
 
@@ -298,6 +424,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter license number"
                     />
+                    {apiErrors.license_no ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.license_no.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
 
@@ -316,6 +447,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       placeholder="Enter email"
                       required
                     />
+                    {apiErrors.email ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.email.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -334,6 +470,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter website URL"
                     />
+                    {apiErrors.website ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.website.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -347,6 +488,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter contact person's name"
                     />
+                    {apiErrors.contact_person ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.contact_person.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -362,6 +508,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter contact person's designation"
                     />
+                    {apiErrors.contact_person_designation ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors.contact_person_designation.join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
               </Row>
@@ -393,6 +544,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       <option value="PROFESSOR">Professor</option>
                       <option value="DOCTOR">Doctor</option>
                     </Input>
+                    {apiErrors["user_data.title"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["user_data.title"].join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -409,6 +565,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       placeholder="Enter first name"
                       required
                     />
+                    {apiErrors["user_data.first_name"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["user_data.first_name"].join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -422,6 +583,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleUserChange}
                       placeholder="Enter middle name"
                     />
+                    {apiErrors["user_data.middle_name"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["user_data.middle_name"].join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -438,6 +604,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       placeholder="Enter last name"
                       required
                     />
+                    {apiErrors["user_data.last_name"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["user_data.last_name"].join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -454,6 +625,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       placeholder="Enter user email"
                       required
                     />
+                    {apiErrors["user_data.email"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["user_data.email"].join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
                 <Col md={6} xs={12}>
@@ -467,6 +643,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleUserChange}
                       placeholder="Enter user phone"
                     />
+                    {apiErrors["user_data.phone"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["user_data.phone"].join(", ")}
+                      </div>
+                    ) : null}
                   </FormGroup>
                 </Col>
               </Row>
