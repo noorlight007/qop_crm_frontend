@@ -24,7 +24,7 @@ const DeleteOrganisationModal: React.FC<DeleteOrganisationModalProps> = ({
       } else {
         toast.error("Failed to delete organisation.");
       }
-      router.push("/network");
+      router.push("/network/director/organisations");
     } catch (error) {
       console.error("Failed to delete organisation", error);
       toast.error("Failed to delete organisation. Please try again.");

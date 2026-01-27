@@ -235,8 +235,18 @@ export interface FetchSingleOrganisationProps {
   isLoading?: boolean;
   isDashboardLoading?: boolean;
 }
+
+export interface UserDataProps {
+  email?: string;
+  phone?: string;
+  title?: string | null;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+}
 export interface AddOrganisationProps {
-  [key: string]: string | File | null | boolean; // Allow any string key, with values being string, File, or null
+  [key: string]: string | File | null | boolean | UserDataProps | undefined;
+  user_data: UserDataProps;
   name: string;
   email: string;
   primary_mobile: string;
@@ -245,8 +255,7 @@ export interface AddOrganisationProps {
   contact_person_designation: string;
   website: string;
   license_no: string;
-  license_image: File | null;
-  is_removed: boolean;
+  license_image?: File;
 }
 
 // Add OrganisationModal Props
@@ -273,3 +282,5 @@ export interface AddEmployeeModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
+
+// User data returned/used in various places
