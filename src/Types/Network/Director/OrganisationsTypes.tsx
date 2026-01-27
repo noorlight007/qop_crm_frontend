@@ -9,6 +9,17 @@ export interface SingleOrganisationProps {
     hero_image?: string | null;
     primary_mobile?: string;
   };
+  users?: {
+    user?: {
+      id?: number;
+      name?: string;
+      email?: string;
+      phone?: string;
+      profile_image?: string | null;
+      user_type?: string;
+      is_active?: boolean;
+    };
+  }[];
   name?: string;
   email?: string;
   logo?: string | null;
@@ -235,8 +246,18 @@ export interface FetchSingleOrganisationProps {
   isLoading?: boolean;
   isDashboardLoading?: boolean;
 }
+
+export interface UserDataProps {
+  email?: string;
+  phone?: string;
+  title?: string | null;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+}
 export interface AddOrganisationProps {
-  [key: string]: string | File | null | boolean; // Allow any string key, with values being string, File, or null
+  [key: string]: string | File | null | boolean | UserDataProps | undefined;
+  user_data: UserDataProps;
   name: string;
   email: string;
   primary_mobile: string;
@@ -245,8 +266,7 @@ export interface AddOrganisationProps {
   contact_person_designation: string;
   website: string;
   license_no: string;
-  license_image: File | null;
-  is_removed: boolean;
+  license_image?: File;
 }
 
 // Add OrganisationModal Props
@@ -273,3 +293,5 @@ export interface AddEmployeeModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
+
+// User data returned/used in various places

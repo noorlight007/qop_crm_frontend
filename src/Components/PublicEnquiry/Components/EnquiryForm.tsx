@@ -47,7 +47,6 @@ const InitialEnquiryForm: React.FC = () => {
     other_source: "",
     notes: "",
     contact_consent: false,
-    privacy_notice_consent: false,
     referral_user: "",
   };
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
@@ -161,7 +160,7 @@ const InitialEnquiryForm: React.FC = () => {
         return Boolean(formData.source);
 
       case 4:
-        return formData.contact_consent && formData.privacy_notice_consent;
+        return formData.contact_consent;
 
       default:
         return false;
@@ -195,8 +194,6 @@ const InitialEnquiryForm: React.FC = () => {
       case 4:
         if (!formData.contact_consent)
           newErrors.contact_consent = "This field is required";
-        if (!formData.privacy_notice_consent)
-          newErrors.privacy_notice_consent = "This field is required";
         break;
     }
 
@@ -708,32 +705,6 @@ const InitialEnquiryForm: React.FC = () => {
                       <small className="text-danger">{errors.source}</small>
                     )}
                   </FormGroup>
-                  {formData.source === "REFERRAL" && (
-                    <FormGroup>
-                      <Label for="referral_user">Referral User</Label>
-                      <Input
-                        id="referral_user"
-                        name="referral_user"
-                        type="select"
-                        value={formData.referral_user || ""}
-                        onBlur={(e) =>
-                          handleBlur("referral_user", e.target.value)
-                        }
-                        onChange={handleChange}
-                      >
-                        <option value="">Select...</option>
-                        {introducerData &&
-                          introducerData?.map((user: any) => (
-                            <option key={user.id} value={user.id}>
-                              {user?.name}
-                            </option>
-                          ))}
-                      </Input>
-                      {errors.source && (
-                        <small className="text-danger">{errors.source}</small>
-                      )}
-                    </FormGroup>
-                  )}
                   {formData.source === "OTHER" && (
                     <FormGroup>
                       <Label for="other_source">Other Source</Label>
@@ -847,7 +818,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                   {/* CONSENT */}
                   <div className="border rounded p-3">
-                    <FormGroup check className="mb-2">
+                    <FormGroup check>
                       <Input
                         id="contact_consent"
                         type="checkbox"
@@ -861,31 +832,11 @@ const InitialEnquiryForm: React.FC = () => {
                         relation to my mortgage enquiry.
                       </Label>
                     </FormGroup>
-
-                    <FormGroup check>
-                      <Input
-                        id="privacy_notice_consent"
-                        type="checkbox"
-                        name="privacy_notice_consent"
-                        checked={formData.privacy_notice_consent}
-                        onChange={handleChange}
-                        className="border-primary"
-                      />
-                      <Label
-                        for="privacy_notice_consent"
-                        check
-                        className="ms-2"
-                      >
-                        I confirm that I have read and understood the Privacy
-                        Notice and consent to my personal data being processed
-                        in accordance with it.
-                      </Label>
-                    </FormGroup>
                   </div>
                 </>
               )}
 
-              <hr style={{ marginTop: "auto" }} />
+              <hr className="mt-2" />
 
               <div className="d-flex justify-content-between">
                 {currentStep > 1 && (
@@ -910,10 +861,7 @@ const InitialEnquiryForm: React.FC = () => {
                   <Button
                     color="primary"
                     className="ms-auto"
-                    disabled={
-                      !formData.contact_consent ||
-                      !formData.privacy_notice_consent
-                    }
+                    disabled={!formData.contact_consent}
                   >
                     {isLoading ? "Submitting..." : "Submit Application"}
                   </Button>

@@ -34,6 +34,9 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
     contact_person: "",
   });
 
+  // API validation errors keyed by dot-notated field paths
+  const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
+
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [oldName, setOldName] = useState("");
   // Rtk hooks
@@ -67,7 +70,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
           "",
       });
       setOldName(
-        organisationData?.name ?? organisationData?.organization?.name ?? ""
+        organisationData?.name ?? organisationData?.organization?.name ?? "",
       );
     }
   }, [organisationData, isOpen]);
@@ -108,22 +111,80 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
       }).unwrap();
       if (response) {
         toast.success("Organisation updated successfully!");
+        // clear previous API errors on success
+        setApiErrors({});
         // Redirect if name changed
         if (formData.name !== oldName) {
           router.push("/network/director/organisations");
           toast.warning(
-            "Due to the name change, redirected to the Organisations page."
+            "Due to the name change, redirected to the Organisations page.",
           );
         } else {
           toggle();
         }
       }
     } catch (error: any) {
-      if (error?.data?.email?.[0]) {
-        toast.error(error.data.email[0]);
-      } else {
-        toast.error("Failed to add organisation. Please try again.");
+      console.error("Update organisation error:", error);
+
+      const flattenErrors = (
+        value: any,
+        prefix = "",
+      ): Array<{ field: string; messages: string[] }> => {
+        const out: Array<{ field: string; messages: string[] }> = [];
+
+        const pushMessages = (fieldPath: string, msgs: any) => {
+          if (msgs == null) return;
+          if (typeof msgs === "string")
+            out.push({ field: fieldPath, messages: [msgs] });
+          else if (Array.isArray(msgs))
+            out.push({
+              field: fieldPath,
+              messages: msgs.map((m) =>
+                typeof m === "string" ? m : JSON.stringify(m),
+              ),
+            });
+          else if (typeof msgs === "object") {
+            Object.entries(msgs).forEach(([k, v]) => {
+              const next = fieldPath ? `${fieldPath}.${k}` : k;
+              out.push(...flattenErrors(v, next));
+            });
+          } else out.push({ field: fieldPath, messages: [String(msgs)] });
+        };
+
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+          Object.entries(value).forEach(([k, v]) => {
+            const next = prefix ? `${prefix}.${k}` : k;
+            out.push(...flattenErrors(v, next));
+          });
+          return out;
+        }
+
+        if (prefix) pushMessages(prefix, value);
+        else if (Array.isArray(value) || typeof value === "string")
+          pushMessages("error", value);
+
+        return out;
+      };
+
+      const source =
+        error?.data && typeof error.data === "object" ? error.data : error;
+      const flattened = flattenErrors(source);
+      if (flattened.length) {
+        const map: Record<string, string[]> = {};
+        flattened.forEach((entry) => {
+          const field = entry.field || "error";
+          map[field] = map[field]
+            ? [...map[field], ...entry.messages]
+            : [...entry.messages];
+          toast.error(`${entry.messages.join(", ")}`);
+        });
+        setApiErrors(map);
+        return;
       }
+
+      const fallback =
+        error?.message ?? "Failed to update organisation. Please try again.";
+      toast.error(fallback);
     }
   };
 
@@ -146,6 +207,11 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   onChange={handleInputChange}
                   required
                 />
+                {apiErrors.name ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.name.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -159,6 +225,11 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   onChange={handleInputChange}
                   required
                 />
+                {apiErrors.email ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.email.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -171,6 +242,11 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={formData.primary_mobile}
                   onChange={handleInputChange}
                 />
+                {apiErrors.primary_mobile ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.primary_mobile.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -188,6 +264,11 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={formData.website}
                   onChange={handleInputChange}
                 />
+                {apiErrors.website ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.website.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -200,6 +281,11 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={formData.contact_person}
                   onChange={handleInputChange}
                 />
+                {apiErrors.contact_person ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.contact_person.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col md="6">
@@ -212,11 +298,15 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={formData.other_contact}
                   onChange={handleInputChange}
                 />
+                {apiErrors.other_contact ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors.other_contact.join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
           </Row>
           <Row>
-            {/* Logo upload removed */}
             {/* Profile Image Upload */}
             <Col md="6">
               <FormGroup>
@@ -228,22 +318,24 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   accept="image/*"
                   onChange={handleFileChange}
                 />
-                {organisationData?.profile_image ? (
-                  <div className="d-flex justify-content-center mt-2">
-                    <Image
-                      src={organisationData.profile_image}
-                      alt="Profile"
-                      width={100}
-                      height={80}
-                      className="rounded-2 w-50 border border-success"
-                    />
-                  </div>
-                ) : (
-                  <div className="text-center mt-2 fw-medium opacity-50">
-                    <h6>Image not available</h6>
-                  </div>
-                )}
               </FormGroup>
+            </Col>
+            <Col md="6">
+              {organisationData?.profile_image ? (
+                <div className="d-flex justify-content-center mt-2">
+                  <Image
+                    src={organisationData.profile_image}
+                    alt="Profile"
+                    width={100}
+                    height={80}
+                    className="rounded-2 w-50 border border-success"
+                  />
+                </div>
+              ) : (
+                <div className="text-center mt-2 fw-medium opacity-50">
+                  <h6>Image not available</h6>
+                </div>
+              )}
             </Col>
           </Row>
         </ModalBody>
