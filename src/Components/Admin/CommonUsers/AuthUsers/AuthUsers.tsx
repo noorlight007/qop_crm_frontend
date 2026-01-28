@@ -1,5 +1,9 @@
+import {
+  useGetNetworkListQuery,
+  useGetOrganisationListQuery,
+} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
 import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
-import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -7,14 +11,12 @@ import { User } from "react-feather";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
   Col,
   Input,
   InputGroup,
-  Label,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -25,72 +27,85 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
-// Define your network and role options
-const NETWORK_OPTIONS = [
-  { value: "", label: "All Networks" },
-  { value: "cityplus", label: "CityPlus" },
-  // Add more network options as needed
-];
-
-const ROLE_OPTIONS = [
-  { value: "", label: "All Roles" },
-  { value: "NETWORK_ADVISER", label: "Network Adviser" },
-  { value: "ADMIN", label: "Admin" },
-  { value: "MANAGER", label: "Manager" },
-  // Add more role options as needed
-];
-
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
   authUsersPerPage = 10,
 }) => {
   const pathname = window.location.pathname;
-  const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [totalCount, setTotalCount] = useState(0);
-  
-  // New state for network and role filters
-  const [selectedNetwork, setSelectedNetwork] = useState("cityplus");
-  const [selectedRole, setSelectedRole] = useState("NETWORK_ADVISER");
 
-  const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    network: selectedNetwork || undefined,
-    role: selectedRole || undefined,
-    page: currentPage,
-    page_size: authUsersPerPage,
-    search: debouncedSearch || undefined,
-  });
+  // Updated state for network and organization filters
+  const [selectedNetwork, setSelectedNetwork] = useState("");
+  const [selectedOrganisation, setSelectedOrganisation] = useState("");
+
+  // Fetch network and organization lists
+  const { data: networkList, isLoading: networkListLoading } =
+    useGetNetworkListQuery({});
+  const { data: orgList, isLoading: orgListLoading } =
+    useGetOrganisationListQuery({
+      network: selectedNetwork,
+    });
+
+  // Set first network as default when networkList is loaded
+  useEffect(() => {
+    if (networkList && networkList.length > 0 && !selectedNetwork) {
+      setSelectedNetwork(networkList[0].subdomain);
+    }
+  }, [networkList, selectedNetwork]);
+
+  // Determine the role based on selection
+  const role = selectedOrganisation
+    ? "ORGANISATION_DIRECTOR"
+    : "NETWORK_DIRECTOR";
+
+  const {
+    data: authUsersData,
+    isLoading,
+    isFetching,
+    isError,
+  } = useGetAuthUsersQuery(
+    {
+      role,
+      network: selectedNetwork || undefined,
+      organisation: selectedOrganisation || undefined,
+      page: currentPage,
+      page_size: authUsersPerPage,
+      search: debouncedSearch || undefined,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  useEffect(() => {
-    if (authUsersData) {
-      if (Array.isArray(authUsersData)) {
-        setAuthUsers(authUsersData || []);
-        setTotalCount(authUsersData.length || 0);
-      } else if (authUsersData.results) {
-        setAuthUsers(authUsersData.results || []);
-        setTotalCount(authUsersData.count || 0);
-      } else {
-        setAuthUsers([]);
-        setTotalCount(0);
-      }
-    }
-  }, [authUsersData]);
+  const authUsers =
+    isFetching || isError
+      ? []
+      : Array.isArray(authUsersData)
+        ? authUsersData
+        : (authUsersData?.results ?? []);
 
-  // Reset to page 1 when filters change
+  const totalCount =
+    isFetching || isError
+      ? 0
+      : Array.isArray(authUsersData)
+        ? authUsersData.length
+        : (authUsersData?.count ?? 0);
+
   const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedNetwork(e.target.value);
+    setSelectedOrganisation("");
     setCurrentPage(1);
   };
 
-  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedRole(e.target.value);
+  const handleOrganisationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedOrganisation(e.target.value);
     setCurrentPage(1);
   };
 
@@ -101,10 +116,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     <Card>
       <CardBody>
         <Row className="d-flex justify-content-between py-4">
-          <Col md="3" xs="12">
+          <Col>
             <h2>{title}</h2>
           </Col>
-          <Col md={3} xs="12">
+          <Col md={2} xs="12">
             <InputGroup className="position-relative">
               <FaSearch
                 className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
@@ -114,6 +129,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 type="text"
                 placeholder="Search... "
                 value={searchQuery}
+                className="rounded"
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
@@ -138,11 +154,51 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               </UncontrolledPopover>
             </InputGroup>
           </Col>
-          <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
+          <Col md={3}>
+            <Input
+              type="select"
+              id="networkFilter"
+              value={selectedNetwork}
+              onChange={handleNetworkChange}
+              disabled={networkListLoading}
+              style={{ paddingTop: "0.4rem", paddingBottom: "0.4rem" }}
+            >
+              {networkListLoading ? (
+                <option disabled>Loading...</option>
+              ) : (
+                networkList?.map((network: any) => (
+                  <option key={network.subdomain} value={network.subdomain}>
+                    {network.name}
+                  </option>
+                ))
+              )}
+            </Input>
+          </Col>
+          <Col md={3}>
+            <Input
+              type="select"
+              id="organisationFilter"
+              value={selectedOrganisation}
+              onChange={handleOrganisationChange}
+              disabled={orgListLoading || !selectedNetwork}
+              style={{ paddingTop: "0.4rem", paddingBottom: "0.4rem" }}
+            >
+              <option value="">Select an Organisation</option>
+              {orgListLoading ? (
+                <option disabled>Loading...</option>
+              ) : (
+                orgList?.map((org: any, index: any) => (
+                  <option
+                    key={org.subdomain || `${org.name}-${index}`}
+                    value={org.subdomain || org.name}
+                  >
+                    {org.name}
+                  </option>
+                ))
+              )}
+            </Input>
+          </Col>
+          <Col className="d-flex justify-content-end mt-sm-0 mt-2">
             <Button
               color="primary"
               // onClick={openAddUserModal}
@@ -153,44 +209,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           </Col>
         </Row>
 
-        {/* Filter Row for Network and Role */}
-        <Row className="mb-3">
-          <Col md="3" xs="12" className="mb-2 mb-md-0">
-            <Label for="networkFilter" className="fw-semibold">
-              Network
-            </Label>
-            <Input
-              type="select"
-              id="networkFilter"
-              value={selectedNetwork}
-              onChange={handleNetworkChange}
-            >
-              {NETWORK_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Input>
-          </Col>
-          <Col md="3" xs="12">
-            <Label for="roleFilter" className="fw-semibold">
-              Role
-            </Label>
-            <Input
-              type="select"
-              id="roleFilter"
-              value={selectedRole}
-              onChange={handleRoleChange}
-            >
-              {ROLE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Input>
-          </Col>
-        </Row>
-
         <Row>
           <Table hover responsive>
             <thead className="thead-light">
@@ -198,23 +216,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Joining Date</th>
-                {pathname !== "/organisation/director/introducers" && (
-                  <th>Gender</th>
-                )}
-                {pathname === "/organisation/director/introducers" && (
-                  <>
-                    <th>Company Name</th>
-                    <th>Company Address</th>
-                  </>
-                )}
                 <th>Created At</th>
-                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
+              {isLoading || isFetching ? (
                 <tr>
                   <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
@@ -223,7 +230,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   </td>
                 </tr>
               ) : currentAuthUsers.length > 0 ? (
-                currentAuthUsers.map((user) => (
+                currentAuthUsers.map((user: any) => (
                   <tr key={user.alias} className="text-center">
                     <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                       <span
@@ -272,47 +279,9 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-
-                    <td>
-                      {user.joining_date ? (
-                        formatDate(user?.joining_date)
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )}
-                    </td>
-                    {pathname !== "/organisation/director/introducers" && (
-                      <td>
-                        {user?.gender ? (
-                          formatChoiceFieldValue(user?.gender)
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                    )}
-                    {pathname === "/organisation/director/introducers" && (
-                      <>
-                        <td>
-                          {user?.company_name || (
-                            <small className="text-muted">Not Available</small>
-                          )}
-                        </td>
-                        <td>
-                          {user?.company_address || (
-                            <small className="text-muted">Not Available</small>
-                          )}
-                        </td>
-                      </>
-                    )}
                     <td>
                       {formatDateAndTime(user?.created_at) || (
                         <small className="text-muted">Not Available</small>
-                      )}
-                    </td>
-                    <td>
-                      {user?.is_active ? (
-                        <Badge color="success">Approved</Badge>
-                      ) : (
-                        <Badge color="danger">Pending</Badge>
                       )}
                     </td>
                     <td>

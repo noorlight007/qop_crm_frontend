@@ -6,7 +6,7 @@ const AdminDirectorsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Director List"
+        title="Directors Overview"
         subTitle="Welcome back! Check all the Network Directors"
         parent="Client"
         child="Dashboard"
