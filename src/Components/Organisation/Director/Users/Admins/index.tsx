@@ -6,7 +6,7 @@ const OrganisationAdminsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Admin Status"
+        title="Admin Overview"
         subTitle="Manage organisation admins"
         parent="Users"
         child="Admins"
