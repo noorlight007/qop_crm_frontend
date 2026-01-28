@@ -1,8 +1,8 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import SupportTicket from "@/Components/Common/SupportTicket/SupportTicket";
 import { Container, Row } from "reactstrap";
-import SupportTicketList from "./SupportTicketList/SupportTicketList";
 
-const index: React.FC = () => {
+const SupportTicketContainer: React.FC = () => {
   return (
    <>
       <Breadcrumbs
@@ -13,11 +13,11 @@ const index: React.FC = () => {
       />
       <Container fluid>
         <Row>
-          <SupportTicketList />
+          <SupportTicket />
         </Row>
       </Container>
     </>
   );
 };
 
-export default index;
+export default SupportTicketContainer;

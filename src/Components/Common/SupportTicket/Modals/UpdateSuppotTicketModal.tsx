@@ -3,6 +3,7 @@ import {
   SupportTicketFormData,
   UpdateSupportTicketModalProps,
 } from "@/Types/Common/SupportTicket/SupportTicketTypes";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -26,11 +27,14 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
   const [formData, setFormData] = useState<SupportTicketFormData>({
     alias: "",
     ticket_type: "",
+    priority: "",
+    status: "",
     subject: "",
     message: "",
     files: [],
   });
-
+  const { data: session } = useSession();
+  const userType = session?.user?.user_type;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
@@ -45,6 +49,8 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       setFormData({
         alias: selected.alias || "",
         ticket_type: selected.ticket_type || "",
+        priority: selected.priority || "",
+        status: selected.status || "",
         subject: selected.subject || "",
         message: selected.message || "",
         files: [],
@@ -60,6 +66,8 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       setFormData({
         alias: "",
         ticket_type: "",
+        priority: "",
+        status: "",
         subject: "",
         message: "",
         files: [],
@@ -151,6 +159,8 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     if (shouldReplaceFiles && totalFilesCount === 0) {
       submissionData = {
         ticket_type: formData.ticket_type,
+        priority: formData.priority,
+        status: formData.status,
         subject: formData.subject,
         message: formData.message,
         upload_files: [],
@@ -162,6 +172,11 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       fd.append("ticket_type", formData.ticket_type);
       fd.append("subject", formData.subject);
       fd.append("message", formData.message);
+      fd.append("priority", formData.priority || "");
+
+      if (userType === "ADMIN") {
+        fd.append("status", formData.status || "");
+      }
 
       if (shouldReplaceFiles) {
         // Re-upload remaining existing files
@@ -253,6 +268,53 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               <div className="text-danger">{errors.ticket_type}</div>
             )}
           </FormGroup>
+
+          <FormGroup>
+            <Label for="priority">
+              Priority<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="priority"
+              name="priority"
+              type="select"
+              value={formData.priority}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Priority</option>
+              <option value="URGENT">Urgent</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="NORMAL">Normal</option>
+              <option value="WHEN_POSSIBLE">When Possible</option>
+            </Input>
+            {errors.priority && (
+              <div className="text-danger">{errors.priority}</div>
+            )}
+          </FormGroup>
+
+          {userType === "ADMIN" && (
+            <FormGroup>
+              <Label for="status">
+                Status<span className="text-danger">*</span>
+              </Label>
+              <Input
+                id="status"
+                name="status"
+                type="select"
+                value={formData.status}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Status</option>
+                <option value="OPEN">Open</option>
+                <option value="IN_REVIEW">In Review</option>
+                <option value="RESOLVED">Resolved</option>
+              </Input>
+              {errors.status && (
+                <div className="text-danger">{errors.status}</div>
+              )}
+            </FormGroup>
+          )}
 
           <FormGroup>
             <Label for="subject">
