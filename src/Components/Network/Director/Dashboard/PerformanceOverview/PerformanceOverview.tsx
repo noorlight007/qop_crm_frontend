@@ -17,38 +17,39 @@ const PerformanceOverview: React.FC<NetworkDirectorDashboardProps> = ({
     {
       title: "New Mortgage Enquiry",
       value:
-        networkDirectorDashboardData?.summary_cards?.new_mortgage_enquiry ?? 0,
+        networkDirectorDashboardData?.mortgage_summary_cards
+          ?.new_mortgage_enquiry ?? 0,
       icon: TbFileInvoice,
       bgColor: "bg-primary",
     },
     {
       title: "Mortgage Cases Submitted",
       value:
-        networkDirectorDashboardData?.summary_cards?.mortgage_cases_submitted ??
-        0,
+        networkDirectorDashboardData?.mortgage_summary_cards
+          ?.mortgage_cases_submitted ?? 0,
       icon: TbFileText,
       bgColor: "bg-success",
     },
     {
       title: "Mortgage Cases Offered",
       value:
-        networkDirectorDashboardData?.summary_cards?.mortgage_cases_offered ??
-        0,
+        networkDirectorDashboardData?.mortgage_summary_cards
+          ?.mortgage_cases_offered ?? 0,
       icon: TbFileCheck,
       bgColor: "bg-warning",
     },
     {
       title: "Mortgage Cases Completed",
       value:
-        networkDirectorDashboardData?.summary_cards?.mortgage_cases_completed ??
-        0,
+        networkDirectorDashboardData?.mortgage_summary_cards
+          ?.mortgage_cases_completed ?? 0,
       icon: TbFileX,
       bgColor: "bg-info",
     },
     {
       title: "Insurance Cases Submitted",
       value:
-        networkDirectorDashboardData?.summary_cards
+        networkDirectorDashboardData?.insurance_summary_cards
           ?.insurance_cases_submitted ?? 0,
       icon: TbShield,
       bgColor: "bg-secondary",
