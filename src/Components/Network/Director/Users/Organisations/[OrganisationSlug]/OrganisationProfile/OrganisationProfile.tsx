@@ -76,10 +76,10 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
           <Spinner color="primary" />
         </Card>
       ) : (
-        <Card className="shadow-lg border-0 org-profile-card">
+        <Card className="shadow-lg">
           {/* Header Section with Logo and Basic Info */}
           <div
-            className="bg-gradient-primary position-relative overflow-hidden"
+            className="bg-gradient-primary position-relative overflow-hidden rounded-top-3"
             style={{
               background: `linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)`,
               minHeight: "140px",

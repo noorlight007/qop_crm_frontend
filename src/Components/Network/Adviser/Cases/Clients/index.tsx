@@ -6,7 +6,7 @@ const NetworkAdviserClientsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Client Status"
+        title="Client Overview"
         subTitle="Here you can see all the clients of the network"
         parent="Cases"
         child="Clients"

@@ -6,8 +6,8 @@ const NetworkDirectorLeadsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Lead Status"
-        subTitle="Welcome to the Lead Status"
+        title="Lead Overview"
+        subTitle="Welcome to the Lead Overview"
         parent="Cases"
         child="Leads"
       />

@@ -6,7 +6,7 @@ const OrganisationDirectorIntroducersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Introducer Status"
+        title="Introducer Overview"
         subTitle="Manage organisation introducers"
         parent="Users"
         child="Introducers"
