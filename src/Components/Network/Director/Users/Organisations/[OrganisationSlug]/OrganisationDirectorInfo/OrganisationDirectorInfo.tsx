@@ -88,7 +88,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
           <Spinner className="organisation-spinner" />
         </Card>
       ) : (
-        <Card className="organisation-director-card border-0 overflow-hidden position-relative shadow-lg">
+        <Card className="border-0 overflow-hidden position-relative shadow-lg">
           {/* Gradient header background */}
           <div className="organisation-gradient-header" />
 
@@ -175,7 +175,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
             </Row>
             <Row>
               <Col sm="6">
-                <Card className="bg-light-secondary p-2 d-flex align-items-center">
+                <Card className="bg-light-secondary p-2 d-flex align-items-center mb-2">
                   <FaPhoneAlt
                     className="me-2 bg-secondary p-1 rounded-1"
                     size={25}
@@ -189,7 +189,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
               </Col>
               <Col sm="6">
                 {directorUser?.is_active ? (
-                  <Card className="bg-light-success p-2 d-flex align-items-center">
+                  <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
                     <FaShieldAlt
                       className="me-2 bg-success p-1 rounded-1"
                       size={25}
@@ -197,7 +197,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                     Verified Director
                   </Card>
                 ) : (
-                  <Card className="bg-light-danger p-2 d-flex align-items-center">
+                  <Card className="bg-light-danger p-2 d-flex align-items-center mb-2">
                     <FaShieldAlt
                       className="me-2 bg-danger p-1 rounded-1"
                       size={25}

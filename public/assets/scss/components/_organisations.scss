@@ -64,16 +64,12 @@
   color: white !important;
 }
 
-.organisation-director-card {
-  height: 450px;
-}
-
 .organisation-gradient-header {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 190px;
+  height: 140px;
   background: var(--primary-color);
   z-index: 0;
 }
@@ -83,7 +79,7 @@
 }
 
 .organisation-avatar-container {
-  margin-top: 120px;
+  margin-top: 70px;
 }
 
 .organisation-avatar-img {
