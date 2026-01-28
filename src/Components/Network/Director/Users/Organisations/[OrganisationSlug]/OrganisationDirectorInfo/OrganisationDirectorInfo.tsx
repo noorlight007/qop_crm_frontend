@@ -1,20 +1,27 @@
+import { Update } from "@/Constant";
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import { FaCamera, FaPhoneAlt, FaShieldAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import UpdateOrgDirectorInfoModal from "../Modals/UpdateOrgDirectorInfoModal";
 
 const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
   isLoading,
 }) => {
+  const [isOrgDirectorUpdateModalOpen, setIsOrgDirectorUpdateModalOpen] = useState(false);
   // Rtk hooks
   const [updateOrganisation, { isLoading: isUpdating }] =
     useUpdateOrganisationMutation();
+
+    const toggleOrgDirectorUpdateModal = () => {
+      setIsOrgDirectorUpdateModalOpen(!isOrgDirectorUpdateModalOpen);
+    }
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -91,7 +98,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
               <Button
                 size="sm"
                 color="primary"
-                // onClick={toggleUpdateModal}
+                onClick={toggleOrgDirectorUpdateModal}
                 title="Edit Organisation"
               >
                 <i className="iconly-Edit icli"></i>
@@ -203,6 +210,11 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
           </CardBody>
         </Card>
       )}
+      <UpdateOrgDirectorInfoModal
+        isOpen={isOrgDirectorUpdateModalOpen}
+        toggle={toggleOrgDirectorUpdateModal}
+        organisationData={singleOrgInfo}
+      />
     </>
   );
 };

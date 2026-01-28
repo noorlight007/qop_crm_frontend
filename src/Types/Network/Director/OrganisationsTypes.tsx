@@ -285,7 +285,7 @@ export interface DeleteOrganisationModalProps {
 export interface UpdateOrganisationModalProps {
   isOpen: boolean;
   toggle: () => void;
-  slug: string | undefined;
+  slug?: string | undefined;
   organisationData?: any;
 }
 
