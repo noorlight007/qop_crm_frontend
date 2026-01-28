@@ -1,4 +1,3 @@
-import { Update } from "@/Constant";
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -14,14 +13,15 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
   isLoading,
 }) => {
-  const [isOrgDirectorUpdateModalOpen, setIsOrgDirectorUpdateModalOpen] = useState(false);
+  const [isOrgDirectorUpdateModalOpen, setIsOrgDirectorUpdateModalOpen] =
+    useState(false);
   // Rtk hooks
   const [updateOrganisation, { isLoading: isUpdating }] =
     useUpdateOrganisationMutation();
 
-    const toggleOrgDirectorUpdateModal = () => {
-      setIsOrgDirectorUpdateModalOpen(!isOrgDirectorUpdateModalOpen);
-    }
+  const toggleOrgDirectorUpdateModal = () => {
+    setIsOrgDirectorUpdateModalOpen(!isOrgDirectorUpdateModalOpen);
+  };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -120,7 +120,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                     <button
                       title="Change profile image"
                       className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                      style={{ width: 30, height: 30, right: 8, bottom: 8 }}
+                      style={{ width: 30, height: 30, right: 3, bottom: 3 }}
                       onClick={handleProfileImageUpload}
                       disabled={isUpdating}
                     >
@@ -136,7 +136,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                     <button
                       title="Change profile image"
                       className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                      style={{ width: 30, height: 30, right: 8, bottom: 8 }}
+                      style={{ width: 30, height: 30, right: 3, bottom: 3 }}
                       onClick={handleProfileImageUpload}
                       disabled={isUpdating}
                     >

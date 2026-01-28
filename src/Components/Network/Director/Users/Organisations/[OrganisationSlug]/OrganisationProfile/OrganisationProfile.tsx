@@ -1,6 +1,9 @@
+import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { FaCamera } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
   Button,
   Card,
@@ -19,6 +22,53 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgDashboardData,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Rtk hooks
+  const [updateOrganisation, { isLoading: isUpdating }] =
+    useUpdateOrganisationMutation();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleProfileImageUpload = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    // Basic client-side validation (optional)
+    const maxSizeInMB = 5;
+    if (file.size / 1024 / 1024 > maxSizeInMB) {
+      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
+      return;
+    }
+
+    try {
+      const formDataToSend = new FormData();
+      // Place file inside user_data so backend updates the user profile image
+      formDataToSend.append("logo", file);
+
+      if (!singleOrgInfo?.slug) {
+        toast.error("Organisation identifier missing");
+        return;
+      }
+
+      await updateOrganisation({
+        slug: singleOrgInfo.slug,
+        payload: formDataToSend,
+      }).unwrap();
+
+      toast.success("Profile image updated");
+    } catch (err: any) {
+      console.error("Profile upload error:", err);
+      const msg = err?.data?.detail || err?.message || "Upload failed";
+      toast.error(msg);
+    } finally {
+      // Reset input so same file can be re-selected if needed
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const toggleUpdateModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -70,7 +120,24 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 alt="Logo"
                 className="profile-pic object-fit-cover"
               />
-              {/* edit icon intentionally removed from inside the logo */}
+              {/* Camera overlay badge (bottom-right) for initials avatar */}
+              <button
+                title="Change profile image"
+                className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                style={{ width: 30, height: 30, right: 8, bottom: 8 }}
+                onClick={handleProfileImageUpload}
+                disabled={isUpdating}
+              >
+                <FaCamera size={12} className="text-dark" />
+              </button>
+              {/* Hidden file input used by camera button */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFileSelected}
+              />
             </div>
             <CardTitle
               tag="h3"
