@@ -50,7 +50,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 alt="Banner"
               />
             </div>
-            {/* Edit button moved to top-right of the card (not over the logo) */}
+            {/* Edit button top-right of the card */}
             <div className="edit_icon position-absolute">
               <Button
                 size="sm"
