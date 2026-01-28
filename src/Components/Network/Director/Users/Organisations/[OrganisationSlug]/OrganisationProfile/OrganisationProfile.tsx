@@ -2,13 +2,8 @@ import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director
 import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import Image from "next/image";
 import { useRef, useState } from "react";
-import {
-  FaCamera,
-  FaEnvelope,
-  FaGlobeAmericas,
-  FaNetworkWired,
-  FaPhone,
-} from "react-icons/fa";
+import { Mail } from "react-feather";
+import { FaCamera, FaNetworkWired, FaPhoneAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
@@ -160,12 +155,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 <Col className="text-white">
                   <h2 className="mb-1 fw-bold">{singleOrgInfo?.name}</h2>
                   <div className="d-flex align-items-center gap-2 mb-2">
-                    <Badge color="dark" className="text-dark fw-500">
-                      <FaGlobeAmericas className="me-1" />
-                      Organisation
-                    </Badge>
                     {singleOrgInfo?.network?.name && (
-                      <Badge color="dark" className="text-dark">
+                      <Badge className="bg-success">
                         <FaNetworkWired className="me-1" />
                         {singleOrgInfo?.network?.name}
                       </Badge>
@@ -206,7 +197,10 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         marginTop: "2px",
                       }}
                     >
-                      <FaPhone size={16} />
+                      <FaPhoneAlt
+                        className="bg-primary p-1 rounded-1"
+                        size={25}
+                      />
                     </div>
                     <div className="flex-grow-1">
                       <p className="small text-muted mb-1">Phone</p>
@@ -240,7 +234,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         marginTop: "2px",
                       }}
                     >
-                      <FaEnvelope size={16} />
+                      <Mail className="bg-primary p-1 rounded-1" size={25} />
                     </div>
                     <div className="flex-grow-1">
                       <p className="small text-muted mb-1">Email</p>

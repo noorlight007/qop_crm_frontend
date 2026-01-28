@@ -117,14 +117,15 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
 
           <CardBody className="organisation-card-body p-4 position-relative">
             {/* Edit button top-right of the card */}
-            <div className="edit_icon position-absolute">
+            <div className="edit_icon">
               <Button
                 size="sm"
+                outline
                 color="primary"
                 onClick={toggleOrgDirectorUpdateModal}
                 title="Edit Organisation"
               >
-                <i className="iconly-Edit icli"></i>
+                <i className="iconly-Edit me-2"></i>Edit
               </Button>
             </div>
             {/* Avatar section - positioned to overlap gradient */}
