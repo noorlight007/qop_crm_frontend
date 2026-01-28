@@ -86,7 +86,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
           <div
             className="bg-gradient-primary position-relative overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              background: `linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color) 100%)`,
               minHeight: "140px",
             }}
           >
@@ -201,7 +201,10 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                   <div className="d-flex align-items-start gap-3">
                     <div
                       className="flex-shrink-0"
-                      style={{ color: "#667eea", marginTop: "2px" }}
+                      style={{
+                        color: "var(--primary-color)",
+                        marginTop: "2px",
+                      }}
                     >
                       <FaPhone size={16} />
                     </div>
@@ -213,7 +216,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                           className="fw-500 text-dark text-decoration-none"
                           style={{ transition: "color 0.2s" }}
                           onMouseEnter={(e) =>
-                            (e.currentTarget.style.color = "#667eea")
+                            (e.currentTarget.style.color =
+                              "var(--primary-color)")
                           }
                           onMouseLeave={(e) =>
                             (e.currentTarget.style.color = "inherit")
@@ -231,7 +235,10 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                   <div className="d-flex align-items-start gap-3">
                     <div
                       className="flex-shrink-0"
-                      style={{ color: "#667eea", marginTop: "2px" }}
+                      style={{
+                        color: "var(--primary-color)",
+                        marginTop: "2px",
+                      }}
                     >
                       <FaEnvelope size={16} />
                     </div>
@@ -243,7 +250,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                           className="fw-500 text-dark text-decoration-none"
                           style={{ transition: "color 0.2s" }}
                           onMouseEnter={(e) =>
-                            (e.currentTarget.style.color = "#667eea")
+                            (e.currentTarget.style.color =
+                              "var(--primary-color)")
                           }
                           onMouseLeave={(e) =>
                             (e.currentTarget.style.color = "inherit")

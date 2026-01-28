@@ -90,7 +90,30 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
       ) : (
         <Card className="border-0 overflow-hidden position-relative shadow-lg">
           {/* Gradient header background */}
-          <div className="organisation-gradient-header" />
+          <div className="organisation-gradient-header overflow-hidden">
+            <div
+              className="position-absolute"
+              style={{
+                top: -50,
+                right: -50,
+                width: 200,
+                height: 200,
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: "50%",
+              }}
+            ></div>
+            <div
+              className="position-absolute"
+              style={{
+                bottom: -30,
+                left: -30,
+                width: 150,
+                height: 150,
+                background: "rgba(255,255,255,0.05)",
+                borderRadius: "50%",
+              }}
+            ></div>
+          </div>
 
           <CardBody className="organisation-card-body p-4 position-relative">
             {/* Edit button top-right of the card */}
