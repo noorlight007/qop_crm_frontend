@@ -19,7 +19,7 @@ export const SingleOrganisationApi = baseApi.injectEndpoints({
     updateOrganisation: builder.mutation({
       query: ({ slug, payload }) => ({
         url: `/organization/list/${slug}/`,
-        method: "PUT",
+        method: "PATCH",
         body: payload,
       }),
       invalidatesTags: ["SingleOrganisation", "OrganisationList"],

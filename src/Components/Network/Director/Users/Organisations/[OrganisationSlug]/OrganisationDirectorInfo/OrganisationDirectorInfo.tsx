@@ -1,14 +1,72 @@
+import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
+import { useRef, useState } from "react";
 import { Mail } from "react-feather";
-import { FaPhoneAlt, FaShieldAlt } from "react-icons/fa";
-import { Badge, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import { FaCamera, FaPhoneAlt, FaShieldAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import UpdateOrgDirectorInfoModal from "../Modals/UpdateOrgDirectorInfoModal";
 
 const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,
   isLoading,
 }) => {
+  const [isOrgDirectorUpdateModalOpen, setIsOrgDirectorUpdateModalOpen] =
+    useState(false);
+  // Rtk hooks
+  const [updateOrganisation, { isLoading: isUpdating }] =
+    useUpdateOrganisationMutation();
+
+  const toggleOrgDirectorUpdateModal = () => {
+    setIsOrgDirectorUpdateModalOpen(!isOrgDirectorUpdateModalOpen);
+  };
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleProfileImageUpload = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    // Basic client-side validation (optional)
+    const maxSizeInMB = 5;
+    if (file.size / 1024 / 1024 > maxSizeInMB) {
+      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
+      return;
+    }
+
+    try {
+      const formDataToSend = new FormData();
+      // Place file inside user_data so backend updates the user profile image
+      formDataToSend.append("user_data.profile_image", file);
+
+      if (!singleOrgInfo?.slug) {
+        toast.error("Organisation identifier missing");
+        return;
+      }
+
+      await updateOrganisation({
+        slug: singleOrgInfo.slug,
+        payload: formDataToSend,
+      }).unwrap();
+
+      toast.success("Profile image updated");
+    } catch (err: any) {
+      console.error("Profile upload error:", err);
+      const msg = err?.data?.detail || err?.message || "Upload failed";
+      toast.error(msg);
+    } finally {
+      // Reset input so same file can be re-selected if needed
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   // Find the organisation director user if present
   const directorUser =
     singleOrgInfo?.users?.find(
@@ -30,11 +88,46 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
           <Spinner className="organisation-spinner" />
         </Card>
       ) : (
-        <Card className="organisation-director-card border-0 overflow-hidden position-relative shadow-lg">
+        <Card className="border-0 overflow-hidden position-relative shadow-lg">
           {/* Gradient header background */}
-          <div className="organisation-gradient-header" />
+          <div className="organisation-gradient-header overflow-hidden">
+            <div
+              className="position-absolute"
+              style={{
+                top: -50,
+                right: -50,
+                width: 200,
+                height: 200,
+                background: "rgba(255,255,255,0.1)",
+                borderRadius: "50%",
+              }}
+            ></div>
+            <div
+              className="position-absolute"
+              style={{
+                bottom: -30,
+                left: -30,
+                width: 150,
+                height: 150,
+                background: "rgba(255,255,255,0.05)",
+                borderRadius: "50%",
+              }}
+            ></div>
+          </div>
 
           <CardBody className="organisation-card-body p-4 position-relative">
+            {/* Edit button top-right of the card */}
+            <div className="edit_icon">
+              <Button
+                size="sm"
+                outline
+                color="primary"
+                onClick={toggleOrgDirectorUpdateModal}
+                title="Edit Organisation"
+              >
+                <i className="iconly-Edit me-2"></i>Edit
+              </Button>
+            </div>
             {/* Avatar section - positioned to overlap gradient */}
             <div className="d-flex justify-content-center organisation-avatar-container">
               <div className="position-relative">
@@ -47,32 +140,45 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                       height={90}
                       className="rounded-circle organisation-avatar-img"
                     />
-                    {directorUser?.is_active && (
-                      <div className="organisation-active-badge position-absolute bg-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i
-                          className="fa fa-check"
-                          style={{ fontSize: "10px", color: "white" }}
-                        />
-                      </div>
-                    )}
+                    {/* Camera overlay badge (bottom-right) */}
+                    <button
+                      title="Change profile image"
+                      className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                      style={{ width: 30, height: 30, right: 3, bottom: 3 }}
+                      onClick={handleProfileImageUpload}
+                      disabled={isUpdating}
+                    >
+                      <FaCamera size={12} className="text-dark" />
+                    </button>
                   </div>
                 ) : (
                   <div className="position-relative">
                     <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
                       {initials(directorUser?.name)}
                     </div>
-                    {directorUser?.is_active && (
-                      <div className="organisation-active-badge position-absolute bg-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i
-                          className="fa fa-check"
-                          style={{ fontSize: "10px", color: "white" }}
-                        />
-                      </div>
-                    )}
+                    {/* Camera overlay badge (bottom-right) for initials avatar */}
+                    <button
+                      title="Change profile image"
+                      className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                      style={{ width: 30, height: 30, right: 3, bottom: 3 }}
+                      onClick={handleProfileImageUpload}
+                      disabled={isUpdating}
+                    >
+                      <FaCamera size={12} className="text-dark" />
+                    </button>
                   </div>
                 )}
               </div>
             </div>
+
+            {/* Hidden file input used by camera button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleFileSelected}
+            />
 
             {/* Name and role */}
             <div className="text-center mt-1 mb-3">
@@ -93,7 +199,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
             </Row>
             <Row>
               <Col sm="6">
-                <Card className="bg-light-secondary p-2 d-flex align-items-center">
+                <Card className="bg-light-secondary p-2 d-flex align-items-center mb-2">
                   <FaPhoneAlt
                     className="me-2 bg-secondary p-1 rounded-1"
                     size={25}
@@ -107,7 +213,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
               </Col>
               <Col sm="6">
                 {directorUser?.is_active ? (
-                  <Card className="bg-light-success p-2 d-flex align-items-center">
+                  <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
                     <FaShieldAlt
                       className="me-2 bg-success p-1 rounded-1"
                       size={25}
@@ -115,7 +221,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                     Verified Director
                   </Card>
                 ) : (
-                  <Card className="bg-light-danger p-2 d-flex align-items-center">
+                  <Card className="bg-light-danger p-2 d-flex align-items-center mb-2">
                     <FaShieldAlt
                       className="me-2 bg-danger p-1 rounded-1"
                       size={25}
@@ -128,6 +234,11 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
           </CardBody>
         </Card>
       )}
+      <UpdateOrgDirectorInfoModal
+        isOpen={isOrgDirectorUpdateModalOpen}
+        toggle={toggleOrgDirectorUpdateModal}
+        organisationData={singleOrgInfo}
+      />
     </>
   );
 };

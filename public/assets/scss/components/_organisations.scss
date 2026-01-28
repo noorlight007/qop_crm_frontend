@@ -13,34 +13,6 @@
   background: transparent;
 }
 
-.edit_icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  border-radius: 50%;
-  font-size: 14px;
-  box-shadow: none;
-}
-
-.edit_icon button {
-  background: white !important;
-  border: none !important;
-  box-shadow: none !important;
-  height: 40px;
-  width: 40px;
-  border-radius: 50%;
-  padding-bottom: 0px;
-}
-.edit_icon button:hover {
-  background: rgb(223, 223, 223) !important;
-  transition: all 0.5s ease-in-out;
-}
-
-.edit_icon button i {
-  color: #333;
-  font-size: 18px;
-}
-
 .organisation_card {
   box-shadow: 0 5px 15px rgba(48, 142, 136, 0.153);
   transition: all 0.3s ease;
@@ -52,6 +24,16 @@
 }
 
 // OrganisationDirectorInfo css
+
+.edit_icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 50%;
+  font-size: 14px;
+  box-shadow: none;
+}
+
 .organisation-director-loading {
   height: 450px;
   border-radius: 20px;
@@ -64,16 +46,12 @@
   color: white !important;
 }
 
-.organisation-director-card {
-  height: 450px;
-}
-
 .organisation-gradient-header {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 190px;
+  height: 140px;
   background: var(--primary-color);
   z-index: 0;
 }
@@ -83,7 +61,7 @@
 }
 
 .organisation-avatar-container {
-  margin-top: 120px;
+  margin-top: 70px;
 }
 
 .organisation-avatar-img {

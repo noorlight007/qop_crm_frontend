@@ -8,12 +8,14 @@ export interface Adviser {
 }
 export interface NetworkDirectorDashboardData {
   network?: string;
-  summary_cards: {
+  mortgage_summary_cards: {
     new_mortgage_enquiry?: number;
     mortgage_cases_submitted?: number;
     mortgage_cases_completed?: number;
-    insurance_cases_submitted?: number;
     mortgage_cases_offered?: number;
+  };
+  insurance_summary_cards: {
+    insurance_cases_submitted?: number;
   };
   mortgage_type_counts: {
     PURCHASE?: number;
