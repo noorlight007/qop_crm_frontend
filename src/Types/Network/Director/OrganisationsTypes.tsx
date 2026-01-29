@@ -255,9 +255,7 @@ export interface UserDataProps {
   middle_name?: string;
   last_name?: string;
 }
-export interface AddOrganisationProps {
-  [key: string]: string | File | null | boolean | UserDataProps | undefined;
-  user_data: UserDataProps;
+export interface OrganisationListProps {
   name: string;
   email: string;
   primary_mobile: string;
@@ -267,6 +265,12 @@ export interface AddOrganisationProps {
   website: string;
   license_no: string;
   license_image?: File;
+}
+
+export interface AddOrganisationProps {
+  [key: string]: string | File | null | boolean | UserDataProps | undefined;
+  organization: OrganisationListProps;
+  user: UserDataProps;
 }
 
 // Add OrganisationModal Props

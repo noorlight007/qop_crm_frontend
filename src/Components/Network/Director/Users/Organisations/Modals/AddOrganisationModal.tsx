@@ -75,7 +75,17 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   toggleModal,
 }) => {
   const [formData, setFormData] = useState<AddOrganisationProps>({
-    user_data: {
+    organization: {
+      name: "",
+      primary_mobile: "",
+      email: "",
+      other_contact: "",
+      contact_person: "",
+      contact_person_designation: "",
+      website: "",
+      license_no: "",
+    },
+    user: {
       email: "",
       phone: "",
       title: null,
@@ -83,14 +93,6 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       middle_name: "",
       last_name: "",
     },
-    name: "",
-    email: "",
-    primary_mobile: "",
-    other_contact: "",
-    contact_person: "",
-    contact_person_designation: "",
-    website: "",
-    license_no: "",
   });
   // API validation errors keyed by dot-notated field paths
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
@@ -102,11 +104,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      organization: {
+        ...(prevState.organization as any),
+        [name]: value,
+      },
     }));
   };
 
-  // Handle user_data text input changes
+  // Handle user text input changes
   const handleUserChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -114,8 +119,8 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     const fieldValue: any = type === "checkbox" ? checked : value;
     setFormData((prevState) => ({
       ...prevState,
-      user_data: {
-        ...(prevState.user_data as UserDataProps),
+      user: {
+        ...(prevState.user as UserDataProps),
         [name]: fieldValue,
       },
     }));
@@ -132,9 +137,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   // Validate required organisation fields
   const validateOrganisation = () => {
     // Return true if required organisation fields are non-empty.
-    const name = ((formData as any).name || "").toString().trim();
-    const primary = ((formData as any).primary_mobile || "").toString().trim();
-    const email = ((formData as any).email || "").toString().trim();
+    const name = ((formData as any).organization?.name || "").toString().trim();
+    const primary = ((formData as any).organization?.primary_mobile || "")
+      .toString()
+      .trim();
+    const email = ((formData as any).organization?.email || "")
+      .toString()
+      .trim();
     return !!(name && primary && email);
   };
 
@@ -154,7 +163,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       }
       return;
     }
-    toggleTab("user_data");
+    toggleTab("user");
   };
 
   const onBack = () => {
@@ -179,7 +188,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       return;
     }
 
-    // ensure entire form validity (includes user_data fields)
+    // ensure entire form validity (includes user fields)
     if (formRef.current && !formRef.current.checkValidity()) {
       formRef.current.reportValidity();
       return;
@@ -187,46 +196,29 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
     try {
       // Build JSON payload. Convert File -> base64 string when present.
-      const userData = formData.user_data as any;
+      const userData = formData.user as any;
 
-      const fileToBase64 = (file: File) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = (err) => reject(err);
-          reader.readAsDataURL(file);
-        });
+      // Build payload directly from formData (no file -> base64 conversion)
+      const payload: Record<string, any> = { ...(formData as any) };
 
-      const payload: Record<string, any> = {};
-
-      for (const key in formData) {
-        if (key === "user_data") continue;
-        const val = (formData as any)[key];
-        if (val === null || val === "") continue;
-        if (val instanceof File) {
-          try {
-            payload[key] = await fileToBase64(val as File);
-          } catch (err) {
-            console.warn("Failed to convert file to base64", err);
-          }
-        } else {
-          payload[key] = val;
-        }
-      }
-
-      if (userData) payload.user_data = userData;
-
-      console.log("Organisation JSON payload:", JSON.stringify(payload));
-
+      if (userData) payload.user = userData;
       const response = await addOrganisation({ payload }).unwrap();
-
-      console.log("Response:", response);
 
       if (response) {
         toast.success("Organisation added successfully!");
         // Clear the form data after submission
         setFormData({
-          user_data: {
+          organization: {
+            name: "",
+            primary_mobile: "",
+            email: "",
+            other_contact: "",
+            contact_person: "",
+            contact_person_designation: "",
+            website: "",
+            license_no: "",
+          },
+          user: {
             email: "",
             phone: "",
             title: null,
@@ -234,14 +226,6 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             middle_name: "",
             last_name: "",
           },
-          name: "",
-          email: "",
-          primary_mobile: "",
-          other_contact: "",
-          contact_person: "",
-          contact_person_designation: "",
-          website: "",
-          license_no: "",
         });
         toggleModal();
       }
@@ -338,10 +322,10 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             </NavItem>
             <NavItem>
               <NavLink
-                active={activeTab === "user_data"}
+                active={activeTab === "user"}
                 onClick={onNext}
                 style={{ cursor: "pointer" }}
-                className={`${activeTab === "user_data" ? "bg-primary" : "text-primary border-primary"}`}
+                className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
               >
                 Organisation Director
               </NavLink>
@@ -361,14 +345,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="name"
                       name="name"
-                      value={formData.name}
+                      value={formData.organization.name}
                       onChange={handleChange}
                       placeholder="Enter organisation name"
                       required
                     />
-                    {apiErrors.name ? (
+                    {apiErrors["organization.name"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.name.join(", ")}
+                        {apiErrors["organization.name"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -382,14 +366,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="primary_mobile"
                       name="primary_mobile"
-                      value={formData.primary_mobile}
+                      value={formData.organization.primary_mobile}
                       onChange={handleChange}
                       placeholder="Enter primary mobile number"
                       required
                     />
-                    {apiErrors.primary_mobile ? (
+                    {apiErrors["organization.primary_mobile"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.primary_mobile.join(", ")}
+                        {apiErrors["organization.primary_mobile"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -401,13 +385,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="other_contact"
                       name="other_contact"
-                      value={formData.other_contact}
+                      value={formData.organization.other_contact}
                       onChange={handleChange}
                       placeholder="Enter other contact person's phone"
                     />
-                    {apiErrors.other_contact ? (
+                    {apiErrors["organization.other_contact"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.other_contact.join(", ")}
+                        {apiErrors["organization.other_contact"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -420,13 +404,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="license_no"
                       name="license_no"
-                      value={formData.license_no}
+                      value={formData.organization.license_no}
                       onChange={handleChange}
                       placeholder="Enter license number"
                     />
-                    {apiErrors.license_no ? (
+                    {apiErrors["organization.license_no"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.license_no.join(", ")}
+                        {apiErrors["organization.license_no"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -442,14 +426,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="email"
                       id="email"
                       name="email"
-                      value={formData.email}
+                      value={formData.organization.email}
                       onChange={handleChange}
                       placeholder="Enter email"
                       required
                     />
-                    {apiErrors.email ? (
+                    {apiErrors["organization.email"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.email.join(", ")}
+                        {apiErrors["organization.email"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -466,13 +450,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="url"
                       id="website"
                       name="website"
-                      value={formData.website}
+                      value={formData.organization.website}
                       onChange={handleChange}
                       placeholder="Enter website URL"
                     />
-                    {apiErrors.website ? (
+                    {apiErrors["organization.website"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.website.join(", ")}
+                        {apiErrors["organization.website"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -484,13 +468,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="contact_person"
                       name="contact_person"
-                      value={formData.contact_person}
+                      value={formData.organization.contact_person}
                       onChange={handleChange}
                       placeholder="Enter contact person's name"
                     />
-                    {apiErrors.contact_person ? (
+                    {apiErrors["organization.contact_person"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.contact_person.join(", ")}
+                        {apiErrors["organization.contact_person"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -504,13 +488,15 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="contact_person_designation"
                       name="contact_person_designation"
-                      value={formData.contact_person_designation}
+                      value={formData.organization.contact_person_designation}
                       onChange={handleChange}
                       placeholder="Enter contact person's designation"
                     />
-                    {apiErrors.contact_person_designation ? (
+                    {apiErrors["organization.contact_person_designation"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors.contact_person_designation.join(", ")}
+                        {apiErrors[
+                          "organization.contact_person_designation"
+                        ].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -518,7 +504,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
               </Row>
             </TabPane>
 
-            <TabPane tabId="user_data">
+            <TabPane tabId="user">
               <Row>
                 <Col md={6} xs={12}>
                   <FormGroup>
@@ -529,7 +515,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       id="user_title"
                       name="title"
                       type="select"
-                      value={formData.user_data.title ?? ""}
+                      value={formData.user.title ?? ""}
                       onChange={handleUserChange}
                       required
                     >
@@ -544,9 +530,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       <option value="PROFESSOR">Professor</option>
                       <option value="DOCTOR">Doctor</option>
                     </Input>
-                    {apiErrors["user_data.title"] ? (
+                    {apiErrors["user.title"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors["user_data.title"].join(", ")}
+                        {apiErrors["user.title"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -560,14 +546,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="user_first_name"
                       name="first_name"
-                      value={formData.user_data?.first_name}
+                      value={formData.user?.first_name}
                       onChange={handleUserChange}
                       placeholder="Enter first name"
                       required
                     />
-                    {apiErrors["user_data.first_name"] ? (
+                    {apiErrors["user.first_name"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors["user_data.first_name"].join(", ")}
+                        {apiErrors["user.first_name"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -579,13 +565,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="user_middle_name"
                       name="middle_name"
-                      value={formData.user_data?.middle_name}
+                      value={formData.user?.middle_name}
                       onChange={handleUserChange}
                       placeholder="Enter middle name"
                     />
-                    {apiErrors["user_data.middle_name"] ? (
+                    {apiErrors["user.middle_name"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors["user_data.middle_name"].join(", ")}
+                        {apiErrors["user.middle_name"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -599,14 +585,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="user_last_name"
                       name="last_name"
-                      value={formData.user_data?.last_name}
+                      value={formData.user?.last_name}
                       onChange={handleUserChange}
                       placeholder="Enter last name"
                       required
                     />
-                    {apiErrors["user_data.last_name"] ? (
+                    {apiErrors["user.last_name"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors["user_data.last_name"].join(", ")}
+                        {apiErrors["user.last_name"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -620,14 +606,14 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="email"
                       id="user_email"
                       name="email"
-                      value={formData.user_data?.email}
+                      value={formData.user?.email}
                       onChange={handleUserChange}
                       placeholder="Enter user email"
                       required
                     />
-                    {apiErrors["user_data.email"] ? (
+                    {apiErrors["user.email"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors["user_data.email"].join(", ")}
+                        {apiErrors["user.email"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -639,13 +625,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       type="text"
                       id="user_phone"
                       name="phone"
-                      value={formData.user_data?.phone}
+                      value={formData.user?.phone}
                       onChange={handleUserChange}
                       placeholder="Enter user phone"
                     />
-                    {apiErrors["user_data.phone"] ? (
+                    {apiErrors["user.phone"] ? (
                       <div className="text-danger small mt-1">
-                        {apiErrors["user_data.phone"].join(", ")}
+                        {apiErrors["user.phone"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -656,7 +642,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
         </ModalBody>
         <ModalFooter className="d-flex justify-content-between">
           <div>
-            {activeTab === "user_data" ? (
+            {activeTab === "user" ? (
               <Button color="secondary" type="button" onClick={onBack}>
                 Back
               </Button>
