@@ -1,16 +1,23 @@
 import LoadingSpinner from "@/app/loading";
-import { useFetchSupportTicketDetailsQuery } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import {
+  useFetchSupportTicketDetailsQuery,
+  useUpdateSupportTicketMutation,
+} from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import {
+  FaCheck,
+  FaChevronDown,
   FaDownload,
   FaExclamationCircle,
   FaFileAlt,
   FaSpinner,
 } from "react-icons/fa";
 import { TbCheck } from "react-icons/tb";
+import { toast } from "react-toastify";
 import {
   Alert,
   Badge,
@@ -20,12 +27,19 @@ import {
   CardHeader,
   Col,
   Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Row,
 } from "reactstrap";
+import Swal from "sweetalert2";
 import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
 
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();
+  const { data: session } = useSession();
+  const userType = session?.user?.user_type;
 
   const {
     data: ticketDetails,
@@ -37,6 +51,9 @@ const SupportTicketDetails: React.FC = () => {
     { skip: !supportticketalias },
   );
 
+  const [updateSupportTicket, { isLoading: updateSupTicketLoading }] =
+    useUpdateSupportTicketMutation();
+
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
   const [ticketData, setTicketData] = useState<Partial<SupportTicketFormData>>({
@@ -45,6 +62,37 @@ const SupportTicketDetails: React.FC = () => {
     message: "",
     files: [],
   });
+
+  const statusOptions = [
+    { value: "OPEN", label: "Open" },
+    { value: "IN_REVIEW", label: "In Review" },
+    { value: "RESOLVED", label: "Resolved" },
+  ];
+
+  const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const toggleDropdown = (ticketId: string) => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [ticketId]: !prev[ticketId],
+    }));
+  };
+
+  const handleStatusChange = async (ticketAlias: string, newStatus: string) => {
+    try {
+      await updateSupportTicket({
+        ticket_alias: ticketAlias,
+        payload: { status: newStatus },
+      }).unwrap();
+
+      Swal.fire("Success", "Status Updated Successfully!", "success");
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      toast.error("Failed to update status. Please try again.");
+    }
+  };
 
   const handleDownload = async (fileUrl: string, fileName: string) => {
     try {
@@ -167,8 +215,9 @@ const SupportTicketDetails: React.FC = () => {
                       Priority:{" "}
                       <Badge
                         color={
-                          priorityColorMap[ticketDetails?.priority as Priority] ??
-                          "dark"
+                          priorityColorMap[
+                            ticketDetails?.priority as Priority
+                          ] ?? "dark"
                         }
                       >
                         {formatChoiceFieldValue(ticketDetails?.priority)}
@@ -179,19 +228,94 @@ const SupportTicketDetails: React.FC = () => {
                 <Col xs="auto">
                   <div className="d-flex justify-content-end">
                     {ticketDetails.status ? (
-                      <span>
+                      userType === "ADMIN" ? (
+                        <Dropdown
+                          isOpen={dropdownOpen[ticketDetails.id] || false}
+                          toggle={() => toggleDropdown(ticketDetails.id)}
+                        >
+                          <DropdownToggle
+                            tag="span"
+                            style={{ cursor: "pointer" }}
+                            caret={false}
+                          >
+                            <Badge
+                              color={
+                                statusColorMap[
+                                  ticketDetails?.status as TicketStatus
+                                ] ?? "dark"
+                              }
+                              className="d-flex justify-content-center align-items-center gap-1 px-2 py-2"
+                              style={{ cursor: "pointer" }}
+                            >
+                              {
+                                statusIconMap[
+                                  ticketDetails?.status as TicketStatus
+                                ]
+                              }
+                              <span style={{ marginTop: "2.5px" }}>
+                                {formatChoiceFieldValue(ticketDetails?.status)}
+                              </span>
+                              <FaChevronDown size={10} />
+                            </Badge>
+                          </DropdownToggle>
+                          <DropdownMenu
+                            className="shadow-sm py-2"
+                            style={{ minWidth: "160px" }}
+                          >
+                            {statusOptions.map((option) => {
+                              const isActive =
+                                ticketDetails.status === option.value;
+                              const colorClass =
+                                statusColorMap[option.value as TicketStatus] ||
+                                "secondary";
+
+                              return (
+                                <DropdownItem
+                                  key={option.value}
+                                  onClick={() =>
+                                    handleStatusChange(
+                                      ticketDetails.alias,
+                                      option.value,
+                                    )
+                                  }
+                                  className="d-flex align-items-center gap-3 px-3 py-2"
+                                  active={isActive}
+                                >
+                                  <span
+                                    className={`rounded-circle bg-${colorClass}`}
+                                    style={{
+                                      width: "8px",
+                                      height: "8px",
+                                    }}
+                                  />
+                                  <span className={isActive ? "fw-bold" : ""}>
+                                    {option.label}
+                                  </span>
+                                  {isActive && (
+                                    <span className="ms-auto">
+                                      <FaCheck />
+                                    </span>
+                                  )}
+                                </DropdownItem>
+                              );
+                            })}
+                          </DropdownMenu>
+                        </Dropdown>
+                      ) : (
                         <Badge
                           color={
                             statusColorMap[
                               ticketDetails?.status as TicketStatus
                             ] ?? "dark"
                           }
-                          className="d-flex justify-content-center align-items-center gap-1"
+                          className="d-flex justify-content-center align-items-center gap-1 py-2"
                         >
                           {statusIconMap[ticketDetails?.status as TicketStatus]}{" "}
-                          {formatChoiceFieldValue(ticketDetails?.status)}
+                          <span style={{ marginTop: "2.5px" }}>
+                            {formatChoiceFieldValue(ticketDetails?.status)}
+                          </span>
                         </Badge>
-                      </span>
+                      )
                     ) : (
                       <small className="text-muted">Not Found</small>
                     )}
