@@ -1,5 +1,4 @@
 import DarkMode from "./DarkMode/DarkMode";
-import MaximizeScreen from "./MaximizeScreen/MaximizeScreen";
 import NotificationHeader from "./NotificationHeader/NotificationHeader";
 import Profile from "./Profile/Profile";
 import ResponsiveSearch from "./ResponsiveSearch/ResponsiveSearch";
@@ -11,7 +10,7 @@ const HeaderRight = () => {
         <ResponsiveSearch />
         <DarkMode />
         <NotificationHeader />
-        <MaximizeScreen />
+        {/* <MaximizeScreen /> */}
         <Profile />
       </ul>
     </div>
