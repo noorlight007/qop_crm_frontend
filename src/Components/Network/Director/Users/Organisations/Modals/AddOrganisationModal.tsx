@@ -202,7 +202,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       const payload: Record<string, any> = { ...(formData as any) };
 
       if (userData) payload.user = userData;
-      const response = await addOrganisation({ payload }).unwrap();
+      const response = await addOrganisation(payload).unwrap();
 
       if (response) {
         toast.success("Organisation added successfully!");
