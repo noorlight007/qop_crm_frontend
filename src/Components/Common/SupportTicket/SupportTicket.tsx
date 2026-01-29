@@ -384,8 +384,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                   <tr className="text-center">
                     <th>Ticket ID</th>
                     <th>Ticket Type</th>
-                    <th>Priority</th>
                     <th>Status</th>
+                    <th>Priority</th>
                     <th>Subject</th>
                     <th>Message</th>
                     <th>Files</th>
