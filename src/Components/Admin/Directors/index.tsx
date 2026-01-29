@@ -8,12 +8,11 @@ const AdminDirectorsContainer: React.FC = () => {
       <Breadcrumbs
         title="Directors Overview"
         subTitle="Welcome back! Check all the Network Directors"
-        parent="Client"
-        child="Dashboard"
+        parent="Directors"
       />
       <Container fluid>
         <Row>
-            <DirectorList />
+          <DirectorList />
         </Row>
       </Container>
     </>

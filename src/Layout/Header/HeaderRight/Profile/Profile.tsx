@@ -59,7 +59,9 @@ const Profile = () => {
           <h6>{session?.user?.name}</h6>
           <p className="mb-0 text-primary">
             <span className="bg-light-primary mt-1 px-2 py-1 rounded-5">
-              {formatChoiceFieldValue(session?.user?.user_type || "User Type")}{" "}
+              {formatChoiceFieldValue(
+                session?.user?.user_type || "User Type",
+              )}{" "}
             </span>
             <i className="fa-solid fa-chevron-down" />
           </p>
@@ -76,7 +78,8 @@ const Profile = () => {
                 Profile
               </Link>
             </li>
-            {session?.user?.user_type === "NETWORK_DIRECTOR" ||
+            {session?.user?.user_type === "ADMIN" ||
+            session?.user?.user_type === "NETWORK_DIRECTOR" ||
             session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
             session?.user?.user_type === "ORGANISATION_DIRECTOR" ? (
               <li className="d-flex gap-2" style={{ cursor: "pointer" }}>

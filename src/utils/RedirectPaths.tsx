@@ -8,7 +8,7 @@ export const getDashboardHomeUrl = (session: Session | null) => {
   const userType = session?.user?.user_type;
   switch (userType) {
     case "ADMIN":
-      return "/admin";
+      return "/admin/dashboard";
     case "NETWORK_DIRECTOR":
       return "/network/director/dashboard";
     case "NETWORK_COMPLIANCE_ASSISTANT":
@@ -37,7 +37,7 @@ export const getAllCasesUrl = (session: Session | null) => {
 
   switch (userType) {
     case "ADMIN":
-      return `/admin`;
+      return `/admin/cases`;
     case "NETWORK_DIRECTOR":
       return `/network/director/cases`;
     case "NETWORK_COMPLIANCE_ASSISTANT":
