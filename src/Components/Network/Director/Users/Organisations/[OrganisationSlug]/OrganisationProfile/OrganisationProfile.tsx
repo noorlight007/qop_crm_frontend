@@ -165,35 +165,27 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       </Badge>
                     )}
                     {singleOrgInfo?.organization?.subdomain && (
-                      <a
-                        href={`https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-white text-decoration-none"
-                      >
-                        <Badge className="bg-warning">
-                          <FaGlobe className="me-1" />
-                          {singleOrgInfo?.organization?.subdomain}
-                        </Badge>
-                      </a>
+                      <Badge className="bg-warning">
+                        <FaGlobe className="me-1" />
+                        {singleOrgInfo?.organization?.subdomain}
+                      </Badge>
                     )}
                   </div>
                 </Col>
-                {/* Edit Button */}
-                <Col md="auto">
-                  <Button
-                    size="sm"
-                    outline
-                    color="primary"
-                    onClick={toggleUpdateModal}
-                    title="Edit Organisation"
-                    className="fw-500"
-                  >
-                    <i className="iconly-Edit me-2"></i>Edit
-                  </Button>
-                </Col>
               </Row>
             </CardBody>
+          </div>
+          <div className="edit_icon">
+            <Button
+              size="sm"
+              outline
+              color="primary"
+              onClick={toggleUpdateModal}
+              title="Edit Organisation"
+              className="fw-500"
+            >
+              <i className="iconly-Edit me-2"></i>Edit
+            </Button>
           </div>
 
           {/* Organization Details Section */}
