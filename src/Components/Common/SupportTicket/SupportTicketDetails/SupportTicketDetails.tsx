@@ -110,6 +110,15 @@ const SupportTicketDetails: React.FC = () => {
     RESOLVED: "success",
   };
 
+  type Priority = "URGENT" | "MEDIUM" | "NORMAL" | "WHEN_POSSIBLE";
+
+  const priorityColorMap: Record<Priority, string> = {
+    URGENT: "danger",
+    MEDIUM: "warning",
+    NORMAL: "info",
+    WHEN_POSSIBLE: "dark",
+  };
+
   const statusIconMap: Record<TicketStatus, JSX.Element> = {
     OPEN: <FaExclamationCircle />,
     IN_REVIEW: <FaSpinner />,
@@ -139,20 +148,33 @@ const SupportTicketDetails: React.FC = () => {
                   <div className="d-flex align-items-center gap-2 flex-wrap mb-2">
                     <h3 className="mb-0">Subject: {ticketDetails.subject}</h3>
                   </div>
-                  <small>
-                    Ticket Type:{" "}
-                    <Badge
-                      className={`me-1 ${
-                        ticketDetails.ticket_type === "BUG_REPORT"
-                          ? "bg-danger"
-                          : ticketDetails.ticket_type === "FEATURE_REQUEST"
-                            ? "bg-info"
-                            : "bg-success"
-                      }`}
-                    >
-                      {formatChoiceFieldValue(ticketDetails.ticket_type)}
-                    </Badge>
-                  </small>
+                  <div className="d-flex flex-column ">
+                    <span className="py-1">
+                      Ticket Type:{" "}
+                      <Badge
+                        className={`me-1 ${
+                          ticketDetails.ticket_type === "BUG_REPORT"
+                            ? "bg-danger"
+                            : ticketDetails.ticket_type === "FEATURE_REQUEST"
+                              ? "bg-info"
+                              : "bg-success"
+                        }`}
+                      >
+                        {formatChoiceFieldValue(ticketDetails.ticket_type)}
+                      </Badge>
+                    </span>
+                    <span className="py-1">
+                      Priority:{" "}
+                      <Badge
+                        color={
+                          priorityColorMap[ticketDetails?.priority as Priority] ??
+                          "dark"
+                        }
+                      >
+                        {formatChoiceFieldValue(ticketDetails?.priority)}
+                      </Badge>
+                    </span>
+                  </div>
                 </Col>
                 <Col xs="auto">
                   <div className="d-flex justify-content-end">

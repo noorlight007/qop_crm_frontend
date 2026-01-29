@@ -23,6 +23,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<AddSupportTicketFormData>({
     ticket_type: "",
+    priority: "",
     subject: "",
     message: "",
     files: [],
@@ -36,6 +37,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
     if (!isOpen) {
       setFormData({
         ticket_type: "",
+        priority: "",
         subject: "",
         message: "",
         files: [],
@@ -108,6 +110,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
 
     const submissionData = new FormData();
     submissionData.append("ticket_type", formData.ticket_type);
+    submissionData.append("priority", formData.priority);
     submissionData.append("subject", formData.subject);
     submissionData.append("message", formData.message);
 
@@ -125,6 +128,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
         // Reset form
         setFormData({
           ticket_type: "",
+          priority: "",
           subject: "",
           message: "",
           files: [],
@@ -189,13 +193,36 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
               onChange={handleChange}
               required
             >
-              <option value="">Select ticket type</option>
+              <option value="">Select Ticket Type</option>
               <option value="FEEDBACK">Feedback</option>
               <option value="BUG_REPORT">Bug Report</option>
               <option value="FEATURE_REQUEST">Feature Request</option>
             </Input>
             {errors.ticket_type && (
               <div className="text-danger">{errors.ticket_type}</div>
+            )}
+          </FormGroup>
+
+          <FormGroup>
+            <Label for="priority">
+              Priority<span className="text-danger">*</span>
+            </Label>
+            <Input
+              id="priority"
+              name="priority"
+              type="select"
+              value={formData.priority}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Priority</option>
+              <option value="URGENT">Urgent</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="NORMAL">Normal</option>
+              <option value="WHEN_POSSIBLE">When Possible</option>
+            </Input>
+            {errors.priority && (
+              <div className="text-danger">{errors.priority}</div>
             )}
           </FormGroup>
 

@@ -1,3 +1,7 @@
+import {
+  useGetNetworkListQuery,
+  useGetOrganisationListQuery,
+} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
 import { useFetchSupportTicketQuery } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -20,6 +24,7 @@ import {
   Col,
   Input,
   InputGroup,
+  Label,
   Pagination,
   PaginationItem,
   PaginationLink,
@@ -32,8 +37,11 @@ import {
 import AddSupportTicketModal from "./Modals/AddSupportTicketModal";
 import DeleteSupportTicketModal from "./Modals/DeleteSupportTicketModal";
 import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
+interface SupportTicketProps {
+  initialIsRemoved?: string;
+}
 
-const SupportTicket: React.FC = () => {
+const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,19 +53,61 @@ const SupportTicket: React.FC = () => {
   const [ticketToDelete, setTicketToDelete] =
     useState<SupportTicketFormData | null>(null);
 
+  const [filterIcon, setFilterIcon] = useState(false);
+  const defaultFilters = {
+    ticket_type: "",
+    status: "",
+    network: "",
+    organisation: "",
+    is_removed: initialIsRemoved ?? "",
+  };
+  const [filters, setFilters] = useState(defaultFilters);
+
   const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
+  const toggleFilterIcon = () => setFilterIcon(!filterIcon);
+
+  const [selectedNetwork, setSelectedNetwork] = useState("");
+  const [selectedOrganisation, setSelectedOrganisation] = useState("");
 
   const userType = session?.user?.user_type;
 
-  const { data: supportTicketData, isLoading } = useFetchSupportTicketQuery({
-    params: {
-      search: debouncedSearch || undefined,
-      page: currentPage,
-      page_size: casesPerPage,
+  const {
+    data: supportTicketData,
+    isLoading,
+    isFetching,
+    isError,
+  } = useFetchSupportTicketQuery(
+    {
+      params: {
+        search: debouncedSearch || undefined,
+        page: currentPage,
+        page_size: casesPerPage,
+        ticket_type: filters.ticket_type || undefined,
+        status: filters.status || undefined,
+        network: filters.network || undefined,
+        organisation: filters.organisation || undefined,
+        is_removed: filters.is_removed || undefined,
+      },
     },
-  });
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
+
+  // Fetch network and organization lists
+  const { data: networkList, isLoading: networkListLoading } =
+    useGetNetworkListQuery({});
+  const { data: orgList, isLoading: orgListLoading } =
+    useGetOrganisationListQuery(
+      {
+        network: selectedNetwork,
+      },
+      {
+        skip: !selectedNetwork, // Only fetch when a network is selected
+      },
+    );
 
   const [ticketData, setTicketData] = useState<Partial<SupportTicketFormData>>({
     ticket_type: "",
@@ -73,8 +123,12 @@ const SupportTicket: React.FC = () => {
       .join(" ");
   };
 
-  const tickets = supportTicketData?.results || [];
-  const totalCount = supportTicketData?.count || 0;
+  const tickets =
+    isFetching || isError ? [] : (supportTicketData?.results ?? []);
+
+  const totalCount =
+    isFetching || isError ? 0 : (supportTicketData?.count ?? 0);
+
   const ticketsPerPage = 10;
   const totalPages = Math.ceil(totalCount / ticketsPerPage);
 
@@ -88,6 +142,14 @@ const SupportTicket: React.FC = () => {
     toggleDeleteModal();
   };
 
+  type TicketType = "FEEDBACK" | "BUG_REPORT" | "FEATURE_REQUEST";
+
+  const ticketTypeColorMap: Record<TicketType, string> = {
+    FEEDBACK: "success",
+    BUG_REPORT: "warning",
+    FEATURE_REQUEST: "info",
+  };
+
   type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
 
   const statusColorMap: Record<TicketStatus, string> = {
@@ -95,6 +157,16 @@ const SupportTicket: React.FC = () => {
     IN_REVIEW: "warning",
     RESOLVED: "success",
   };
+
+  type Priority = "URGENT" | "MEDIUM" | "NORMAL" | "WHEN_POSSIBLE";
+
+  const priorityColorMap: Record<Priority, string> = {
+    URGENT: "danger",
+    MEDIUM: "warning",
+    NORMAL: "info",
+    WHEN_POSSIBLE: "dark",
+  };
+
   const statusIconMap: Record<TicketStatus, JSX.Element> = {
     OPEN: <FaExclamationCircle />,
     IN_REVIEW: <FaSpinner />,
@@ -105,6 +177,14 @@ const SupportTicket: React.FC = () => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
     return () => clearTimeout(t);
   }, [searchQuery]);
+
+  const handleFilterChange = (filterKey: string, value: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterKey]: value,
+    }));
+    setCurrentPage(1);
+  };
 
   return (
     <Row>
@@ -156,6 +236,17 @@ const SupportTicket: React.FC = () => {
                 className="d-flex justify-content-end mt-sm-0 mt-2"
               >
                 <Button
+                  color="secondary"
+                  onClick={toggleFilterIcon}
+                  className="me-2"
+                >
+                  {filterIcon ? (
+                    <i className="fa-solid fa-filter-circle-xmark"></i>
+                  ) : (
+                    <i className="fa-solid fa-filter"></i>
+                  )}
+                </Button>
+                <Button
                   color="primary"
                   onClick={toggleModal}
                   className="d-flex justify-content-center align-items-center gap-1"
@@ -166,12 +257,134 @@ const SupportTicket: React.FC = () => {
               </Col>
             </Row>
 
+            {filterIcon && (
+              <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
+                <Row className="justify-content-center g-3">
+                  <Col>
+                    <Label>Select Ticket Type</Label>
+                    <Input
+                      type="select"
+                      id="ticketTypeFilter"
+                      className="py-1"
+                      value={filters.ticket_type}
+                      onChange={(e) =>
+                        handleFilterChange("ticket_type", e.target.value)
+                      }
+                    >
+                      <option value="">All Ticket Types</option>{" "}
+                      {/* Updated text */}
+                      <option value="FEEDBACK">Feedback</option>
+                      <option value="BUG_REPORT">Bug Report</option>
+                      <option value="FEATURE_REQUEST">Feature Request</option>
+                    </Input>
+                  </Col>
+                  <Col>
+                    <Label>Select Ticket Status</Label>
+                    <Input
+                      type="select"
+                      id="ticketStatusFilter"
+                      className="py-1"
+                      value={filters.status}
+                      onChange={(e) =>
+                        handleFilterChange("status", e.target.value)
+                      }
+                    >
+                      <option value="">All Statuses</option>{" "}
+                      {/* Updated text */}
+                      <option value="OPEN">Open</option>
+                      <option value="IN_REVIEW">In Review</option>
+                      <option value="RESOLVED">Resolved</option>
+                    </Input>
+                  </Col>
+                  {userType === "ADMIN" && (
+                    <>
+                      <Col>
+                        <Label>Select Network</Label>
+                        <Input
+                          type="select"
+                          id="networkFilter"
+                          className="py-1"
+                          value={filters.network}
+                          onChange={(e) => {
+                            const networkValue = e.target.value;
+                            handleFilterChange("network", networkValue);
+                            setSelectedNetwork(networkValue);
+                            handleFilterChange("organisation", "");
+                            setSelectedOrganisation("");
+                          }}
+                        >
+                          <option value="">All Networks</option>
+                          {networkList?.map((network: any) => (
+                            <option
+                              key={network.subdomain}
+                              value={network.subdomain}
+                            >
+                              {network.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                      <Col>
+                        <Label>Select Organisation</Label>
+                        <Input
+                          type="select"
+                          id="organisationFilter"
+                          className="py-1"
+                          value={filters.organisation}
+                          onChange={(e) => {
+                            const orgValue = e.target.value;
+                            handleFilterChange("organisation", orgValue);
+                            setSelectedOrganisation(orgValue);
+                          }}
+                          disabled={!selectedNetwork || orgListLoading}
+                        >
+                          <option value="">
+                            {!selectedNetwork
+                              ? "Select a Network first"
+                              : orgListLoading
+                                ? "Loading organisations..."
+                                : "All Organisations"}
+                          </option>
+                          {orgList?.map((org: any, index: any) => (
+                            <option
+                              key={org.subdomain || `${org.name}-${index}`}
+                              value={org.subdomain || org.name}
+                            >
+                              {org.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                    </>
+                  )}
+
+                  <Col>
+                    <Label>Clear All Filters</Label>
+                    <Button
+                      outline
+                      color="danger"
+                      className="w-100 d-flex justify-content-center align-items-center gap-1"
+                      onClick={() => {
+                        setFilters(defaultFilters);
+                        setSelectedNetwork("");
+                        setSelectedOrganisation("");
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <i className="fa-solid fa-xmark"></i>Clear
+                    </Button>
+                  </Col>
+                </Row>
+              </Card>
+            )}
+
             <Row>
               <Table hover responsive>
                 <thead className="thead-light">
                   <tr className="text-center">
                     <th>Ticket ID</th>
                     <th>Ticket Type</th>
+                    <th>Priority</th>
                     <th>Status</th>
                     <th>Subject</th>
                     <th>Message</th>
@@ -182,7 +395,7 @@ const SupportTicket: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {isLoading ? (
+                  {isLoading || isFetching ? (
                     <tr>
                       <td colSpan={9} className="text-center">
                         <div className="d-flex justify-content-center align-items-center">
@@ -195,17 +408,14 @@ const SupportTicket: React.FC = () => {
                       <tr key={ticket.alias} className="text-center">
                         <td className="text-truncate">{ticket.ticket_id}</td>
                         <td>
-                          <span
-                            className={`badge ${
-                              ticket.ticket_type === "BUG_REPORT"
-                                ? "bg-danger"
-                                : ticket.ticket_type === "FEATURE_REQUEST"
-                                  ? "bg-info"
-                                  : "bg-success"
-                            }`}
+                          <Badge
+                            color={
+                              ticketTypeColorMap[ticket?.ticket_type as TicketType] ??
+                              "dark"
+                            }
                           >
                             {formatChoiceFieldValue(ticket.ticket_type)}
-                          </span>
+                          </Badge>
                         </td>
                         <td>
                           <span>
@@ -220,6 +430,25 @@ const SupportTicket: React.FC = () => {
                               >
                                 {statusIconMap[ticket?.status as TicketStatus]}{" "}
                                 {formatChoiceFieldValue(ticket?.status)}
+                              </Badge>
+                            ) : (
+                              <small className="text-text-muted">
+                                Not Founds
+                              </small>
+                            )}
+                          </span>
+                        </td>
+                        <td>
+                          <span>
+                            {ticket.priority ? (
+                              <Badge
+                                color={
+                                  priorityColorMap[
+                                    ticket?.priority as Priority
+                                  ] ?? "dark"
+                                }
+                              >
+                                {formatChoiceFieldValue(ticket?.priority)}
                               </Badge>
                             ) : (
                               <small className="text-text-muted">

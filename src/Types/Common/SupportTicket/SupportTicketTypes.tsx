@@ -1,6 +1,8 @@
 export interface SupportTicketFormData {
   alias: string;
   ticket_type: string;
+  priority?: string;
+  status?: string;
   subject: string;
   message: string;
   files: File[];
@@ -16,6 +18,7 @@ export interface SupportTicketFormData {
 
 export interface AddSupportTicketFormData {
   ticket_type: string;
+  priority: string;
   subject: string;
   message: string;
   files: File[];

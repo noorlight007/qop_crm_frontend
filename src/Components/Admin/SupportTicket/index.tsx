@@ -1,9 +1,23 @@
-const index: React.FC = () => {
+import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
+import SupportTicket from "@/Components/Common/SupportTicket/SupportTicket";
+import { Container, Row } from "reactstrap";
+
+const SupportTicketContainer: React.FC = () => {
   return (
-    <div>
-      {/* JSX here */}
-    </div>
+   <>
+      <Breadcrumbs
+        title="Support Ticket Overview"
+        subTitle="Welcome back! Check all the Support Tickets"
+        parent="Client"
+        child="Dashboard"
+      />
+      <Container fluid>
+        <Row>
+          <SupportTicket />
+        </Row>
+      </Container>
+    </>
   );
 };
 
-export default index;
+export default SupportTicketContainer;
