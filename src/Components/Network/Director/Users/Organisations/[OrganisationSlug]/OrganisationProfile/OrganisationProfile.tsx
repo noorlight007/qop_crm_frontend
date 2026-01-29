@@ -3,7 +3,7 @@ import { FetchSingleOrganisationProps } from "@/Types/Network/Director/Organisat
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
-import { FaCamera, FaNetworkWired, FaPhoneAlt } from "react-icons/fa";
+import { FaCamera, FaGlobe, FaNetworkWired, FaPhoneAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
@@ -39,15 +39,15 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
     try {
       const formDataToSend = new FormData();
       // Place file inside user_data so backend updates the user profile image
-      formDataToSend.append("logo", file);
+      formDataToSend.append("organization.logo", file);
 
-      if (!singleOrgInfo?.slug) {
+      if (!singleOrgInfo?.organization?.slug) {
         toast.error("Organisation identifier missing");
         return;
       }
 
       await updateOrganisation({
-        slug: singleOrgInfo.slug,
+        slug: singleOrgInfo?.organization?.slug,
         payload: formDataToSend,
       }).unwrap();
 
@@ -121,7 +121,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       width={150}
                       height={100}
                       src={
-                        singleOrgInfo?.logo || "/assets/images/network/logo.jpg"
+                        singleOrgInfo?.organization?.logo ||
+                        "/assets/images/network/logo.jpg"
                       }
                       alt="Logo"
                       className="rounded-3 object-fit-cover bg-white p-1"
@@ -153,31 +154,38 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                   </div>
                 </Col>
                 <Col className="text-white">
-                  <h2 className="mb-1 fw-bold">{singleOrgInfo?.name}</h2>
+                  <h2 className="mb-1 fw-bold">
+                    {singleOrgInfo?.organization?.name}
+                  </h2>
                   <div className="d-flex align-items-center gap-2 mb-2">
-                    {singleOrgInfo?.network?.name && (
+                    {singleOrgInfo?.organization?.network && (
                       <Badge className="bg-success">
                         <FaNetworkWired className="me-1" />
-                        {singleOrgInfo?.network?.name}
+                        {singleOrgInfo?.organization?.network}
+                      </Badge>
+                    )}
+                    {singleOrgInfo?.organization?.subdomain && (
+                      <Badge className="bg-warning">
+                        <FaGlobe className="me-1" />
+                        {singleOrgInfo?.organization?.subdomain}
                       </Badge>
                     )}
                   </div>
                 </Col>
-                {/* Edit Button */}
-                <Col md="auto">
-                  <Button
-                    size="sm"
-                    outline
-                    color="primary"
-                    onClick={toggleUpdateModal}
-                    title="Edit Organisation"
-                    className="fw-500"
-                  >
-                    <i className="iconly-Edit me-2"></i>Edit
-                  </Button>
-                </Col>
               </Row>
             </CardBody>
+          </div>
+          <div className="edit_icon">
+            <Button
+              size="sm"
+              outline
+              color="primary"
+              onClick={toggleUpdateModal}
+              title="Edit Organisation"
+              className="fw-500"
+            >
+              <i className="iconly-Edit me-2"></i>Edit
+            </Button>
           </div>
 
           {/* Organization Details Section */}
@@ -204,9 +212,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     </div>
                     <div className="flex-grow-1">
                       <p className="small text-muted mb-1">Phone</p>
-                      {singleOrgInfo?.primary_mobile ? (
-                        <a
-                          href={`tel:${singleOrgInfo?.primary_mobile}`}
+                      {singleOrgInfo?.organization?.primary_mobile ? (
+                        <span
                           className="fw-500 text-dark text-decoration-none"
                           style={{ transition: "color 0.2s" }}
                           onMouseEnter={(e) =>
@@ -217,8 +224,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                             (e.currentTarget.style.color = "inherit")
                           }
                         >
-                          {singleOrgInfo?.primary_mobile}
-                        </a>
+                          {singleOrgInfo?.organization?.primary_mobile}
+                        </span>
                       ) : (
                         <span className="text-muted">Not Available</span>
                       )}
@@ -238,9 +245,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     </div>
                     <div className="flex-grow-1">
                       <p className="small text-muted mb-1">Email</p>
-                      {singleOrgInfo?.email ? (
-                        <a
-                          href={`mailto:${singleOrgInfo?.email}`}
+                      {singleOrgInfo?.organization?.email ? (
+                        <span
                           className="fw-500 text-dark text-decoration-none"
                           style={{ transition: "color 0.2s" }}
                           onMouseEnter={(e) =>
@@ -251,8 +257,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                             (e.currentTarget.style.color = "inherit")
                           }
                         >
-                          {singleOrgInfo?.email}
-                        </a>
+                          {singleOrgInfo?.organization?.email}
+                        </span>
                       ) : (
                         <span className="text-muted">Not Available</span>
                       )}
@@ -331,7 +337,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       <UpdateOrganisationModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
-        slug={singleOrgInfo?.slug}
+        slug={singleOrgInfo?.organization?.slug}
         organisationData={singleOrgInfo}
       />
     </>
