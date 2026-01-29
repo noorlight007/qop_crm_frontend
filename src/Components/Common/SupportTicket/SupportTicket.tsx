@@ -2,7 +2,10 @@ import {
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
 } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import { useFetchSupportTicketQuery } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import {
+  useFetchSupportTicketQuery,
+  useUpdateSupportTicketMutation,
+} from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getSupportTicketUrl } from "@/utils/RedirectPaths";
@@ -10,18 +13,25 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
+  FaCheck,
+  FaChevronDown,
   FaExclamationCircle,
   FaInfoCircle,
   FaSearch,
   FaSpinner,
 } from "react-icons/fa";
 import { TbCheck, TbCirclePlus, TbExternalLink } from "react-icons/tb";
+import { toast } from "react-toastify";
 import {
   Badge,
   Button,
   Card,
   CardBody,
   Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Input,
   InputGroup,
   Label,
@@ -34,6 +44,7 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import Swal from "sweetalert2";
 import AddSupportTicketModal from "./Modals/AddSupportTicketModal";
 import DeleteSupportTicketModal from "./Modals/DeleteSupportTicketModal";
 import UpdateSupportTicketModal from "./Modals/UpdateSuppotTicketModal";
@@ -95,6 +106,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
       refetchOnMountOrArgChange: true,
     },
   );
+
+  const [updateSupportTicket, { isLoading: updateSupTicketLoading }] =
+    useUpdateSupportTicketMutation();
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
@@ -171,6 +185,37 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     OPEN: <FaExclamationCircle />,
     IN_REVIEW: <FaSpinner />,
     RESOLVED: <TbCheck />,
+  };
+
+  const statusOptions = [
+    { value: "OPEN", label: "Open" },
+    { value: "IN_REVIEW", label: "In Review" },
+    { value: "RESOLVED", label: "Resolved" },
+  ];
+
+  const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const toggleDropdown = (ticketId: string) => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [ticketId]: !prev[ticketId],
+    }));
+  };
+
+  const handleStatusChange = async (ticketAlias: string, newStatus: string) => {
+    try {
+      await updateSupportTicket({
+        ticket_alias: ticketAlias,
+        payload: { status: newStatus },
+      }).unwrap();
+
+      Swal.fire("Success", "Status Updated Successfully!", "success");
+    } catch (error) {
+      console.error("Failed to update status:", error);
+      toast.error("Failed to update status. Please try again.");
+    }
   };
 
   useEffect(() => {
@@ -410,34 +455,110 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         <td>
                           <Badge
                             color={
-                              ticketTypeColorMap[ticket?.ticket_type as TicketType] ??
-                              "dark"
+                              ticketTypeColorMap[
+                                ticket?.ticket_type as TicketType
+                              ] ?? "dark"
                             }
                           >
                             {formatChoiceFieldValue(ticket.ticket_type)}
                           </Badge>
                         </td>
                         <td>
-                          <span>
-                            {ticket.status ? (
+                          {ticket.status ? (
+                            userType === "ADMIN" ? (
+                              <Dropdown
+                                isOpen={dropdownOpen[ticket.id] || false}
+                                toggle={() => toggleDropdown(ticket.id)}
+                              >
+                                <DropdownToggle
+                                  tag="span"
+                                  style={{ cursor: "pointer" }}
+                                  caret={false}
+                                >
+                                  <Badge
+                                    color={
+                                      statusColorMap[
+                                        ticket?.status as TicketStatus
+                                      ] ?? "dark"
+                                    }
+                                    className="d-flex justify-content-center align-items-center gap-1 px-2 py-2"
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    {
+                                      statusIconMap[
+                                        ticket?.status as TicketStatus
+                                      ]
+                                    }
+                                    <span style={{ marginTop: "2.5px" }}>
+                                      {formatChoiceFieldValue(ticket?.status)}
+                                    </span>
+                                    <FaChevronDown size={10} />
+                                  </Badge>
+                                </DropdownToggle>
+                                <DropdownMenu
+                                  className="shadow-sm py-2"
+                                  style={{ minWidth: "160px" }}
+                                >
+                                  {statusOptions.map((option) => {
+                                    const isActive =
+                                      ticket.status === option.value;
+                                    const colorClass =
+                                      statusColorMap[
+                                        option.value as TicketStatus
+                                      ] || "secondary";
+
+                                    return (
+                                      <DropdownItem
+                                        key={option.value}
+                                        onClick={() =>
+                                          handleStatusChange(
+                                            ticket.alias,
+                                            option.value,
+                                          )
+                                        }
+                                        className="d-flex align-items-center gap-3 px-3 py-2"
+                                        active={isActive}
+                                      >
+                                        <span
+                                          className={`rounded-circle bg-${colorClass}`}
+                                          style={{
+                                            width: "8px",
+                                            height: "8px",
+                                          }}
+                                        />
+                                        <span
+                                          className={isActive ? "fw-bold" : ""}
+                                        >
+                                          {option.label}
+                                        </span>
+                                        {isActive && (
+                                          <span className="ms-auto">
+                                            <FaCheck />
+                                          </span>
+                                        )}
+                                      </DropdownItem>
+                                    );
+                                  })}
+                                </DropdownMenu>
+                              </Dropdown>
+                            ) : (
                               <Badge
                                 color={
                                   statusColorMap[
                                     ticket?.status as TicketStatus
                                   ] ?? "dark"
                                 }
-                                className="d-flex justify-content-center align-items-center gap-1"
+                                className="d-flex justify-content-center align-items-center gap-1 py-2"
                               >
                                 {statusIconMap[ticket?.status as TicketStatus]}{" "}
-                                {formatChoiceFieldValue(ticket?.status)}
+                                <span style={{ marginTop: "2.5px" }}>{formatChoiceFieldValue(ticket?.status)}</span>
                               </Badge>
-                            ) : (
-                              <small className="text-text-muted">
-                                Not Founds
-                              </small>
-                            )}
-                          </span>
+                            )
+                          ) : (
+                            <small className="text-muted">Not Found</small>
+                          )}
                         </td>
+
                         <td>
                           <span>
                             {ticket.priority ? (
