@@ -241,7 +241,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Update Organisation</h3>
+        <h2 className="text-primary">Update Organisation Details</h2>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
