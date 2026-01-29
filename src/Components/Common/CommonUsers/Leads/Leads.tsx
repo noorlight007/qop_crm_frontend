@@ -107,7 +107,14 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
 
   // Server-side search/pagination is used. `leads` already contains current page results.
   const currentLeads = leads;
-  const totalPages = Math.ceil(totalCount / leadsPerPage) || 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / leadsPerPage));
+
+  // If API reduces the total pages (e.g., after a search), ensure currentPage is in-range
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages]);
 
   if (isLoading) {
     return (
@@ -143,7 +150,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
               <FaInfoCircle
                 id="leadSearchSuggestion"
                 className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
-                style={{ cursor: "pointer", zIndex: 10  }}
+                style={{ cursor: "pointer", zIndex: 10 }}
               />
 
               <UncontrolledPopover
@@ -152,8 +159,8 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                 trigger="hover"
               >
                 <PopoverBody className="bg-white rounded text-dark p-3 small">
-                  🔍 You can search using Title(e.g., Mr, Ms), First Name, Middle Name, Last
-                  Name, Email Address or Phone Number.
+                  🔍 You can search using Title(e.g., Mr, Ms), First Name,
+                  Middle Name, Last Name, Email Address or Phone Number.
                 </PopoverBody>
               </UncontrolledPopover>
             </InputGroup>
@@ -342,7 +349,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
               <PaginationItem disabled={currentPage === 1}>
                 <PaginationLink
                   previous
-                  onClick={() => setCurrentPage(currentPage - 1)}
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 />
               </PaginationItem>
 
@@ -409,7 +416,9 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
               <PaginationItem disabled={currentPage === totalPages}>
                 <PaginationLink
                   next
-                  onClick={() => setCurrentPage(currentPage + 1)}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
                 />
               </PaginationItem>
               <PaginationItem disabled={currentPage === totalPages}>
