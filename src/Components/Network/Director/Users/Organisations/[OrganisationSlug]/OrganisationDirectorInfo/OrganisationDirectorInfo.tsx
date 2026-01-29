@@ -44,15 +44,15 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
     try {
       const formDataToSend = new FormData();
       // Place file inside user_data so backend updates the user profile image
-      formDataToSend.append("user_data.profile_image", file);
+      formDataToSend.append("user.profile_image", file);
 
-      if (!singleOrgInfo?.slug) {
+      if (!singleOrgInfo?.organization?.slug) {
         toast.error("Organisation identifier missing");
         return;
       }
 
       await updateOrganisation({
-        slug: singleOrgInfo.slug,
+        slug: singleOrgInfo.organization.slug,
         payload: formDataToSend,
       }).unwrap();
 
@@ -66,12 +66,6 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
-
-  // Find the organisation director user if present
-  const directorUser =
-    singleOrgInfo?.users?.find(
-      (u: any) => u?.user?.user_type === "ORGANISATION_DIRECTOR",
-    )?.user ?? singleOrgInfo?.users?.[0]?.user;
 
   const initials = (name?: string) =>
     (name || "")
@@ -131,11 +125,11 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
             {/* Avatar section - positioned to overlap gradient */}
             <div className="d-flex justify-content-center organisation-avatar-container">
               <div className="position-relative">
-                {directorUser?.profile_image ? (
+                {singleOrgInfo?.user?.profile_image ? (
                   <div className="position-relative">
                     <Image
-                      src={directorUser.profile_image}
-                      alt={directorUser?.name ?? "Director"}
+                      src={singleOrgInfo.user.profile_image}
+                      alt={singleOrgInfo?.user?.name ?? "Director"}
                       width={90}
                       height={90}
                       className="rounded-circle organisation-avatar-img"
@@ -154,7 +148,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                 ) : (
                   <div className="position-relative">
                     <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
-                      {initials(directorUser?.name)}
+                      {initials(singleOrgInfo?.user?.name)}
                     </div>
                     {/* Camera overlay badge (bottom-right) for initials avatar */}
                     <button
@@ -182,10 +176,13 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
 
             {/* Name and role */}
             <div className="text-center mt-1 mb-3">
-              <h4 className="mb-2 fw-bold fs-4">{directorUser?.name ?? "—"}</h4>
+              <h4 className="mb-2 fw-bold fs-4">
+                {singleOrgInfo?.user?.name ?? "—"}
+              </h4>
               <Badge className="px-3 py-2 bg-light-primary fw-semibold rounded-pill">
                 <i className="fa fa-crown me-1" />
-                {formatChoiceFieldValue(directorUser?.user_type) ?? "User"}
+                {formatChoiceFieldValue(singleOrgInfo?.user?.user_type) ??
+                  "User"}
               </Badge>
             </div>
 
@@ -193,7 +190,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
               <Col sm="12">
                 <Card className="bg-light-primary p-2 d-flex flex-row justify-content-center align-items-center mb-2">
                   <Mail className="me-2 bg-primary p-1 rounded-1" size={25} />
-                  {directorUser?.email ?? "Email not provided"}
+                  {singleOrgInfo?.user?.email ?? "Email not provided"}
                 </Card>
               </Col>
             </Row>
@@ -204,15 +201,15 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                     className="me-2 bg-secondary p-1 rounded-1"
                     size={25}
                   />
-                  {directorUser?.phone ? (
-                    directorUser.phone
+                  {singleOrgInfo?.user?.phone ? (
+                    singleOrgInfo.user.phone
                   ) : (
                     <small className="text-muted">Phone not provided</small>
                   )}
                 </Card>
               </Col>
               <Col sm="6">
-                {directorUser?.is_active ? (
+                {singleOrgInfo?.user?.is_active ? (
                   <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
                     <FaShieldAlt
                       className="me-2 bg-success p-1 rounded-1"

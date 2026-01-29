@@ -3,7 +3,7 @@ import { FetchSingleOrganisationProps } from "@/Types/Network/Director/Organisat
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
-import { FaCamera, FaNetworkWired, FaPhoneAlt } from "react-icons/fa";
+import { FaCamera, FaGlobe, FaNetworkWired, FaPhoneAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
@@ -39,15 +39,15 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
     try {
       const formDataToSend = new FormData();
       // Place file inside user_data so backend updates the user profile image
-      formDataToSend.append("logo", file);
+      formDataToSend.append("organization.logo", file);
 
-      if (!singleOrgInfo?.slug) {
+      if (!singleOrgInfo?.organization?.slug) {
         toast.error("Organisation identifier missing");
         return;
       }
 
       await updateOrganisation({
-        slug: singleOrgInfo.slug,
+        slug: singleOrgInfo?.organization?.slug,
         payload: formDataToSend,
       }).unwrap();
 
@@ -164,6 +164,19 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         {singleOrgInfo?.organization?.network}
                       </Badge>
                     )}
+                    {singleOrgInfo?.organization?.subdomain && (
+                      <a
+                        href={`https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-white text-decoration-none"
+                      >
+                        <Badge className="bg-warning">
+                          <FaGlobe className="me-1" />
+                          {singleOrgInfo?.organization?.subdomain}
+                        </Badge>
+                      </a>
+                    )}
                   </div>
                 </Col>
                 {/* Edit Button */}
@@ -191,7 +204,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 Contact Information
               </h6>
               <Row>
-                <Col md="4" className="mb-3">
+                <Col md="6" className="mb-3">
                   <div className="d-flex align-items-start gap-3">
                     <div
                       className="flex-shrink-0"
@@ -227,7 +240,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     </div>
                   </div>
                 </Col>
-                <Col md="4" className="mb-3">
+                <Col md="6" className="mb-3">
                   <div className="d-flex align-items-start gap-3">
                     <div
                       className="flex-shrink-0"
@@ -254,42 +267,6 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         >
                           {singleOrgInfo?.organization?.email}
                         </span>
-                      ) : (
-                        <span className="text-muted">Not Available</span>
-                      )}
-                    </div>
-                  </div>
-                </Col>
-                <Col md="4" className="mb-3">
-                  <div className="d-flex align-items-start gap-3">
-                    <div
-                      className="flex-shrink-0"
-                      style={{
-                        color: "var(--primary-color)",
-                        marginTop: "2px",
-                      }}
-                    >
-                      <Mail className="bg-primary p-1 rounded-1" size={25} />
-                    </div>
-                    <div className="flex-grow-1">
-                      <p className="small text-muted mb-1">Subdomain</p>
-                      {singleOrgInfo?.organization?.subdomain ? (
-                        <a
-                          href={`https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="fw-500 text-dark text_decoration_hover"
-                          style={{ transition: "color 0.2s" }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.color =
-                              "var(--primary-color)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "inherit")
-                          }
-                        >
-                          {singleOrgInfo?.organization?.subdomain}
-                        </a>
                       ) : (
                         <span className="text-muted">Not Available</span>
                       )}
