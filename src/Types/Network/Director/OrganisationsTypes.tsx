@@ -1,25 +1,33 @@
 export interface SingleOrganisationProps {
   slug?: string;
-  network?: {
-    slug?: string;
-    name?: string;
-    email?: string;
-    logo?: string | null;
-    profile_image?: string | null;
-    hero_image?: string | null;
-    primary_mobile?: string;
+  organization: {
+    slug: string;
+    network: string;
+    subdomain: string;
+    logo: string | null;
+    name: string;
+    primary_mobile: string;
+    email: string;
+    other_contact: string;
+    contact_person: string;
+    contact_person_designation: string;
+    website: string;
+    license_no: string;
+    license_image: string | null;
   };
-  users?: {
-    user?: {
-      id?: number;
-      name?: string;
-      email?: string;
-      phone?: string;
-      profile_image?: string | null;
-      user_type?: string;
-      is_active?: boolean;
-    };
-  }[];
+  user: {
+    alias: string;
+    name: string;
+    email: string;
+    phone: string;
+    title: string | null;
+    first_name: string;
+    middle_name: string;
+    last_name: string;
+    profile_image: string | null;
+    user_type: string;
+    is_active: boolean;
+  };
   name?: string;
   email?: string;
   logo?: string | null;
