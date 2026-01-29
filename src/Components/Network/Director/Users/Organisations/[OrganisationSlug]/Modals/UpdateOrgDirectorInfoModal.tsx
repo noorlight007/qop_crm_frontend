@@ -36,6 +36,9 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
     },
   });
 
+  // API validation errors keyed by dot-notated field paths
+  const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
+
   // Keep original values to detect changes
   const originalRef = useRef<Record<string, string | null>>({
     title: null,
@@ -110,13 +113,75 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
         return;
       }
 
-      await updateOrganisation({ slug: targetSlug, payload }).unwrap();
-      toast.success("Director info updated");
-      toggle();
+      const response = await updateOrganisation({
+        slug: targetSlug,
+        payload,
+      }).unwrap();
+      if (response) {
+        setApiErrors({});
+        toast.success("Director info updated");
+        toggle();
+      }
     } catch (err: any) {
       console.error("Update director error:", err);
-      const msg = err?.data?.detail || err?.message || "Update failed";
-      toast.error(msg);
+
+      const flattenErrors = (
+        value: any,
+        prefix = "",
+      ): Array<{ field: string; messages: string[] }> => {
+        const out: Array<{ field: string; messages: string[] }> = [];
+
+        const pushMessages = (fieldPath: string, msgs: any) => {
+          if (msgs == null) return;
+          if (typeof msgs === "string")
+            out.push({ field: fieldPath, messages: [msgs] });
+          else if (Array.isArray(msgs))
+            out.push({
+              field: fieldPath,
+              messages: msgs.map((m) =>
+                typeof m === "string" ? m : JSON.stringify(m),
+              ),
+            });
+          else if (typeof msgs === "object") {
+            Object.entries(msgs).forEach(([k, v]) => {
+              const next = fieldPath ? `${fieldPath}.${k}` : k;
+              out.push(...flattenErrors(v, next));
+            });
+          } else out.push({ field: fieldPath, messages: [String(msgs)] });
+        };
+
+        if (value && typeof value === "object" && !Array.isArray(value)) {
+          Object.entries(value).forEach(([k, v]) => {
+            const next = prefix ? `${prefix}.${k}` : k;
+            out.push(...flattenErrors(v, next));
+          });
+          return out;
+        }
+
+        if (prefix) pushMessages(prefix, value);
+        else if (Array.isArray(value) || typeof value === "string")
+          pushMessages("error", value);
+
+        return out;
+      };
+
+      const source = err?.data && typeof err.data === "object" ? err.data : err;
+      const flattened = flattenErrors(source);
+      if (flattened.length) {
+        const map: Record<string, string[]> = {};
+        flattened.forEach((entry) => {
+          const field = entry.field || "error";
+          map[field] = map[field]
+            ? [...map[field], ...entry.messages]
+            : [...entry.messages];
+          toast.error(`${entry.messages.join(", ")}`);
+        });
+        setApiErrors(map);
+        return;
+      }
+
+      const fallback = err?.message ?? "Update failed";
+      toast.error(fallback);
     }
   };
 
@@ -152,6 +217,11 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
+                {apiErrors["user.title"] || apiErrors["title"] ? (
+                  <div className="text-danger small mt-1">
+                    {(apiErrors["user.title"] || apiErrors["title"]).join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col sm="6">
@@ -166,6 +236,13 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   onChange={handleChange}
                   required
                 />
+                {apiErrors["user.first_name"] || apiErrors["first_name"] ? (
+                  <div className="text-danger small mt-1">
+                    {(
+                      apiErrors["user.first_name"] || apiErrors["first_name"]
+                    ).join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col sm="6">
@@ -177,6 +254,13 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={form.user.middle_name}
                   onChange={handleChange}
                 />
+                {apiErrors["user.middle_name"] || apiErrors["middle_name"] ? (
+                  <div className="text-danger small mt-1">
+                    {(
+                      apiErrors["user.middle_name"] || apiErrors["middle_name"]
+                    ).join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col sm="6">
@@ -191,6 +275,13 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   onChange={handleChange}
                   required
                 />
+                {apiErrors["user.last_name"] || apiErrors["last_name"] ? (
+                  <div className="text-danger small mt-1">
+                    {(
+                      apiErrors["user.last_name"] || apiErrors["last_name"]
+                    ).join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col sm="6">
@@ -206,6 +297,11 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   onChange={handleChange}
                   required
                 />
+                {apiErrors["user.email"] || apiErrors["email"] ? (
+                  <div className="text-danger small mt-1">
+                    {(apiErrors["user.email"] || apiErrors["email"]).join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
             <Col sm="6">
@@ -217,6 +313,11 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={form.user.phone}
                   onChange={handleChange}
                 />
+                {apiErrors["user.phone"] || apiErrors["phone"] ? (
+                  <div className="text-danger small mt-1">
+                    {(apiErrors["user.phone"] || apiErrors["phone"]).join(", ")}
+                  </div>
+                ) : null}
               </FormGroup>
             </Col>
           </Row>
