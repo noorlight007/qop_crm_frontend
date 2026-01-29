@@ -51,7 +51,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
             <div className="d-flex justify-content-between align-items-center">
               <div>
                 <h5 className="fw-bold">Delete this organisation</h5>
-                <p className="mb-0 opacity-75">
+                <p className="mb-0 opacity-75 text-danger">
                   Once you delete a organisation, there is no going back. Please
                   be certain.
                 </p>
@@ -62,7 +62,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
             </div>
           )}
           {/* Delete modal  */}
-          {singleOrgInfo?.slug && (
+          {singleOrgInfo?.organization?.slug && (
             <DeleteOrganisationModal
               isOpen={isModalOpen}
               toggle={toggleModal}

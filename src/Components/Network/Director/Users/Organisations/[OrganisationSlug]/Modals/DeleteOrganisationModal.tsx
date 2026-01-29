@@ -16,7 +16,7 @@ const DeleteOrganisationModal: React.FC<DeleteOrganisationModalProps> = ({
 
   const handleDelete = async () => {
     try {
-      const slug = organisationInfo?.slug;
+      const slug = organisationInfo?.organization?.slug;
       const response = await deleteOrganisation({ slug });
       toggle();
       if (response.data === null) {
@@ -39,16 +39,31 @@ const DeleteOrganisationModal: React.FC<DeleteOrganisationModalProps> = ({
       <ModalBody>
         <p>
           Are you sure you want to delete{" "}
-          <strong className="text-danger">{organisationInfo?.name}</strong>{" "}
-          organisation? This action cannot be undone.
+          <strong className="text-danger">
+            {organisationInfo?.organization?.name}
+          </strong>{" "}
+          organisation?
         </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this organisation will permanently remove all associated
+            data, including but not limited to cases, leads, clients, advisers,
+            admins, joint applicants, appearance preferences, settings, profile
+            information, and all historical records. This data cannot be
+            restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={handleDelete} disabled={isLoading}>
-          {isLoading ? "Deleting..." : "Delete"}
-        </Button>
         <Button color="secondary" onClick={toggle} disabled={isLoading}>
           Cancel
+        </Button>
+        <Button color="danger" onClick={handleDelete} disabled={isLoading}>
+          {isLoading ? "Deleting..." : "Delete"}
         </Button>
       </ModalFooter>
     </Modal>
