@@ -1,6 +1,6 @@
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { UpdateOrganisationModalProps } from "@/Types/Network/Director/OrganisationsTypes";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -26,7 +26,19 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
     useUpdateOrganisationMutation();
 
   const [form, setForm] = useState({
-    title: null as string | null,
+    user: {
+      title: null as string | null,
+      first_name: "",
+      middle_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+    },
+  });
+
+  // Keep original values to detect changes
+  const originalRef = useRef<Record<string, string | null>>({
+    title: null,
     first_name: "",
     middle_name: "",
     last_name: "",
@@ -34,47 +46,65 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
     phone: "",
   });
 
-  // Prefill when modal opens / organisationData changes
   useEffect(() => {
     if (!organisationData) return;
-
-    const director =
-      organisationData.users?.find(
-        (u: any) => u?.user?.user_type === "ORGANISATION_DIRECTOR",
-      )?.user ?? organisationData.users?.[0]?.user;
-
-    if (director) {
-      setForm({
-        title: director.title ?? null,
-        first_name: director.first_name ?? director.name ?? "",
-        middle_name: director.middle_name ?? "",
-        last_name: director.last_name ?? "",
-        email: director.email ?? "",
-        phone: director.phone ?? "",
-      });
-    }
+    const original = {
+      title: organisationData?.user?.title ?? organisationData?.title ?? null,
+      first_name:
+        organisationData?.user?.first_name ??
+        organisationData?.first_name ??
+        "",
+      middle_name:
+        organisationData?.user?.middle_name ??
+        organisationData?.middle_name ??
+        "",
+      last_name:
+        organisationData?.user?.last_name ?? organisationData?.last_name ?? "",
+      email: organisationData?.user?.email ?? organisationData?.email ?? "",
+      phone: organisationData?.user?.phone ?? organisationData?.phone ?? "",
+    } as Record<string, string | null>;
+    originalRef.current = original;
+    setForm({ user: { ...original } as any });
   }, [organisationData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target as HTMLInputElement;
-    setForm((s) => ({ ...s, [name]: value }));
+    setForm((s) => ({ ...s, user: { ...s.user, [name]: value } }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const payload = new FormData();
-      // Append every user_data field explicitly
-      payload.append("user_data.title", form.title ?? "");
-      payload.append("user_data.first_name", form.first_name ?? "");
-      payload.append("user_data.middle_name", form.middle_name ?? "");
-      payload.append("user_data.last_name", form.last_name ?? "");
-      payload.append("user_data.email", form.email ?? "");
-      payload.append("user_data.phone", form.phone ?? "");
 
-      const targetSlug = slug ?? organisationData?.slug;
+      // Only append changed fields
+      const orig = originalRef.current;
+      let hasChanges = false;
+      const userEntries: Array<[string, string]> = [
+        ["title", String(form.user.title ?? "")],
+        ["first_name", form.user.first_name ?? ""],
+        ["middle_name", form.user.middle_name ?? ""],
+        ["last_name", form.user.last_name ?? ""],
+        ["email", form.user.email ?? ""],
+        ["phone", form.user.phone ?? ""],
+      ];
+
+      userEntries.forEach(([key, value]) => {
+        const originalVal = String(orig[key as keyof typeof orig] ?? "");
+        if (value !== originalVal) {
+          payload.append(`user.${key}`, value);
+          hasChanges = true;
+        }
+      });
+
+      if (!hasChanges) {
+        toast.info("No changes detected.");
+        return;
+      }
+
+      const targetSlug = slug ?? organisationData?.organization?.slug;
       if (!targetSlug) {
         toast.error("Organisation identifier missing");
         return;
@@ -104,7 +134,7 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                 <Input
                   id="title"
                   name="title"
-                  value={form.title ?? ""}
+                  value={form.user.title ?? ""}
                   onChange={handleChange}
                 />
               </FormGroup>
@@ -113,7 +143,7 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                 <Input
                   id="first_name"
                   name="first_name"
-                  value={form.first_name}
+                  value={form.user.first_name}
                   onChange={handleChange}
                   required
                 />
@@ -123,7 +153,7 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                 <Input
                   id="middle_name"
                   name="middle_name"
-                  value={form.middle_name}
+                  value={form.user.middle_name}
                   onChange={handleChange}
                 />
               </FormGroup>
@@ -134,7 +164,7 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                 <Input
                   id="last_name"
                   name="last_name"
-                  value={form.last_name}
+                  value={form.user.last_name}
                   onChange={handleChange}
                   required
                 />
@@ -145,7 +175,7 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   id="email"
                   name="email"
                   type="email"
-                  value={form.email}
+                  value={form.user.email}
                   onChange={handleChange}
                   required
                 />
@@ -155,7 +185,7 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                 <Input
                   id="phone"
                   name="phone"
-                  value={form.phone}
+                  value={form.user.phone}
                   onChange={handleChange}
                 />
               </FormGroup>

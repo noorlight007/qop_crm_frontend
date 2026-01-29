@@ -26,12 +26,14 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
 }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    primary_mobile: "",
-    other_contact: "",
-    website: "",
-    contact_person: "",
+    organization: {
+      name: "",
+      email: "",
+      primary_mobile: "",
+      other_contact: "",
+      website: "",
+      contact_person: "",
+    },
   });
 
   // API validation errors keyed by dot-notated field paths
@@ -46,6 +48,66 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
   useEffect(() => {
     if (organisationData && isOpen) {
       setFormData({
+        organization: {
+          name:
+            organisationData?.organization?.name ??
+            organisationData?.name ??
+            "",
+          email:
+            organisationData?.organization?.email ??
+            organisationData?.email ??
+            "",
+          primary_mobile:
+            organisationData?.organization?.primary_mobile ??
+            organisationData?.primary_mobile ??
+            "",
+          other_contact:
+            organisationData?.organization?.other_contact ??
+            organisationData?.other_contact ??
+            "",
+          website:
+            organisationData?.organization?.website ??
+            organisationData?.website ??
+            "",
+          contact_person:
+            organisationData?.organization?.contact_person ??
+            organisationData?.contact_person ??
+            "",
+        },
+      });
+      setOldName(
+        organisationData?.organization?.name ?? organisationData?.name ?? "",
+      );
+    }
+  }, [organisationData, isOpen]);
+
+  // Handle input change for text fields
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      organization: { ...formData.organization, [name]: value },
+    });
+  };
+
+  // Handle file selection
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, files } = e.target;
+    if (files && files.length > 0) {
+      if (name === "organization.license_image") {
+        setProfileImage(files[0]);
+      }
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const formDataToSend = new FormData();
+
+      // Build original organization values to compare against
+      const originalOrg = {
         name:
           organisationData?.organization?.name ?? organisationData?.name ?? "",
         email:
@@ -68,41 +130,29 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
           organisationData?.organization?.contact_person ??
           organisationData?.contact_person ??
           "",
+      } as Record<string, string>;
+
+      // Append only changed text fields
+      let hasChanges = false;
+      Object.entries(formData.organization).forEach(([key, value]) => {
+        const orig = String(originalOrg[key] ?? "");
+        const next = String(value ?? "");
+        if (next !== orig) {
+          formDataToSend.append(`organization.${key}`, next);
+          hasChanges = true;
+        }
       });
-      setOldName(
-        organisationData?.name ?? organisationData?.organization?.name ?? "",
-      );
-    }
-  }, [organisationData, isOpen]);
 
-  // Handle input change for text fields
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  // Handle file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, files } = e.target;
-    if (files && files.length > 0) {
-      if (name === "profile_image") {
-        setProfileImage(files[0]);
-      }
-    }
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const formDataToSend = new FormData();
-      // Append text fields
-      Object.entries(formData).forEach(([key, value]) => {
-        formDataToSend.append(key, value);
-      });
-      // Append files if selected
+      // Append file only if selected
       if (profileImage) {
-        formDataToSend.append("profile_image", profileImage);
+        formDataToSend.append("organization.license_image", profileImage);
+        hasChanges = true;
+      }
+
+      // If nothing changed, avoid calling the API
+      if (!hasChanges) {
+        toast.info("No changes detected.");
+        return;
       }
       // Use RTK Query mutation
       const response = await updateOrganisation({
@@ -114,7 +164,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
         // clear previous API errors on success
         setApiErrors({});
         // Redirect if name changed
-        if (formData.name !== oldName) {
+        if (formData.organization.name !== oldName) {
           router.push("/network/director/organisations");
           toast.warning(
             "Due to the name change, redirected to the Organisations page.",
@@ -203,13 +253,13 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   type="text"
                   id="name"
                   name="name"
-                  value={formData.name}
+                  value={formData.organization.name}
                   onChange={handleInputChange}
                   required
                 />
-                {apiErrors.name ? (
+                {apiErrors["organization.name"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors.name.join(", ")}
+                    {apiErrors["organization.name"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -221,13 +271,13 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   type="email"
                   id="email"
                   name="email"
-                  value={formData.email}
+                  value={formData.organization.email}
                   onChange={handleInputChange}
                   required
                 />
-                {apiErrors.email ? (
+                {apiErrors["organization.email"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors.email.join(", ")}
+                    {apiErrors["organization.email"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -239,12 +289,12 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   type="text"
                   id="primary_mobile"
                   name="primary_mobile"
-                  value={formData.primary_mobile}
+                  value={formData.organization.primary_mobile}
                   onChange={handleInputChange}
                 />
-                {apiErrors.primary_mobile ? (
+                {apiErrors["organization.primary_mobile"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors.primary_mobile.join(", ")}
+                    {apiErrors["organization.primary_mobile"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -261,12 +311,12 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   type="url"
                   id="website"
                   name="website"
-                  value={formData.website}
+                  value={formData.organization.website}
                   onChange={handleInputChange}
                 />
-                {apiErrors.website ? (
+                {apiErrors["organization.website"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors.website.join(", ")}
+                    {apiErrors["organization.website"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -278,12 +328,12 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   type="text"
                   id="contact_person"
                   name="contact_person"
-                  value={formData.contact_person}
+                  value={formData.organization.contact_person}
                   onChange={handleInputChange}
                 />
-                {apiErrors.contact_person ? (
+                {apiErrors["organization.contact_person"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors.contact_person.join(", ")}
+                    {apiErrors["organization.contact_person"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -295,12 +345,12 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   type="text"
                   id="other_contact"
                   name="other_contact"
-                  value={formData.other_contact}
+                  value={formData.organization.other_contact}
                   onChange={handleInputChange}
                 />
-                {apiErrors.other_contact ? (
+                {apiErrors["organization.other_contact"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors.other_contact.join(", ")}
+                    {apiErrors["organization.other_contact"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -310,22 +360,22 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
             {/* Profile Image Upload */}
             <Col md="6">
               <FormGroup>
-                <Label for="profile_image">Banner Image</Label>
+                <Label for="organization.license_image">License Image</Label>
                 <Input
                   type="file"
-                  id="profile_image"
-                  name="profile_image"
+                  id="organization.license_image"
+                  name="organization.license_image"
                   accept="image/*"
                   onChange={handleFileChange}
                 />
               </FormGroup>
             </Col>
             <Col md="6">
-              {organisationData?.profile_image ? (
+              {organisationData?.organization.license_image ? (
                 <div className="d-flex justify-content-center mt-2">
                   <Image
-                    src={organisationData.profile_image}
-                    alt="Profile"
+                    src={organisationData.organization.license_image}
+                    alt="License Image"
                     width={100}
                     height={80}
                     className="rounded-2 w-50 border border-success"

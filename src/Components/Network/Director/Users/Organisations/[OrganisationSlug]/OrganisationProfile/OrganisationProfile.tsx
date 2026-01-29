@@ -345,7 +345,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       <UpdateOrganisationModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
-        slug={singleOrgInfo?.slug}
+        slug={singleOrgInfo?.organization?.slug}
         organisationData={singleOrgInfo}
       />
     </>
