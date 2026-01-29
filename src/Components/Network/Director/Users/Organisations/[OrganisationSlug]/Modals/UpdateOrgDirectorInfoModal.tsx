@@ -124,22 +124,41 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
     <Modal isOpen={isOpen} toggle={toggle} centered size="lg">
       <Form onSubmit={handleSubmit}>
         <ModalHeader toggle={toggle}>
-          <h3 className="text-primary">Update Organisation Director Info</h3>
+          <h2 className="text-primary">Update Organisation Director Info</h2>
         </ModalHeader>
         <ModalBody>
           <Row>
             <Col sm="6">
               <FormGroup>
-                <Label for="title">Title</Label>
+                <Label for="title">
+                  Title<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="title"
                   name="title"
+                  type="select"
                   value={form.user.title ?? ""}
                   onChange={handleChange}
-                />
+                  required
+                >
+                  <option value="">Select...</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
+                </Input>
               </FormGroup>
+            </Col>
+            <Col sm="6">
               <FormGroup>
-                <Label for="first_name">First name</Label>
+                <Label for="first_name">
+                  First name<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="first_name"
                   name="first_name"
@@ -148,6 +167,8 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   required
                 />
               </FormGroup>
+            </Col>
+            <Col sm="6">
               <FormGroup>
                 <Label for="middle_name">Middle name</Label>
                 <Input
@@ -160,7 +181,9 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
             </Col>
             <Col sm="6">
               <FormGroup>
-                <Label for="last_name">Last name</Label>
+                <Label for="last_name">
+                  Last name<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="last_name"
                   name="last_name"
@@ -169,8 +192,12 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   required
                 />
               </FormGroup>
+            </Col>
+            <Col sm="6">
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for="email">
+                  Email<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="email"
                   name="email"
@@ -180,6 +207,8 @@ const UpdateOrgDirectorInfoModal: React.FC<UpdateOrganisationModalProps> = ({
                   required
                 />
               </FormGroup>
+            </Col>
+            <Col sm="6">
               <FormGroup>
                 <Label for="phone">Phone</Label>
                 <Input
