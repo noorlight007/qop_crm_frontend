@@ -2,19 +2,27 @@ import {
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
 } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import {
+  useGetAuthUsersQuery,
+  useUpdateAuthUserDetailsMutation,
+} from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
-import { FaInfoCircle, FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
+import { FaChevronDown, FaInfoCircle, FaSearch } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
   Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Input,
   InputGroup,
   Pagination,
@@ -26,6 +34,10 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import Swal from "sweetalert2";
+import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
+import { AuthUser, AuthUsersProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
@@ -39,6 +51,34 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   // Updated state for network and organization filters
   const [selectedNetwork, setSelectedNetwork] = useState("");
   const [selectedOrganisation, setSelectedOrganisation] = useState("");
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+
+  const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    email: "",
+    phone: null,
+    is_active: false,
+    profile_image: null,
+    created_at: "",
+    created_by: null,
+  });
+
+  const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const toggleDropdown = (userAlias: string) => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [userAlias]: !prev[userAlias],
+    }));
+  };
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
@@ -79,6 +119,9 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     },
   );
 
+  const [updateStatusData, isUpdateStatusLoading] =
+    useUpdateAuthUserDetailsMutation();
+
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
     return () => clearTimeout(t);
@@ -109,6 +152,40 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     setCurrentPage(1);
   };
 
+  const statusOptions = [
+    { value: true, label: "Approved" },
+    { value: false, label: "Pending" },
+  ];
+
+  // Status color map
+  const statusColorMap = {
+    true: "success",
+    false: "danger",
+  };
+
+  // Handle status change
+  const handleStatusChange = async (userAlias: string, newStatus: boolean) => {
+    try {
+      const result = await updateStatusData({
+        userAlias: userAlias, // Changed from 'alias' to 'userAlias'
+        payload: { is_active: newStatus },
+      }).unwrap();
+      Swal.fire("Success", "Status Updated Successfully!", "success");
+    } catch (error) {
+      toast.error("Failed to update status. Please try again.");
+    }
+  };
+
+  const openViewModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleViewModal();
+  };
+
+  const openUpdateModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleUpdateModal();
+  };
+
   const currentAuthUsers = authUsers;
   const totalPages = Math.ceil(totalCount / authUsersPerPage) || 1;
 
@@ -119,7 +196,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           <Col>
             <h2>{title}</h2>
           </Col>
-          <Col md={2} xs="12">
+          <Col md={3} xs="12">
             <InputGroup className="position-relative">
               <FaSearch
                 className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
@@ -198,15 +275,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
-          <Col className="d-flex justify-content-end mt-sm-0 mt-2">
-            <Button
-              color="primary"
-              // onClick={openAddUserModal}
-            >
-              <TbCirclePlus size={18} className="me-1" />
-              Add {title.slice(0, -1)}
-            </Button>
-          </Col>
         </Row>
 
         <Row>
@@ -217,6 +285,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Created At</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -252,7 +321,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
-                          //   openViewModal(user);
+                            openViewModal(user);
                         }}
                         style={{ cursor: "pointer" }}
                       >
@@ -285,12 +354,82 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
                     <td>
+                      <div style={{ position: "relative" }}>
+                        <Dropdown
+                          isOpen={dropdownOpen[user.alias] || false}
+                          toggle={() => toggleDropdown(user.alias)}
+                        >
+                          <DropdownToggle
+                            tag="span"
+                            style={{ cursor: "pointer" }}
+                            caret={false}
+                          >
+                            <Badge
+                              color={user?.is_active ? "success" : "danger"}
+                              className="d-flex justify-content-center align-items-center gap-1 px-2 py-2"
+                              style={{ cursor: "pointer" }}
+                            >
+                              <span>
+                                {user?.is_active ? "Approved" : "Pending"}
+                              </span>
+                              <FaChevronDown size={10} />
+                            </Badge>
+                          </DropdownToggle>
+
+                          <DropdownMenu
+                            className="shadow-sm py-2"
+                            style={{
+                              minWidth: "140px",
+                              backgroundColor: "white",
+                              zIndex: 1050,
+                            }}
+                            container="body"
+                          >
+                            {statusOptions.map((option) => {
+                              const isActive = user.is_active === option.value;
+                              const colorClass =
+                                statusColorMap[
+                                  option.value.toString() as "true" | "false"
+                                ];
+
+                              return (
+                                <DropdownItem
+                                  key={option.value.toString()}
+                                  onClick={() =>
+                                    handleStatusChange(user.alias, option.value)
+                                  }
+                                  className="d-flex align-items-center gap-3 px-3 py-2"
+                                  active={isActive}
+                                  style={{
+                                    backgroundColor: isActive
+                                      ? "rgba(0,0,0,0.05)"
+                                      : "white",
+                                  }}
+                                >
+                                  <span
+                                    className={`rounded-circle bg-${colorClass}`}
+                                    style={{ width: "8px", height: "8px" }}
+                                  />
+                                  <span className={isActive ? "fw-bold" : ""}>
+                                    {option.label}
+                                  </span>
+                                  {isActive && (
+                                    <span className="ms-auto">✓</span>
+                                  )}
+                                </DropdownItem>
+                              );
+                            })}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
+                    </td>
+                    <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
                           color="primary"
                           size="sm"
                           title="Update User"
-                          //   onClick={() => openUpdateModal(user)}
+                          onClick={() => openUpdateModal(user)}
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
@@ -411,6 +550,17 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           </div>
         </Row>
       </CardBody>
+       <ViewAuthUserModal
+          isOpen={isViewModalOpen}
+          toggle={toggleViewModal}
+          selectedAuthUser={selectedAuthUser}
+        />
+
+      <UpdateAuthUserModal
+        isOpen={isUpdateModalOpen}
+        toggle={toggleUpdateModal}
+        selectedAuthUser={selectedAuthUser}
+      />
     </Card>
   );
 };

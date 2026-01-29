@@ -1,4 +1,4 @@
-interface AuthUser {
+export interface AuthUser {
   alias: string;
   name: string;
   title: string;
@@ -18,7 +18,18 @@ interface AuthUser {
   role?: string;
 }
 
-interface AuthUsersProps {
+export interface AuthUsersProps {
   title: string;
   authUsersPerPage?: number;
+}
+
+export interface ViewAuthUserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedAuthUser: Partial<AuthUser>;
+}
+export interface UpdateAuthUserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedAuthUser: Partial<AuthUser>;
 }
