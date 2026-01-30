@@ -291,14 +291,16 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <i className="fa-solid fa-filter"></i>
                   )}
                 </Button>
-                <Button
-                  color="primary"
-                  onClick={toggleModal}
-                  className="d-flex justify-content-center align-items-center gap-1"
-                >
-                  <TbCirclePlus size={18} />
-                  <span>Create Support Ticket</span>
-                </Button>
+                {session?.user?.user_type !== "ADMIN" && (
+                  <Button
+                    color="primary"
+                    onClick={toggleModal}
+                    className="d-flex justify-content-center align-items-center gap-1"
+                  >
+                    <TbCirclePlus size={18} />
+                    <span>Create Support Ticket</span>
+                  </Button>
+                )}
               </Col>
             </Row>
 
