@@ -60,7 +60,7 @@ export default function SetPassword() {
       toast.error("Passwords do not match.");
       return;
     }
-    if (!uid || !token) {
+    if (!uid || !token || !tenant) {
       toast.error("Invalid or missing credentials. Please try again.");
       return;
     }
@@ -73,7 +73,7 @@ export default function SetPassword() {
 
       const res = await setNewPassword({
         payload: formData,
-        tenant: tenant || undefined,
+        tenant: tenant,
         uid: uid,
         token: token,
       });
