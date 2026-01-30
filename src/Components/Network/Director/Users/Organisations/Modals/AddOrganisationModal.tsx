@@ -173,6 +173,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     // final validation: ensure organisation required fields
     if (!validateOrganisation()) {
       if (formRef.current) {
@@ -293,6 +294,16 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
           toast.error(`${body}`);
         });
         setApiErrors(map);
+
+        // Switch to the relevant tab based on error field paths
+        // Prefer the tab corresponding to the first reported field.
+        const firstField = flattened[0]?.field || Object.keys(map)[0];
+        if (firstField && firstField.startsWith("user")) {
+          toggleTab("user");
+        } else {
+          // default to organisation tab for organization / generic errors
+          toggleTab("organisation");
+        }
         return;
       }
 
@@ -342,7 +353,6 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   <FormGroup>
                     <Label for="name">
                       Organisation Name
-                      <small className="text-muted">(Unique)</small>
                       <span className="text-danger">*</span>
                     </Label>
                     <Input
@@ -365,7 +375,6 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                   <FormGroup>
                     <Label for="subdomain">
                       Sub Domain
-                      <small className="text-muted">(Unique)</small>
                       <span className="text-danger">*</span>
                     </Label>
                     <Input
@@ -680,7 +689,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
               Cancel
             </Button>
             {activeTab === "organisation" ? (
-              <Button color="primary" type="button" onClick={onNext}>
+              <Button color="primary" onClick={onNext}>
                 Go Next
               </Button>
             ) : (
