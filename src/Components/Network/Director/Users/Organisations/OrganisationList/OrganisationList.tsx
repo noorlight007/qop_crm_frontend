@@ -178,7 +178,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                           </div>
                         </Col>
                         <Col className="border-end">
-                          <div className="text-center ">
+                          <div className="text-center">
                             <h5 className="mb-0">{item.total_advisers}</h5>
                             <span className="text-primary small">Advisers</span>
                           </div>
