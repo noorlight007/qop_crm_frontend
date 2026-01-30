@@ -114,9 +114,9 @@ const OrgCases: React.FC = () => {
                       trigger="hover"
                     >
                       <PopoverBody className="bg-white rounded text-dark p-3 small">
-                        🔍 You Can Search Using The Lead’s Name, Title, Phone
-                        Number, Email Address, Case Category, Case Status or
-                        Assigned User’s Name.
+                        🔍 You Can Search Using The Lead’s Name, Phone Number,
+                        Email Address, Case Category, Case Status or Assigned
+                        User’s Name.
                       </PopoverBody>
                     </UncontrolledPopover>
                   </InputGroup>

@@ -169,8 +169,7 @@ const OrgClients: React.FC = () => {
                 trigger="hover"
               >
                 <PopoverBody className="bg-white rounded text-dark p-3 small">
-                  🔍 You can search using Title(e.g., Mr, Ms), First Name,
-                  Middle Name, Last Name, Email Address or Phone Number.
+                  🔍 You can search using Name, Email Address or Phone Number.
                 </PopoverBody>
               </UncontrolledPopover>
             </InputGroup>

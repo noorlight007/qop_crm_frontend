@@ -269,9 +269,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     trigger="hover"
                   >
                     <PopoverBody className="bg-white rounded text-dark p-3 small">
-                      🔍 You can search using Ticket ID, Creator's Name (First
-                      Name, Middle Name, Last Name), Creator's Email Address or
-                      Phone Number.
+                      🔍 You can search using Ticket ID, Creator's Name,
+                      Creator's Email Address or Phone Number.
                     </PopoverBody>
                   </UncontrolledPopover>
                 </InputGroup>
@@ -292,14 +291,16 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <i className="fa-solid fa-filter"></i>
                   )}
                 </Button>
-                <Button
-                  color="primary"
-                  onClick={toggleModal}
-                  className="d-flex justify-content-center align-items-center gap-1"
-                >
-                  <TbCirclePlus size={18} />
-                  <span>Create Support Ticket</span>
-                </Button>
+                {session?.user?.user_type !== "ADMIN" && (
+                  <Button
+                    color="primary"
+                    onClick={toggleModal}
+                    className="d-flex justify-content-center align-items-center gap-1"
+                  >
+                    <TbCirclePlus size={18} />
+                    <span>Create Support Ticket</span>
+                  </Button>
+                )}
               </Col>
             </Row>
 
