@@ -281,7 +281,8 @@ const MyTask: React.FC = () => {
                   trigger="hover"
                 >
                   <PopoverBody className="bg-white rounded text-dark p-3 small">
-                    🔍 You can search using Task Name, Case Name.
+                    🔍 You can search using Client Title(e.g., Mr, Ms), First
+                    Name, Middle Name, Last Name, Task Name, Case ID, .
                   </PopoverBody>
                 </UncontrolledPopover>
               </InputGroup>
