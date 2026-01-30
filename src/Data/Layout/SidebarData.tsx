@@ -1,5 +1,58 @@
 import { MenuItem } from "@/Types/LayoutTypes";
 
+//Admin
+const AdminMenu: MenuItem[] = [
+  {
+    title: "Admin",
+    lanClass: "lan-1",
+    type: "group",
+    Items: [
+      {
+        title: "Dashboard",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/dashboard",
+      },
+      {
+        title: "Networks",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/networks",
+      },
+      {
+        title: "Organisations",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/organisations",
+      },
+      {
+        title: "Directors",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/directors",
+      },
+      {
+        title: "Compliance Assistants",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/compliance-assistants",
+      },
+      {
+        title: "Support Ticket",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/support-ticket",
+      },
+    ],
+  },
+];
+
 //NetworkDirectorMenu
 const NetworkDirectorMenu: MenuItem[] = [
   {
@@ -12,7 +65,7 @@ const NetworkDirectorMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/network/director",
+        path: "/network/director/dashboard",
       },
       {
         title: "Cases",
@@ -20,27 +73,27 @@ const NetworkDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/network/director/leads",
+            path: "/network/director/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/network/director/cases",
+            path: "/network/director/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/network/director/activecases",
+            path: "/network/director/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
-            path: "/dashboard/network/director/clients",
+            path: "/network/director/clients",
             title: "Clients",
             type: "link",
           },
           {
-            path: "/dashboard/network/director/reports",
+            path: "/network/director/reports",
             title: "Reports",
             type: "link",
           },
@@ -52,24 +105,24 @@ const NetworkDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/network/director/organisations",
+            path: "/network/director/organisations",
             title: "Organisations",
             type: "link",
           },
           {
-            path: "/dashboard/network/director/compliance-assistants",
+            path: "/network/director/compliance-assistants",
             title: "Compliance Assistants",
             type: "link",
             children: [],
           },
           {
-            path: "/dashboard/network/director/advisers",
+            path: "/network/director/advisers",
             title: "Registered Advisers",
             type: "link",
             children: [],
           },
           {
-            path: "/dashboard/network/director/advisers-status",
+            path: "/network/director/advisers-status",
             title: "Advisers Status",
             type: "link",
           },
@@ -80,7 +133,7 @@ const NetworkDirectorMenu: MenuItem[] = [
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/network/director/support-ticket",
+        path: "/network/director/support-ticket",
       },
       // {
       //   title: "Reports & Tasks",
@@ -89,22 +142,22 @@ const NetworkDirectorMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/dashboard/network/director/usermanagement",
+      //       path: "/network/director/usermanagement",
       //       title: "User Management",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/director/systemreports",
+      //       path: "/network/director/systemreports",
       //       title: "System Reports",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/director/auditlog",
+      //       path: "/network/director/auditlog",
       //       title: "Audit Log",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/director/securitypolicy",
+      //       path: "/network/director/securitypolicy",
       //       title: "Security Policy",
       //       type: "link",
       //     },
@@ -126,7 +179,7 @@ const NetworkAdviserMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/network/adviser",
+        path: "/network/adviser/dashboard",
       },
       {
         title: "Cases",
@@ -134,27 +187,27 @@ const NetworkAdviserMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/network/adviser/leads",
+            path: "/network/adviser/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/network/adviser/cases",
+            path: "/network/adviser/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/network/adviser/activecases",
+            path: "/network/adviser/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
             title: "Clients",
             type: "link",
-            path: "/dashboard/network/adviser/clients",
+            path: "/network/adviser/clients",
           },
           {
-            path: "/dashboard/network/adviser/reports",
+            path: "/network/adviser/reports",
             title: "Reports",
             type: "link",
           },
@@ -165,7 +218,7 @@ const NetworkAdviserMenu: MenuItem[] = [
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/network/adviser/support-ticket",
+        path: "/network/adviser/support-ticket",
       },
       // {
       //   title: "Users",
@@ -173,12 +226,12 @@ const NetworkAdviserMenu: MenuItem[] = [
       //   type: "sub",
       //   children: [
       //     {
-      //       path: "/dashboard/network/adviser/marketinghub",
+      //       path: "/network/adviser/marketinghub",
       //       title: "Marketing Hub",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/network/adviser/tasksandreminders",
+      //       path: "/network/adviser/tasksandreminders",
       //       title: "Tasks & Reminders",
       //       type: "link",
       //     },
@@ -200,7 +253,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/director",
+        path: "/organisation/director/dashboard",
       },
       {
         title: "Cases",
@@ -208,27 +261,27 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/organisation/director/leads",
+            path: "/organisation/director/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/cases",
+            path: "/organisation/director/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/activecases",
+            path: "/organisation/director/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/clients",
+            path: "/organisation/director/clients",
             title: "Clients",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/reports",
+            path: "/organisation/director/reports",
             title: "Reports",
             type: "link",
           },
@@ -240,17 +293,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/dashboard/organisation/director/advisers",
+            path: "/organisation/director/advisers",
             title: "Advisers",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/admins",
+            path: "/organisation/director/admins",
             title: "Admins",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/director/introducers",
+            path: "/organisation/director/introducers",
             title: "Introducers",
             type: "link",
           },
@@ -261,7 +314,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/director/support-ticket",
+        path: "/organisation/director/support-ticket",
       },
       // {
       //   title: "Reports & Tasks",
@@ -270,17 +323,17 @@ const OrganisationDirectorMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/dashboard/organisation/director/usersandroles",
+      //       path: "/organisation/director/usersandroles",
       //       title: "Users & Roles",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/organisation/director/workflowsandintegrations",
+      //       path: "/organisation/director/workflowsandintegrations",
       //       title: "Workflows & Integrations",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/organisation/director/systemreportsandlogs",
+      //       path: "/organisation/director/systemreportsandlogs",
       //       title: "System Reports & Logs",
       //       type: "link",
       //     },
@@ -301,7 +354,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
         title: "Dashboard",
         icon: "Chart",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/adviser",
+        path: "/organisation/adviser/dashboard",
         type: "link",
       },
       {
@@ -311,27 +364,27 @@ const OrganisationAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            path: "/dashboard/organisation/adviser/leads",
+            path: "/organisation/adviser/leads",
             title: "Leads",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/adviser/cases",
+            path: "/organisation/adviser/cases",
             title: "All Cases",
             type: "link",
           },
           {
-            path: "/dashboard/organisation/adviser/activecases",
+            path: "/organisation/adviser/activecases",
             title: "Active Cases",
             type: "link",
           },
           {
             title: "Clients",
             type: "link",
-            path: "/dashboard/organisation/adviser/clients",
+            path: "/organisation/adviser/clients",
           },
           {
-            path: "/dashboard/organisation/adviser/reports",
+            path: "/organisation/adviser/reports",
             title: "Reports",
             type: "link",
           },
@@ -342,7 +395,7 @@ const OrganisationAdviserMenu: MenuItem[] = [
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/adviser/support-ticket",
+        path: "/organisation/adviser/support-ticket",
       },
 
       // {
@@ -352,12 +405,12 @@ const OrganisationAdviserMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/dashboard/organisation/adviser/marketinghub",
+      //       path: "/organisation/adviser/marketinghub",
       //       title: "Marketing Hub",
       //       type: "link",
       //     },
       //     {
-      //       path: "/dashboard/organisation/adviser/tasksandreminders",
+      //       path: "/organisation/adviser/tasksandreminders",
       //       title: "Tasks & Reminders",
       //       type: "link",
       //     },
@@ -378,7 +431,7 @@ const OrganisationAdminMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/admin",
+        path: "/organisation/admin/dashboard",
       },
       {
         title: "Cases",
@@ -390,22 +443,22 @@ const OrganisationAdminMenu: MenuItem[] = [
           {
             title: "Leads",
             type: "link",
-            path: "/dashboard/organisation/admin/leads",
+            path: "/organisation/admin/leads",
           },
           {
             title: "All Cases",
             type: "link",
-            path: "/dashboard/organisation/admin/cases",
+            path: "/organisation/admin/cases",
           },
           {
             title: "Clients",
             type: "link",
-            path: "/dashboard/organisation/admin/clients",
+            path: "/organisation/admin/clients",
           },
           {
             title: "Reports",
             type: "link",
-            path: "/dashboard/organisation/admin/reports",
+            path: "/organisation/admin/reports",
           },
         ],
       },
@@ -414,42 +467,42 @@ const OrganisationAdminMenu: MenuItem[] = [
       //   icon: "Edit",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/orgstaff/tasksandreminders",
+      //   path: "/orgstaff/tasksandreminders",
       // },
       // {
       //   title: "Adviser Clients",
       //   icon: "Profile",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/organisation/admin/adviserclient",
+      //   path: "/organisation/admin/adviserclient",
       // },
       {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/organisation/admin/support-ticket",
+        path: "/organisation/admin/support-ticket",
       },
       // {
       //   title: "Document Management",
       //   icon: "Paper",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/organisation/admin/documentmanagement",
+      //   path: "/organisation/admin/documentmanagement",
       // },
       // {
       //   title: "Chat & Communication",
       //   icon: "Chat",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/organisation/admin/chatandcommunication",
+      //   path: "/organisation/admin/chatandcommunication",
       // },
       // {
       //   title: "Comments",
       //   icon: "Message",
       //   type: "link",
       //   lanClass: "lan-3",
-      //   path: "/dashboard/organisation/admin/comments",
+      //   path: "/organisation/admin/comments",
       // },
     ],
   },
@@ -467,7 +520,7 @@ const ClientMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/dashboard/client",
+        path: "/client/dashboard",
       },
     ],
   },
@@ -475,6 +528,7 @@ const ClientMenu: MenuItem[] = [
 
 // Export all menus
 export {
+  AdminMenu,
   ClientMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
@@ -485,6 +539,8 @@ export {
 
 export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
+    case "ADMIN":
+      return AdminMenu;
     case "NETWORK_DIRECTOR":
       return NetworkDirectorMenu;
     case "NETWORK_COMPLIANCE_ASSISTANT":

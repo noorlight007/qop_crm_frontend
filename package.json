@@ -36,6 +36,7 @@
     "cleave.js": "^1.6.0",
     "convert-size": "^1.2.1",
     "country-list": "^2.3.0",
+    "date-fns": "^3.6.0",
     "feather-icons": "^4.29.2",
     "file-saver": "^2.0.5",
     "filepond-plugin-image-exif-orientation": "^1.0.11",

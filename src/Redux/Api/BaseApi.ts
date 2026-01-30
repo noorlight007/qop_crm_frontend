@@ -182,6 +182,7 @@ export const baseApi = createApi({
     "AppearanceSettings",
     //AddUser
     "AddUser",
+    "AuthUserList",
 
     //Common components start
     "LeadDetails",
@@ -246,10 +247,8 @@ export const baseApi = createApi({
     "OrganisationList",
     "SingleOrganisation",
     "NetworkReports",
-    "OrgLeads",
-    "OrgClients",
+    "OrgUserList",
     "OrgCases",
-    "OrgAdvisers",
     "NetworkDirectorDashboard",
     //Network Director end
 

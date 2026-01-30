@@ -1,7 +1,7 @@
 /* OrganizationBanner css */
 .org-profile-container {
   position: absolute;
-  top: 140px;
+  top: 120px;
   left: 80px;
   transform: translateX(-50%);
   text-align: center;
@@ -9,36 +9,8 @@
 
 .profile-pic {
   border-radius: 50%;
-  border: 1px solid var(--primary-color);
+  border: 2px solid var(--primary-color);
   background: transparent;
-}
-
-.edit_icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  border-radius: 50%;
-  font-size: 14px;
-  box-shadow: none;
-}
-
-.edit_icon button {
-  background: white !important;
-  border: none !important;
-  box-shadow: none !important;
-  height: 40px;
-  width: 40px;
-  border-radius: 50%;
-  padding-bottom: 0px;
-}
-.edit_icon button:hover {
-  background: rgb(223, 223, 223) !important;
-  transition: all 0.5s ease-in-out;
-}
-
-.edit_icon button i {
-  color: #333;
-  font-size: 18px;
 }
 
 .organisation_card {
@@ -49,4 +21,81 @@
 .organisation_card:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(48, 142, 136, 0.573);
+}
+
+// OrganisationDirectorInfo css
+
+.edit_icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 50%;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+.organisation-director-loading {
+  height: 450px;
+  border-radius: 20px;
+  background: var(--bs-secondary);
+}
+
+.organisation-spinner {
+  width: 3rem !important;
+  height: 3rem !important;
+  color: white !important;
+}
+
+.organisation-gradient-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 140px;
+  background: var(--primary-color);
+  z-index: 0;
+}
+
+.organisation-card-body {
+  z-index: 1;
+}
+
+.organisation-avatar-container {
+  margin-top: 70px;
+}
+
+.organisation-avatar-img {
+  border: 2px solid white;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  width: 90px;
+  height: 90px;
+}
+
+.organisation-initials {
+  width: 90px;
+  height: 90px;
+  font-size: 28px;
+  font-weight: 700;
+  background: var(--primary-color);
+  border: 2px solid white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.organisation-active-badge {
+  width: 24px;
+  height: 24px;
+  bottom: 4px;
+  right: 4px;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure the active badge icon is small and white */
+.organisation-active-badge i {
+  font-size: 10px;
+  color: white;
 }
