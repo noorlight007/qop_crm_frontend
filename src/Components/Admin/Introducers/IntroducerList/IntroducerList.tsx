@@ -6,7 +6,7 @@ const IntroducerList: React.FC = () => {
     <div>
       <>
       <Container fluid>
-        <AuthUsers title="Compliance Assistant" roles="INTRODUCER"/>
+        <AuthUsers title="Introducer" roles="INTRODUCER"/>
       </Container>
     </>
     </div>

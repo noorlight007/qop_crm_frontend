@@ -66,7 +66,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     }
     return roles;
   };
-  
+
   const role = getRole();
 
   const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
@@ -202,7 +202,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
       <CardBody>
         <Row className="d-flex justify-content-between py-4">
           <Col>
-            <h2>{title}</h2>
+            <h2>{title}s</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -260,31 +260,30 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           </Col>
           {pathname !== "/admin/compliance-assistants" && (
             <Col md={3}>
-            <Input
-              type="select"
-              id="organisationFilter"
-              value={selectedOrganisation}
-              onChange={handleOrganisationChange}
-              disabled={orgListLoading || !selectedNetwork}
-              style={{ paddingTop: "0.4rem", paddingBottom: "0.4rem" }}
-            >
-              <option value="">Select an Organisation</option>
-              {orgListLoading ? (
-                <option disabled>Loading...</option>
-              ) : (
-                orgList?.map((org: any, index: any) => (
-                  <option
-                    key={org.subdomain || `${org.name}-${index}`}
-                    value={org.subdomain || org.name}
-                  >
-                    {org.name}
-                  </option>
-                ))
-              )}
-            </Input>
-          </Col>
+              <Input
+                type="select"
+                id="organisationFilter"
+                value={selectedOrganisation}
+                onChange={handleOrganisationChange}
+                disabled={orgListLoading || !selectedNetwork}
+                style={{ paddingTop: "0.4rem", paddingBottom: "0.4rem" }}
+              >
+                <option value="">Select an Organisation</option>
+                {orgListLoading ? (
+                  <option disabled>Loading...</option>
+                ) : (
+                  orgList?.map((org: any, index: any) => (
+                    <option
+                      key={org.subdomain || `${org.name}-${index}`}
+                      value={org.subdomain || org.name}
+                    >
+                      {org.name}
+                    </option>
+                  ))
+                )}
+              </Input>
+            </Col>
           )}
-          
         </Row>
 
         <Row>
@@ -376,7 +375,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                           >
                             <Badge
                               color={user?.is_active ? "success" : "danger"}
-                              className="d-flex justify-content-center align-items-center gap-1 px-2 py-2"
+                              className="d-flex justify-content-center align-items-center gap-1"
                               style={{ cursor: "pointer" }}
                             >
                               <span>
@@ -567,6 +566,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
       />
 
       <UpdateAuthUserModal
+        title={title}
         isOpen={isUpdateModalOpen}
         toggle={toggleUpdateModal}
         selectedAuthUser={selectedAuthUser}

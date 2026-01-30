@@ -6,7 +6,7 @@ const AdviserList: React.FC = () => {
     <div>
       <>
       <Container fluid>
-        <AuthUsers title="Advisers" roles={["NETWORK_ADVISER", "ORGANISATION_ADVISER"]}/>
+        <AuthUsers title="Adviser" roles={["NETWORK_ADVISER", "ORGANISATION_ADVISER"]}/>
       </Container>
     </>
     </div>
