@@ -103,6 +103,28 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   // Handle text input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    // Special handling for subdomain: allow only lowercase letters and hyphen
+    if (name === "subdomain") {
+      const sanitized = value.toLowerCase().replace(/[^a-z-]/g, "");
+      // Show a small message when user typed disallowed characters
+      if (value && sanitized !== value) {
+        setSubdomainError("Only lowercase letters and hyphen (-) are allowed");
+      } else {
+        setSubdomainError(null);
+      }
+
+      setFormData((prevState) => ({
+        ...prevState,
+        organization: {
+          ...(prevState.organization as any),
+          [name]: sanitized,
+        },
+      }));
+
+      return;
+    }
+
     setFormData((prevState) => ({
       ...prevState,
       organization: {
@@ -129,6 +151,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("organisation");
+  // API validation state (used when user clicks "Go Next")
+  const [validating, setValidating] = useState(false);
+  const [orgValidated, setOrgValidated] = useState(false);
+  // Local validation message for subdomain (client-side only)
+  const [subdomainError, setSubdomainError] = useState<string | null>(null);
   // form ref for native validity/reporting
   const formRef = useRef<HTMLFormElement | null>(null);
   const toggleTab = (tab: string) => {
@@ -137,22 +164,35 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   // Validate required organisation fields
   const validateOrganisation = () => {
-    // Return true if required organisation fields are non-empty.
+    // Return true if required organisation fields are non-empty and valid.
     const name = ((formData as any).organization?.name || "").toString().trim();
+    const subdomain = ((formData as any).organization?.subdomain || "")
+      .toString()
+      .trim();
     const primary = ((formData as any).organization?.primary_mobile || "")
       .toString()
       .trim();
     const email = ((formData as any).organization?.email || "")
       .toString()
       .trim();
-    return !!(name && primary && email);
+
+    // Subdomain must be lowercase letters and hyphen only
+    const subdomainRegex = /^[a-z-]+$/;
+    const subdomainValid = subdomainRegex.test(subdomain);
+    if (!subdomainValid) {
+      setSubdomainError("Only lowercase letters and hyphen (-) are allowed");
+    } else {
+      setSubdomainError(null);
+    }
+
+    return !!(name && subdomain && primary && email && subdomainValid);
   };
 
-  const onNext = () => {
+  const onNext = async () => {
     if (!validateOrganisation()) {
       // show native browser validation on the first invalid organisation field
       if (formRef.current) {
-        const ids = ["name", "primary_mobile", "email"];
+        const ids = ["name", "subdomain", "primary_mobile", "email"];
         for (const id of ids) {
           const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
           if (el && !el.checkValidity()) {
@@ -164,11 +204,92 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       }
       return;
     }
-    toggleTab("user");
+
+    // Call API to validate organisation fields before moving to user tab
+    setValidating(true);
+    try {
+      const payload = { organization: { ...(formData.organization as any) } };
+      const res = await addOrganisation(payload).unwrap();
+      // Consider success as validation success (server did not return field errors)
+      setApiErrors({});
+      setOrgValidated(true);
+      toast.success("Organisation validated");
+      toggleTab("user");
+    } catch (error: any) {
+      console.error("Organisation validation error:", error);
+      const source =
+        error?.data && typeof error.data === "object" ? error.data : error;
+      const flattened = flattenErrors(source);
+      if (flattened.length) {
+        const map: Record<string, string[]> = {};
+        flattened.forEach((entry) => {
+          const field = entry.field || "error";
+          map[field] = map[field]
+            ? [...map[field], ...entry.messages]
+            : [...entry.messages];
+          const body = entry.messages.join(", ");
+          // toast.error(body);
+        });
+        setApiErrors(map);
+
+        const firstField = flattened[0]?.field || Object.keys(map)[0];
+        if (firstField && firstField.startsWith("user")) {
+          toggleTab("user");
+        } else {
+          toggleTab("organisation");
+        }
+      } else {
+        const msg = getErrorMessage(error) || "Validation failed";
+        // toast.error(msg);
+      }
+    } finally {
+      setValidating(false);
+    }
   };
 
   const onBack = () => {
     toggleTab("organisation");
+  };
+
+  // Helper to flatten nested validation error payloads into [{ field, messages[] }]
+  const flattenErrors = (
+    value: any,
+    prefix = "",
+  ): Array<{ field: string; messages: string[] }> => {
+    const out: Array<{ field: string; messages: string[] }> = [];
+
+    const pushMessages = (fieldPath: string, msgs: any) => {
+      if (msgs == null) return;
+      if (typeof msgs === "string")
+        out.push({ field: fieldPath, messages: [msgs] });
+      else if (Array.isArray(msgs))
+        out.push({
+          field: fieldPath,
+          messages: msgs.map((m) =>
+            typeof m === "string" ? m : JSON.stringify(m),
+          ),
+        });
+      else if (typeof msgs === "object") {
+        Object.entries(msgs).forEach(([k, v]) => {
+          const next = fieldPath ? `${fieldPath}.${k}` : k;
+          out.push(...flattenErrors(v, next));
+        });
+      } else out.push({ field: fieldPath, messages: [String(msgs)] });
+    };
+
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      Object.entries(value).forEach(([k, v]) => {
+        const next = prefix ? `${prefix}.${k}` : k;
+        out.push(...flattenErrors(v, next));
+      });
+      return out;
+    }
+
+    if (prefix) pushMessages(prefix, value);
+    else if (Array.isArray(value) || typeof value === "string")
+      pushMessages("error", value);
+
+    return out;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -177,7 +298,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     // final validation: ensure organisation required fields
     if (!validateOrganisation()) {
       if (formRef.current) {
-        const ids = ["name", "primary_mobile", "email"];
+        const ids = ["name", "subdomain", "primary_mobile", "email"];
         for (const id of ids) {
           const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
           if (el && !el.checkValidity()) {
@@ -235,55 +356,12 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     } catch (error: any) {
       console.error("Add organisation error:", error);
 
-      // If API returned a field->messages object, flatten nested fields and show each specific field's messages.
-      const flattenErrors = (
-        value: any,
-        prefix = "",
-      ): Array<{ field: string; messages: string[] }> => {
-        const out: Array<{ field: string; messages: string[] }> = [];
-
-        const pushMessages = (fieldPath: string, msgs: any) => {
-          if (msgs == null) return;
-          if (typeof msgs === "string")
-            out.push({ field: fieldPath, messages: [msgs] });
-          else if (Array.isArray(msgs))
-            out.push({
-              field: fieldPath,
-              messages: msgs.map((m) =>
-                typeof m === "string" ? m : JSON.stringify(m),
-              ),
-            });
-          else if (typeof msgs === "object") {
-            // object with nested fields -> recurse
-            Object.entries(msgs).forEach(([k, v]) => {
-              const next = fieldPath ? `${fieldPath}.${k}` : k;
-              out.push(...flattenErrors(v, next));
-            });
-          } else out.push({ field: fieldPath, messages: [String(msgs)] });
-        };
-
-        // If incoming value is an object representing multiple fields
-        if (value && typeof value === "object" && !Array.isArray(value)) {
-          Object.entries(value).forEach(([k, v]) => {
-            const next = prefix ? `${prefix}.${k}` : k;
-            out.push(...flattenErrors(v, next));
-          });
-          return out;
-        }
-
-        // Otherwise push messages for the prefix path
-        if (prefix) pushMessages(prefix, value);
-        else if (Array.isArray(value) || typeof value === "string")
-          pushMessages("error", value);
-
-        return out;
-      };
-
+      // Try to extract field errors and show toasts
       const source =
         error?.data && typeof error.data === "object" ? error.data : error;
       const flattened = flattenErrors(source);
       if (flattened.length) {
-        // Build a map for rendering under inputs
+        // Build a map for rendering under inputs and show a toast for each field
         const map: Record<string, string[]> = {};
         flattened.forEach((entry) => {
           const field = entry.field || "error";
@@ -291,12 +369,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             ? [...map[field], ...entry.messages]
             : [...entry.messages];
           const body = entry.messages.join(", ");
-          toast.error(`${body}`);
+          // toast.error(body);
         });
         setApiErrors(map);
 
         // Switch to the relevant tab based on error field paths
-        // Prefer the tab corresponding to the first reported field.
         const firstField = flattened[0]?.field || Object.keys(map)[0];
         if (firstField && firstField.startsWith("user")) {
           toggleTab("user");
@@ -385,10 +462,16 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter organisation sub domain"
                       required
+                      pattern="[a-z-]+"
+                      title="Only lowercase letters and hyphen (-) are allowed"
                     />
                     {apiErrors["organization.subdomain"] ? (
                       <div className="text-danger small mt-1">
                         {apiErrors["organization.subdomain"].join(", ")}
+                      </div>
+                    ) : subdomainError ? (
+                      <div className="text-danger small mt-1">
+                        {subdomainError}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -689,8 +772,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
               Cancel
             </Button>
             {activeTab === "organisation" ? (
-              <Button color="primary" onClick={onNext}>
-                Go Next
+              <Button
+                color="primary"
+                type="button"
+                onClick={onNext}
+                disabled={validating}
+              >
+                {validating ? "Validating..." : "Go Next"}
               </Button>
             ) : (
               <Button color="primary" type="submit">
