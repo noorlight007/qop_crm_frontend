@@ -269,9 +269,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     trigger="hover"
                   >
                     <PopoverBody className="bg-white rounded text-dark p-3 small">
-                      🔍 You can search using Ticket ID, Creator's Name (First
-                      Name, Middle Name, Last Name), Creator's Email Address or
-                      Phone Number.
+                      🔍 You can search using Ticket ID, Creator's Name,
+                      Creator's Email Address or Phone Number.
                     </PopoverBody>
                   </UncontrolledPopover>
                 </InputGroup>
