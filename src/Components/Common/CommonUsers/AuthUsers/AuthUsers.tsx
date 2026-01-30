@@ -142,6 +142,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   setCurrentPage(1);
                 }}
                 style={{ padding: "10px 10px 10px 25px" }}
+                className="rounded-end-1"
               />
               <FaInfoCircle
                 id="complianceAssistantSearch"

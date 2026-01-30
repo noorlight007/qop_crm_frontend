@@ -255,6 +255,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       setCurrentPage(1);
                     }}
                     style={{ padding: "10px 27px 10px 25px" }}
+                    className="rounded-end-1"
                   />
                   <FaInfoCircle
                     id="ticketSearchSuggestion"
@@ -317,7 +318,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       }
                     >
                       <option value="">All Ticket Types</option>{" "}
-                      {/* Updated text */}
                       <option value="FEEDBACK">Feedback</option>
                       <option value="BUG_REPORT">Bug Report</option>
                       <option value="FEATURE_REQUEST">Feature Request</option>
@@ -335,7 +335,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       }
                     >
                       <option value="">All Statuses</option>{" "}
-                      {/* Updated text */}
                       <option value="OPEN">Open</option>
                       <option value="IN_REVIEW">In Review</option>
                       <option value="RESOLVED">Resolved</option>
@@ -481,7 +480,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                         ticket?.status as TicketStatus
                                       ] ?? "dark"
                                     }
-                                    className="d-flex justify-content-center align-items-center gap-1 px-2 py-2"
+                                    className="d-flex justify-content-center align-items-center gap-1 px-1"
                                     style={{ cursor: "pointer" }}
                                   >
                                     {
@@ -548,10 +547,12 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                     ticket?.status as TicketStatus
                                   ] ?? "dark"
                                 }
-                                className="d-flex justify-content-center align-items-center gap-1 py-2"
+                                className="d-flex justify-content-center align-items-center gap-1"
                               >
                                 {statusIconMap[ticket?.status as TicketStatus]}{" "}
-                                <span style={{ marginTop: "2.5px" }}>{formatChoiceFieldValue(ticket?.status)}</span>
+                                <span style={{ marginTop: "2.5px" }}>
+                                  {formatChoiceFieldValue(ticket?.status)}
+                                </span>
                               </Badge>
                             )
                           ) : (

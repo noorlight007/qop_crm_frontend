@@ -155,11 +155,12 @@ const OrgClients: React.FC = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 style={{ padding: "10px 27px 10px 25px" }}
+                className="rounded-end-1"
               />
               <FaInfoCircle
                 id="orgClientSearch"
                 className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
-                style={{ cursor: "pointer", zIndex: 10  }}
+                style={{ cursor: "pointer", zIndex: 10 }}
               />
 
               <UncontrolledPopover
@@ -168,8 +169,8 @@ const OrgClients: React.FC = () => {
                 trigger="hover"
               >
                 <PopoverBody className="bg-white rounded text-dark p-3 small">
-                  🔍 You can search using Title(e.g., Mr, Ms), First Name, Middle Name, Last
-                  Name, Email Address or Phone Number.
+                  🔍 You can search using Title(e.g., Mr, Ms), First Name,
+                  Middle Name, Last Name, Email Address or Phone Number.
                 </PopoverBody>
               </UncontrolledPopover>
             </InputGroup>

@@ -146,6 +146,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
                   setCurrentPage(1);
                 }}
                 style={{ padding: "10px 27px 10px 25px" }}
+                className="rounded-end-1"
               />
               <FaInfoCircle
                 id="leadSearchSuggestion"

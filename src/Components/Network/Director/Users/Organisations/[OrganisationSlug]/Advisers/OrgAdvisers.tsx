@@ -133,6 +133,7 @@ const OrgAdvisers: React.FC = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 style={{ padding: "10px 27px 10px 25px" }}
+                className="rounded-end-1"
               />
               <FaInfoCircle
                 id="orgAdviderSearch"

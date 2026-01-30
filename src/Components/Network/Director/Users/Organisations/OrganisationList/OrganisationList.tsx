@@ -91,6 +91,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                     setCurrentPage(1);
                   }}
                   style={{ padding: "10px 10px 10px 25px" }}
+                  className="rounded-end-1"
                 />
                 <FaInfoCircle
                   id="OrgListSearchSuggestion"

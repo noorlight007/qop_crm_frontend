@@ -4,7 +4,7 @@ import { useGetMyTasksQuery } from "@/Redux/Reducers/Common/MyTask/MyTasksApi";
 import { MyTaskProps } from "@/Types/Common/MyTask/MyTaskTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import {
   Badge,
   Button,
@@ -18,8 +18,10 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
+  PopoverBody,
   Row,
   Table,
+  UncontrolledPopover,
 } from "reactstrap";
 
 const MyTask: React.FC = () => {
@@ -265,7 +267,23 @@ const MyTask: React.FC = () => {
                   style={{ padding: "10px 10px 10px 25px" }}
                   value={filters.searchTerm}
                   onChange={(e) => onFilterChange("searchTerm", e.target.value)}
+                  className="rounded-end-1"
                 />
+                <FaInfoCircle
+                  id="MyTaskSearchSuggestion"
+                  className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
+                  style={{ cursor: "pointer", zIndex: 10 }}
+                />
+
+                <UncontrolledPopover
+                  placement="right"
+                  target="MyTaskSearchSuggestion"
+                  trigger="hover"
+                >
+                  <PopoverBody className="bg-white rounded text-dark p-3 small">
+                    🔍 You can search using Task Name, Case Name.
+                  </PopoverBody>
+                </UncontrolledPopover>
               </InputGroup>
             </Col>
             <Col md="2" xs="12" className="d-flex justify-content-end">
