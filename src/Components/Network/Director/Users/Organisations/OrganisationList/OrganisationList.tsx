@@ -29,6 +29,7 @@ type OrganisationListProps = {
 };
 
 const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
+  const pathname = window.location.pathname;
   const { data: session } = useSession();
   const [organisations, setOrganisations] = useState<SingleOrganisationProps[]>(
     [],
@@ -63,10 +64,21 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
   }, [organisationList]);
 
   // Pagination logic
-  const currentOrganisations = organisations;
   const itemsPerPage = maxItems ?? (organisationList as any)?.page_size ?? 12;
+  // Ensure we only render up to `itemsPerPage` items even if the API returned more
+  const currentOrganisations = organisations?.slice(0, itemsPerPage) ?? [];
   const totalCount = (organisationList as any)?.count ?? organisations.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
+
+  // Ensure currentPage is always within the valid range when totalPages changes
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+    if (currentPage < 1) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
 
   return (
     <Card>
@@ -203,68 +215,47 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
             )}
           </Row>
           {/* Pagination and total organisations */}
-          <Row>
-            <div className="d-flex justify-content-between align-items-center p-3">
-              <div className="px-2">
-                <p className="text-primary">
-                  Showing{" "}
-                  {totalCount === 0
-                    ? "0"
-                    : (currentPage - 1) * itemsPerPage + 1}{" "}
-                  to{" "}
-                  {currentOrganisations.length === 0
-                    ? 0
-                    : (currentPage - 1) * itemsPerPage +
-                      currentOrganisations.length}{" "}
-                  of {totalCount} Organisations
-                </p>
-              </div>
-              <Pagination className="d-flex justify-content-end p-2">
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink first onClick={() => setCurrentPage(1)} />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink
-                    previous
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  />
-                </PaginationItem>
+          {pathname === "/network/director/dashboard" ? (
+            <div className="d-flex justify-content-end">
+              <Button
+                color="link"
+                className="text-primary p-0 mb-4"
+                href="/network/director/organisations"
+              >
+                View All Organisations
+              </Button>
+            </div>
+          ) : (
+            <Row>
+              <div className="d-flex justify-content-between align-items-center p-3">
+                <div className="px-2">
+                  <p className="text-primary">
+                    Showing{" "}
+                    {totalCount === 0
+                      ? "0"
+                      : (currentPage - 1) * itemsPerPage + 1}{" "}
+                    to{" "}
+                    {currentOrganisations.length === 0
+                      ? 0
+                      : (currentPage - 1) * itemsPerPage +
+                        currentOrganisations.length}{" "}
+                    of {totalCount} Organisations
+                  </p>
+                </div>
+                <Pagination className="d-flex justify-content-end p-2">
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink first onClick={() => setCurrentPage(1)} />
+                  </PaginationItem>
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink
+                      previous
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    />
+                  </PaginationItem>
 
-                {totalPages <= 7 ? (
-                  Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (pageNumber) => (
-                      <PaginationItem
-                        key={pageNumber}
-                        active={pageNumber === currentPage}
-                      >
-                        <PaginationLink
-                          onClick={() => setCurrentPage(pageNumber)}
-                        >
-                          {pageNumber}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ),
-                  )
-                ) : (
-                  <>
-                    <PaginationItem active={currentPage === 1}>
-                      <PaginationLink onClick={() => setCurrentPage(1)}>
-                        1
-                      </PaginationLink>
-                    </PaginationItem>
-
-                    {currentPage > 3 && (
-                      <PaginationItem disabled>
-                        <PaginationLink>...</PaginationLink>
-                      </PaginationItem>
-                    )}
-
-                    {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                      .filter(
-                        (pageNumber) =>
-                          pageNumber > 1 && pageNumber < totalPages,
-                      )
-                      .map((pageNumber) => (
+                  {totalPages <= 7 ? (
+                    Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (pageNumber) => (
                         <PaginationItem
                           key={pageNumber}
                           active={pageNumber === currentPage}
@@ -275,40 +266,72 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                             {pageNumber}
                           </PaginationLink>
                         </PaginationItem>
-                      ))}
-
-                    {currentPage < totalPages - 2 && (
-                      <PaginationItem disabled>
-                        <PaginationLink>...</PaginationLink>
+                      ),
+                    )
+                  ) : (
+                    <>
+                      <PaginationItem active={currentPage === 1}>
+                        <PaginationLink onClick={() => setCurrentPage(1)}>
+                          1
+                        </PaginationLink>
                       </PaginationItem>
-                    )}
 
-                    <PaginationItem active={currentPage === totalPages}>
-                      <PaginationLink
-                        onClick={() => setCurrentPage(totalPages)}
-                      >
-                        {totalPages}
-                      </PaginationLink>
-                    </PaginationItem>
-                  </>
-                )}
+                      {currentPage > 3 && (
+                        <PaginationItem disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      )}
 
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    next
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    last
-                    onClick={() => setCurrentPage(totalPages)}
-                  />
-                </PaginationItem>
-              </Pagination>
-            </div>
-          </Row>
+                      {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                        .filter(
+                          (pageNumber) =>
+                            pageNumber > 1 && pageNumber < totalPages,
+                        )
+                        .map((pageNumber) => (
+                          <PaginationItem
+                            key={pageNumber}
+                            active={pageNumber === currentPage}
+                          >
+                            <PaginationLink
+                              onClick={() => setCurrentPage(pageNumber)}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
 
+                      {currentPage < totalPages - 2 && (
+                        <PaginationItem disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      )}
+
+                      <PaginationItem active={currentPage === totalPages}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(totalPages)}
+                        >
+                          {totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    </>
+                  )}
+
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      next
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    />
+                  </PaginationItem>
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      last
+                      onClick={() => setCurrentPage(totalPages)}
+                    />
+                  </PaginationItem>
+                </Pagination>
+              </div>
+            </Row>
+          )}
           {/* Add Organisation Modal */}
           <AddOrganisationModal
             isOpen={isModalOpen}
