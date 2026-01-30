@@ -1,5 +1,4 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
 import { useSubmitEnquiryMutation } from "@/Redux/Reducers/PublicEnquiry/PublicEnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -52,8 +51,6 @@ const InitialEnquiryForm: React.FC = () => {
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   const [formData, setFormData] =
     useState<InitialEnquiryData>(INITIAL_FORM_DATA);
-
-  const { data: introducerData } = useGetUserListQuery({ role: "INTRODUCER" });
 
   const [submitEnquiry, { isLoading }] = useSubmitEnquiryMutation();
 
