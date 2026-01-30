@@ -265,6 +265,7 @@ export interface UserDataProps {
 }
 export interface OrganisationListProps {
   name: string;
+  subdomain: string;
   email: string;
   primary_mobile: string;
   other_contact: string;

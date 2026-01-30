@@ -77,6 +77,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   const [formData, setFormData] = useState<AddOrganisationProps>({
     organization: {
       name: "",
+      subdomain: "",
       primary_mobile: "",
       email: "",
       other_contact: "",
@@ -210,6 +211,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
         setFormData({
           organization: {
             name: "",
+            subdomain: "",
             primary_mobile: "",
             email: "",
             other_contact: "",
@@ -339,7 +341,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 <Col md={6} xs={12}>
                   <FormGroup>
                     <Label for="name">
-                      Organisation Name<span className="text-danger">*</span>
+                      Organisation Name
+                      <small className="text-muted">(Unique)</small>
+                      <span className="text-danger">*</span>
                     </Label>
                     <Input
                       type="text"
@@ -353,6 +357,29 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                     {apiErrors["organization.name"] ? (
                       <div className="text-danger small mt-1">
                         {apiErrors["organization.name"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="subdomain">
+                      Sub Domain
+                      <small className="text-muted">(Unique)</small>
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="subdomain"
+                      name="subdomain"
+                      value={formData.organization.subdomain}
+                      onChange={handleChange}
+                      placeholder="Enter organisation sub domain"
+                      required
+                    />
+                    {apiErrors["organization.subdomain"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["organization.subdomain"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -438,7 +465,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                     ) : null}
                   </FormGroup>
                 </Col>
-                <Col md={6} xs={12}>
+                {/* <Col md={6} xs={12}>
                   <FormGroup>
                     <Label for="website">
                       Website{" "}
@@ -460,7 +487,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       </div>
                     ) : null}
                   </FormGroup>
-                </Col>
+                </Col> */}
                 <Col md={6} xs={12}>
                   <FormGroup>
                     <Label for="contact_person">Contact Person</Label>
