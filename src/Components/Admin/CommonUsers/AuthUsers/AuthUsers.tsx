@@ -6,6 +6,10 @@ import {
   useGetAuthUsersQuery,
   useUpdateAuthUserDetailsMutation,
 } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import {
+  AuthUser,
+  AuthUsersProps,
+} from "@/Types/Admin/Common/AuthUsers/AuthUserType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -36,12 +40,12 @@ import {
 } from "reactstrap";
 import Swal from "sweetalert2";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
-import { AuthUser, AuthUsersProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
   authUsersPerPage = 10,
+  roles,
 }) => {
   const pathname = window.location.pathname;
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,6 +59,15 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+
+  const getRole = () => {
+    if (Array.isArray(roles)) {
+      return selectedOrganisation ? roles[1] : roles[0];
+    }
+    return roles;
+  };
+  
+  const role = getRole();
 
   const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
     title: "",
@@ -94,11 +107,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
       setSelectedNetwork(networkList[0].subdomain);
     }
   }, [networkList, selectedNetwork]);
-
-  // Determine the role based on selection
-  const role = selectedOrganisation
-    ? "ORGANISATION_DIRECTOR"
-    : "NETWORK_DIRECTOR";
 
   const {
     data: authUsersData,
@@ -206,7 +214,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 type="text"
                 placeholder="Search... "
                 value={searchQuery}
-                className="rounded"
+                className="rounded end-1"
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
@@ -225,8 +233,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 trigger="hover"
               >
                 <PopoverBody className="bg-white rounded text-dark p-3 small">
-                  🔍 You can search using Title(e.g., Mr, Ms), First Name,
-                  Middle Name, Last Name, Email Address or Phone Number.
+                  🔍 You can search using Name, Email Address or Phone Number.
                 </PopoverBody>
               </UncontrolledPopover>
             </InputGroup>
@@ -251,7 +258,8 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
-          <Col md={3}>
+          {pathname !== "/admin/compliance-assistants" && (
+            <Col md={3}>
             <Input
               type="select"
               id="organisationFilter"
@@ -275,6 +283,8 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
+          )}
+          
         </Row>
 
         <Row>
@@ -321,7 +331,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       <span
                         className="text_decoration_hover"
                         onClick={() => {
-                            openViewModal(user);
+                          openViewModal(user);
                         }}
                         style={{ cursor: "pointer" }}
                       >
@@ -550,11 +560,11 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           </div>
         </Row>
       </CardBody>
-       <ViewAuthUserModal
-          isOpen={isViewModalOpen}
-          toggle={toggleViewModal}
-          selectedAuthUser={selectedAuthUser}
-        />
+      <ViewAuthUserModal
+        isOpen={isViewModalOpen}
+        toggle={toggleViewModal}
+        selectedAuthUser={selectedAuthUser}
+      />
 
       <UpdateAuthUserModal
         isOpen={isUpdateModalOpen}

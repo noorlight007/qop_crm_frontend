@@ -1,16 +1,17 @@
 import { Container } from "reactstrap";
 import AuthUsers from "../../CommonUsers/AuthUsers/AuthUsers";
 
-const DirectorList: React.FC = () => {
+const LeadList: React.FC = () => {
   return (
     <div>
       <>
       <Container fluid>
-        <AuthUsers title="Directors" roles={["NETWORK_DIRECTOR", "ORGANISATION_DIRECTOR"]}/>
+        {/* <AuthUsers title="Compliance Assistant" roles="LEAD"/> */}
+        This page is under development
       </Container>
     </>
     </div>
   );
 };
 
-export default DirectorList;
+export default LeadList;
