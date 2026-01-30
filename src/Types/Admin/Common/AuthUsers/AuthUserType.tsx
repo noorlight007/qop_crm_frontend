@@ -21,6 +21,7 @@ export interface AuthUser {
 export interface AuthUsersProps {
   title: string;
   authUsersPerPage?: number;
+  roles: string | string[];
 }
 
 export interface ViewAuthUserModalProps {
