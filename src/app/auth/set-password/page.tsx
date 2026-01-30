@@ -14,11 +14,36 @@ export default function SetPassword() {
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tenant = searchParams.get("tenant");
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
-  // console.log("UID:", uid);
-  // console.log("Token:", token);
+
+  // Determine tenant: prefer explicit ?tenant= query, otherwise derive from hostname subdomain
+  const getTenantFromHost = () => {
+    if (typeof window === "undefined") return null;
+    const hostname = window.location.hostname;
+
+    // Local development: allow overriding via env
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || null;
+    }
+
+    const parts = hostname.split(".");
+    // Examples handled:
+    // - subdomain.example.com -> subdomain
+    // - subdomain.localhost -> subdomain (when using dev host like subdomain.localhost)
+    if (parts.length > 2 || (parts.length === 2 && parts[1] === "localhost")) {
+      const subdomain = parts[0];
+      if (subdomain && subdomain !== "www") return subdomain;
+    }
+
+    return null;
+  };
+
+  const tenant = searchParams.get("tenant") || getTenantFromHost();
+
+  // Debug
+  // eslint-disable-next-line no-console
+  console.debug("SetPassword: tenant=", tenant, "uid=", uid, "token=", token);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
