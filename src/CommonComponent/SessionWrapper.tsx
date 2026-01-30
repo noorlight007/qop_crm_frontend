@@ -54,7 +54,7 @@ const SessionMonitor = ({ children }: { children: ReactNode }) => {
       // Check if current path is in the auth routes (public pages)
       const pathname = window.location.pathname;
       const isPublicPath =
-        pathname.startsWith("/auth/") || pathname.startsWith("/enquiry");
+        pathname.startsWith("/auth/") || pathname.startsWith("/public-enquiry");
 
       // Only redirect to login if NOT on a public page
       if (!isPublicPath) {
