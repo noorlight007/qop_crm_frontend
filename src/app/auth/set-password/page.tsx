@@ -14,6 +14,7 @@ export default function SetPassword() {
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const tenant = searchParams.get("tenant");
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
   // console.log("UID:", uid);
@@ -72,6 +73,7 @@ export default function SetPassword() {
 
       const res = await setNewPassword({
         payload: formData,
+        tenant: tenant || undefined,
         uid: uid,
         token: token,
       });
