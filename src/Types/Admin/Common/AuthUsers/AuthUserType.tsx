@@ -30,6 +30,7 @@ export interface ViewAuthUserModalProps {
   selectedAuthUser: Partial<AuthUser>;
 }
 export interface UpdateAuthUserModalProps {
+  title: string;
   isOpen: boolean;
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;

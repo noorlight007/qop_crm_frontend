@@ -6,8 +6,7 @@ const LeadList: React.FC = () => {
     <div>
       <>
       <Container fluid>
-        {/* <AuthUsers title="Compliance Assistant" roles="LEAD"/> */}
-        This page is under development
+        <AuthUsers title="Lead" roles="LEAD"/>
       </Container>
     </>
     </div>
