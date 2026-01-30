@@ -49,27 +49,34 @@ const AdminMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/admin/advisers",
       },
-      // {
-      //   title: "Admins",
-      //   icon: "Profile",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/admin/admins",
-      // },
-      // {
-      //   title: "Introducers",
-      //   icon: "Profile",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/admin/introducers",
-      // },
-      // {
-      //   title: "Leads",
-      //   icon: "Profile",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/admin/leads",
-      // },
+      {
+        title: "Admins",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/admins",
+      },
+      {
+        title: "Introducers",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/introducers",
+      },
+      {
+        title: "Leads",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/leads",
+      },
+      {
+        title: "Clients",
+        icon: "Profile",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/admin/clients",
+      },
       {
         title: "Support Ticket",
         icon: "Ticket",
@@ -565,6 +572,25 @@ export {
   OrganisationDirectorMenu,
 };
 
+export const removeComplianceAssistants = (menu: MenuItem[]): MenuItem[] => {
+  // Return a deep-copied menu with any item or child titled 'Compliance Assistants' removed
+  return menu.map((group) => {
+    const newGroup: MenuItem = { ...group };
+    if (Array.isArray(newGroup.Items)) {
+      newGroup.Items = newGroup.Items.map((item) => {
+        const newItem: any = { ...item };
+        if (Array.isArray((item as any).children)) {
+          newItem.children = (item as any).children!.filter(
+            (child: any) => child.title !== "Compliance Assistants",
+          );
+        }
+        return newItem;
+      }).filter((item) => item.title !== "Compliance Assistants");
+    }
+    return newGroup;
+  });
+};
+
 export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
     case "ADMIN":
@@ -572,7 +598,7 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
     case "NETWORK_DIRECTOR":
       return NetworkDirectorMenu;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return NetworkDirectorMenu;
+      return removeComplianceAssistants(NetworkDirectorMenu);
     case "NETWORK_ADVISER":
       return NetworkAdviserMenu;
     case "ORGANISATION_DIRECTOR":

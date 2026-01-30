@@ -6,7 +6,7 @@ const ComplianceAssistantContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Compliance Assistant Overview"
+        title="Compliance Assistants Overview"
         subTitle="Welcome back! Check all the Compliance Assistants"
         parent="Compliance Assistants"
       />

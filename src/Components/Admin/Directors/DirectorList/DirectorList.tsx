@@ -6,7 +6,7 @@ const DirectorList: React.FC = () => {
     <div>
       <>
       <Container fluid>
-        <AuthUsers title="Directors" roles={["NETWORK_DIRECTOR", "ORGANISATION_DIRECTOR"]}/>
+        <AuthUsers title="Director" roles={["NETWORK_DIRECTOR", "ORGANISATION_DIRECTOR"]}/>
       </Container>
     </>
     </div>

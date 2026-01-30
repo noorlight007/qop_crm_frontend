@@ -20,6 +20,7 @@ import {
 } from "reactstrap";
 
 const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
+  title,
   isOpen,
   toggle,
   selectedAuthUser,
@@ -158,7 +159,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         });
 
         if (result.data) {
-          toast.success("Director updated successfully.");
+          toast.success(`${title} Updated Successfully.`);
           setErrors({});
           toggle();
         } else if ("error" in result) {
