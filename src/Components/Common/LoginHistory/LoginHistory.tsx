@@ -122,12 +122,6 @@ const LoginHistory: React.FC = () => {
               </small>
             </div>
           </div>
-          {loginHistoryData?.results && loginHistoryData.results.length > 0 && (
-            <Badge color="primary" pill className="px-3 py-2">
-              {loginHistoryData.results.length}{" "}
-              {loginHistoryData.results.length === 1 ? "Record" : "Records"}
-            </Badge>
-          )}
         </div>
 
         {/* Login History Items */}
