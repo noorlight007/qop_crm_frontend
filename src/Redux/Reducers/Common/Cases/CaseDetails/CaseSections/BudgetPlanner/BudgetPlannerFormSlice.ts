@@ -175,6 +175,9 @@ const initialState: BudgetPlanner = {
   },
   disclaimer: false,
   disclaimer_details: "",
+
+  // Store any server-side API validation errors keyed by field
+  api_errors: {},
 };
 
 // Create the slice
@@ -222,6 +225,15 @@ const budgetPlannerSlice = createSlice({
       }
     },
 
+    // Set API validation errors
+    setApiErrors: (state, action: PayloadAction<Record<string, string>>) => {
+      state.api_errors = action.payload || {};
+    },
+
+    clearApiErrors: (state) => {
+      state.api_errors = {};
+    },
+
     // Initialize entire form with new data
     initializeBudgetPlannerForm: (
       state,
@@ -260,6 +272,8 @@ export const {
   initializeBudgetPlannerForm,
   resetBudgetPlannerForm,
   updateField,
+  setApiErrors,
+  clearApiErrors,
 } = budgetPlannerSlice.actions;
 
 // Export reducer

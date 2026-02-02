@@ -18,6 +18,7 @@ import {
 
 const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   updateField,
+  errors,
 }) => {
   const { casealias } = useParams();
   const { data, isLoading, refetch } = useGetCaseBudgetPlannerQuery(
@@ -45,6 +46,16 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     {},
   );
   const [postValues, setPostValues] = useState<Record<string, string>>({});
+
+  const getFieldError = (name: string) => {
+    const errs = (errors as Record<string, string>) || {};
+    if (!errs) return undefined;
+    if (errs[name]) return errs[name];
+    if (errs[name.replace(/\./g, "_")]) return errs[name.replace(/\./g, "_")];
+    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
+    if (errs[leaf]) return errs[leaf];
+    return undefined;
+  };
 
   const livingCostFieldMappings = {
     Electricity: "electricity",
@@ -98,7 +109,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   // Force a refetch when component mounts or casealias changes
   useEffect(() => {
     if (casealias && refetch) {
-      console.log("Forcing API refetch for living expenses, case:", casealias);
+      // console.log("Forcing API refetch for living expenses, case:", casealias);
       refetch();
     }
   }, [casealias, refetch]);
@@ -109,11 +120,11 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
       !budgetPlannerData?.current_living_cost ||
       !budgetPlannerData?.post_living_cost
     ) {
-      console.log("❌ No living expenses data available for initialization");
+      // console.log("❌ No living expenses data available for initialization");
       return;
     }
 
-    console.log("🔄 Initializing living expenses state with API data...");
+    // console.log("🔄 Initializing living expenses state with API data...");
 
     const initialCurrentValues: Record<string, string> = {};
     const initialPostValues: Record<string, string> = {};
@@ -128,14 +139,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current Living ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[
-          `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Current Living ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[
+      //     `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
     // Post Living Costs
@@ -148,14 +159,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post Living ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[
-          `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Post Living ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[
+      //     `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
     // Current Insurance
@@ -168,14 +179,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current Insurance ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[
-          `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Current Insurance ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[
+      //     `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
     // Post Insurance
@@ -188,24 +199,24 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post Insurance ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[
-          `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Post Insurance ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[
+      //     `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
-    console.log("📝 Setting living expenses state...");
-    console.log("Initial current values:", initialCurrentValues);
-    console.log("Initial post values:", initialPostValues);
+    // console.log("📝 Setting living expenses state...");
+    // console.log("Initial current values:", initialCurrentValues);
+    // console.log("Initial post values:", initialPostValues);
 
     setCurrentValues(initialCurrentValues);
     setPostValues(initialPostValues);
 
-    console.log("✅ Living expenses state setting completed");
+    // console.log("✅ Living expenses state setting completed");
   }, [budgetPlannerData]);
 
   // Update parent modal with current values
@@ -349,115 +360,143 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     mappings: Record<string, string>,
   ) => (
     <Form>
-      {fields.map((field) => {
-        const id = field.replace(/[\s/&]/g, "");
-        const fieldName = `${prefix}.${id}`;
-        const reduxFieldName = mappings[field];
-        return (
-          <div key={id}>
-            <FormGroup row className="mb-2">
-              <Label
-                for={`${prefix}_${reduxFieldName}`}
-                sm={6}
-                style={{ fontSize: "0.9rem" }}
-              >
-                {field}
-              </Label>
-              <Col sm={6}>
-                <InputGroup>
-                  <InputGroupText>£</InputGroupText>
-                  <Input
-                    type="number"
-                    name={fieldName}
-                    id={`${prefix}_${reduxFieldName}`}
-                    className="numeric-decimal living-cost"
-                    placeholder="0.00"
-                    step="0.01"
-                    min={0}
-                    inputMode="decimal"
-                    onKeyDown={blockInvalidChar}
-                    onInput={limitDecimalPlaces}
-                    value={
-                      prefix === "CurrentBudgetPlanner"
-                        ? currentValues[fieldName] || ""
-                        : postValues[fieldName] || ""
-                    }
-                    onChange={(e) => {
-                      const safe = sanitizeNumberInput(e.target.value);
-                      const newValues =
+      {(() => {
+        const isInsurance =
+          fields?.length > 0 &&
+          Object.prototype.hasOwnProperty.call(
+            insuranceFieldMappings,
+            fields[0],
+          );
+        const apiSection =
+          prefix === "CurrentBudgetPlanner"
+            ? isInsurance
+              ? "current_insurance"
+              : "current_living_cost"
+            : isInsurance
+              ? "post_insurance"
+              : "post_living_cost";
+
+        return fields.map((field) => {
+          const id = field.replace(/[\s/&]/g, "");
+          const fieldName = `${prefix}.${id}`;
+          const reduxFieldName = mappings[field];
+          const errorMsg =
+            getFieldError(fieldName) ||
+            getFieldError(`${prefix}_${reduxFieldName}`) ||
+            getFieldError(`${apiSection}.${reduxFieldName}`) ||
+            getFieldError(reduxFieldName);
+
+          return (
+            <div key={id}>
+              <FormGroup row className="mb-2">
+                <Label
+                  for={`${prefix}_${reduxFieldName}`}
+                  sm={6}
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  {field}
+                </Label>
+                <Col sm={6}>
+                  <InputGroup>
+                    <InputGroupText>£</InputGroupText>
+                    <Input
+                      type="number"
+                      name={fieldName}
+                      id={`${prefix}_${reduxFieldName}`}
+                      className="numeric-decimal living-cost"
+                      placeholder="0.00"
+                      step="0.01"
+                      min={0}
+                      inputMode="decimal"
+                      onKeyDown={blockInvalidChar}
+                      onInput={limitDecimalPlaces}
+                      value={
                         prefix === "CurrentBudgetPlanner"
-                          ? { ...currentValues, [fieldName]: safe }
-                          : { ...postValues, [fieldName]: safe };
-                      prefix === "CurrentBudgetPlanner"
-                        ? setCurrentValues(newValues)
-                        : setPostValues(newValues);
-                    }}
-                  />
-                  <InputGroupText
-                    className="penNoteIcon_Holder"
-                    onClick={(e) =>
-                      toggleNotes(
-                        e,
-                        `${
-                          prefix === "CurrentBudgetPlanner" ? "" : "Post_"
-                        }${reduxFieldName}_Notes`,
-                      )
-                    }
-                    style={{ cursor: "pointer" }}
-                  >
-                    <FaEdit />
-                  </InputGroupText>
-                </InputGroup>
-              </Col>
-            </FormGroup>
-            <FormGroup
-              className={`${reduxFieldName}_Notes_Holder mb-2`}
-              style={{
-                display: visibleNotes[
-                  `${
-                    prefix === "CurrentBudgetPlanner" ? "" : "Post_"
-                  }${reduxFieldName}_Notes`
-                ]
-                  ? "block"
-                  : "none",
-              }}
-            >
-              <Label
-                for={`${prefix}_${reduxFieldName}_Notes`}
-                style={{ fontSize: "0.9rem" }}
-              >
-                Notes
-              </Label>
-              <Input
-                type="textarea"
-                name={`${prefix}.${reduxFieldName}_Notes`}
-                id={`${prefix}_${reduxFieldName}_Notes`}
-                className="textAreaRestrictions form-control"
-                value={
-                  prefix === "CurrentBudgetPlanner"
-                    ? currentValues[`${prefix}.${reduxFieldName}_Notes`] || ""
-                    : postValues[`${prefix}.${reduxFieldName}_Notes`] || ""
-                }
-                onChange={(e) => {
-                  const newValues =
-                    prefix === "CurrentBudgetPlanner"
-                      ? {
-                          ...currentValues,
-                          [`${prefix}.${reduxFieldName}_Notes`]: e.target.value,
-                        }
-                      : {
-                          ...postValues,
-                          [`${prefix}.${reduxFieldName}_Notes`]: e.target.value,
-                        };
-                  prefix === "CurrentBudgetPlanner"
-                    ? setCurrentValues(newValues)
-                    : setPostValues(newValues);
+                          ? currentValues[fieldName] || ""
+                          : postValues[fieldName] || ""
+                      }
+                      onChange={(e) => {
+                        const safe = sanitizeNumberInput(e.target.value);
+                        const newValues =
+                          prefix === "CurrentBudgetPlanner"
+                            ? { ...currentValues, [fieldName]: safe }
+                            : { ...postValues, [fieldName]: safe };
+                        prefix === "CurrentBudgetPlanner"
+                          ? setCurrentValues(newValues)
+                          : setPostValues(newValues);
+                      }}
+                    />
+                    <InputGroupText
+                      className="penNoteIcon_Holder"
+                      onClick={(e) =>
+                        toggleNotes(
+                          e,
+                          `${
+                            prefix === "CurrentBudgetPlanner" ? "" : "Post_"
+                          }${reduxFieldName}_Notes`,
+                        )
+                      }
+                      style={{ cursor: "pointer" }}
+                    >
+                      <FaEdit />
+                    </InputGroupText>
+                  </InputGroup>{" "}
+                  {errorMsg && (
+                    <div className="text-danger small mt-1">{errorMsg}</div>
+                  )}{" "}
+                </Col>
+              </FormGroup>
+              <FormGroup
+                className={`${reduxFieldName}_Notes_Holder mb-2`}
+                style={{
+                  display: visibleNotes[
+                    `${
+                      prefix === "CurrentBudgetPlanner" ? "" : "Post_"
+                    }${reduxFieldName}_Notes`
+                  ]
+                    ? "block"
+                    : "none",
                 }}
-              />
-            </FormGroup>
-          </div>
-        );
-      })}
+              >
+                <Label
+                  for={`${prefix}_${reduxFieldName}_Notes`}
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  Notes
+                </Label>
+                <Input
+                  type="textarea"
+                  name={`${prefix}.${reduxFieldName}_Notes`}
+                  id={`${prefix}_${reduxFieldName}_Notes`}
+                  className="textAreaRestrictions form-control"
+                  value={
+                    prefix === "CurrentBudgetPlanner"
+                      ? currentValues[`${prefix}.${reduxFieldName}_Notes`] || ""
+                      : postValues[`${prefix}.${reduxFieldName}_Notes`] || ""
+                  }
+                  onChange={(e) => {
+                    const newValues =
+                      prefix === "CurrentBudgetPlanner"
+                        ? {
+                            ...currentValues,
+                            [`${prefix}.${reduxFieldName}_Notes`]:
+                              e.target.value,
+                          }
+                        : {
+                            ...postValues,
+                            [`${prefix}.${reduxFieldName}_Notes`]:
+                              e.target.value,
+                          };
+                    prefix === "CurrentBudgetPlanner"
+                      ? setCurrentValues(newValues)
+                      : setPostValues(newValues);
+                  }}
+                />
+              </FormGroup>
+            </div>
+          );
+        });
+      })()}
     </Form>
   );
 

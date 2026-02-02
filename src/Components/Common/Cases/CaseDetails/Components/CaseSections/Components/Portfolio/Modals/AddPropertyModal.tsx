@@ -118,6 +118,55 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     return result;
   };
 
+  // Scroll to the first DOM element associated with an API error key
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      const snakeToCamel = (s: string) =>
+        s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+      for (const rawKey of keys) {
+        if (!rawKey) continue;
+        const candidates = [
+          rawKey,
+          rawKey.replace(/\./g, "_"),
+          rawKey.replace(/_/g, "."),
+          snakeToCamel(rawKey.replace(/\./g, "_")),
+        ];
+
+        for (const id of candidates) {
+          if (!id) continue;
+
+          const elById = document.getElementById(id);
+          if (elById) {
+            (elById as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elById as HTMLElement).focus?.();
+            return;
+          }
+
+          const elByName = document.querySelector(`[name="${id}"]`);
+          if (elByName) {
+            (elByName as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elByName as HTMLElement).focus?.();
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
+
   const getFieldError = (name: string) => {
     if (!errors) return undefined;
 
@@ -227,6 +276,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           (response.error as any)?.data ?? response.error,
         );
         setErrors(parsed);
+        // Scroll to the first field that has a server-side validation error
+        scrollToFirstError(parsed);
         const first =
           Object.values(parsed)[0] ||
           (response.error as any)?.data?.detail ||
@@ -238,7 +289,10 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     } catch (error) {
       console.error("Failed to add property:", error);
       const parsed = parseApiErrors(error);
-      if (Object.keys(parsed).length) setErrors(parsed);
+      if (Object.keys(parsed).length) {
+        setErrors(parsed);
+        scrollToFirstError(parsed);
+      }
       const first =
         Object.values(parsed)[0] || "Failed to add property. Please try again!";
       toast.error(String(first));

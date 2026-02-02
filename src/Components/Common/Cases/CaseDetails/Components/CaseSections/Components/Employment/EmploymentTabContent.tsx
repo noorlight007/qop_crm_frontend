@@ -109,6 +109,55 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     recurse(data, []);
     return out;
   };
+
+  // Scroll to the first DOM element associated with an API error key
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      const snakeToCamel = (s: string) =>
+        s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+      for (const rawKey of keys) {
+        if (!rawKey) continue;
+        const candidates = [
+          rawKey,
+          rawKey.replace(/\./g, "_"),
+          rawKey.replace(/_/g, "."),
+          snakeToCamel(rawKey.replace(/\./g, "_")),
+        ];
+
+        for (const id of candidates) {
+          if (!id) continue;
+
+          const elById = document.getElementById(id);
+          if (elById) {
+            (elById as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elById as HTMLElement).focus?.();
+            return;
+          }
+
+          const elByName = document.querySelector(`[name="${id}"]`);
+          if (elByName) {
+            (elByName as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elByName as HTMLElement).focus?.();
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
   const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
   const DEFAULT_ZOOM = 10;
   const DETAIL_ZOOM = 16;
@@ -269,6 +318,8 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     } else if (res.error) {
       const parsed = parseApiErrors(res.error as any);
       setErrors(parsed);
+      // Scroll to the first field with an API validation error
+      scrollToFirstError(parsed);
       const first = Object.values(parsed)[0];
       toast.error(first || "Failed to update employment details.");
     } else {
@@ -2145,11 +2196,11 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                         handleInputChange("other", e.target.value)
                       }
                     />
-                  {getFieldError("other") && (
-                    <div className="text-danger small">
-                      {getFieldError("other")}
-                    </div>
-                  )}
+                    {getFieldError("other") && (
+                      <div className="text-danger small">
+                        {getFieldError("other")}
+                      </div>
+                    )}
                   </FormGroup>
                 </Col>
               )}
