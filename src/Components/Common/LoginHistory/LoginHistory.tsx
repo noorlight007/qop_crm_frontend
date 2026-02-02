@@ -122,10 +122,10 @@ const LoginHistory: React.FC = () => {
               </small>
             </div>
           </div>
-          {loginHistoryData && loginHistoryData.length > 0 && (
+          {loginHistoryData?.results && loginHistoryData.results.length > 0 && (
             <Badge color="primary" pill className="px-3 py-2">
-              {loginHistoryData.length}{" "}
-              {loginHistoryData.length === 1 ? "Record" : "Records"}
+              {loginHistoryData.results.length}{" "}
+              {loginHistoryData.results.length === 1 ? "Record" : "Records"}
             </Badge>
           )}
         </div>
@@ -140,8 +140,8 @@ const LoginHistory: React.FC = () => {
             paddingRight: "8px",
           }}
         >
-          {loginHistoryData.results && loginHistoryData.results.length > 0 ? (
-            currentResults.map((history: LoginHistoryItem, index: number) => {
+          {loginHistoryData?.results && loginHistoryData.results.length > 0 ? (
+            currentResults?.map((history: LoginHistoryItem, index: number) => {
               const badge = getStatusBadge(history.status);
               const icon = getDeviceIcon(history.device_type);
 

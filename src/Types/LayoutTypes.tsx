@@ -1,10 +1,12 @@
+import { ReactNode } from "react";
+
 export interface MenuItem {
   badge?: string;
   title: string;
   lanClass?: string;
   Items?: MenuItem[];
   id?: number;
-  icon?: string;
+  icon?: string | ReactNode;
   type?: string;
   active?: boolean;
   children?: MenuItem[];
@@ -24,7 +26,7 @@ export interface SidebarItemTypes {
   item: {
     id?: number;
     title?: string | undefined;
-    icon?: string;
+    icon?: string | ReactNode;
     type?: string;
     active?: boolean;
     path?: string;
@@ -53,7 +55,7 @@ export interface SearchSuggestionListType {
 }
 
 export interface SearchSuggestionItem {
-  icon: string | undefined;
+  icon?: string | ReactNode;
   title: string;
   path: string;
   bookmarked?: boolean;

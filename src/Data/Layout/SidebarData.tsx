@@ -1,4 +1,5 @@
 import { MenuItem } from "@/Types/LayoutTypes";
+import { FaBriefcase, FaNetworkWired, FaUsers } from "react-icons/fa";
 
 //Admin
 const AdminMenu: MenuItem[] = [
@@ -16,63 +17,63 @@ const AdminMenu: MenuItem[] = [
       },
       {
         title: "Networks",
-        icon: "Chart",
+        icon: <FaNetworkWired />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/networks",
       },
       {
         title: "Organisations",
-        icon: "Chart",
+        icon: <FaBriefcase />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/organisations",
       },
       {
         title: "Directors",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/directors",
       },
       {
         title: "Compliance Assistants",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/compliance-assistants",
       },
       {
         title: "Advisers",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/advisers",
       },
       {
         title: "Admins",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/admins",
       },
       {
         title: "Introducers",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/introducers",
       },
       {
         title: "Leads",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/leads",
       },
       {
         title: "Clients",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "link",
         lanClass: "lan-3",
         path: "/admin/clients",
@@ -136,7 +137,7 @@ const NetworkDirectorMenu: MenuItem[] = [
       },
       {
         title: "Users",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "sub",
         children: [
           {
@@ -324,7 +325,7 @@ const OrganisationDirectorMenu: MenuItem[] = [
       },
       {
         title: "Users",
-        icon: "Profile",
+        icon: <FaUsers />,
         type: "sub",
         children: [
           {
