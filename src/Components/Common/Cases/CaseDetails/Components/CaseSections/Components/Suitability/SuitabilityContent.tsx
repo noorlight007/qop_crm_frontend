@@ -546,8 +546,106 @@ const SuitabilityContent: React.FC = () => {
     }));
   };
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Local errors state + helpers
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    if (!err) return {};
+    const out: Record<string, string> = {};
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    const recurse = (value: any, path: string[]) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = value;
+        return;
+      }
+      if (Array.isArray(value)) {
+        const msgs = value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+        out[path.join(".")] = msgs.join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) {
+          recurse(value[k], path.concat(k));
+        }
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    const data = err?.data || err;
+    if (data && typeof data === "object") recurse(data, []);
+    return out;
+  };
+
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      for (const rawKey of keys) {
+        const candidates = [
+          rawKey,
+          rawKey.replace(/\./g, "_"),
+          rawKey.replace(/_/g, "."),
+          (rawKey.split(".").pop() as string) || rawKey,
+        ];
+
+        for (const id of candidates) {
+          if (!id) continue;
+          const elById = document.getElementById(id);
+          if (elById) {
+            (elById as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            try {
+              (elById as HTMLElement).focus();
+            } catch {}
+            return;
+          }
+
+          const elByName = document.querySelector(`[name="${id}"]`);
+          if (elByName) {
+            (elByName as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            try {
+              (elByName as HTMLElement).focus();
+            } catch {}
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
+
+  // Handle form submission (returns true on success)
+  const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
     e.preventDefault();
     const payload = {
       alias: casealias,
@@ -594,6 +692,7 @@ const SuitabilityContent: React.FC = () => {
         ...formValue.wills,
       },
     };
+
     try {
       const res = await updateSuitability({
         payload: payload,
@@ -601,6 +700,7 @@ const SuitabilityContent: React.FC = () => {
       });
       if (res.data) {
         toast.success("Changes saved successfully!");
+        setErrors({});
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias,
@@ -609,18 +709,36 @@ const SuitabilityContent: React.FC = () => {
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
+        return true;
       } else if (res.error) {
-        const errorMessage =
-          getErrorMessage(res.error) || "Failed to save changes";
-        toast.error(errorMessage);
+        const parsed = parseApiErrors(res.error);
+        if (Object.keys(parsed).length) {
+          setErrors(parsed);
+          scrollToFirstError(parsed);
+          toast.error(Object.values(parsed)[0]);
+        } else {
+          const errorMessage =
+            getErrorMessage(res.error) || "Failed to save changes";
+          toast.error(errorMessage);
+        }
+        return false;
       } else {
         toast.error("Failed to save changes. Please try again!");
+        return false;
       }
     } catch (error) {
       console.error("Failed to update suitability:", error);
+      const parsed = parseApiErrors((error as any)?.data || error);
+      if (Object.keys(parsed).length) {
+        setErrors(parsed);
+        scrollToFirstError(parsed);
+        toast.error(Object.values(parsed)[0]);
+        return false;
+      }
       const errorMessage =
         getErrorMessage(error) || "Failed to save changes. Please try again.";
       toast.error(errorMessage);
+      return false;
     }
   };
 
@@ -2501,8 +2619,8 @@ const SuitabilityContent: React.FC = () => {
               if (session?.user?.user_type === "CLIENT") {
                 handleNextTab();
               } else {
-                await handleSubmit(e);
-                handleNextTab();
+                const ok = await handleSubmit(e);
+                if (ok) handleNextTab();
               }
             }}
           >

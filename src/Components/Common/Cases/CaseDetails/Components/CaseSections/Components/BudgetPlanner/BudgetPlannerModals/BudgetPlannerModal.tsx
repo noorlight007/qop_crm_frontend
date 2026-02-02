@@ -1,7 +1,9 @@
 "use client";
 import { useUpdateBudgetPlannerMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
 import {
+  clearApiErrors,
   initializeBudgetPlannerForm,
+  setApiErrors,
   updateBudgetPlannerSection,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
@@ -49,6 +51,150 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
   // Local state to track only the changes
   const [updatedFields, setUpdatedFields] = useState<Record<string, any>>({});
 
+  // Server-side validation errors
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    if (!err) return {};
+    const out: Record<string, string> = {};
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    const data = err?.data || err;
+    if (data && typeof data === "object") {
+      const recurse = (value: any, path: string[]) => {
+        if (value == null) return;
+        if (typeof value === "string") {
+          out[path.join(".")] = value;
+          return;
+        }
+        if (Array.isArray(value)) {
+          out[path.join(".")] = value
+            .map((v: any) => (typeof v === "string" ? v : JSON.stringify(v)))
+            .join(", ");
+          return;
+        }
+        if (typeof value === "object") {
+          for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+          return;
+        }
+        out[path.join(".")] = String(value);
+      };
+      recurse(data, []);
+    }
+
+    return out;
+  };
+
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      const tryIds = (k: string) => {
+        const variants = [
+          k,
+          k.replace(/\./g, "_"),
+          k.replace(/_/g, "."),
+          (k.split(".").pop() as string) || k,
+          k.replace(/[^a-zA-Z0-9\.]/g, ""),
+        ];
+        for (const v of variants) {
+          const el =
+            document.getElementById(v) ||
+            document.querySelector(`[name="${v}"]`);
+          if (el) {
+            (el as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            try {
+              (el as HTMLElement).focus();
+            } catch {}
+            return true;
+          }
+        }
+        return false;
+      };
+
+      for (const k of keys) {
+        if (tryIds(k)) return;
+      }
+    } catch (e) {
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
+
+  const normalizeBudgetPlannerErrors = (errs: Record<string, string>) => {
+    const out: Record<string, string> = {};
+
+    const add = (key: string, value: string) => {
+      if (!key) return;
+      if (out[key]) return;
+      out[key] = value;
+    };
+
+    const subTotalIdFromSnake = (snake: string) => {
+      if (snake === "total_income") return "TotalIncome";
+      if (snake === "total_debt_repayment") return "TotalDebtRepayment";
+      if (snake === "total_living_expenses") return "TotalHome";
+      if (snake === "available_income") return "AvailableIncome";
+      return null;
+    };
+
+    for (const [k, rawValue] of Object.entries(errs || {})) {
+      const value = String(rawValue);
+      add(k, value);
+
+      if (
+        /^TotalIncome$|^TotalDebtRepayment$|^TotalHome$|^AvailableIncome$/i.test(
+          k,
+        )
+      ) {
+        add(`CurrentBudgetPlanner.${k}`, value);
+        add(`PostCompletionBudgetPlanner.${k}`, value);
+        continue;
+      }
+
+      const m = k.match(
+        /^(current_income|post_income|current_debt_repayments|post_debt_repayments|current_priority_debt|post_priority_debt|current_unsecured_borrowing|post_unsecured_borrowing|current_living_cost|post_living_cost|current_insurance|post_insurance|current_sub_total|post_sub_total)\.(.+)$/,
+      );
+      if (!m) continue;
+
+      const section = m[1];
+      const fieldSnake = m[2];
+      const isPost = section.startsWith("post_");
+      const prefix = isPost
+        ? "PostCompletionBudgetPlanner"
+        : "CurrentBudgetPlanner";
+
+      add(`${prefix}_${fieldSnake}`, value);
+      add(fieldSnake, value);
+
+      if (section.endsWith("sub_total")) {
+        const subId = subTotalIdFromSnake(fieldSnake);
+        if (subId) add(`${prefix}.${subId}`, value);
+      }
+    }
+
+    return out;
+  };
+
   const handleTabClick = (index: number) => {
     setBasicTab(index);
   };
@@ -69,6 +215,8 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     });
     if (res.data) {
       toast.success("Budget Planner Updated Successfully");
+      setErrors({});
+      dispatch(clearApiErrors());
       try {
         await updateSectionCompleteStatus({
           case_alias: casealias,
@@ -79,10 +227,49 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
       }
       toggle();
     } else if (res.error) {
-      const errorMessage =
-        (res.error as any)?.data?.detail ||
-        "Error updating budget planner details!";
-      toast.error(errorMessage);
+      const parsed = parseApiErrors((res as any).error);
+      if (Object.keys(parsed).length) {
+        const normalized = normalizeBudgetPlannerErrors(parsed);
+        setErrors(normalized);
+        dispatch(setApiErrors(normalized));
+        // Determine the tab containing the first error
+        const firstKey = Object.keys(normalized)[0] || "";
+        let targetTab = 1;
+        if (
+          /TotalIncome|Applicant|Rental|Part Time|Child|Tax|Maintenance|Pension|Other Benefits/i.test(
+            firstKey,
+          )
+        )
+          targetTab = 1;
+        else if (
+          /Mortgage|Second Mortgage|Priority|Credit Cards|Loans|Car Finance|Overdraft|CCJs|Debt/i.test(
+            firstKey,
+          )
+        )
+          targetTab = 2;
+        else if (
+          /Electricity|Gas|Water|Council|Food|Fuel|TV|Insurance|Buildings|Contents|Childcare/i.test(
+            firstKey,
+          )
+        )
+          targetTab = 3;
+        else if (
+          /TotalIncome|TotalDebtRepayment|TotalHome|AvailableIncome|Available/i.test(
+            firstKey,
+          )
+        )
+          targetTab = 4;
+        setBasicTab(targetTab);
+        try {
+          scrollToFirstError(normalized);
+        } catch (e) {}
+        toast.error(String(Object.values(normalized)[0]));
+      } else {
+        const errorMessage =
+          (res.error as any)?.data?.detail ||
+          "Error updating budget planner details!";
+        toast.error(errorMessage);
+      }
     } else {
       toast.error("Budget Planner Update Failed");
     }
@@ -139,6 +326,8 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
                   (field: string, value: any) => updateField(field, value),
                   [updateField],
                 )}
+                errors={errors}
+                setErrors={setErrors}
               />
             </CardBody>
           </CardBody>

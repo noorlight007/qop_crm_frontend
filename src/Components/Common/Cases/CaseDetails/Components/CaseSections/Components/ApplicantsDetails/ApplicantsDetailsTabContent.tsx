@@ -111,6 +111,52 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     return out;
   };
 
+  // Scroll to the first DOM element associated with an API error key
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      for (const rawKey of keys) {
+        // Try several common id/name variants used in this form
+        const candidates = [
+          rawKey,
+          rawKey.replace(/\./g, "_"),
+          rawKey.replace(/_/g, "."),
+        ];
+
+        for (const id of candidates) {
+          if (!id) continue;
+          // Prefer getElementById because IDs can contain dots or underscores
+          const elById = document.getElementById(id);
+          if (elById) {
+            (elById as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elById as HTMLElement).focus?.();
+            return;
+          }
+
+          // Fallback to name selector
+          const elByName = document.querySelector(`[name="${id}"]`);
+          if (elByName) {
+            (elByName as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elByName as HTMLElement).focus?.();
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
+
   // Rtk hooks
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -401,6 +447,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       } else if (response.error) {
         const parsed = parseApiErrors(response.error);
         setErrors(parsed);
+        // Scroll to the first field that caused a server-side validation error
+        scrollToFirstError(parsed);
         const detail = (response.error as any)?.data?.detail;
         const firstFieldMsg = Object.values(parsed)[0];
         const errorMessage =

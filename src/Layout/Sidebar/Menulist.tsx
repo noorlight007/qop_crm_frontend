@@ -86,8 +86,8 @@ const Menulist: React.FC<MenuListType> = ({
     Array.isArray(menu) && menu.length > 0
       ? menu
       : level === 0
-      ? menuToUse
-      : menu;
+        ? menuToUse
+        : menu;
   if (!items || !Array.isArray(items)) {
     return null;
   }
@@ -121,9 +121,14 @@ const Menulist: React.FC<MenuListType> = ({
               onClick={(e) => handleClick(e, item)}
               style={{ cursor: "pointer", width: "220px" }}
             >
-              {item.icon && (
-                <SVG className="stroke-icon me-2" iconId={item.icon} />
-              )}
+              {item.icon &&
+                (typeof item.icon === "string" ? (
+                  <SVG className="stroke-icon me-2" iconId={item.icon} />
+                ) : (
+                  <span className="me-2 d-flex align-items-center">
+                    {item.icon}
+                  </span>
+                ))}
               {!item.icon ? (
                 <span className="flex-grow-1">{t(item.title)}</span>
               ) : (

@@ -5,6 +5,7 @@ import {
   useGetCaseLoanDetailsQuery,
   useGetLoanDetailsQuery,
   useUpdateLoanDetailsMutation,
+  useValidateLoanDetailsMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/LoanDetails/LoanDetailsApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
@@ -79,6 +80,27 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     return out;
   };
 
+  // Determine which tab contains an error based on the parsed error keys
+  const findTabFromErrors = (
+    errorsObj: Record<string, string>,
+  ): string | null => {
+    const keys = Object.keys(errorsObj || {});
+    // prepare snake_case lists for each tab
+    const tab1Fields = Object.keys(formDataTab1).map(camelToSnake);
+    const tab2Fields = Object.keys(formDataTab2).map(camelToSnake);
+    const tab3Fields = Object.keys(formDataTab3).map(camelToSnake);
+    const tab4Fields = Object.keys(formDataTab4).map(camelToSnake);
+
+    for (const k of keys) {
+      const lower = k.toLowerCase();
+      if (tab1Fields.some((f) => lower.includes(f))) return "1";
+      if (tab2Fields.some((f) => lower.includes(f))) return "2";
+      if (tab3Fields.some((f) => lower.includes(f))) return "3";
+      if (tab4Fields.some((f) => lower.includes(f))) return "4";
+    }
+    return null;
+  };
+
   // Ensure `data` exists and has elements before accessing `[0]`
   const loandetailsAlias =
     Array.isArray(data) && data.length > 0 ? data[0].alias : null;
@@ -91,6 +113,10 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     );
   const [updateLoanDetails, { isLoading: isUpdating }] =
     useUpdateLoanDetailsMutation();
+  // Validation mutation (does not invalidate cache)
+  const [validateLoanDetails, { isLoading: isValidating }] =
+    useValidateLoanDetailsMutation();
+
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -321,7 +347,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   const formRef3 = useRef<HTMLFormElement | null>(null);
   const formRef4 = useRef<HTMLFormElement | null>(null);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const nextId = (parseInt(tabId) + 1).toString();
 
     // pick current form ref based on active tab
@@ -345,12 +371,38 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
       }
     }
 
-    setTabId(nextId);
+    // Call validation API before navigating to the next tab
+    try {
+      const mergedData = {
+        ...formDataTab1,
+        ...formDataTab2,
+        ...formDataTab3,
+        ...formDataTab4,
+      };
+
+      const res = await validateLoanDetails({
+        case_alias: casealias,
+        loanDetails_alias: loandetailsAlias,
+        mergedData,
+      }).unwrap();
+
+      // validation passed
+      setErrors({});
+      setTabId(nextId);
+    } catch (err: any) {
+      // validation failed - parse and set errors, then switch to the first tab with an error
+      const parsed = parseApiErrors(err);
+      setErrors(parsed);
+      const target = findTabFromErrors(parsed);
+      if (target) setTabId(target);
+      const firstMessage = Object.values(parsed)[0];
+      toast.error(firstMessage || "Validation failed");
+    }
   };
 
   const handleBack = () => setTabId((parseInt(tabId) - 1).toString());
 
-  const handleSave = async () => {
+  const handleSave = async (): Promise<boolean> => {
     const updatedLoanDetailsData = {
       ...formDataTab1,
       ...formDataTab2,
@@ -358,39 +410,43 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
       ...formDataTab4,
     };
     try {
+      // Use unwrap so server-side validation errors are thrown and handled in catch
       const response = await updateLoanDetails({
         case_alias: casealias,
         loanDetails_alias: loandetailsAlias,
         mergedData: updatedLoanDetailsData,
-      });
+      }).unwrap();
 
-      if (response.data) {
-        setErrors({});
-        toast.success("Loan details updated successfully");
-        try {
-          await updateSectionCompleteStatus({
-            case_alias: casealias,
-            section_data: { is_loan_details: true },
-          });
-        } catch (err) {
-          console.error("Failed to update section complete status:", err);
-        }
-      } else if (response.error) {
-        const parsed = parseApiErrors(response.error);
-        setErrors(parsed);
-        // Prioritize a detail message if present
-        const detail = (response.error as any)?.data?.detail;
-        const firstFieldMsg = Object.values(parsed)[0];
-        const errorMessage =
-          detail || firstFieldMsg || "Failed to update loan details!";
-        toast.error(errorMessage);
-      } else {
-        toast.error("Failed to update loan details!!!!");
+      // If unwrap succeeds, treat as success
+      setErrors({});
+      toast.success("Loan details updated successfully");
+      try {
+        await updateSectionCompleteStatus({
+          case_alias: casealias,
+          section_data: { is_loan_details: true },
+        });
+      } catch (err) {
+        console.error("Failed to update section complete status:", err);
       }
+
+      return true;
     } catch (error: any) {
-      // Handle any unexpected errors
+      // API returned validation errors or other errors
+      const parsed = parseApiErrors(error);
+      if (Object.keys(parsed).length) {
+        setErrors(parsed);
+        const target = findTabFromErrors(parsed);
+        if (target) setTabId(target);
+        // Show first field message if present
+        const firstMsg = Object.values(parsed)[0];
+        toast.error(firstMsg || "Failed to update loan details");
+        return false;
+      }
+
+      // Unexpected error
       const errorMessage = error?.message || "An unexpected error occurred";
       toast.error(errorMessage);
+      return false;
     }
   };
   const currentTab: string | null = useAppSelector(
@@ -763,7 +819,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
             </Row>
           </Form>
           <Button color="primary" onClick={handleNext} className="float-end">
-            Next
+            {isValidating ? "Validating..." : "Next"}
           </Button>
         </TabPane>
         <TabPane tabId="2">
@@ -1198,7 +1254,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               className="ms-2"
               disabled={!isTab2Valid()}
             >
-              Next
+              {isValidating ? "Validating..." : "Next"}
             </Button>
           </div>
         </TabPane>
@@ -1525,7 +1581,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               Back
             </Button>
             <Button color="primary" onClick={handleNext} className="ms-2">
-              Next
+               {isValidating ? "Validating..." : "Next"}
             </Button>
           </div>
         </TabPane>
@@ -1792,8 +1848,10 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     handleNextTab();
                   } else {
                     try {
-                      await handleSave();
-                      handleNextTab();
+                      const ok = await handleSave();
+                      if (ok) {
+                        handleNextTab();
+                      }
                     } catch (error) {
                       console.error("Save failed, not navigating to next tab");
                     }

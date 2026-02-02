@@ -1,7 +1,15 @@
-import { initializeForm } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { useValidatePropertyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyApi";
+import {
+  clearPropertyErrors,
+  initializeForm,
+  setPropertyErrors,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { PropertyData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
+import { useParams } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import { Button, Form, TabContent, TabPane } from "reactstrap";
 import AdditionalInfo from "./Components/PropertyDetailsTabs/PropertyAdditionalInfo";
 import AddressDetails from "./Components/PropertyDetailsTabs/PropertyAddress";
@@ -26,7 +34,94 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
   const formRef3 = useRef<HTMLFormElement | null>(null);
   const formRef4 = useRef<HTMLFormElement | null>(null);
 
-  const handleNext = () => {
+  const params = useParams();
+  const { casealias } = params;
+
+  const propertyForm = useAppSelector((s) => s.propertyForm.Properties);
+  const appDispatch = useAppDispatch();
+  const [validateProperty, { isLoading: isValidating }] =
+    useValidatePropertyMutation();
+
+  const parseApiErrors = (err: any): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const data = err?.data || (err?.error && err.error.data) || err;
+    const recurse = (value: any, path: string[] = []) => {
+      if (value == null) return;
+      if (typeof value === "string") {
+        out[path.join(".")] = value;
+        return;
+      }
+      if (Array.isArray(value)) {
+        out[path.join(".")] = value
+          .map((v) => (typeof v === "string" ? v : JSON.stringify(v)))
+          .join(", ");
+        return;
+      }
+      if (typeof value === "object") {
+        for (const k of Object.keys(value)) recurse(value[k], path.concat(k));
+        return;
+      }
+      out[path.join(".")] = String(value);
+    };
+
+    recurse(data, []);
+    return out;
+  };
+
+  const findTabFromErrors = (errs: Record<string, string>): string | null => {
+    const keys = Object.keys(errs || {});
+    const tab1Fields = [
+      "postcode",
+      "house_name_or_number",
+      "address_one",
+      "address_two",
+      "city",
+      "county",
+      "country",
+      "latitude",
+      "longitude",
+    ];
+    const tab2Fields = [
+      "property_type",
+      "house_type",
+      "construction_of_walls",
+      "construction_of_roof",
+      "bedrooms",
+      "bathrooms",
+      "reception_rooms",
+      "kitchens",
+      "garages",
+      "parking_spaces",
+      "epc_rating",
+      "floor",
+      "flats",
+      "year_built",
+      "tenure",
+    ];
+    const tab3Fields = [
+      "please_provide_further_details",
+      "comments_details",
+      "new_build_warranty_provider",
+      "other_new_build_warranty_provider",
+    ];
+    const tab4Fields = [
+      "valuation_type",
+      "estimated_value",
+      "property_purchase_price",
+      "property_estimated_valuation",
+    ];
+
+    for (const k of keys) {
+      const lower = k.toLowerCase();
+      if (tab1Fields.some((f) => lower.includes(f))) return "1";
+      if (tab2Fields.some((f) => lower.includes(f))) return "2";
+      if (tab3Fields.some((f) => lower.includes(f))) return "3";
+      if (tab4Fields.some((f) => lower.includes(f))) return "4";
+    }
+    return null;
+  };
+
+  const handleNext = async () => {
     const current =
       tabId === "1"
         ? formRef1.current
@@ -43,7 +138,36 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
         console.warn("reportValidity failed", err);
       }
     }
-    setTabId((parseInt(tabId) + 1).toString());
+
+    // Call server-side validation before moving to the next tab
+    try {
+      const propertyAlias = (propertyData as any)?.alias;
+      if (!propertyAlias) {
+        // If no alias, just proceed
+        setTabId((parseInt(tabId) + 1).toString());
+        return;
+      }
+
+      const res = await validateProperty({
+        case_alias: casealias,
+        property_alias: propertyAlias,
+        updatedSecurityProperty: propertyForm,
+      }).unwrap();
+
+      // validation passed
+      appDispatch(clearPropertyErrors());
+      setTabId((parseInt(tabId) + 1).toString());
+    } catch (err: any) {
+      const parsed = parseApiErrors(err);
+      // store parsed errors in the form slice for children to display
+      appDispatch(setPropertyErrors(parsed));
+      const target = findTabFromErrors(parsed);
+      if (target) setTabId(target);
+      const first = Object.values(parsed)[0];
+      // keep user on current tab if no tab mapping found
+      // show toast
+      if (first) toast.error(first);
+    }
   };
 
   useEffect(() => {

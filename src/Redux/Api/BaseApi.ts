@@ -271,6 +271,9 @@ export const baseApi = createApi({
 
     // Client start
     "CLientApplicationDetails",
+
+    // Admin Start
+    "NetworkList",
   ],
   endpoints: () => ({}),
 });

@@ -17,7 +17,7 @@ export default function SetPassword() {
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
 
-  // Determine tenant: prefer explicit ?tenant= query, otherwise derive from hostname subdomain
+  // Determine subdomain: prefer explicit ?subdomain= query, otherwise derive from hostname subdomain
   const getTenantFromHost = () => {
     if (typeof window === "undefined") return null;
     const hostname = window.location.hostname;
@@ -39,11 +39,11 @@ export default function SetPassword() {
     return null;
   };
 
-  const tenant = searchParams.get("tenant") || getTenantFromHost();
+  const subdomain = searchParams.get("subdomain") || getTenantFromHost();
 
   // Debug
   // eslint-disable-next-line no-console
-  console.debug("SetPassword: tenant=", tenant, "uid=", uid, "token=", token);
+  // console.debug("SetPassword: subdomain=", subdomain, "uid=", uid, "token=", token);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -85,7 +85,7 @@ export default function SetPassword() {
       toast.error("Passwords do not match.");
       return;
     }
-    if (!uid || !token || !tenant) {
+    if (!uid || !token || !subdomain) {
       toast.error("Invalid or missing credentials. Please try again.");
       return;
     }
@@ -98,7 +98,7 @@ export default function SetPassword() {
 
       const res = await setNewPassword({
         payload: formData,
-        tenant: tenant,
+        subdomain: subdomain,
         uid: uid,
         token: token,
       });

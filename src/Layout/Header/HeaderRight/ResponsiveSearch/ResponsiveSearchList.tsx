@@ -1,9 +1,11 @@
 import SVG from "@/CommonComponent/SVG";
-import { useAppDispatch } from "@/Redux/Hooks";
 import { SearchSuggestionListType } from "@/Types/LayoutTypes";
 import Link from "next/link";
 
-const ResponsiveSearchList: React.FC<SearchSuggestionListType> = ({ searchedArray, setSearchedWord }) => {
+const ResponsiveSearchList: React.FC<SearchSuggestionListType> = ({
+  searchedArray,
+  setSearchedWord,
+}) => {
   const handleSearch = () => setSearchedWord("");
 
   return (
@@ -11,11 +13,21 @@ const ResponsiveSearchList: React.FC<SearchSuggestionListType> = ({ searchedArra
       {searchedArray?.map((item, index) => (
         <div className="ProfileCard u-cf" key={index}>
           <div className="ProfileCard-avatar">
-            <SVG className="search-bg svg-color" iconId={item.icon} />
+            {typeof item.icon === "string" ? (
+              <SVG className="search-bg svg-color" iconId={item.icon} />
+            ) : (
+              <span className="search-bg svg-color d-flex align-items-center justify-content-center">
+                {item.icon}
+              </span>
+            )}
           </div>
           <div className="ProfileCard-details">
             <div className="ProfileCard-realName">
-              <Link className="realname w-auto d-flex justify-content-start gap-2" href={`${item.path}`} onClick={handleSearch}>
+              <Link
+                className="realname w-auto d-flex justify-content-start gap-2"
+                href={`${item.path}`}
+                onClick={handleSearch}
+              >
                 {item.title}
               </Link>
             </div>

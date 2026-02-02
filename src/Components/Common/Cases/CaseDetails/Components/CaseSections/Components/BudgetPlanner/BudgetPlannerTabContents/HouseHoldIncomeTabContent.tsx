@@ -17,6 +17,7 @@ import {
 
 const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
   updateField,
+  errors,
 }) => {
   const { casealias } = useParams();
   const { data, isLoading, error, refetch } = useGetCaseBudgetPlannerQuery(
@@ -110,12 +111,12 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
       initialPostValues[`PostCompletionBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Post ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[`PostCompletionBudgetPlanner.${field}`],
+      // );
     });
 
     // console.log("📝 Setting household income state...");
@@ -184,6 +185,47 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
     });
   }, [postValues, updateField]);
 
+  const getFieldError = (name: string) => {
+    const errs = (errors as Record<string, string>) || {};
+    if (!errs) return undefined;
+
+    const direct = (k: string) => {
+      if (!k) return undefined;
+      return errs[k] ?? errs[k.replace(/\./g, "_")];
+    };
+
+    const hit = direct(name);
+    if (hit) return hit;
+
+    const [prefix, label] = name.split(".");
+    const fieldKey =
+      incomeFieldMappings[label as keyof typeof incomeFieldMappings];
+    const isPost = String(prefix).includes("PostCompletion");
+
+    if (fieldKey) {
+      const candidates = [
+        `${prefix}_${fieldKey}`,
+        fieldKey,
+        `${isPost ? "post_income" : "current_income"}.${fieldKey}`,
+      ];
+      for (const c of candidates) {
+        const v = direct(c);
+        if (v) return v;
+      }
+    }
+
+    // total income can also come back as sub_total.total_income
+    if (label === "TotalIncome") {
+      const v = direct(
+        `${isPost ? "post_sub_total" : "current_sub_total"}.total_income`,
+      );
+      if (v) return v;
+    }
+
+    const leaf = (label || name).replace(/\s|\//g, "");
+    return direct(leaf) ?? errs[leaf];
+  };
+
   const renderForm = (prefix: string, className: string) => (
     <Form>
       {Object.entries(incomeFieldMappings).map(([label, fieldKey]) => {
@@ -228,6 +270,11 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
                   }}
                 />
               </InputGroup>
+              {getFieldError(fieldName) && (
+                <div className="text-danger small mt-1">
+                  {getFieldError(fieldName)}
+                </div>
+              )}
             </Col>
           </FormGroup>
         );

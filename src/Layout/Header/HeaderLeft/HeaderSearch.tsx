@@ -10,7 +10,7 @@ const HeaderSearch = () => {
   const [arr, setArr] = useState<SearchSuggestionItem[]>([]);
   const [searchedWord, setSearchedWord] = useState<string>("");
   const [searchedArray, setSearchedArray] = useState<SearchSuggestionItem[]>(
-    []
+    [],
   );
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
@@ -18,7 +18,7 @@ const HeaderSearch = () => {
   useEffect(() => {
     const suggestionArray: SearchSuggestionItem[] = [];
     let num = 0;
-    const getAllLink = (item: MenuItem, icon: string | undefined) => {
+    const getAllLink = (item: MenuItem, icon?: MenuItem["icon"]) => {
       if (item.children) {
         item.children.forEach((ele) => {
           getAllLink(ele, icon);
@@ -42,7 +42,7 @@ const HeaderSearch = () => {
 
     roleBasedMenu.forEach((item) => {
       item.Items?.forEach((child) => {
-        getAllLink(child, child.icon);
+        getAllLink(child, child?.icon);
       });
     });
 
@@ -53,7 +53,7 @@ const HeaderSearch = () => {
     if (!searchedWord) setSearchedWord("");
     setSearchedWord(e.target.value);
     const result = arr.filter((item) =>
-      item.title?.toLowerCase().includes(e.target.value.toLowerCase())
+      item.title?.toLowerCase().includes(e.target.value.toLowerCase()),
     );
     setSearchedArray(result);
   };
