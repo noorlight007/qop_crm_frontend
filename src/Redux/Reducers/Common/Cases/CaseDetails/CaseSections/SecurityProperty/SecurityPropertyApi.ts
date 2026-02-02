@@ -17,8 +17,19 @@ export const SecurityPropertyApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["SecurityProperty"],
     }),
+    // Validation-only mutation (server returns validation errors without persisting when possible)
+    validateProperty: builder.mutation({
+      query: ({ case_alias, property_alias, updatedSecurityProperty }) => ({
+        url: `/cases/${case_alias}/property/details/${property_alias}/?validate=true`,
+        method: "PUT",
+        body: updatedSecurityProperty,
+      }),
+    }),
   }),
 });
 
-export const { useGetPropertiesQuery, useUpdatePropertyMutation } =
-  SecurityPropertyApi;
+export const {
+  useGetPropertiesQuery,
+  useUpdatePropertyMutation,
+  useValidatePropertyMutation,
+} = SecurityPropertyApi;

@@ -100,6 +100,55 @@ const MortgageYourNeedsContent: React.FC = () => {
     return out;
   };
 
+  // Scroll to the first DOM element associated with an API error key
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      const snakeToCamel = (s: string) =>
+        s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+      for (const rawKey of keys) {
+        if (!rawKey) continue;
+        const candidates = [
+          rawKey,
+          rawKey.replace(/\./g, "_"),
+          rawKey.replace(/_/g, "."),
+          snakeToCamel(rawKey.replace(/\./g, "_")),
+        ];
+
+        for (const id of candidates) {
+          if (!id) continue;
+
+          const elById = document.getElementById(id);
+          if (elById) {
+            (elById as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elById as HTMLElement).focus?.();
+            return;
+          }
+
+          const elByName = document.querySelector(`[name="${id}"]`);
+          if (elByName) {
+            (elByName as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elByName as HTMLElement).focus?.();
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
+
   // Add handleInputChange function
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -190,6 +239,8 @@ const MortgageYourNeedsContent: React.FC = () => {
         const errData = (res.error as any)?.data || (res.error as any) || {};
         const parsed = parseApiErrors(errData);
         setErrors(parsed);
+        // Scroll to the first field that caused a server-side validation error
+        scrollToFirstError(parsed);
         const first =
           Object.values(parsed)[0] || "Failed to update mortgage needs.";
         toast.error(String(first));
@@ -203,6 +254,7 @@ const MortgageYourNeedsContent: React.FC = () => {
         (error as any)?.data || (error as any) || error,
       );
       setErrors(parsed);
+      if (Object.keys(parsed).length) scrollToFirstError(parsed);
       const first =
         Object.values(parsed)[0] ||
         "Failed to update mortgage needs. Please try again.";

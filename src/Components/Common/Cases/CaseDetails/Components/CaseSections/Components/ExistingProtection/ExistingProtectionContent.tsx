@@ -171,38 +171,103 @@ const ExistingProtectionContent: React.FC<
     return out;
   };
 
+  // Scroll to the first DOM element associated with an API error key
+  const scrollToFirstError = (errorsObj: Record<string, string>) => {
+    try {
+      const keys = Object.keys(errorsObj || {});
+      if (!keys.length) return;
+
+      const snakeToCamel = (s: string) =>
+        s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+
+      for (const rawKey of keys) {
+        if (!rawKey) continue;
+        const candidates = [
+          rawKey,
+          rawKey.replace(/\./g, "_"),
+          rawKey.replace(/_/g, "."),
+          snakeToCamel(rawKey.replace(/\./g, "_")),
+        ];
+
+        for (const id of candidates) {
+          if (!id) continue;
+
+          const elById = document.getElementById(id);
+          if (elById) {
+            (elById as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elById as HTMLElement).focus?.();
+            return;
+          }
+
+          const elByName = document.querySelector(`[name="${id}"]`);
+          if (elByName) {
+            (elByName as HTMLElement).scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            (elByName as HTMLElement).focus?.();
+            return;
+          }
+        }
+      }
+    } catch (e) {
+      // non-fatal
+      // eslint-disable-next-line no-console
+      console.warn("scrollToFirstError failed", e);
+    }
+  };
+
   // Add save handler
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await updatePropertyDetails({
-      case_alias: casealias,
-      existingProtection_alias: formValues?.alias,
-      existingProtectionUpdatePayload: formValues,
-    });
-    if (res.data) {
-      toast.success("Updated Successfully!");
-      try {
-        await updateSectionCompleteStatus({
-          case_alias: casealias,
-          section_data: { is_existing_protection: true },
-        });
-      } catch (err) {
-        console.error("Failed to update section complete status:", err);
+    try {
+      const res = await updatePropertyDetails({
+        case_alias: casealias,
+        existingProtection_alias: formValues?.alias,
+        existingProtectionUpdatePayload: formValues,
+      });
+
+      if (res.data) {
+        toast.success("Updated Successfully!");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_existing_protection: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        // Clear cached edits for this alias since changes are now saved
+        if (clearCachedEdits && formValues?.alias) {
+          clearCachedEdits(formValues.alias);
+        }
+        setErrors({});
+      } else if (res.error) {
+        const errData = (res.error as any)?.data || (res.error as any) || {};
+        const parsed = parseApiErrors(errData);
+        setErrors(parsed);
+        // Scroll to the first field that caused a server-side validation error
+        scrollToFirstError(parsed);
+        const first =
+          Object.values(parsed)[0] || "Failed to update Property details!";
+        toast.error(String(first));
+      } else {
+        toast.error("Failed to update Property details!");
       }
-      // Clear cached edits for this alias since changes are now saved
-      if (clearCachedEdits && formValues?.alias) {
-        clearCachedEdits(formValues.alias);
+    } catch (error: any) {
+      console.error("Failed to update Property details:", error);
+      const parsed = parseApiErrors(error?.data || error);
+      if (Object.keys(parsed).length) {
+        setErrors(parsed);
+        scrollToFirstError(parsed);
       }
-      setErrors({});
-    } else if (res.error) {
-      const errData = (res.error as any)?.data || (res.error as any) || {};
-      const parsed = parseApiErrors(errData);
-      setErrors(parsed);
       const first =
-        Object.values(parsed)[0] || "Failed to update Property details!";
+        Object.values(parsed)[0] ||
+        "Failed to update Property details. Please try again!";
       toast.error(String(first));
-    } else {
-      toast.error("Failed to update Property details!");
     }
   };
 
