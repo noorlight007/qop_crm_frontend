@@ -12,7 +12,7 @@ export const SearchBar = () => {
   const [arr, setArr] = useState<SearchSuggestionItem[]>([]);
   const [searchedWord, setSearchedWord] = useState<string>("");
   const [searchedArray, setSearchedArray] = useState<SearchSuggestionItem[]>(
-    []
+    [],
   );
   const { responsiveSearch } = useAppSelector((state) => state.layout);
   const dispatch = useAppDispatch();
@@ -25,7 +25,7 @@ export const SearchBar = () => {
 
   useEffect(() => {
     const suggesionArray: SearchSuggestionItem[] = [];
-    const getAllLink = (item: MenuItem, icon: string | undefined) => {
+    const getAllLink = (item: MenuItem, icon?: MenuItem["icon"]) => {
       if (item.children) {
         item.children.forEach((ele) => {
           getAllLink(ele, icon);
@@ -58,7 +58,7 @@ export const SearchBar = () => {
     setSearchedWord(e.target.value);
     let data = [...arr];
     let result = data.filter((item) =>
-      item.title?.toLowerCase().includes(e.target.value.toLowerCase())
+      item.title?.toLowerCase().includes(e.target.value.toLowerCase()),
     );
     setSearchedArray(result);
   };
