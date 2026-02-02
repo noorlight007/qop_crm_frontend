@@ -66,6 +66,69 @@ const getFieldError = (errors: Record<string, string>, name: string) => {
   return undefined;
 };
 
+const parseApiErrors = (err: any): Record<string, string> => {
+  if (!err) return {};
+  const collect = (value: any): string[] => {
+    if (value == null) return [];
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value))
+      return value.map((v) => (typeof v === "string" ? v : JSON.stringify(v)));
+    if (typeof value === "object") {
+      try {
+        return Object.values(value).flatMap((v) => collect(v));
+      } catch {
+        return [String(value)];
+      }
+    }
+    return [String(value)];
+  };
+
+  const parsed: Record<string, string> = {};
+  const data = err?.data || err;
+  if (data && typeof data === "object") {
+    Object.entries(data).forEach(([k, v]) => {
+      const msgs = collect(v);
+      if (msgs.length) parsed[k] = msgs.join(", ");
+    });
+  }
+  return parsed;
+};
+
+const scrollToFirstError = (errorsObj: Record<string, string>) => {
+  try {
+    if (!errorsObj) return;
+    const keys = Object.keys(errorsObj);
+    const tryIds = (k: string) => {
+      const variants = [
+        k,
+        k.replace(/\./g, "_"),
+        k.replace(/_/g, "."),
+        camelToSnake(k),
+      ];
+      for (const v of variants) {
+        const el =
+          document.getElementById(v) || document.querySelector(`[name="${v}"]`);
+        if (el) {
+          (el as HTMLElement).scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          try {
+            (el as HTMLElement).focus();
+          } catch {}
+          return true;
+        }
+      }
+      return false;
+    };
+    for (const k of keys) {
+      if (tryIds(k)) return;
+    }
+  } catch (e) {
+    console.warn("scrollToFirstError failed", e);
+  }
+};
+
 const ProductContent: React.FC = () => {
   const params = useParams();
   const { casealias } = params;
@@ -232,6 +295,8 @@ const ProductContent: React.FC = () => {
             });
             if (Object.keys(fieldErrors).length) {
               setErrors(fieldErrors);
+              // Scroll to the first field that caused a server-side validation error
+              scrollToFirstError(fieldErrors);
               const firstMsg = Object.values(fieldErrors)[0];
               toast.error(firstMsg);
             } else {
@@ -252,6 +317,13 @@ const ProductContent: React.FC = () => {
       }
     } catch (error: any) {
       // Handle any unexpected errors
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
+      if (Object.keys(parsed).length) {
+        setErrors(parsed);
+        scrollToFirstError(parsed);
+      }
       const errorMessage =
         getErrorMessage(error) || "An unexpected error occurred";
       toast.error(errorMessage);
