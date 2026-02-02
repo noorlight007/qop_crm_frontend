@@ -1,5 +1,6 @@
 import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import React from "react";
+import { FaNetworkWired } from "react-icons/fa";
 import { TbNetwork } from "react-icons/tb";
 import { Card } from "reactstrap";
 
@@ -25,7 +26,7 @@ const WelcomeBanner: React.FC<NetworkDirectorDashboardProps> = ({
     <Card className="welcomeCard">
       <div className="welcomeCardContent">
         <div className="welcomeIconWrapper">
-          <TbNetwork className="welcomeIcon" />
+          <FaNetworkWired className="welcomeIcon" />
         </div>
         <div className="welcomeTextContent">
           <div className="welcomeGreeting">Welcome back</div>
