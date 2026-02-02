@@ -3,8 +3,8 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const ResetUserPasswordApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     resetUserPassword: builder.mutation({
-      query: ({ payload, uid, token }) => ({
-        url: `/auth/reset-password/${uid}/${token}/`,
+      query: ({ payload, subdomain, uid, token }) => ({
+        url: `/auth/reset-password/${subdomain}/${uid}/${token}/`,
         method: "POST",
         body: payload,
       }),

@@ -20,6 +20,30 @@ export default function ResetPassword() {
   // console.log("UID:", uid);
   // console.log("Token:", token);
 
+  // Determine subdomain: prefer explicit ?subdomain= query, otherwise derive from hostname subdomain
+  const getTenantFromHost = () => {
+    if (typeof window === "undefined") return null;
+    const hostname = window.location.hostname;
+
+    // Local development: allow overriding via env
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || null;
+    }
+
+    const parts = hostname.split(".");
+    // Examples handled:
+    // - subdomain.example.com -> subdomain
+    // - subdomain.localhost -> subdomain (when using dev host like subdomain.localhost)
+    if (parts.length > 2 || (parts.length === 2 && parts[1] === "localhost")) {
+      const subdomain = parts[0];
+      if (subdomain && subdomain !== "www") return subdomain;
+    }
+
+    return null;
+  };
+
+  const subdomain = searchParams.get("subdomain") || getTenantFromHost();
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,7 +85,7 @@ export default function ResetPassword() {
       toast.error("Passwords do not match.");
       return;
     }
-    if (!uid || !token) {
+    if (!uid || !token || !subdomain) {
       toast.error("Invalid or missing credentials. Please try again.");
       return;
     }
@@ -77,8 +101,9 @@ export default function ResetPassword() {
         payload: formData,
         uid: uid,
         token: token,
+        subdomain: subdomain,
       });
-      console.log("Res:", res.data);
+      // console.log("Res:", res.data);
 
       if (res.data) {
         // Notify other tabs and force sign-out

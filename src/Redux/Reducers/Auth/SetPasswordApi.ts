@@ -3,8 +3,8 @@ import { publicBaseApi } from "@/Redux/Api/PublicBaseApi";
 export const SetNewPasswordApi = publicBaseApi.injectEndpoints({
   endpoints: (builder) => ({
     setNewPassword: builder.mutation({
-      query: ({ payload, tenant, uid, token }) => ({
-        url: `/auth/set-password/${tenant}/${uid}/${token}/`,
+      query: ({ payload, subdomain, uid, token }) => ({
+        url: `/auth/set-password/${subdomain}/${uid}/${token}/`,
         method: "POST",
         body: payload,
       }),
