@@ -442,7 +442,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                 <tbody>
                   {isLoading || isFetching ? (
                     <tr>
-                      <td colSpan={9} className="text-center">
+                      <td colSpan={10} className="text-center">
                         <div className="d-flex justify-content-center align-items-center">
                           <Spinner color="primary" />
                         </div>
@@ -666,7 +666,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={9} className="text-center">
+                      <td colSpan={10} className="text-center">
                         No support tickets available.
                       </td>
                     </tr>
