@@ -117,10 +117,7 @@ const SendEmailForResetPasswordModal: React.FC<UserProfileModalProps> = ({
           <Button color="warning" onClick={onClose}>
             Close
           </Button>
-          {/* <Button color="primary">
-            {isLoading ? <Spinner size="sm" /> : "Send Email"}
-          // </Button> */}
-          <div className="d-grid mt-3">
+          <div className="d-grid">
             <Button
               type="submit"
               color="primary"
