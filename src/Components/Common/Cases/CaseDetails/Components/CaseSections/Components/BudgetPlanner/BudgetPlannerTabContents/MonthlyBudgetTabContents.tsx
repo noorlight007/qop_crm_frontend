@@ -13,6 +13,7 @@ import {
 
 const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
   updateField,
+  errors,
 }) => {
   const budgetPlannerData = useSelector(
     (state: RootState) => state.budgetPlanner,
@@ -135,6 +136,16 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
     },
   ];
 
+  const getFieldError = (name: string) => {
+    const errs = (errors as Record<string, string>) || {};
+    if (!errs) return undefined;
+    if (errs[name]) return errs[name];
+    if (errs[name.replace(/\./g, "_")]) return errs[name.replace(/\./g, "_")];
+    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
+    if (errs[leaf]) return errs[leaf];
+    return undefined;
+  };
+
   const availableIncomeField = {
     label: "Available Income",
     id: "AvailableIncome",
@@ -238,6 +249,11 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
                         : setPostValues(newValues);
                     }}
                   />
+                  {getFieldError(`${prefix}.${field.id}`) && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError(`${prefix}.${field.id}`)}
+                    </div>
+                  )}
                 </InputGroup>
                 <span
                   className="field-validation-valid"

@@ -183,23 +183,30 @@ export interface BudgetPlannerTabContentProps {
   tabId: number | null;
   setTabId: (id: number) => void;
   updateField: (field: string, value: any) => void;
+  errors?: Record<string, string>;
+  setErrors?: (e: Record<string, string>) => void;
 }
 
 export interface DebtRepaymentTabContentProps {
   updateField: (field: string, value: any) => void;
+  errors?: Record<string, string>;
 }
 
 export interface DisclaimerTabContentsProps {
   updateField: (field: string, value: any) => void;
+  errors?: Record<string, string>;
 }
 
 export interface HouseHoldIncomeTabContentProps {
   updateField: (field: string, value: any) => void;
+  errors?: Record<string, string>;
 }
 
 export interface LivingExpensesTabContentsProps {
   updateField: (field: string, value: any) => void;
+  errors?: Record<string, string>;
 }
 export interface MonthlyBudgetTabContentsProps {
   updateField: (field: string, value: any) => void;
+  errors?: Record<string, string>;
 }

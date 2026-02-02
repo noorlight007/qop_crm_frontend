@@ -18,6 +18,7 @@ import {
 
 const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   updateField,
+  errors,
 }) => {
   const { casealias } = useParams();
   const { data, isLoading, refetch } = useGetCaseBudgetPlannerQuery(
@@ -45,6 +46,16 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
     {},
   );
   const [postValues, setPostValues] = useState<Record<string, string>>({});
+
+  const getFieldError = (name: string) => {
+    const errs = (errors as Record<string, string>) || {};
+    if (!errs) return undefined;
+    if (errs[name]) return errs[name];
+    if (errs[name.replace(/\./g, "_")]) return errs[name.replace(/\./g, "_")];
+    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
+    if (errs[leaf]) return errs[leaf];
+    return undefined;
+  };
 
   const livingCostFieldMappings = {
     Electricity: "electricity",
@@ -98,7 +109,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
   // Force a refetch when component mounts or casealias changes
   useEffect(() => {
     if (casealias && refetch) {
-      console.log("Forcing API refetch for living expenses, case:", casealias);
+      // console.log("Forcing API refetch for living expenses, case:", casealias);
       refetch();
     }
   }, [casealias, refetch]);
@@ -109,11 +120,11 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
       !budgetPlannerData?.current_living_cost ||
       !budgetPlannerData?.post_living_cost
     ) {
-      console.log("❌ No living expenses data available for initialization");
+      // console.log("❌ No living expenses data available for initialization");
       return;
     }
 
-    console.log("🔄 Initializing living expenses state with API data...");
+    // console.log("🔄 Initializing living expenses state with API data...");
 
     const initialCurrentValues: Record<string, string> = {};
     const initialPostValues: Record<string, string> = {};
@@ -128,14 +139,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current Living ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[
-          `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Current Living ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[
+      //     `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
     // Post Living Costs
@@ -148,14 +159,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post Living ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[
-          `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Post Living ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[
+      //     `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
     // Current Insurance
@@ -168,14 +179,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current Insurance ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[
-          `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Current Insurance ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[
+      //     `CurrentBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
     // Post Insurance
@@ -188,24 +199,24 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
         `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
       ] = value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post Insurance ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[
-          `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
-        ],
-      );
+      // console.log(
+      //   `Post Insurance ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[
+      //     `PostCompletionBudgetPlanner.${field.replace(/[\s/&]/g, "")}`
+      //   ],
+      // );
     });
 
-    console.log("📝 Setting living expenses state...");
-    console.log("Initial current values:", initialCurrentValues);
-    console.log("Initial post values:", initialPostValues);
+    // console.log("📝 Setting living expenses state...");
+    // console.log("Initial current values:", initialCurrentValues);
+    // console.log("Initial post values:", initialPostValues);
 
     setCurrentValues(initialCurrentValues);
     setPostValues(initialPostValues);
 
-    console.log("✅ Living expenses state setting completed");
+    // console.log("✅ Living expenses state setting completed");
   }, [budgetPlannerData]);
 
   // Update parent modal with current values
@@ -407,7 +418,12 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                   >
                     <FaEdit />
                   </InputGroupText>
-                </InputGroup>
+                </InputGroup>{" "}
+                {getFieldError(fieldName) && (
+                  <div className="text-danger small mt-1">
+                    {getFieldError(fieldName)}
+                  </div>
+                )}{" "}
               </Col>
             </FormGroup>
             <FormGroup

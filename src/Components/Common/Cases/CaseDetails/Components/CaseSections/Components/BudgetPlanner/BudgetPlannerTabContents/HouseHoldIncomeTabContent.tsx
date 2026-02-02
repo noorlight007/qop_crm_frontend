@@ -17,6 +17,7 @@ import {
 
 const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
   updateField,
+  errors,
 }) => {
   const { casealias } = useParams();
   const { data, isLoading, error, refetch } = useGetCaseBudgetPlannerQuery(
@@ -110,12 +111,12 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
       initialPostValues[`PostCompletionBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Post ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[`PostCompletionBudgetPlanner.${field}`],
+      // );
     });
 
     // console.log("📝 Setting household income state...");
@@ -184,6 +185,16 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
     });
   }, [postValues, updateField]);
 
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    if (errors[name.replace(/\./g, "_")])
+      return errors[name.replace(/\./g, "_")];
+    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
+    if (errors[leaf]) return errors[leaf];
+    return undefined;
+  };
+
   const renderForm = (prefix: string, className: string) => (
     <Form>
       {Object.entries(incomeFieldMappings).map(([label, fieldKey]) => {
@@ -228,6 +239,11 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
                   }}
                 />
               </InputGroup>
+              {getFieldError(fieldName) && (
+                <div className="text-danger small mt-1">
+                  {getFieldError(fieldName)}
+                </div>
+              )}
             </Col>
           </FormGroup>
         );

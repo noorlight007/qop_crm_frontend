@@ -17,6 +17,7 @@ import {
 
 const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
   updateField,
+  errors,
 }) => {
   const { casealias } = useParams();
   const { data, isLoading, refetch } = useGetCaseBudgetPlannerQuery(
@@ -84,7 +85,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
   // Force a refetch when component mounts or casealias changes
   useEffect(() => {
     if (casealias && refetch) {
-      console.log("Forcing API refetch for debt repayment, case:", casealias);
+      // console.log("Forcing API refetch for debt repayment, case:", casealias);
       refetch();
     }
   }, [casealias, refetch]);
@@ -95,11 +96,11 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       !budgetPlannerData?.current_debt_repayments ||
       !budgetPlannerData?.post_debt_repayments
     ) {
-      console.log("❌ No debt repayment data available for initialization");
+      // console.log("❌ No debt repayment data available for initialization");
       return;
     }
 
-    console.log("🔄 Initializing debt repayment state with API data...");
+    // console.log("🔄 Initializing debt repayment state with API data...");
 
     const initialCurrentValues: Record<string, string> = {};
     const initialPostValues: Record<string, string> = {};
@@ -113,12 +114,12 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       initialCurrentValues[`CurrentBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[`CurrentBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Current ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[`CurrentBudgetPlanner.${field}`],
+      // );
     });
 
     // Post Debt Repayments
@@ -130,12 +131,12 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       initialPostValues[`PostCompletionBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Post ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[`PostCompletionBudgetPlanner.${field}`],
+      // );
     });
 
     // Current Priority Debt
@@ -147,12 +148,12 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       initialCurrentValues[`CurrentBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current Priority ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[`CurrentBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Current Priority ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[`CurrentBudgetPlanner.${field}`],
+      // );
     });
 
     // Post Priority Debt
@@ -164,12 +165,12 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       initialPostValues[`PostCompletionBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post Priority ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Post Priority ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[`PostCompletionBudgetPlanner.${field}`],
+      // );
     });
 
     // Current Unsecured Borrowing
@@ -181,12 +182,12 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       initialCurrentValues[`CurrentBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Current Unsecured ${field} (${key}):`,
-        value,
-        "->",
-        initialCurrentValues[`CurrentBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Current Unsecured ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialCurrentValues[`CurrentBudgetPlanner.${field}`],
+      // );
     });
 
     // Post Unsecured Borrowing
@@ -198,22 +199,22 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       initialPostValues[`PostCompletionBudgetPlanner.${field}`] =
         value !== 0 ? String(value) : "";
 
-      console.log(
-        `Post Unsecured ${field} (${key}):`,
-        value,
-        "->",
-        initialPostValues[`PostCompletionBudgetPlanner.${field}`],
-      );
+      // console.log(
+      //   `Post Unsecured ${field} (${key}):`,
+      //   value,
+      //   "->",
+      //   initialPostValues[`PostCompletionBudgetPlanner.${field}`],
+      // );
     });
 
-    console.log("📝 Setting debt repayment state...");
-    console.log("Initial current values:", initialCurrentValues);
-    console.log("Initial post values:", initialPostValues);
+    // console.log("📝 Setting debt repayment state...");
+    // console.log("Initial current values:", initialCurrentValues);
+    // console.log("Initial post values:", initialPostValues);
 
     setCurrentValues(initialCurrentValues);
     setPostValues(initialPostValues);
 
-    console.log("✅ Debt repayment state setting completed");
+    // console.log("✅ Debt repayment state setting completed");
   }, [budgetPlannerData]);
 
   // Update parent modal with current values
@@ -373,6 +374,16 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
     }
   }, [postValues, updateField]);
 
+  const getFieldError = (name: string) => {
+    if (!errors) return undefined;
+    if (errors[name]) return errors[name];
+    if (errors[name.replace(/\./g, "_")])
+      return errors[name.replace(/\./g, "_")];
+    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
+    if (errors[leaf]) return errors[leaf];
+    return undefined;
+  };
+
   const renderForm = (
     prefix: string,
     fields: string[],
@@ -422,6 +433,11 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
                   }}
                 />
               </InputGroup>
+              {getFieldError(fieldName) && (
+                <><h6>Error</h6><div className="text-danger small mt-1">
+                  {getFieldError(fieldName)}
+                </div></>
+              )}
             </Col>
           </FormGroup>
         );
