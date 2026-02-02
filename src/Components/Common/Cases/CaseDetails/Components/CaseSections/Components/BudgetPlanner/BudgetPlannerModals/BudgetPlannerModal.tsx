@@ -1,7 +1,9 @@
 "use client";
 import { useUpdateBudgetPlannerMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
 import {
+  clearApiErrors,
   initializeBudgetPlannerForm,
+  setApiErrors,
   updateBudgetPlannerSection,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
@@ -138,6 +140,61 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     }
   };
 
+  const normalizeBudgetPlannerErrors = (errs: Record<string, string>) => {
+    const out: Record<string, string> = {};
+
+    const add = (key: string, value: string) => {
+      if (!key) return;
+      if (out[key]) return;
+      out[key] = value;
+    };
+
+    const subTotalIdFromSnake = (snake: string) => {
+      if (snake === "total_income") return "TotalIncome";
+      if (snake === "total_debt_repayment") return "TotalDebtRepayment";
+      if (snake === "total_living_expenses") return "TotalHome";
+      if (snake === "available_income") return "AvailableIncome";
+      return null;
+    };
+
+    for (const [k, rawValue] of Object.entries(errs || {})) {
+      const value = String(rawValue);
+      add(k, value);
+
+      if (
+        /^TotalIncome$|^TotalDebtRepayment$|^TotalHome$|^AvailableIncome$/i.test(
+          k,
+        )
+      ) {
+        add(`CurrentBudgetPlanner.${k}`, value);
+        add(`PostCompletionBudgetPlanner.${k}`, value);
+        continue;
+      }
+
+      const m = k.match(
+        /^(current_income|post_income|current_debt_repayments|post_debt_repayments|current_priority_debt|post_priority_debt|current_unsecured_borrowing|post_unsecured_borrowing|current_living_cost|post_living_cost|current_insurance|post_insurance|current_sub_total|post_sub_total)\.(.+)$/,
+      );
+      if (!m) continue;
+
+      const section = m[1];
+      const fieldSnake = m[2];
+      const isPost = section.startsWith("post_");
+      const prefix = isPost
+        ? "PostCompletionBudgetPlanner"
+        : "CurrentBudgetPlanner";
+
+      add(`${prefix}_${fieldSnake}`, value);
+      add(fieldSnake, value);
+
+      if (section.endsWith("sub_total")) {
+        const subId = subTotalIdFromSnake(fieldSnake);
+        if (subId) add(`${prefix}.${subId}`, value);
+      }
+    }
+
+    return out;
+  };
+
   const handleTabClick = (index: number) => {
     setBasicTab(index);
   };
@@ -159,6 +216,7 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     if (res.data) {
       toast.success("Budget Planner Updated Successfully");
       setErrors({});
+      dispatch(clearApiErrors());
       try {
         await updateSectionCompleteStatus({
           case_alias: casealias,
@@ -171,9 +229,11 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     } else if (res.error) {
       const parsed = parseApiErrors((res as any).error);
       if (Object.keys(parsed).length) {
-        setErrors(parsed);
+        const normalized = normalizeBudgetPlannerErrors(parsed);
+        setErrors(normalized);
+        dispatch(setApiErrors(normalized));
         // Determine the tab containing the first error
-        const firstKey = Object.keys(parsed)[0] || "";
+        const firstKey = Object.keys(normalized)[0] || "";
         let targetTab = 1;
         if (
           /TotalIncome|Applicant|Rental|Part Time|Child|Tax|Maintenance|Pension|Other Benefits/i.test(
@@ -201,9 +261,9 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
           targetTab = 4;
         setBasicTab(targetTab);
         try {
-          scrollToFirstError(parsed);
+          scrollToFirstError(normalized);
         } catch (e) {}
-        toast.error(Object.values(parsed)[0]);
+        toast.error(String(Object.values(normalized)[0]));
       } else {
         const errorMessage =
           (res.error as any)?.data?.detail ||

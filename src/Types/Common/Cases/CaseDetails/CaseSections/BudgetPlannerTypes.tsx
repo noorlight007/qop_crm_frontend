@@ -1,5 +1,9 @@
 export interface BudgetPlanner {
   alias?: string;
+
+  // Server-side validation errors (keyed by field)
+  api_errors?: Record<string, string>;
+
   current_income: {
     applicant_one_net_monthly_income: number | null;
     applicant_two_net_monthly_income: number | null;

@@ -141,7 +141,31 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
     if (!errs) return undefined;
     if (errs[name]) return errs[name];
     if (errs[name.replace(/\./g, "_")]) return errs[name.replace(/\./g, "_")];
-    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
+    const [prefix, id] = name.split(".");
+    if (prefix && id) {
+      // DOM id format
+      const domKey = `${prefix}_${id}`;
+      if (errs[domKey]) return errs[domKey];
+
+      // backend sub_total snake_case keys
+      const isPost = String(prefix).includes("PostCompletion");
+      const section = isPost ? "post_sub_total" : "current_sub_total";
+      const snake =
+        id === "TotalIncome"
+          ? "total_income"
+          : id === "TotalDebtRepayment"
+            ? "total_debt_repayment"
+            : id === "TotalHome"
+              ? "total_living_expenses"
+              : id === "AvailableIncome"
+                ? "available_income"
+                : null;
+      if (snake && errs[`${section}.${snake}`])
+        return errs[`${section}.${snake}`];
+      if (snake && errs[snake]) return errs[snake];
+    }
+
+    const leaf = (id || name).replace(/\s|\//g, "");
     if (errs[leaf]) return errs[leaf];
     return undefined;
   };

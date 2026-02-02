@@ -186,13 +186,44 @@ const HouseHoldIncomeTabContent: FC<HouseHoldIncomeTabContentProps> = ({
   }, [postValues, updateField]);
 
   const getFieldError = (name: string) => {
-    if (!errors) return undefined;
-    if (errors[name]) return errors[name];
-    if (errors[name.replace(/\./g, "_")])
-      return errors[name.replace(/\./g, "_")];
-    const leaf = (name.split(".").pop() || name).replace(/\s|\//g, "");
-    if (errors[leaf]) return errors[leaf];
-    return undefined;
+    const errs = (errors as Record<string, string>) || {};
+    if (!errs) return undefined;
+
+    const direct = (k: string) => {
+      if (!k) return undefined;
+      return errs[k] ?? errs[k.replace(/\./g, "_")];
+    };
+
+    const hit = direct(name);
+    if (hit) return hit;
+
+    const [prefix, label] = name.split(".");
+    const fieldKey =
+      incomeFieldMappings[label as keyof typeof incomeFieldMappings];
+    const isPost = String(prefix).includes("PostCompletion");
+
+    if (fieldKey) {
+      const candidates = [
+        `${prefix}_${fieldKey}`,
+        fieldKey,
+        `${isPost ? "post_income" : "current_income"}.${fieldKey}`,
+      ];
+      for (const c of candidates) {
+        const v = direct(c);
+        if (v) return v;
+      }
+    }
+
+    // total income can also come back as sub_total.total_income
+    if (label === "TotalIncome") {
+      const v = direct(
+        `${isPost ? "post_sub_total" : "current_sub_total"}.total_income`,
+      );
+      if (v) return v;
+    }
+
+    const leaf = (label || name).replace(/\s|\//g, "");
+    return direct(leaf) ?? errs[leaf];
   };
 
   const renderForm = (prefix: string, className: string) => (

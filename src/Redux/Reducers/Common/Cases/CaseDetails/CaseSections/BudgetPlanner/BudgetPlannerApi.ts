@@ -28,7 +28,7 @@ export const BudgetPlannerApi = baseApi.injectEndpoints({
         updatedBudgetPlannerData,
       }) => ({
         url: `/cases/${case_alias}/budget/${budgetplanner_alias}/?validate=true`,
-        method: "PUT",
+        method: "PATCH",
         body: updatedBudgetPlannerData,
       }),
     }),

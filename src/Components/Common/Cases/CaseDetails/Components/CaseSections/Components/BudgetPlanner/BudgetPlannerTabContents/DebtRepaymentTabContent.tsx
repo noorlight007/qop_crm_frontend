@@ -393,6 +393,24 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
       {fields.map((field) => {
         const fieldName = `${prefix}.${field}`;
         const reduxFieldName = mappings[field];
+        const apiSection = (() => {
+          const isPost = prefix.includes("PostCompletion");
+          if (mappings === debtRepaymentFieldMappings)
+            return isPost ? "post_debt_repayments" : "current_debt_repayments";
+          if (mappings === priorityDebtFieldMappings)
+            return isPost ? "post_priority_debt" : "current_priority_debt";
+          if (mappings === unsecuredBorrowingFieldMappings)
+            return isPost
+              ? "post_unsecured_borrowing"
+              : "current_unsecured_borrowing";
+          return isPost ? "post_debt_repayments" : "current_debt_repayments";
+        })();
+
+        const errorMsg =
+          getFieldError(fieldName) ||
+          getFieldError(`${prefix}_${reduxFieldName}`) ||
+          getFieldError(`${apiSection}.${reduxFieldName}`) ||
+          getFieldError(reduxFieldName);
         return (
           <FormGroup row key={field} className="mb-2">
             <Label
@@ -433,10 +451,8 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
                   }}
                 />
               </InputGroup>
-              {getFieldError(fieldName) && (
-                <><h6>Error</h6><div className="text-danger small mt-1">
-                  {getFieldError(fieldName)}
-                </div></>
+              {errorMsg && (
+                <div className="text-danger small mt-1">{errorMsg}</div>
               )}
             </Col>
           </FormGroup>
