@@ -43,7 +43,8 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
   const budgetPlannerState = (useSelector as any)(
     (state: any) => state.budgetPlanner,
   );
-  const [validateBudgetPlanner] = useValidateBudgetPlannerMutation();
+  const [validateBudgetPlanner, { isLoading: isValidating }] =
+    useValidateBudgetPlannerMutation();
 
   const getErrorMessage = (err: any) => {
     if (!err) return "Unknown error";
@@ -272,7 +273,7 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
               onClick={() => (tabId !== null ? handleNextClick() : null)}
               className="float-end mt-2"
             >
-              Next
+              {isValidating ? "Validating..." : "Next"}
             </Button>
           )}
         </TabPane>
