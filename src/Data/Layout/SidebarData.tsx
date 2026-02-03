@@ -32,7 +32,6 @@ const AdminMenu: MenuItem[] = [
       {
         title: "Users",
         icon: <FaUsers />,
-        type: "link",
         lanClass: "lan-3",
         children: [
           {
