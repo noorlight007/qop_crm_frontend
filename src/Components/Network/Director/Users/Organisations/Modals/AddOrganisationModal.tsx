@@ -104,15 +104,21 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    // Special handling for subdomain: allow only lowercase letters and hyphen
+    // Special handling for subdomain: allow lowercase letters, numbers and hyphen; show specific validation messages
     if (name === "subdomain") {
-      const sanitized = value.toLowerCase().replace(/[^a-z-]/g, "");
-      // Show a small message when user typed disallowed characters
+      const sanitized = value.toLowerCase().replace(/[^a-z0-9-]/g, "");
+      // Show a small message when user typed disallowed characters or broke other rules
+      let error: string | null = null;
       if (value && sanitized !== value) {
-        setSubdomainError("Only lowercase letters and hyphen (-) are allowed");
+        error = "Only lowercase letters, numbers and hyphen (-) are allowed";
+      } else if (value && (value.startsWith("-") || value.endsWith("-"))) {
+        error = "Subdomain cannot start or end with a hyphen.";
+      } else if (value && value.length > 63) {
+        error = "Subdomain must be at most 63 characters long.";
       } else {
-        setSubdomainError(null);
+        error = null;
       }
+      setSubdomainError(error);
 
       setFormData((prevState) => ({
         ...prevState,
@@ -176,12 +182,25 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       .toString()
       .trim();
 
-    // Subdomain must be lowercase letters and hyphen only
-    const subdomainRegex = /^[a-z-]+$/;
-    const subdomainValid = subdomainRegex.test(subdomain);
-    if (!subdomainValid) {
-      setSubdomainError("Only lowercase letters and hyphen (-) are allowed");
+    // Subdomain must be lowercase letters, numbers and hyphen only, cannot start/end with hyphen, and max 63 chars
+    const subdomainRegex = /^[a-z0-9-]+$/;
+    let subdomainValid = subdomainRegex.test(subdomain);
+    if (!subdomain) {
+      subdomainValid = false;
+      setSubdomainError("Subdomain is required");
+    } else if (!subdomainRegex.test(subdomain)) {
+      subdomainValid = false;
+      setSubdomainError(
+        "Only lowercase letters, numbers and hyphen (-) are allowed",
+      );
+    } else if (subdomain.startsWith("-") || subdomain.endsWith("-")) {
+      subdomainValid = false;
+      setSubdomainError("Subdomain cannot start or end with a hyphen.");
+    } else if (subdomain.length > 63) {
+      subdomainValid = false;
+      setSubdomainError("Subdomain must be at most 63 characters long.");
     } else {
+      subdomainValid = true;
       setSubdomainError(null);
     }
 
@@ -462,8 +481,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                       onChange={handleChange}
                       placeholder="Enter organisation sub domain"
                       required
-                      pattern="[a-z-]+"
-                      title="Only lowercase letters and hyphen (-) are allowed"
+                      pattern="[a-z0-9-]+"
+                      maxLength={63}
+                      title="Only lowercase letters, numbers and hyphen (-) are allowed. Cannot start/end with hyphen. Max 63 chars."
                     />
                     {apiErrors["organization.subdomain"] ? (
                       <div className="text-danger small mt-1">
