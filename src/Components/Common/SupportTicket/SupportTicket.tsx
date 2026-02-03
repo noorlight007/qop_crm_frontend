@@ -68,6 +68,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const defaultFilters = {
     ticket_type: "",
     status: "",
+    priority: "",
     network: "",
     organisation: "",
     is_removed: initialIsRemoved ?? "",
@@ -97,6 +98,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
         page_size: casesPerPage,
         ticket_type: filters.ticket_type || undefined,
         status: filters.status || undefined,
+        priority: filters.priority || undefined,
         network: filters.network || undefined,
         organisation: filters.organisation || undefined,
         is_removed: filters.is_removed || undefined,
@@ -339,6 +341,24 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       <option value="OPEN">Open</option>
                       <option value="IN_REVIEW">In Review</option>
                       <option value="RESOLVED">Resolved</option>
+                    </Input>
+                  </Col>
+                  <Col>
+                    <Label>Select Ticket Priority</Label>
+                    <Input
+                      type="select"
+                      id="ticketPriorityFilter"
+                      className="py-1"
+                      value={filters.priority}
+                      onChange={(e) =>
+                        handleFilterChange("priority", e.target.value)
+                      }
+                    >
+                      <option value="">All Priorities</option>{" "}
+                      <option value="URGENT">Urgent</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="NORMAL">Normal</option>
+                      <option value="WHEN_POSSIBLE">When Possible</option>
                     </Input>
                   </Col>
                   {userType === "ADMIN" && (

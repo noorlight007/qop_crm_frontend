@@ -8,7 +8,7 @@ const HeaderRight = () => {
       <ul className="header-right">
         <ResponsiveSearch />
         {/* <DarkMode /> */}
-        <NotificationHeader />
+        {/* <NotificationHeader /> */}
         {/* <MaximizeScreen /> */}
         <Profile />
       </ul>
