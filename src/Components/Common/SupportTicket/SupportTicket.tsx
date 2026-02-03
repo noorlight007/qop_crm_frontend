@@ -20,7 +20,7 @@ import {
   FaSearch,
   FaSpinner,
 } from "react-icons/fa";
-import { TbCheck, TbCirclePlus, TbExternalLink } from "react-icons/tb";
+import { TbCheck, TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -471,7 +471,14 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                   ) : tickets.length > 0 ? (
                     tickets.map((ticket: any) => (
                       <tr key={ticket.alias} className="text-center">
-                        <td className="text-truncate">{ticket.ticket_id}</td>
+                        <td className="text-truncate">
+                          <Link
+                            href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
+                            className="text_decoration_hover"
+                          >
+                            {ticket.ticket_id}
+                          </Link>
+                        </td>
                         <td>
                           <Badge
                             color={
@@ -652,17 +659,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
                         <td>
                           <div className="d-flex justify-content-center gap-2 align-items-center">
-                            <Link
-                              href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
-                            >
-                              <Button
-                                color="primary"
-                                size="sm"
-                                title="View Ticket"
-                              >
-                                <TbExternalLink size={18} />
-                              </Button>
-                            </Link>
                             <Button
                               color="secondary"
                               size="sm"
