@@ -411,7 +411,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 ? "Loading organisations..."
                                 : "All Organisations"}
                           </option>
-                          {orgList?.map((org: any, index: any) => (
+                          {(Array.isArray(orgList)
+                            ? orgList
+                            : (orgList?.results ?? [])
+                          )?.map((org: any, index: any) => (
                             <option
                               key={org.subdomain || `${org.name}-${index}`}
                               value={org.subdomain || org.name}
