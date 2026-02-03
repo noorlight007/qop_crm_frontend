@@ -34,7 +34,7 @@ import DeleteClientModal from "./Modals/DeleteClientModal";
 import UpdateClientModal from "./Modals/UpdateClientModal";
 import ViewClientModal from "./Modals/ViewClientModal";
 
-const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
+const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
   const { data: session } = useSession();
   const [clients, setClients] = useState<ClientInfoProps[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +52,6 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 10 }) => {
 
   const { data: clientData, isLoading } = useGetClientDetailsQuery({
     page: currentPage,
-    page_size: clientsPerPage,
     search: debouncedSearch || undefined,
   });
 

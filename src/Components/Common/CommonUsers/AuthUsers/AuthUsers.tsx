@@ -34,7 +34,7 @@ import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
-  authUsersPerPage = 10,
+  authUsersPerPage = 12,
   userRole,
 }) => {
   const pathname = window.location.pathname;
@@ -66,7 +66,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
     role: userRole,
     page: currentPage,
-    page_size: authUsersPerPage,
     search: debouncedSearch || undefined,
   });
 

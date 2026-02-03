@@ -95,7 +95,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
-    useGetNetworkListQuery({});
+    useGetNetworkListQuery(undefined);
   const { data: orgList, isLoading: orgListLoading } =
     useGetOrganisationListQuery({
       network: selectedNetwork,
@@ -103,8 +103,11 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
 
   // Set first network as default when networkList is loaded
   useEffect(() => {
-    if (networkList && networkList.length > 0 && !selectedNetwork) {
-      setSelectedNetwork(networkList[0].subdomain);
+    const networksArray = Array.isArray(networkList)
+      ? networkList
+      : (networkList?.results ?? []);
+    if (networksArray.length > 0 && !selectedNetwork) {
+      setSelectedNetwork(networksArray[0].subdomain);
     }
   }, [networkList, selectedNetwork]);
 
@@ -250,11 +253,17 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               {networkListLoading ? (
                 <option disabled>Loading...</option>
               ) : (
-                networkList?.map((network: any) => (
-                  <option key={network.subdomain} value={network.subdomain}>
-                    {network.name}
-                  </option>
-                ))
+                <>
+                  <option value="">All Networks</option>
+                  {(Array.isArray(networkList)
+                    ? networkList
+                    : (networkList?.results ?? [])
+                  )?.map((network: any) => (
+                    <option key={network.subdomain} value={network.subdomain}>
+                      {network.name}
+                    </option>
+                  ))}
+                </>
               )}
             </Input>
           </Col>
@@ -272,7 +281,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 {orgListLoading ? (
                   <option disabled>Loading...</option>
                 ) : (
-                  orgList?.map((org: any, index: any) => (
+                  (Array.isArray(orgList)
+                    ? orgList
+                    : (orgList?.results ?? [])
+                  ).map((org: any, index: any) => (
                     <option
                       key={org.subdomain || `${org.name}-${index}`}
                       value={org.subdomain || org.name}

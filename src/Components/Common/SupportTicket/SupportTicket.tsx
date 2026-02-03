@@ -56,7 +56,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [casesPerPage] = useState(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -95,7 +94,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
       params: {
         search: debouncedSearch || undefined,
         page: currentPage,
-        page_size: casesPerPage,
         ticket_type: filters.ticket_type || undefined,
         status: filters.status || undefined,
         priority: filters.priority || undefined,
@@ -114,7 +112,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
-    useGetNetworkListQuery({});
+    useGetNetworkListQuery(undefined);
   const { data: orgList, isLoading: orgListLoading } =
     useGetOrganisationListQuery(
       {
@@ -145,7 +143,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const totalCount =
     isFetching || isError ? 0 : (supportTicketData?.count ?? 0);
 
-  const ticketsPerPage = 10;
+  const ticketsPerPage = 12;
   const totalPages = Math.ceil(totalCount / ticketsPerPage);
 
   const openUpdateModal = (ticket: SupportTicketFormData) => {
@@ -379,7 +377,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           }}
                         >
                           <option value="">All Networks</option>
-                          {networkList?.map((network: any) => (
+                          {(Array.isArray(networkList)
+                            ? networkList
+                            : (networkList?.results ?? [])
+                          )?.map((network: any) => (
                             <option
                               key={network.subdomain}
                               value={network.subdomain}

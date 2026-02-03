@@ -26,7 +26,7 @@ import {
 
 const MyTask: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [tasksPerPage] = useState(10);
+  const [tasksPerPage] = useState(12);
 
   // Filters state (all server-side)
   const [filters, setFilters] = useState({
@@ -46,7 +46,6 @@ const MyTask: React.FC = () => {
   const buildApiParams = () => {
     const p: any = {
       page: currentPage,
-      page_size: tasksPerPage,
     };
 
     if (filters.task_assigned_to) p.task_assigned_to = filters.task_assigned_to;
