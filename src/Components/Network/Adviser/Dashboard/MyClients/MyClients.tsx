@@ -17,7 +17,9 @@ const MyClients: React.FC<CommonAdviserClientProps> = ({
         <div className="text-muted mt-2">Loading clients...</div>
       </div>
     </div>
-  ) : !adviserClientData || adviserClientData.length === 0 ? (
+  ) : !adviserClientData ||
+    !Array.isArray(adviserClientData) ||
+    adviserClientData.length === 0 ? (
     <div
       className="d-flex align-items-center justify-content-center"
       style={{ height: "100%" }}

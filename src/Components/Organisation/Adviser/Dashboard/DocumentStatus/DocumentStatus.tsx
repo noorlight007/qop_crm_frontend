@@ -51,7 +51,9 @@ const DocumentStatus: React.FC<CommonAdviserDocumentProps> = ({
               </Row>
             ))}
           </div>
-        ) : !adviserDocumentData || adviserDocumentData?.length === 0 ? (
+        ) : !adviserDocumentData ||
+          !Array.isArray(adviserDocumentData) ||
+          adviserDocumentData?.length === 0 ? (
           <div
             className="d-flex align-items-center justify-content-center"
             style={{ height: "100%" }}
