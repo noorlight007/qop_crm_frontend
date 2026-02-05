@@ -1,4 +1,7 @@
-import { useGetCaseDocumentsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
+import {
+  useGetCaseDocumentsQuery,
+  useGetFileTypeCountsQuery,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/DocumentsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -82,16 +85,22 @@ const Documents: React.FC = () => {
     { value: "OTHERS", label: "Others" },
   ];
 
-  // RTK hooks
+  // RTK hooks - server-side pagination and file_type filtering
   const { data: caseDocumentsData, isLoading } = useGetCaseDocumentsQuery({
+    case_alias: casealias,
+    page: currentPage,
+    page_size: filesPerPage,
+    file_type: activeTab || undefined,
+  });
+
+  const { data: fileTypeCounts } = useGetFileTypeCountsQuery({
     case_alias: casealias,
   });
 
-  // First filter by active tab (file_type), then by search term
-  const tabFilteredDocuments = caseDocuments.filter((doc) => {
-    if (!activeTab) return true; // all
-    return doc.file_type === activeTab;
-  });
+  console.log("File Type Counts:::", fileTypeCounts)
+
+  // Server provides file_type filtering via API; keep local list as-is
+  const tabFilteredDocuments = caseDocuments;
 
   const filteredDocuments = tabFilteredDocuments.filter((doc) => {
     if (!searchTerm) return true;
@@ -131,17 +140,18 @@ const Documents: React.FC = () => {
     );
   });
 
-  const totalPages = Math.ceil(filteredDocuments.length / filesPerPage);
-  const indexOfLastDocument = currentPage * filesPerPage;
-  const indexOfFirstDocument = indexOfLastDocument - filesPerPage;
-  const currentDocuments = filteredDocuments.slice(
-    indexOfFirstDocument,
-    indexOfLastDocument,
-  );
+  // Server-side pagination: total pages calculate from server count
+  const totalPages = Math.ceil((caseDocumentsData?.count || 0) / filesPerPage);
+  const indexOfFirstDocument = (currentPage - 1) * filesPerPage;
+  // current page's documents (filtered by tab/search client-side within page)
+  const currentDocuments = filteredDocuments; // already limited to current page by server
 
   useEffect(() => {
-    if (caseDocumentsData) {
-      setCaseDocuments(caseDocumentsData as CaseDocumentProps[]);
+    // Server returns paginated object: { count, next, previous, results }
+    if (caseDocumentsData && Array.isArray(caseDocumentsData.results)) {
+      setCaseDocuments(caseDocumentsData.results as CaseDocumentProps[]);
+    } else {
+      setCaseDocuments([]);
     }
   }, [caseDocumentsData]);
 
@@ -376,7 +386,7 @@ const Documents: React.FC = () => {
                   className="p-2"
                 >
                   <FaFolder className="me-1" />
-                  All ({caseDocuments.length})
+                  All ({caseDocumentsData?.count ?? caseDocuments.length})
                 </Button>
                 {FILE_TYPES.map((ft) => (
                   <Button
@@ -584,15 +594,18 @@ const Documents: React.FC = () => {
                   <div>
                     <span>
                       Show {currentDocuments.length} entries | Total:{" "}
-                      {filteredDocuments.length} entries
+                      {caseDocumentsData?.count ?? filteredDocuments.length}{" "}
+                      entries
                       {searchTerm && (
                         <span className="text-muted ms-2">
-                          (filtered from {caseDocuments.length} total)
+                          (filtered from{" "}
+                          {caseDocumentsData?.count ?? caseDocuments.length}{" "}
+                          total)
                         </span>
                       )}
                     </span>
                   </div>
-                  {filteredDocuments.length > filesPerPage && (
+                  {(caseDocumentsData?.count || 0) > filesPerPage && (
                     <div className="d-flex justify-content-end mt-3">
                       <Button
                         color="primary"
