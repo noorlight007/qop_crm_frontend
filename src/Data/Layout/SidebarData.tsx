@@ -40,9 +40,9 @@ const AdminMenu: MenuItem[] = [
             path: "/admin/users/directors",
           },
           {
-            title: "Compliance Assistants",
+            title: "Compliances",
             type: "link",
-            path: "/admin/users/compliance-assistants",
+            path: "/admin/users/compliances",
           },
           {
             title: "Advisers",
