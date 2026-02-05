@@ -19,7 +19,7 @@ export const DocumentsApi = baseApi.injectEndpoints({
       providesTags: ["CaseDocuments"],
     }),
 
-    getFileTypeCounts: builder.query({
+    getFileCount: builder.query({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/file-count/`,
         method: "GET",
@@ -59,7 +59,7 @@ export const DocumentsApi = baseApi.injectEndpoints({
 
 export const {
   useGetCaseDocumentsQuery,
-  useGetFileTypeCountsQuery,
+  useGetFileCountQuery,
   useUploadCaseDocumentMutation,
   useUpdateCaseDocumentMutation,
   useDeleteCaseDocumentMutation,

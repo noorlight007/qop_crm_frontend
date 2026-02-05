@@ -1,6 +1,6 @@
 import {
   useGetCaseDocumentsQuery,
-  useGetFileTypeCountsQuery,
+  useGetFileCountQuery,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Documents/DocumentsApi";
 import { CaseDocumentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/DocumentsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -93,11 +93,32 @@ const Documents: React.FC = () => {
     file_type: activeTab || undefined,
   });
 
-  const { data: fileTypeCounts } = useGetFileTypeCountsQuery({
+  const { data: fileCount } = useGetFileCountQuery({
     case_alias: casealias,
   });
 
-  console.log("File Type Counts:::", fileTypeCounts)
+  // Build a lookup map from the file count API. Supports multiple possible shapes:
+  // - [{ value: 'IDS', label: 'IDs', count: 16 }, ...]
+  // - [{ IDS: 16 }, { SUITABILITY_LETTER: 6 }, ...]
+  const fileCountMap = new Map<string, number>();
+  if (Array.isArray(fileCount)) {
+    fileCount.forEach((ft: any) => {
+      if (ft && typeof ft === "object") {
+        // shape: { value, count }
+        if (typeof ft.value === "string" && typeof ft.count === "number") {
+          fileCountMap.set(ft.value, ft.count);
+          return;
+        }
+        // shape: { KEY: number }
+        Object.keys(ft).forEach((k) => {
+          if (typeof ft[k] === "number") fileCountMap.set(k, ft[k]);
+        });
+      }
+    });
+  }
+
+  // Ordered list of types for consistent display
+  const allCount = fileCountMap.get("ALL") ?? caseDocuments.length;
 
   // Server provides file_type filtering via API; keep local list as-is
   const tabFilteredDocuments = caseDocuments;
@@ -383,31 +404,34 @@ const Documents: React.FC = () => {
                   color={activeTab === "" ? "primary" : "outline-primary"}
                   size="sm"
                   onClick={() => setActiveTab("")}
+                  title="All"
                   className="p-2"
                 >
                   <FaFolder className="me-1" />
-                  All ({caseDocumentsData?.count ?? caseDocuments.length})
+                  All ({allCount})
                 </Button>
-                {FILE_TYPES.map((ft) => (
-                  <Button
-                    key={ft.value}
-                    color={
-                      activeTab === ft.value ? "primary" : "outline-primary"
-                    }
-                    size="sm"
-                    onClick={() => setActiveTab(ft.value)}
-                    title={ft.label}
-                    className="p-2"
-                  >
-                    <FaFolder className="me-1" />
-                    {ft.label} (
-                    {
-                      caseDocuments.filter((d) => d.file_type === ft.value)
-                        .length
-                    }
-                    )
-                  </Button>
-                ))}
+
+                {FILE_TYPES.map((ft) => {
+                  const count =
+                    fileCountMap.get(ft.value) ??
+                    caseDocuments.filter((d) => d.file_type === ft.value)
+                      .length;
+                  return (
+                    <Button
+                      key={ft.value}
+                      color={
+                        activeTab === ft.value ? "primary" : "outline-primary"
+                      }
+                      size="sm"
+                      onClick={() => setActiveTab(ft.value)}
+                      title={ft.label}
+                      className="p-2"
+                    >
+                      <FaFolder className="me-1" />
+                      {ft.label} ({count})
+                    </Button>
+                  );
+                })}
               </div>
             </Col>
           </Row>
