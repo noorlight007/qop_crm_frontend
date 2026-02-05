@@ -13,13 +13,16 @@ const FeeOutTable = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState<any | null>(null);
 
+  const [page, setPage] = useState<number>(1);
   const { data: feesOutDetails, isLoading } = useGetFeesOutDetailsQuery({
     case_alias: casealias,
+    page,
   });
 
   useEffect(() => {
-    if (feesOutDetails?.length > 0) {
-      const formattedFees = feesOutDetails.map((fee: any, index: number) => ({
+    const results = feesOutDetails?.results ?? [];
+    if (results.length > 0) {
+      const formattedFees = results.map((fee: any, index: number) => ({
         alias: fee.alias || "",
         index: index,
         feeInFeeOutId: fee.case?.alias || "",
@@ -33,24 +36,17 @@ const FeeOutTable = () => {
         feeDate: fee.date_paid_out || "",
       }));
       setFeesOut(formattedFees);
+    } else {
+      setFeesOut([]);
     }
   }, [feesOutDetails]);
 
-  const [feesOut, setFeesOut] = useState([
-    {
-      alias: "",
-      index: 0,
-      feeInFeeOutId: "",
-      caseType: "",
-      propertyName: "List_Fees_Out",
-      paymentLink: "",
-      fee: "",
-      feeType: "",
-      method: "",
-      notes: "",
-      feeDate: "",
-    },
-  ]);
+  const [feesOut, setFeesOut] = useState<any[]>([]);
+
+  const totalCount = feesOutDetails?.count ?? 0;
+  const pageSize = feesOutDetails?.results?.length ?? feesOut.length ?? 0;
+  const totalPages =
+    pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
     { title: "Unknown", value: "UNKNOWN" },
@@ -73,7 +69,7 @@ const FeeOutTable = () => {
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const handleAddFee = (newFee: any) => {
-    setFeesOut([...feesOut, { ...newFee, index: feesOut.length }]);
+    setPage(1);
     toggleModal();
   };
   const handleFeeDelete = (fee: any) => {
@@ -141,14 +137,14 @@ const FeeOutTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {feesOutDetails?.length === 0 ? (
+                {feesOut.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-4">
                       No fees available
                     </td>
                   </tr>
                 ) : (
-                  feesOut?.map((feeOut, index) => (
+                  feesOut.map((feeOut, index) => (
                     <tr
                       key={feeOut.alias || index}
                       className="feeTableRow feeRowOut"
@@ -164,8 +160,9 @@ const FeeOutTable = () => {
                           ?.title || "-"}
                       </td>
                       <td className="text-center align-middle">
-                        {methods.find((method) => method.value === feeOut.method)
-                          ?.title || "-"}
+                        {methods.find(
+                          (method) => method.value === feeOut.method,
+                        )?.title || "-"}
                       </td>
                       <td className="text-center align-middle">
                         {feeOut.notes || "-"}
@@ -192,6 +189,39 @@ const FeeOutTable = () => {
           </div>
         </Col>
       </Row>
+
+      <Row className="mt-3">
+        <Col
+          sm={12}
+          className="d-flex justify-content-between align-items-center"
+        >
+          <div>
+            Page {page} of {totalPages} (Total {totalCount})
+          </div>
+          <div>
+            <Button
+              color="secondary"
+              size="sm"
+              outline
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || isLoading}
+            >
+              <i className="fa fa-chevron-left"></i> Prev
+            </Button>
+            <Button
+              color="secondary"
+              size="sm"
+              outline
+              className="ms-2"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages || isLoading}
+            >
+              Next <i className="fa fa-chevron-right"></i>
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
       {/* Delete Fee Modal can be added here */}
       <DeleteFeeModal
         isOpen={isDeleteModalOpen}
