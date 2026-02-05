@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgUserListQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgUserListApi";
+import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgClientInfo } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";

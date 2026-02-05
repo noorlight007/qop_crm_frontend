@@ -1,8 +1,8 @@
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
-} from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
-import { SingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
+} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import LoadingSpinner from "@/app/loading";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

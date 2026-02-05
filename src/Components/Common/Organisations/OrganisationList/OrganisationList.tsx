@@ -1,5 +1,5 @@
-import { useGetOrganisationListQuery } from "@/Redux/Reducers/Network/Director/Organisations/OrganisationListApi";
-import { SingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
+import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
+import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { getOrganisationUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Image from "next/image";

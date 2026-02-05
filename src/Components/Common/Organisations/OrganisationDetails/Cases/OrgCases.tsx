@@ -3,7 +3,7 @@ import {
   insuranceCaseStages,
   mortgageStages,
 } from "@/Data/Common/FilterChoiceFields";
-import { useGetOrgCasesQuery } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/OrgCasesApi";
+import { useGetOrgCasesQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

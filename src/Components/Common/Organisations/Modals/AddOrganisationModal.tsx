@@ -1,9 +1,9 @@
-import { useAddOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/OrganisationListApi";
+import { useAddOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
 import {
   AddOrganisationModalProps,
   AddOrganisationProps,
   UserDataProps,
-} from "@/Types/Network/Director/OrganisationsTypes";
+} from "@/Types/Common/Organisations/OrganisationsTypes";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {

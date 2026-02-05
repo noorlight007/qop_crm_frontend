@@ -1,4 +1,4 @@
-import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
+import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import {
   Card,
   CardBody,

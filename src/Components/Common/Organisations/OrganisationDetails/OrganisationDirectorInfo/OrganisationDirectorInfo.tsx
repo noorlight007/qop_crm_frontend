@@ -1,5 +1,5 @@
-import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
-import { FetchSingleOrganisationProps } from "@/Types/Network/Director/OrganisationsTypes";
+import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useRef, useState } from "react";

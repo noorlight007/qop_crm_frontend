@@ -1,5 +1,5 @@
-import { useDeleteOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
-import { DeleteOrganisationModalProps } from "@/Types/Network/Director/OrganisationsTypes";
+import { useDeleteOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import { DeleteOrganisationModalProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { useRouter } from "next/navigation";
 
 import { toast } from "react-toastify";
