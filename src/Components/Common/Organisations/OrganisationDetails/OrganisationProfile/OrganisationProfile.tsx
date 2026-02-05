@@ -167,7 +167,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     {singleOrgInfo?.organization?.subdomain && (
                       <Badge className="bg-warning">
                         <FaGlobe className="me-1" />
-                        {singleOrgInfo?.organization?.subdomain}
+                        {`singleOrgInfo?.organization?.subdomain`}
                       </Badge>
                     )}
                   </div>
