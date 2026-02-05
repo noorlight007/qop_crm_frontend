@@ -26,6 +26,12 @@ export interface NetworkFormData {
   };
 }
 
+export interface NetworkDetails {
+  slug: any;
+  networkData: any;
+  isLoading: boolean;
+}
+
 export interface AddNetworkModalProps{
   isOpen: boolean;
   toggle: () => void;
