@@ -213,7 +213,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -363,7 +363,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     No clients available.
                   </td>
                 </tr>

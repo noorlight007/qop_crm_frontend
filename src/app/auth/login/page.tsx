@@ -14,10 +14,9 @@ const UserLogin = () => {
 
     if (session.user?.user_type === "ADMIN") {
       router.push("/admin/dashboard");
-    } else if (
-      session.user?.user_type === "NETWORK_DIRECTOR" ||
-      session.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
-    ) {
+    } else if (session.user?.user_type === "NETWORK_DIRECTOR") {
+      router.push("/network/director/dashboard");
+    } else if (session.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT") {
       router.push("/network/director/dashboard");
     } else if (session.user?.user_type === "NETWORK_ADVISER") {
       router.push("/network/adviser/dashboard");

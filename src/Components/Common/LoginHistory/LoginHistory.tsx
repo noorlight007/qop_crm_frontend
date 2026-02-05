@@ -73,7 +73,7 @@ const LoginHistory: React.FC = () => {
   const currentResults = loginHistoryData?.results || [];
   const hasNextPage = !!loginHistoryData?.next;
   const hasPreviousPage = !!loginHistoryData?.previous;
-  const pageSize = currentResults.length || 12;
+  const pageSize = 12;
   const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   if (isLoading) {

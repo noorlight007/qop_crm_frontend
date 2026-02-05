@@ -195,6 +195,84 @@ const NetworkDirectorMenu: MenuItem[] = [
     ],
   },
 ];
+//NetworkNetworkComplianceMenuMenu
+const NetworkComplianceMenu: MenuItem[] = [
+  {
+    title: "Director",
+    lanClass: "lan-1",
+    type: "group",
+    Items: [
+      {
+        title: "Dashboard",
+        icon: "Chart",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/dashboard",
+      },
+      {
+        title: "Cases",
+        icon: "Paper",
+        type: "sub",
+        children: [
+          {
+            path: "/network/director/leads",
+            title: "Leads",
+            type: "link",
+          },
+          {
+            path: "/network/director/cases",
+            title: "All Cases",
+            type: "link",
+          },
+          {
+            path: "/network/director/activecases",
+            title: "Active Cases",
+            type: "link",
+          },
+          {
+            path: "/network/director/clients",
+            title: "Clients",
+            type: "link",
+          },
+          {
+            path: "/network/director/reports",
+            title: "Reports",
+            type: "link",
+          },
+        ],
+      },
+      {
+        title: "Users",
+        icon: <FaUsers />,
+        type: "sub",
+        children: [
+          {
+            path: "/network/director/organisations",
+            title: "Organisations",
+            type: "link",
+          },
+          {
+            path: "/network/director/advisers",
+            title: "Registered Advisers",
+            type: "link",
+          },
+          {
+            path: "/network/director/advisers-status",
+            title: "Advisers Status",
+            type: "link",
+          },
+        ],
+      },
+      {
+        title: "Support Ticket",
+        icon: "Ticket",
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/support-ticket",
+      },
+    ],
+  },
+];
 
 // Network Adviser Menu
 const NetworkAdviserMenu: MenuItem[] = [
@@ -573,25 +651,6 @@ export {
   OrganisationDirectorMenu,
 };
 
-export const removeComplianceAssistants = (menu: MenuItem[]): MenuItem[] => {
-  // Return a deep-copied menu with any item or child titled 'Compliance Assistants' removed
-  return menu.map((group) => {
-    const newGroup: MenuItem = { ...group };
-    if (Array.isArray(newGroup.Items)) {
-      newGroup.Items = newGroup.Items.map((item) => {
-        const newItem: any = { ...item };
-        if (Array.isArray((item as any).children)) {
-          newItem.children = (item as any).children!.filter(
-            (child: any) => child.title !== "Compliance Assistants",
-          );
-        }
-        return newItem;
-      }).filter((item) => item.title !== "Compliance Assistants");
-    }
-    return newGroup;
-  });
-};
-
 export const getMenuByRole = (role?: string): MenuItem[] => {
   switch (role) {
     case "ADMIN":
@@ -599,7 +658,7 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
     case "NETWORK_DIRECTOR":
       return NetworkDirectorMenu;
     case "NETWORK_COMPLIANCE_ASSISTANT":
-      return removeComplianceAssistants(NetworkDirectorMenu);
+      return NetworkComplianceMenu;
     case "NETWORK_ADVISER":
       return NetworkAdviserMenu;
     case "ORGANISATION_DIRECTOR":
