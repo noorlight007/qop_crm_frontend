@@ -243,6 +243,13 @@ const NetworkAdviserMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        path: "/network/adviser/organisations",
+        type: "link",
+        lanClass: "lan-3",
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",

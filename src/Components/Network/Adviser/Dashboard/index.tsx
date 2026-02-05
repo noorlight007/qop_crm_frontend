@@ -6,7 +6,7 @@ import {
   useGetAdviserDashboardSummaryDataQuery,
 } from "@/Redux/Reducers/Common/CommonAdviserDashboard/CommonAdviserDashboardApi";
 import { Col, Container, Row } from "reactstrap";
-import OrganisationList from "../../Director/Users/Organisations/OrganisationList/OrganisationList";
+import OrganisationList from "../Organisations/OrganisationList/OrganisationList";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
