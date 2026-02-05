@@ -14,7 +14,7 @@ const Footer = () => {
           </Col>
           <Col md="6">
             <p className="float-end mb-0">
-              Beta Version 1.0.0
+              Version {process.env.NEXT_PUBLIC_MANUAL_VERSION} - Made with{" "}
               <SVG className="svg-color footer-icon" iconId="heart" />
             </p>
           </Col>
