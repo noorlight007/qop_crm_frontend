@@ -6,7 +6,7 @@ import { Network } from "@/Types/Admin/Networks/NetworkType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaCalendarAlt,
   FaCamera,
@@ -26,30 +26,33 @@ import {
   Container,
   Input,
   InputGroup,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
   PopoverBody,
   Row,
   Spinner,
   UncontrolledPopover,
 } from "reactstrap";
 import AddNetworkModal from "./Modals/AddNetworkModal";
-import DeleteNetworkModal from "./Modals/DeleteNetworkModal";
-import UpdateNetworkModal from "./Modals/UpdateNetworkModal";
 
-const NetworkList: React.FC = () => {
+type NetworkListProps = {
+  maxItems?: number;
+};
+
+const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isAddNetworkModalOpen, setIsAddNetworkModalOpen] = useState(false);
-  const [isEditNetworkModalOpen, setIsEditNetworkModalOpen] = useState(false);
-  const [networkToEdit, setNetworkToEdit] = useState<Network | null>(null);
-  const [isDeleteNetworkModalOpen, setIsDeleteNetworkModalOpen] =
-    useState(false);
-  const [networkSlugToDelete, setNetworkSlugToDelete] = useState<string | null>(
-    null,
-  );
 
   // LOGIC FIX: Track which specific network is being updated
   const [uploadingSlug, setUploadingSlug] = useState<string | null>(null);
 
-  const { data: getNetworkList, isLoading } = useGetNetworkListQuery({});
+  const { data: getNetworkList, isLoading } = useGetNetworkListQuery({
+    search: searchQuery,
+    page: currentPage,
+    page_size: maxItems,
+  });
   console.log("Network List Data:", getNetworkList);
   const [updateNetwork, { isLoading: updateNetworkLoading }] =
     useUpdateNetworkMutation();
@@ -58,32 +61,8 @@ const NetworkList: React.FC = () => {
 
   const toggleAddNetworkModal = () =>
     setIsAddNetworkModalOpen(!isAddNetworkModalOpen);
-  const toggleEditNetworkModal = (network: Network | null = null) => {
-    setNetworkToEdit(network);
-    setIsEditNetworkModalOpen(!isEditNetworkModalOpen);
-  };
-
-  // Called by UpdateNetworkModal when user submits changes
-  const handleEditNetworkSave = async (network_slug: string, payload: any) => {
-    try {
-      await updateNetwork({ network_slug, payload }).unwrap();
-      toast.success("Network updated");
-      setIsEditNetworkModalOpen(false);
-      setNetworkToEdit(null);
-    } catch (err: any) {
-      const msg = err?.data?.detail || err?.message || "Update failed";
-      toast.error(msg);
-      throw err; // rethrow so modal can display field errors if needed
-    }
-  };
-  const toggleDeleteNetworkModal = () =>
-    setIsDeleteNetworkModalOpen(!isDeleteNetworkModalOpen);
 
   const openAddNetworkModal = () => toggleAddNetworkModal();
-  const openDeleteNetworkModal = (network_slug: string) => {
-    setNetworkSlugToDelete(network_slug);
-    toggleDeleteNetworkModal();
-  };
 
   // LOGIC FIX: Handle the camera click for a specific slug
   const handleProfileImageUpload = (slug: string) => {
@@ -124,6 +103,21 @@ const NetworkList: React.FC = () => {
     }
   };
 
+  const itemsPerPage = maxItems ?? (getNetworkList as any)?.page_size ?? 12;
+  // Ensure we only render up to `itemsPerPage` items even if the API returned more
+  const currentNetworks = getNetworkList?.results?.slice(0, itemsPerPage) ?? [];
+  const totalCount = (getNetworkList as any)?.count ?? currentNetworks.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
+
+  useEffect(() => {
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages);
+      }
+      if (currentPage < 1) {
+        setCurrentPage(1);
+      }
+    }, [totalPages, currentPage]);
+
   return (
     <div>
       <Container fluid>
@@ -153,7 +147,10 @@ const NetworkList: React.FC = () => {
                       type="text"
                       placeholder="Search Organisation... "
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                      }}
                       style={{ padding: "10px 10px 10px 25px" }}
                       className="rounded-end-1"
                     />
@@ -243,12 +240,14 @@ const NetworkList: React.FC = () => {
                             className="bg-primary bg-gradient text-center rounded d-flex align-items-center justify-content-center"
                             style={{ width: "160px", height: "80px" }}
                           >
-                            <Link className="text_decoration_hover" href={`/admin/networks/${network.slug}`}>
-                            <h3 className="text-white fw-bold mb-0">
-                              {network.name.charAt(0).toUpperCase()}
-                            </h3>
+                            <Link
+                              className="text_decoration_hover"
+                              href={`/admin/networks/${network.slug}`}
+                            >
+                              <h3 className="text-white fw-bold mb-0">
+                                {network.name.charAt(0).toUpperCase()}
+                              </h3>
                             </Link>
-                            
                           </div>
                         )}
 
@@ -310,33 +309,6 @@ const NetworkList: React.FC = () => {
                         Created {formatDateAndTime(network.created_at)}
                       </small>
                     </div>
-
-                    {/* <Row className="g-2">
-                      <Col xs="6">
-                        <Button
-                          color="primary"
-                          outline
-                          size="sm"
-                          block
-                          className="fw-semibold"
-                          onClick={() => toggleEditNetworkModal(network)}
-                        >
-                          Edit
-                        </Button>
-                      </Col>
-                      <Col xs="6">
-                        <Button
-                          color="secondary"
-                          outline
-                          size="sm"
-                          block
-                          className="fw-semibold"
-                          onClick={() => openDeleteNetworkModal(network.slug)}
-                        >
-                          Delete
-                        </Button>
-                      </Col>
-                    </Row> */}
                   </CardBody>
                 </Card>
               </Col>
@@ -344,21 +316,115 @@ const NetworkList: React.FC = () => {
           )}
         </Row>
 
+        <Row>
+              <div className="d-flex justify-content-between align-items-center p-3">
+                <div className="px-2">
+                  <p className="text-primary">
+                    Showing{" "}
+                    {totalCount === 0
+                      ? "0"
+                      : (currentPage - 1) * itemsPerPage + 1}{" "}
+                    to{" "}
+                    {currentNetworks.length === 0
+                      ? 0
+                      : (currentPage - 1) * itemsPerPage +
+                        currentNetworks.length}{" "}
+                    of {totalCount} Networks
+                  </p>
+                </div>
+                <Pagination className="d-flex justify-content-end p-2">
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink first onClick={() => setCurrentPage(1)} />
+                  </PaginationItem>
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink
+                      previous
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    />
+                  </PaginationItem>
+
+                  {totalPages <= 7 ? (
+                    Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (pageNumber) => (
+                        <PaginationItem
+                          key={pageNumber}
+                          active={pageNumber === currentPage}
+                        >
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNumber)}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ),
+                    )
+                  ) : (
+                    <>
+                      <PaginationItem active={currentPage === 1}>
+                        <PaginationLink onClick={() => setCurrentPage(1)}>
+                          1
+                        </PaginationLink>
+                      </PaginationItem>
+
+                      {currentPage > 3 && (
+                        <PaginationItem disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      )}
+
+                      {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                        .filter(
+                          (pageNumber) =>
+                            pageNumber > 1 && pageNumber < totalPages,
+                        )
+                        .map((pageNumber) => (
+                          <PaginationItem
+                            key={pageNumber}
+                            active={pageNumber === currentPage}
+                          >
+                            <PaginationLink
+                              onClick={() => setCurrentPage(pageNumber)}
+                            >
+                              {pageNumber}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+
+                      {currentPage < totalPages - 2 && (
+                        <PaginationItem disabled>
+                          <PaginationLink>...</PaginationLink>
+                        </PaginationItem>
+                      )}
+
+                      <PaginationItem active={currentPage === totalPages}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(totalPages)}
+                        >
+                          {totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    </>
+                  )}
+
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      next
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    />
+                  </PaginationItem>
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      last
+                      onClick={() => setCurrentPage(totalPages)}
+                    />
+                  </PaginationItem>
+                </Pagination>
+              </div>
+            </Row>
+
         <AddNetworkModal
           isOpen={isAddNetworkModalOpen}
           toggle={toggleAddNetworkModal}
-        />
-
-        <UpdateNetworkModal
-          isOpen={isEditNetworkModalOpen}
-          toggle={toggleEditNetworkModal}
-          network={networkToEdit}
-          onSave={handleEditNetworkSave}
-        />
-        <DeleteNetworkModal
-          isOpen={isDeleteNetworkModalOpen}
-          toggle={toggleDeleteNetworkModal}
-          network_slug={networkSlugToDelete}
         />
       </Container>
     </div>
