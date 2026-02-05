@@ -1,4 +1,3 @@
-import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
@@ -79,12 +78,6 @@ const OrganisationDetails: React.FC = () => {
 
   return (
     <>
-      <Breadcrumbs
-        title="Organisation Status"
-        subTitle="Welcome! Continue your journey."
-        parent="Users"
-        child="Organisation"
-      />
       <Container fluid>
         <Row>
           <Col lg="6" md="12">

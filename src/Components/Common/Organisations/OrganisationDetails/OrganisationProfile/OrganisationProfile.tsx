@@ -165,9 +165,9 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       </Badge>
                     )}
                     {singleOrgInfo?.organization?.subdomain && (
-                      <Badge className="bg-warning">
+                      <Badge className="bg-warning text-truncate">
                         <FaGlobe className="me-1" />
-                        {`singleOrgInfo?.organization?.subdomain`}
+                        {`${"https://"}${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
                       </Badge>
                     )}
                   </div>
