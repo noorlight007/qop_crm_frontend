@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import OrganisationList from "./OrganisationList/OrganisationList";
+import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 
 const OrganisationsContainer: React.FC = () => {
   return (

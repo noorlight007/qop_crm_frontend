@@ -321,11 +321,26 @@ const NetworkAdviserMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Organisations",
-        icon: <FaBriefcase />,
-        path: "/network/adviser/organisations",
-        type: "link",
-        lanClass: "lan-3",
+        title: "Users",
+        icon: <FaUsers />,
+        type: "sub",
+        children: [
+          {
+            title: "Organisations",
+            path: "/network/adviser/organisations",
+            type: "link",
+          },
+          // {
+          //   path: "/network/adviser/marketinghub",
+          //   title: "Marketing Hub",
+          //   type: "link",
+          // },
+          // {
+          //   path: "/network/adviser/tasksandreminders",
+          //   title: "Tasks & Reminders",
+          //   type: "link",
+          // },
+        ],
       },
       {
         title: "Support Ticket",
@@ -334,23 +349,6 @@ const NetworkAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/network/adviser/support-ticket",
       },
-      // {
-      //   title: "Users",
-      //   icon: "Profile",
-      //   type: "sub",
-      //   children: [
-      //     {
-      //       path: "/network/adviser/marketinghub",
-      //       title: "Marketing Hub",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/adviser/tasksandreminders",
-      //       title: "Tasks & Reminders",
-      //       type: "link",
-      //     },
-      //   ],
-      // },
     ],
   },
 ];
