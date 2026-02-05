@@ -46,6 +46,18 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
           </strong>{" "}
           network?
         </p>
+
+        <div className="border border-danger rounded p-3 bg-light">
+          <p className="mb-2 fw-semibold text-danger">
+            This action is irreversible.
+          </p>
+          <small className="text-muted">
+            Deleting this network will permanently remove all associated
+            data, including organisations, cases, leads, clients, advisers, admins, joint
+            applicants, appearance preferences, settings, profile information,
+            and all historical records. This data cannot be restored.
+          </small>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle} disabled={isLoading}>
