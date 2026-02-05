@@ -13,13 +13,16 @@ const FeeInTable = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFee, setSelectedFee] = useState<any | null>(null);
 
+  const [page, setPage] = useState<number>(1);
   const { data: feesInDetails, isLoading } = useGetFeesInDetailsQuery({
     case_alias: casealias,
+    page,
   });
 
   useEffect(() => {
-    if (feesInDetails?.length > 0) {
-      const formattedFees = feesInDetails.map((fee: any, index: number) => ({
+    const results = feesInDetails?.results ?? [];
+    if (results.length > 0) {
+      const formattedFees = results.map((fee: any, index: number) => ({
         alias: fee.alias || "",
         index: index,
         feeInFeeOutId: fee.case?.alias || "",
@@ -33,24 +36,17 @@ const FeeInTable = () => {
         feeDate: fee.date_received || "",
       }));
       setFeesIn(formattedFees);
+    } else {
+      setFeesIn([]);
     }
   }, [feesInDetails]);
 
-  const [feesIn, setFeesIn] = useState([
-    {
-      alias: "",
-      index: 0,
-      feeInFeeOutId: "",
-      caseType: "",
-      propertyName: "List_Fees_In",
-      paymentLink: "",
-      fee: "",
-      feeType: "",
-      method: "",
-      notes: "",
-      feeDate: "",
-    },
-  ]);
+  const [feesIn, setFeesIn] = useState<any[]>([]);
+
+  const totalCount = feesInDetails?.count ?? 0;
+  const pageSize = feesInDetails?.results?.length ?? feesIn.length ?? 0;
+  const totalPages =
+    pageSize > 0 ? Math.max(1, Math.ceil(totalCount / pageSize)) : 1;
 
   const feeTypes = [
     { title: "Unknown", value: "UNKNOWN" },
@@ -75,7 +71,8 @@ const FeeInTable = () => {
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const handleAddFee = (newFee: any) => {
-    setFeesIn([...feesIn, { ...newFee, index: feesIn.length }]);
+    // rely on server-side fetch after mutation; show first page where new entries usually appear
+    setPage(1);
     toggleModal();
   };
   const handleFeeDelete = (fee: any) => {
@@ -144,14 +141,14 @@ const FeeInTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {feesInDetails?.length === 0 ? (
+                {feesIn.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-4">
                       No fees available
                     </td>
                   </tr>
                 ) : (
-                  feesIn?.map((feeIn, index) => (
+                  feesIn.map((feeIn, index) => (
                     <tr
                       key={feeIn.alias || index}
                       className="feeTableRow feeRowIn"
@@ -195,6 +192,39 @@ const FeeInTable = () => {
           </div>
         </Col>
       </Row>
+
+      <Row className="mt-3">
+        <Col
+          sm={12}
+          className="d-flex justify-content-between align-items-center"
+        >
+          <div>
+            Page {page} of {totalPages} (Total {totalCount})
+          </div>
+          <div>
+            <Button
+              color="secondary"
+              size="sm"
+              outline
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || isLoading}
+            >
+              <i className="fa fa-chevron-left"></i> Prev
+            </Button>
+            <Button
+              color="secondary"
+              size="sm"
+              outline
+              className="ms-2"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages || isLoading}
+            >
+              Next <i className="fa fa-chevron-right"></i>
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
       {/* Delete Fee Modal can be added here */}
       <DeleteFeeModal
         isOpen={isDeleteModalOpen}

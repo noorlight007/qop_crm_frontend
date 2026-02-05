@@ -28,7 +28,7 @@ import DeleteLeadModal from "./Modals/DeleteLeadModal";
 import UpdateLeadModal from "./Modals/UpdateLeadModal";
 import ViewLeadModal from "./Modals/ViewLeadModal";
 
-const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
+const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 12 }) => {
   const { data: session } = useSession();
   const [leads, setLeads] = useState<LeadsInfo[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,7 +43,6 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 10 }) => {
   // rtk hooks - pass pagination and debounced search params to the query
   const { data: leadData, isLoading } = useGetLeadDetailsQuery({
     page: currentPage,
-    page_size: leadsPerPage,
     search: debouncedSearch || undefined,
   });
 

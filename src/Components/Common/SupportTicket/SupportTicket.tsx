@@ -20,7 +20,7 @@ import {
   FaSearch,
   FaSpinner,
 } from "react-icons/fa";
-import { TbCheck, TbCirclePlus, TbExternalLink } from "react-icons/tb";
+import { TbCheck, TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -56,7 +56,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [casesPerPage] = useState(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -68,6 +67,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const defaultFilters = {
     ticket_type: "",
     status: "",
+    priority: "",
     network: "",
     organisation: "",
     is_removed: initialIsRemoved ?? "",
@@ -94,9 +94,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
       params: {
         search: debouncedSearch || undefined,
         page: currentPage,
-        page_size: casesPerPage,
         ticket_type: filters.ticket_type || undefined,
         status: filters.status || undefined,
+        priority: filters.priority || undefined,
         network: filters.network || undefined,
         organisation: filters.organisation || undefined,
         is_removed: filters.is_removed || undefined,
@@ -112,7 +112,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
-    useGetNetworkListQuery({});
+    useGetNetworkListQuery(undefined);
   const { data: orgList, isLoading: orgListLoading } =
     useGetOrganisationListQuery(
       {
@@ -143,7 +143,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const totalCount =
     isFetching || isError ? 0 : (supportTicketData?.count ?? 0);
 
-  const ticketsPerPage = 10;
+  const ticketsPerPage = 12;
   const totalPages = Math.ceil(totalCount / ticketsPerPage);
 
   const openUpdateModal = (ticket: SupportTicketFormData) => {
@@ -341,6 +341,24 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       <option value="RESOLVED">Resolved</option>
                     </Input>
                   </Col>
+                  <Col>
+                    <Label>Select Ticket Priority</Label>
+                    <Input
+                      type="select"
+                      id="ticketPriorityFilter"
+                      className="py-1"
+                      value={filters.priority}
+                      onChange={(e) =>
+                        handleFilterChange("priority", e.target.value)
+                      }
+                    >
+                      <option value="">All Priorities</option>{" "}
+                      <option value="URGENT">Urgent</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="NORMAL">Normal</option>
+                      <option value="WHEN_POSSIBLE">When Possible</option>
+                    </Input>
+                  </Col>
                   {userType === "ADMIN" && (
                     <>
                       <Col>
@@ -359,7 +377,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           }}
                         >
                           <option value="">All Networks</option>
-                          {networkList?.map((network: any) => (
+                          {(Array.isArray(networkList)
+                            ? networkList
+                            : (networkList?.results ?? [])
+                          )?.map((network: any) => (
                             <option
                               key={network.subdomain}
                               value={network.subdomain}
@@ -390,7 +411,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 ? "Loading organisations..."
                                 : "All Organisations"}
                           </option>
-                          {orgList?.map((org: any, index: any) => (
+                          {(Array.isArray(orgList)
+                            ? orgList
+                            : (orgList?.results ?? [])
+                          )?.map((org: any, index: any) => (
                             <option
                               key={org.subdomain || `${org.name}-${index}`}
                               value={org.subdomain || org.name}
@@ -451,7 +475,14 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                   ) : tickets.length > 0 ? (
                     tickets.map((ticket: any) => (
                       <tr key={ticket.alias} className="text-center">
-                        <td className="text-truncate">{ticket.ticket_id}</td>
+                        <td className="text-truncate">
+                          <Link
+                            href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
+                            className="text_decoration_hover"
+                          >
+                            {ticket.ticket_id}
+                          </Link>
+                        </td>
                         <td>
                           <Badge
                             color={
@@ -632,17 +663,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
                         <td>
                           <div className="d-flex justify-content-center gap-2 align-items-center">
-                            <Link
-                              href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
-                            >
-                              <Button
-                                color="primary"
-                                size="sm"
-                                title="View Ticket"
-                              >
-                                <TbExternalLink size={18} />
-                              </Button>
-                            </Link>
                             <Button
                               color="secondary"
                               size="sm"

@@ -199,23 +199,27 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 <Col md="6" className="mb-3">
                   <div className="d-flex align-items-start gap-3">
                     <div
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 d-flex align-items-center justify-content-center"
                       style={{
-                        color: "var(--primary-color)",
-                        marginTop: "2px",
+                        width: 36,
+                        height: 36,
+                        background: "var(--primary-color)",
+                        color: "#fff",
+                        borderRadius: 6,
+                        marginTop: 2,
                       }}
                     >
-                      <FaPhoneAlt
-                        className="bg-primary p-1 rounded-1"
-                        size={25}
-                      />
+                      <FaPhoneAlt size={18} />
                     </div>
                     <div className="flex-grow-1">
                       <p className="small text-muted mb-1">Phone</p>
                       {singleOrgInfo?.organization?.primary_mobile ? (
                         <span
-                          className="fw-500 text-dark text-decoration-none"
-                          style={{ transition: "color 0.2s" }}
+                          className="fw-500 text-dark text-decoration-none text-break"
+                          style={{
+                            transition: "color 0.2s",
+                            wordBreak: "break-word",
+                          }}
                           onMouseEnter={(e) =>
                             (e.currentTarget.style.color =
                               "var(--primary-color)")
@@ -235,20 +239,27 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 <Col md="6" className="mb-3">
                   <div className="d-flex align-items-start gap-3">
                     <div
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 d-flex align-items-center justify-content-center"
                       style={{
-                        color: "var(--primary-color)",
-                        marginTop: "2px",
+                        width: 36,
+                        height: 36,
+                        background: "var(--primary-color)",
+                        color: "#fff",
+                        borderRadius: 6,
+                        marginTop: 2,
                       }}
                     >
-                      <Mail className="bg-primary p-1 rounded-1" size={25} />
+                      <Mail size={18} />
                     </div>
                     <div className="flex-grow-1">
                       <p className="small text-muted mb-1">Email</p>
                       {singleOrgInfo?.organization?.email ? (
                         <span
-                          className="fw-500 text-dark text-decoration-none"
-                          style={{ transition: "color 0.2s" }}
+                          className="fw-500 text-dark text-decoration-none text-break"
+                          style={{
+                            transition: "color 0.2s",
+                            wordBreak: "break-word",
+                          }}
                           onMouseEnter={(e) =>
                             (e.currentTarget.style.color =
                               "var(--primary-color)")

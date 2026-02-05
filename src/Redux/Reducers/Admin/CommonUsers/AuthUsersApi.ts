@@ -3,10 +3,9 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const AuthUsersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getNetworkList: builder.query({
-      query: (params) => ({
+      query: () => ({
         url: "/filters/networks/",
         method: "GET",
-        params,
       }),
       providesTags: ["AuthUsers"],
     }),

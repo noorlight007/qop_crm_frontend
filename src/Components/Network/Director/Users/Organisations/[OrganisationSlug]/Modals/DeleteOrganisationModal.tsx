@@ -51,10 +51,9 @@ const DeleteOrganisationModal: React.FC<DeleteOrganisationModalProps> = ({
           </p>
           <small className="text-muted">
             Deleting this organisation will permanently remove all associated
-            data, including but not limited to cases, leads, clients, advisers,
-            admins, joint applicants, appearance preferences, settings, profile
-            information, and all historical records. This data cannot be
-            restored.
+            data, including cases, leads, clients, advisers, admins, joint
+            applicants, appearance preferences, settings, profile information,
+            and all historical records. This data cannot be restored.
           </small>
         </div>
       </ModalBody>

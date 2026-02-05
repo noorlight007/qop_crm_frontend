@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -22,7 +21,6 @@ import {
   Spinner,
   UncontrolledPopover,
 } from "reactstrap";
-import AddOrganisationModal from "../Modals/AddOrganisationModal";
 
 type OrganisationListProps = {
   maxItems?: number;
@@ -140,14 +138,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
               md="3"
               xs="12"
               className="text-md-end text-center mt-2 mt-md-0"
-            >
-              {session?.user.user_type === "NETWORK_DIRECTOR" && (
-                <Button color="primary" onClick={toggleModal}>
-                  <TbCirclePlus size={18} className="me-1" />
-                  Add Organisation
-                </Button>
-              )}
-            </Col>
+            />
           </Row>
           <Row>
             {isLoading ? (
@@ -362,11 +353,6 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
               </div>
             </Row>
           )}
-          {/* Add Organisation Modal */}
-          <AddOrganisationModal
-            isOpen={isModalOpen}
-            toggleModal={toggleModal}
-          />
         </Col>
       </Row>
     </Card>

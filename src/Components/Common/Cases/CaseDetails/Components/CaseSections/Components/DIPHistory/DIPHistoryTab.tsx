@@ -27,6 +27,8 @@ const DIPHistoryTab: React.FC = () => {
     case_alias: casealias,
   });
 
+  const histories = dipHistories?.results ?? [];
+
   const toggle = (tab: string) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -37,10 +39,10 @@ const DIPHistoryTab: React.FC = () => {
 
   return (
     <div className="p-1">
-      {dipHistories.length > 0 ? (
+      {histories.length > 0 ? (
         <>
           <Nav className="nav-warning justify-content-center" pills>
-            {dipHistories.map((_: any, index: number) => (
+            {histories.map((_: any, index: number) => (
               <NavItem key={index}>
                 <NavLink
                   className={`${
@@ -56,7 +58,7 @@ const DIPHistoryTab: React.FC = () => {
           </Nav>
 
           <TabContent activeTab={activeTab}>
-            {dipHistories.map((dipHistory: DIPHistoryProps, index: number) => (
+            {histories.map((dipHistory: DIPHistoryProps, index: number) => (
               <TabPane key={index} tabId={String(index + 1)}>
                 <div className="p-1">
                   <DIPHistoryContent dipData={dipHistory} />
@@ -73,7 +75,7 @@ const DIPHistoryTab: React.FC = () => {
             onClick={() => setModalIsOpen(true)}
             type="button"
             disabled={
-              session?.user?.user_type === "CLIENT" && dipHistories.length > 0
+              session?.user?.user_type === "CLIENT" && histories.length > 0
             }
           >
             Add New Lender History

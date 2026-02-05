@@ -244,7 +244,7 @@ const SupportTicketDetails: React.FC = () => {
                                   ticketDetails?.status as TicketStatus
                                 ] ?? "dark"
                               }
-                              className="d-flex justify-content-center align-items-center gap-1 px-2 py-2"
+                              className="d-flex justify-content-center align-items-center gap-1"
                               style={{ cursor: "pointer" }}
                             >
                               {
@@ -308,7 +308,7 @@ const SupportTicketDetails: React.FC = () => {
                               ticketDetails?.status as TicketStatus
                             ] ?? "dark"
                           }
-                          className="d-flex justify-content-center align-items-center gap-1 py-2"
+                          className="d-flex justify-content-center align-items-center gap-1"
                         >
                           {statusIconMap[ticketDetails?.status as TicketStatus]}{" "}
                           <span style={{ marginTop: "2.5px" }}>

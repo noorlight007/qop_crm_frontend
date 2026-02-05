@@ -49,7 +49,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [casesPerPage] = useState(10);
+  const [casesPerPage] = useState(12);
   const [filterIcon, setFilterIcon] = useState(false);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
 

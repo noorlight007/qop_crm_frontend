@@ -3,15 +3,15 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const FeesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getFeesInDetails: builder.query({
-      query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/fees/in/`,
+      query: ({ case_alias, page }) => ({
+        url: `/cases/${case_alias}/fees/in/?page=${page ?? 1}`,
         method: "GET",
       }),
       providesTags: ["Fees"],
     }),
     getFeesOutDetails: builder.query({
-      query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/fees/out/`,
+      query: ({ case_alias, page }) => ({
+        url: `/cases/${case_alias}/fees/out/?page=${page ?? 1}`,
         method: "GET",
       }),
       providesTags: ["Fees"],
