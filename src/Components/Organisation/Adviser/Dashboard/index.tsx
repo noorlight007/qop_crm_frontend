@@ -15,7 +15,9 @@ import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationAdviserContainer: React.FC = () => {
   const { data: adviserSummary, isLoading: isSummaryLoading } =
-    useGetAdviserDashboardSummaryDataQuery(undefined);
+    useGetAdviserDashboardSummaryDataQuery(undefined, {
+      refetchOnMountOrArgChange: true,
+    });
   const { data: adviserClients, isLoading: isClientsLoading } =
     useGetAdviserDashboardClientDataQuery(undefined);
   const { data: adviserDocuments, isLoading: isDocumentsLoading } =

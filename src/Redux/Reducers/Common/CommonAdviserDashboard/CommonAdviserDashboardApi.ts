@@ -8,6 +8,7 @@ export const CommonAdviserDashboardApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["AdviserDashboardData"],
+      keepUnusedDataFor: 0,
     }),
     getAdviserDashboardClientData: builder.query({
       query: () => ({
