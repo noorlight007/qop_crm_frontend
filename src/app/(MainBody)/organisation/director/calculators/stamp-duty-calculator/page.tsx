@@ -1,13 +1,13 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const MonthlyPaymentCalculatorPage = () => {
+const StampDutyCalculatorPage = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Organisation/Director/Calculators/MonthlyPaymentCalculator")
+          await import("@/Components/Organisation/Director/Calculators/StampDutyCalculator")
         ).default;
         setClient(() => newClient);
       }
@@ -16,4 +16,4 @@ const MonthlyPaymentCalculatorPage = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default MonthlyPaymentCalculatorPage;
+export default StampDutyCalculatorPage;
