@@ -8,7 +8,7 @@ const DirectorList: React.FC = () => {
         <Container fluid>
           <AuthUsers
             title="Director"
-            roles={["NETWORK_DIRECTOR", "ORGANISATION_DIRECTOR"]}
+            roles={"DIRECTOR"}
           />
         </Container>
       </>
