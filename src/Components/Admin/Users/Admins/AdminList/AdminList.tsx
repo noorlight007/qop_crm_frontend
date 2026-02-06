@@ -6,7 +6,7 @@ const AdminList: React.FC = () => {
     <div>
       <>
         <Container fluid>
-          <AuthUsers title="Admin" roles="ORGANISATION_ADMIN" />
+          <AuthUsers title="Admin" roles="ADMIN" />
         </Container>
       </>
     </div>
