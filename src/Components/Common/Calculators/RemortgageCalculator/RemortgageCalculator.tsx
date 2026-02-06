@@ -343,82 +343,49 @@ const RemortgageCalculator: React.FC = () => {
     results: CalculationResults;
   }) => {
     return (
-      <div className="position-relative bg-white p-4 rounded border h-100">
-        <div
-          className="position-absolute top-0 start-0 translate-middle-y ms-3 px-3 py-2 bg-white border rounded-pill"
-          style={{ marginTop: "1px" }}
-        >
-          <span className="small text-muted">{title}</span>
+      <div className="bg-white p-4 rounded border h-100">
+        <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+          <span className="text-muted small">{title}</span>
         </div>
 
-        <div className="row g-3 pt-3">
-          <div className="col-12">
-            <div className="row align-items-center">
-              <div className="col-6 text-end">
-                <label className="form-label m-0 small text-muted">
-                  Monthly payment
-                </label>
-              </div>
-              <div className="col-6">
-                <input
-                  className="form-control bg-light-dark"
-                  value={calculated ? formatInt(results.monthlyPayment) : ""}
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
+        <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+          <span className="text-muted small">Monthly payment</span>
+          <span
+            className="h5 bg-light-dark p-2 rounded m-0"
+            style={{ minWidth: "150px", textAlign: "right" }}
+          >
+            {calculated ? formatInt(results.monthlyPayment) : "—"}
+          </span>
+        </div>
 
-          <div className="col-12">
-            <div className="row align-items-center">
-              <div className="col-6 text-end">
-                <label className="form-label m-0 small text-muted">
-                  Total paid
-                </label>
-              </div>
-              <div className="col-6">
-                <input
-                  className="form-control bg-light-dark"
-                  value={calculated ? formatInt(results.totalPaid) : ""}
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
+        <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+          <span className="text-muted small">Total paid</span>
+          <span
+            className="h5 bg-light-dark p-2 rounded m-0"
+            style={{ minWidth: "150px", textAlign: "right" }}
+          >
+            {calculated ? formatInt(results.totalPaid) : "—"}
+          </span>
+        </div>
 
-          <div className="col-12">
-            <div className="row align-items-center">
-              <div className="col-6 text-end">
-                <label className="form-label m-0 small text-muted">
-                  Total interest
-                </label>
-              </div>
-              <div className="col-6">
-                <input
-                  className="form-control bg-light-dark"
-                  value={calculated ? formatInt(results.totalInterest) : ""}
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
+        <div className="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+          <span className="text-muted small">Total interest</span>
+          <span
+            className="h5 bg-light-dark p-2 rounded m-0"
+            style={{ minWidth: "150px", textAlign: "right" }}
+          >
+            {calculated ? formatInt(results.totalInterest) : "—"}
+          </span>
+        </div>
 
-          <div className="col-12">
-            <div className="row align-items-center">
-              <div className="col-6 text-end">
-                <label className="form-label m-0 small text-muted">
-                  Total repayments
-                </label>
-              </div>
-              <div className="col-6">
-                <input
-                  className="form-control bg-light-dark"
-                  value={calculated ? formatInt(results.totalRepayments) : ""}
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
+        <div className="d-flex justify-content-between align-items-center">
+          <span className="text-muted small">Total repayments</span>
+          <span
+            className="h5 bg-light-dark p-2 rounded m-0"
+            style={{ minWidth: "150px", textAlign: "right" }}
+          >
+            {calculated ? formatInt(results.totalRepayments) : "—"}
+          </span>
         </div>
       </div>
     );
@@ -428,347 +395,309 @@ const RemortgageCalculator: React.FC = () => {
     <div className="container-fluid p-4 bg-light-primary rounded">
       <div className="row g-4">
         <div className="col-lg-6">
-          <div className="position-relative bg-white p-4 rounded border h-100">
-            <div
-              className="position-absolute top-0 start-0 translate-middle-y ms-3 px-3 py-2 bg-white border rounded-pill"
-              style={{ marginTop: "1px" }}
-            >
-              <span className="small text-muted">Current mortgage</span>
+          <div className="bg-white p-4 rounded border h-100">
+            <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+              <span className="text-muted small">Current mortgage</span>
             </div>
 
-            <div className="pt-3">
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Mortgage amount<span className="text-danger">*</span>
-                  </label>
+            <div className="mb-3">
+              <label className="form-label">
+                Mortgage amount<span className="text-danger">*</span>
+              </label>
+              <div className="input-group">
+                <span className="input-group-text">£</span>
+                <input
+                  type="number"
+                  className={`form-control ${errors.currentAmount ? "is-invalid" : ""} rounded-start-0`}
+                  value={state.current.amount}
+                  onChange={(e) => setCurrentField("amount", e.target.value)}
+                  min="0"
+                />
+              </div>
+              {errors.currentAmount && (
+                <div className="invalid-feedback d-block">
+                  {errors.currentAmount}
                 </div>
-                <div className="col-7">
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Mortgage type<span className="text-danger">*</span>
+              </label>
+              <select
+                className={`form-select ${errors.currentMortgageType ? "is-invalid" : ""}`}
+                value={state.current.mortgageType}
+                onChange={(e) =>
+                  setCurrentField("mortgageType", e.target.value)
+                }
+              >
+                <option value="">Choose...</option>
+                <option value="repayment">Repayment</option>
+                <option value="interest-only">Interest only</option>
+              </select>
+              {errors.currentMortgageType && (
+                <div className="invalid-feedback d-block">
+                  {errors.currentMortgageType}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Interest rate<span className="text-danger">*</span>
+              </label>
+              <div className="input-group">
+                <input
+                  type="number"
+                  className={`form-control ${errors.currentInterestRate ? "is-invalid" : ""} rounded-end-0`}
+                  value={state.current.interestRate}
+                  onChange={(e) =>
+                    setCurrentField("interestRate", e.target.value)
+                  }
+                  min="0"
+                  step="0.01"
+                />
+                <span className="input-group-text rounded-start-0">%</span>
+              </div>
+              {errors.currentInterestRate && (
+                <div className="invalid-feedback d-block">
+                  {errors.currentInterestRate}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Mortgage term<span className="text-danger">*</span>
+              </label>
+              <div className="row g-2">
+                <div className="col">
                   <input
                     type="number"
-                    className={`form-control ${errors.currentAmount ? "is-invalid" : ""}`}
-                    value={state.current.amount}
-                    onChange={(e) => setCurrentField("amount", e.target.value)}
+                    className="form-control"
+                    value={state.current.termYears}
+                    onChange={(e) =>
+                      setCurrentField("termYears", e.target.value)
+                    }
                     min="0"
                   />
-                  {errors.currentAmount && (
-                    <div className="invalid-feedback d-block">
-                      {errors.currentAmount}
-                    </div>
-                  )}
+                  <small className="form-text text-muted">years</small>
                 </div>
-              </div>
-
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Mortgage type<span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-7">
-                  <select
-                    className={`form-select ${errors.currentMortgageType ? "is-invalid" : ""}`}
-                    value={state.current.mortgageType}
-                    onChange={(e) =>
-                      setCurrentField("mortgageType", e.target.value)
-                    }
-                  >
-                    <option value="">Choose...</option>
-                    <option value="repayment">Repayment</option>
-                    <option value="interest-only">Interest only</option>
-                  </select>
-                  {errors.currentMortgageType && (
-                    <div className="invalid-feedback d-block">
-                      {errors.currentMortgageType}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Interest rate<span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-7">
+                <div className="col">
                   <input
                     type="number"
-                    className={`form-control ${errors.currentInterestRate ? "is-invalid" : ""}`}
-                    value={state.current.interestRate}
+                    className="form-control"
+                    value={state.current.termMonths}
                     onChange={(e) =>
-                      setCurrentField("interestRate", e.target.value)
+                      setCurrentField("termMonths", e.target.value)
                     }
                     min="0"
-                    step="0.01"
+                    max="11"
                   />
-                  {errors.currentInterestRate && (
-                    <div className="invalid-feedback d-block">
-                      {errors.currentInterestRate}
-                    </div>
-                  )}
+                  <small className="form-text text-muted">months</small>
                 </div>
               </div>
-
-              <div className="row align-items-center">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Mortgage term<span className="text-danger">*</span>
-                  </label>
+              {errors.currentTerm && (
+                <div className="text-danger small mt-2">
+                  {errors.currentTerm}
                 </div>
-                <div className="col-7">
-                  <div className="input-group">
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={state.current.termYears}
-                      onChange={(e) =>
-                        setCurrentField("termYears", e.target.value)
-                      }
-                      min="0"
-                    />
-                    <span className="input-group-text">years</span>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={state.current.termMonths}
-                      onChange={(e) =>
-                        setCurrentField("termMonths", e.target.value)
-                      }
-                      min="0"
-                      max="11"
-                    />
-                    <span className="input-group-text">months</span>
-                  </div>
-                  {errors.currentTerm && (
-                    <div className="text-danger small mt-2">
-                      {errors.currentTerm}
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="col-lg-6">
-          <div className="position-relative bg-white p-4 rounded border h-100">
-            <div
-              className="position-absolute top-0 start-0 translate-middle-y ms-3 px-3 py-2 bg-white border rounded-pill"
-              style={{ marginTop: "1px" }}
-            >
-              <span className="small text-muted">New mortgage</span>
+          <div className="bg-white p-4 rounded border h-100">
+            <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+              <span className="text-muted small">New mortgage</span>
             </div>
 
-            <div className="pt-3">
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Mortgage amount<span className="text-danger">*</span>
-                  </label>
+            <div className="mb-3">
+              <label className="form-label">
+                Mortgage amount<span className="text-danger">*</span>
+              </label>
+              <div className="input-group">
+                <span className="input-group-text">£</span>
+                <input
+                  type="number"
+                  className={`form-control ${errors.newAmount ? "is-invalid" : ""} rounded-start-0`}
+                  value={state.newMortgage.amount}
+                  onChange={(e) => setNewField("amount", e.target.value)}
+                  min="0"
+                />
+              </div>
+              {errors.newAmount && (
+                <div className="invalid-feedback d-block">
+                  {errors.newAmount}
                 </div>
-                <div className="col-7">
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Arrangement fee added</label>
+              <div className="input-group">
+                <span className="input-group-text">£</span>
+                <input
+                  type="number"
+                  className={`form-control ${errors.arrangementFeeAdded ? "is-invalid" : ""} rounded-start-0`}
+                  value={state.newMortgage.arrangementFeeAdded}
+                  onChange={(e) =>
+                    setNewField("arrangementFeeAdded", e.target.value)
+                  }
+                  min="0"
+                />
+              </div>
+              {errors.arrangementFeeAdded && (
+                <div className="invalid-feedback d-block">
+                  {errors.arrangementFeeAdded}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Other costs</label>
+              <div className="input-group">
+                <span className="input-group-text">£</span>
+                <input
+                  type="number"
+                  className={`form-control ${errors.otherCosts ? "is-invalid" : ""} rounded-start-0`}
+                  value={state.newMortgage.otherCosts}
+                  onChange={(e) => setNewField("otherCosts", e.target.value)}
+                  min="0"
+                />
+              </div>
+              {errors.otherCosts && (
+                <div className="invalid-feedback d-block">
+                  {errors.otherCosts}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Mortgage type<span className="text-danger">*</span>
+              </label>
+              <select
+                className={`form-select ${errors.newMortgageType ? "is-invalid" : ""}`}
+                value={state.newMortgage.mortgageType}
+                onChange={(e) => setNewField("mortgageType", e.target.value)}
+              >
+                <option value="">Choose...</option>
+                <option value="repayment">Repayment</option>
+                <option value="interest-only">Interest only</option>
+              </select>
+              {errors.newMortgageType && (
+                <div className="invalid-feedback d-block">
+                  {errors.newMortgageType}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Interest rate<span className="text-danger">*</span>
+              </label>
+              <div className="input-group">
+                <input
+                  type="number"
+                  className={`form-control ${errors.newInterestRate ? "is-invalid" : ""} rounded-end-0`}
+                  value={state.newMortgage.interestRate}
+                  onChange={(e) => setNewField("interestRate", e.target.value)}
+                  min="0"
+                  step="0.01"
+                />
+                <span className="input-group-text rounded-start-0">%</span>
+              </div>
+              {errors.newInterestRate && (
+                <div className="invalid-feedback d-block">
+                  {errors.newInterestRate}
+                </div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Mortgage term<span className="text-danger">*</span>
+              </label>
+              <div className="row g-2">
+                <div className="col">
                   <input
                     type="number"
-                    className={`form-control ${errors.newAmount ? "is-invalid" : ""}`}
-                    value={state.newMortgage.amount}
-                    onChange={(e) => setNewField("amount", e.target.value)}
+                    className="form-control"
+                    value={state.newMortgage.termYears}
+                    onChange={(e) => setNewField("termYears", e.target.value)}
                     min="0"
                   />
-                  {errors.newAmount && (
-                    <div className="invalid-feedback d-block">
-                      {errors.newAmount}
-                    </div>
-                  )}
+                  <small className="form-text text-muted">years</small>
                 </div>
-              </div>
-
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Arrangement fee added
-                  </label>
-                </div>
-                <div className="col-7">
+                <div className="col">
                   <input
                     type="number"
-                    className={`form-control ${errors.arrangementFeeAdded ? "is-invalid" : ""}`}
-                    value={state.newMortgage.arrangementFeeAdded}
-                    onChange={(e) =>
-                      setNewField("arrangementFeeAdded", e.target.value)
-                    }
+                    className="form-control"
+                    value={state.newMortgage.termMonths}
+                    onChange={(e) => setNewField("termMonths", e.target.value)}
                     min="0"
+                    max="11"
                   />
-                  {errors.arrangementFeeAdded && (
-                    <div className="invalid-feedback d-block">
-                      {errors.arrangementFeeAdded}
-                    </div>
-                  )}
+                  <small className="form-text text-muted">months</small>
                 </div>
               </div>
-
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">Other costs</label>
-                </div>
-                <div className="col-7">
-                  <input
-                    type="number"
-                    className={`form-control ${errors.otherCosts ? "is-invalid" : ""}`}
-                    value={state.newMortgage.otherCosts}
-                    onChange={(e) => setNewField("otherCosts", e.target.value)}
-                    min="0"
-                  />
-                  {errors.otherCosts && (
-                    <div className="invalid-feedback d-block">
-                      {errors.otherCosts}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Mortgage type<span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-7">
-                  <select
-                    className={`form-select ${errors.newMortgageType ? "is-invalid" : ""}`}
-                    value={state.newMortgage.mortgageType}
-                    onChange={(e) =>
-                      setNewField("mortgageType", e.target.value)
-                    }
-                  >
-                    <option value="">Choose...</option>
-                    <option value="repayment">Repayment</option>
-                    <option value="interest-only">Interest only</option>
-                  </select>
-                  {errors.newMortgageType && (
-                    <div className="invalid-feedback d-block">
-                      {errors.newMortgageType}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="row align-items-center mb-3">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Interest rate<span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-7">
-                  <input
-                    type="number"
-                    className={`form-control ${errors.newInterestRate ? "is-invalid" : ""}`}
-                    value={state.newMortgage.interestRate}
-                    onChange={(e) =>
-                      setNewField("interestRate", e.target.value)
-                    }
-                    min="0"
-                    step="0.01"
-                  />
-                  {errors.newInterestRate && (
-                    <div className="invalid-feedback d-block">
-                      {errors.newInterestRate}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="row align-items-center">
-                <div className="col-5 text-end">
-                  <label className="form-label m-0">
-                    Mortgage term<span className="text-danger">*</span>
-                  </label>
-                </div>
-                <div className="col-7">
-                  <div className="input-group">
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={state.newMortgage.termYears}
-                      onChange={(e) => setNewField("termYears", e.target.value)}
-                      min="0"
-                    />
-                    <span className="input-group-text">years</span>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={state.newMortgage.termMonths}
-                      onChange={(e) =>
-                        setNewField("termMonths", e.target.value)
-                      }
-                      min="0"
-                      max="11"
-                    />
-                    <span className="input-group-text">months</span>
-                  </div>
-                  {errors.newTerm && (
-                    <div className="text-danger small mt-2">
-                      {errors.newTerm}
-                    </div>
-                  )}
-                </div>
-              </div>
+              {errors.newTerm && (
+                <div className="text-danger small mt-2">{errors.newTerm}</div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="col-12">
-          <div className="d-flex flex-column align-items-center">
-            <div
-              className="row align-items-center g-2"
-              style={{ maxWidth: 520 }}
-            >
-              <div className="col-12 col-md-5 text-md-end">
-                <label className="form-label m-0">
-                  Compare mortgages over<span className="text-danger">*</span>
-                </label>
+          <div
+            className="bg-white p-4 rounded border"
+            style={{ maxWidth: 720, margin: "0 auto" }}
+          >
+            <label className="form-label">
+              Compare mortgages over<span className="text-danger">*</span>
+            </label>
+            <div className="row g-2">
+              <div className="col">
+                <input
+                  type="number"
+                  className="form-control"
+                  value={state.compareYears}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      compareYears: e.target.value,
+                    }))
+                  }
+                  min="0"
+                />
+                <small className="form-text text-muted">years</small>
               </div>
-              <div className="col-12 col-md-7">
-                <div className="input-group">
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={state.compareYears}
-                    onChange={(e) =>
-                      setState((prev) => ({
-                        ...prev,
-                        compareYears: e.target.value,
-                      }))
-                    }
-                    min="0"
-                  />
-                  <span className="input-group-text">years</span>
-                  <input
-                    type="number"
-                    className="form-control"
-                    value={state.compareMonths}
-                    onChange={(e) =>
-                      setState((prev) => ({
-                        ...prev,
-                        compareMonths: e.target.value,
-                      }))
-                    }
-                    min="0"
-                    max="11"
-                  />
-                  <span className="input-group-text">months</span>
-                </div>
-                {errors.compare && (
-                  <div className="text-danger small mt-2">{errors.compare}</div>
-                )}
+              <div className="col">
+                <input
+                  type="number"
+                  className="form-control"
+                  value={state.compareMonths}
+                  onChange={(e) =>
+                    setState((prev) => ({
+                      ...prev,
+                      compareMonths: e.target.value,
+                    }))
+                  }
+                  min="0"
+                  max="11"
+                />
+                <small className="form-text text-muted">months</small>
               </div>
             </div>
-          </div>
-          <div className="d-flex justify-content-center mb-5">
+            {errors.compare && (
+              <div className="text-danger small mt-2">{errors.compare}</div>
+            )}
+
             <button
               onClick={handleCalculate}
-              className="btn btn-danger btn-lg rounded-pill mt-4"
-              style={{ minWidth: 140 }}
+              className="btn btn-danger btn-lg rounded-pill w-100 mt-3"
             >
               Calculate
             </button>
@@ -787,18 +716,17 @@ const RemortgageCalculator: React.FC = () => {
 
         <div className="col-12">
           <div
-            className="row align-items-center g-2"
-            style={{ maxWidth: 520, margin: "0 auto" }}
+            className="bg-white p-4 rounded border"
+            style={{ maxWidth: 720, margin: "0 auto" }}
           >
-            <div className="col-12 col-md-5 text-md-end">
-              <label className="form-label m-0">Cost difference</label>
-            </div>
-            <div className="col-12 col-md-7">
-              <input
-                className="form-control bg-light-dark"
-                value={calculated ? formatInt(costDifference) : ""}
-                readOnly
-              />
+            <div className="d-flex justify-content-between align-items-center">
+              <span className="text-muted small">Cost difference</span>
+              <span
+                className="h5 bg-light-dark p-2 rounded m-0"
+                style={{ minWidth: "150px", textAlign: "right" }}
+              >
+                {calculated ? formatInt(costDifference) : "—"}
+              </span>
             </div>
           </div>
         </div>
