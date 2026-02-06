@@ -317,23 +317,18 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Phone</th>
                   <th>Case Category</th>
                   <th>Lender</th>
-                  <th>Security property</th>
+                  <th className="text-truncate">Security property</th>
                   <th>Case Stage</th>
-                  <th>Review Date</th>
-                  <th>Created At</th>
-                  <th>
-                    {session?.user?.user_type === "NETWORK_DIRECTOR" ||
+                  {session?.user?.user_type === "NETWORK_DIRECTOR" ||
                     session?.user?.user_type === "NETWORK_ADVISER" ||
-                    session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
-                      ? "Organisation"
-                      : session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-                          session?.user?.user_type === "ORGANISATION_ADVISER" ||
-                          session?.user?.user_type === "ORGANISATION_ADMIN"
-                        ? "Network"
-                        : "Unknown"}
-                  </th>
+                    (session?.user?.user_type ===
+                      "NETWORK_COMPLIANCE_ASSISTANT" && (
+                      <th>"Organisation" </th>
+                    ))}
                   <th>Created By</th>
                   <th>Assigned To</th>
+                  <th className="text-truncate">Review Date</th>
+                  <th>Created At</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -471,7 +466,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      <td className="text-truncate">
+                      <td>
                         {(() => {
                           const pd = caseItem?.property_details;
                           if (!pd) return "N/A";
@@ -517,31 +512,18 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      <td className="text-truncate">
-                        {formatDate(caseItem?.review_date) || (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                      <td className="text-truncate">
-                        {formatDateAndTime(caseItem.created_at)}
-                      </td>
-                      <td className="text-truncate">
-                        {userType === "NETWORK_DIRECTOR" ||
+                      {userType === "NETWORK_DIRECTOR" ||
                         userType === "NETWORK_COMPLIANCE_ASSISTANT" ||
-                        userType === "NETWORK_ADVISER" ? (
-                          (caseItem.organization?.name ?? (
+                        (userType === "NETWORK_ADVISER" && (
+                          <td className="text-truncate">
+                            {" "}
+                            (caseItem.organization?.name ?? (
                             <small className="text-muted">
                               Owned by Network
                             </small>
-                          ))
-                        ) : userType === "ORGANISATION_DIRECTOR" ||
-                          userType === "ORGANISATION_ADVISER" ||
-                          userType === "ORGANISATION_ADMIN" ? (
-                          (caseItem.network?.name ?? "Self")
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
+                            )){" "}
+                          </td>
+                        ))}
                       <td className="text-truncate">
                         <p className="m-0">
                           {caseItem.created_by?.title
@@ -599,6 +581,14 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         ) : (
                           <small className="text-muted">Not Assigned</small>
                         )}
+                      </td>
+                      <td>
+                        {formatDate(caseItem?.review_date) || (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                      <td className="text-truncate">
+                        {formatDateAndTime(caseItem.created_at)}
                       </td>
                       <td>
                         <div className="d-flex justify-content-center align-items-center">
