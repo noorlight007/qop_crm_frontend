@@ -1,4 +1,3 @@
-
 export interface Network {
   slug: string;
   logo: string | null;
@@ -26,13 +25,7 @@ export interface NetworkFormData {
   };
 }
 
-export interface NetworkDetails {
-  slug: any;
-  networkData: any;
-  isLoading: boolean;
-}
-
-export interface AddNetworkModalProps{
+export interface AddNetworkModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
@@ -49,5 +42,3 @@ export interface DeleteNetworkModalProps {
   toggle: () => void;
   networkInfo?: any;
 }
-
-
