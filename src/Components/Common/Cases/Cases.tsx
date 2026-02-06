@@ -166,9 +166,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   trigger="hover"
                 >
                   <PopoverBody className="bg-white rounded text-dark p-3 small">
-                    🔍 You Can Search Using The Lead’s Name, Title, Phone
-                    Number, Email Address, Case Category, Case Status or
-                    Assigned User’s Name.
+                    🔍 You Can Search Using The Client Name, Phone Number, Email
+                    Address, Case Category, Case Status or Assigned User Name.
                   </PopoverBody>
                 </UncontrolledPopover>
               </InputGroup>
