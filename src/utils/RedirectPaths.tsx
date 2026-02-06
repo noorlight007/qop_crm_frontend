@@ -114,6 +114,8 @@ export const getOrganisationUrl = (session: Session | null) => {
   const userType = session?.user?.user_type;
 
   switch (userType) {
+    case "ADMIN":
+      return `/admin/organisations`;
     case "NETWORK_DIRECTOR":
       return `/network/director/organisations`;
     case "NETWORK_COMPLIANCE_ASSISTANT":
