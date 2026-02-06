@@ -1,4 +1,3 @@
-
 export interface Network {
   slug: string;
   logo: string | null;
@@ -16,6 +15,7 @@ export interface NetworkFormData {
     address: string;
     primary_mobile: string;
     email: string;
+    license_no: string;
   };
   user: {
     first_name: string;
@@ -25,22 +25,20 @@ export interface NetworkFormData {
   };
 }
 
-export interface AddNetworkModalProps{
+export interface AddNetworkModalProps {
   isOpen: boolean;
   toggle: () => void;
 }
 
-export interface UpdateNetworkModalProps{
+export interface UpdateNetworkInfoModalProps {
   isOpen: boolean;
   toggle: () => void;
-  network: Network | null;
-  // onSave should accept the network slug and the form payload and return a Promise
-  onSave: (network_slug: string, payload: NetworkFormData) => Promise<any>;
-} 
-
-export interface DeleteNetworkModalProps{
-  isOpen: boolean;
-  toggle: () => void;
-  network_slug: string | null;
+  slug?: string | undefined;
+  networkData?: any;
 }
 
+export interface DeleteNetworkModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  networkInfo?: any;
+}
