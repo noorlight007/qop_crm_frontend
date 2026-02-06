@@ -1,150 +1,31 @@
-import {
-  useGetNetworkDetailsQuery,
-  useUpdateNetworkMutation,
-} from "@/Redux/Reducers/Admin/Networks/NetworksApi";
+import { useGetSingleOrganisationQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
-  FaCamera,
-  FaGlobe,
-  FaIdCard,
-  FaPhoneAlt,
-  FaRegCalendarAlt,
-  FaShieldAlt,
+    FaGlobe,
+    FaIdCard,
+    FaNetworkWired,
+    FaPhoneAlt,
+    FaRegCalendarAlt,
+    FaShieldAlt,
 } from "react-icons/fa";
-import { toast } from "react-toastify";
-import {
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  Spinner,
-} from "reactstrap";
-import DeleteNetworkModal from "./Modals/DeleteNetworkModal";
-import UpdateNetworkDirectorInfoModal from "./Modals/UpdateNetworkDirectorInfoModal";
-import UpdateNetworkInfoModal from "./Modals/UpdateNetworkInfoModal";
-import formatChoiceFieldValue from "@/utils/formatters";
+import { Badge, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 
-const NetworkDetails: React.FC = () => {
+const OrganisationDetails: React.FC = () => {
   const params = useParams();
-  const slug = params?.networkslug;
-  const { data: getNetworkDetails, isLoading } = useGetNetworkDetailsQuery({
-    network_slug: slug,
-  });
-  const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleProfileImageUpload = () => {
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const file = files[0];
-
-    const maxSizeInMB = 5;
-    if (file.size / 1024 / 1024 > maxSizeInMB) {
-      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
-      return;
-    }
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("network.logo", file);
-
-      if (!slug) {
-        toast.error("Network identifier missing");
-        return;
-      }
-
-      await updateNetwork({
-        network_slug: slug,
-        payload: formDataToSend,
-      }).unwrap();
-
-      toast.success("Network logo updated");
-    } catch (err: any) {
-      console.error("Logo upload error:", err);
-      const msg = err?.data?.detail || err?.message || "Upload failed";
-      toast.error(msg);
-    } finally {
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  // Add another ref for director profile image
-  const directorFileInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Handler to trigger director file input
-  const handleDirectorProfileImageUpload = () => {
-    if (directorFileInputRef.current) directorFileInputRef.current.click();
-  };
-
-  // Handler for director profile image file selection
-  const handleDirectorFileSelected = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const file = files[0];
-
-    const maxSizeInMB = 5;
-    if (file.size / 1024 / 1024 > maxSizeInMB) {
-      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
-      return;
-    }
-
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("user.profile_image", file);
-
-      if (!slug) {
-        toast.error("Network identifier missing");
-        return;
-      }
-
-      await updateNetwork({
-        network_slug: slug,
-        payload: formDataToSend,
-      }).unwrap();
-
-      toast.success("Director profile image updated");
-    } catch (err: any) {
-      console.error("Profile upload error:", err);
-      const msg = err?.data?.detail || err?.message || "Upload failed";
-      toast.error(msg);
-    } finally {
-      if (directorFileInputRef.current) directorFileInputRef.current.value = "";
-    }
-  };
-
-  const toggleUpdateModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
-
-  const toggleDirectorModal = () => {
-    setIsDirectorModalOpen(!isDirectorModalOpen);
-  };
-
-  const toggleDeleteModal = () => {
-    setIsDeleteModalOpen(!isDeleteModalOpen);
-  };
+  const slug = params?.organisationslug;
+  const { data: getOrganisationDetails, isLoading } =
+    useGetSingleOrganisationQuery({
+      organisationslug: slug,
+    });
 
   return (
     <>
       <Row>
-        {/* Network Profile Card */}
+        {/* Organisation Profile Card */}
         <Col lg="6" className="mb-4">
           {isLoading ? (
             <Card
@@ -190,7 +71,7 @@ const NetworkDetails: React.FC = () => {
                 <CardBody className="position-relative pt-3 pb-0">
                   <Row className="align-items-end">
                     <Col md="auto">
-                      {/* Network Logo */}
+                      {/* Organisation Logo */}
                       <div
                         className="position-relative mb-3"
                         style={{ width: 150, height: 100 }}
@@ -199,47 +80,23 @@ const NetworkDetails: React.FC = () => {
                           width={150}
                           height={100}
                           src={
-                            getNetworkDetails?.network?.logo ||
+                            getOrganisationDetails?.organization?.logo ||
                             "/assets/images/network/logo.jpg"
                           }
                           alt="Logo"
                           className="rounded-3 object-fit-cover bg-white p-1"
                         />
-                        {/* Camera overlay for logo upload */}
-                        <button
-                          title="Change network logo"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                          style={{
-                            width: 32,
-                            height: 32,
-                            right: 0,
-                            bottom: 0,
-                            cursor: "pointer",
-                          }}
-                          onClick={handleProfileImageUpload}
-                          disabled={isUpdating}
-                        >
-                          <FaCamera size={14} className="text-primary" />
-                        </button>
-                        {/* Hidden file input */}
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          onChange={handleFileSelected}
-                        />
                       </div>
                     </Col>
                     <Col className="text-white">
                       <h2 className="mb-1 fw-bold">
-                        {getNetworkDetails?.network?.name}
+                        {getOrganisationDetails?.organization?.name}
                       </h2>
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        {getNetworkDetails?.network?.subdomain && (
+                        {getOrganisationDetails?.organization?.subdomain && (
                           <Badge className="bg-warning">
                             <FaGlobe className="me-1" />
-                            {`${"https://"}${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
+                            {`${"https://"}${getOrganisationDetails?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
                           </Badge>
                         )}
                       </div>
@@ -247,20 +104,8 @@ const NetworkDetails: React.FC = () => {
                   </Row>
                 </CardBody>
               </div>
-              <div className="edit_icon">
-                <Button
-                  size="sm"
-                  outline
-                  color="primary"
-                  onClick={toggleUpdateModal}
-                  title="Edit Network"
-                  className="fw-500"
-                >
-                  <i className="iconly-Edit me-2"></i>Edit
-                </Button>
-              </div>
 
-              {/* Network Details Section */}
+              {/* Organisation Details Section */}
               <CardBody className="pb-2">
                 {/* Contact Information */}
                 <div className="mb-4">
@@ -285,7 +130,8 @@ const NetworkDetails: React.FC = () => {
                         </div>
                         <div className="flex-grow-1">
                           <p className="small text-muted mb-1">Phone</p>
-                          {getNetworkDetails?.network?.primary_mobile ? (
+                          {getOrganisationDetails?.organization
+                            ?.primary_mobile ? (
                             <span
                               className="fw-500 text-dark text-decoration-none text-break"
                               style={{
@@ -300,7 +146,10 @@ const NetworkDetails: React.FC = () => {
                                 (e.currentTarget.style.color = "inherit")
                               }
                             >
-                              {getNetworkDetails?.network?.primary_mobile}
+                              {
+                                getOrganisationDetails?.organization
+                                  ?.primary_mobile
+                              }
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -325,7 +174,7 @@ const NetworkDetails: React.FC = () => {
                         </div>
                         <div className="flex-grow-1">
                           <p className="small text-muted mb-1">Email</p>
-                          {getNetworkDetails?.network?.email ? (
+                          {getOrganisationDetails?.organization?.email ? (
                             <span
                               className="fw-500 text-dark text-decoration-none text-break"
                               style={{
@@ -340,7 +189,7 @@ const NetworkDetails: React.FC = () => {
                                 (e.currentTarget.style.color = "inherit")
                               }
                             >
-                              {getNetworkDetails?.network?.email}
+                              {getOrganisationDetails?.organization?.email}
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -357,20 +206,20 @@ const NetworkDetails: React.FC = () => {
                 <Row>
                   <Col sm="6">
                     <Card className="bg-light-primary p-2 d-flex flex-row justify-content-center align-items-center mb-2">
-                      <FaGlobe
+                      <FaNetworkWired
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
                       <a
-                        href={getNetworkDetails?.network?.website}
+                        href={getOrganisationDetails?.organization?.network}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-truncate text-decoration-none text-dark"
                         style={{ maxWidth: "200px" }}
-                        title={getNetworkDetails?.network?.website}
+                        title={getOrganisationDetails?.organization?.network}
                       >
-                        {getNetworkDetails?.network?.website ??
-                          "Website not provided"}
+                        {getOrganisationDetails?.organization?.network ??
+                          "Network not available"}
                       </a>
                     </Card>
                   </Col>
@@ -380,7 +229,7 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.network?.license_no ??
+                      {getOrganisationDetails?.organization?.license_no ??
                         "License number not provided"}
                     </Card>
                   </Col>
@@ -392,8 +241,8 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-secondary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.network?.other_contact ? (
-                        getNetworkDetails.network.other_contact
+                      {getOrganisationDetails?.organization?.other_contact ? (
+                        getOrganisationDetails.organization.other_contact
                       ) : (
                         <small className="text-muted">
                           Secondary contact not provided
@@ -409,7 +258,8 @@ const NetworkDetails: React.FC = () => {
                       />
                       <small className="text-muted">
                         {formatDateAndTime(
-                          getNetworkDetails?.network?.created_at ?? "",
+                          getOrganisationDetails?.organization?.created_at ??
+                            "",
                         )}
                       </small>
                     </Card>
@@ -420,7 +270,7 @@ const NetworkDetails: React.FC = () => {
           )}
         </Col>
 
-        {/* Network Director Profile Card */}
+        {/* Organisation Director Profile Card */}
         <Col lg="6" className="mb-4">
           {isLoading ? (
             <Card
@@ -458,99 +308,44 @@ const NetworkDetails: React.FC = () => {
               </div>
 
               <CardBody className="organisation-card-body p-4 position-relative">
-                {/* Edit button top-right of the card */}
-                <div className="edit_icon">
-                  <Button
-                    size="sm"
-                    outline
-                    color="primary"
-                    onClick={toggleDirectorModal}
-                    title="Edit Network Director"
-                  >
-                    <i className="iconly-Edit me-2"></i>Edit
-                  </Button>
-                </div>
                 {/* Avatar section - positioned to overlap gradient */}
                 <div className="d-flex justify-content-center organisation-avatar-container">
                   <div className="position-relative">
-                    {getNetworkDetails?.user?.profile_image ? (
+                    {getOrganisationDetails?.user?.profile_image ? (
                       <div className="position-relative">
                         <Image
-                          src={getNetworkDetails.user.profile_image}
-                          alt={getNetworkDetails?.user?.name ?? "Director"}
+                          src={getOrganisationDetails.user.profile_image}
+                          alt={getOrganisationDetails?.user?.name ?? "Director"}
                           width={90}
                           height={90}
                           className="rounded-circle organisation-avatar-img"
                         />
-                        <button
-                          title="Change profile image"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                          style={{
-                            width: 30,
-                            height: 30,
-                            right: 3,
-                            bottom: 3,
-                            zIndex: 10,
-                            cursor: "pointer",
-                          }}
-                          onClick={() => {
-                            alert("Button clicked!"); // This CANNOT be missed
-                            handleDirectorProfileImageUpload();
-                          }}
-                          // onClick={handleDirectorProfileImageUpload}
-                          disabled={isUpdating}
-                        >
-                          <FaCamera size={12} className="text-primary" />
-                        </button>
                       </div>
                     ) : (
                       <div className="position-relative">
                         <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
-                          {getNetworkDetails?.user?.name
+                          {getOrganisationDetails?.user?.name
                             ?.split(" ")
                             .map((n: any) => n[0])
                             .join("")
                             .toUpperCase()
                             .slice(0, 2) || "ND"}
                         </div>
-                        <button
-                          title="Change profile image"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                          style={{
-                            width: 30,
-                            height: 30,
-                            right: 3,
-                            bottom: 3,
-                            zIndex: 10,
-                            cursor: "pointer",
-                          }}
-                          onClick={handleDirectorProfileImageUpload}
-                          disabled={isUpdating}
-                        >
-                          <FaCamera size={12} className="text-primary" />
-                        </button>
                       </div>
                     )}
                   </div>
-
-                  {/* Hidden file input for director profile */}
-                  <input
-                    ref={directorFileInputRef}
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    onChange={handleDirectorFileSelected}
-                  />
                 </div>
 
                 {/* Name and role */}
                 <div className="text-center mt-1 mb-3">
                   <h4 className="mb-2 fw-bold fs-4">
-                    {getNetworkDetails?.user?.name ?? "—"}
+                    {getOrganisationDetails?.user?.name ?? "—"}
                   </h4>
                   <Badge className="px-3 py-2 bg-light-primary fw-semibold rounded-pill">
                     <i className="fa fa-crown me-1" />
-                    {formatChoiceFieldValue(getNetworkDetails?.user?.user_type)}
+                    {formatChoiceFieldValue(
+                      getOrganisationDetails?.user?.user_type,
+                    )}
                   </Badge>
                 </div>
 
@@ -561,7 +356,8 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.user?.email ?? "Email not provided"}
+                      {getOrganisationDetails?.user?.email ??
+                        "Email not provided"}
                     </Card>
                   </Col>
                 </Row>
@@ -572,15 +368,15 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-secondary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.user?.phone ? (
-                        getNetworkDetails.user.phone
+                      {getOrganisationDetails?.user?.phone ? (
+                        getOrganisationDetails.user.phone
                       ) : (
                         <small className="text-muted">Phone not provided</small>
                       )}
                     </Card>
                   </Col>
                   <Col sm="6">
-                    {getNetworkDetails?.user?.is_active ? (
+                    {getOrganisationDetails?.user?.is_active ? (
                       <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
                         <FaShieldAlt
                           className="me-2 bg-success p-1 rounded-1"
@@ -604,48 +400,8 @@ const NetworkDetails: React.FC = () => {
           )}
         </Col>
       </Row>
-
-      <Row>
-        <Card className="shadow p-2">
-          <CardHeader className="h3 text-danger">Danger Zone</CardHeader>
-          <CardBody className="border-danger rounded-2 mb-4">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 className="fw-bold">Delete this Network</h5>
-                <p className="mb-0 opacity-75 text-danger">
-                  Once you delete a network, there is no going back. Please be
-                  certain.
-                </p>
-              </div>
-              <Button color="danger" onClick={toggleDeleteModal}>
-                Delete this Network
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      </Row>
-
-      <UpdateNetworkInfoModal
-        isOpen={isModalOpen}
-        toggle={toggleUpdateModal}
-        slug={getNetworkDetails?.network?.slug}
-        networkData={getNetworkDetails}
-      />
-
-      <UpdateNetworkDirectorInfoModal
-        isOpen={isDirectorModalOpen}
-        toggle={toggleDirectorModal}
-        slug={getNetworkDetails?.network?.slug}
-        networkData={getNetworkDetails}
-      />
-
-      <DeleteNetworkModal
-        isOpen={isDeleteModalOpen}
-        toggle={toggleDeleteModal}
-        networkInfo={getNetworkDetails}
-      />
     </>
   );
 };
 
-export default NetworkDetails;
+export default OrganisationDetails;

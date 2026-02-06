@@ -1,21 +1,21 @@
 "use client";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import NetworkDetails from "./NetworkDetails/NetworkDetails";
+import OrganisationDetails from "./OrganisationDetails/OrganisationDetails";
 
-const NetworkDetailsContainer: React.FC = () => {
+const OrganisationDetailsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
-        title="Network Status"
+        title="Organisation Status"
         subTitle="Welcome! Continue your journey."
-        parent="Networks"
+        parent="Organisations"
       />
       <Container fluid>
-        <NetworkDetails />
+        <OrganisationDetails />
       </Container>
     </div>
   );
 };
 
-export default NetworkDetailsContainer;
+export default OrganisationDetailsContainer;

@@ -1,25 +1,18 @@
-import {
-  useGetNetworkListQuery,
-  useUpdateNetworkMutation,
-} from "@/Redux/Reducers/Admin/Networks/NetworksApi";
-import { Network } from "@/Types/Admin/Networks/NetworkType";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
+import { Organisation } from "@/Types/Admin/Organisations/OrganisationTypes";
+import { getOrganisationUrl } from "@/utils/RedirectPaths";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  FaCalendarAlt,
-  FaCamera,
   FaEnvelope,
   FaGlobe,
   FaInfoCircle,
   FaPhone,
   FaSearch,
 } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
-import { toast } from "react-toastify";
 import {
-  Button,
   Card,
   CardBody,
   Col,
@@ -34,79 +27,26 @@ import {
   Spinner,
   UncontrolledPopover,
 } from "reactstrap";
-import AddNetworkModal from "./Modals/AddNetworkModal";
 
-type NetworkListProps = {
+type OrgListProps = {
   maxItems?: number;
 };
 
-const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
+const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
+  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isAddNetworkModalOpen, setIsAddNetworkModalOpen] = useState(false);
 
-  // LOGIC FIX: Track which specific network is being updated
-  const [uploadingSlug, setUploadingSlug] = useState<string | null>(null);
-
-  const { data: getNetworkList, isLoading } = useGetNetworkListQuery({
+  const { data: organisationList, isLoading } = useGetOrganisationListQuery({
     search: searchQuery,
     page: currentPage,
     page_size: maxItems,
   });
-  console.log("Network List Data:", getNetworkList);
-  const [updateNetwork, { isLoading: updateNetworkLoading }] =
-    useUpdateNetworkMutation();
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const toggleAddNetworkModal = () =>
-    setIsAddNetworkModalOpen(!isAddNetworkModalOpen);
-
-  const openAddNetworkModal = () => toggleAddNetworkModal();
-
-  // LOGIC FIX: Handle the camera click for a specific slug
-  const handleProfileImageUpload = (slug: string) => {
-    console.log("Uploading image for network slug:", slug);
-    setUploadingSlug(slug);
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || !uploadingSlug) return;
-    const file = files[0];
-
-    const maxSizeInMB = 5;
-    if (file.size / 1024 / 1024 > maxSizeInMB) {
-      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
-      return;
-    }
-
-    try {
-      const formDataToSend = new FormData();
-      // Using the key your backend expects
-      formDataToSend.append("network.logo", file);
-
-      // Use the uploadingSlug state we set during the click
-      await updateNetwork({
-        network_slug: uploadingSlug,
-        payload: formDataToSend,
-      }).unwrap();
-
-      toast.success("Profile image updated");
-    } catch (err: any) {
-      const msg = err?.data?.detail || err?.message || "Upload failed";
-      toast.error(msg);
-    } finally {
-      setUploadingSlug(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
 
   const itemsPerPage = 12;
   // Ensure we only render up to `itemsPerPage` items even if the API returned more
-  const currentNetworks = getNetworkList?.results?.slice(0, itemsPerPage) ?? [];
-  const totalCount = (getNetworkList as any)?.count ?? currentNetworks.length;
+  const currentOrgs = organisationList?.results?.slice(0, itemsPerPage) ?? [];
+  const totalCount = (organisationList as any)?.count ?? currentOrgs.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
 
   useEffect(() => {
@@ -121,21 +61,12 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
   return (
     <div>
       <Container fluid>
-        {/* LOGIC FIX: Single hidden input outside the map loop */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleFileSelected}
-        />
-
         <Row>
           <Col xs="12">
             <Card className="px-4 border-0 shadow-sm mb-0">
               <Row className="flex justify-content-between py-4">
                 <Col md="3">
-                  <h4 className="mb-0 fw-bold text-dark">Networks</h4>
+                  <h4 className="mb-0 fw-bold text-dark">Organisations</h4>
                 </Col>
                 <Col md={3} xs="12" className="mt-3 mt-md-0">
                   <InputGroup className="position-relative">
@@ -145,7 +76,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                     />
                     <Input
                       type="text"
-                      placeholder="Search Network... "
+                      placeholder="Search Organisation... "
                       value={searchQuery}
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -165,24 +96,10 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                       trigger="hover"
                     >
                       <PopoverBody className="bg-white rounded text-dark p-3 small">
-                        🔍 You can search using Network Name.
+                        🔍 You can search using Organisation Name.
                       </PopoverBody>
                     </UncontrolledPopover>
                   </InputGroup>
-                </Col>
-                <Col
-                  md="3"
-                  xs="12"
-                  className="text-md-end text-center mt-3 mt-md-0"
-                >
-                  <Button
-                    color="primary"
-                    className="px-4"
-                    onClick={openAddNetworkModal}
-                  >
-                    <TbCirclePlus size={18} className="me-2" />
-                    Add Network
-                  </Button>
                 </Col>
               </Row>
             </Card>
@@ -195,26 +112,32 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
               <Spinner color="primary" className="mb-3">
                 Loading...
               </Spinner>
-              <p className="mt-3 text-muted">Loading networks...</p>
+              <p className="mt-3 text-muted">Loading organisations...</p>
             </Col>
-          ) : getNetworkList?.results?.length === 0 ? (
+          ) : organisationList?.results?.length === 0 ? (
             <Col xs="12" className="text-center py-5">
               <div className="text-muted">
                 <FaSearch size={48} className="mb-3 opacity-50" />
-                <h5>No networks found</h5>
+                <h5>No organisations found</h5>
                 <p>
                   {searchQuery
                     ? "Try adjusting your search criteria"
-                    : "Click 'Add Network' to create your first network"}
+                    : "Click 'Add Organisation' to create your first organisation"}
                 </p>
               </div>
             </Col>
           ) : (
-            getNetworkList?.results?.map((network: Network) => (
-              <Col xs="12" md="6" lg="4" className="mb-4" key={network.slug}>
+            organisationList?.results?.map((organisation: Organisation) => (
+              <Col
+                xs="12"
+                md="6"
+                lg="4"
+                className="mb-4"
+                key={organisation.slug}
+              >
                 <Card className="h-100 shadow-sm border-0">
                   <Link
-                    href={`/admin/networks/${network.slug}`}
+                    href={`/admin/organisations/${organisation.slug}`}
                     title="Website"
                     className="text-muted position-absolute top-0 end-0 p-3"
                   >
@@ -226,10 +149,10 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                   <CardBody className="p-3">
                     <div className="d-flex gap-3">
                       <div className="flex-shrink-0 position-relative">
-                        {network.logo ? (
+                        {organisation.logo ? (
                           <Image
-                            src={network.logo}
-                            alt={network.name}
+                            src={organisation.logo}
+                            alt={organisation.name}
                             width={160}
                             height={80}
                             className="rounded p-1 shadow"
@@ -241,73 +164,40 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             style={{ width: "160px", height: "80px" }}
                           >
                             <h3 className="text-white fw-bold mb-0">
-                              {network.name.charAt(0).toUpperCase()}
+                              {organisation.name.charAt(0).toUpperCase()}
                             </h3>
                           </div>
                         )}
-
-                        <button
-                          title="Change network logo"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                          style={{
-                            width: 32,
-                            height: 32,
-                            right: 0,
-                            bottom: 0,
-                            cursor: "pointer",
-                          }}
-                          // LOGIC FIX: Pass the specific network slug
-                          onClick={() => handleProfileImageUpload(network.slug)}
-                          disabled={
-                            updateNetworkLoading &&
-                            uploadingSlug === network.slug
-                          }
-                        >
-                          {updateNetworkLoading &&
-                          uploadingSlug === network.slug ? (
-                            <Spinner size="sm" color="primary" />
-                          ) : (
-                            <FaCamera size={14} className="text-primary" />
-                          )}
-                        </button>
                       </div>
 
                       <div className="flex-grow-1">
                         <h5 className="fw-bold text-dark mb-1">
                           <Link
                             className="text_decoration_hover"
-                            href={`/admin/networks/${network.slug}`}
+                            href={`${getOrganisationUrl(session)}/${organisation.slug}`}
                           >
-                            {network.name}
+                            {organisation.name}
                           </Link>
                         </h5>
                         <p className="text-muted small mb-2">
                           <FaGlobe className="me-1" />
-                          {network.subdomain}
+                          {organisation.subdomain}
                         </p>
                         <div className="mb-1">
                           <small className="text-muted d-flex align-items-center">
                             <FaEnvelope className="me-2 text-primary" />
                             <span className="text-truncate">
-                              {network.email}
+                              {organisation.email}
                             </span>
                           </small>
                         </div>
                         <div className="mb-2">
                           <small className="text-muted d-flex align-items-center">
                             <FaPhone className="me-2 text-primary" />
-                            {network.primary_mobile}
+                            {organisation.primary_mobile}
                           </small>
                         </div>
                       </div>
-                    </div>
-
-                    <hr className="my-3" />
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                      <small className="text-muted">
-                        <FaCalendarAlt className="me-1" />
-                        Created {formatDateAndTime(network.created_at)}
-                      </small>
                     </div>
                   </CardBody>
                 </Card>
@@ -323,11 +213,10 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                 Showing{" "}
                 {totalCount === 0 ? "0" : (currentPage - 1) * itemsPerPage + 1}{" "}
                 to{" "}
-                {currentNetworks.length === 0
+                {currentOrgs.length === 0
                   ? 0
-                  : (currentPage - 1) * itemsPerPage +
-                    currentNetworks.length}{" "}
-                of {totalCount} Networks
+                  : (currentPage - 1) * itemsPerPage + currentOrgs.length}{" "}
+                of {totalCount} Organisations
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -416,14 +305,9 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
             </Pagination>
           </div>
         </Row>
-
-        <AddNetworkModal
-          isOpen={isAddNetworkModalOpen}
-          toggle={toggleAddNetworkModal}
-        />
       </Container>
     </div>
   );
 };
 
-export default NetworkList;
+export default OrganisationList;
