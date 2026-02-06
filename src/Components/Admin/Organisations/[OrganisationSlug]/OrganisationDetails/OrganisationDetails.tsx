@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import { Badge, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 
-const OrganisationDetailsTab: React.FC = () => {
+const OrganisationDetails: React.FC = () => {
   const params = useParams();
   const slug = params?.organisationslug;
   const { data: getOrganisationDetails, isLoading } =
@@ -404,4 +404,4 @@ const OrganisationDetailsTab: React.FC = () => {
   );
 };
 
-export default OrganisationDetailsTab;
+export default OrganisationDetails;

@@ -43,7 +43,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
     page_size: maxItems,
   });
 
-  const itemsPerPage = maxItems ?? (organisationList as any)?.page_size ?? 12;
+  const itemsPerPage = 12;
   // Ensure we only render up to `itemsPerPage` items even if the API returned more
   const currentOrgs = organisationList?.results?.slice(0, itemsPerPage) ?? [];
   const totalCount = (organisationList as any)?.count ?? currentOrgs.length;

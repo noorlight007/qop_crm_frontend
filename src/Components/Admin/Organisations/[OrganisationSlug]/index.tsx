@@ -1,9 +1,9 @@
 "use client";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
-import OrganisationDetailsTab from "./OrganisationDetails/OrganisationDetails";
+import OrganisationDetails from "./OrganisationDetails/OrganisationDetails";
 
-const OrganisationDetails: React.FC = () => {
+const OrganisationDetailsContainer: React.FC = () => {
   return (
     <div>
       <Breadcrumbs
@@ -12,10 +12,10 @@ const OrganisationDetails: React.FC = () => {
         parent="Organisations"
       />
       <Container fluid>
-        <OrganisationDetailsTab />
+        <OrganisationDetails />
       </Container>
     </div>
   );
 };
 
-export default OrganisationDetails;
+export default OrganisationDetailsContainer;

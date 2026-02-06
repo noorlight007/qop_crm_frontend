@@ -31,7 +31,7 @@ import UpdateNetworkDirectorInfoModal from "./Modals/UpdateNetworkDirectorInfoMo
 import UpdateNetworkInfoModal from "./Modals/UpdateNetworkInfoModal";
 import formatChoiceFieldValue from "@/utils/formatters";
 
-const NetworkDetailsTab: React.FC = () => {
+const NetworkDetails: React.FC = () => {
   const params = useParams();
   const slug = params?.networkslug;
   const { data: getNetworkDetails, isLoading } = useGetNetworkDetailsQuery({
@@ -648,4 +648,4 @@ const NetworkDetailsTab: React.FC = () => {
   );
 };
 
-export default NetworkDetailsTab;
+export default NetworkDetails;

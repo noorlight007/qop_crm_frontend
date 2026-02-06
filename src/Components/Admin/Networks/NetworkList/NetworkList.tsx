@@ -103,7 +103,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
     }
   };
 
-  const itemsPerPage = maxItems ?? (getNetworkList as any)?.page_size ?? 12;
+  const itemsPerPage = 12;
   // Ensure we only render up to `itemsPerPage` items even if the API returned more
   const currentNetworks = getNetworkList?.results?.slice(0, itemsPerPage) ?? [];
   const totalCount = (getNetworkList as any)?.count ?? currentNetworks.length;
