@@ -53,15 +53,10 @@ const UpdateNetworkDirectorInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
     const original = {
       title: networkData?.user?.title ?? networkData?.title ?? null,
       first_name:
-        networkData?.user?.first_name ??
-        networkData?.first_name ??
-        "",
+        networkData?.user?.first_name ?? networkData?.first_name ?? "",
       middle_name:
-        networkData?.user?.middle_name ??
-        networkData?.middle_name ??
-        "",
-      last_name:
-        networkData?.user?.last_name ?? networkData?.last_name ?? "",
+        networkData?.user?.middle_name ?? networkData?.middle_name ?? "",
+      last_name: networkData?.user?.last_name ?? networkData?.last_name ?? "",
       email: networkData?.user?.email ?? networkData?.email ?? "",
       phone: networkData?.user?.phone ?? networkData?.phone ?? "",
     } as Record<string, string | null>;

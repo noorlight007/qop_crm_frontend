@@ -1,7 +1,5 @@
 import { useDeleteNetworkMutation } from "@/Redux/Reducers/Admin/Networks/NetworksApi";
-import { useDeleteOrganisationMutation } from "@/Redux/Reducers/Network/Director/Organisations/SingleOrganisation/SingleOrganisationApi";
 import { DeleteNetworkModalProps } from "@/Types/Admin/Networks/NetworkType";
-import { DeleteOrganisationModalProps } from "@/Types/Network/Director/OrganisationsTypes";
 import { useRouter } from "next/navigation";
 
 import { toast } from "react-toastify";
@@ -41,9 +39,7 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
       <ModalBody>
         <p>
           Are you sure you want to delete{" "}
-          <strong className="text-danger">
-            {networkInfo?.network?.name}
-          </strong>{" "}
+          <strong className="text-danger">{networkInfo?.network?.name}</strong>{" "}
           network?
         </p>
 
@@ -52,10 +48,11 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
             This action is irreversible.
           </p>
           <small className="text-muted">
-            Deleting this network will permanently remove all associated
-            data, including organisations, cases, leads, clients, advisers, admins, joint
-            applicants, appearance preferences, settings, profile information,
-            and all historical records. This data cannot be restored.
+            Deleting this network will permanently remove all associated data,
+            including organisations, cases, leads, clients, advisers, admins,
+            joint applicants, appearance preferences, settings, profile
+            information, and all historical records. This data cannot be
+            restored.
           </small>
         </div>
       </ModalBody>

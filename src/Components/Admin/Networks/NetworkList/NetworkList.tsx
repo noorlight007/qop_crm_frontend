@@ -110,13 +110,13 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
 
   useEffect(() => {
-      if (currentPage > totalPages) {
-        setCurrentPage(totalPages);
-      }
-      if (currentPage < 1) {
-        setCurrentPage(1);
-      }
-    }, [totalPages, currentPage]);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+    if (currentPage < 1) {
+      setCurrentPage(1);
+    }
+  }, [totalPages, currentPage]);
 
   return (
     <div>
@@ -145,7 +145,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                     />
                     <Input
                       type="text"
-                      placeholder="Search Organisation... "
+                      placeholder="Search Network... "
                       value={searchQuery}
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -165,7 +165,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                       trigger="hover"
                     >
                       <PopoverBody className="bg-white rounded text-dark p-3 small">
-                        🔍 You can search using Organisation Name.
+                        🔍 You can search using Network Name.
                       </PopoverBody>
                     </UncontrolledPopover>
                   </InputGroup>
@@ -240,19 +240,14 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             className="bg-primary bg-gradient text-center rounded d-flex align-items-center justify-content-center"
                             style={{ width: "160px", height: "80px" }}
                           >
-                            <Link
-                              className="text_decoration_hover"
-                              href={`/admin/networks/${network.slug}`}
-                            >
-                              <h3 className="text-white fw-bold mb-0">
-                                {network.name.charAt(0).toUpperCase()}
-                              </h3>
-                            </Link>
+                            <h3 className="text-white fw-bold mb-0">
+                              {network.name.charAt(0).toUpperCase()}
+                            </h3>
                           </div>
                         )}
 
                         <button
-                          title="Change organisation logo"
+                          title="Change network logo"
                           className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
                           style={{
                             width: 32,
@@ -279,7 +274,12 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
 
                       <div className="flex-grow-1">
                         <h5 className="fw-bold text-dark mb-1">
-                          {network.name}
+                          <Link
+                            className="text_decoration_hover"
+                            href={`/admin/networks/${network.slug}`}
+                          >
+                            {network.name}
+                          </Link>
                         </h5>
                         <p className="text-muted small mb-2">
                           <FaGlobe className="me-1" />
@@ -317,110 +317,105 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
         </Row>
 
         <Row>
-              <div className="d-flex justify-content-between align-items-center p-3">
-                <div className="px-2">
-                  <p className="text-primary">
-                    Showing{" "}
-                    {totalCount === 0
-                      ? "0"
-                      : (currentPage - 1) * itemsPerPage + 1}{" "}
-                    to{" "}
-                    {currentNetworks.length === 0
-                      ? 0
-                      : (currentPage - 1) * itemsPerPage +
-                        currentNetworks.length}{" "}
-                    of {totalCount} Networks
-                  </p>
-                </div>
-                <Pagination className="d-flex justify-content-end p-2">
-                  <PaginationItem disabled={currentPage === 1}>
-                    <PaginationLink first onClick={() => setCurrentPage(1)} />
+          <div className="d-flex justify-content-between align-items-center p-3">
+            <div className="px-2">
+              <p className="text-primary">
+                Showing{" "}
+                {totalCount === 0 ? "0" : (currentPage - 1) * itemsPerPage + 1}{" "}
+                to{" "}
+                {currentNetworks.length === 0
+                  ? 0
+                  : (currentPage - 1) * itemsPerPage +
+                    currentNetworks.length}{" "}
+                of {totalCount} Networks
+              </p>
+            </div>
+            <Pagination className="d-flex justify-content-end p-2">
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink first onClick={() => setCurrentPage(1)} />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink
+                  previous
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                />
+              </PaginationItem>
+
+              {totalPages <= 7 ? (
+                Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (pageNumber) => (
+                    <PaginationItem
+                      key={pageNumber}
+                      active={pageNumber === currentPage}
+                    >
+                      <PaginationLink
+                        onClick={() => setCurrentPage(pageNumber)}
+                      >
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ),
+                )
+              ) : (
+                <>
+                  <PaginationItem active={currentPage === 1}>
+                    <PaginationLink onClick={() => setCurrentPage(1)}>
+                      1
+                    </PaginationLink>
                   </PaginationItem>
-                  <PaginationItem disabled={currentPage === 1}>
-                    <PaginationLink
-                      previous
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                    />
-                  </PaginationItem>
 
-                  {totalPages <= 7 ? (
-                    Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                      (pageNumber) => (
-                        <PaginationItem
-                          key={pageNumber}
-                          active={pageNumber === currentPage}
-                        >
-                          <PaginationLink
-                            onClick={() => setCurrentPage(pageNumber)}
-                          >
-                            {pageNumber}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ),
-                    )
-                  ) : (
-                    <>
-                      <PaginationItem active={currentPage === 1}>
-                        <PaginationLink onClick={() => setCurrentPage(1)}>
-                          1
-                        </PaginationLink>
-                      </PaginationItem>
-
-                      {currentPage > 3 && (
-                        <PaginationItem disabled>
-                          <PaginationLink>...</PaginationLink>
-                        </PaginationItem>
-                      )}
-
-                      {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                        .filter(
-                          (pageNumber) =>
-                            pageNumber > 1 && pageNumber < totalPages,
-                        )
-                        .map((pageNumber) => (
-                          <PaginationItem
-                            key={pageNumber}
-                            active={pageNumber === currentPage}
-                          >
-                            <PaginationLink
-                              onClick={() => setCurrentPage(pageNumber)}
-                            >
-                              {pageNumber}
-                            </PaginationLink>
-                          </PaginationItem>
-                        ))}
-
-                      {currentPage < totalPages - 2 && (
-                        <PaginationItem disabled>
-                          <PaginationLink>...</PaginationLink>
-                        </PaginationItem>
-                      )}
-
-                      <PaginationItem active={currentPage === totalPages}>
-                        <PaginationLink
-                          onClick={() => setCurrentPage(totalPages)}
-                        >
-                          {totalPages}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </>
+                  {currentPage > 3 && (
+                    <PaginationItem disabled>
+                      <PaginationLink>...</PaginationLink>
+                    </PaginationItem>
                   )}
 
-                  <PaginationItem disabled={currentPage === totalPages}>
-                    <PaginationLink
-                      next
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                    />
+                  {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                    .filter(
+                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
+                    )
+                    .map((pageNumber) => (
+                      <PaginationItem
+                        key={pageNumber}
+                        active={pageNumber === currentPage}
+                      >
+                        <PaginationLink
+                          onClick={() => setCurrentPage(pageNumber)}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                  {currentPage < totalPages - 2 && (
+                    <PaginationItem disabled>
+                      <PaginationLink>...</PaginationLink>
+                    </PaginationItem>
+                  )}
+
+                  <PaginationItem active={currentPage === totalPages}>
+                    <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                      {totalPages}
+                    </PaginationLink>
                   </PaginationItem>
-                  <PaginationItem disabled={currentPage === totalPages}>
-                    <PaginationLink
-                      last
-                      onClick={() => setCurrentPage(totalPages)}
-                    />
-                  </PaginationItem>
-                </Pagination>
-              </div>
-            </Row>
+                </>
+              )}
+
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  next
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  last
+                  onClick={() => setCurrentPage(totalPages)}
+                />
+              </PaginationItem>
+            </Pagination>
+          </div>
+        </Row>
 
         <AddNetworkModal
           isOpen={isAddNetworkModalOpen}

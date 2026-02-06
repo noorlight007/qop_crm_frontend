@@ -1,6 +1,10 @@
-import { useUpdateNetworkMutation } from "@/Redux/Reducers/Admin/Networks/NetworksApi";
+import {
+  useGetNetworkDetailsQuery,
+  useUpdateNetworkMutation,
+} from "@/Redux/Reducers/Admin/Networks/NetworksApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
@@ -22,12 +26,16 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import DeleteNetworkModal from "../Modals/DeleteNetworkModal";
-import UpdateNetworkDirectorInfoModal from "../Modals/UpdateNetworkDirectorInfoModal";
-import UpdateNetworkInfoModal from "../Modals/UpdateNetworkInfoModal";
-import { NetworkDetails } from "@/Types/Admin/Networks/NetworkType";
+import DeleteNetworkModal from "./Modals/DeleteNetworkModal";
+import UpdateNetworkDirectorInfoModal from "./Modals/UpdateNetworkDirectorInfoModal";
+import UpdateNetworkInfoModal from "./Modals/UpdateNetworkInfoModal";
 
-const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoading }) => {
+const NetworkDetailsTab: React.FC = () => {
+  const params = useParams();
+  const slug = params?.networkslug;
+  const { data: getNetworkDetails, isLoading } = useGetNetworkDetailsQuery({
+    network_slug: slug,
+  });
   const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
@@ -190,7 +198,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                           width={150}
                           height={100}
                           src={
-                            networkData?.network?.logo ||
+                            getNetworkDetails?.network?.logo ||
                             "/assets/images/network/logo.jpg"
                           }
                           alt="Logo"
@@ -224,13 +232,13 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                     </Col>
                     <Col className="text-white">
                       <h2 className="mb-1 fw-bold">
-                        {networkData?.network?.name}
+                        {getNetworkDetails?.network?.name}
                       </h2>
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        {networkData?.network?.subdomain && (
+                        {getNetworkDetails?.network?.subdomain && (
                           <Badge className="bg-warning">
                             <FaGlobe className="me-1" />
-                            {`${"https://"}${networkData?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
+                            {`${"https://"}${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
                           </Badge>
                         )}
                       </div>
@@ -276,7 +284,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         </div>
                         <div className="flex-grow-1">
                           <p className="small text-muted mb-1">Phone</p>
-                          {networkData?.network?.primary_mobile ? (
+                          {getNetworkDetails?.network?.primary_mobile ? (
                             <span
                               className="fw-500 text-dark text-decoration-none text-break"
                               style={{
@@ -291,7 +299,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                                 (e.currentTarget.style.color = "inherit")
                               }
                             >
-                              {networkData?.network?.primary_mobile}
+                              {getNetworkDetails?.network?.primary_mobile}
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -316,7 +324,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         </div>
                         <div className="flex-grow-1">
                           <p className="small text-muted mb-1">Email</p>
-                          {networkData?.network?.email ? (
+                          {getNetworkDetails?.network?.email ? (
                             <span
                               className="fw-500 text-dark text-decoration-none text-break"
                               style={{
@@ -331,7 +339,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                                 (e.currentTarget.style.color = "inherit")
                               }
                             >
-                              {networkData?.network?.email}
+                              {getNetworkDetails?.network?.email}
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -353,14 +361,14 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         size={25}
                       />
                       <a
-                        href={networkData?.network?.website}
+                        href={getNetworkDetails?.network?.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-truncate text-decoration-none text-dark"
                         style={{ maxWidth: "200px" }}
-                        title={networkData?.network?.website}
+                        title={getNetworkDetails?.network?.website}
                       >
-                        {networkData?.network?.website ??
+                        {getNetworkDetails?.network?.website ??
                           "Website not provided"}
                       </a>
                     </Card>
@@ -371,7 +379,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {networkData?.network?.license_no ??
+                      {getNetworkDetails?.network?.license_no ??
                         "License number not provided"}
                     </Card>
                   </Col>
@@ -383,8 +391,8 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         className="me-2 bg-secondary p-1 rounded-1"
                         size={25}
                       />
-                      {networkData?.network?.other_contact ? (
-                        networkData.network.other_contact
+                      {getNetworkDetails?.network?.other_contact ? (
+                        getNetworkDetails.network.other_contact
                       ) : (
                         <small className="text-muted">
                           Secondary contact not provided
@@ -400,7 +408,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                       />
                       <small className="text-muted">
                         {formatDateAndTime(
-                          networkData?.network?.created_at ?? "",
+                          getNetworkDetails?.network?.created_at ?? "",
                         )}
                       </small>
                     </Card>
@@ -464,11 +472,11 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                 {/* Avatar section - positioned to overlap gradient */}
                 <div className="d-flex justify-content-center organisation-avatar-container">
                   <div className="position-relative">
-                    {networkData?.user?.profile_image ? (
+                    {getNetworkDetails?.user?.profile_image ? (
                       <div className="position-relative">
                         <Image
-                          src={networkData.user.profile_image}
-                          alt={networkData?.user?.name ?? "Director"}
+                          src={getNetworkDetails.user.profile_image}
+                          alt={getNetworkDetails?.user?.name ?? "Director"}
                           width={90}
                           height={90}
                           className="rounded-circle organisation-avatar-img"
@@ -497,7 +505,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                     ) : (
                       <div className="position-relative">
                         <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
-                          {networkData?.user?.name
+                          {getNetworkDetails?.user?.name
                             ?.split(" ")
                             .map((n: any) => n[0])
                             .join("")
@@ -537,7 +545,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                 {/* Name and role */}
                 <div className="text-center mt-1 mb-3">
                   <h4 className="mb-2 fw-bold fs-4">
-                    {networkData?.user?.name ?? "—"}
+                    {getNetworkDetails?.user?.name ?? "—"}
                   </h4>
                   <Badge className="px-3 py-2 bg-light-primary fw-semibold rounded-pill">
                     <i className="fa fa-crown me-1" />
@@ -552,7 +560,7 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {networkData?.user?.email ?? "Email not provided"}
+                      {getNetworkDetails?.user?.email ?? "Email not provided"}
                     </Card>
                   </Col>
                 </Row>
@@ -563,15 +571,15 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
                         className="me-2 bg-secondary p-1 rounded-1"
                         size={25}
                       />
-                      {networkData?.user?.phone ? (
-                        networkData.user.phone
+                      {getNetworkDetails?.user?.phone ? (
+                        getNetworkDetails.user.phone
                       ) : (
                         <small className="text-muted">Phone not provided</small>
                       )}
                     </Card>
                   </Col>
                   <Col sm="6">
-                    {networkData?.user?.is_active ? (
+                    {getNetworkDetails?.user?.is_active ? (
                       <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
                         <FaShieldAlt
                           className="me-2 bg-success p-1 rounded-1"
@@ -619,21 +627,21 @@ const NetworkDetailsTab: React.FC<NetworkDetails> = ({ slug, networkData, isLoad
       <UpdateNetworkInfoModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
-        slug={networkData?.network?.slug}
-        networkData={networkData}
+        slug={getNetworkDetails?.network?.slug}
+        networkData={getNetworkDetails}
       />
 
       <UpdateNetworkDirectorInfoModal
         isOpen={isDirectorModalOpen}
         toggle={toggleDirectorModal}
-        slug={networkData?.network?.slug}
-        networkData={networkData}
+        slug={getNetworkDetails?.network?.slug}
+        networkData={getNetworkDetails}
       />
 
       <DeleteNetworkModal
         isOpen={isDeleteModalOpen}
         toggle={toggleDeleteModal}
-        networkInfo={networkData}
+        networkInfo={getNetworkDetails}
       />
     </>
   );
