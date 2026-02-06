@@ -2,9 +2,9 @@ import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
-  useGetMortgageYourNeedsQuery,
-  useUpdateMortgageYourNeedsMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/MortgageYourNeeds/MortgageYourNeedsApi";
+  useGetNeedsAndPreferencesQuery,
+  useUpdateNeedsAndPreferencesMutation,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/NeedsAndPreferences/NeedsAndPreferencesApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -25,7 +25,7 @@ import {
   Row,
 } from "reactstrap";
 
-const MortgageYourNeedsContent: React.FC = () => {
+const NeedsAndPreferencesContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
@@ -35,26 +35,27 @@ const MortgageYourNeedsContent: React.FC = () => {
   );
 
   // rtk hooks
-  const { data: mortgageData, isLoading } = useGetMortgageYourNeedsQuery({
-    case_alias: casealias,
-  });
-  const [updateMortgageYourNeeds, { isLoading: isUpdating }] =
-    useUpdateMortgageYourNeedsMutation();
+  const { data: needsAndPreferencesData, isLoading } =
+    useGetNeedsAndPreferencesQuery({
+      case_alias: casealias,
+    });
+  const [updateNeedsAndPreferences, { isLoading: isUpdating }] =
+    useUpdateNeedsAndPreferencesMutation();
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
 
-  const [formData, setFormData] = useState(mortgageData || {});
+  const [formData, setFormData] = useState(needsAndPreferencesData || {});
   useEffect(() => {
-    if (mortgageData) {
-      setFormData(mortgageData);
+    if (needsAndPreferencesData) {
+      setFormData(needsAndPreferencesData);
     }
-  }, [mortgageData]);
+  }, [needsAndPreferencesData]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (!mortgageData) setErrors({});
-  }, [mortgageData]);
+    if (!needsAndPreferencesData) setErrors({});
+  }, [needsAndPreferencesData]);
 
   const parseApiErrors = (err: any): Record<string, string> => {
     const out: Record<string, string> = {};
@@ -219,7 +220,7 @@ const MortgageYourNeedsContent: React.FC = () => {
     };
 
     try {
-      const res = await updateMortgageYourNeeds({
+      const res = await updateNeedsAndPreferences({
         case_alias: casealias,
         payload: formValues,
       });
@@ -2034,4 +2035,4 @@ const MortgageYourNeedsContent: React.FC = () => {
   );
 };
 
-export default MortgageYourNeedsContent;
+export default NeedsAndPreferencesContent;

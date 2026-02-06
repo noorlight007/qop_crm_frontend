@@ -16,7 +16,7 @@ import HealthCheckContent from "./HealthCheck/HealthCheckContent";
 import InsuranceHealthContent from "./InsuranceHealth/InsuranceHealthContent";
 import InsuranceOverviewContent from "./InsuranceOverview/InsuranceOverviewContent";
 import { LoanDetailsTab } from "./LoanDetails/LoanDetailsTab";
-import MortgageYourNeedsContent from "./MortgageYourNeeds/MortgageYourNeedsContent";
+import NeedsAndPreferencesContent from "./NeedsAndPreferences/NeedsAndPreferencesContent";
 import { NotesTab } from "./Notes/NotesTab";
 import PortfolioContent from "./Portfolio/PortfolioContent";
 import ProductContent from "./Product/ProductContent";
@@ -37,7 +37,7 @@ const tabComponents: Record<string, React.FC> = {
   "Solicitors & Accountants": SolicitorsAndAccountantsTab,
   "Budget Planner": BudgetPlanner,
   "Existing Protection": ExistingProtectionTab,
-  "Mortgage Your Needs": MortgageYourNeedsContent,
+  "Needs And Preferences": NeedsAndPreferencesContent,
   Notes: NotesTab,
   Product: ProductContent,
   "DIP History": DIPHistoryTab,

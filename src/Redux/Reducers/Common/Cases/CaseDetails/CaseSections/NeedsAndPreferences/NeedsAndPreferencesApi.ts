@@ -1,26 +1,26 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const MortgageYourNeedsApi = baseApi.injectEndpoints({
+export const NeedsAndPreferencesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getMortgageYourNeeds: builder.query({
+    getNeedsAndPreferences: builder.query({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/mortgage/`,
         method: "GET",
       }),
-      providesTags: ["MortgageYourNeeds"],
+      providesTags: ["NeedsAndPreferences"],
     }),
-    updateMortgageYourNeeds: builder.mutation({
+    updateNeedsAndPreferences: builder.mutation({
       query: ({ case_alias, payload }) => ({
         url: `/cases/${case_alias}/mortgage/`,
         method: "PUT",
         body: payload,
       }),
-      invalidatesTags: ["MortgageYourNeeds"],
+      invalidatesTags: ["NeedsAndPreferences"],
     }),
   }),
 });
 
 export const {
-  useGetMortgageYourNeedsQuery,
-  useUpdateMortgageYourNeedsMutation,
-} = MortgageYourNeedsApi;
+  useGetNeedsAndPreferencesQuery,
+  useUpdateNeedsAndPreferencesMutation,
+} = NeedsAndPreferencesApi;
