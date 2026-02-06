@@ -1,5 +1,10 @@
 import { MenuItem } from "@/Types/LayoutTypes";
-import { FaBriefcase, FaNetworkWired, FaUsers } from "react-icons/fa";
+import {
+  FaBriefcase,
+  FaCalculator,
+  FaNetworkWired,
+  FaUsers,
+} from "react-icons/fa";
 
 //Admin
 const AdminMenu: MenuItem[] = [
@@ -418,6 +423,34 @@ const OrganisationDirectorMenu: MenuItem[] = [
             path: "/organisation/director/introducers",
             title: "Introducers",
             type: "link",
+          },
+        ],
+      },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/organisation/director/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/organisation/director/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/organisation/director/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/organisation/director/calculators/stamp-duty-calculator",
           },
         ],
       },
