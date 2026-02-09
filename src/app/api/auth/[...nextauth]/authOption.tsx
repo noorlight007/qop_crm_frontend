@@ -41,7 +41,6 @@ declare module "next-auth" {
     profile_image?: string | null;
     name?: string;
     subdomain?: string | null;
-    accessTokenExpires?: number;
   }
 
   // Extend core auth options to support trustHost
@@ -50,50 +49,13 @@ declare module "next-auth" {
   }
 }
 
-// Helper function to refresh access token
-async function refreshAccessToken(token: any) {
-  try {
-    if (!token.refreshToken) {
-      throw new Error("No refresh token available");
-    }
-
-    const response = await apiClient.post(
-      "/auth/jwt/refresh/",
-      {
-        refresh: token.refreshToken,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-TENANT-SUBDOMAIN": token.subdomain || "",
-        },
-      },
-    );
-
-    if (!response.data) {
-      throw new Error("Failed to refresh token");
-    }
-
-    return {
-      ...token,
-      accessToken: response.data.access,
-      accessTokenExpires: Date.now() + 5 * 60 * 1000, // 5 minutes from now
-    };
-  } catch (error) {
-    console.error("Error refreshing access token:", error);
-    return {
-      ...token,
-      error: "RefreshAccessTokenError",
-    };
-  }
-}
-
 export const authoption: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    // Match backend refresh token expiry (1 day)
-    maxAge: 24 * 60 * 60, // 1 day (matches backend refresh token expiry)
-    updateAge: 60 * 60, // re-issue session cookie once per hour while active
+    // Auto logout after 24 hours.
+    // NOTE: access tokens may still be short-lived; API layer refreshes them on 401.
+    maxAge: 24 * 60 * 60, // 24 hours
+    updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
   },
   pages: {
     signIn: "/auth/login",
@@ -108,8 +70,6 @@ export const authoption: NextAuthOptions = {
         sameSite: "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production",
-        // Match session duration (1 day to align with backend refresh token)
-        maxAge: 24 * 60 * 60, // 1 day
         // Extract base domain for subdomain support
         // If you're on app.example.com, this sets .example.com
         domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN || undefined,
@@ -185,14 +145,11 @@ export const authoption: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, session }) {
-      // Initial sign in
       if (user) {
         const userWithToken = user as UserWithToken;
         token.name = userWithToken.name;
         if (userWithToken.accessToken) {
           token.accessToken = userWithToken.accessToken;
-          // Set access token expiry time (5 minutes from now as buffer)
-          token.accessTokenExpires = Date.now() + 5 * 60 * 1000;
         }
         if (userWithToken.refreshToken) {
           token.refreshToken = userWithToken.refreshToken;
@@ -206,52 +163,25 @@ export const authoption: NextAuthOptions = {
         if (userWithToken.subdomain) {
           token.subdomain = userWithToken.subdomain;
         }
-        return token;
       }
 
-      // Return previous token if the access token has not expired yet
-      if (
-        token.accessTokenExpires &&
-        Date.now() < (token.accessTokenExpires as number)
-      ) {
-        // Handle session updates (when update() is called)
-        if (trigger === "update" && session) {
-          if (session.name) {
-            token.name = session.name;
-          }
-          if (session.profile_image !== undefined) {
-            token.profile_image = session.profile_image;
-          }
-          if (session.user_type !== undefined) {
-            token.user_type = session.user_type;
-          }
-          if (session.subdomain !== undefined) {
-            token.subdomain = session.subdomain;
-          }
-        }
-        return token;
-      }
-
-      // Access token has expired, try to refresh it
-      const refreshedToken = await refreshAccessToken(token);
-
-      // Handle session updates after refresh
+      // Handle session updates (when update() is called)
       if (trigger === "update" && session) {
         if (session.name) {
-          refreshedToken.name = session.name;
+          token.name = session.name;
         }
         if (session.profile_image !== undefined) {
-          refreshedToken.profile_image = session.profile_image;
+          token.profile_image = session.profile_image;
         }
         if (session.user_type !== undefined) {
-          refreshedToken.user_type = session.user_type;
+          token.user_type = session.user_type;
         }
         if (session.subdomain !== undefined) {
-          refreshedToken.subdomain = session.subdomain;
+          token.subdomain = session.subdomain;
         }
       }
 
-      return refreshedToken;
+      return token;
     },
 
     async session({ session, token }) {
