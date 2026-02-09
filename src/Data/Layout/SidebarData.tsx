@@ -163,6 +163,34 @@ const NetworkDirectorMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/network/director/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/network/director/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/network/director/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/network/director/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
