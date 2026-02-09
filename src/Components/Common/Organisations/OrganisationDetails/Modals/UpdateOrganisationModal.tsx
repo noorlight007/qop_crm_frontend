@@ -33,6 +33,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
       other_contact: "",
       website: "",
       contact_person: "",
+      license_no: "",
     },
   });
 
@@ -72,6 +73,10 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
           contact_person:
             organisationData?.organization?.contact_person ??
             organisationData?.contact_person ??
+            "",
+          license_no:
+            organisationData?.organization?.license_no ??
+            organisationData?.license_no ??
             "",
         },
       });
@@ -129,6 +134,10 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
         contact_person:
           organisationData?.organization?.contact_person ??
           organisationData?.contact_person ??
+          "",
+        license_no:
+          organisationData?.organization?.license_no ??
+          organisationData?.license_no ??
           "",
       } as Record<string, string>;
 
@@ -357,7 +366,24 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
             </Col>
           </Row>
           <Row>
-            {/* Profile Image Upload */}
+            <Col md="12">
+              <FormGroup>
+                <Label for="license_no">License Number</Label>
+                <Input
+                  type="text"
+                  id="license_no"
+                  name="license_no"
+                  value={formData.organization.license_no}
+                  onChange={handleInputChange}
+                />
+                {apiErrors["organization.license_no"] ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors["organization.license_no"].join(", ")}
+                  </div>
+                ) : null}
+              </FormGroup>
+            </Col>
+            {/* License Image Upload */}
             <Col md="6">
               <FormGroup>
                 <Label for="organization.license_image">License Image</Label>
