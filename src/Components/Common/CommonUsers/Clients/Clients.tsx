@@ -183,7 +183,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            {/* {session?.user?.user_type !== "NETWORK_COMPLIANCE_ASSISTANT" && (
+            {/* {session?.user?.user_type !== "NETWORK_COMPLIANCE" && (
               <Button
                 color="primary"
                 onClick={openAddModal}
@@ -344,8 +344,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                           <i className="icon-pencil-alt"></i>
                         </Button>
                         {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                          session?.user?.user_type ===
-                            "NETWORK_COMPLIANCE_ASSISTANT" ||
+                          session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                           session?.user?.user_type ===
                             "ORGANISATION_DIRECTOR") && (
                           <Button

@@ -800,7 +800,7 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
       return AdminMenu;
     case "NETWORK_DIRECTOR":
       return NetworkDirectorMenu;
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return NetworkComplianceMenu;
     case "NETWORK_ADVISER":
       return NetworkAdviserMenu;

@@ -170,7 +170,7 @@ const Notes: React.FC = () => {
               )}
 
               {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
+                session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                 session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
                 <th style={{ minWidth: "100px", textAlign: "center" }}>
                   Actions
@@ -275,8 +275,7 @@ const Notes: React.FC = () => {
                     )}
 
                     {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                      session?.user?.user_type ===
-                        "NETWORK_COMPLIANCE_ASSISTANT" ||
+                      session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                       session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
                       <td className="text-center">
                         <Button
