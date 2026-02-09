@@ -5,8 +5,9 @@ import {
 import { FeesTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
+import { TbDownload } from "react-icons/tb";
 import { toast } from "react-toastify";
-import { Button, Col, Row } from "reactstrap";
+import { Button, Col, Row, Spinner } from "reactstrap";
 import FeeInTable from "./FeesTabContents/FeesInTable";
 import FeeOutTable from "./FeesTabContents/FeesOutTable";
 
@@ -73,18 +74,27 @@ export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
 
   return (
     <div className="p-4">
-      <div className="mb-3 d-flex justify-content-end">
-        {isFeesSummaryDownloading ? (
-          <>Downloading...</>
-        ) : (
-          <Button color="primary" onClick={handleDownloadFeesSummary}>
-            Download Fees Summary
-          </Button>
-        )}
-      </div>
-
       {renderTabContent()}
 
+      <Row>
+        <Col>
+          <div className="d-flex justify-content-end mt-2">
+            <Button className="bg-secondary rounded">
+              {isFeesSummaryDownloading ? (
+                <>
+                  <Spinner size="sm" color="light" className="me-2" />
+                  Downloading...
+                </>
+              ) : (
+                <div onClick={handleDownloadFeesSummary}>
+                  <TbDownload size={20} className="me-2" />
+                  Download Fees Summary
+                </div>
+              )}
+            </Button>
+          </div>
+        </Col>
+      </Row>
       <Row>
         <Col>
           <div className="d-flex justify-content-center gap-2 mt-3 bg-light-primary p-3 rounded">
