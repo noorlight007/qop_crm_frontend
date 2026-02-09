@@ -1,10 +1,12 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useDownloadFeesSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { TbDownload } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -15,6 +17,7 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Spinner,
 } from "reactstrap";
 import { FeesTabContent } from "./FeesTabContent";
 
@@ -26,7 +29,50 @@ const FeesTab: FC = () => {
     { case_alias: casealias },
     { skip: !casealias },
   );
+
   const [basicTab, setBasicTab] = useState("1");
+  const [shouldDownload, setShouldDownload] = useState(false);
+
+  const {
+    data: feesSummaryBlob,
+    isLoading: isFeesSummaryDownloading,
+    isSuccess,
+    isError,
+  } = useDownloadFeesSummaryQuery(
+    { case_alias: casealias },
+    { skip: !shouldDownload || !casealias },
+  );
+
+  useEffect(() => {
+    if (isSuccess && feesSummaryBlob && shouldDownload) {
+      // Create download link
+      const url = window.URL.createObjectURL(feesSummaryBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `fees-summary(${caseData.name}).pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShouldDownload(false);
+    }
+  }, [isSuccess, feesSummaryBlob, shouldDownload, caseData]);
+  // Handle errors
+  useEffect(() => {
+    if (isError && shouldDownload) {
+      toast.error("Failed to download fees summary. Please try again.");
+      setShouldDownload(false);
+    }
+  }, [isError, shouldDownload]);
+
+  const handleDownloadFeesSummary = () => {
+    if (!casealias) {
+      toast.error("Fees summary is not available for download.");
+      return;
+    }
+    setShouldDownload(true);
+  };
 
   const currentTab: string | null = useAppSelector(
     (state) => state.caseSections.basicTabId,
@@ -66,6 +112,21 @@ const FeesTab: FC = () => {
                 </NavItem>
               ))}
             </Nav>
+            <div className="position-absolute top-0 end-0 me-2">
+              <Button color="primary">
+                {isFeesSummaryDownloading ? (
+                  <>
+                    <Spinner size="sm" color="light" className="me-2" />
+                    Downloading...
+                  </>
+                ) : (
+                  <div onClick={handleDownloadFeesSummary}>
+                    <TbDownload size={20} className="me-2" />
+                    Download Fees Summary
+                  </div>
+                )}
+              </Button>
+            </div>
           </CardHeader>
           <CardBody className="pxd-0 pbd-0">
             <FeesTabContent tabId={basicTab} setTabId={setBasicTab} />
