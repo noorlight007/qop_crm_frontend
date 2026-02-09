@@ -1,12 +1,12 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import MyTask from "@/Components/Common/MyTask/MyTask";
+import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetAdminDashboardDataQuery } from "@/Redux/Reducers/Organisation/Admin/Dashboard/AdminDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import AdviserTaskOverview from "./AdviserTaskOverview/AdviserTaskOverview";
 import CaseProgress from "./CaseProgress/CaseProgress";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
-import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationAdminDashboardContainer: React.FC = () => {
   const { data: adminDashboardData, isLoading } =
@@ -20,10 +20,7 @@ const OrganisationAdminDashboardContainer: React.FC = () => {
         parent="Dashboard"
       />
       <Container fluid>
-        <WelcomeBanner
-          isLoading={isLoading}
-          dashboardData={adminDashboardData}
-        />
+        <WelcomeBanner />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}

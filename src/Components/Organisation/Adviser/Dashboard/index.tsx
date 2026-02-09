@@ -1,5 +1,6 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import MyTask from "@/Components/Common/MyTask/MyTask";
+import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import {
   useGetAdviserDashboardClientDataQuery,
   useGetAdviserDashboardDocumentDataQuery,
@@ -11,7 +12,6 @@ import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
-import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationAdviserContainer: React.FC = () => {
   const { data: adviserSummary, isLoading: isSummaryLoading } =
@@ -29,10 +29,7 @@ const OrganisationAdviserContainer: React.FC = () => {
         parent="Dashboard"
       />
       <Container fluid>
-        <WelcomeBanner
-          isLoading={isSummaryLoading}
-          adviserSummaryData={adviserSummary}
-        />
+        <WelcomeBanner />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isSummaryLoading}
