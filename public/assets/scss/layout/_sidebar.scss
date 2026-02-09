@@ -28,8 +28,9 @@
   &.iconcolor-sidebar {
     .sidebar-menu {
       li {
-        $strokes: $success-color, $secondary-color, $primary-color,
-          $danger-color, $info-color, $warning-color, $body-font-color;
+        $strokes:
+          $success-color, $secondary-color, $primary-color, $danger-color,
+          $info-color, $warning-color, $body-font-color;
         $repeat: 100;
         @for $i from 1 through $repeat {
           &:nth-child(#{length($strokes)}n + #{$i}) {
@@ -393,6 +394,29 @@
     }
   }
 }
+
+/* Mobile: keep submenu left-aligned like medium/large screens */
+@media only screen and (max-width: 575.98px) {
+  .sidebar-submenu {
+    margin-left: 20px;
+    padding-left: 12px;
+    border-left: 2px solid var(--theme-default);
+    list-style: none;
+    display: block !important;
+  }
+  .sidebar-submenu li {
+    padding: 0 10px;
+    list-style: none;
+  }
+  .sidebar-submenu li a {
+    padding-left: 10px;
+    text-align: left;
+  }
+  .sidebar-submenu li a::before {
+    left: -6px;
+  }
+}
+
 .page-sidebar {
   .left-arrow {
     display: none;
