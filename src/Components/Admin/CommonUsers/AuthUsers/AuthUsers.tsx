@@ -248,7 +248,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
-          {pathname !== "/admin/compliance-assistants" && (
+          {pathname !== "/admin/compliances" && (
             <Col md={3}>
               <Input
                 type="select"

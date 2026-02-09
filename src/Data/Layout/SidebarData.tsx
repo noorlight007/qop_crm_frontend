@@ -144,14 +144,14 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
           },
           {
-            path: "/network/director/compliance-assistants",
-            title: "Compliance Assistants",
+            path: "/network/director/compliances",
+            title: "Compliances",
             type: "link",
             children: [],
           },
           {
             path: "/network/director/advisers",
-            title: "Registered Advisers",
+            title: "Advisers",
             type: "link",
             children: [],
           },

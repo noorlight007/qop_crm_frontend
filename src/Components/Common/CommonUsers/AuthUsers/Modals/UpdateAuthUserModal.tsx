@@ -135,6 +135,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
           "email",
           "phone",
           "gender",
+          "designation",
           "joining_date",
           "company_name",
           "company_address",
@@ -362,30 +363,53 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-            {pathname !== "/organisation/director/introducers" && (
-              <Col md={6} xs={6}>
+            {pathname === "/network/director/compliances" && (
+              <Col md={6}>
                 <FormGroup>
-                  <Label for="gender">Gender</Label>
+                  <Label for="designation">
+                    Designation<span className="text-danger">*</span>
+                  </Label>
                   <Input
-                    id="gender"
-                    name="gender"
-                    type="select"
-                    value={authUserData?.gender || ""}
+                    id="designation"
+                    name="designation"
+                    type="text"
+                    value={authUserData.designation || ""}
                     onChange={handleChange}
-                  >
-                    <option value="">Select...</option>
-                    <option value="MALE">Male</option>
-                    <option value="FEMALE">Female</option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                  {getFieldError("gender") && (
+                    required
+                  />
+                  {getFieldError("designation") && (
                     <div className="text-danger small mt-1">
-                      {getFieldError("gender")}
+                      {getFieldError("designation")}
                     </div>
                   )}
                 </FormGroup>
               </Col>
             )}
+            {pathname !== "/organisation/director/introducers" &&
+              pathname !== "/network/director/compliances" && (
+                <Col md={6} xs={6}>
+                  <FormGroup>
+                    <Label for="gender">Gender</Label>
+                    <Input
+                      id="gender"
+                      name="gender"
+                      type="select"
+                      value={authUserData?.gender || ""}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select...</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                      <option value="OTHER">Other</option>
+                    </Input>
+                    {getFieldError("gender") && (
+                      <div className="text-danger small mt-1">
+                        {getFieldError("gender")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
             {pathname === "/organisation/director/introducers" && (
               <>
                 <Col md={6}>

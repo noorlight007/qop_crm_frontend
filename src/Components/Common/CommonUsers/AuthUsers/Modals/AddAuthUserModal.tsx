@@ -31,6 +31,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     phone: "",
     password: "",
     gender: "",
+    designation: "",
     joining_date: "",
     company_name: "",
     company_address: "",
@@ -124,11 +125,12 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       phone: formData.phone || null,
       password: formData.password,
       gender: formData.gender ? formData.gender : null,
+      designation: formData.designation,
       joining_date: formData.joining_date ? formData.joining_date : null,
       role:
         pathname === "/network/director/advisers"
           ? "NETWORK_ADVISER"
-          : pathname === "/network/director/compliance-assistants"
+          : pathname === "/network/director/compliances"
             ? "NETWORK_COMPLIANCE"
             : pathname === "/organisation/director/advisers"
               ? "ORGANISATION_ADVISER"
@@ -155,6 +157,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
           phone: "",
           password: "",
           gender: "",
+          designation: "",
           joining_date: "",
           company_name: "",
           company_address: "",
@@ -344,33 +347,57 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
 
-              {pathname !== "/organisation/director/introducers" && (
+              {pathname === "/network/director/compliances" && (
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="gender">
-                      Gender<span className="text-danger">*</span>
+                    <Label for="designation">
+                      Designation<span className="text-danger">*</span>
                     </Label>
                     <Input
-                      id="gender"
-                      name="gender"
-                      type="select"
-                      value={formData.gender}
+                      id="designation"
+                      name="designation"
+                      type="text"
+                      value={formData.designation || ""}
                       onChange={handleInputChange}
                       required
-                    >
-                      <option value="">Select...</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                    </Input>
-                    {getFieldError("gender") && (
+                    />
+                    {getFieldError("designation") && (
                       <div className="text-danger small mt-1">
-                        {getFieldError("gender")}
+                        {getFieldError("designation")}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
               )}
+
+              {pathname !== "/organisation/director/introducers" &&
+                pathname !== "/network/director/compliances" && (
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="gender">
+                        Gender<span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        id="gender"
+                        name="gender"
+                        type="select"
+                        value={formData.gender}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select...</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                      </Input>
+                      {getFieldError("gender") && (
+                        <div className="text-danger small mt-1">
+                          {getFieldError("gender")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                )}
               {pathname === "/organisation/director/introducers" && (
                 <>
                   <Col md={6}>
