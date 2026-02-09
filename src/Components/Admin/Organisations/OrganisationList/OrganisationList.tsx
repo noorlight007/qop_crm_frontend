@@ -135,11 +135,12 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                 className="mb-4"
                 key={organisation.slug}
               >
-                <Card className="h-100 shadow-sm border-0">
+                <Card className="h-100 shadow-sm border-0" style={{ position: "relative", overflow: "hidden" }}>
                   <Link
                     href={`/admin/organisations/${organisation.slug}`}
                     title="Website"
                     className="text-muted position-absolute top-0 end-0 p-3"
+                    style={{ zIndex: 5 }}
                   >
                     <i
                       style={{ fontSize: "10px" }}
@@ -147,8 +148,8 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                     ></i>
                   </Link>
                   <CardBody className="p-3">
-                    <div className="d-flex gap-3">
-                      <div className="flex-shrink-0 position-relative">
+                    <div className="d-flex gap-3 flex-column flex-sm-row">
+                      <div className="flex-shrink-0 position-relative d-flex justify-content-center justify-content-sm-start">
                         {organisation.logo ? (
                           <Image
                             src={organisation.logo}
@@ -161,7 +162,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                         ) : (
                           <div
                             className="bg-primary bg-gradient text-center rounded d-flex align-items-center justify-content-center"
-                            style={{ width: "160px", height: "80px" }}
+                            style={{ width: "160px", height: "80px", maxWidth: "100%" }}
                           >
                             <h3 className="text-white fw-bold mb-0">
                               {organisation.name.charAt(0).toUpperCase()}
@@ -170,8 +171,8 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                         )}
                       </div>
 
-                      <div className="flex-grow-1">
-                        <h5 className="fw-bold text-dark mb-1">
+                      <div className="flex-grow-1" style={{ minWidth: 0, paddingRight: "25px" }}>
+                        <h5 className="fw-bold text-dark mb-1" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
                           <Link
                             className="text_decoration_hover"
                             href={`${getOrganisationUrl(session)}/${organisation.slug}`}
@@ -179,21 +180,21 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                             {organisation.name}
                           </Link>
                         </h5>
-                        <p className="text-muted small mb-2">
+                        <p className="text-muted small mb-2" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
                           <FaGlobe className="me-1" />
                           {organisation.subdomain}
                         </p>
                         <div className="mb-1">
-                          <small className="text-muted d-flex align-items-center">
-                            <FaEnvelope className="me-2 text-primary" />
-                            <span className="text-truncate">
+                          <small className="text-muted d-flex align-items-center" style={{ minWidth: 0 }}>
+                            <FaEnvelope className="me-2 text-primary flex-shrink-0" />
+                            <span className="text-truncate" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {organisation.email}
                             </span>
                           </small>
                         </div>
                         <div className="mb-2">
-                          <small className="text-muted d-flex align-items-center">
-                            <FaPhone className="me-2 text-primary" />
+                          <small className="text-muted d-flex align-items-center" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                            <FaPhone className="me-2 text-primary flex-shrink-0" />
                             {organisation.primary_mobile}
                           </small>
                         </div>
@@ -207,9 +208,9 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
         </Row>
 
         <Row>
-          <div className="d-flex justify-content-between align-items-center p-3">
-            <div className="px-2">
-              <p className="text-primary">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 gap-3">
+            <div className="px-2 text-center text-md-start">
+              <p className="text-primary mb-0">
                 Showing{" "}
                 {totalCount === 0 ? "0" : (currentPage - 1) * itemsPerPage + 1}{" "}
                 to{" "}
@@ -219,7 +220,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                 of {totalCount} Organisations
               </p>
             </div>
-            <Pagination className="d-flex justify-content-end p-2">
+            <Pagination className="d-flex justify-content-end p-2 mb-0 flex-wrap">
               <PaginationItem disabled={currentPage === 1}>
                 <PaginationLink first onClick={() => setCurrentPage(1)} />
               </PaginationItem>

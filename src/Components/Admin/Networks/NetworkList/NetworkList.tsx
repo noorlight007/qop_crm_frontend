@@ -212,11 +212,12 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
           ) : (
             getNetworkList?.results?.map((network: Network) => (
               <Col xs="12" md="6" lg="4" className="mb-4" key={network.slug}>
-                <Card className="h-100 shadow-sm border-0">
+                <Card className="h-100 shadow-sm border-0" style={{ position: "relative", overflow: "hidden" }}>
                   <Link
                     href={`/admin/networks/${network.slug}`}
                     title="Website"
                     className="text-muted position-absolute top-0 end-0 p-3"
+                    style={{ zIndex: 5 }}
                   >
                     <i
                       style={{ fontSize: "10px" }}
@@ -224,8 +225,8 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                     ></i>
                   </Link>
                   <CardBody className="p-3">
-                    <div className="d-flex gap-3">
-                      <div className="flex-shrink-0 position-relative">
+                    <div className="d-flex gap-3 flex-column flex-sm-row">
+                      <div className="flex-shrink-0 position-relative d-flex justify-content-center justify-content-sm-start">
                         {network.logo ? (
                           <Image
                             src={network.logo}
@@ -238,7 +239,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                         ) : (
                           <div
                             className="bg-primary bg-gradient text-center rounded d-flex align-items-center justify-content-center"
-                            style={{ width: "160px", height: "80px" }}
+                            style={{ width: "160px", height: "80px", maxWidth: "100%" }}
                           >
                             <h3 className="text-white fw-bold mb-0">
                               {network.name.charAt(0).toUpperCase()}
@@ -272,8 +273,8 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                         </button>
                       </div>
 
-                      <div className="flex-grow-1">
-                        <h5 className="fw-bold text-dark mb-1">
+                      <div className="flex-grow-1" style={{ minWidth: 0, paddingRight: "25px" }}>
+                        <h5 className="fw-bold text-dark mb-1" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
                           <Link
                             className="text_decoration_hover"
                             href={`/admin/networks/${network.slug}`}
@@ -281,21 +282,21 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             {network.name}
                           </Link>
                         </h5>
-                        <p className="text-muted small mb-2">
+                        <p className="text-muted small mb-2" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
                           <FaGlobe className="me-1" />
                           {network.subdomain}
                         </p>
                         <div className="mb-1">
-                          <small className="text-muted d-flex align-items-center">
-                            <FaEnvelope className="me-2 text-primary" />
-                            <span className="text-truncate">
+                          <small className="text-muted d-flex align-items-center" style={{ minWidth: 0 }}>
+                            <FaEnvelope className="me-2 text-primary flex-shrink-0" />
+                            <span className="text-truncate" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {network.email}
                             </span>
                           </small>
                         </div>
                         <div className="mb-2">
-                          <small className="text-muted d-flex align-items-center">
-                            <FaPhone className="me-2 text-primary" />
+                          <small className="text-muted d-flex align-items-center" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                            <FaPhone className="me-2 text-primary flex-shrink-0" />
                             {network.primary_mobile}
                           </small>
                         </div>
@@ -304,7 +305,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
 
                     <hr className="my-3" />
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                      <small className="text-muted">
+                      <small className="text-muted" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
                         <FaCalendarAlt className="me-1" />
                         Created {formatDateAndTime(network.created_at)}
                       </small>
@@ -317,9 +318,9 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
         </Row>
 
         <Row>
-          <div className="d-flex justify-content-between align-items-center p-3">
-            <div className="px-2">
-              <p className="text-primary">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 gap-3">
+            <div className="px-2 text-center text-md-start">
+              <p className="text-primary mb-0">
                 Showing{" "}
                 {totalCount === 0 ? "0" : (currentPage - 1) * itemsPerPage + 1}{" "}
                 to{" "}
@@ -330,7 +331,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                 of {totalCount} Networks
               </p>
             </div>
-            <Pagination className="d-flex justify-content-end p-2">
+            <Pagination className="d-flex justify-content-end p-2 mb-0 flex-wrap">
               <PaginationItem disabled={currentPage === 1}>
                 <PaginationLink first onClick={() => setCurrentPage(1)} />
               </PaginationItem>
