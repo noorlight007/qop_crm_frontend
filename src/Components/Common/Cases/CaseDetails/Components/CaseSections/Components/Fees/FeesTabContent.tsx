@@ -1,17 +1,64 @@
-import { useCalculateFeesQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import {
+  useCalculateFeesQuery,
+  useDownloadFeesSummaryQuery,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import { FeesTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
 import { useParams } from "next/navigation";
-import { FC } from "react";
-import { Col, Row } from "reactstrap";
+import { FC, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { Button, Col, Row } from "reactstrap";
 import FeeInTable from "./FeesTabContents/FeesInTable";
 import FeeOutTable from "./FeesTabContents/FeesOutTable";
 
 export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
   const { casealias } = useParams();
+  const [shouldDownload, setShouldDownload] = useState(false);
   const { data: feesCaculateData, isLoading: feesCalculateLoading } =
     useCalculateFeesQuery({
       case_alias: casealias,
     });
+
+  const {
+    data: feesSummaryBlob,
+    isLoading: isFeesSummaryDownloading,
+    isSuccess,
+    isError,
+  } = useDownloadFeesSummaryQuery(
+    { case_alias: casealias },
+    { skip: !shouldDownload || !casealias },
+  );
+
+  useEffect(() => {
+    if (isSuccess && feesSummaryBlob && shouldDownload) {
+      // Create download link
+      const url = window.URL.createObjectURL(feesSummaryBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `fees-summary-${casealias}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShouldDownload(false);
+    }
+  }, [isSuccess, feesSummaryBlob, shouldDownload, casealias]);
+
+  // Handle errors
+  useEffect(() => {
+    if (isError && shouldDownload) {
+      toast.error("Failed to download fees summary. Please try again.");
+      setShouldDownload(false);
+    }
+  }, [isError, shouldDownload]);
+
+  const handleDownloadFeesSummary = () => {
+    if (!casealias) {
+      toast.error("Fees summary is not available for download.");
+      return;
+    }
+    setShouldDownload(true);
+  };
 
   const renderTabContent = () => {
     switch (tabId) {
@@ -26,7 +73,18 @@ export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
 
   return (
     <div className="p-4">
+      <div className="mb-3 d-flex justify-content-end">
+        {isFeesSummaryDownloading ? (
+          <>Downloading...</>
+        ) : (
+          <Button color="primary" onClick={handleDownloadFeesSummary}>
+            Download Fees Summary
+          </Button>
+        )}
+      </div>
+
       {renderTabContent()}
+
       <Row>
         <Col>
           <div className="d-flex justify-content-center gap-2 mt-3 bg-light-primary p-3 rounded">
