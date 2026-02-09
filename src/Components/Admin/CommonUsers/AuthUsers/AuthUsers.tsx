@@ -8,7 +8,7 @@ import {
   AuthUser,
   AuthUsersProps,
 } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -248,7 +248,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
-          {pathname !== "/admin/compliances" && (
+          {pathname !== "/admin/users/compliances" && (
             <Col md={3}>
               <Input
                 type="select"
@@ -301,6 +301,11 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                {pathname === "/admin/users/compliances" && (
+                  <th>Designation</th>
+                )}
+                <th>Joining Date</th>
+                <th>Created By</th>
                 <th>Created At</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -309,7 +314,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
             <tbody>
               {isLoading || isFetching ? (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={9} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -318,33 +323,38 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               ) : currentAuthUsers.length > 0 ? (
                 currentAuthUsers.map((user: any) => (
                   <tr key={user.alias} className="text-center">
-                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                      <span
-                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                        style={{ width: 40, height: 40 }}
-                      >
-                        {user?.profile_image ? (
-                          <Image
-                            src={user.profile_image}
-                            alt="Profile"
-                            width={35}
-                            height={35}
-                            className="rounded-circle"
-                          />
-                        ) : (
-                          <User size={30} className="text-primary" />
-                        )}
-                      </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => {
-                          openViewModal(user);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {user?.title ? formatChoiceFieldValue(user?.title) : ""}{" "}
-                        {user?.first_name} {user?.middle_name} {user?.last_name}
-                      </span>
+                    <td>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {user?.profile_image ? (
+                            <Image
+                              src={user.profile_image}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => {
+                            openViewModal(user);
+                          }}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {user?.title
+                            ? formatChoiceFieldValue(user?.title)
+                            : ""}{" "}
+                          {user?.first_name} {user?.middle_name}{" "}
+                          {user?.last_name}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {user?.email ? (
@@ -365,6 +375,45 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
+                    {pathname === "/admin/users/compliances" && (
+                      <td>
+                        {user?.designation ? (
+                          user?.designation
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                    )}
+                    <td>
+                      {user.joining_date ? (
+                        formatDate(user?.joining_date)
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    {user?.created_by?.name ? (
+                      <td>
+                        <p className="m-0">{user?.created_by.name}</p>
+                        <p
+                          className="m-0 opacity-75"
+                          style={{ fontSize: "9px" }}
+                        >
+                          {user?.created_by?.email}
+                        </p>
+                        <p
+                          className="m-0 opacity-75"
+                          style={{ fontSize: "9px" }}
+                        >
+                          ({formatChoiceFieldValue(user?.created_by?.user_type)}
+                          )
+                        </p>
+                      </td>
+                    ) : (
+                      <td>
+                        <small className="text-muted">Not Available</small>
+                      </td>
+                    )}
+
                     <td>
                       {formatDateAndTime(user?.created_at) || (
                         <small className="text-muted">Not Available</small>
@@ -456,7 +505,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={9} className="text-center">
                     No users available.
                   </td>
                 </tr>

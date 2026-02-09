@@ -240,7 +240,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   ) : (
                     <>
                       <TbDownload size="16" className="me-1" />
-                      Download Applicant Info
+                      Download Applicants Info
                     </>
                   )}
                 </DropdownItem>
