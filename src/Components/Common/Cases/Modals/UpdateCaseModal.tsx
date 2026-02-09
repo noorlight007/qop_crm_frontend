@@ -163,7 +163,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
             {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
               session?.user?.user_type === "NETWORK_ADVISER" ||
-              session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT") && (
+              session?.user?.user_type === "NETWORK_COMPLIANCE") && (
               <FormGroup>
                 <Label for="adviser">Assign Adviser</Label>
                 <Input

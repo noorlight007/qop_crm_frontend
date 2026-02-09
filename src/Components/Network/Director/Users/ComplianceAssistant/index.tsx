@@ -13,7 +13,7 @@ const NetworkComplianceAssistantContainer: React.FC = () => {
       />
       <Container fluid>
         <AuthUsers
-          userRole="NETWORK_COMPLIANCE_ASSISTANT"
+          userRole="NETWORK_COMPLIANCE"
           title="Compliance Assistants"
         />
       </Container>

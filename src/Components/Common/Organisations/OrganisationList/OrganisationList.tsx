@@ -142,7 +142,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
               className="text-md-end text-center mt-2 mt-md-0"
             >
               {(session?.user.user_type === "NETWORK_DIRECTOR" ||
-                session?.user.user_type === "NETWORK_COMPLIANCE_ASSISTANT") && (
+                session?.user.user_type === "NETWORK_COMPLIANCE") && (
                 <Button color="primary" onClick={toggleModal}>
                   <TbCirclePlus size={18} className="me-1" />
                   Add Organisation
@@ -167,8 +167,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                 >
                   <Card className="bg-white border organisation_card opacity-100  p-3 position-relative">
                     {(session?.user.user_type === "NETWORK_DIRECTOR" ||
-                      session?.user.user_type ===
-                        "NETWORK_COMPLIANCE_ASSISTANT") && (
+                      session?.user.user_type === "NETWORK_COMPLIANCE") && (
                       <Link
                         href={`${getOrganisationUrl(session)}/${item.slug}`}
                         title="Website"
@@ -193,8 +192,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                         </div>
                         <h5 className="mb-1">
                           {session?.user.user_type === "NETWORK_DIRECTOR" ||
-                          session?.user.user_type ===
-                            "NETWORK_COMPLIANCE_ASSISTANT" ? (
+                          session?.user.user_type === "NETWORK_COMPLIANCE" ? (
                             <Link
                               className="text-black fw-bold text_decoration_hover"
                               href={`${getOrganisationUrl(session)}/${item.slug}`}

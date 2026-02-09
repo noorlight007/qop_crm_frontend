@@ -182,7 +182,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   Copy Case
                 </DropdownItem>
                 {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                  session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
+                  session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                   session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
                   <>
                     <DropdownItem divider />

@@ -2,7 +2,7 @@
      sidebar css start
 ==========================**/
 .page-sidebar {
-  margin-top: 77px;
+  margin-top: 70px;
   position: fixed;
   top: 0;
   left: 0;
@@ -16,13 +16,13 @@
     margin-top: 70px;
   }
   @media (max-width: 767.98px) {
-    margin-top: 67px;
+    margin-top: 68px;
   }
   @media (max-width: 680px) {
-    margin-top: 65px;
+    margin-top: 68px;
   }
   @media (max-width: 575.98px) {
-    margin-top: 63px;
+    margin-top: 68px;
   }
   &[sidebar-layout="iconcolor-sidebar"],
   &.iconcolor-sidebar {

@@ -80,7 +80,7 @@ const Profile = () => {
             </li>
             {session?.user?.user_type === "ADMIN" ||
             session?.user?.user_type === "NETWORK_DIRECTOR" ||
-            session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
+            session?.user?.user_type === "NETWORK_COMPLIANCE" ||
             session?.user?.user_type === "ORGANISATION_DIRECTOR" ? (
               <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
                 <Link href="/appearance" className="d-flex gap-2">

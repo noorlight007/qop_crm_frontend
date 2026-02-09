@@ -68,7 +68,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     if (
       session?.user?.user_type === "NETWORK_DIRECTOR" ||
       session?.user?.user_type === "NETWORK_ADVISER" ||
-      session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
+      session?.user?.user_type === "NETWORK_COMPLIANCE"
     ) {
       return "NETWORK_ADVISER";
     } else if (
@@ -320,8 +320,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Case Stage</th>
                   {session?.user?.user_type === "NETWORK_DIRECTOR" ||
                     session?.user?.user_type === "NETWORK_ADVISER" ||
-                    (session?.user?.user_type ===
-                      "NETWORK_COMPLIANCE_ASSISTANT" && (
+                    (session?.user?.user_type === "NETWORK_COMPLIANCE" && (
                       <th>"Organisation" </th>
                     ))}
                   <th>Created By</th>
@@ -512,7 +511,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         )}
                       </td>
                       {userType === "NETWORK_DIRECTOR" ||
-                        userType === "NETWORK_COMPLIANCE_ASSISTANT" ||
+                        userType === "NETWORK_COMPLIANCE" ||
                         (userType === "NETWORK_ADVISER" && (
                           <td className="text-truncate">
                             {" "}
@@ -601,7 +600,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             <i className="icon-pencil-alt"></i>
                           </Button>
                           {(userType === "NETWORK_DIRECTOR" ||
-                            userType === "NETWORK_COMPLIANCE_ASSISTANT" ||
+                            userType === "NETWORK_COMPLIANCE" ||
                             userType === "ORGANISATION_DIRECTOR") && (
                             <Button
                               size="sm"

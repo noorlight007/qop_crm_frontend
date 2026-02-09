@@ -129,7 +129,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
         pathname === "/network/director/advisers"
           ? "NETWORK_ADVISER"
           : pathname === "/network/director/compliance-assistants"
-            ? "NETWORK_COMPLIANCE_ASSISTANT"
+            ? "NETWORK_COMPLIANCE"
             : pathname === "/organisation/director/advisers"
               ? "ORGANISATION_ADVISER"
               : pathname === "/organisation/director/admins"

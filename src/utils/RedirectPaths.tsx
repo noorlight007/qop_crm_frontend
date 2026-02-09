@@ -11,7 +11,7 @@ export const getDashboardHomeUrl = (session: Session | null) => {
       return "/admin/dashboard";
     case "NETWORK_DIRECTOR":
       return "/network/director/dashboard";
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return "/network/director/dashboard";
     case "NETWORK_ADVISER":
       return "/network/adviser/dashboard";
@@ -40,7 +40,7 @@ export const getAllCasesUrl = (session: Session | null) => {
       return `/admin/cases`;
     case "NETWORK_DIRECTOR":
       return `/network/director/cases`;
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return `/network/director/cases`;
     case "NETWORK_ADVISER":
       return `/network/adviser/cases`;
@@ -64,7 +64,7 @@ export const getCaseUrl = (caseAlias: string, userType: string) => {
       return `/admin/cases/${caseAlias}`;
     case "NETWORK_DIRECTOR":
       return `/network/director/cases/${caseAlias}`;
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return `/network/director/cases/${caseAlias}`;
     case "NETWORK_ADVISER":
       return `/network/adviser/cases/${caseAlias}`;
@@ -90,7 +90,7 @@ export const getSupportTicketUrl = (
       return `/admin/support-ticket/${supportTicketAlias}`;
     case "NETWORK_DIRECTOR":
       return `/network/director/support-ticket/${supportTicketAlias}`;
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return `/network/director/support-ticket/${supportTicketAlias}`;
     case "NETWORK_ADVISER":
       return `/network/adviser/support-ticket/${supportTicketAlias}`;
@@ -118,7 +118,7 @@ export const getOrganisationUrl = (session: Session | null) => {
       return `/admin/organisations`;
     case "NETWORK_DIRECTOR":
       return `/network/director/organisations`;
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return `/network/director/organisations`;
     case "NETWORK_ADVISER":
       return `/network/adviser/organisations`;
