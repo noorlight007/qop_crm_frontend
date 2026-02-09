@@ -1,18 +1,36 @@
-import { useGetSingleOrganisationQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import {
+  useGetSingleOrganisationQuery,
+  useUpdateOrganisationMutation,
+} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
-    FaGlobe,
-    FaIdCard,
-    FaNetworkWired,
-    FaPhoneAlt,
-    FaRegCalendarAlt,
-    FaShieldAlt,
+  FaCamera,
+  FaGlobe,
+  FaIdCard,
+  FaNetworkWired,
+  FaPhoneAlt,
+  FaRegCalendarAlt,
+  FaShieldAlt,
 } from "react-icons/fa";
-import { Badge, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import { toast } from "react-toastify";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Spinner,
+} from "reactstrap";
+import DeleteOrgModal from "./Modals/DeleteOrgModal";
+import UpdateOrgDirectorInfoModal from "./Modals/UpdateOrgDirectorModal";
+import UpdateOrgInfoModal from "./Modals/UpdateOrgInfoModal";
 
 const OrganisationDetails: React.FC = () => {
   const params = useParams();
@@ -21,6 +39,112 @@ const OrganisationDetails: React.FC = () => {
     useGetSingleOrganisationQuery({
       organisationslug: slug,
     });
+
+  const [updateOrganization, { isLoading: isUpdating }] =
+    useUpdateOrganisationMutation();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  const toggleUpdateModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const toggleDirectorModal = () => {
+    setIsDirectorModalOpen(!isDirectorModalOpen);
+  };
+
+  const toggleDeleteModal = () => {
+    setIsDeleteModalOpen(!isDeleteModalOpen);
+  };
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleProfileImageUpload = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    const maxSizeInMB = 5;
+    if (file.size / 1024 / 1024 > maxSizeInMB) {
+      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
+      return;
+    }
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("organization.logo", file);
+
+      if (!slug) {
+        toast.error("Organisation identifier missing");
+        return;
+      }
+
+      await updateOrganization({
+        slug,
+        payload: formDataToSend,
+      }).unwrap();
+
+      toast.success("Organisation logo updated");
+    } catch (err: any) {
+      console.error("Logo upload error:", err);
+      const msg = err?.data?.detail || err?.message || "Upload failed";
+      toast.error(msg);
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  // Add another ref for director profile image
+  const directorFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Handler to trigger director file input
+  const handleDirectorProfileImageUpload = () => {
+    if (directorFileInputRef.current) directorFileInputRef.current.click();
+  };
+
+  // Handler for director profile image file selection
+  const handleDirectorFileSelected = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
+    const maxSizeInMB = 5;
+    if (file.size / 1024 / 1024 > maxSizeInMB) {
+      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
+      return;
+    }
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("user.profile_image", file);
+
+      if (!slug) {
+        toast.error("Organisation identifier missing");
+        return;
+      }
+
+      await updateOrganization({
+        slug,
+        payload: formDataToSend,
+      }).unwrap();
+
+      toast.success("Director profile image updated");
+    } catch (err: any) {
+      console.error("Profile upload error:", err);
+      const msg = err?.data?.detail || err?.message || "Upload failed";
+      toast.error(msg);
+    } finally {
+      if (directorFileInputRef.current) directorFileInputRef.current.value = "";
+    }
+  };
 
   return (
     <>
@@ -86,6 +210,30 @@ const OrganisationDetails: React.FC = () => {
                           alt="Logo"
                           className="rounded-3 object-fit-cover bg-white p-1"
                         />
+                        {/* Camera overlay for logo upload */}
+                        <button
+                          title="Change organization logo"
+                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            right: 0,
+                            bottom: 0,
+                            cursor: "pointer",
+                          }}
+                          onClick={handleProfileImageUpload}
+                          disabled={isUpdating}
+                        >
+                          <FaCamera size={14} className="text-primary" />
+                        </button>
+                        {/* Hidden file input */}
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          onChange={handleFileSelected}
+                        />
                       </div>
                     </Col>
                     <Col className="text-white">
@@ -103,6 +251,18 @@ const OrganisationDetails: React.FC = () => {
                     </Col>
                   </Row>
                 </CardBody>
+              </div>
+              <div className="edit_icon">
+                <Button
+                  size="sm"
+                  outline
+                  color="primary"
+                  onClick={toggleUpdateModal}
+                  title="Edit Organisation"
+                  className="fw-500"
+                >
+                  <i className="iconly-Edit me-2"></i>Edit
+                </Button>
               </div>
 
               {/* Organisation Details Section */}
@@ -308,6 +468,18 @@ const OrganisationDetails: React.FC = () => {
               </div>
 
               <CardBody className="organisation-card-body p-4 position-relative">
+                {/* Edit button top-right of the card */}
+                <div className="edit_icon">
+                  <Button
+                    size="sm"
+                    outline
+                    color="primary"
+                    onClick={toggleDirectorModal}
+                    title="Edit Organization Director"
+                  >
+                    <i className="iconly-Edit me-2"></i>Edit
+                  </Button>
+                </div>
                 {/* Avatar section - positioned to overlap gradient */}
                 <div className="d-flex justify-content-center organisation-avatar-container">
                   <div className="position-relative">
@@ -320,6 +492,24 @@ const OrganisationDetails: React.FC = () => {
                           height={90}
                           className="rounded-circle organisation-avatar-img"
                         />
+                        <button
+                          title="Change profile image"
+                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          style={{
+                            width: 30,
+                            height: 30,
+                            right: 3,
+                            bottom: 3,
+                            zIndex: 10,
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            handleDirectorProfileImageUpload();
+                          }}
+                          disabled={isUpdating}
+                        >
+                          <FaCamera size={12} className="text-primary" />
+                        </button>
                       </div>
                     ) : (
                       <div className="position-relative">
@@ -331,9 +521,34 @@ const OrganisationDetails: React.FC = () => {
                             .toUpperCase()
                             .slice(0, 2) || "ND"}
                         </div>
+                        <button
+                          title="Change profile image"
+                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          style={{
+                            width: 30,
+                            height: 30,
+                            right: 3,
+                            bottom: 3,
+                            zIndex: 10,
+                            cursor: "pointer",
+                          }}
+                          onClick={handleDirectorProfileImageUpload}
+                          disabled={isUpdating}
+                        >
+                          <FaCamera size={12} className="text-primary" />
+                        </button>
                       </div>
                     )}
                   </div>
+
+                  {/* Hidden file input for director profile */}
+                  <input
+                    ref={directorFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleDirectorFileSelected}
+                  />
                 </div>
 
                 {/* Name and role */}
@@ -400,6 +615,46 @@ const OrganisationDetails: React.FC = () => {
           )}
         </Col>
       </Row>
+
+      <Row>
+        <Card className="shadow p-2">
+          <CardHeader className="h3 text-danger">Danger Zone</CardHeader>
+          <CardBody className="border-danger rounded-2 mb-4">
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 className="fw-bold">Delete this Organization</h5>
+                <p className="mb-0 opacity-75 text-danger">
+                  Once you delete an organization, there is no going back.
+                  Please be certain.
+                </p>
+              </div>
+              <Button color="danger" onClick={toggleDeleteModal}>
+                Delete this Organization
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      </Row>
+
+      <UpdateOrgInfoModal
+        isOpen={isModalOpen}
+        toggle={toggleUpdateModal}
+        slug={getOrganisationDetails?.organization?.slug}
+        organisationData={getOrganisationDetails}
+      />
+
+      <UpdateOrgDirectorInfoModal
+        isOpen={isDirectorModalOpen}
+        toggle={toggleDirectorModal}
+        slug={getOrganisationDetails?.organization?.slug}
+        organisationData={getOrganisationDetails}
+      />
+
+      <DeleteOrgModal
+        isOpen={isDeleteModalOpen}
+        toggle={toggleDeleteModal}
+        organisationInfo={getOrganisationDetails}
+      />
     </>
   );
 };
