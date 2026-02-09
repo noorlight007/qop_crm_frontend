@@ -46,6 +46,13 @@ export const FeesApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Fees"],
     }),
+    downloadFeesSummary: builder.query({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/fees/pdf/`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
   }),
 });
 
@@ -56,4 +63,5 @@ export const {
   useAddFeesOutDetailsMutation,
   useDeleteFeesInOutMutation,
   useCalculateFeesQuery,
+  useDownloadFeesSummaryQuery,
 } = FeesApi;

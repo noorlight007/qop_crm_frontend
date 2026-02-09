@@ -1,5 +1,10 @@
 import { MenuItem } from "@/Types/LayoutTypes";
-import { FaBriefcase, FaNetworkWired, FaUsers } from "react-icons/fa";
+import {
+  FaBriefcase,
+  FaCalculator,
+  FaNetworkWired,
+  FaUsers,
+} from "react-icons/fa";
 
 //Admin
 const AdminMenu: MenuItem[] = [
@@ -40,9 +45,9 @@ const AdminMenu: MenuItem[] = [
             path: "/admin/users/directors",
           },
           {
-            title: "Compliance Assistants",
+            title: "Compliances",
             type: "link",
-            path: "/admin/users/compliance-assistants",
+            path: "/admin/users/compliances",
           },
           {
             title: "Advisers",
@@ -264,6 +269,34 @@ const NetworkComplianceMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/network/director/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/network/director/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/network/director/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/network/director/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
@@ -321,11 +354,54 @@ const NetworkAdviserMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Organisations",
-        icon: <FaBriefcase />,
-        path: "/network/adviser/organisations",
-        type: "link",
+        title: "Users",
+        icon: <FaUsers />,
+        type: "sub",
+        children: [
+          {
+            title: "Organisations",
+            path: "/network/adviser/organisations",
+            type: "link",
+          },
+          // {
+          //   path: "/network/adviser/marketinghub",
+          //   title: "Marketing Hub",
+          //   type: "link",
+          // },
+          // {
+          //   path: "/network/adviser/tasksandreminders",
+          //   title: "Tasks & Reminders",
+          //   type: "link",
+          // },
+        ],
+      },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
         lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/network/adviser/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/network/adviser/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/network/adviser/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/network/adviser/calculators/stamp-duty-calculator",
+          },
+        ],
       },
       {
         title: "Support Ticket",
@@ -334,23 +410,6 @@ const NetworkAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/network/adviser/support-ticket",
       },
-      // {
-      //   title: "Users",
-      //   icon: "Profile",
-      //   type: "sub",
-      //   children: [
-      //     {
-      //       path: "/network/adviser/marketinghub",
-      //       title: "Marketing Hub",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/adviser/tasksandreminders",
-      //       title: "Tasks & Reminders",
-      //       type: "link",
-      //     },
-      //   ],
-      // },
     ],
   },
 ];
@@ -420,6 +479,34 @@ const OrganisationDirectorMenu: MenuItem[] = [
             path: "/organisation/director/introducers",
             title: "Introducers",
             type: "link",
+          },
+        ],
+      },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/organisation/director/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/organisation/director/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/organisation/director/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/organisation/director/calculators/stamp-duty-calculator",
           },
         ],
       },
@@ -501,6 +588,34 @@ const OrganisationAdviserMenu: MenuItem[] = [
             path: "/organisation/adviser/reports",
             title: "Reports",
             type: "link",
+          },
+        ],
+      },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/organisation/adviser/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/organisation/adviser/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/organisation/adviser/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/organisation/adviser/calculators/stamp-duty-calculator",
           },
         ],
       },
@@ -591,6 +706,34 @@ const OrganisationAdminMenu: MenuItem[] = [
       //   path: "/organisation/admin/adviserclient",
       // },
       {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/organisation/admin/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/organisation/admin/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/organisation/admin/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/organisation/admin/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
@@ -657,7 +800,7 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
       return AdminMenu;
     case "NETWORK_DIRECTOR":
       return NetworkDirectorMenu;
-    case "NETWORK_COMPLIANCE_ASSISTANT":
+    case "NETWORK_COMPLIANCE":
       return NetworkComplianceMenu;
     case "NETWORK_ADVISER":
       return NetworkAdviserMenu;

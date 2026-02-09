@@ -77,6 +77,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
       address: "",
       primary_mobile: "",
       email: "",
+      license_no: "",
     },
     user: {
       first_name: "",
@@ -331,6 +332,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
             address: "",
             primary_mobile: "",
             email: "",
+            license_no: "",
           },
           user: {
             first_name: "",
@@ -391,6 +393,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
         address: "",
         primary_mobile: "",
         email: "",
+        license_no: "",
       },
       user: {
         first_name: "",
@@ -532,6 +535,27 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                     {apiErrors["network.address"] ? (
                       <div className="text-danger small mt-1">
                         {apiErrors["network.address"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+                <Col>
+                  <FormGroup>
+                    <Label for="license_no">
+                      License Number<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="license_no"
+                      name="license_no"
+                      value={formData.network.license_no}
+                      onChange={handleChange}
+                      placeholder="Enter license number"
+                      required
+                    />
+                    {apiErrors["network.license_no"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["network.license_no"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>

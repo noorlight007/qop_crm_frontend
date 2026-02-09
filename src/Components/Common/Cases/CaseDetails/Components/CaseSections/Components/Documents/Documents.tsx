@@ -337,8 +337,7 @@ const Documents: React.FC = () => {
                   {selectedDocuments.size > 0 && (
                     <>
                       {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                        session?.user?.user_type ===
-                          "NETWORK_COMPLIANCE_ASSISTANT" ||
+                        session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                         session?.user?.user_type ===
                           "ORGANISATION_DIRECTOR") && (
                         <Button
@@ -589,7 +588,7 @@ const Documents: React.FC = () => {
                               {(session?.user?.user_type ===
                                 "NETWORK_DIRECTOR" ||
                                 session?.user?.user_type ===
-                                  "NETWORK_COMPLIANCE_ASSISTANT" ||
+                                  "NETWORK_COMPLIANCE" ||
                                 session?.user?.user_type ===
                                   "ORGANISATION_DIRECTOR") && (
                                 <Button

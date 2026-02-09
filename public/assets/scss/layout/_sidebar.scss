@@ -2,7 +2,7 @@
      sidebar css start
 ==========================**/
 .page-sidebar {
-  margin-top: 77px;
+  margin-top: 70px;
   position: fixed;
   top: 0;
   left: 0;
@@ -16,20 +16,21 @@
     margin-top: 70px;
   }
   @media (max-width: 767.98px) {
-    margin-top: 67px;
+    margin-top: 68px;
   }
   @media (max-width: 680px) {
-    margin-top: 65px;
+    margin-top: 68px;
   }
   @media (max-width: 575.98px) {
-    margin-top: 63px;
+    margin-top: 68px;
   }
   &[sidebar-layout="iconcolor-sidebar"],
   &.iconcolor-sidebar {
     .sidebar-menu {
       li {
-        $strokes: $success-color, $secondary-color, $primary-color,
-          $danger-color, $info-color, $warning-color, $body-font-color;
+        $strokes:
+          $success-color, $secondary-color, $primary-color, $danger-color,
+          $info-color, $warning-color, $body-font-color;
         $repeat: 100;
         @for $i from 1 through $repeat {
           &:nth-child(#{length($strokes)}n + #{$i}) {
@@ -393,6 +394,29 @@
     }
   }
 }
+
+/* Mobile: keep submenu left-aligned like medium/large screens */
+@media only screen and (max-width: 575.98px) {
+  .sidebar-submenu {
+    margin-left: 20px;
+    padding-left: 12px;
+    border-left: 2px solid var(--theme-default);
+    list-style: none;
+    display: block !important;
+  }
+  .sidebar-submenu li {
+    padding: 0 10px;
+    list-style: none;
+  }
+  .sidebar-submenu li a {
+    padding-left: 10px;
+    text-align: left;
+  }
+  .sidebar-submenu li a::before {
+    left: -6px;
+  }
+}
+
 .page-sidebar {
   .left-arrow {
     display: none;

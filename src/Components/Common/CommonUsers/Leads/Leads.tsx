@@ -301,8 +301,7 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 12 }) => {
                           <i className="icon-pencil-alt"></i>
                         </Button>
                         {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                          session?.user?.user_type ===
-                            "NETWORK_COMPLIANCE_ASSISTANT" ||
+                          session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                           session?.user?.user_type ===
                             "ORGANISATION_DIRECTOR") && (
                           <Button

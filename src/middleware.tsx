@@ -23,8 +23,8 @@ export default withAuth(
 
     if (
       path.startsWith("/network/director") &&
-      !["NETWORK_DIRECTOR", "NETWORK_COMPLIANCE_ASSISTANT"].includes(
-        token.user_type as string
+      !["NETWORK_DIRECTOR", "NETWORK_COMPLIANCE"].includes(
+        token.user_type as string,
       )
     ) {
       const loginUrl = new URL("/auth/login", req.url);
@@ -79,7 +79,7 @@ export default withAuth(
     pages: {
       ...pagesOptions,
     },
-  }
+  },
 );
 
 export const config = {

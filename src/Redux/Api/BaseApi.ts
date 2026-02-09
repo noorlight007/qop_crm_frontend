@@ -226,7 +226,7 @@ export const baseApi = createApi({
     "SolicitorDetails",
     "AccountantDetails",
     "ExistingProtectionDetails",
-    "MortgageYourNeeds",
+    "NeedsAndPreferences",
     "Notes",
     "Tasks",
     "BudgetPlanner",

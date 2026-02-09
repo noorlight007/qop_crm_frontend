@@ -1,6 +1,7 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import LoginHistory from "@/Components/Common/LoginHistory/LoginHistory";
 import MyTask from "@/Components/Common/MyTask/MyTask";
+import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetOrganisationDirectorDashboardQuery } from "@/Redux/Reducers/Network/Director/Dashboard/DashdoardApi";
 import { Col, Container, Row } from "reactstrap";
 import CaseCompletionOverTime from "./CaseCompletionOverTime/CaseCompletionOverTime";
@@ -8,7 +9,6 @@ import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import MonthlyClients from "./MonthlyClients/MonthlyClients";
 import MonthlyRevenueTrend from "./MonthlyRevenueTrend/MonthlyRevenueTrend";
 import TopPerformingAdvisers from "./TopPerformingAdvisers/TopPerformingAdvisers";
-import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const OrganisationDirectorDashboardContainer = () => {
   //RTK hooks
@@ -23,10 +23,7 @@ const OrganisationDirectorDashboardContainer = () => {
         parent="Dashboard"
       />
       <Container fluid>
-        <WelcomeBanner
-          isLoading={isLoading}
-          organisationDirectorDashboardData={organisationDirectorDashboardData}
-        />
+        <WelcomeBanner />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isLoading}

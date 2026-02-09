@@ -1,18 +1,18 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import MyTask from "@/Components/Common/MyTask/MyTask";
+import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
+import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import {
   useGetAdviserDashboardClientDataQuery,
   useGetAdviserDashboardDocumentDataQuery,
   useGetAdviserDashboardSummaryDataQuery,
 } from "@/Redux/Reducers/Common/CommonAdviserDashboard/CommonAdviserDashboardApi";
 import { Col, Container, Row } from "reactstrap";
-import OrganisationList from "../Organisations/OrganisationList/OrganisationList";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
 import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
 import MyClients from "./MyClients/MyClients";
-import WelcomeBanner from "./WelcomeBanner/WelcomeBanner";
 
 const NetworkAdviserContainer: React.FC = () => {
   const { data: adviserSummary, isLoading: isSummaryLoading } =
@@ -30,10 +30,7 @@ const NetworkAdviserContainer: React.FC = () => {
         parent="Dashboard"
       />
       <Container fluid>
-        <WelcomeBanner
-          isLoading={isSummaryLoading}
-          adviserSummaryData={adviserSummary}
-        />
+        <WelcomeBanner />
         {/* 1st row  */}
         <DashboardOverview
           isLoading={isSummaryLoading}

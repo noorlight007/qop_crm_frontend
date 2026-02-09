@@ -68,7 +68,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     if (
       session?.user?.user_type === "NETWORK_DIRECTOR" ||
       session?.user?.user_type === "NETWORK_ADVISER" ||
-      session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
+      session?.user?.user_type === "NETWORK_COMPLIANCE"
     ) {
       return "NETWORK_ADVISER";
     } else if (
@@ -166,9 +166,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   trigger="hover"
                 >
                   <PopoverBody className="bg-white rounded text-dark p-3 small">
-                    🔍 You Can Search Using The Lead’s Name, Title, Phone
-                    Number, Email Address, Case Category, Case Status or
-                    Assigned User’s Name.
+                    🔍 You Can Search Using The Client Name, Phone Number, Email
+                    Address, Case Category, Case Status or Assigned User Name.
                   </PopoverBody>
                 </UncontrolledPopover>
               </InputGroup>
@@ -317,23 +316,17 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Phone</th>
                   <th>Case Category</th>
                   <th>Lender</th>
-                  <th>Security property</th>
+                  <th className="text-truncate">Security property</th>
                   <th>Case Stage</th>
-                  <th>Review Date</th>
-                  <th>Created At</th>
-                  <th>
-                    {session?.user?.user_type === "NETWORK_DIRECTOR" ||
+                  {session?.user?.user_type === "NETWORK_DIRECTOR" ||
                     session?.user?.user_type === "NETWORK_ADVISER" ||
-                    session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT"
-                      ? "Organisation"
-                      : session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-                          session?.user?.user_type === "ORGANISATION_ADVISER" ||
-                          session?.user?.user_type === "ORGANISATION_ADMIN"
-                        ? "Network"
-                        : "Unknown"}
-                  </th>
+                    (session?.user?.user_type === "NETWORK_COMPLIANCE" && (
+                      <th>"Organisation" </th>
+                    ))}
                   <th>Created By</th>
                   <th>Assigned To</th>
+                  <th className="text-truncate">Review Date</th>
+                  <th>Created At</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -471,7 +464,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      <td className="text-truncate">
+                      <td>
                         {(() => {
                           const pd = caseItem?.property_details;
                           if (!pd) return "N/A";
@@ -517,31 +510,18 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      <td className="text-truncate">
-                        {formatDate(caseItem?.review_date) || (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                      <td className="text-truncate">
-                        {formatDateAndTime(caseItem.created_at)}
-                      </td>
-                      <td className="text-truncate">
-                        {userType === "NETWORK_DIRECTOR" ||
-                        userType === "NETWORK_COMPLIANCE_ASSISTANT" ||
-                        userType === "NETWORK_ADVISER" ? (
-                          (caseItem.organization?.name ?? (
+                      {userType === "NETWORK_DIRECTOR" ||
+                        userType === "NETWORK_COMPLIANCE" ||
+                        (userType === "NETWORK_ADVISER" && (
+                          <td className="text-truncate">
+                            {" "}
+                            (caseItem.organization?.name ?? (
                             <small className="text-muted">
                               Owned by Network
                             </small>
-                          ))
-                        ) : userType === "ORGANISATION_DIRECTOR" ||
-                          userType === "ORGANISATION_ADVISER" ||
-                          userType === "ORGANISATION_ADMIN" ? (
-                          (caseItem.network?.name ?? "Self")
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
+                            )){" "}
+                          </td>
+                        ))}
                       <td className="text-truncate">
                         <p className="m-0">
                           {caseItem.created_by?.title
@@ -601,6 +581,14 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         )}
                       </td>
                       <td>
+                        {formatDate(caseItem?.review_date) || (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                      <td className="text-truncate">
+                        {formatDateAndTime(caseItem.created_at)}
+                      </td>
+                      <td>
                         <div className="d-flex justify-content-center align-items-center">
                           <Button
                             size="sm"
@@ -612,7 +600,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             <i className="icon-pencil-alt"></i>
                           </Button>
                           {(userType === "NETWORK_DIRECTOR" ||
-                            userType === "NETWORK_COMPLIANCE_ASSISTANT" ||
+                            userType === "NETWORK_COMPLIANCE" ||
                             userType === "ORGANISATION_DIRECTOR") && (
                             <Button
                               size="sm"

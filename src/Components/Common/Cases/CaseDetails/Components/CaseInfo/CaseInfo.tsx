@@ -1,5 +1,6 @@
 import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
+import { useDownloadApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
 import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -9,6 +10,7 @@ import { FaArrowRight, FaTrash } from "react-icons/fa";
 import {
   TbCircleArrowUp,
   TbCopy,
+  TbDownload,
   TbMailShare,
   TbSettings,
   TbUserPlus,
@@ -57,6 +59,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState<any>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
+  const [shouldDownload, setShouldDownload] = useState(false);
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
@@ -113,6 +116,49 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           }) as any,
       );
     }
+  };
+
+  const {
+    data: blob,
+    isLoading: isDownloading,
+    isSuccess,
+    isError,
+  } = useDownloadApplicantInfoQuery(
+    { case_alias: caseInfo?.alias },
+    { skip: !shouldDownload || !caseInfo },
+  );
+
+  // Handle download when data is ready
+  useEffect(() => {
+    if (isSuccess && blob && shouldDownload) {
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `applicant-info-${caseInfo?.alias}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setShouldDownload(false);
+    }
+  }, [isSuccess, blob, shouldDownload, caseInfo]);
+
+  // Handle errors
+  useEffect(() => {
+    if (isError && shouldDownload) {
+      toast.error("Failed to download applicant info. Please try again.");
+      setShouldDownload(false); // Reset
+    }
+  }, [isError, shouldDownload]);
+
+  const handleDownloadApplicantInfo = () => {
+    if (!caseInfo) {
+      toast.error("Case information is not available for download.");
+      return;
+    }
+    setShouldDownload(true);
   };
 
   return (
@@ -181,8 +227,25 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   <TbCopy size="16" className="me-1" />
                   Copy Case
                 </DropdownItem>
+                <DropdownItem
+                  className="opacity-100 py-3"
+                  onClick={handleDownloadApplicantInfo}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <>
+                      <Spinner size="sm" className="me-1" />
+                      Downloading...
+                    </>
+                  ) : (
+                    <>
+                      <TbDownload size="16" className="me-1" />
+                      Download Applicant Info
+                    </>
+                  )}
+                </DropdownItem>
                 {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                  session?.user?.user_type === "NETWORK_COMPLIANCE_ASSISTANT" ||
+                  session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                   session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
                   <>
                     <DropdownItem divider />

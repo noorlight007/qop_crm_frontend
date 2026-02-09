@@ -1,11 +1,9 @@
 import {
+  useGetAuthUsersQuery,
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
-} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import {
-  useGetAuthUsersQuery,
   useUpdateAuthUserDetailsMutation,
-} from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
 import {
   AuthUser,
   AuthUsersProps,
@@ -60,14 +58,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
 
-  const getRole = () => {
-    if (Array.isArray(roles)) {
-      return selectedOrganisation ? roles[1] : roles[0];
-    }
-    return roles;
-  };
-
-  const role = getRole();
+  const role = roles;
 
   const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
     title: "",
@@ -100,16 +91,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     useGetOrganisationListQuery({
       network: selectedNetwork,
     });
-
-  // Set first network as default when networkList is loaded
-  useEffect(() => {
-    const networksArray = Array.isArray(networkList)
-      ? networkList
-      : (networkList?.results ?? []);
-    if (networksArray.length > 0 && !selectedNetwork) {
-      setSelectedNetwork(networksArray[0].subdomain);
-    }
-  }, [networkList, selectedNetwork]);
 
   const {
     data: authUsersData,
@@ -254,7 +235,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <option disabled>Loading...</option>
               ) : (
                 <>
-                  <option value="">All Networks</option>
+                  <option value="">Select a Network</option>
                   {(Array.isArray(networkList)
                     ? networkList
                     : (networkList?.results ?? [])
@@ -296,6 +277,21 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               </Input>
             </Col>
           )}
+          <Col md={1}>
+            <Button
+              outline
+              color="danger"
+              className="w-100 d-flex justify-content-center align-items-center gap-1"
+              onClick={() => {
+                setSelectedNetwork("");
+                setSelectedOrganisation("");
+                setSearchQuery("");
+                setCurrentPage(1);
+              }}
+            >
+              <i className="fa-solid fa-xmark"></i>Clear
+            </Button>
+          </Col>
         </Row>
 
         <Row>
