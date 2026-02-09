@@ -269,6 +269,34 @@ const NetworkComplianceMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/network/director/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/network/director/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/network/director/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/network/director/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
@@ -345,6 +373,34 @@ const NetworkAdviserMenu: MenuItem[] = [
           //   title: "Tasks & Reminders",
           //   type: "link",
           // },
+        ],
+      },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/network/adviser/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/network/adviser/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/network/adviser/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/network/adviser/calculators/stamp-duty-calculator",
+          },
         ],
       },
       {
@@ -536,6 +592,34 @@ const OrganisationAdviserMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/organisation/adviser/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/organisation/adviser/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/organisation/adviser/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/organisation/adviser/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
+      {
         title: "Support Ticket",
         icon: "Ticket",
         type: "link",
@@ -621,6 +705,34 @@ const OrganisationAdminMenu: MenuItem[] = [
       //   lanClass: "lan-3",
       //   path: "/organisation/admin/adviserclient",
       // },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/organisation/admin/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/organisation/admin/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/organisation/admin/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/organisation/admin/calculators/stamp-duty-calculator",
+          },
+        ],
+      },
       {
         title: "Support Ticket",
         icon: "Ticket",
