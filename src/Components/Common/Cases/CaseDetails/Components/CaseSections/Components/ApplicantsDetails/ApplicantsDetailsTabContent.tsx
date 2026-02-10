@@ -561,10 +561,20 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       const response = await apiAddress.get(
         `/autocomplete/${postcode}?api-key=${process.env.NEXT_PUBLIC_GET_ADDRESS_API_KEY}`,
       );
-      setAddressList(response.data.suggestions || []);
-      setIsModalOpen(true);
-    } catch (err) {
+      const suggestions = response.data.suggestions || [];
+      setAddressList(suggestions);
+      if (!suggestions || suggestions.length === 0) {
+        toast.info("No addresses found for this postcode");
+      } else {
+        setIsModalOpen(true);
+      }
+    } catch (err: any) {
       console.error("Error looking up address:", err);
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to lookup address";
+      toast.error(message);
     } finally {
       setIsSearchingPostcode(false);
     }
