@@ -57,6 +57,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     assigned_to_admin: "",
     notes: "",
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const { data: session } = useSession();
   const userType = session?.user?.user_type;
   const router = useRouter();
@@ -161,6 +162,12 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     }
   }, [userLEADListData]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setFormErrors({});
+    }
+  }, [isOpen]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -169,6 +176,13 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       ...formData,
       [name]: name === "lead" ? Number(value) : value,
     });
+    if (formErrors[name]) {
+      setFormErrors((prev) => {
+        const copy = { ...prev } as Record<string, string>;
+        delete (copy as any)[name];
+        return copy;
+      });
+    }
   };
 
   // Custom Option Component for beautiful display
@@ -342,29 +356,27 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     leadOptions.find((opt) => opt.value === Number(formData.lead)) || null;
 
   const handleSubmit = async (submitType: "save" | "save_view") => {
-    if (!formData.lead) {
-      toast.error("Please select a Lead/Client.");
-      return;
-    }
-    if (!formData.case_category) {
-      toast.error("Please select a Case Category.");
+    // Reset previous errors and perform client-side validation
+    setFormErrors({});
+    const errors: Record<string, string> = {};
+    if (!formData.lead) errors.lead = "Please select a Lead/Client.";
+    if (!formData.case_category)
+      errors.case_category = "Please select a Case Category.";
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
     try {
-      const result = await addCaseDetails({
-        payload: formData,
-      });
-      if (result.data) {
+      const result = await addCaseDetails({ payload: formData });
+      if ((result as any).data) {
+        setFormErrors({});
         toast.success("Case added successfully!");
-        const alias = result.data.alias;
-        // If user chose Save and Add View, navigate to the case page
+        const alias = (result as any).data.alias;
         if (submitType === "save_view" && alias) {
-          // Close modal then navigate
           toggle();
           handleCaseCreated(alias);
           return;
         }
-        // Default: reset form and close
         setFormData({
           lead: leadId || 0,
           case_category: "",
@@ -376,11 +388,41 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         if (onCaseCreated && alias) {
           handleCaseCreated(alias);
         }
+      } else if ((result as any).error) {
+        const apiError: any = (result as any).error;
+        const fieldErrors: Record<string, string> = {};
+        const data = apiError?.data || apiError || {};
+        if (data?.errors && typeof data.errors === "object") {
+          Object.keys(data.errors).forEach((k) => {
+            const v = data.errors[k];
+            fieldErrors[k] = Array.isArray(v) ? v.join(" ") : String(v);
+          });
+        } else if (data && typeof data === "object") {
+          Object.keys(data).forEach((k) => {
+            const v = (data as any)[k];
+            if (Array.isArray(v)) {
+              fieldErrors[k] = v.join(" ");
+            } else if (typeof v === "string") {
+              fieldErrors[k] = v;
+            }
+          });
+        }
+        if (Object.keys(fieldErrors).length > 0) {
+          setFormErrors(fieldErrors);
+        } else {
+          const msg =
+            data?.detail ||
+            data?.message ||
+            apiError?.message ||
+            "Invalid Request";
+          toast.error(typeof msg === "string" ? msg : "Invalid Request");
+        }
       } else {
         toast.error("Invalid Request...");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during request setup:", error);
+      toast.error(error?.message || "Something went wrong.");
     }
   };
 
@@ -423,6 +465,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   ...prev,
                   lead: selectedValue,
                 }));
+                setFormErrors((prev) => {
+                  const copy = { ...prev } as Record<string, string>;
+                  delete copy.lead;
+                  return copy;
+                });
               }}
               components={{
                 Option: CustomOption,
@@ -434,6 +481,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 leadOptions.length ? "No matches found" : "No leads available"
               }
             />
+            {formErrors.lead && (
+              <div className="text-danger small mt-1">{formErrors.lead}</div>
+            )}
             <div className="mt-2">
               <Button size="sm" color="primary" onClick={handleOpenAddLead}>
                 <TbCirclePlus size={16} className="me-1" />
@@ -458,6 +508,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               <option value="PROTECTION">Protection</option>
               <option value="GENERAL_INSURANCE">General Insurance</option>
             </Input>
+            {formErrors.case_category && (
+              <div className="text-danger small mt-1">
+                {formErrors.case_category}
+              </div>
+            )}
           </FormGroup>
           {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
             session?.user?.user_type === "NETWORK_ADVISER" ||
@@ -484,6 +539,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
+              {formErrors.assigned_to && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to}
+                </div>
+              )}
             </FormGroup>
           )}
 
@@ -512,6 +572,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
+              {formErrors.assigned_to && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to}
+                </div>
+              )}
             </FormGroup>
           )}
           {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
@@ -539,6 +604,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
+              {formErrors.assigned_to_admin && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to_admin}
+                </div>
+              )}
             </FormGroup>
           )}
           <FormGroup>
@@ -550,6 +620,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               value={formData.notes}
               onChange={handleChange}
             />
+            {formErrors.notes && (
+              <div className="text-danger small mt-1">{formErrors.notes}</div>
+            )}
           </FormGroup>
         </ModalBody>
         <ModalFooter>
