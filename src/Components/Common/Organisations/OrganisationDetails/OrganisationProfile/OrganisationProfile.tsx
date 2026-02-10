@@ -7,11 +7,23 @@ import {
   FaCamera,
   FaDownload,
   FaGlobe,
+  FaIdCard,
   FaNetworkWired,
   FaPhoneAlt,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Popover,
+  PopoverBody,
+  PopoverHeader,
+  Row,
+  Spinner,
+} from "reactstrap";
 import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
 
 const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
@@ -71,6 +83,10 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
   const toggleUpdateModal = () => {
     setIsModalOpen(!isModalOpen);
   };
+
+  const [licensePopoverOpen, setLicensePopoverOpen] = useState(false);
+
+  const toggleLicensePopover = () => setLicensePopoverOpen(!licensePopoverOpen);
 
   const handleLicenseImageDownload = async () => {
     const licenseImageUrl = singleOrgInfo?.organization?.license_image;
@@ -211,25 +227,82 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         {`${"https://"}${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
                       </Badge>
                     )}
-                  </div>
-                  <div className="d-flex align-items-center gap-2 mb-2">
-                    {singleOrgInfo?.organization?.network && (
-                      <Badge color="secondary" size="sm" style={{ "padding": "0.4rem" }}>
-                        {/* <FaIdCard className="me-1" /> */}
-                        License No:
-                        {singleOrgInfo?.organization?.license_no ||
-                          "License N/A"}
-                      </Badge>
-                    )}
-                    {singleOrgInfo?.organization?.license_image && (
-                      <Badge
-                        className="p-1"
-                        onClick={handleLicenseImageDownload}
-                        style={{ cursor: "pointer" }}
-                        title="Download License Image"
-                      >
-                        <FaDownload />
-                      </Badge>
+                    {(singleOrgInfo?.organization?.license_no || singleOrgInfo?.organization?.license_image) && (
+                      <>
+                        <Badge
+                          id="licensePopover"
+                          color="secondary"
+                          onClick={toggleLicensePopover}
+                          style={{ cursor: "pointer", padding: "0.3rem" }}
+                        >
+                          <FaIdCard />
+                        </Badge>
+
+                        <Popover
+                          placement="bottom"
+                          isOpen={licensePopoverOpen}
+                          target="licensePopover"
+                          toggle={toggleLicensePopover}
+                          trigger="legacy"
+                        >
+                          <PopoverHeader className="bg-primary text-light">
+                            <FaIdCard className="me-2" />
+                            License Information
+                          </PopoverHeader>
+                          <PopoverBody>
+                            <div className="mb-3">
+                              <small className="text-muted d-block mb-1">
+                                License Number
+                              </small>
+                              {singleOrgInfo?.organization?.license_no ? (
+                                <strong>
+                                  {singleOrgInfo.organization.license_no}
+                                </strong>
+                              ) : (
+                                <small className="text-danger fst-italic">
+                                  Not added yet
+                                </small>
+                              )}
+                            </div>
+
+                            <div>
+                              <small className="text-muted d-block mb-1">
+                                License Image
+                              </small>
+                              {singleOrgInfo?.organization?.license_image ? (
+                                <div>
+                                  <img
+                                    src={
+                                      singleOrgInfo.organization.license_image
+                                    }
+                                    alt="License"
+                                    className="img-fluid rounded border mb-2"
+                                    style={{
+                                      maxHeight: "200px",
+                                      width: "100%",
+                                      maxWidth: "100%",
+                                      objectFit: "contain",
+                                    }}
+                                  />
+                                  <Button
+                                    color="primary"
+                                    size="sm"
+                                    onClick={handleLicenseImageDownload}
+                                    style={{ width: "100%" }}
+                                  >
+                                    <FaDownload className="me-1" />
+                                    Download
+                                  </Button>
+                                </div>
+                              ) : (
+                                <small className="text-danger fst-italic">
+                                  Not added yet
+                                </small>
+                              )}
+                            </div>
+                          </PopoverBody>
+                        </Popover>
+                      </>
                     )}
                   </div>
                 </Col>
