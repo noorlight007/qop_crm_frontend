@@ -116,7 +116,7 @@ const FeesTab: FC = () => {
               <Button color="info" disabled={isFeesSummaryDownloading}>
                 {isFeesSummaryDownloading ? (
                   <>
-                    <Spinner size="sm" color="light" className="me-2" />
+                    <Spinner size="sm" color="dark" className="me-2" />
                     Downloading...
                   </>
                 ) : (
