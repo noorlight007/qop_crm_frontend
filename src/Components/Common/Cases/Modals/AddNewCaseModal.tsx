@@ -58,6 +58,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     notes: "",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState<"save" | "save_view" | null>(
+    null,
+  );
   const { data: session } = useSession();
   const userType = session?.user?.user_type;
   const router = useRouter();
@@ -366,6 +369,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       setFormErrors(errors);
       return;
     }
+
+    setSubmitting(submitType);
+
     try {
       const result = await addCaseDetails({ payload: formData });
       if ((result as any).data) {
@@ -423,6 +429,8 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     } catch (error: any) {
       console.error("Error during request setup:", error);
       toast.error(error?.message || "Something went wrong.");
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -633,7 +641,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               disabled={addCaseLoading}
               onClick={() => handleSubmit("save")}
             >
-              {addCaseLoading ? "Saving..." : "Save Case"}
+              {addCaseLoading && submitting === "save"
+                ? "Saving..."
+                : "Save Case"}
             </Button>
           )}
           <Button
@@ -642,7 +652,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
             disabled={addCaseLoading}
             onClick={() => handleSubmit("save_view")}
           >
-            {addCaseLoading ? "Saving..." : "Save and View Case"}
+            {addCaseLoading && submitting === "save_view"
+              ? "Saving..."
+              : "Save and View Case"}
           </Button>
           <Button
             type="button"

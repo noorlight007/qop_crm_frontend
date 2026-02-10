@@ -208,6 +208,9 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         "An error occurred. Please try again.";
       toast.error(firstMsg);
       console.error("Error creating lead:", error);
+    } finally {
+      // Clear which button was submitting so only clicked button shows loading while active
+      setSubmitType(null);
     }
   };
 
@@ -281,6 +284,8 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         "An error occurred. Please try again.";
       toast.error(firstMsg);
       console.error("Error creating lead:", error);
+    } finally {
+      setSubmitType(null);
     }
   };
 
@@ -544,16 +549,20 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           <Button
             type="submit"
             color="primary"
+            disabled={isLoading}
             onClick={() => setSubmitType("lead")}
           >
-            {isLoading ? "Saving..." : "Save Lead"}
+            {isLoading && submitType === "lead" ? "Saving..." : "Save Lead"}
           </Button>
           <Button
             type="submit"
             color="success"
+            disabled={isLoading}
             onClick={() => setSubmitType("case")}
           >
-            {isLoading ? "Saving..." : "Save & Create Case"}
+            {isLoading && submitType === "case"
+              ? "Saving..."
+              : "Save & Create Case"}
           </Button>
           <Button color="secondary" onClick={toggle}>
             Cancel
