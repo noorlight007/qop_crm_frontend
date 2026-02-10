@@ -363,23 +363,9 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         return;
       }
 
-      setFormData((prev) => ({
-        company_name: "",
-        company_registration_number: prev.company_registration_number,
-        date_of_incorporation: null,
-        company_type: "PRIVATE_LIMITED",
-        trade_business_type: "",
-        sic_code: "",
-        is_spv: false,
-        postcode: "",
-        house_number_or_name: "",
-        address_line1: "",
-        city: "",
-        county: "",
-        country: "",
-        directors_shareholders: [],
-      }));
-      setNumberOfDirectors("0");
+      // Don't clear existing directors immediately — only update them if the
+      // API returns explicit officer/count data. This prevents losing previously
+      // entered directors when the external API has no officers info.
       setShouldFetch(true);
     } catch (err: any) {
       console.log("Setup Error:", err);
@@ -405,28 +391,63 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
 
   useEffect(() => {
     if (companyDetails && shouldFetch) {
-      console.log("API Response Data:", companyDetails);
+      // Normalize various API shapes for officer/count information
+      // Possible shapes handled:
+      // - { number_of_directors_shareholders: { officers: [...] } }
+      // - { number_of_directors_shareholders: [...] }
+      // - { officers: [...] }
+      // - { number_of_directors_shareholders: <number> }
 
-      const apiOfficers = companyDetails.number_of_directors_shareholders;
+      const candidates: any =
+        companyDetails.number_of_directors_shareholders ||
+        companyDetails.officers ||
+        undefined;
+
       let mappedDirectors: any[] = [];
 
-      if (
-        apiOfficers &&
-        apiOfficers.officers &&
-        Array.isArray(apiOfficers.officers)
-      ) {
-        mappedDirectors = apiOfficers.officers.map((officer: any) => {
-          const role = officer.role;
-
-          return {
-            full_name: officer.name || "",
+      if (Array.isArray(candidates)) {
+        // direct array of officers
+        mappedDirectors = candidates.map((officer: any) => ({
+          full_name: officer?.name || "",
+          percentage_share: "",
+          role: officer?.role || "",
+        }));
+      } else if (candidates && Array.isArray(candidates.officers)) {
+        mappedDirectors = candidates.officers.map((officer: any) => ({
+          full_name: officer?.name || "",
+          percentage_share: "",
+          role: officer?.role || "",
+        }));
+      } else if (candidates != null && !Array.isArray(candidates)) {
+        // Possibly a numeric count
+        const count = parseInt(String(candidates), 10);
+        if (!isNaN(count) && count > 0) {
+          mappedDirectors = Array.from({ length: count }, () => ({
+            full_name: "",
             percentage_share: "",
-            role: role,
-          };
-        });
+            role: "",
+          }));
+        }
       }
 
-      setFormData({
+      // Fallback: sometimes companyDetails may have a top-level 'officers' array
+      if (
+        mappedDirectors.length === 0 &&
+        Array.isArray(companyDetails.officers)
+      ) {
+        mappedDirectors = companyDetails.officers.map((officer: any) => ({
+          full_name: officer?.name || "",
+          percentage_share: "",
+          role: officer?.role || "",
+        }));
+      }
+
+      const directorCount = mappedDirectors.length;
+
+      // Merge incoming company details into existing form data. Only
+      // overwrite directors fields when the API provided officers or a
+      // numeric count.
+      const updated: any = {
         company_name: companyDetails.company_name || "",
         company_registration_number: formData.company_registration_number,
         date_of_incorporation: companyDetails.date_of_incorporation || null,
@@ -441,11 +462,16 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         city: companyDetails.city || "",
         county: companyDetails.county || "",
         country: companyDetails.country || "",
-        directors_shareholders: mappedDirectors,
-        number_of_directors_shareholders: mappedDirectors.length,
-      });
+      };
 
-      setNumberOfDirectors(String(mappedDirectors.length));
+      if (mappedDirectors.length > 0) {
+        updated.directors_shareholders = mappedDirectors;
+        updated.number_of_directors_shareholders = directorCount;
+        setNumberOfDirectors(String(directorCount));
+      }
+
+      setFormData((prev) => ({ ...prev, ...updated }));
+
       setShouldFetch(false);
     }
   }, [companyDetails, shouldFetch]);
