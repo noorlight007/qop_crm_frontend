@@ -1,6 +1,9 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
-import { AddNewCaseModalProps } from "@/Types/Common/Cases/CaseTypes";
+import {
+  AddNewCaseModalProps,
+  LeadOptionType,
+} from "@/Types/Common/Cases/CaseTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
@@ -22,16 +25,6 @@ import {
   ModalHeader,
 } from "reactstrap";
 import AddLeadModal from "../../CommonUsers/Leads/Modals/AddLeadModal";
-import "./AddNewCaseModal.scss";
-
-interface LeadOptionType {
-  value: number;
-  label: string;
-  name: string;
-  email?: string;
-  user_type?: string;
-  profile_image?: string | null;
-}
 
 const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,

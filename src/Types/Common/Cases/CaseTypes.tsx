@@ -140,3 +140,12 @@ export interface DeleteCaseModalProps {
   onDelete: () => void; // Callback to handle deletion
   isDeleting?: any;
 }
+
+export interface LeadOptionType {
+  value: number;
+  label: string;
+  name: string;
+  email?: string;
+  user_type?: string;
+  profile_image?: string | null;
+}
