@@ -375,6 +375,16 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
       const name = user?.name || lead?.name || "Unnamed Lead";
       const email = user?.email || lead?.email;
+      const phone =
+        user?.phone ||
+        lead?.phone ||
+        user?.mobile ||
+        lead?.mobile ||
+        user?.mobile_number ||
+        lead?.mobile_number ||
+        user?.phone_number ||
+        lead?.phone_number ||
+        null;
       const userType = user?.user_type || lead?.user_type;
       const profileImage = user?.profile_image || lead?.profile_image;
 
@@ -383,6 +393,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         label: name,
         name: name,
         email: email,
+        phone: phone,
         user_type: userType,
         profile_image: profileImage,
       };
@@ -503,28 +514,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               options={leadOptions}
               value={selectedLeadOption}
               inputValue={leadSearchInput}
-              filterOption={(candidate, rawInput) => {
-                const input = (rawInput || "").trim().toLowerCase();
-                if (!input) return true;
-
-                const data = candidate.data as any;
-                const name = String(data?.name || "").toLowerCase();
-                const email = String(data?.email || "").toLowerCase();
-
-                const phone = String(
-                  data?.phone ||
-                    data?.mobile ||
-                    data?.mobile_number ||
-                    data?.phone_number ||
-                    "",
-                ).toLowerCase();
-
-                return (
-                  name.includes(input) ||
-                  email.includes(input) ||
-                  phone.includes(input)
-                );
-              }}
+              filterOption={() => true}
               onChange={(opt) => {
                 const selectedValue = opt?.value ? Number(opt.value) : 0;
                 setFormData((prev) => ({
