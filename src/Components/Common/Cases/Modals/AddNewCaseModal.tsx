@@ -1,11 +1,14 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
 import { AddNewCaseModalProps } from "@/Types/Common/Cases/CaseTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { User } from "react-feather";
 import { TbCirclePlus } from "react-icons/tb";
+import Select, { components } from "react-select";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -19,6 +22,16 @@ import {
   ModalHeader,
 } from "reactstrap";
 import AddLeadModal from "../../CommonUsers/Leads/Modals/AddLeadModal";
+import "./AddNewCaseModal.scss";
+
+interface LeadOptionType {
+  value: number;
+  label: string;
+  name: string;
+  email?: string;
+  user_type?: string;
+  profile_image?: string | null;
+}
 
 const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,
@@ -30,7 +43,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   const [leads, setLeads] = useState<any[]>([]);
   const { data: userLEADListData, refetch: refetchLeads } = useGetUserListQuery(
     {
-      role: "LEAD",
+      role: ["LEAD", "CLIENT"],
     },
   );
   const { data: userNetAdviserListData } = useGetUserListQuery({
@@ -51,7 +64,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     assigned_to_admin: "",
     notes: "",
   });
-  const [submitType, setSubmitType] = useState<"save" | "save_view">("save");
   const { data: session } = useSession();
   const userType = session?.user?.user_type;
   const router = useRouter();
@@ -132,6 +144,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       const syntheticLead = {
         id: leadId,
         name: displayName,
+        email: null,
+        user_type: null,
+        profile_image: null,
       };
 
       return [...(prev || []), syntheticLead];
@@ -163,8 +178,185 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Custom Option Component for beautiful display
+  const CustomOption = (props: any) => {
+    const { data } = props;
+    return (
+      <components.Option {...props}>
+        <div className="d-flex align-items-center gap-2">
+          <div
+            className="flex-shrink-0"
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              overflow: "hidden",
+              backgroundColor: "#e9ecef",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {data.profile_image ? (
+              <img
+                src={data.profile_image}
+                alt={data.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <User size={20} color="#6c757d" />
+            )}
+          </div>
+          <div className="flex-grow-1">
+            <div className="d-flex justify-content-between">
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  color: "#2c3e50",
+                  marginBottom: "2px",
+                }}
+              >
+                {data.name}
+              </div>
+              {data.user_type && (
+                <span
+                  style={{
+                    backgroundColor:
+                      data.user_type === "CLIENT" ? "#d1ecf1" : "#fff3cd",
+                    color: data.user_type === "CLIENT" ? "#0c5460" : "#856404",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatChoiceFieldValue(data.user_type) || ""}
+                </span>
+              )}
+            </div>
+
+            <div
+              style={{
+                fontSize: "12px",
+                color: "#6c757d",
+                display: "flex",
+                gap: "8px",
+                flexWrap: "wrap",
+              }}
+            >
+              {data.email && <span>📧 {data.email}</span>}
+            </div>
+          </div>
+        </div>
+      </components.Option>
+    );
+  };
+
+  // Custom SingleValue Component for selected value
+  const CustomSingleValue = (props: any) => {
+    const { data } = props;
+    return (
+      <components.SingleValue {...props}>
+        <div className="d-flex align-items-center gap-2">
+          <div
+            className="flex-shrink-0"
+            style={{
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              overflow: "hidden",
+              backgroundColor: "#e9ecef",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {data.profile_image ? (
+              <img
+                src={data.profile_image}
+                alt={data.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <User size={16} color="#6c757d" />
+            )}
+          </div>
+          <div>
+            <div
+              style={{ fontWeight: 600, fontSize: "14px" }}
+              className="d-flex gap-2"
+            >
+              <div>{data.name}</div>
+              {data.user_type && (
+                <span
+                  style={{
+                    backgroundColor:
+                      data.user_type === "CLIENT" ? "#d1ecf1" : "#fff3cd",
+                    color: data.user_type === "CLIENT" ? "#0c5460" : "#856404",
+                    padding: "2px 6px",
+                    borderRadius: "4px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatChoiceFieldValue(data.user_type) || ""}
+                </span>
+              )}
+            </div>
+            {data.email && (
+              <div style={{ fontSize: "11px", color: "#6c757d" }}>
+                {data.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </components.SingleValue>
+    );
+  };
+
+  const leadOptions: LeadOptionType[] = (leads || [])
+    .map((lead: any) => {
+      const user = lead?.user ?? lead;
+      const id = user?.id ?? lead?.id;
+      if (!id) return null;
+
+      const name = user?.name || lead?.name || "Unnamed Lead";
+      const email = user?.email || lead?.email;
+      const userType = user?.user_type || lead?.user_type;
+      const profileImage = user?.profile_image || lead?.profile_image;
+
+      return {
+        value: Number(id),
+        label: name,
+        name: name,
+        email: email,
+        user_type: userType,
+        profile_image: profileImage,
+      };
+    })
+    .filter(Boolean) as LeadOptionType[];
+
+  const selectedLeadOption =
+    leadOptions.find((opt) => opt.value === Number(formData.lead)) || null;
+
+  const handleSubmit = async (submitType: "save" | "save_view") => {
+    if (!formData.lead) {
+      toast.error("Please select a Lead/Client.");
+      return;
+    }
+    if (!formData.case_category) {
+      toast.error("Please select a Case Category.");
+      return;
+    }
     try {
       const result = await addCaseDetails({
         payload: formData,
@@ -212,44 +404,45 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           {!!leadId ? "Continue to Case" : "Create New Case"}
         </h3>
       </ModalHeader>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit("save");
+        }}
+      >
         <ModalBody>
           <FormGroup>
             <Label for="lead">
-              Lead<span className="text-danger">*</span>
+              Lead/Client<span className="text-danger">*</span>
             </Label>
-            <Input
-              id="lead"
+            <Select<LeadOptionType>
+              inputId="lead"
               name="lead"
-              type="select"
-              required
-              value={formData.lead}
-              onChange={handleChange}
-              disabled={!!leadId}
-            >
-              <option value="">Select...</option>
-              {leads && leads.length > 0 ? (
-                leads.map((lead: any) => {
-                  const optionId = lead?.id ?? lead?.user?.id;
-                  return (
-                    <option key={optionId} value={optionId}>
-                      {lead?.name || "Unnamed Lead"}
-                    </option>
-                  );
-                })
-              ) : (
-                <option value="" disabled>
-                  No leads available
-                </option>
-              )}
-            </Input>
+              placeholder="Search by name, email or phone..."
+              isClearable
+              isSearchable
+              isDisabled={!!leadId}
+              options={leadOptions}
+              value={selectedLeadOption}
+              onChange={(opt) => {
+                const selectedValue = opt?.value ? Number(opt.value) : 0;
+                setFormData((prev) => ({
+                  ...prev,
+                  lead: selectedValue,
+                }));
+              }}
+              components={{
+                Option: CustomOption,
+                SingleValue: CustomSingleValue,
+              }}
+              classNamePrefix="lead-select"
+              className="lead-select"
+              noOptionsMessage={() =>
+                leadOptions.length ? "No matches found" : "No leads available"
+              }
+            />
             <div className="mt-2">
-              <Button
-                size="sm"
-                color="primary"
-                onClick={handleOpenAddLead}
-                toggle={toggle}
-              >
+              <Button size="sm" color="primary" onClick={handleOpenAddLead}>
                 <TbCirclePlus size={16} className="me-1" />
                 Add Lead
               </Button>
@@ -369,19 +562,19 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         <ModalFooter>
           {!leadId && (
             <Button
-              type="submit"
+              type="button"
               color="primary"
               disabled={addCaseLoading}
-              onClick={() => setSubmitType("save")}
+              onClick={() => handleSubmit("save")}
             >
               {addCaseLoading ? "Saving..." : "Save Case"}
             </Button>
           )}
           <Button
-            type="submit"
+            type="button"
             color="secondary"
             disabled={addCaseLoading}
-            onClick={() => setSubmitType("save_view")}
+            onClick={() => handleSubmit("save_view")}
           >
             {addCaseLoading ? "Saving..." : "Save and View Case"}
           </Button>
