@@ -50,6 +50,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   const toggleCaseModal = () => setIsCaseModalOpen((prev) => !prev);
 
   const [createdLeadId, setCreatedLeadId] = useState<number | null>(null);
+  const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
   const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
 
   const { data: session } = useSession();
@@ -181,6 +182,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         toast.success("Lead added successfully.");
         const leadId = result.data.user?.id;
         setCreatedLeadId(leadId);
+        setCreatedLeadData(result.data);
         // If a parent provided onLeadCreated, notify it as well
         // so it can update any dependent UI (e.g., lead dropdown).
         if (onLeadCreated && result.data) {
@@ -262,6 +264,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         });
         // Clear any existing errors on success
         setErrors({});
+        setCreatedLeadData(result.data);
         toggle(); // Close the modal
       } else if ("error" in result) {
         const normalized = normalizeApiErrors(result);
@@ -582,6 +585,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
               }`
             : undefined
         }
+        leadData={createdLeadData}
         onCaseCreated={handleCaseCreated}
       />
     </Modal>

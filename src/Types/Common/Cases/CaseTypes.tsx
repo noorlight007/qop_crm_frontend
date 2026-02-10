@@ -125,6 +125,8 @@ export interface AddNewCaseModalProps {
   leadId?: number;
   /** Optional display name for the preselected lead */
   leadName?: string;
+  /** Optional full lead data to prefill the select (user object or lead object) */
+  leadData?: any;
   onCaseCreated?: (caseAlias: string) => void;
 }
 

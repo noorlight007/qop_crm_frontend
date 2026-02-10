@@ -31,6 +31,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   toggle,
   leadId,
   leadName,
+  leadData,
   onCaseCreated,
 }) => {
   const [leads, setLeads] = useState<any[]>([]);
@@ -136,19 +137,38 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
       if (exists) return prev;
 
-      const displayName = leadName || "Selected Lead";
+      // Prefer using leadData (returned from create lead) when present so
+      // the select shows email, user_type and profile_image immediately.
+      let leadToAdd: any;
+      if (leadData) {
+        leadToAdd = leadData.user || leadData;
+        // Ensure name exists (compose from parts if necessary)
+        if (!leadToAdd.name) {
+          const parts = [
+            leadToAdd.title,
+            leadToAdd.first_name,
+            leadToAdd.middle_name,
+            leadToAdd.last_name,
+          ].filter(Boolean);
+          leadToAdd = { ...leadToAdd, name: parts.join(" ") };
+        }
+      } else {
+        const displayName = leadName || "Selected Lead";
+        leadToAdd = {
+          id: leadId,
+          name: displayName,
+          email: null,
+          user_type: null,
+          profile_image: null,
+        };
+      }
 
-      const syntheticLead = {
-        id: leadId,
-        name: displayName,
-        email: null,
-        user_type: null,
-        profile_image: null,
-      };
-
-      return [...(prev || []), syntheticLead];
+      return [...(prev || []), leadToAdd];
     });
-  }, [leadId, leadName]);
+
+    // also ensure the form selects the created lead
+    setFormData((prev) => ({ ...prev, lead: leadId }));
+  }, [leadId, leadName, leadData]);
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {
