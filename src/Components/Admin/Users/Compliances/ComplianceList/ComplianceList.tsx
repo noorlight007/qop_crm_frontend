@@ -6,7 +6,7 @@ const ComplianceList: React.FC = () => {
     <div>
       <>
         <Container fluid>
-          <AuthUsers title="Compliance" roles="COMPLIANCE_ASSISTANT" />
+          <AuthUsers title="Compliance" roles="COMPLIANCE" />
         </Container>
       </>
     </div>

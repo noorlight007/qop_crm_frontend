@@ -494,10 +494,8 @@ const NetworkDetails: React.FC = () => {
                             cursor: "pointer",
                           }}
                           onClick={() => {
-                            alert("Button clicked!"); // This CANNOT be missed
                             handleDirectorProfileImageUpload();
                           }}
-                          // onClick={handleDirectorProfileImageUpload}
                           disabled={isUpdating}
                         >
                           <FaCamera size={12} className="text-primary" />

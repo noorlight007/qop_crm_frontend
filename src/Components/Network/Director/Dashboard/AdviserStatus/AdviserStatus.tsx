@@ -78,7 +78,7 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                 ) : (
                   <>
                     {Array.isArray(
-                      networkDirectorDashboardData?.top_performing_advisers
+                      networkDirectorDashboardData?.top_performing_advisers,
                     ) &&
                     networkDirectorDashboardData.top_performing_advisers
                       .length > 0 ? (
@@ -87,24 +87,26 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                         .map((data, idx: number) => (
                           <tr key={idx}>
                             <td>{data?.rank ?? "0"}</td>
-                            <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                              <span
-                                className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                                style={{ width: 30, height: 30 }}
-                              >
-                                {data?.profile_image ? (
-                                  <Image
-                                    src={data.profile_image}
-                                    alt="Profile"
-                                    width={25}
-                                    height={25}
-                                    className="rounded-circle"
-                                  />
-                                ) : (
-                                  <User size={25} className="text-primary" />
-                                )}
-                              </span>
-                              <span>{data?.name ?? "Not Available"}</span>
+                            <td>
+                              <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                                <span
+                                  className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                                  style={{ width: 30, height: 30 }}
+                                >
+                                  {data?.profile_image ? (
+                                    <Image
+                                      src={data.profile_image}
+                                      alt="Profile"
+                                      width={25}
+                                      height={25}
+                                      className="rounded-circle"
+                                    />
+                                  ) : (
+                                    <User size={25} className="text-primary" />
+                                  )}
+                                </span>
+                                <span>{data?.name ?? "Not Available"}</span>
+                              </div>
                             </td>
                             <td>{data?.total_cases ?? "0"}</td>
                             <td>{data?.residential ?? "0"}</td>

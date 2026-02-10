@@ -211,8 +211,36 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     });
   };
 
+  const validateDirectors = (): Record<string, string> => {
+    const out: Record<string, string> = {};
+    const list = formData.directors_shareholders || [];
+    list.forEach((d: any, i: number) => {
+      if (!d || !String(d.full_name || "").trim()) {
+        out[`directors_shareholders.${i}.full_name`] = "Full name is required";
+      }
+      if (
+        d == null ||
+        d.percentage_share === "" ||
+        d.percentage_share == null ||
+        isNaN(Number(d.percentage_share))
+      ) {
+        out[`directors_shareholders.${i}.percentage_share`] =
+          "Percentage share is required";
+      }
+    });
+    return out;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const validationErrors = validateDirectors();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      toast.error(Object.values(validationErrors)[0]);
+      return;
+    }
+
     try {
       const response = await addCompanyDetails({
         case_alias,
@@ -249,6 +277,14 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
       toast.error("Company name is missing — cannot perform update");
       return;
     }
+
+    const validationErrors = validateDirectors();
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      toast.error(Object.values(validationErrors)[0]);
+      return;
+    }
+
     try {
       await updateCompanyDetails({
         case_alias,
@@ -327,23 +363,9 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         return;
       }
 
-      setFormData((prev) => ({
-        company_name: "",
-        company_registration_number: prev.company_registration_number,
-        date_of_incorporation: null,
-        company_type: "PRIVATE_LIMITED",
-        trade_business_type: "",
-        sic_code: "",
-        is_spv: false,
-        postcode: "",
-        house_number_or_name: "",
-        address_line1: "",
-        city: "",
-        county: "",
-        country: "",
-        directors_shareholders: [],
-      }));
-      setNumberOfDirectors("0");
+      // Don't clear existing directors immediately — only update them if the
+      // API returns explicit officer/count data. This prevents losing previously
+      // entered directors when the external API has no officers info.
       setShouldFetch(true);
     } catch (err: any) {
       console.log("Setup Error:", err);
@@ -369,28 +391,63 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
 
   useEffect(() => {
     if (companyDetails && shouldFetch) {
-      console.log("API Response Data:", companyDetails);
+      // Normalize various API shapes for officer/count information
+      // Possible shapes handled:
+      // - { number_of_directors_shareholders: { officers: [...] } }
+      // - { number_of_directors_shareholders: [...] }
+      // - { officers: [...] }
+      // - { number_of_directors_shareholders: <number> }
 
-      const apiOfficers = companyDetails.number_of_directors_shareholders;
+      const candidates: any =
+        companyDetails.number_of_directors_shareholders ||
+        companyDetails.officers ||
+        undefined;
+
       let mappedDirectors: any[] = [];
 
-      if (
-        apiOfficers &&
-        apiOfficers.officers &&
-        Array.isArray(apiOfficers.officers)
-      ) {
-        mappedDirectors = apiOfficers.officers.map((officer: any) => {
-          const role = officer.role;
-
-          return {
-            full_name: officer.name || "",
+      if (Array.isArray(candidates)) {
+        // direct array of officers
+        mappedDirectors = candidates.map((officer: any) => ({
+          full_name: officer?.name || "",
+          percentage_share: "",
+          role: officer?.role || "",
+        }));
+      } else if (candidates && Array.isArray(candidates.officers)) {
+        mappedDirectors = candidates.officers.map((officer: any) => ({
+          full_name: officer?.name || "",
+          percentage_share: "",
+          role: officer?.role || "",
+        }));
+      } else if (candidates != null && !Array.isArray(candidates)) {
+        // Possibly a numeric count
+        const count = parseInt(String(candidates), 10);
+        if (!isNaN(count) && count > 0) {
+          mappedDirectors = Array.from({ length: count }, () => ({
+            full_name: "",
             percentage_share: "",
-            role: role,
-          };
-        });
+            role: "",
+          }));
+        }
       }
 
-      setFormData({
+      // Fallback: sometimes companyDetails may have a top-level 'officers' array
+      if (
+        mappedDirectors.length === 0 &&
+        Array.isArray(companyDetails.officers)
+      ) {
+        mappedDirectors = companyDetails.officers.map((officer: any) => ({
+          full_name: officer?.name || "",
+          percentage_share: "",
+          role: officer?.role || "",
+        }));
+      }
+
+      const directorCount = mappedDirectors.length;
+
+      // Merge incoming company details into existing form data. Only
+      // overwrite directors fields when the API provided officers or a
+      // numeric count.
+      const updated: any = {
         company_name: companyDetails.company_name || "",
         company_registration_number: formData.company_registration_number,
         date_of_incorporation: companyDetails.date_of_incorporation || null,
@@ -405,11 +462,16 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
         city: companyDetails.city || "",
         county: companyDetails.county || "",
         country: companyDetails.country || "",
-        directors_shareholders: mappedDirectors,
-        number_of_directors_shareholders: mappedDirectors.length,
-      });
+      };
 
-      setNumberOfDirectors(String(mappedDirectors.length));
+      if (mappedDirectors.length > 0) {
+        updated.directors_shareholders = mappedDirectors;
+        updated.number_of_directors_shareholders = directorCount;
+        setNumberOfDirectors(String(directorCount));
+      }
+
+      setFormData((prev) => ({ ...prev, ...updated }));
+
       setShouldFetch(false);
     }
   }, [companyDetails, shouldFetch]);
@@ -580,9 +642,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
               Is SPV
             </Label>
             {getFieldError("is_spv") && (
-              <div className="text-danger small">
-                {getFieldError("is_spv")}
-              </div>
+              <div className="text-danger small">{getFieldError("is_spv")}</div>
             )}
           </FormGroup>
           <Row>
@@ -717,20 +777,23 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
             formData.directors_shareholders.length > 0 && (
               <div className="mt-2">
                 {formData.directors_shareholders.map((d, i) => (
-                  <Row key={i} className="align-items-end mb-2">
+                  <Row key={i} className="align-items-start mb-2">
                     <Col md={6}>
                       <FormGroup>
-                        <Label className="small">Full Name</Label>
+                        <Label className="small">
+                          Full Name <small className="text-danger">*</small>
+                        </Label>
                         <Input
                           type="text"
                           name="full_name"
                           value={d.full_name}
                           onChange={(e) => handleDirectorChange(i, e)}
+                          required
                         />
                         {getFieldError(
                           `directors_shareholders.${i}.full_name`,
                         ) && (
-                          <div className="text-danger small">
+                          <div className="text-danger small mt-1">
                             {getFieldError(
                               `directors_shareholders.${i}.full_name`,
                             )}
@@ -740,28 +803,32 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
                     </Col>
                     <Col md={3}>
                       <FormGroup>
-                        <Label className="small">Percentage Share</Label>
-                        <div className="d-flex">
+                        <Label className="small">
+                          Percentage Share
+                          <small className="text-danger">*</small>
+                        </Label>
+                        <InputGroup>
                           <Input
                             type="number"
                             name="percentage_share"
                             value={d.percentage_share as any}
                             onChange={(e) => handleDirectorChange(i, e)}
                             step="any"
+                            required
                           />
-                          <div className="input-group-append ms-1 align-self-center">
-                            %
+                          <div className="input-group-append">
+                            <span className="input-group-text">%</span>
                           </div>
-                          {getFieldError(
-                            `directors_shareholders.${i}.percentage_share`,
-                          ) && (
-                            <div className="text-danger small ms-2">
-                              {getFieldError(
-                                `directors_shareholders.${i}.percentage_share`,
-                              )}
-                            </div>
-                          )}
-                        </div>
+                        </InputGroup>
+                        {getFieldError(
+                          `directors_shareholders.${i}.percentage_share`,
+                        ) && (
+                          <div className="text-danger small mt-1">
+                            {getFieldError(
+                              `directors_shareholders.${i}.percentage_share`,
+                            )}
+                          </div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col md={3}>

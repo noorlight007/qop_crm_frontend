@@ -179,30 +179,32 @@ const OrgAdvisers: React.FC = () => {
               ) : currentAdvisers.length > 0 ? (
                 currentAdvisers.map((adviser) => (
                   <tr key={adviser.alias} className="text-center">
-                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                      <span
-                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                        style={{ width: 40, height: 40 }}
-                      >
-                        {adviser?.profile_image ? (
-                          <Image
-                            src={adviser?.profile_image}
-                            alt="Profile"
-                            width={35}
-                            height={35}
-                            className="rounded-circle"
-                          />
-                        ) : (
-                          <User size={30} className="text-primary" />
-                        )}
-                      </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => toggleViewOrgAdviserModal(adviser)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {adviser?.name}
-                      </span>
+                    <td>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {adviser?.profile_image ? (
+                            <Image
+                              src={adviser?.profile_image}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => toggleViewOrgAdviserModal(adviser)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {adviser?.name}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {adviser?.email ? (

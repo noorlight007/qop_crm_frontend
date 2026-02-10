@@ -144,14 +144,14 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
           },
           {
-            path: "/network/director/compliance-assistants",
-            title: "Compliance Assistants",
+            path: "/network/director/compliances",
+            title: "Compliances",
             type: "link",
             children: [],
           },
           {
             path: "/network/director/advisers",
-            title: "Registered Advisers",
+            title: "Advisers",
             type: "link",
             children: [],
           },
@@ -159,6 +159,34 @@ const NetworkDirectorMenu: MenuItem[] = [
             path: "/network/director/advisers-status",
             title: "Advisers Status",
             type: "link",
+          },
+        ],
+      },
+      {
+        title: "Calculators",
+        icon: <FaCalculator />,
+        type: "sub",
+        lanClass: "lan-3",
+        children: [
+          {
+            title: "Monthly Payment",
+            type: "link",
+            path: "/network/director/calculators/monthly-payment-calculator",
+          },
+          {
+            title: "Remortgage",
+            type: "link",
+            path: "/network/director/calculators/remortgage-calculator",
+          },
+          {
+            title: "Overpayment",
+            type: "link",
+            path: "/network/director/calculators/overpayment-calculator",
+          },
+          {
+            title: "Stamp Duty",
+            type: "link",
+            path: "/network/director/calculators/stamp-duty-calculator",
           },
         ],
       },

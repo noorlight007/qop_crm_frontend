@@ -1,0 +1,85 @@
+// Custom styles for Lead/Client select dropdown
+.lead-select {
+  .lead-select__control {
+    min-height: 48px;
+    border-color: #dee2e6;
+    box-shadow: none;
+
+    &:hover {
+      border-color: var(--primary-color);
+    }
+
+    &--is-focused {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 1px var(--primary-color);
+    }
+  }
+
+  .lead-select__option {
+    padding: 10px;
+    cursor: pointer;
+
+    &--is-selected {
+      background-color: var(--primary-color);
+      color: white !important;
+
+      // Override all text colors inside selected option
+      div
+       {
+        color: white !important;
+      }
+    }
+
+    &--is-focused {
+      background-color: #f8f9fa;
+
+      &.lead-select__option--is-selected {
+        background-color: var(--primary-color);
+        color: white !important;
+
+        // Override all text colors inside selected option
+        div
+         {
+          color: white !important;
+        }
+      }
+    }
+
+    &:active {
+      background-color: var(--primary-color);
+      color: white !important;
+
+      // Override all text colors inside selected option
+      div
+       {
+        color: white !important;
+      }
+    }
+  }
+
+  .lead-select__single-value {
+    display: flex;
+    align-items: center;
+  }
+
+  .lead-select__menu {
+    z-index: 9999;
+  }
+
+  .lead-select__placeholder {
+    color: #6c757d;
+  }
+
+  .lead-select__indicator-separator {
+    background-color: #dee2e6;
+  }
+
+  .lead-select__clear-indicator,
+  .lead-select__dropdown-indicator {
+    color: #6c757d;
+
+    &:hover {
+      color: #495057;
+    }
+  }
+}

@@ -135,7 +135,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `applicant-info-${caseInfo?.alias}.pdf`;
+      link.download = `applicants-info(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
       link.click();
 
@@ -240,7 +240,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   ) : (
                     <>
                       <TbDownload size="16" className="me-1" />
-                      Download Applicant Info
+                      Download Applicants Info
                     </>
                   )}
                 </DropdownItem>

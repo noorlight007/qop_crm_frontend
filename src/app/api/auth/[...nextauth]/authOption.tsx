@@ -36,6 +36,7 @@ declare module "next-auth" {
 
   interface JWT {
     accessToken?: string;
+    refreshToken?: string;
     user_type?: string;
     profile_image?: string | null;
     name?: string;
@@ -51,7 +52,10 @@ declare module "next-auth" {
 export const authoption: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    maxAge: 12 * 60 * 60, // 12 hours
+    // Auto logout after 24 hours.
+    // NOTE: access tokens may still be short-lived; API layer refreshes them on 401.
+    maxAge: 24 * 60 * 60, // 24 hours
+    updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
   },
   pages: {
     signIn: "/auth/login",
@@ -100,7 +104,7 @@ export const authoption: NextAuthOptions = {
                 "X-Device-Info": credentials.userAgent || "",
                 "X-TENANT-SUBDOMAIN": credentials.subdomain || "",
               },
-            }
+            },
           );
 
           const profileResponse = result?.data?.access

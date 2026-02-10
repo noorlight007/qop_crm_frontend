@@ -178,10 +178,14 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Joining Date</th>
-                {pathname !== "/organisation/director/introducers" && (
-                  <th>Gender</th>
+                {pathname === "/network/director/compliances" && (
+                  <th>Designation</th>
                 )}
+                <th>Joining Date</th>
+                {pathname !== "/organisation/director/introducers" &&
+                  pathname !== "/network/director/compliances" && (
+                    <th>Gender</th>
+                  )}
                 {pathname === "/organisation/director/introducers" && (
                   <>
                     <th>Company Name</th>
@@ -253,6 +257,16 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
 
+                    {pathname === "/network/director/compliances" && (
+                      <td>
+                        {user?.designation ? (
+                          user?.designation
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                    )}
+
                     <td>
                       {user.joining_date ? (
                         formatDate(user?.joining_date)
@@ -260,15 +274,17 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {pathname !== "/organisation/director/introducers" && (
-                      <td>
-                        {user?.gender ? (
-                          formatChoiceFieldValue(user?.gender)
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                    )}
+
+                    {pathname !== "/organisation/director/introducers" &&
+                      pathname !== "/network/director/compliances" && (
+                        <td>
+                          {user?.gender ? (
+                            formatChoiceFieldValue(user?.gender)
+                          ) : (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </td>
+                      )}
                     {pathname === "/organisation/director/introducers" && (
                       <>
                         <td>

@@ -10,6 +10,7 @@ interface AuthUser {
   gender: string;
   created_at: string;
   created_by: string | null;
+  designation?: string;
   joining_date: string;
   is_active: boolean;
   profile_image: string | null;

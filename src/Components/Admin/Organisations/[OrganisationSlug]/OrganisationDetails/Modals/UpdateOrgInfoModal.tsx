@@ -1,5 +1,5 @@
-import { useUpdateNetworkMutation } from "@/Redux/Reducers/Admin/Networks/NetworksApi";
-import { UpdateNetworkInfoModalProps } from "@/Types/Admin/Networks/NetworkType";
+import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import { UpdateOrgInfoModalProps } from "@/Types/Admin/Organisations/OrganisationTypes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,15 +18,15 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
+const UpdateOrgInfoModal: React.FC<UpdateOrgInfoModalProps> = ({
   isOpen,
   toggle,
   slug,
-  networkData,
+  organisationData,
 }) => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    network: {
+    organization: {
       name: "",
       email: "",
       primary_mobile: "",
@@ -37,7 +37,8 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
     },
   });
 
-  console.log("Network Data in Modal:", networkData);
+    console.log("organisation info: ", organisationData);
+//   console.log("slug: ", slug);
 
   // API validation errors keyed by dot-notated field paths
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
@@ -45,44 +46,56 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [oldName, setOldName] = useState("");
   // Rtk hooks
-  const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
+  const [updateOrganization, { isLoading: isUpdating }] =
+    useUpdateOrganisationMutation();
 
   // Set initial form values when modal opens
   useEffect(() => {
-    if (networkData && isOpen) {
+    if (organisationData && isOpen) {
       setFormData({
-        network: {
-          name: networkData?.network?.name ?? networkData?.name ?? "",
-          email: networkData?.network?.email ?? networkData?.email ?? "",
+        organization: {
+          name:
+            organisationData?.organization?.name ??
+            organisationData?.name ??
+            "",
+          email:
+            organisationData?.organization?.email ??
+            organisationData?.email ??
+            "",
           primary_mobile:
-            networkData?.network?.primary_mobile ??
-            networkData?.primary_mobile ??
+            organisationData?.organization?.primary_mobile ??
+            organisationData?.primary_mobile ??
             "",
           other_contact:
-            networkData?.network?.other_contact ??
-            networkData?.other_contact ??
+            organisationData?.organization?.other_contact ??
+            organisationData?.other_contact ??
             "",
-          website: networkData?.network?.website ?? networkData?.website ?? "",
+          website:
+            organisationData?.organization?.website ??
+            organisationData?.website ??
+            "",
           contact_person:
-            networkData?.network?.contact_person ??
-            networkData?.contact_person ??
+            organisationData?.organization?.contact_person ??
+            organisationData?.contact_person ??
             "",
           license_no:
-            networkData?.network?.license_no ??
-            networkData?.license_no ??
+            organisationData?.organization?.license_no ??
+            organisationData?.license_no ??
             "",
         },
       });
-      setOldName(networkData?.network?.name ?? networkData?.name ?? "");
+      setOldName(
+        organisationData?.organization?.name ?? organisationData?.name ?? "",
+      );
     }
-  }, [networkData, isOpen]);
+  }, [organisationData, isOpen]);
 
   // Handle input change for text fields
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      network: { ...formData.network, [name]: value },
+      organization: { ...formData.organization, [name]: value },
     });
   };
 
@@ -90,7 +103,7 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
-      if (name === "network.license_image") {
+      if (name === "organization.license_image") {
         setProfileImage(files[0]);
       }
     }
@@ -102,43 +115,46 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
     try {
       const formDataToSend = new FormData();
 
-      // Build original network values to compare against
-      const originalNetwork = {
-        name: networkData?.network?.name ?? networkData?.name ?? "",
-        email: networkData?.network?.email ?? networkData?.email ?? "",
+      // Build original organisation values to compare against
+      const originalOrganisation = {
+        name:
+          organisationData?.organization?.name ?? organisationData?.name ?? "",
+        email:
+          organisationData?.organization?.email ??
+          organisationData?.email ??
+          "",
         primary_mobile:
-          networkData?.network?.primary_mobile ??
-          networkData?.primary_mobile ??
+          organisationData?.organization?.primary_mobile ??
+          organisationData?.primary_mobile ??
           "",
         other_contact:
-          networkData?.network?.other_contact ??
-          networkData?.other_contact ??
+          organisationData?.organization?.other_contact ??
+          organisationData?.other_contact ??
           "",
-        website: networkData?.network?.website ?? networkData?.website ?? "",
+        website:
+          organisationData?.organization?.website ??
+          organisationData?.website ??
+          "",
         contact_person:
-          networkData?.network?.contact_person ??
-          networkData?.contact_person ??
-          "",
-        license_no:
-          networkData?.network?.license_no ??
-          networkData?.license_no ??
+          organisationData?.organization?.contact_person ??
+          organisationData?.contact_person ??
           "",
       } as Record<string, string>;
 
       // Append only changed text fields
       let hasChanges = false;
-      Object.entries(formData.network).forEach(([key, value]) => {
-        const orig = String(originalNetwork[key] ?? "");
+      Object.entries(formData.organization).forEach(([key, value]) => {
+        const orig = String(originalOrganisation[key] ?? "");
         const next = String(value ?? "");
         if (next !== orig) {
-          formDataToSend.append(`network.${key}`, next);
+          formDataToSend.append(`organization.${key}`, next);
           hasChanges = true;
         }
       });
 
       // Append file only if selected
       if (profileImage) {
-        formDataToSend.append("network.license_image", profileImage);
+        formDataToSend.append("organization.license_image", profileImage);
         hasChanges = true;
       }
 
@@ -148,26 +164,26 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
         return;
       }
       // Use RTK Query mutation
-      const response = await updateNetwork({
-        network_slug: slug,
+      const response = await updateOrganization({
+        slug,
         payload: formDataToSend,
       }).unwrap();
       if (response) {
-        toast.success("Network updated successfully!");
+        toast.success("Organisation updated successfully!");
         // clear previous API errors on success
         setApiErrors({});
         // Redirect if name changed
-        if (formData.network.name !== oldName) {
-          router.push("/admin/networks");
+        if (formData.organization.name !== oldName) {
+          router.push("/admin/organisations");
           toast.warning(
-            "Due to the name change, redirected to the Networks page.",
+            "Due to the name change, redirected to the Organisations page.",
           );
         } else {
           toggle();
         }
       }
     } catch (error: any) {
-      console.error("Update network error:", error);
+      console.error("Update organisation error:", error);
 
       const flattenErrors = (
         value: any,
@@ -226,7 +242,7 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
       }
 
       const fallback =
-        error?.message ?? "Failed to update network. Please try again.";
+        error?.message ?? "Failed to update organisation. Please try again.";
       toast.error(fallback);
     }
   };
@@ -234,25 +250,25 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <h2 className="text-primary">Update Network Details</h2>
+        <h2 className="text-primary">Update Organisation Details</h2>
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
             <Col md="6">
               <FormGroup>
-                <Label for="name">Network Name</Label>
+                <Label for="name">Organisation Name</Label>
                 <Input
                   type="text"
                   id="name"
                   name="name"
-                  value={formData.network.name}
+                  value={formData.organization.name}
                   onChange={handleInputChange}
                   required
                 />
-                {apiErrors["network.name"] ? (
+                {apiErrors["organization.name"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.name"].join(", ")}
+                    {apiErrors["organization.name"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -264,13 +280,13 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
                   type="email"
                   id="email"
                   name="email"
-                  value={formData.network.email}
+                  value={formData.organization.email}
                   onChange={handleInputChange}
                   required
                 />
-                {apiErrors["network.email"] ? (
+                {apiErrors["organization.email"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.email"].join(", ")}
+                    {apiErrors["organization.email"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -282,12 +298,12 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
                   type="text"
                   id="primary_mobile"
                   name="primary_mobile"
-                  value={formData.network.primary_mobile}
+                  value={formData.organization.primary_mobile}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.primary_mobile"] ? (
+                {apiErrors["organization.primary_mobile"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.primary_mobile"].join(", ")}
+                    {apiErrors["organization.primary_mobile"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -304,12 +320,12 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
                   type="url"
                   id="website"
                   name="website"
-                  value={formData.network.website}
+                  value={formData.organization.website}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.website"] ? (
+                {apiErrors["organization.website"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.website"].join(", ")}
+                    {apiErrors["organization.website"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -321,12 +337,12 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
                   type="text"
                   id="contact_person"
                   name="contact_person"
-                  value={formData.network.contact_person}
+                  value={formData.organization.contact_person}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.contact_person"] ? (
+                {apiErrors["organization.contact_person"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.contact_person"].join(", ")}
+                    {apiErrors["organization.contact_person"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -338,12 +354,12 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
                   type="text"
                   id="other_contact"
                   name="other_contact"
-                  value={formData.network.other_contact}
+                  value={formData.organization.other_contact}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.other_contact"] ? (
+                {apiErrors["organization.other_contact"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.other_contact"].join(", ")}
+                    {apiErrors["organization.other_contact"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -357,12 +373,12 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
                   type="text"
                   id="license_no"
                   name="license_no"
-                  value={formData.network.license_no}
+                  value={formData.organization.license_no}
                   onChange={handleInputChange}
                 />
-                {apiErrors["network.license_no"] ? (
+                {apiErrors["organization.license_no"] ? (
                   <div className="text-danger small mt-1">
-                    {apiErrors["network.license_no"].join(", ")}
+                    {apiErrors["organization.license_no"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -370,21 +386,21 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
             {/* License Image Upload */}
             <Col md="6">
               <FormGroup>
-                <Label for="network.license_image">License Image</Label>
+                <Label for="organization.license_image">License Image</Label>
                 <Input
                   type="file"
-                  id="network.license_image"
-                  name="network.license_image"
+                  id="organization.license_image"
+                  name="organization.license_image"
                   accept="image/*"
                   onChange={handleFileChange}
                 />
               </FormGroup>
             </Col>
             <Col md="6">
-              {networkData?.network.license_image ? (
+              {organisationData?.organization?.license_image ? (
                 <div className="d-flex justify-content-center mt-2">
                   <Image
-                    src={networkData.network.license_image}
+                    src={organisationData?.organization?.license_image}
                     alt="License Image"
                     width={100}
                     height={80}
@@ -412,4 +428,4 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   );
 };
 
-export default UpdateNetworkInfoModal;
+export default UpdateOrgInfoModal;

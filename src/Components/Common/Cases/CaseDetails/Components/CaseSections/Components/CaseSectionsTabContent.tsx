@@ -37,7 +37,7 @@ const tabComponents: Record<string, React.FC> = {
   "Solicitors & Accountants": SolicitorsAndAccountantsTab,
   "Budget Planner": BudgetPlanner,
   "Existing Protection": ExistingProtectionTab,
-  "Needs And Preferences": NeedsAndPreferencesContent,
+  "Needs & Preferences": NeedsAndPreferencesContent,
   Notes: NotesTab,
   Product: ProductContent,
   "DIP History": DIPHistoryTab,

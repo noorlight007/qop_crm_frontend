@@ -186,30 +186,34 @@ const OrgIntroducers: React.FC = () => {
               ) : currentIntroducers.length > 0 ? (
                 currentIntroducers.map((introducer) => (
                   <tr key={introducer.alias} className="text-center">
-                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                      <span
-                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                        style={{ width: 40, height: 40 }}
-                      >
-                        {introducer?.profile_image ? (
-                          <Image
-                            src={introducer?.profile_image}
-                            alt="Profile"
-                            width={35}
-                            height={35}
-                            className="rounded-circle"
-                          />
-                        ) : (
-                          <User size={30} className="text-primary" />
-                        )}
-                      </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => toggleViewOrgIntroducerModal(introducer)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {introducer?.name}
-                      </span>
+                    <td>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {introducer?.profile_image ? (
+                            <Image
+                              src={introducer?.profile_image}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() =>
+                            toggleViewOrgIntroducerModal(introducer)
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          {introducer?.name}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {introducer?.email ? (
