@@ -222,37 +222,39 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
               ) : currentClients.length > 0 ? (
                 currentClients.map((client: any) => (
                   <tr key={client.alias} className="text-center">
-                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                      <span
-                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                        style={{ width: 40, height: 40 }}
-                      >
-                        {client.user?.profile_image ? (
-                          <Image
-                            src={client.user.profile_image}
-                            alt="Profile"
-                            width={35}
-                            height={35}
-                            className="rounded-circle"
-                          />
-                        ) : (
-                          <User size={30} className="text-primary" />
-                        )}
-                      </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => {
-                          setSelectedClient(client);
-                          toggleViewModal();
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {client.user?.title
-                          ? formatChoiceFieldValue(client.user?.title)
-                          : ""}{" "}
-                        {client?.user?.first_name} {client?.user?.middle_name}{" "}
-                        {client?.user?.last_name}
-                      </span>
+                    <td>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {client.user?.profile_image ? (
+                            <Image
+                              src={client.user.profile_image}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => {
+                            setSelectedClient(client);
+                            toggleViewModal();
+                          }}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {client.user?.title
+                            ? formatChoiceFieldValue(client.user?.title)
+                            : ""}{" "}
+                          {client?.user?.first_name} {client?.user?.middle_name}{" "}
+                          {client?.user?.last_name}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {client?.user?.email || (
