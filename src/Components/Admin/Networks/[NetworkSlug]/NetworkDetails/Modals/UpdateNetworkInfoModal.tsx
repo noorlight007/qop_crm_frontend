@@ -33,6 +33,7 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
       other_contact: "",
       website: "",
       contact_person: "",
+      license_no: "",
     },
   });
 
@@ -51,14 +52,8 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
     if (networkData && isOpen) {
       setFormData({
         network: {
-          name:
-            networkData?.network?.name ??
-            networkData?.name ??
-            "",
-          email:
-            networkData?.network?.email ??
-            networkData?.email ??
-            "",
+          name: networkData?.network?.name ?? networkData?.name ?? "",
+          email: networkData?.network?.email ?? networkData?.email ?? "",
           primary_mobile:
             networkData?.network?.primary_mobile ??
             networkData?.primary_mobile ??
@@ -67,19 +62,18 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
             networkData?.network?.other_contact ??
             networkData?.other_contact ??
             "",
-          website:
-            networkData?.network?.website ??
-            networkData?.website ??
-            "",
+          website: networkData?.network?.website ?? networkData?.website ?? "",
           contact_person:
             networkData?.network?.contact_person ??
             networkData?.contact_person ??
             "",
+          license_no:
+            networkData?.network?.license_no ??
+            networkData?.license_no ??
+            "",
         },
       });
-      setOldName(
-        networkData?.network?.name ?? networkData?.name ?? "",
-      );
+      setOldName(networkData?.network?.name ?? networkData?.name ?? "");
     }
   }, [networkData, isOpen]);
 
@@ -110,12 +104,8 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
 
       // Build original network values to compare against
       const originalNetwork = {
-        name:
-          networkData?.network?.name ?? networkData?.name ?? "",
-        email:
-          networkData?.network?.email ??
-          networkData?.email ??
-          "",
+        name: networkData?.network?.name ?? networkData?.name ?? "",
+        email: networkData?.network?.email ?? networkData?.email ?? "",
         primary_mobile:
           networkData?.network?.primary_mobile ??
           networkData?.primary_mobile ??
@@ -124,13 +114,14 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
           networkData?.network?.other_contact ??
           networkData?.other_contact ??
           "",
-        website:
-          networkData?.network?.website ??
-          networkData?.website ??
-          "",
+        website: networkData?.network?.website ?? networkData?.website ?? "",
         contact_person:
           networkData?.network?.contact_person ??
           networkData?.contact_person ??
+          "",
+        license_no:
+          networkData?.network?.license_no ??
+          networkData?.license_no ??
           "",
       } as Record<string, string>;
 
@@ -158,7 +149,7 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
       }
       // Use RTK Query mutation
       const response = await updateNetwork({
-        network_slug:slug,
+        network_slug: slug,
         payload: formDataToSend,
       }).unwrap();
       if (response) {
@@ -359,7 +350,24 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
             </Col>
           </Row>
           <Row>
-            {/* Profile Image Upload */}
+            <Col md="12">
+              <FormGroup>
+                <Label for="license_no">License Number</Label>
+                <Input
+                  type="text"
+                  id="license_no"
+                  name="license_no"
+                  value={formData.network.license_no}
+                  onChange={handleInputChange}
+                />
+                {apiErrors["network.license_no"] ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors["network.license_no"].join(", ")}
+                  </div>
+                ) : null}
+              </FormGroup>
+            </Col>
+            {/* License Image Upload */}
             <Col md="6">
               <FormGroup>
                 <Label for="network.license_image">License Image</Label>
