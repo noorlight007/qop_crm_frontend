@@ -35,11 +35,16 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   onCaseCreated,
 }) => {
   const [leads, setLeads] = useState<any[]>([]);
-  const { data: userLEADListData, refetch: refetchLeads } = useGetUserListQuery(
-    {
-      role: ["LEAD", "CLIENT"],
-    },
-  );
+  const [leadSearchInput, setLeadSearchInput] = useState("");
+  const [leadSearch, setLeadSearch] = useState("");
+  const {
+    data: userLEADListData,
+    refetch: refetchLeads,
+    isFetching: isFetchingLeads,
+  } = useGetUserListQuery({
+    role: ["LEAD", "CLIENT"],
+    search: leadSearch || undefined,
+  });
   const { data: userNetAdviserListData } = useGetUserListQuery({
     role: "NETWORK_ADVISER",
   });
@@ -190,6 +195,15 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       setFormErrors({});
     }
   }, [isOpen]);
+
+  // Debounce Lead/Client search to avoid triggering an API call per keystroke.
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setLeadSearch(leadSearchInput.trim());
+    }, 350);
+
+    return () => clearTimeout(timeoutId);
+  }, [leadSearchInput]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -485,8 +499,32 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               isClearable
               isSearchable
               isDisabled={!!leadId}
+              isLoading={isFetchingLeads}
               options={leadOptions}
               value={selectedLeadOption}
+              inputValue={leadSearchInput}
+              filterOption={(candidate, rawInput) => {
+                const input = (rawInput || "").trim().toLowerCase();
+                if (!input) return true;
+
+                const data = candidate.data as any;
+                const name = String(data?.name || "").toLowerCase();
+                const email = String(data?.email || "").toLowerCase();
+
+                const phone = String(
+                  data?.phone ||
+                    data?.mobile ||
+                    data?.mobile_number ||
+                    data?.phone_number ||
+                    "",
+                ).toLowerCase();
+
+                return (
+                  name.includes(input) ||
+                  email.includes(input) ||
+                  phone.includes(input)
+                );
+              }}
               onChange={(opt) => {
                 const selectedValue = opt?.value ? Number(opt.value) : 0;
                 setFormData((prev) => ({
@@ -499,6 +537,13 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   return copy;
                 });
               }}
+              onInputChange={(inputValue, { action }) => {
+                // Keep whatever the user typed in the input field.
+                // React-select may call this with empty values for actions like
+                // "menu-close" or "set-value"; we ignore those to avoid clearing.
+                if (action === "input-change")
+                  setLeadSearchInput(inputValue || "");
+              }}
               components={{
                 Option: CustomOption,
                 SingleValue: CustomSingleValue,
@@ -506,7 +551,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               classNamePrefix="lead-select"
               className="lead-select"
               noOptionsMessage={() =>
-                leadOptions.length ? "No matches found" : "No leads available"
+                isFetchingLeads
+                  ? "Loading..."
+                  : leadSearchInput
+                    ? "No matches found"
+                    : "No leads available"
               }
             />
             {formErrors.lead && (
