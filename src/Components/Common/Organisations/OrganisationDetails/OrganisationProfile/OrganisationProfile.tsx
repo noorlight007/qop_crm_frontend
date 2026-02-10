@@ -3,7 +3,13 @@ import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/Organ
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
-import { FaCamera, FaGlobe, FaNetworkWired, FaPhoneAlt } from "react-icons/fa";
+import {
+  FaCamera,
+  FaDownload,
+  FaGlobe,
+  FaNetworkWired,
+  FaPhoneAlt,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
@@ -64,6 +70,41 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
 
   const toggleUpdateModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  const handleLicenseImageDownload = async () => {
+    const licenseImageUrl = singleOrgInfo?.organization?.license_image;
+
+    if (!licenseImageUrl) return;
+
+    try {
+      // Fetch the image as a blob
+      const response = await fetch(licenseImageUrl);
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      // Extract filename from URL or use a default name
+      const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
+      link.download = fileName;
+
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Fallback to opening in new tab if download fails
+      window.open(licenseImageUrl, "_blank");
+    }
   };
 
   return (
@@ -168,6 +209,26 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       <Badge className="bg-warning text-truncate">
                         <FaGlobe className="me-1" />
                         {`${"https://"}${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="d-flex align-items-center gap-2 mb-2">
+                    {singleOrgInfo?.organization?.network && (
+                      <Badge color="secondary" size="sm" style={{ "padding": "0.4rem" }}>
+                        {/* <FaIdCard className="me-1" /> */}
+                        License No:
+                        {singleOrgInfo?.organization?.license_no ||
+                          "License N/A"}
+                      </Badge>
+                    )}
+                    {singleOrgInfo?.organization?.license_image && (
+                      <Badge
+                        className="p-1"
+                        onClick={handleLicenseImageDownload}
+                        style={{ cursor: "pointer" }}
+                        title="Download License Image"
+                      >
+                        <FaDownload />
                       </Badge>
                     )}
                   </div>
