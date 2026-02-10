@@ -204,6 +204,15 @@ $colors: (
   padding: 0.05rem 0.4rem;
   font-size: 11px;
 }
-/**=====================
-     buttons css end
-==========================**/
+
+/* Ensure info buttons keep white text on hover/focus/active */
+.btn-info,
+.btn-outline-info {
+  &:hover,
+  &:focus,
+  &.active,
+  &:active:focus,
+  &.show {
+    color: var(--white) !important;
+  }
+}

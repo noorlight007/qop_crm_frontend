@@ -40,6 +40,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   const { data, isLoading, isError } = useGetCaseLoanDetailsQuery(casealias);
   const dispatch = useAppDispatch();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
 
   const camelToSnake = (s: string) =>
     s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -1581,7 +1584,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               Back
             </Button>
             <Button color="primary" onClick={handleNext} className="ms-2">
-               {isValidating ? "Validating..." : "Next"}
+              {isValidating ? "Validating..." : "Next"}
             </Button>
           </div>
         </TabPane>
@@ -1818,9 +1821,16 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
             </Button>
             <div className="d-flex gap-3">
               <Button
-                type="submit"
+                type="button"
                 color="primary"
-                onClick={handleSave}
+                onClick={async () => {
+                  setSubmitting("save");
+                  try {
+                    await handleSave();
+                  } finally {
+                    setSubmitting(null);
+                  }
+                }}
                 className=""
                 disabled={
                   isLoading ||
@@ -1829,10 +1839,12 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     loandetailsData?.updated_by !== null)
                 }
               >
-                {isUpdating ? "Saving..." : "Save Details"}
+                {isUpdating && submitting === "save"
+                  ? "Saving..."
+                  : "Save Details"}
               </Button>
               <Button
-                type="submit"
+                type="button"
                 color="secondary"
                 onClick={async () => {
                   // Validate tab 4 form before saving/navigating
@@ -1847,6 +1859,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   ) {
                     handleNextTab();
                   } else {
+                    setSubmitting("save_next");
                     try {
                       const ok = await handleSave();
                       if (ok) {
@@ -1854,6 +1867,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       }
                     } catch (error) {
                       console.error("Save failed, not navigating to next tab");
+                    } finally {
+                      setSubmitting(null);
                     }
                   }
                 }}
@@ -1862,7 +1877,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 {session?.user?.user_type === "CLIENT" &&
                 loandetailsData?.updated_by !== null
                   ? "Go To Next"
-                  : "Save & Next"}
+                  : isUpdating && submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
               </Button>
             </div>
           </div>

@@ -31,6 +31,9 @@ export const ComplianceTab = () => {
     { skip: !casealias },
   );
   const [basicTab, setBasicTab] = useState("1");
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
   const complianceState = useAppSelector(
     (state: RootState) => state.compliance,
   );
@@ -40,8 +43,12 @@ export const ComplianceTab = () => {
     useUpdateSectionCompleteStatusMutation();
 
   // Update this to use the Redux state
-  const handleUpdateAll = async () => {
+  const handleUpdateAll = async (
+    action: "save" | "save_next" = "save",
+  ): Promise<boolean> => {
     try {
+      setSubmitting(action);
+
       const changedFields = Object.entries(complianceState).reduce(
         (acc, [key, value]) => {
           if (value !== null) {
@@ -52,32 +59,44 @@ export const ComplianceTab = () => {
         {},
       );
 
-      if (Object.keys(changedFields).length > 0) {
-        const res = await updateCompliance({
-          case_alias: casealias,
-          payload: changedFields,
-        });
-        if (res.data) {
-          toast.success("Compliance data updated successfully");
-          try {
-            await updateSectionCompleteStatus({
-              case_alias: casealias,
-              section_data: { is_compliance: true },
-            });
-          } catch (err) {
-            console.error("Failed to update section complete status:", err);
-          }
-        } else if (res.error) {
-          const errorMessage =
-            (res.error as any)?.data?.detail ||
-            "Failed to update compliance data!";
-          toast.error(errorMessage);
-        } else {
-          toast.error("Failed to update compliance data");
-        }
+      if (Object.keys(changedFields).length === 0) {
+        return true;
       }
+
+      const res = await updateCompliance({
+        case_alias: casealias,
+        payload: changedFields,
+      });
+
+      if (res.data) {
+        toast.success("Compliance data updated successfully");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_compliance: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        return true;
+      }
+
+      if (res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.detail ||
+          "Failed to update compliance data!";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Failed to update compliance data");
+      }
+
+      return false;
     } catch (error) {
       console.error("Failed to update compliance data:", error);
+      toast.error("Failed to update compliance data");
+      return false;
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -138,25 +157,38 @@ export const ComplianceTab = () => {
             <div className="d-flex justify-content-end mb-3 gap-2 px-2">
               <Button
                 color="primary"
-                onClick={handleUpdateAll}
-                disabled={isUpdating || session?.user?.user_type === "CLIENT"}
+                type="button"
+                onClick={() => {
+                  void handleUpdateAll("save");
+                }}
+                disabled={
+                  submitting !== null ||
+                  isUpdating ||
+                  session?.user?.user_type === "CLIENT"
+                }
               >
-                {isUpdating ? "Saving..." : "Save Changes"}
+                {submitting === "save" ? "Saving..." : "Save Changes"}
               </Button>
               <Button
                 color="secondary"
+                type="button"
+                disabled={submitting !== null || isUpdating}
                 onClick={async () => {
                   if (session?.user?.user_type === "CLIENT") {
                     handleNextTab();
                   } else {
-                    await handleUpdateAll();
-                    handleNextTab();
+                    const ok = await handleUpdateAll("save_next");
+                    if (ok) {
+                      handleNextTab();
+                    }
                   }
                 }}
               >
                 {session?.user?.user_type === "CLIENT"
                   ? "Go To Next"
-                  : "Save & Next"}
+                  : submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
               </Button>
             </div>
           </CardBody>

@@ -70,6 +70,9 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const toggleAddressModal = () => setIsAddressModalOpen(!isAddressModalOpen);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
 
   const camelToSnake = (s: string) =>
     s.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
@@ -291,39 +294,49 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   };
   const handleSaveClick = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
+    // mark which action is submitting so only that button shows loading label
+    const action = submitActionRef.current || "save";
+    setSubmitting(action === "next" ? "save_next" : "save");
 
-    const res = await updateEmploymentDetails({
-      case_alias: casealias,
-      employmentDetails_alias: formValues?.alias,
-      employmentDetails: formValues,
-    });
+    try {
+      const res = await updateEmploymentDetails({
+        case_alias: casealias,
+        employmentDetails_alias: formValues?.alias,
+        employmentDetails: formValues,
+      });
 
-    if (res.data) {
-      setErrors({});
-      toast.success("Employment details updated successfully.");
-      try {
-        await updateSectionCompleteStatus({
-          case_alias: casealias,
-          section_data: { is_employment_income: true },
-        });
-      } catch (err) {
-        console.error("Failed to update section complete status:", err);
+      if (res.data) {
+        setErrors({});
+        toast.success("Employment details updated successfully.");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_employment_income: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        // Clear saved draft on successful save so we don't reapply stale data.
+        if (formValues?.alias) delete draftsRef.current[formValues.alias];
+        // Only go to next tab if this was a Save & Next action
+        if (submitActionRef.current === "next") {
+          handleNextTab();
+        }
+      } else if (res.error) {
+        const parsed = parseApiErrors(res.error as any);
+        setErrors(parsed);
+        // Scroll to the first field with an API validation error
+        scrollToFirstError(parsed);
+        const first = Object.values(parsed)[0];
+        toast.error(first || "Failed to update employment details.");
+      } else {
+        toast.error("Failed to update employment details.");
       }
-      // Clear saved draft on successful save so we don't reapply stale data.
-      if (formValues?.alias) delete draftsRef.current[formValues.alias];
-      // Only go to next tab if this was a Save & Next action
-      if (submitActionRef.current === "next") {
-        handleNextTab();
-      }
-    } else if (res.error) {
-      const parsed = parseApiErrors(res.error as any);
-      setErrors(parsed);
-      // Scroll to the first field with an API validation error
-      scrollToFirstError(parsed);
-      const first = Object.values(parsed)[0];
-      toast.error(first || "Failed to update employment details.");
-    } else {
-      toast.error("Failed to update employment details.");
+    } catch (error: any) {
+      const msg = error?.message || "Failed to update employment details.";
+      toast.error(msg);
+    } finally {
+      setSubmitting(null);
     }
   };
   const currentTab: string | null = useAppSelector(
@@ -2389,18 +2402,22 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               <Button
                 color="primary"
                 type="submit"
-                disabled={session?.user?.user_type === "CLIENT"}
+                disabled={
+                  isUpdateEmploymentDetailsLoading ||
+                  session?.user?.user_type === "CLIENT"
+                }
                 onClick={() => {
                   submitActionRef.current = "save";
                 }}
               >
-                {isUpdateEmploymentDetailsLoading
+                {isUpdateEmploymentDetailsLoading && submitting === "save"
                   ? "Saving..."
                   : "Save Changes"}
               </Button>
               <Button
                 type="submit"
                 color="secondary"
+                disabled={isUpdateEmploymentDetailsLoading}
                 onClick={(e) => {
                   e.preventDefault();
                   if (session?.user?.user_type === "CLIENT") {
@@ -2413,7 +2430,10 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               >
                 {session?.user?.user_type === "CLIENT"
                   ? "Go To Next"
-                  : "Save & Next"}
+                  : isUpdateEmploymentDetailsLoading &&
+                      submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
               </Button>
             </div>
           </Col>

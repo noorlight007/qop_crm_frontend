@@ -166,6 +166,10 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
   const [viewDMPsModal, setViewDMPsModal] = useState(false);
   const [viewPayDayLoansModal, setViewPayDayLoansModal] = useState(false);
 
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
+
   // Add handle view button click
   const handleViewClick = (key: keyof typeof formData) => {
     switch (key) {
@@ -199,51 +203,59 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
   };
   // Add this function before the return statement
   const handleSubmit = async () => {
-    const updatedFields = {
-      has_any_defaults_registered_in_the_last_six_years:
-        formData.has_any_defaults_registered_in_the_last_six_years,
-      has_any_ccj_registered_in_the_last_six_years:
-        formData.has_any_ccj_registered_in_the_last_six_years,
-      missed_any_payments_on_commitments_in_the_last_five_years:
-        formData.missed_any_payments_on_commitments_in_the_last_five_years,
-      is_a_property_repossessed: formData.is_a_property_repossessed,
-      has_ever_been_made_bankrupt: formData.has_ever_been_made_bankrupt,
-      have_you_ever_entered_into_an_individual_voluntary_arrangement:
-        formData.have_you_ever_entered_into_an_individual_voluntary_arrangement,
-      is_ever_enter_into_a_debt_management_plan_or_debt_relief_order:
-        formData.is_ever_enter_into_a_debt_management_plan_or_debt_relief_order,
-      is_ever_taken_out_a_pay_day_loan:
-        formData.is_ever_taken_out_a_pay_day_loan,
-      is_exceeded_your_overdraft_in_the_last_three_months:
-        formData.is_exceeded_your_overdraft_in_the_last_three_months,
-      is_direct_debit_returned_in_the_last_three_months:
-        formData.is_direct_debit_returned_in_the_last_three_months,
-      why_did_the_adverse_occur: formData.why_did_the_adverse_occur,
-      is_adverse: true,
-    };
-    console.log("Updated Fields:", updatedFields);
-    const res = await updateAdverseDetails({
-      case_alias: casealias,
-      adverse_alias: basicTab,
-      adverse_details: updatedFields,
-    });
-    console.log("Response:", res);
-    if (res.data) {
-      toast.success("Adverse updated successfully");
-      try {
-        await updateSectionCompleteStatus({
-          case_alias: casealias,
-          section_data: { is_adverse: true },
-        });
-      } catch (err) {
-        console.error("Failed to update section complete status:", err);
+    try {
+      const updatedFields = {
+        has_any_defaults_registered_in_the_last_six_years:
+          formData.has_any_defaults_registered_in_the_last_six_years,
+        has_any_ccj_registered_in_the_last_six_years:
+          formData.has_any_ccj_registered_in_the_last_six_years,
+        missed_any_payments_on_commitments_in_the_last_five_years:
+          formData.missed_any_payments_on_commitments_in_the_last_five_years,
+        is_a_property_repossessed: formData.is_a_property_repossessed,
+        has_ever_been_made_bankrupt: formData.has_ever_been_made_bankrupt,
+        have_you_ever_entered_into_an_individual_voluntary_arrangement:
+          formData.have_you_ever_entered_into_an_individual_voluntary_arrangement,
+        is_ever_enter_into_a_debt_management_plan_or_debt_relief_order:
+          formData.is_ever_enter_into_a_debt_management_plan_or_debt_relief_order,
+        is_ever_taken_out_a_pay_day_loan:
+          formData.is_ever_taken_out_a_pay_day_loan,
+        is_exceeded_your_overdraft_in_the_last_three_months:
+          formData.is_exceeded_your_overdraft_in_the_last_three_months,
+        is_direct_debit_returned_in_the_last_three_months:
+          formData.is_direct_debit_returned_in_the_last_three_months,
+        why_did_the_adverse_occur: formData.why_did_the_adverse_occur,
+        is_adverse: true,
+      };
+
+      const res = await updateAdverseDetails({
+        case_alias: casealias,
+        adverse_alias: basicTab,
+        adverse_details: updatedFields,
+      });
+
+      if (res.data) {
+        toast.success("Adverse updated successfully");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_adverse: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+      } else if (res.error) {
+        const errorMessage =
+          (res.error as any)?.data?.detail ||
+          "Failed to update adverse details!";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Something went wrong");
       }
-    } else if (res.error) {
-      const errorMessage =
-        (res.error as any)?.data?.detail || "Failed to update adverse details!";
-      toast.error(errorMessage);
-    } else {
+    } catch (err) {
+      console.error(err);
       toast.error("Something went wrong");
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -416,30 +428,41 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                 {/* Submit Button */}
                 <div className="d-flex justify-content-end mt-4 gap-2">
                   <Button
+                    type="button"
                     color="primary"
-                    onClick={handleSubmit}
+                    onClick={async () => {
+                      if (session?.user?.user_type === "CLIENT") return;
+                      setSubmitting("save");
+                      await handleSubmit();
+                    }}
                     disabled={
-                      isAdverseUpdating || session?.user?.user_type === "CLIENT"
+                      submitting !== null ||
+                      isAdverseUpdating ||
+                      session?.user?.user_type === "CLIENT"
                     }
                   >
-                    {isAdverseUpdating ? "Saving..." : "Save Changes"}
+                    {submitting === "save" ? "Saving..." : "Save Changes"}
                   </Button>
                   <Button
-                    type="submit"
+                    type="button"
                     color="secondary"
                     onClick={async (e) => {
                       if (session?.user?.user_type === "CLIENT") {
                         handleNextTab();
                       } else {
                         e.preventDefault();
+                        setSubmitting("save_next");
                         await handleSubmit();
                         handleNextTab();
                       }
                     }}
+                    disabled={submitting !== null || isAdverseUpdating}
                   >
                     {session?.user?.user_type === "CLIENT"
                       ? "Go To Next"
-                      : "Save & Next"}
+                      : submitting === "save_next"
+                        ? "Saving..."
+                        : "Save & Next"}
                   </Button>
                 </div>
               </Form>

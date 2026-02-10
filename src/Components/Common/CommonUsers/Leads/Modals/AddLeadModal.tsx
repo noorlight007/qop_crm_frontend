@@ -50,6 +50,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   const toggleCaseModal = () => setIsCaseModalOpen((prev) => !prev);
 
   const [createdLeadId, setCreatedLeadId] = useState<number | null>(null);
+  const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
   const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
 
   const { data: session } = useSession();
@@ -181,6 +182,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         toast.success("Lead added successfully.");
         const leadId = result.data.user?.id;
         setCreatedLeadId(leadId);
+        setCreatedLeadData(result.data);
         // If a parent provided onLeadCreated, notify it as well
         // so it can update any dependent UI (e.g., lead dropdown).
         if (onLeadCreated && result.data) {
@@ -208,6 +210,9 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         "An error occurred. Please try again.";
       toast.error(firstMsg);
       console.error("Error creating lead:", error);
+    } finally {
+      // Clear which button was submitting so only clicked button shows loading while active
+      setSubmitType(null);
     }
   };
 
@@ -259,6 +264,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         });
         // Clear any existing errors on success
         setErrors({});
+        setCreatedLeadData(result.data);
         toggle(); // Close the modal
       } else if ("error" in result) {
         const normalized = normalizeApiErrors(result);
@@ -281,6 +287,8 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         "An error occurred. Please try again.";
       toast.error(firstMsg);
       console.error("Error creating lead:", error);
+    } finally {
+      setSubmitType(null);
     }
   };
 
@@ -544,16 +552,20 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           <Button
             type="submit"
             color="primary"
+            disabled={isLoading}
             onClick={() => setSubmitType("lead")}
           >
-            {isLoading ? "Saving..." : "Save Lead"}
+            {isLoading && submitType === "lead" ? "Saving..." : "Save Lead"}
           </Button>
           <Button
             type="submit"
             color="success"
+            disabled={isLoading}
             onClick={() => setSubmitType("case")}
           >
-            {isLoading ? "Saving..." : "Save & Create Case"}
+            {isLoading && submitType === "case"
+              ? "Saving..."
+              : "Save & Create Case"}
           </Button>
           <Button color="secondary" onClick={toggle}>
             Cancel
@@ -573,6 +585,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
               }`
             : undefined
         }
+        leadData={createdLeadData}
         onCaseCreated={handleCaseCreated}
       />
     </Modal>

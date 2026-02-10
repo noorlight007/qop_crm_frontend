@@ -113,10 +113,10 @@ const FeesTab: FC = () => {
               ))}
             </Nav>
             <div className="position-absolute top-0 end-0 me-2">
-              <Button color="primary">
+              <Button color="info" disabled={isFeesSummaryDownloading}>
                 {isFeesSummaryDownloading ? (
                   <>
-                    <Spinner size="sm" color="light" className="me-2" />
+                    <Spinner size="sm" color="dark" className="me-2" />
                     Downloading...
                   </>
                 ) : (

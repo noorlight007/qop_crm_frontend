@@ -79,6 +79,10 @@ const SuitabilityContent: React.FC = () => {
   // Modal State
   const [isExtraAnswerModalOpen, setIsExtraAnswerModalOpen] = useState(false);
 
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
+
   // Form State
   const [formValue, setFormValue] = useState({
     circumstances_objectives: {
@@ -645,8 +649,13 @@ const SuitabilityContent: React.FC = () => {
   };
 
   // Handle form submission (returns true on success)
-  const handleSubmit = async (e: React.FormEvent): Promise<boolean> => {
+  const handleSubmit = async (
+    e: React.FormEvent,
+    action: "save" | "save_next" = "save",
+  ): Promise<boolean> => {
     e.preventDefault();
+
+    setSubmitting(action);
     const payload = {
       alias: casealias,
       circumstances_objectives: {
@@ -739,6 +748,8 @@ const SuitabilityContent: React.FC = () => {
         getErrorMessage(error) || "Failed to save changes. Please try again.";
       toast.error(errorMessage);
       return false;
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -769,7 +780,11 @@ const SuitabilityContent: React.FC = () => {
 
   return (
     <>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={(e) => {
+          void handleSubmit(e, "save");
+        }}
+      >
         {/* Your circumstances and objectives */}
         <Card className="border-1 border-success">
           <CardHeader className="d-flex justify-content-between align-items-center">
@@ -2608,25 +2623,36 @@ const SuitabilityContent: React.FC = () => {
         <div className="d-flex justify-content-end mt-3 mb-0 gap-2">
           <Button
             color="primary"
-            type="submit"
-            disabled={isUpdating || session?.user?.user_type === "CLIENT"}
+            type="button"
+            disabled={
+              submitting !== null ||
+              isUpdating ||
+              session?.user?.user_type === "CLIENT"
+            }
+            onClick={(e) => {
+              void handleSubmit(e, "save");
+            }}
           >
-            {isUpdating ? "Saving..." : "Save Changes"}
+            {submitting === "save" ? "Saving..." : "Save Changes"}
           </Button>
           <Button
             color="secondary"
+            type="button"
+            disabled={submitting !== null || isUpdating}
             onClick={async (e) => {
               if (session?.user?.user_type === "CLIENT") {
                 handleNextTab();
               } else {
-                const ok = await handleSubmit(e);
+                const ok = await handleSubmit(e, "save_next");
                 if (ok) handleNextTab();
               }
             }}
           >
             {session?.user?.user_type === "CLIENT"
               ? "Go To Next"
-              : "Save & Next"}
+              : submitting === "save_next"
+                ? "Saving..."
+                : "Save & Next"}
           </Button>
         </div>
       </Form>

@@ -31,14 +31,20 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   toggle,
   leadId,
   leadName,
+  leadData,
   onCaseCreated,
 }) => {
   const [leads, setLeads] = useState<any[]>([]);
-  const { data: userLEADListData, refetch: refetchLeads } = useGetUserListQuery(
-    {
-      role: ["LEAD", "CLIENT"],
-    },
-  );
+  const [leadSearchInput, setLeadSearchInput] = useState("");
+  const [leadSearch, setLeadSearch] = useState("");
+  const {
+    data: userLEADListData,
+    refetch: refetchLeads,
+    isFetching: isFetchingLeads,
+  } = useGetUserListQuery({
+    role: ["LEAD", "CLIENT"],
+    search: leadSearch || undefined,
+  });
   const { data: userNetAdviserListData } = useGetUserListQuery({
     role: "NETWORK_ADVISER",
   });
@@ -57,6 +63,10 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     assigned_to_admin: "",
     notes: "",
   });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState<"save" | "save_view" | null>(
+    null,
+  );
   const { data: session } = useSession();
   const userType = session?.user?.user_type;
   const router = useRouter();
@@ -132,19 +142,38 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
       if (exists) return prev;
 
-      const displayName = leadName || "Selected Lead";
+      // Prefer using leadData (returned from create lead) when present so
+      // the select shows email, user_type and profile_image immediately.
+      let leadToAdd: any;
+      if (leadData) {
+        leadToAdd = leadData.user || leadData;
+        // Ensure name exists (compose from parts if necessary)
+        if (!leadToAdd.name) {
+          const parts = [
+            leadToAdd.title,
+            leadToAdd.first_name,
+            leadToAdd.middle_name,
+            leadToAdd.last_name,
+          ].filter(Boolean);
+          leadToAdd = { ...leadToAdd, name: parts.join(" ") };
+        }
+      } else {
+        const displayName = leadName || "Selected Lead";
+        leadToAdd = {
+          id: leadId,
+          name: displayName,
+          email: null,
+          user_type: null,
+          profile_image: null,
+        };
+      }
 
-      const syntheticLead = {
-        id: leadId,
-        name: displayName,
-        email: null,
-        user_type: null,
-        profile_image: null,
-      };
-
-      return [...(prev || []), syntheticLead];
+      return [...(prev || []), leadToAdd];
     });
-  }, [leadId, leadName]);
+
+    // also ensure the form selects the created lead
+    setFormData((prev) => ({ ...prev, lead: leadId }));
+  }, [leadId, leadName, leadData]);
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {
@@ -161,6 +190,21 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     }
   }, [userLEADListData]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setFormErrors({});
+    }
+  }, [isOpen]);
+
+  // Debounce Lead/Client search to avoid triggering an API call per keystroke.
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setLeadSearch(leadSearchInput.trim());
+    }, 350);
+
+    return () => clearTimeout(timeoutId);
+  }, [leadSearchInput]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
@@ -169,6 +213,13 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       ...formData,
       [name]: name === "lead" ? Number(value) : value,
     });
+    if (formErrors[name]) {
+      setFormErrors((prev) => {
+        const copy = { ...prev } as Record<string, string>;
+        delete (copy as any)[name];
+        return copy;
+      });
+    }
   };
 
   // Custom Option Component for beautiful display
@@ -342,29 +393,30 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     leadOptions.find((opt) => opt.value === Number(formData.lead)) || null;
 
   const handleSubmit = async (submitType: "save" | "save_view") => {
-    if (!formData.lead) {
-      toast.error("Please select a Lead/Client.");
+    // Reset previous errors and perform client-side validation
+    setFormErrors({});
+    const errors: Record<string, string> = {};
+    if (!formData.lead) errors.lead = "Please select a Lead/Client.";
+    if (!formData.case_category)
+      errors.case_category = "Please select a Case Category.";
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
-    if (!formData.case_category) {
-      toast.error("Please select a Case Category.");
-      return;
-    }
+
+    setSubmitting(submitType);
+
     try {
-      const result = await addCaseDetails({
-        payload: formData,
-      });
-      if (result.data) {
+      const result = await addCaseDetails({ payload: formData });
+      if ((result as any).data) {
+        setFormErrors({});
         toast.success("Case added successfully!");
-        const alias = result.data.alias;
-        // If user chose Save and Add View, navigate to the case page
+        const alias = (result as any).data.alias;
         if (submitType === "save_view" && alias) {
-          // Close modal then navigate
           toggle();
           handleCaseCreated(alias);
           return;
         }
-        // Default: reset form and close
         setFormData({
           lead: leadId || 0,
           case_category: "",
@@ -376,11 +428,43 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         if (onCaseCreated && alias) {
           handleCaseCreated(alias);
         }
+      } else if ((result as any).error) {
+        const apiError: any = (result as any).error;
+        const fieldErrors: Record<string, string> = {};
+        const data = apiError?.data || apiError || {};
+        if (data?.errors && typeof data.errors === "object") {
+          Object.keys(data.errors).forEach((k) => {
+            const v = data.errors[k];
+            fieldErrors[k] = Array.isArray(v) ? v.join(" ") : String(v);
+          });
+        } else if (data && typeof data === "object") {
+          Object.keys(data).forEach((k) => {
+            const v = (data as any)[k];
+            if (Array.isArray(v)) {
+              fieldErrors[k] = v.join(" ");
+            } else if (typeof v === "string") {
+              fieldErrors[k] = v;
+            }
+          });
+        }
+        if (Object.keys(fieldErrors).length > 0) {
+          setFormErrors(fieldErrors);
+        } else {
+          const msg =
+            data?.detail ||
+            data?.message ||
+            apiError?.message ||
+            "Invalid Request";
+          toast.error(typeof msg === "string" ? msg : "Invalid Request");
+        }
       } else {
         toast.error("Invalid Request...");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during request setup:", error);
+      toast.error(error?.message || "Something went wrong.");
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -415,14 +499,50 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               isClearable
               isSearchable
               isDisabled={!!leadId}
+              isLoading={isFetchingLeads}
               options={leadOptions}
               value={selectedLeadOption}
+              inputValue={leadSearchInput}
+              filterOption={(candidate, rawInput) => {
+                const input = (rawInput || "").trim().toLowerCase();
+                if (!input) return true;
+
+                const data = candidate.data as any;
+                const name = String(data?.name || "").toLowerCase();
+                const email = String(data?.email || "").toLowerCase();
+
+                const phone = String(
+                  data?.phone ||
+                    data?.mobile ||
+                    data?.mobile_number ||
+                    data?.phone_number ||
+                    "",
+                ).toLowerCase();
+
+                return (
+                  name.includes(input) ||
+                  email.includes(input) ||
+                  phone.includes(input)
+                );
+              }}
               onChange={(opt) => {
                 const selectedValue = opt?.value ? Number(opt.value) : 0;
                 setFormData((prev) => ({
                   ...prev,
                   lead: selectedValue,
                 }));
+                setFormErrors((prev) => {
+                  const copy = { ...prev } as Record<string, string>;
+                  delete copy.lead;
+                  return copy;
+                });
+              }}
+              onInputChange={(inputValue, { action }) => {
+                // Keep whatever the user typed in the input field.
+                // React-select may call this with empty values for actions like
+                // "menu-close" or "set-value"; we ignore those to avoid clearing.
+                if (action === "input-change")
+                  setLeadSearchInput(inputValue || "");
               }}
               components={{
                 Option: CustomOption,
@@ -431,9 +551,16 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               classNamePrefix="lead-select"
               className="lead-select"
               noOptionsMessage={() =>
-                leadOptions.length ? "No matches found" : "No leads available"
+                isFetchingLeads
+                  ? "Loading..."
+                  : leadSearchInput
+                    ? "No matches found"
+                    : "No leads available"
               }
             />
+            {formErrors.lead && (
+              <div className="text-danger small mt-1">{formErrors.lead}</div>
+            )}
             <div className="mt-2">
               <Button size="sm" color="primary" onClick={handleOpenAddLead}>
                 <TbCirclePlus size={16} className="me-1" />
@@ -458,6 +585,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               <option value="PROTECTION">Protection</option>
               <option value="GENERAL_INSURANCE">General Insurance</option>
             </Input>
+            {formErrors.case_category && (
+              <div className="text-danger small mt-1">
+                {formErrors.case_category}
+              </div>
+            )}
           </FormGroup>
           {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
             session?.user?.user_type === "NETWORK_ADVISER" ||
@@ -484,6 +616,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
+              {formErrors.assigned_to && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to}
+                </div>
+              )}
             </FormGroup>
           )}
 
@@ -512,6 +649,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
+              {formErrors.assigned_to && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to}
+                </div>
+              )}
             </FormGroup>
           )}
           {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
@@ -539,6 +681,11 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   </option>
                 )}
               </Input>
+              {formErrors.assigned_to_admin && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to_admin}
+                </div>
+              )}
             </FormGroup>
           )}
           <FormGroup>
@@ -550,6 +697,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               value={formData.notes}
               onChange={handleChange}
             />
+            {formErrors.notes && (
+              <div className="text-danger small mt-1">{formErrors.notes}</div>
+            )}
           </FormGroup>
         </ModalBody>
         <ModalFooter>
@@ -560,7 +710,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               disabled={addCaseLoading}
               onClick={() => handleSubmit("save")}
             >
-              {addCaseLoading ? "Saving..." : "Save Case"}
+              {addCaseLoading && submitting === "save"
+                ? "Saving..."
+                : "Save Case"}
             </Button>
           )}
           <Button
@@ -569,7 +721,9 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
             disabled={addCaseLoading}
             onClick={() => handleSubmit("save_view")}
           >
-            {addCaseLoading ? "Saving..." : "Save and View Case"}
+            {addCaseLoading && submitting === "save_view"
+              ? "Saving..."
+              : "Save and View Case"}
           </Button>
           <Button
             type="button"

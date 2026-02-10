@@ -49,6 +49,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const { casealias } = params;
   const [isLoading, setIsLoading] = useState(false);
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState<
+    "save" | "next" | "next-applicant" | "previous-applicant" | null
+  >(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addressList, setAddressList] = useState<any[]>([]);
   const [isFetchingAddress, setIsFetchingAddress] = useState(false);
@@ -403,6 +406,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Mark which action is being submitted (falls back to 'save')
+    const action = submitActionRef.current || "save";
+    setSubmitting(action as any);
     setIsLoading(true);
     try {
       // Create a copy of formValues
@@ -463,6 +469,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      setSubmitting(null);
     }
   };
 
@@ -2885,7 +2892,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 submitActionRef.current = "save";
               }}
             >
-              {isUpdatingApplicant ? "Updating..." : "Save Changes"}
+              {isUpdatingApplicant && submitting === "save"
+                ? "Updating..."
+                : "Save Changes"}
             </Button>
             <Button
               type="submit"
@@ -2905,7 +2914,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 formRef.current?.requestSubmit();
               }}
             >
-              Save & Previous Applicant
+              {isUpdatingApplicant && submitting === "previous-applicant"
+                ? "Saving..."
+                : "Save & Previous Applicant"}
             </Button>
             <Button
               type="submit"
@@ -2926,12 +2937,14 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 formRef.current?.requestSubmit();
               }}
             >
-              Save & Next Applicant
+              {isUpdatingApplicant && submitting === "next-applicant"
+                ? "Saving..."
+                : "Save & Next Applicant"}
             </Button>
             <Button
               type="submit"
               color="secondary"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 if (
                   session?.user?.user_type === "CLIENT" &&
@@ -2947,7 +2960,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               {session?.user?.user_type === "CLIENT" &&
               selectedApplicant?.updated_by !== null
                 ? "Go To Next"
-                : "Save & Next Section"}
+                : isUpdatingApplicant && submitting === "next"
+                  ? "Saving..."
+                  : "Save & Next Section"}
             </Button>
           </div>
         </form>
