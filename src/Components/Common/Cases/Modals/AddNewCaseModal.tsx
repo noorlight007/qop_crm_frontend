@@ -513,14 +513,44 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               isLoading={isFetchingLeads}
               options={leadOptions}
               value={selectedLeadOption}
-              inputValue={leadSearchInput}
               filterOption={() => true}
               onChange={(opt) => {
                 const selectedValue = opt?.value ? Number(opt.value) : 0;
+
+                // Ensure the selected lead remains available in options even if
+                // the API results change due to searching.
+                if (opt?.value) {
+                  setLeads((prev) => {
+                    const exists = (prev || []).some((l: any) => {
+                      const existingId = l?.id ?? l?.user?.id;
+                      return Number(existingId) === Number(opt.value);
+                    });
+                    if (exists) return prev;
+
+                    return [
+                      ...(prev || []),
+                      {
+                        id: Number(opt.value),
+                        name: opt.name,
+                        email: opt.email,
+                        phone: (opt as any).phone,
+                        user_type: opt.user_type,
+                        profile_image: opt.profile_image,
+                      },
+                    ];
+                  });
+                }
+
                 setFormData((prev) => ({
                   ...prev,
                   lead: selectedValue,
                 }));
+
+                // Clear the search input after selection so the control shows
+                // the selected value label normally.
+                setLeadSearchInput("");
+                setLeadSearch("");
+
                 setFormErrors((prev) => {
                   const copy = { ...prev } as Record<string, string>;
                   delete copy.lead;
@@ -528,11 +558,16 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 });
               }}
               onInputChange={(inputValue, { action }) => {
-                // Keep whatever the user typed in the input field.
-                // React-select may call this with empty values for actions like
-                // "menu-close" or "set-value"; we ignore those to avoid clearing.
-                if (action === "input-change")
+                if (action === "input-change") {
                   setLeadSearchInput(inputValue || "");
+                }
+
+                // After selecting an option, react-select clears the input.
+                // Keep our state in sync so we don't accidentally keep an old
+                // search term (which can trigger a new API fetch).
+                if (action === "set-value") {
+                  setLeadSearchInput("");
+                }
               }}
               components={{
                 Option: CustomOption,
