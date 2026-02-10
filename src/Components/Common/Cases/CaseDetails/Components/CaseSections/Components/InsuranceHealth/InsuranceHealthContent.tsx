@@ -29,6 +29,9 @@ const InsuranceHealthContent: React.FC = () => {
 
   const [healthConditions, setHealthConditions] = useState<boolean>(false);
   const [note, setNote] = useState<string>("");
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
 
   const dispatch = useAppDispatch();
   const currentTab: string | null = useAppSelector(
@@ -53,8 +56,13 @@ const InsuranceHealthContent: React.FC = () => {
     }
   }, [InsuranceHealthData]);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleSubmit = async (
+    e: React.FormEvent,
+    action: "save" | "save_next" = "save",
+  ): Promise<boolean> => {
+    e.preventDefault();
+
+    setSubmitting(action);
 
     try {
       const insuranceRecord = Array.isArray(InsuranceHealthData)
@@ -80,11 +88,13 @@ const InsuranceHealthContent: React.FC = () => {
       } catch (err) {
         console.error("Failed to update section complete status:", err);
       }
-      return res;
+      return true;
     } catch (err) {
       console.error("Update failed", err);
       toast.error("Failed to update insurance health details.");
-      throw err;
+      return false;
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -111,7 +121,11 @@ const InsuranceHealthContent: React.FC = () => {
 
   return (
     <div>
-      <Form onSubmit={handleSubmit}>
+      <Form
+        onSubmit={(e) => {
+          void handleSubmit(e, "save");
+        }}
+      >
         <FormGroup check className="mt-2">
           <Label check>
             <Input
@@ -141,29 +155,37 @@ const InsuranceHealthContent: React.FC = () => {
         <div className="d-flex justify-content-end gap-2">
           <Button
             color="primary"
-            disabled={isUpdating || session?.user?.user_type === "CLIENT"}
-            onClick={handleSubmit}
+            type="button"
+            disabled={
+              submitting !== null ||
+              isUpdating ||
+              session?.user?.user_type === "CLIENT"
+            }
+            onClick={(e) => {
+              void handleSubmit(e as any, "save");
+            }}
           >
-            {isUpdating ? <Spinner size="sm" /> : "Save changes"}
+            {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
           </Button>
           <Button
             color="secondary"
-            disabled={isUpdating}
-            onClick={async () => {
+            type="button"
+            disabled={submitting !== null || isUpdating}
+            onClick={async (e) => {
               if (session?.user?.user_type === "CLIENT") {
                 handleNextTab();
               } else {
-                const success = await handleSubmit(new Event("click") as any);
+                const success = await handleSubmit(e as any, "save_next");
                 if (success) {
                   handleNextTab();
                 }
               }
             }}
           >
-            {isUpdating ? (
-              <Spinner size="sm" />
-            ) : session?.user?.user_type === "CLIENT" ? (
+            {session?.user?.user_type === "CLIENT" ? (
               "Go To Next"
+            ) : submitting === "save_next" ? (
+              <Spinner size="sm" />
             ) : (
               "Save & Next"
             )}

@@ -135,6 +135,9 @@ const ProductContent: React.FC = () => {
   const { data: session } = useSession();
   const submitActionRef = useRef<"save" | "next">("save");
   const formRef = useRef<HTMLFormElement>(null);
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
 
   // State to manage form data
   const [formData, setFormData] = useState({
@@ -226,85 +229,86 @@ const ProductContent: React.FC = () => {
     }
   }, [productDetails]);
 
-  // Update handleSubmit to include the product alias
+  // Update handleSubmit to include the product alias and track which action triggered it
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!productDetails || !productDetails[0]) return;
+
+    const action: "save" | "save_next" =
+      submitActionRef.current === "next" ? "save_next" : "save";
+
+    setSubmitting(action);
+
     try {
-      if (productDetails && productDetails[0]) {
-        // Clean up the form data before sending
-        const cleanedFormData = { ...formData };
+      // Clean up the form data before sending
+      const cleanedFormData = { ...formData };
 
-        // Ensure date fields are properly formatted or null
-        if (
-          cleanedFormData.initial_rate_date_period === "" ||
-          cleanedFormData.initial_rate_date_period === null
-        ) {
-          cleanedFormData.initial_rate_date_period = null;
+      // Ensure date fields are properly formatted or null
+      if (
+        cleanedFormData.initial_rate_date_period === "" ||
+        cleanedFormData.initial_rate_date_period === null
+      ) {
+        cleanedFormData.initial_rate_date_period = null;
+      }
+      if (
+        cleanedFormData.early_repayment_charge_end_date === "" ||
+        cleanedFormData.early_repayment_charge_end_date === null
+      ) {
+        cleanedFormData.early_repayment_charge_end_date = null;
+      }
+
+      const response = await updateProductDetails({
+        case_alias: casealias,
+        product_alias: productDetails[0].alias,
+        productUpdatePayload: cleanedFormData,
+      });
+
+      if (response.data) {
+        toast.success("Product details updated successfully!");
+        setErrors({});
+        // Only go to next tab if this was a Save & Next action
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_product: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
         }
-        if (
-          cleanedFormData.early_repayment_charge_end_date === "" ||
-          cleanedFormData.early_repayment_charge_end_date === null
-        ) {
-          cleanedFormData.early_repayment_charge_end_date = null;
+        if (submitActionRef.current === "next") {
+          handleNextTab();
         }
-
-        const response = await updateProductDetails({
-          case_alias: casealias,
-          product_alias: productDetails[0].alias,
-          productUpdatePayload: cleanedFormData,
-        });
-
-        if (response.data) {
-          toast.success("Product details updated successfully!");
-          setErrors({});
-          // Only go to next tab if this was a Save & Next action
-          try {
-            await updateSectionCompleteStatus({
-              case_alias: casealias,
-              section_data: { is_product: true },
-            });
-          } catch (err) {
-            console.error("Failed to update section complete status:", err);
-          }
-          if (submitActionRef.current === "next") {
-            handleNextTab();
-          }
-        } else if (response.error) {
-          const errData = (response as any).error?.data;
-          if (errData && typeof errData === "object") {
-            const collect = (value: any): string[] => {
-              if (value == null) return [];
-              if (typeof value === "string") return [value];
-              if (Array.isArray(value))
-                return value.map((v) =>
-                  typeof v === "string" ? v : JSON.stringify(v),
-                );
-              if (typeof value === "object") {
-                try {
-                  return Object.values(value).flatMap((v) => collect(v));
-                } catch {
-                  return [String(value)];
-                }
+      } else if (response.error) {
+        const errData = (response as any).error?.data;
+        if (errData && typeof errData === "object") {
+          const collect = (value: any): string[] => {
+            if (value == null) return [];
+            if (typeof value === "string") return [value];
+            if (Array.isArray(value))
+              return value.map((v) =>
+                typeof v === "string" ? v : JSON.stringify(v),
+              );
+            if (typeof value === "object") {
+              try {
+                return Object.values(value).flatMap((v) => collect(v));
+              } catch {
+                return [String(value)];
               }
-              return [String(value)];
-            };
-            const fieldErrors: Record<string, string> = {};
-            Object.entries(errData).forEach(([k, v]) => {
-              const msgs = collect(v);
-              if (msgs.length) fieldErrors[k] = msgs.join(", ");
-            });
-            if (Object.keys(fieldErrors).length) {
-              setErrors(fieldErrors);
-              // Scroll to the first field that caused a server-side validation error
-              scrollToFirstError(fieldErrors);
-              const firstMsg = Object.values(fieldErrors)[0];
-              toast.error(firstMsg);
-            } else {
-              const errorMessage =
-                getErrorMessage((response as any).error) ||
-                "Failed to update product details";
-              toast.error(errorMessage);
             }
+            return [String(value)];
+          };
+          const fieldErrors: Record<string, string> = {};
+          Object.entries(errData).forEach(([k, v]) => {
+            const msgs = collect(v);
+            if (msgs.length) fieldErrors[k] = msgs.join(", ");
+          });
+          if (Object.keys(fieldErrors).length) {
+            setErrors(fieldErrors);
+            // Scroll to the first field that caused a server-side validation error
+            scrollToFirstError(fieldErrors);
+            const firstMsg = Object.values(fieldErrors)[0];
+            toast.error(firstMsg);
           } else {
             const errorMessage =
               getErrorMessage((response as any).error) ||
@@ -312,8 +316,13 @@ const ProductContent: React.FC = () => {
             toast.error(errorMessage);
           }
         } else {
-          toast.error("Failed to update product details");
+          const errorMessage =
+            getErrorMessage((response as any).error) ||
+            "Failed to update product details";
+          toast.error(errorMessage);
         }
+      } else {
+        toast.error("Failed to update product details");
       }
     } catch (error: any) {
       // Handle any unexpected errors
@@ -327,6 +336,8 @@ const ProductContent: React.FC = () => {
       const errorMessage =
         getErrorMessage(error) || "An unexpected error occurred";
       toast.error(errorMessage);
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -1059,12 +1070,13 @@ const ProductContent: React.FC = () => {
             submitActionRef.current = "save";
           }}
           disabled={
+            submitting !== null ||
             isUpdating ||
             (session?.user?.user_type === "CLIENT" &&
               productDetails[0]?.updated_by !== null)
           }
         >
-          {isUpdating ? "Saving..." : "Save Changes"}
+          {submitting === "save" ? "Saving..." : "Save Changes"}
         </Button>
         <Button
           type="submit"
@@ -1081,12 +1093,15 @@ const ProductContent: React.FC = () => {
               formRef.current?.requestSubmit();
             }
           }}
+          disabled={submitting !== null || isUpdating}
         >
           {/* {session?.user?.user_type === "CLIENT" ? "Go to Next" : "Save & Next"} */}
           {session?.user?.user_type === "CLIENT" &&
           productDetails[0]?.updated_by !== null
             ? "Go to Next"
-            : "Save & Next"}
+            : submitting === "save_next"
+              ? "Saving..."
+              : "Save & Next"}
         </Button>
       </div>
     </form>

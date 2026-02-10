@@ -12,7 +12,7 @@ import { RootState } from "@/Redux/Store";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import {
@@ -41,6 +41,10 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
   const [updateSingleProperty, { isLoading }] = useUpdatePropertyMutation();
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
+
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -95,33 +99,40 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
   );
 
   const handleSubmit = async () => {
-    const response = await updateSingleProperty({
-      case_alias: casealias,
-      property_alias: propertyAlias,
-      updatedSecurityProperty: formData,
-    });
+    try {
+      const response = await updateSingleProperty({
+        case_alias: casealias,
+        property_alias: propertyAlias,
+        updatedSecurityProperty: formData,
+      });
 
-    if (response.data) {
-      dispatch(clearPropertyErrors());
-      try {
-        await updateSectionCompleteStatus({
-          case_alias: casealias,
-          section_data: { is_security_property: true },
-        });
-      } catch (err) {
-        console.error("Failed to update section complete status:", err);
+      if (response.data) {
+        dispatch(clearPropertyErrors());
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_security_property: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        toast.success("Property Details Updated Successfully");
+      } else if (response.error) {
+        const parsed = parseApiErrors(response.error);
+        dispatch(setPropertyErrors(parsed));
+        const firstMsg =
+          Object.values(parsed)[0] ||
+          (response.error as any)?.data?.detail ||
+          "Failed to update property";
+        toast.error(firstMsg);
+      } else {
+        toast.error("Something went wrong");
       }
-      toast.success("Property Details Updated Successfully");
-    } else if (response.error) {
-      const parsed = parseApiErrors(response.error);
-      dispatch(setPropertyErrors(parsed));
-      const firstMsg =
-        Object.values(parsed)[0] ||
-        (response.error as any)?.data?.detail ||
-        "Failed to update property";
-      toast.error(firstMsg);
-    } else {
+    } catch (err) {
+      console.error(err);
       toast.error("Something went wrong");
+    } finally {
+      setSubmitting(null);
     }
   };
   const currentTab: string | null = useAppSelector(
@@ -186,30 +197,43 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
 
         <div className="d-flex justify-content-end align-items-center gap-3">
           <Button
+            type="button"
             color="primary"
             id="submit"
             name="next"
             className="px-4"
-            onClick={handleSubmit}
-            disabled={isLoading || session?.user?.user_type === "CLIENT"}
+            onClick={async () => {
+              if (session?.user?.user_type === "CLIENT") return;
+              setSubmitting("save");
+              await handleSubmit();
+            }}
+            disabled={
+              submitting !== null ||
+              isLoading ||
+              session?.user?.user_type === "CLIENT"
+            }
           >
-            {isLoading ? "Saving..." : "Save Changes"}
+            {submitting === "save" ? "Saving..." : "Save Changes"}
           </Button>
           <Button
-            type="submit"
+            type="button"
             color="secondary"
             onClick={async () => {
               if (session?.user?.user_type === "CLIENT") {
                 handleNextTab();
               } else {
+                setSubmitting("save_next");
                 await handleSubmit();
                 handleNextTab();
               }
             }}
+            disabled={submitting !== null || isLoading}
           >
             {session?.user?.user_type === "CLIENT"
               ? "Go to Next"
-              : "Save & Next"}
+              : submitting === "save_next"
+                ? "Saving..."
+                : "Save & Next"}
           </Button>
         </div>
       </CardFooter>

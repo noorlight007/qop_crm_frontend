@@ -93,6 +93,9 @@ const ClientSurveyContent: React.FC = () => {
   const [email, setEmail] = React.useState<string>("");
   const [phoneNumber, setPhoneNumber] = React.useState<string>("");
   const [note, setNote] = React.useState<string>("");
+  const [submitting, setSubmitting] = React.useState<
+    "save" | "save_next" | null
+  >(null);
 
   // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
@@ -413,10 +416,23 @@ const ClientSurveyContent: React.FC = () => {
 
   // === STEP 5: Final Submit (Validation) ===
   // In handleSubmit
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent,
+    action: "save" | "save_next" = "save",
+  ): Promise<boolean> => {
     e.preventDefault();
 
-    if (!casealias) return toast.error("Case alias missing");
+    if (!casealias) {
+      toast.error("Case alias missing");
+      return false;
+    }
+
+    if (!surveyAlias) {
+      toast.error("Survey alias missing");
+      return false;
+    }
+
+    setSubmitting(action);
 
     const payload = {
       case_alias: casealias,
@@ -459,37 +475,41 @@ const ClientSurveyContent: React.FC = () => {
     };
 
     try {
-      if (surveyAlias) {
-        const response = await updateClientSurvey({
-          case_alias: casealias,
-          survey_alias: surveyAlias,
-          payload,
-        });
+      const response = await updateClientSurvey({
+        case_alias: casealias,
+        survey_alias: surveyAlias,
+        payload,
+      });
 
-        if (response.data) {
-          toast.success("Saved successfully!");
-          try {
-            await updateSectionCompleteStatus({
-              case_alias: casealias,
-              section_data: { is_client_survey: true },
-            });
-          } catch (err) {
-            console.error("Failed to update section complete status:", err);
-          }
-        } else if (response.error) {
-          // Extract backend error message - prioritize details field
-          const errorMessage =
-            (response.error as any)?.data?.detail ||
-            "Save failed. Check input or contact support.";
-          toast.error(errorMessage);
-        } else {
-          toast.error("Save failed. Check input or contact support.");
+      if (response.data) {
+        toast.success("Saved successfully!");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_client_survey: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
         }
+        return true;
       }
+
+      if (response.error) {
+        const errorMessage =
+          (response.error as any)?.data?.detail ||
+          "Save failed. Check input or contact support.";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Save failed. Check input or contact support.");
+      }
+
+      return false;
     } catch (error: any) {
-      // Handle any unexpected errors
       const errorMessage = error?.message || "An unexpected error occurred";
       toast.error(errorMessage);
+      return false;
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -607,7 +627,11 @@ const ClientSurveyContent: React.FC = () => {
                 <h3 className="text-center">Answers</h3>
               </Col>
             </Row>
-            <Form onSubmit={handleSubmit}>
+            <Form
+              onSubmit={(e) => {
+                void handleSubmit(e, "save");
+              }}
+            >
               {/* Question 1: Adviser Name */}
               <Row className="border-top border-primary border-2 p-2">
                 <Col md={6}>
@@ -1510,8 +1534,15 @@ const ClientSurveyContent: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="d-flex justify-content-end mt-4 gap-2">
-                <Button color="primary" type="submit" disabled={isUpdating}>
-                  {isUpdating ? "Saving..." : "Save Changes"}
+                <Button
+                  color="primary"
+                  type="button"
+                  disabled={submitting !== null || isUpdating}
+                  onClick={(e) => {
+                    void handleSubmit(e, "save");
+                  }}
+                >
+                  {submitting === "save" ? "Saving..." : "Save Changes"}
                 </Button>
 
                 <Button
@@ -1524,15 +1555,20 @@ const ClientSurveyContent: React.FC = () => {
                     ) {
                       handleNextTab();
                     } else {
-                      await handleSubmit(e);
-                      handleNextTab();
+                      const ok = await handleSubmit(e, "save_next");
+                      if (ok) {
+                        handleNextTab();
+                      }
                     }
                   }}
-                  disabled={isUpdating}
+                  type="button"
+                  disabled={submitting !== null || isUpdating}
                 >
                   {session?.user?.user_type === "CLIENT"
                     ? "Go To Next"
-                    : "Save & Next"}
+                    : submitting === "save_next"
+                      ? "Saving..."
+                      : "Save & Next"}
                 </Button>
               </div>
             </Form>

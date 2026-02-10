@@ -67,6 +67,10 @@ const ExistingProtectionContent: React.FC<
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
+
   useEffect(() => {
     setErrors({});
   }, [activeTab, activeUser]);
@@ -221,8 +225,12 @@ const ExistingProtectionContent: React.FC<
   };
 
   // Add save handler
-  const handleUpdate = async (e: React.FormEvent) => {
+  const handleUpdate = async (
+    e: React.FormEvent | React.MouseEvent<HTMLButtonElement>,
+    action: "save" | "save_next" = "save",
+  ) => {
     e.preventDefault();
+    setSubmitting(action);
     try {
       const res = await updatePropertyDetails({
         case_alias: casealias,
@@ -240,7 +248,6 @@ const ExistingProtectionContent: React.FC<
         } catch (err) {
           console.error("Failed to update section complete status:", err);
         }
-        // Clear cached edits for this alias since changes are now saved
         if (clearCachedEdits && formValues?.alias) {
           clearCachedEdits(formValues.alias);
         }
@@ -249,7 +256,6 @@ const ExistingProtectionContent: React.FC<
         const errData = (res.error as any)?.data || (res.error as any) || {};
         const parsed = parseApiErrors(errData);
         setErrors(parsed);
-        // Scroll to the first field that caused a server-side validation error
         scrollToFirstError(parsed);
         const first =
           Object.values(parsed)[0] || "Failed to update Property details!";
@@ -268,13 +274,15 @@ const ExistingProtectionContent: React.FC<
         Object.values(parsed)[0] ||
         "Failed to update Property details. Please try again!";
       toast.error(String(first));
+    } finally {
+      setSubmitting(null);
     }
   };
 
   return (
     <div>
       <>
-        <Form onSubmit={handleUpdate}>
+        <Form>
           <Card className="mb-3 mt-2 border-primary">
             <CardBody>
               <div className="px-3">
@@ -945,25 +953,39 @@ const ExistingProtectionContent: React.FC<
             <div className="d-flex gap-2">
               <Button
                 color="primary"
-                type="submit"
-                disabled={session?.user?.user_type === "CLIENT"}
+                type="button"
+                disabled={
+                  session?.user?.user_type === "CLIENT" ||
+                  submitting !== null ||
+                  isUpdateLoading
+                }
+                onClick={async (e) => {
+                  await handleUpdate(e, "save");
+                }}
               >
-                {isUpdateLoading ? "Saving..." : "Save Changes"}
+                {submitting === "save" ? "Saving..." : "Save Changes"}
               </Button>
               <Button
                 color="secondary"
+                type="button"
+                disabled={
+                  session?.user?.user_type !== "CLIENT" &&
+                  (submitting !== null || isUpdateLoading)
+                }
                 onClick={async (e) => {
                   if (session?.user?.user_type === "CLIENT") {
                     handleNextTab();
                   } else {
-                    await handleUpdate(e);
+                    await handleUpdate(e, "save_next");
                     handleNextTab();
                   }
                 }}
               >
                 {session?.user?.user_type === "CLIENT"
                   ? "Go To Next"
-                  : "Save & Next"}
+                  : submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
               </Button>
             </div>
           </div>

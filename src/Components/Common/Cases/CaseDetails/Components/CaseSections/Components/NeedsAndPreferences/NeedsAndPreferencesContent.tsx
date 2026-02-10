@@ -53,6 +53,10 @@ const NeedsAndPreferencesContent: React.FC = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
+    null,
+  );
+
   useEffect(() => {
     if (!needsAndPreferencesData) setErrors({});
   }, [needsAndPreferencesData]);
@@ -161,8 +165,10 @@ const NeedsAndPreferencesContent: React.FC = () => {
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>,
+    action: "save" | "save_next" = "save",
   ) => {
     e.preventDefault();
+    setSubmitting(action);
     const formValues = {
       repayment_method: formData.repayment_method,
       monthly_mortgage_payments: formData.monthly_mortgage_payments,
@@ -262,6 +268,8 @@ const NeedsAndPreferencesContent: React.FC = () => {
       toast.error(String(first));
       console.error("Failed to update mortgage needs:", error);
       return false;
+    } finally {
+      setSubmitting(null);
     }
   };
 
@@ -300,7 +308,11 @@ const NeedsAndPreferencesContent: React.FC = () => {
           <h3>Questions & Answers</h3>
         </CardHeader>
         <CardBody>
-          <Form onSubmit={handleSubmit}>
+          <Form
+            onSubmit={(e) =>
+              handleSubmit(e as React.FormEvent<HTMLFormElement>, "save")
+            }
+          >
             <FormGroup>
               <Label>What repayment method do you require and why?</Label>
               <Input
@@ -2004,18 +2016,32 @@ const NeedsAndPreferencesContent: React.FC = () => {
             <div className="d-flex justify-content-end gap-2 mt-3">
               <Button
                 color="primary"
-                disabled={isUpdating || session?.user?.user_type === "CLIENT"}
+                type="button"
+                disabled={
+                  isUpdating ||
+                  submitting !== null ||
+                  session?.user?.user_type === "CLIENT"
+                }
+                onClick={(e) =>
+                  handleSubmit(e as React.MouseEvent<HTMLButtonElement>, "save")
+                }
               >
-                {isUpdating ? "Saving..." : "Save Changes"}
+                {submitting === "save" ? "Saving..." : "Save Changes"}
               </Button>
               <Button
                 color="secondary"
-                onClick={async () => {
+                type="button"
+                disabled={
+                  session?.user?.user_type !== "CLIENT" &&
+                  (isUpdating || submitting !== null)
+                }
+                onClick={async (e) => {
                   if (session?.user?.user_type === "CLIENT") {
                     handleNextTab();
                   } else {
                     const success = await handleSubmit(
-                      new Event("click") as any,
+                      e as React.MouseEvent<HTMLButtonElement>,
+                      "save_next",
                     );
                     if (success) {
                       handleNextTab();
@@ -2025,7 +2051,9 @@ const NeedsAndPreferencesContent: React.FC = () => {
               >
                 {session?.user?.user_type === "CLIENT"
                   ? "Go To Next"
-                  : "Save & Next"}
+                  : submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
               </Button>
             </div>
           </Form>
