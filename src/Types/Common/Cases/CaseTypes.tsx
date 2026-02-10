@@ -148,6 +148,7 @@ export interface LeadOptionType {
   label: string;
   name: string;
   email?: string;
+  phone?: string | null;
   user_type?: string;
   profile_image?: string | null;
 }
