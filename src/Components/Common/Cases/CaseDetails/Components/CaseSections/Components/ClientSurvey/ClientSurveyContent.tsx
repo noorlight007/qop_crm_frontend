@@ -82,7 +82,6 @@ const ClientSurveyContent: React.FC = () => {
 
   // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
-    
     if (!clientSurveyList) return null;
 
     // If API returned an array, pick the newest by created_at
