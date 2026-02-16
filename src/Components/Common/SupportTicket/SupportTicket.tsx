@@ -70,6 +70,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     priority: "",
     network: "",
     organisation: "",
+    created_by: "",
     is_removed: initialIsRemoved ?? "",
   };
   const [filters, setFilters] = useState(defaultFilters);
@@ -99,6 +100,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
         priority: filters.priority || undefined,
         network: filters.network || undefined,
         organisation: filters.organisation || undefined,
+        created_by: filters.created_by || undefined,
         is_removed: filters.is_removed || undefined,
       },
     },
@@ -237,8 +239,42 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
         <Card className="shadow-sm">
           <CardBody>
             <Row className="d-flex justify-content-between align-items-center py-4">
-              <Col md="3" xs="12">
-                <h2 className="mb-0 h4 h2-md">Support Tickets</h2>
+              <Col md="3" xs="12" className="d-flex ">
+                <h2 className="mb-0 h4 h2-md">Tickets:</h2>
+                <div
+                  className="btn-group ms-2"
+                  role="group"
+                  aria-label="Show tickets filter"
+                >
+                  <Button
+                    size="sm"
+                    color={filters.created_by ? "light" : "primary"}
+                    className={`rounded-pill px-3 py-1 ${filters.created_by ? "text-muted" : ""}`}
+                    onClick={() => handleFilterChange("created_by", "")}
+                    aria-pressed={!filters.created_by}
+                    type="button"
+                  >
+                    All
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    color={filters.created_by ? "primary" : "light"}
+                    className={`rounded-pill px-3 py-1 ${filters.created_by ? "" : "text-muted"}`}
+                    onClick={() =>
+                      handleFilterChange(
+                        "created_by",
+                        String(session?.user?.id) || "",
+                      )
+                    }
+                    aria-pressed={
+                      filters.created_by === String(session?.user?.id)
+                    }
+                    type="button"
+                  >
+                    My
+                  </Button>
+                </div>
               </Col>
               <Col md={3} xs="12">
                 <InputGroup className="position-relative">

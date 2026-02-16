@@ -16,6 +16,7 @@ interface UserWithToken extends NextAuthUser {
 declare module "next-auth" {
   interface Session {
     user: {
+      id: number;
       name?: string | null;
       email?: string | null;
       image?: string | null;
@@ -126,7 +127,7 @@ export const authoption: NextAuthOptions = {
             }${userData.last_name ? " " + userData.last_name : ""}`.trim();
 
             return {
-              id: profileResponse.data.user_id || "default_id",
+              id: userData.id || "default_id",
               name: fullName || credentials.email,
               email: credentials.email,
               user_type: userData.user_type || "",
@@ -147,6 +148,8 @@ export const authoption: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         const userWithToken = user as UserWithToken;
+        
+        token.id = userWithToken.id;
         token.name = userWithToken.name;
         if (userWithToken.accessToken) {
           token.accessToken = userWithToken.accessToken;
@@ -187,6 +190,7 @@ export const authoption: NextAuthOptions = {
     async session({ session, token }) {
       session.user = {
         ...session.user,
+        id: token.id as number,
         name: token.name as string | undefined,
         accessToken: token.accessToken as string | undefined,
         refreshToken: token.refreshToken as string | undefined,
