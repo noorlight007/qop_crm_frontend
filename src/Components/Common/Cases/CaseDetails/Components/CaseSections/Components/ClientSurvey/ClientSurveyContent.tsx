@@ -76,37 +76,29 @@ const ClientSurveyContent: React.FC = () => {
   const [question17, setQuestion17] = React.useState<string>("");
   const [question18, setQuestion18] = React.useState<string>("");
   const [question19, setQuestion19] = React.useState<string>("");
-  const [question20, setQuestion20] = React.useState<string>("");
-  const [question21, setQuestion21] = React.useState<string>("");
-  const [question22, setQuestion22] = React.useState<string>("");
-  const [question23, setQuestion23] = React.useState<string>("");
-  const [question24, setQuestion24] = React.useState<string>("");
-  const [question25, setQuestion25] = React.useState<string>("");
-  const [question26, setQuestion26] = React.useState<string>("");
-  const [question27, setQuestion27] = React.useState<string>("");
-  const [question28, setQuestion28] = React.useState<string>("");
-  const [question29, setQuestion29] = React.useState<string>("");
-  const [question30, setQuestion30] = React.useState<string>("");
-  const [name, setName] = React.useState<string>("");
-  const [email, setEmail] = React.useState<string>("");
-  const [phoneNumber, setPhoneNumber] = React.useState<string>("");
-  const [note, setNote] = React.useState<string>("");
   const [submitting, setSubmitting] = React.useState<
     "save" | "save_next" | null
   >(null);
 
   // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
-    if (!Array.isArray(clientSurveyList) || clientSurveyList.length === 0)
-      return null;
+    
+    if (!clientSurveyList) return null;
 
-    // Sort by creation date: newest first
-    const sorted = [...clientSurveyList].sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-    );
+    // If API returned an array, pick the newest by created_at
+    if (Array.isArray(clientSurveyList)) {
+      if (clientSurveyList.length === 0) return null;
+      const sorted = [...clientSurveyList].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+      return sorted[0];
+    }
 
-    return sorted[0];
+    // If API returned a single object (not an array), use it directly
+    if (typeof clientSurveyList === "object") return clientSurveyList as any;
+
+    return null;
   }, [clientSurveyList]);
 
   // === STEP 2: Generate surveyAlias for update ===
@@ -116,75 +108,26 @@ const ClientSurveyContent: React.FC = () => {
   useEffect(() => {
     if (selectedSurvey && typeof selectedSurvey === "object") {
       setAdviserName(selectedSurvey.adviser_name || "");
-      setQuestion2(
-        selectedSurvey.is_clarification_explanation_of_the_service_firm || "",
-      );
-      setQuestion3(selectedSurvey.is_timely_service_delivery || "");
-      setQuestion4(selectedSurvey.is_helpfulness_representative || "");
-      setQuestion5(selectedSurvey.the_firm_offices_reason || "");
-      setQuestion6(selectedSurvey.is_accuracy_information_provided || "");
-      setQuestion7(selectedSurvey.is_clarification_explanation_paid || "");
-      setQuestion8(selectedSurvey.is_raising_queries_relating_service || "");
-      setQuestion9(
-        selectedSurvey.is_clarification_explanation_protection_review || "",
-      );
-      setQuestion10(
-        selectedSurvey.is_understanding_of_financial_objectives || "",
-      );
-      setQuestion11(
-        selectedSurvey.is_explanation_consideration_of_attitude_risk || "",
-      );
+      setQuestion2(selectedSurvey.felt_valued_by_adviser || "");
+      setQuestion3(selectedSurvey.felt_valued_by_firm || "");
+      setQuestion4(selectedSurvey.adviser_communication_clear || "");
+      setQuestion5(selectedSurvey.firm_communication_clear || "");
+      setQuestion6(selectedSurvey.adviser_treated_client_fairly || "");
+      setQuestion7(selectedSurvey.firm_treated_client_fairly || "");
+      setQuestion8(selectedSurvey.firm_fees_information_clear || "");
+      setQuestion9(selectedSurvey.received_disclosure_document || "");
+      setQuestion10(selectedSurvey.adviser_explained_interest_rate_risks || "");
+      setQuestion11(selectedSurvey.mortgage_tailored_to_client || "");
       setQuestion12(
-        selectedSurvey.is_explanation_consideration_capacity_loss_of_capital ||
-          "",
+        selectedSurvey.received_mortgage_recommendation_letter || "",
       );
-      setQuestion13(selectedSurvey.is_explanation_adviser_product || "");
-      setQuestion14(selectedSurvey.is_interaction_adviser_professionals || "");
-      setQuestion15(selectedSurvey.is_suitable_advice_for_your_needs || "");
-      setQuestion16(
-        selectedSurvey.is_ability_of_the_adviser_undue_pressure_commit || "",
-      );
-      setQuestion17(selectedSurvey.is_timing_deliver_review_by_adviser || "");
-      setQuestion18(selectedSurvey.the_broker_fee_paid_represents || "");
-      setQuestion19(
-        selectedSurvey.explanation_broker_fees_including_refund_policy || "",
-      );
-      setQuestion20(
-        selectedSurvey.is_receive_the_value_expected_broker_fee || "",
-      );
-      setQuestion21(
-        selectedSurvey.is_any_other_documentation_provided_to_you || "",
-      );
-      setQuestion22(
-        selectedSurvey.is_timing_arrangements_made_conduct_review_with_you ||
-          "",
-      );
-      setQuestion23(
-        selectedSurvey.is_frequency_communications_receive_from_firm || "",
-      );
-      setQuestion24(
-        selectedSurvey.is_relevance_communications_sent_to_the_firm || "",
-      );
-      setQuestion25(
-        selectedSurvey.is_raising_any_queries_on_communications || "",
-      );
-      setQuestion26(
-        selectedSurvey.is_overall_standard_communications_received_from_firm ||
-          "",
-      );
-      setQuestion27(
-        selectedSurvey.is_timely_manner_of_receiving_letter_confirming_recommendation ||
-          "",
-      );
-      setQuestion28(selectedSurvey.do_we_better_serve_next_time || "");
-      setQuestion29(
-        selectedSurvey.have_any_further_comments_on_the_service_received || "",
-      );
-      setQuestion30(selectedSurvey.do_you_like_someone_to_contact_you || "");
-      setName(selectedSurvey.name || "");
-      setEmail(selectedSurvey.email || "");
-      setPhoneNumber(selectedSurvey.phone_number || "");
-      setNote(selectedSurvey.note || "");
+      setQuestion13(selectedSurvey.offered_mortgage_and_home_protection || "");
+      setQuestion14(selectedSurvey.satisfied_with_advice_process || "");
+      setQuestion15(selectedSurvey.overall_service_satisfaction || "");
+      setQuestion16(selectedSurvey.would_recommend_adviser || "");
+      setQuestion17(selectedSurvey.would_recommend_firm || "");
+      setQuestion18(selectedSurvey.service_improvement_suggestions || "");
+      setQuestion19(selectedSurvey.service_strengths_feedback || "");
     } else {
       // No existing survey — initialize as empty
       setAdviserName("");
@@ -206,21 +149,6 @@ const ClientSurveyContent: React.FC = () => {
       setQuestion17("");
       setQuestion18("");
       setQuestion19("");
-      setQuestion20("");
-      setQuestion21("");
-      setQuestion22("");
-      setQuestion23("");
-      setQuestion24("");
-      setQuestion25("");
-      setQuestion26("");
-      setQuestion27("");
-      setQuestion28("");
-      setQuestion29("");
-      setQuestion30("");
-      setName("");
-      setEmail("");
-      setPhoneNumber("");
-      setNote("");
     }
   }, [selectedSurvey]);
 
@@ -246,24 +174,9 @@ const ClientSurveyContent: React.FC = () => {
         | "question16"
         | "question17"
         | "question18"
-        | "question19"
-        | "question20"
-        | "question21"
-        | "question22"
-        | "question23"
-        | "question24"
-        | "question25"
-        | "question26"
-        | "question27"
-        | "question28"
-        | "question29"
-        | "question30"
-        | "name"
-        | "email"
-        | "phoneNumber"
-        | "note",
+        | "question19",
     ) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = e.target.value;
       switch (field) {
         case "adviserName":
@@ -323,50 +236,6 @@ const ClientSurveyContent: React.FC = () => {
         case "question19":
           setQuestion19(value);
           break;
-        case "question20":
-          setQuestion20(value);
-          break;
-        case "question21":
-          setQuestion21(value);
-          break;
-        case "question22":
-          setQuestion22(value);
-          break;
-        case "question23":
-          setQuestion23(value);
-          break;
-        case "question24":
-          setQuestion24(value);
-          break;
-        case "question25":
-          setQuestion25(value);
-          break;
-        case "question26":
-          setQuestion26(value);
-          break;
-        case "question27":
-          setQuestion27(value);
-          break;
-        case "question28":
-          setQuestion28(value);
-          break;
-        case "question29":
-          setQuestion29(value);
-          break;
-        case "question30":
-          setQuestion30(value);
-          break;
-        case "name":
-          setName(value);
-          break;
-        case "email":
-          setEmail(value);
-          break;
-        case "phoneNumber":
-          setPhoneNumber(value);
-          break;
-        case "note":
-          setNote(value);
         default:
           console.warn(`Unknown field: ${field}`);
           break;
@@ -396,40 +265,24 @@ const ClientSurveyContent: React.FC = () => {
     const payload = {
       case_alias: casealias,
       adviser_name: adviserName.trim(),
-      is_clarification_explanation_of_the_service_firm: question2,
-      is_timely_service_delivery: question3,
-      is_helpfulness_representative: question4,
-      the_firm_offices_reasonable: question5,
-      is_accuracy_information_provided: question6,
-      is_clarification_explanation_paid: question7,
-      is_raising_queries_relating_service: question8,
-      is_clarification_explanation_protection_review: question9,
-      is_understanding_of_financial_objectives: question10,
-      is_explanation_consideration_of_attitude_risk: question11,
-      is_explanation_consideration_capacity_loss_of_capital: question12,
-      is_explanation_adviser_product: question13,
-      is_interaction_adviser_professionals: question14,
-      is_suitable_advice_for_your_needs: question15,
-      is_ability_of_the_adviser_undue_pressure_commit: question16,
-      is_timing_deliver_review_by_adviser: question17,
-      the_broker_fee_paid_represents: question18,
-      explanation_broker_fees_including_refund_policy: question19,
-      is_receive_the_value_expected_broker_fee: question20,
-      is_any_other_documentation_provided_to_you: question21,
-      is_timing_arrangements_made_conduct_review_with_you: question22,
-      is_frequency_communications_receive_from_firm: question23,
-      is_relevance_communications_sent_to_the_firm: question24,
-      is_raising_any_queries_on_communications: question25,
-      is_overall_standard_communications_received_from_firm: question26,
-      is_timely_manner_of_receiving_letter_confirming_recommendation:
-        question27,
-      do_we_better_serve_next_time: question28,
-      have_any_further_comments_on_the_service_received: question29,
-      do_you_like_someone_to_contact_you: question30,
-      name: name,
-      email: email,
-      phone_number: phoneNumber,
-      note: note,
+      felt_valued_by_adviser: question2,
+      felt_valued_by_firm: question3,
+      adviser_communication_clear: question4,
+      firm_communication_clear: question5,
+      adviser_treated_client_fairly: question6,
+      firm_treated_client_fairly: question7,
+      firm_fees_information_clear: question8,
+      received_disclosure_document: question9,
+      adviser_explained_interest_rate_risks: question10,
+      mortgage_tailored_to_client: question11,
+      received_mortgage_recommendation_letter: question12,
+      offered_mortgage_and_home_protection: question13,
+      satisfied_with_advice_process: question14,
+      overall_service_satisfaction: question15,
+      would_recommend_adviser: question16,
+      would_recommend_firm: question17,
+      service_improvement_suggestions: question18,
+      service_strengths_feedback: question19,
     };
 
     try {
@@ -553,7 +406,9 @@ const ClientSurveyContent: React.FC = () => {
             {/* Question 1: Adviser Name */}
             <Row className="border-top border-primary border-2 p-2">
               <Col md={6}>
-                <Label htmlFor="adviserName">Your Adviser Name*</Label>
+                <Label htmlFor="adviserName">
+                  Your Adviser Name<span className="text-danger">*</span>
+                </Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
@@ -575,8 +430,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The clarification and explanation of the service to be
-                  provided by the firm.
+                  Throughout the process, I was made to feel valued by my
+                  adviser.
                 </Label>
               </Col>
               <Col md={6}>
@@ -592,6 +447,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question2 === option.value}
                         onChange={handleInputChange("question2")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -604,7 +460,9 @@ const ClientSurveyContent: React.FC = () => {
             {/* Question 3 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>The timely delivery of the service by the firm.</Label>
+                <Label>
+                  Throughout the process, I was made to feel valued by the firm.
+                </Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
@@ -619,6 +477,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question3 === option.value}
                         onChange={handleInputChange("question3")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -631,8 +490,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The helpfulness of any representative of the firm who you
-                  dealt with.
+                  My adviser communicated with me in a way that felt clear and
+                  easy to understand.
                 </Label>
               </Col>
               <Col md={6}>
@@ -648,6 +507,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question4 === option.value}
                         onChange={handleInputChange("question4")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -660,8 +520,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The way you were dealt with if you had to contact the firm’s
-                  offices for any reason.
+                  The firm communicated with me in a way that felt clear and
+                  easy to understand.
                 </Label>
               </Col>
               <Col md={6}>
@@ -677,6 +537,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question5 === option.value}
                         onChange={handleInputChange("question5")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -688,9 +549,7 @@ const ClientSurveyContent: React.FC = () => {
             {/* Question 6 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>
-                  The accuracy of the information provided to you by the firm.
-                </Label>
+                <Label>I feel that my advisor treated me fairly.</Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
@@ -705,6 +564,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question6 === option.value}
                         onChange={handleInputChange("question6")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -716,10 +576,7 @@ const ClientSurveyContent: React.FC = () => {
             {/* Question 7 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>
-                  The clarification and explanation of how the firm were to be
-                  paid.
-                </Label>
+                <Label>I feel that the firm treated me fairly.</Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
@@ -734,6 +591,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question7 === option.value}
                         onChange={handleInputChange("question7")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -746,8 +604,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The way you were treated by the firm when raising any queries
-                  relating to service.
+                  The information about the firm's fees and charges was made
+                  clear to me from the outset.
                 </Label>
               </Col>
               <Col md={6}>
@@ -763,6 +621,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question8 === option.value}
                         onChange={handleInputChange("question8")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -775,8 +634,7 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The clarification and explanation of the firm will provide a
-                  protection review or referral to a protection specialist.
+                  I received a disclosure document confirming these details.
                 </Label>
               </Col>
               <Col md={6}>
@@ -792,6 +650,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question9 === option.value}
                         onChange={handleInputChange("question9")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -800,21 +659,12 @@ const ClientSurveyContent: React.FC = () => {
                 </FormGroup>
               </Col>
             </Row>
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <p>
-                  Please comment on the adviser who dealt with your application
-                  *
-                </p>
-              </Col>
-            </Row>
-
             {/* Question 10 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The process the adviser went through to gain an understanding
-                  of your financial objectives.
+                  My advisor clearly explained the potential risks and impacts
+                  of interest rate changes once my deal expires.
                 </Label>
               </Col>
               <Col md={6}>
@@ -830,6 +680,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question10 === option.value}
                         onChange={handleInputChange("question10")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -843,8 +694,9 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The establishment, explanation and consideration of your
-                  attitude to risk.
+                  I am confident that the mortgage was tailored to my personal
+                  circumstances and understand why this specific mortgage was
+                  recommended to me.
                 </Label>
               </Col>
               <Col md={6}>
@@ -860,6 +712,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question11 === option.value}
                         onChange={handleInputChange("question11")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -872,8 +725,9 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The establishment, explanation and consideration of your
-                  capacity for loss of capital.
+                  I received a letter of recommendation detailing how the
+                  mortgage was right based on my circumstances, within a week of
+                  the application being submitted.
                 </Label>
               </Col>
               <Col md={6}>
@@ -889,6 +743,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question12 === option.value}
                         onChange={handleInputChange("question12")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -901,8 +756,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The explanation the adviser gave you on how the product/advice
-                  was to work and why it has been recommended to you?
+                  I was provided the opportunity to protect my mortgage my
+                  mortgage and home.
                 </Label>
               </Col>
               <Col md={6}>
@@ -918,6 +773,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question13 === option.value}
                         onChange={handleInputChange("question13")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -929,10 +785,7 @@ const ClientSurveyContent: React.FC = () => {
             {/* Question 14 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>
-                  The interaction of your adviser with other professionals (e.g.
-                  accountant/solicitor)?
-                </Label>
+                <Label>Overall I am satisfied with the advice process.</Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
@@ -947,6 +800,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question14 === option.value}
                         onChange={handleInputChange("question14")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -958,9 +812,7 @@ const ClientSurveyContent: React.FC = () => {
             {/* Question 15 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>
-                  The provision of objective and suitable advice for your needs.
-                </Label>
+                <Label>Overall I am satisfied with the service provided.</Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
@@ -975,6 +827,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question15 === option.value}
                         onChange={handleInputChange("question15")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -987,8 +840,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The ability of the adviser to put you at ease and not make you
-                  feel you were under any undue pressure to commit.
+                  Based on my experience I would recommend the advisor to my
+                  friends and family.
                 </Label>
               </Col>
               <Col md={6}>
@@ -1004,6 +857,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question16 === option.value}
                         onChange={handleInputChange("question16")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -1016,7 +870,8 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The timing and delivery of the review by the adviser.
+                  Based on my experience I would recommend the firm to my
+                  friends and family.
                 </Label>
               </Col>
               <Col md={6}>
@@ -1032,6 +887,7 @@ const ClientSurveyContent: React.FC = () => {
                         value={option.value}
                         checked={question17 === option.value}
                         onChange={handleInputChange("question17")}
+                        className="border-primary"
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
@@ -1051,22 +907,16 @@ const ClientSurveyContent: React.FC = () => {
               </Col>
               <Col md={6}>
                 <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question18"
-                        value={option.value}
-                        checked={question18 === option.value}
-                        onChange={handleInputChange("question18")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
+                  <Input
+                    type="textarea"
+                    name="question18"
+                    id="question18"
+                    placeholder="Please describe any suggestions for improving the service"
+                    value={question18}
+                    onChange={handleInputChange("question18")}
+                    rows={4}
+                    disabled={isUpdating}
+                  />
                 </FormGroup>
               </Col>
             </Row>
@@ -1079,371 +929,19 @@ const ClientSurveyContent: React.FC = () => {
               </Col>
               <Col md={6}>
                 <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question19"
-                        value={option.value}
-                        checked={question19 === option.value}
-                        onChange={handleInputChange("question19")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 20 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  Did you receive the value you expected from the broker fee
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question20"
-                        value={option.value}
-                        checked={question20 === option.value}
-                        onChange={handleInputChange("question20")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <p>Communications & Understanding *</p>
-              </Col>
-            </Row>
-            {/* Question 21 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The clarity of any letters, emails, brochures and any other
-                  documentation provided to you.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question21"
-                        value={option.value}
-                        checked={question21 === option.value}
-                        onChange={handleInputChange("question21")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 22 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The timing and arrangements made to conduct a review with you.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question22"
-                        value={option.value}
-                        checked={question22 === option.value}
-                        onChange={handleInputChange("question22")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 23 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The frequency of communications you receive from the firm.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question23"
-                        value={option.value}
-                        checked={question23 === option.value}
-                        onChange={handleInputChange("question23")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 24 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The relevance of any communications sent to you by the firm.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question24"
-                        value={option.value}
-                        checked={question24 === option.value}
-                        onChange={handleInputChange("question24")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 25 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The way you were treated by the firm when raising any queries
-                  on communications.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question25"
-                        value={option.value}
-                        checked={question25 === option.value}
-                        onChange={handleInputChange("question25")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 26 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The overall standard of communications received from the firm.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question26"
-                        value={option.value}
-                        checked={question26 === option.value}
-                        onChange={handleInputChange("question26")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 27 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  The timely manner of receiving your letter confirming the
-                  recommendation and that it explained everything clearly?
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  {ANSWER_OPTIONS.map((option) => (
-                    <div
-                      key={option.value}
-                      className="d-flex align-items-center mb-1"
-                    >
-                      <Input
-                        type="radio"
-                        name="question27"
-                        value={option.value}
-                        checked={question27 === option.value}
-                        onChange={handleInputChange("question27")}
-                        disabled={isUpdating}
-                      />
-                      <span className="ms-1">{option.label}</span>
-                    </div>
-                  ))}
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 28 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label htmlFor="do_we_better_serve_next_time">
-                  What could we do to better serve your needs next time?
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Input
-                    type="text"
-                    id="do_we_better_serve_next_time"
-                    name="do_we_better_serve_next_time"
-                    value={question28}
-                    onChange={handleInputChange("question28")}
-                    disabled={isUpdating}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 28 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label htmlFor="have_any_further_comments_on_the_service_received">
-                  Do you have any further comments on the service received?
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Input
-                    type="text"
-                    id="have_any_further_comments_on_the_service_received"
-                    name="have_any_further_comments_on_the_service_received"
-                    value={question29}
-                    onChange={handleInputChange("question29")}
-                    disabled={isUpdating}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 30 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>How satisfied are you with the service received?</Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <div className="d-flex flex-wrap justify-content-center align-items-center">
-                    {["Yes", "No"].map((option) => (
-                      <div
-                        key={option}
-                        className="d-flex align-items-center me-3"
-                      >
-                        <Input
-                          type="radio"
-                          name="question30"
-                          value={option.toUpperCase()}
-                          checked={question30 === option.toUpperCase()}
-                          onChange={handleInputChange("question30")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option}</span>
-                      </div>
-                    ))}
-                  </div>
-                </FormGroup>
-                <FormGroup>
-                  <Label for="name">Name</Label>
-                  <Input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={name}
-                    onChange={handleInputChange("name")}
-                    disabled={isUpdating}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="email">Email Address (optional)</Label>
-                  <Input
-                    type="text"
-                    id="email"
-                    name="email"
-                    value={email}
-                    onChange={handleInputChange("email")}
-                    disabled={isUpdating}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="phone_number">Phone Number (optional)</Label>
-                  <Input
-                    type="text"
-                    id="phone_number"
-                    name="phone_number"
-                    value={phoneNumber}
-                    onChange={handleInputChange("phoneNumber")}
-                    disabled={isUpdating}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label for="note">Additional Note (optional)</Label>
                   <Input
                     type="textarea"
-                    id="note"
-                    name="note"
-                    value={note}
-                    onChange={handleInputChange("note")}
+                    name="question19"
+                    id="question19"
+                    placeholder="Please provide any feedback on strengths of the service"
+                    value={question19}
+                    onChange={handleInputChange("question19")}
+                    rows={4}
                     disabled={isUpdating}
                   />
                 </FormGroup>
               </Col>
             </Row>
-
             {/* Action Buttons */}
             <div className="d-flex justify-content-end mt-4 gap-2">
               <Button
