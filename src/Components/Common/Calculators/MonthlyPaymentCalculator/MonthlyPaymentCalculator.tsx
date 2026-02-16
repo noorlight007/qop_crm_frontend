@@ -1,23 +1,10 @@
 "use client";
-
+import {
+  CalculationResults,
+  CalculatorState,
+} from "@/Types/Common/Calculators/MonthlyPaymentCalculatorTypes";
 import React, { useState } from "react";
 import { getCurrencySign } from "../../../../utils/currency";
-
-interface CalculatorState {
-  mortgageAmount: number | string;
-  arrangementFee: number | string;
-  mortgageType: "" | "interest-only" | "repayment";
-  interestRate: number | string;
-  years: number | string;
-  months: number | string;
-}
-
-interface CalculationResults {
-  monthlyPayment: number;
-  totalPaid: number;
-  totalInterest: number;
-  totalRepayments: number;
-}
 
 const MonthlyPaymentCalculator: React.FC = () => {
   // Start with empty user-driven inputs (no pre-filled defaults)
