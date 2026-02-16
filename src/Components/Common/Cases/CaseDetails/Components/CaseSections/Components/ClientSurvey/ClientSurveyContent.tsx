@@ -1,12 +1,9 @@
 import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
-import {
-  useGetClientSurveyQuery,
-  useUpdateClientSurveyMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
-import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetClientSurveyQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -51,11 +48,6 @@ const ClientSurveyContent: React.FC = () => {
     isError,
   } = useGetClientSurveyQuery({ case_alias: casealias }, { skip: !casealias });
 
-  const [updateClientSurvey, { isLoading: isUpdating }] =
-    useUpdateClientSurveyMutation();
-  const [updateSectionCompleteStatus] =
-    useUpdateSectionCompleteStatusMutation();
-
   // Local form state
   const [adviserName, setAdviserName] = React.useState<string>("");
   const [question2, setQuestion2] = React.useState<string>("");
@@ -76,9 +68,6 @@ const ClientSurveyContent: React.FC = () => {
   const [question17, setQuestion17] = React.useState<string>("");
   const [question18, setQuestion18] = React.useState<string>("");
   const [question19, setQuestion19] = React.useState<string>("");
-  const [submitting, setSubmitting] = React.useState<
-    "save" | "save_next" | null
-  >(null);
 
   // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
@@ -99,9 +88,6 @@ const ClientSurveyContent: React.FC = () => {
 
     return null;
   }, [clientSurveyList]);
-
-  // === STEP 2: Generate surveyAlias for update ===
-  const surveyAlias = selectedSurvey?.alias || null;
 
   // === STEP 3: Sync form state when selectedSurvey changes ===
   useEffect(() => {
@@ -241,87 +227,6 @@ const ClientSurveyContent: React.FC = () => {
       }
     };
 
-  // === STEP 5: Final Submit (Validation) ===
-  // In handleSubmit
-  const handleSubmit = async (
-    e: React.FormEvent,
-    action: "save" | "save_next" = "save",
-  ): Promise<boolean> => {
-    e.preventDefault();
-
-    if (!casealias) {
-      toast.error("Case alias missing");
-      return false;
-    }
-
-    if (!surveyAlias) {
-      toast.error("Survey alias missing");
-      return false;
-    }
-
-    setSubmitting(action);
-
-    const payload = {
-      case_alias: casealias,
-      adviser_name: adviserName.trim(),
-      felt_valued_by_adviser: question2,
-      felt_valued_by_firm: question3,
-      adviser_communication_clear: question4,
-      firm_communication_clear: question5,
-      adviser_treated_client_fairly: question6,
-      firm_treated_client_fairly: question7,
-      firm_fees_information_clear: question8,
-      received_disclosure_document: question9,
-      adviser_explained_interest_rate_risks: question10,
-      mortgage_tailored_to_client: question11,
-      received_mortgage_recommendation_letter: question12,
-      offered_mortgage_and_home_protection: question13,
-      satisfied_with_advice_process: question14,
-      overall_service_satisfaction: question15,
-      would_recommend_adviser: question16,
-      would_recommend_firm: question17,
-      service_improvement_suggestions: question18,
-      service_strengths_feedback: question19,
-    };
-
-    try {
-      const response = await updateClientSurvey({
-        case_alias: casealias,
-        payload,
-      });
-
-      if (response.data) {
-        toast.success("Saved successfully!");
-        try {
-          await updateSectionCompleteStatus({
-            case_alias: casealias,
-            section_data: { is_client_survey: true },
-          });
-        } catch (err) {
-          console.error("Failed to update section complete status:", err);
-        }
-        return true;
-      }
-
-      if (response.error) {
-        const errorMessage =
-          (response.error as any)?.data?.detail ||
-          "Save failed. Check input or contact support.";
-        toast.error(errorMessage);
-      } else {
-        toast.error("Save failed. Check input or contact support.");
-      }
-
-      return false;
-    } catch (error: any) {
-      const errorMessage = error?.message || "An unexpected error occurred";
-      toast.error(errorMessage);
-      return false;
-    } finally {
-      setSubmitting(null);
-    }
-  };
-
   // === STEP 6: Navigation ===
   const currentTab: string | null = useAppSelector(
     (state) => state.caseSections.basicTabId,
@@ -374,12 +279,8 @@ const ClientSurveyContent: React.FC = () => {
             ) : (
               session?.user?.user_type !== "CLIENT" && (
                 <p className="text-muted small mb-3">
-                  Editing survey submitted on{" "}
-                  {new Date(selectedSurvey.updated_at).toLocaleDateString()} by{" "}
-                  <span className="fw-bold">
-                    {selectedSurvey.updated_by?.first_name}{" "}
-                    {selectedSurvey.updated_by?.last_name}
-                  </span>
+                  Survey submitted on{" "}
+                  {formatDateAndTime(selectedSurvey?.updated_at)}
                 </p>
               )
             )}
@@ -396,11 +297,7 @@ const ClientSurveyContent: React.FC = () => {
               <h3 className="text-center">Answers</h3>
             </Col>
           </Row>
-          <Form
-            onSubmit={(e) => {
-              void handleSubmit(e, "save");
-            }}
-          >
+          <Form onSubmit={(e) => e.preventDefault()}>
             {/* Question 1: Adviser Name */}
             <Row className="border-top border-primary border-2 p-2">
               <Col md={6}>
@@ -418,7 +315,6 @@ const ClientSurveyContent: React.FC = () => {
                     required
                     value={adviserName}
                     onChange={handleInputChange("adviserName")}
-                    disabled={isUpdating}
                   />
                 </FormGroup>
               </Col>
@@ -447,7 +343,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question2 === option.value}
                         onChange={handleInputChange("question2")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -478,7 +373,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question3 === option.value}
                         onChange={handleInputChange("question3")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -509,7 +403,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question4 === option.value}
                         onChange={handleInputChange("question4")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -540,7 +433,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question5 === option.value}
                         onChange={handleInputChange("question5")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -568,7 +460,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question6 === option.value}
                         onChange={handleInputChange("question6")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -596,7 +487,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question7 === option.value}
                         onChange={handleInputChange("question7")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -627,7 +517,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question8 === option.value}
                         onChange={handleInputChange("question8")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -657,7 +546,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question9 === option.value}
                         onChange={handleInputChange("question9")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -688,7 +576,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question10 === option.value}
                         onChange={handleInputChange("question10")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -721,7 +608,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question11 === option.value}
                         onChange={handleInputChange("question11")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -753,7 +639,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question12 === option.value}
                         onChange={handleInputChange("question12")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -784,7 +669,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question13 === option.value}
                         onChange={handleInputChange("question13")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -812,7 +696,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question14 === option.value}
                         onChange={handleInputChange("question14")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -840,7 +723,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question15 === option.value}
                         onChange={handleInputChange("question15")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -871,7 +753,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question16 === option.value}
                         onChange={handleInputChange("question16")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -902,7 +783,6 @@ const ClientSurveyContent: React.FC = () => {
                         checked={question17 === option.value}
                         onChange={handleInputChange("question17")}
                         className="border-primary"
-                        disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
                     </label>
@@ -929,7 +809,6 @@ const ClientSurveyContent: React.FC = () => {
                     value={question18}
                     onChange={handleInputChange("question18")}
                     rows={4}
-                    disabled={isUpdating}
                   />
                 </FormGroup>
               </Col>
@@ -951,7 +830,6 @@ const ClientSurveyContent: React.FC = () => {
                     value={question19}
                     onChange={handleInputChange("question19")}
                     rows={4}
-                    disabled={isUpdating}
                   />
                 </FormGroup>
               </Col>
@@ -959,40 +837,14 @@ const ClientSurveyContent: React.FC = () => {
             {/* Action Buttons */}
             <div className="d-flex justify-content-end mt-4 gap-2">
               <Button
-                color="primary"
-                type="button"
-                disabled={submitting !== null || isUpdating}
-                onClick={(e) => {
-                  void handleSubmit(e, "save");
-                }}
-              >
-                {submitting === "save" ? "Saving..." : "Save Changes"}
-              </Button>
-
-              <Button
                 color="secondary"
-                onClick={async (e) => {
+                onClick={(e) => {
                   e.preventDefault();
-                  if (
-                    session?.user?.user_type === "CLIENT" &&
-                    selectedSurvey?.updated_by !== null
-                  ) {
-                    handleNextTab();
-                  } else {
-                    const ok = await handleSubmit(e, "save_next");
-                    if (ok) {
-                      handleNextTab();
-                    }
-                  }
+                  handleNextTab();
                 }}
                 type="button"
-                disabled={submitting !== null || isUpdating}
               >
-                {session?.user?.user_type === "CLIENT"
-                  ? "Go To Next"
-                  : submitting === "save_next"
-                    ? "Saving..."
-                    : "Save & Next"}
+                Go To Next
               </Button>
             </div>
           </Form>
