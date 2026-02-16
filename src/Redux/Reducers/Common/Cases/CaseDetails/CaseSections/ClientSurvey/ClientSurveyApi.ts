@@ -10,8 +10,8 @@ export const ClientSurveyApi = baseApi.injectEndpoints({
       providesTags: ["ClientSurvey"],
     }),
     updateClientSurvey: builder.mutation({
-      query: ({ case_alias, payload, survey_alias }) => ({
-        url: `/cases/${case_alias}/client-survey/${survey_alias}/`,
+      query: ({ case_alias, payload }) => ({
+        url: `/cases/${case_alias}/client-survey/`,
         method: "PATCH",
         body: payload,
       }),

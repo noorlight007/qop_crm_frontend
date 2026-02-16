@@ -287,7 +287,6 @@ const ClientSurveyContent: React.FC = () => {
     try {
       const response = await updateClientSurvey({
         case_alias: casealias,
-        survey_alias: surveyAlias,
         payload,
       });
 
