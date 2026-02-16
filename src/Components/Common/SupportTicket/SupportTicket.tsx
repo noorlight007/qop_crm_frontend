@@ -753,12 +753,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </td>
                         <td>
                           <p className="m-0">
-                            {ticket.created_by?.title
-                              ? formatChoiceFieldValue(ticket.created_by?.title)
-                              : ""}{" "}
-                            {ticket.created_by?.first_name}{" "}
-                            {ticket.created_by?.middle_name}{" "}
-                            {ticket.created_by?.last_name}
+                            {ticket.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
