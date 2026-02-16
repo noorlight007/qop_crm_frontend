@@ -435,9 +435,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -449,7 +450,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -465,9 +466,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -479,7 +481,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -495,9 +497,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -509,7 +512,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -525,9 +528,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -539,7 +543,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -552,9 +556,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -566,7 +571,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -579,9 +584,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -593,7 +599,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -609,9 +615,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -623,7 +630,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -638,9 +645,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -652,7 +660,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -668,9 +676,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -682,7 +691,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -700,9 +709,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -714,7 +724,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -731,9 +741,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -745,7 +756,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -761,9 +772,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -775,7 +787,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -788,9 +800,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -802,7 +815,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -815,9 +828,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -829,7 +843,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -838,16 +852,17 @@ const ClientSurveyContent: React.FC = () => {
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  Based on my experience I would recommend the advisor to my
+                  Based on my experience I would recommend the adviser to my
                   friends and family.
                 </Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -859,7 +874,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
@@ -875,9 +890,10 @@ const ClientSurveyContent: React.FC = () => {
               <Col md={6}>
                 <FormGroup>
                   {ANSWER_OPTIONS.map((option) => (
-                    <div
+                    <label
                       key={option.value}
                       className="d-flex align-items-center mb-1"
+                      style={{ cursor: "pointer" }}
                     >
                       <Input
                         type="radio"
@@ -889,7 +905,7 @@ const ClientSurveyContent: React.FC = () => {
                         disabled={isUpdating}
                       />
                       <span className="ms-1">{option.label}</span>
-                    </div>
+                    </label>
                   ))}
                 </FormGroup>
               </Col>
