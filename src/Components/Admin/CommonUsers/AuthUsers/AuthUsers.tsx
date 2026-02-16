@@ -42,7 +42,7 @@ import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
 const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
-  authUsersPerPage = 10,
+  authUsersPerPage = 12,
   roles,
 }) => {
   const pathname = window.location.pathname;

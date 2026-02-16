@@ -373,7 +373,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       const id = user?.id ?? lead?.id;
       if (!id) return null;
 
-      const name = user?.name || lead?.name || "Unnamed Lead";
+      const name = user?.name || lead?.name || "Loading...";
       const email = user?.email || lead?.email;
       const phone =
         user?.phone ||

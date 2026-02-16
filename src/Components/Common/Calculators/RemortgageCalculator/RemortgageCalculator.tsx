@@ -1,33 +1,12 @@
 "use client";
-
+import {
+  CalculationResults,
+  MortgageInputs,
+  MortgageType,
+  RemortgageCalculatorState,
+} from "@/Types/Common/Calculators/RemortgageCalculatorTypes";
+import { getCurrencySign } from "@/utils/currency";
 import React, { useMemo, useState } from "react";
-
-type MortgageType = "" | "interest-only" | "repayment";
-
-interface MortgageInputs {
-  amount: number | string;
-  mortgageType: MortgageType;
-  interestRate: number | string;
-  termYears: number | string;
-  termMonths: number | string;
-}
-
-interface RemortgageCalculatorState {
-  current: MortgageInputs;
-  newMortgage: MortgageInputs & {
-    arrangementFeeAdded: number | string;
-    otherCosts: number | string;
-  };
-  compareYears: number | string;
-  compareMonths: number | string;
-}
-
-interface CalculationResults {
-  monthlyPayment: number;
-  totalPaid: number;
-  totalInterest: number;
-  totalRepayments: number;
-}
 
 const toNumber = (value: number | string) => {
   const num = Number(value);
@@ -354,7 +333,9 @@ const RemortgageCalculator: React.FC = () => {
             className="h5 bg-light-dark p-2 rounded m-0"
             style={{ minWidth: "150px", textAlign: "right" }}
           >
-            {calculated ? formatInt(results.monthlyPayment) : "—"}
+            {calculated
+              ? `${getCurrencySign()}${formatInt(results.monthlyPayment)}`
+              : "—"}
           </span>
         </div>
 
@@ -364,7 +345,9 @@ const RemortgageCalculator: React.FC = () => {
             className="h5 bg-light-dark p-2 rounded m-0"
             style={{ minWidth: "150px", textAlign: "right" }}
           >
-            {calculated ? formatInt(results.totalPaid) : "—"}
+            {calculated
+              ? `${getCurrencySign()}${formatInt(results.totalPaid)}`
+              : "—"}
           </span>
         </div>
 
@@ -374,7 +357,9 @@ const RemortgageCalculator: React.FC = () => {
             className="h5 bg-light-dark p-2 rounded m-0"
             style={{ minWidth: "150px", textAlign: "right" }}
           >
-            {calculated ? formatInt(results.totalInterest) : "—"}
+            {calculated
+              ? `${getCurrencySign()}${formatInt(results.totalInterest)}`
+              : "—"}
           </span>
         </div>
 
@@ -384,7 +369,9 @@ const RemortgageCalculator: React.FC = () => {
             className="h5 bg-light-dark p-2 rounded m-0"
             style={{ minWidth: "150px", textAlign: "right" }}
           >
-            {calculated ? formatInt(results.totalRepayments) : "—"}
+            {calculated
+              ? `${getCurrencySign()}${formatInt(results.totalRepayments)}`
+              : "—"}
           </span>
         </div>
       </div>
@@ -405,7 +392,7 @@ const RemortgageCalculator: React.FC = () => {
                 Mortgage amount<span className="text-danger">*</span>
               </label>
               <div className="input-group">
-                <span className="input-group-text">£</span>
+                <span className="input-group-text">{getCurrencySign()}</span>
                 <input
                   type="number"
                   className={`form-control ${errors.currentAmount ? "is-invalid" : ""} rounded-start-0`}
@@ -518,7 +505,7 @@ const RemortgageCalculator: React.FC = () => {
                 Mortgage amount<span className="text-danger">*</span>
               </label>
               <div className="input-group">
-                <span className="input-group-text">£</span>
+                <span className="input-group-text">{getCurrencySign()}</span>
                 <input
                   type="number"
                   className={`form-control ${errors.newAmount ? "is-invalid" : ""} rounded-start-0`}
@@ -537,7 +524,7 @@ const RemortgageCalculator: React.FC = () => {
             <div className="mb-3">
               <label className="form-label">Arrangement fee added</label>
               <div className="input-group">
-                <span className="input-group-text">£</span>
+                <span className="input-group-text">{getCurrencySign()}</span>
                 <input
                   type="number"
                   className={`form-control ${errors.arrangementFeeAdded ? "is-invalid" : ""} rounded-start-0`}
@@ -558,7 +545,7 @@ const RemortgageCalculator: React.FC = () => {
             <div className="mb-3">
               <label className="form-label">Other costs</label>
               <div className="input-group">
-                <span className="input-group-text">£</span>
+                <span className="input-group-text">{getCurrencySign()}</span>
                 <input
                   type="number"
                   className={`form-control ${errors.otherCosts ? "is-invalid" : ""} rounded-start-0`}
@@ -725,7 +712,9 @@ const RemortgageCalculator: React.FC = () => {
                 className="h5 bg-light-dark p-2 rounded m-0"
                 style={{ minWidth: "150px", textAlign: "right" }}
               >
-                {calculated ? formatInt(costDifference) : "—"}
+                {calculated
+                  ? `${getCurrencySign()}${formatInt(costDifference)}`
+                  : "—"}
               </span>
             </div>
           </div>

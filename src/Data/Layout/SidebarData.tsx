@@ -117,11 +117,6 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
           },
           {
-            path: "/network/director/activecases",
-            title: "Active Cases",
-            type: "link",
-          },
-          {
             path: "/network/director/clients",
             title: "Clients",
             type: "link",
@@ -258,11 +253,6 @@ const NetworkComplianceMenu: MenuItem[] = [
             type: "link",
           },
           {
-            path: "/network/director/activecases",
-            title: "Active Cases",
-            type: "link",
-          },
-          {
             path: "/network/director/clients",
             title: "Clients",
             type: "link",
@@ -365,11 +355,6 @@ const NetworkAdviserMenu: MenuItem[] = [
             type: "link",
           },
           {
-            path: "/network/adviser/activecases",
-            title: "Active Cases",
-            type: "link",
-          },
-          {
             title: "Clients",
             type: "link",
             path: "/network/adviser/clients",
@@ -469,11 +454,6 @@ const OrganisationDirectorMenu: MenuItem[] = [
           {
             path: "/organisation/director/cases",
             title: "All Cases",
-            type: "link",
-          },
-          {
-            path: "/organisation/director/activecases",
-            title: "Active Cases",
             type: "link",
           },
           {
@@ -600,11 +580,6 @@ const OrganisationAdviserMenu: MenuItem[] = [
           {
             path: "/organisation/adviser/cases",
             title: "All Cases",
-            type: "link",
-          },
-          {
-            path: "/organisation/adviser/activecases",
-            title: "Active Cases",
             type: "link",
           },
           {
