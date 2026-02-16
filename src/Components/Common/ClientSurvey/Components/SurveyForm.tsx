@@ -160,6 +160,7 @@ const SurveyForm: React.FC = () => {
             <Col md={6}>
               <Label>
                 Throughout the process, I was made to feel valued by my adviser.
+                <span className="text-danger">*</span>
               </Label>
               {/* <FormGroup className="mb-0">
                       {ANSWER_OPTIONS.map((option) => (
@@ -196,6 +197,7 @@ const SurveyForm: React.FC = () => {
                       checked={question2 === option.value}
                       onChange={handleInputChange("question2")}
                       className="border-primary"
+                      required
                     />
                     <span className="ms-2">{option.label}</span>
                   </label>
@@ -209,6 +211,7 @@ const SurveyForm: React.FC = () => {
             <Col md={6}>
               <Label>
                 Throughout the process, I was made to feel valued by the firm.
+                <span className="text-danger">*</span>
               </Label>
             </Col>
             <Col md={6}>
@@ -226,6 +229,7 @@ const SurveyForm: React.FC = () => {
                       checked={question3 === option.value}
                       onChange={handleInputChange("question3")}
                       className="border-primary"
+                      required
                     />
                     <span className="ms-2">{option.label}</span>
                   </label>
