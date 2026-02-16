@@ -1,3 +1,4 @@
+import { ANSWER_OPTIONS } from "@/Data/Common/ClientSurvey";
 import React from "react";
 import {
   Button,
@@ -10,15 +11,6 @@ import {
   Label,
   Row,
 } from "reactstrap";
-
-// Enum values for backend
-const ANSWER_OPTIONS = [
-  { label: "Strongly Disagree", value: "STRONGLY_DISAGREE" },
-  { label: "Disagree", value: "DISAGREE" },
-  { label: "Neutral", value: "NEUTRAL" },
-  { label: "Agree", value: "AGREE" },
-  { label: "Strongly Agree", value: "STRONGLY_AGREE" },
-];
 
 const SurveyForm: React.FC = () => {
   const [adviserName, setAdviserName] = React.useState<string>("");

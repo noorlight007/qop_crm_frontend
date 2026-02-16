@@ -1,4 +1,5 @@
 import LoadingSpinner from "@/app/loading";
+import { ANSWER_OPTIONS } from "@/Data/Common/ClientSurvey";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useGetClientSurveyQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
@@ -21,15 +22,6 @@ import {
   Label,
   Row,
 } from "reactstrap";
-
-// Enum values for backend
-const ANSWER_OPTIONS = [
-  { label: "Strongly Disagree", value: "STRONGLY_DISAGREE" },
-  { label: "Disagree", value: "DISAGREE" },
-  { label: "Neutral", value: "NEUTRAL" },
-  { label: "Agree", value: "AGREE" },
-  { label: "Strongly Agree", value: "STRONGLY_AGREE" },
-];
 
 const ClientSurveyContent: React.FC = () => {
   const { data: session } = useSession();
