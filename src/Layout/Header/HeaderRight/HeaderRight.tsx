@@ -1,10 +1,11 @@
+import DarkMode from "./DarkMode/DarkMode";
 import Profile from "./Profile/Profile";
 
 const HeaderRight = () => {
   return (
     <div className="nav-right">
       <ul className="header-right">
-        {/* <DarkMode /> */}
+        <DarkMode />
         {/* <NotificationHeader /> */}
         <Profile />
       </ul>
