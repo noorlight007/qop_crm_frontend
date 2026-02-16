@@ -1,3 +1,9 @@
+import {
+  CalculationBreakdown,
+  FormData,
+  LeaseTerm,
+} from "@/Types/Common/Calculators/StampDutyCalculatorTypes";
+import getCurrencySign from "@/utils/currency";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -16,49 +22,6 @@ import {
   Row,
   Table,
 } from "reactstrap";
-
-// Types
-interface FormData {
-  propertyType: "freehold" | "leasehold" | "";
-  propertyUse: "residential" | "non-residential" | "";
-  effectiveDay: string;
-  effectiveMonth: string;
-  effectiveYear: string;
-  isNonUKResident: boolean | null;
-  isPurchasingAsIndividual: boolean | null;
-  willOwnMultipleProperties: boolean | null;
-  isReplacingMainResidence: boolean | null;
-  hasEverOwnedProperty: boolean | null;
-  willThisBeMainResidence: boolean | null;
-  isSharedOwnership: boolean | null;
-  sharedMarketValueOption: "lte500k" | "gt500k" | "";
-  sharedMarketValueElection: "market" | "stages" | "";
-  sharedOwnershipMarketValue: string;
-  sharedOwnershipInitialShare: string;
-  leaseStartDay: string;
-  leaseStartMonth: string;
-  leaseStartYear: string;
-  leaseEndDay: string;
-  leaseEndMonth: string;
-  leaseEndYear: string;
-  purchasePrice: string;
-  yearlyRents: string[]; // Dynamic array for each year's rent
-}
-
-interface CalculationBreakdown {
-  band: string;
-  amount: number;
-  rate: number;
-  tax: number;
-}
-
-interface LeaseTerm {
-  years: number;
-  days: number;
-  totalDays: number;
-  totalYears: number;
-  calendarYearsSpanned?: number; // Number of distinct calendar years
-}
 
 const StampDutyCalculator: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -843,7 +806,6 @@ const StampDutyCalculator: React.FC = () => {
                 }
               }
             }
-            // If hasEverOwnedProperty === true, no additional questions - go to lease dates
           }
         }
       }
@@ -1596,7 +1558,7 @@ const StampDutyCalculator: React.FC = () => {
                                 })
                               }
                             />{" "}
-                            £500,000 or less
+                            {getCurrencySign()}500,000 or less
                           </Label>
                         </FormGroup>
                         <FormGroup check className="my-3 mx-3">
@@ -1615,7 +1577,7 @@ const StampDutyCalculator: React.FC = () => {
                                 })
                               }
                             />{" "}
-                            More than £500,000
+                            More than {getCurrencySign()}500,000
                           </Label>
                         </FormGroup>
                       </FormGroup>
@@ -1707,7 +1669,9 @@ const StampDutyCalculator: React.FC = () => {
 
                           <FormGroup>
                             <div className="input-group">
-                              <span className="input-group-text">£</span>
+                              <span className="input-group-text">
+                                {getCurrencySign()}
+                              </span>
                               <Input
                                 type="text"
                                 value={
@@ -1928,7 +1892,7 @@ const StampDutyCalculator: React.FC = () => {
 
           <FormGroup>
             <div className="input-group">
-              <span className="input-group-text">£</span>
+              <span className="input-group-text">{getCurrencySign()}</span>
               <Input
                 type="text"
                 value={formData.purchasePrice}
@@ -1998,7 +1962,7 @@ const StampDutyCalculator: React.FC = () => {
             <FormGroup key={index}>
               <Label for={`year${index + 1}Rent`}>Year {index + 1} rent</Label>
               <div className="input-group mb-2">
-                <span className="input-group-text">£</span>
+                <span className="input-group-text">{getCurrencySign()}</span>
                 <Input
                   type="text"
                   id={`year${index + 1}Rent`}
@@ -2194,10 +2158,12 @@ const StampDutyCalculator: React.FC = () => {
                         {formData.propertyType === "leasehold"
                           ? "Premium"
                           : "Purchase price"}{" "}
-                        bands (£)
+                        bands ({getCurrencySign()})
                       </th>
                       <th className="text-center">Percentage rate (%)</th>
-                      <th className="text-end">SDLT due (£)</th>
+                      <th className="text-end">
+                        SDLT due ({getCurrencySign()})
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2234,9 +2200,11 @@ const StampDutyCalculator: React.FC = () => {
                       <Table bordered responsive hover className="mb-4">
                         <thead className="table-light">
                           <tr>
-                            <th>Rent bands (£)</th>
+                            <th>Rent bands ({getCurrencySign()})</th>
                             <th className="text-center">Percentage rate (%)</th>
-                            <th className="text-end">SDLT due (£)</th>
+                            <th className="text-end">
+                              SDLT due ({getCurrencySign()})
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2308,14 +2276,17 @@ const StampDutyCalculator: React.FC = () => {
 
               {/* Navigation Buttons */}
               <div className="mt-4 d-flex justify-content-between">
-                <Button
-                  color="secondary"
-                  outline
-                  onClick={handleBack}
-                  disabled={currentStep === 1}
-                >
-                  ← Back
-                </Button>
+                {currentStep > 1 ? (
+                  <Button
+                    color="secondary"
+                    outline
+                    onClick={handleBack}
+                  >
+                    ← Back
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
 
                 {currentStep < totalSteps ? (
                   <Button color="primary" onClick={handleNext}>
