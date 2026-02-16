@@ -245,11 +245,17 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                   className="btn-group ms-2"
                   role="group"
                   aria-label="Show tickets filter"
+                  style={{
+                    background: "#e9ecef",
+                    padding: 3,
+                    borderRadius: 999,
+                  }}
                 >
                   <Button
                     size="sm"
-                    color={filters.created_by ? "light" : "primary"}
-                    className={`rounded-pill px-3 py-1 ${filters.created_by ? "text-muted" : ""}`}
+                    color={!filters.created_by ? "primary" : "light"}
+                    className={`rounded-pill px-3 py-1 ${!filters.created_by ? "" : "text-muted"}`}
+                    style={{ borderRadius: 999, padding: "6px 14px" }}
                     onClick={() => handleFilterChange("created_by", "")}
                     aria-pressed={!filters.created_by}
                     type="button"
@@ -259,8 +265,13 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
                   <Button
                     size="sm"
-                    color={filters.created_by ? "primary" : "light"}
-                    className={`rounded-pill px-3 py-1 ${filters.created_by ? "" : "text-muted"}`}
+                    color={
+                      filters.created_by === String(session?.user?.id)
+                        ? "primary"
+                        : "light"
+                    }
+                    className={`rounded-pill px-3 py-1 ${filters.created_by === String(session?.user?.id) ? "" : "text-muted"}`}
+                    style={{ borderRadius: 999, padding: "6px 14px" }}
                     onClick={() =>
                       handleFilterChange(
                         "created_by",
