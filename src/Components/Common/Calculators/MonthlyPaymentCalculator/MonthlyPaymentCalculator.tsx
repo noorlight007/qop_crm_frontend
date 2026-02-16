@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { getCurrencySign } from "../../../../utils/currency";
 
 interface CalculatorState {
   mortgageAmount: number | string;
@@ -150,7 +151,7 @@ const MonthlyPaymentCalculator: React.FC = () => {
               Mortgage amount<span className="text-danger">*</span>
             </label>
             <div className="input-group">
-              <span className="input-group-text">£</span>
+              <span className="input-group-text">{getCurrencySign()}</span>
               <input
                 id="mortgageAmount"
                 type="number"
@@ -174,7 +175,7 @@ const MonthlyPaymentCalculator: React.FC = () => {
               Arrangement fee
             </label>
             <div className="input-group">
-              <span className="input-group-text">£</span>
+              <span className="input-group-text">{getCurrencySign()}</span>
               <input
                 id="arrangementFee"
                 type="number"
@@ -285,7 +286,9 @@ const MonthlyPaymentCalculator: React.FC = () => {
                 className="h5 bg-light-dark p-2 rounded"
                 style={{ minWidth: "150px", textAlign: "right" }}
               >
-                {calculated ? results.monthlyPayment.toFixed(2) : "—"}
+                {calculated
+                  ? `${getCurrencySign()}${results.monthlyPayment.toFixed(2)}`
+                  : "—"}
               </span>
             </div>
 
@@ -295,7 +298,9 @@ const MonthlyPaymentCalculator: React.FC = () => {
                 className="h5 bg-light-dark p-2 rounded"
                 style={{ minWidth: "150px", textAlign: "right" }}
               >
-                {calculated ? results.totalPaid.toFixed(2) : "—"}
+                {calculated
+                  ? `${getCurrencySign()}${results.totalPaid.toFixed(2)}`
+                  : "—"}
               </span>
             </div>
 
@@ -305,7 +310,9 @@ const MonthlyPaymentCalculator: React.FC = () => {
                 className="h5 bg-light-dark p-2 rounded"
                 style={{ minWidth: "150px", textAlign: "right" }}
               >
-                {calculated ? results.totalInterest.toFixed(2) : "—"}
+                {calculated
+                  ? `${getCurrencySign()}${results.totalInterest.toFixed(2)}`
+                  : "—"}
               </span>
             </div>
 
@@ -315,7 +322,9 @@ const MonthlyPaymentCalculator: React.FC = () => {
                 className="h5 bg-light-dark p-2 rounded"
                 style={{ minWidth: "150px", textAlign: "right" }}
               >
-                {calculated ? results.totalRepayments.toFixed(2) : "—"}
+                {calculated
+                  ? `${getCurrencySign()}${results.totalRepayments.toFixed(2)}`
+                  : "—"}
               </span>
             </div>
           </div>
