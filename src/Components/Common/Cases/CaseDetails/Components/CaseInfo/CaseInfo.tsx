@@ -166,9 +166,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <Card>
         <CardHeader className="d-flex justify-content-between">
           <h3 className="mb-2">
-            Case Info
-            <span className="small text-primary opacity-75">
-              ({caseInfo?.name})
+            <span className="text-primary">
+              {caseInfo?.name}
             </span>
           </h3>
           <ButtonGroup>

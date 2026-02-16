@@ -8,7 +8,7 @@ import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
-import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -313,27 +313,25 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 <tr>
                   <th>Case ID</th>
                   <th>Applicants</th>
-                  <th>Phone</th>
                   <th>Case Category</th>
                   <th>Lender</th>
                   <th className="text-truncate">Security property</th>
                   <th>Case Stage</th>
                   {session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                    session?.user?.user_type === "NETWORK_ADVISER" ||
-                    (session?.user?.user_type === "NETWORK_COMPLIANCE" && (
-                      <th>"Organisation" </th>
-                    ))}
-                  <th>Created By</th>
-                  <th>Assigned To</th>
+                  session?.user?.user_type === "NETWORK_ADVISER" ||
+                  session?.user?.user_type === "NETWORK_COMPLIANCE" ? (
+                    <th>Organisation</th>
+                  ) : null}
+                  <th>Adviser</th>
+                  <th>Admin</th>
                   <th className="text-truncate">Review Date</th>
-                  <th>Created At</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody className="text-center">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={13} className="text-center">
+                    <td colSpan={10} className="text-center">
                       <Spinner color="primary" />
                     </td>
                   </tr>
@@ -400,18 +398,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             <></>
                           )}
                         </ul>
-                      </td>
-                      <td>
-                        {caseItem.lead_user.phone ? (
-                          <a
-                            href={`tel:${caseItem.lead_user.phone}`}
-                            className="text-black text_decoration_hover"
-                          >
-                            {caseItem.lead_user.phone}
-                          </a>
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
                       </td>
                       <td className="text-truncate">
                         {caseItem.case_category ? (
@@ -511,43 +497,19 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                         )}
                       </td>
                       {userType === "NETWORK_DIRECTOR" ||
-                        userType === "NETWORK_COMPLIANCE" ||
-                        (userType === "NETWORK_ADVISER" && (
-                          <td className="text-truncate">
-                            {" "}
-                            (caseItem.organization?.name ?? (
+                      userType === "NETWORK_COMPLIANCE" ||
+                      userType === "NETWORK_ADVISER" ? (
+                        <td className="text-truncate">
+                          {" "}
+                          {caseItem.organization?.name ? (
+                            caseItem.organization.name
+                          ) : (
                             <small className="text-muted">
                               Owned by Network
                             </small>
-                            )){" "}
-                          </td>
-                        ))}
-                      <td className="text-truncate">
-                        <p className="m-0">
-                          {caseItem.created_by?.title
-                            ? formatChoiceFieldValue(
-                                caseItem.created_by.title,
-                              ) + " "
-                            : ""}
-                          {caseItem.created_by?.first_name}{" "}
-                          {caseItem.created_by?.middle_name
-                            ? caseItem.created_by.middle_name + " "
-                            : ""}
-                          {caseItem.created_by?.last_name}
-                        </p>
-                        <p
-                          className="m-0 opacity-75"
-                          style={{ fontSize: "9px" }}
-                        >
-                          (
-                          {caseItem.created_by?.user_type
-                            ? formatChoiceFieldValue(
-                                caseItem.created_by.user_type,
-                              )
-                            : ""}
-                          )
-                        </p>
-                      </td>
+                          )}{" "}
+                        </td>
+                      ) : null}
                       <td className="text-truncate">
                         {caseItem.assigned_user ? (
                           <>
@@ -580,13 +542,42 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Assigned</small>
                         )}
                       </td>
+                      <td className="text-truncate">
+                        {caseItem.assigned_admin ? (
+                          <>
+                            <p className="m-0">
+                              {caseItem.assigned_admin.title
+                                ? formatChoiceFieldValue(
+                                    caseItem.assigned_admin.title,
+                                  ) + " "
+                                : ""}
+                              {caseItem.assigned_admin.first_name}{" "}
+                              {caseItem.assigned_admin.middle_name
+                                ? caseItem.assigned_admin.middle_name + " "
+                                : ""}
+                              {caseItem.assigned_admin.last_name}
+                            </p>
+                            <p
+                              className="m-0 opacity-75"
+                              style={{ fontSize: "9px" }}
+                            >
+                              (
+                              {caseItem.assigned_admin.user_type
+                                ? formatChoiceFieldValue(
+                                    caseItem.assigned_admin.user_type,
+                                  )
+                                : ""}
+                              )
+                            </p>
+                          </>
+                        ) : (
+                          <small className="text-muted">Not Assigned</small>
+                        )}
+                      </td>
                       <td>
                         {formatDate(caseItem?.review_date) || (
                           <small className="text-muted">Not Available</small>
                         )}
-                      </td>
-                      <td className="text-truncate">
-                        {formatDateAndTime(caseItem.created_at)}
                       </td>
                       <td>
                         <div className="d-flex justify-content-center align-items-center">
@@ -617,7 +608,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={13} className="text-center">
+                    <td colSpan={10} className="text-center">
                       No cases found.
                     </td>
                   </tr>

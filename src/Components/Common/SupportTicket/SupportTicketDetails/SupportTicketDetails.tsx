@@ -35,6 +35,7 @@ import {
 } from "reactstrap";
 import Swal from "sweetalert2";
 import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
+import SupportTicketComments from "./SupportTicketComments";
 
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();
@@ -342,6 +343,16 @@ const SupportTicketDetails: React.FC = () => {
               <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
                 {ticketDetails.message}
               </p>
+            </CardBody>
+          </Card>
+
+          {/* Comments Card */}
+          <Card className="shadow-sm mb-4">
+            <CardHeader className="bg-white">
+              <h5 className="mb-0">Comments</h5>
+            </CardHeader>
+            <CardBody>
+              <SupportTicketComments />
             </CardBody>
           </Card>
 

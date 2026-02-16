@@ -15,8 +15,8 @@ const CaesSummary: React.FC = () => {
     <Row>
       {isLoading ? (
         <>
-          {[...Array(4)].map((_, index) => (
-            <Col md="3" className="mb-2" key={index}>
+          {[...Array(3)].map((_, index) => (
+            <Col className="mb-2" key={index}>
               <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
                 <CardBody className="p-2">
                   <div className="d-flex justify-content-between">
@@ -44,7 +44,7 @@ const CaesSummary: React.FC = () => {
         // Actual Content
         <>
           {/* All Cases  */}
-          <Col md="3">
+          <Col>
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
@@ -67,7 +67,7 @@ const CaesSummary: React.FC = () => {
             </Card>
           </Col>
           {/* Active Cases  */}
-          <Col md="3">
+          <Col>
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
@@ -91,33 +91,8 @@ const CaesSummary: React.FC = () => {
               </CardBody>
             </Card>
           </Col>
-          {/* Pending Cases  */}
-          <Col md="3">
-            <Card className="p-2 shadow">
-              <CardBody className="p-2">
-                <div className="d-flex justify-content-between">
-                  <div>
-                    <CardTitle className="small text-muted">
-                      Pending Cases
-                    </CardTitle>
-                    <h4 className="mb-1 text-dark">
-                      {summary.pending_cases || 0}
-                    </h4>
-                  </div>
-                  <div>
-                    <span
-                      className="d-flex justify-content-center align-items-center bg-light-warning rounded-3"
-                      style={{ width: "30px", height: "30px" }}
-                    >
-                      <TbFileDescription className="fs-6" />
-                    </span>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
           {/* Completed Cases  */}
-          <Col md="3">
+          <Col>
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
