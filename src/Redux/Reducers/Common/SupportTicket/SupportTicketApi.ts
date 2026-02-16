@@ -40,6 +40,13 @@ export const SupportTicketApi = baseApi.injectEndpoints({
       }),
       providesTags: ["SupportTicket"],
     }),
+    fetchSupportTicketComments: builder.query({
+      query: ({ ticket_alias }) => ({
+        url: `/api/support-ticket/${ticket_alias}/comments/`,
+        method: "GET",
+      }),
+      providesTags: ["SupportTicket"],
+    }),
   }),
 });
 
@@ -49,4 +56,5 @@ export const {
   useUpdateSupportTicketMutation,
   useDeleteSupportTicketMutation,
   useFetchSupportTicketDetailsQuery,
+  useFetchSupportTicketCommentsQuery,
 } = SupportTicketApi;
