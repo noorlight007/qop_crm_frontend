@@ -14,7 +14,6 @@ import React, { useEffect, useMemo } from "react";
 import { toast } from "react-toastify";
 import {
   Alert,
-  Badge,
   Button,
   Card,
   CardBody,
@@ -28,11 +27,11 @@ import {
 
 // Enum values for backend
 const ANSWER_OPTIONS = [
-  { label: "Better than expected", value: "BETTER_THAN_EXPECTED" },
-  { label: "As Expected", value: "AS_EXPECTED" },
-  { label: "Below Expected", value: "BELOW_EXPECTED" },
-  { label: "N/A", value: "N/A" },
-  { label: "Not mentioned to me", value: "NOT_MENTIONED_TO_ME" },
+  { label: "Strongly Disagree", value: "STRONGLY_DISAGREE" },
+  { label: "Disagree", value: "DISAGREE" },
+  { label: "Neutral", value: "NEUTRAL" },
+  { label: "Agree", value: "AGREE" },
+  { label: "Strongly Agree", value: "STRONGLY_AGREE" },
 ];
 
 const ClientSurveyContent: React.FC = () => {
@@ -58,7 +57,6 @@ const ClientSurveyContent: React.FC = () => {
     useUpdateSectionCompleteStatusMutation();
 
   // Local form state
-  const [clientSurvey, setClientSurvey] = React.useState<boolean>(false);
   const [adviserName, setAdviserName] = React.useState<string>("");
   const [question2, setQuestion2] = React.useState<string>("");
   const [question3, setQuestion3] = React.useState<string>("");
@@ -117,7 +115,6 @@ const ClientSurveyContent: React.FC = () => {
   // === STEP 3: Sync form state when selectedSurvey changes ===
   useEffect(() => {
     if (selectedSurvey && typeof selectedSurvey === "object") {
-      setClientSurvey(selectedSurvey.client_survey || false);
       setAdviserName(selectedSurvey.adviser_name || "");
       setQuestion2(
         selectedSurvey.is_clarification_explanation_of_the_service_firm || "",
@@ -190,7 +187,6 @@ const ClientSurveyContent: React.FC = () => {
       setNote(selectedSurvey.note || "");
     } else {
       // No existing survey — initialize as empty
-      setClientSurvey(false);
       setAdviserName("");
       setQuestion2("");
       setQuestion3("");
@@ -377,43 +373,6 @@ const ClientSurveyContent: React.FC = () => {
       }
     };
 
-  const handleClientSurveyChange = (value: boolean) => {
-    setClientSurvey(value);
-    // Auto-update when clicked
-    if (surveyAlias) {
-      const payload = {
-        case_alias: casealias,
-        client_survey: value,
-      };
-
-      updateClientSurvey({
-        case_alias: casealias,
-        survey_alias: surveyAlias,
-        payload,
-      })
-        .then((response) => {
-          if (response.data) {
-            toast.success("Client survey updated successfully!");
-          } else if (response.error) {
-            // Extract backend error message - prioritize details field
-            const errorMessage =
-              (response.error as any)?.data?.detail ||
-              "Failed to update client survey.";
-            toast.error(errorMessage);
-            // Revert the state if update fails
-            setClientSurvey(!value);
-          }
-        })
-        .catch((error) => {
-          // Handle any unexpected errors
-          const errorMessage = error?.message || "An unexpected error occurred";
-          toast.error(errorMessage);
-          // Revert the state if update fails
-          setClientSurvey(!value);
-        });
-    }
-  };
-
   // === STEP 5: Final Submit (Validation) ===
   // In handleSubmit
   const handleSubmit = async (
@@ -436,7 +395,6 @@ const ClientSurveyContent: React.FC = () => {
 
     const payload = {
       case_alias: casealias,
-      client_survey: clientSurvey,
       adviser_name: adviserName.trim(),
       is_clarification_explanation_of_the_service_firm: question2,
       is_timely_service_delivery: question3,
@@ -549,45 +507,6 @@ const ClientSurveyContent: React.FC = () => {
       <CardBody>
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
-          {session?.user?.user_type !== "CLIENT" && (
-            <div>
-              <Form>
-                <FormGroup>
-                  <div className="d-flex align-items-center mb-3">
-                    <Label className="me-3 mb-0">Client Survey:</Label>
-                    <div className="d-flex gap-2">
-                      <Button
-                        color={clientSurvey ? "success" : "outline-success"}
-                        size="sm"
-                        onClick={() => handleClientSurveyChange(true)}
-                        disabled={isUpdating}
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        color={!clientSurvey ? "danger" : "outline-danger"}
-                        size="sm"
-                        onClick={() => handleClientSurveyChange(false)}
-                        disabled={isUpdating}
-                      >
-                        No
-                      </Button>
-                    </div>
-                    <Badge
-                      color={
-                        selectedSurvey?.client_survey ? "success" : "danger"
-                      }
-                      className="ms-2"
-                    >
-                      {selectedSurvey?.client_survey
-                        ? "Enabled for Client"
-                        : "Disabled for Client"}
-                    </Badge>
-                  </div>
-                </FormGroup>
-              </Form>
-            </div>
-          )}
           <div>
             {selectedSurvey === null ? (
               <Alert color="info" className="mb-4">
@@ -615,970 +534,957 @@ const ClientSurveyContent: React.FC = () => {
             )}
           </div>
         </div>
-        {session?.user?.user_type !== "CLIENT" ||
-        !!selectedSurvey?.client_survey ? (
-          <>
-            {/* Header */}
-            <Row className="mb-3 d-flex justify-content-between gap-3">
-              <Col className="border-b-primary border-2">
-                <h3 className="text-center">Questions</h3>
+
+        <>
+          {/* Header */}
+          <Row className="mb-3 d-flex justify-content-between gap-3">
+            <Col className="border-b-primary border-2">
+              <h3 className="text-center">Questions</h3>
+            </Col>
+            <Col className="border-b-primary border-2">
+              <h3 className="text-center">Answers</h3>
+            </Col>
+          </Row>
+          <Form
+            onSubmit={(e) => {
+              void handleSubmit(e, "save");
+            }}
+          >
+            {/* Question 1: Adviser Name */}
+            <Row className="border-top border-primary border-2 p-2">
+              <Col md={6}>
+                <Label htmlFor="adviserName">Your Adviser Name*</Label>
               </Col>
-              <Col className="border-b-primary border-2">
-                <h3 className="text-center">Answers</h3>
+              <Col md={6}>
+                <FormGroup>
+                  <Input
+                    type="text"
+                    id="adviserName"
+                    name="adviser_name"
+                    placeholder="Enter adviser name"
+                    required
+                    value={adviserName}
+                    onChange={handleInputChange("adviserName")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
               </Col>
             </Row>
-            <Form
-              onSubmit={(e) => {
-                void handleSubmit(e, "save");
-              }}
-            >
-              {/* Question 1: Adviser Name */}
-              <Row className="border-top border-primary border-2 p-2">
-                <Col md={6}>
-                  <Label htmlFor="adviserName">Your Adviser Name*</Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      id="adviserName"
-                      name="adviser_name"
-                      placeholder="Enter adviser name"
-                      required
-                      value={adviserName}
-                      onChange={handleInputChange("adviserName")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
 
-              {/* Question 2 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The clarification and explanation of the service to be
-                    provided by the firm.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question2"
-                          value={option.value}
-                          checked={question2 === option.value}
-                          onChange={handleInputChange("question2")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              {/* Question 3 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>The timely delivery of the service by the firm.</Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question3"
-                          value={option.value}
-                          checked={question3 === option.value}
-                          onChange={handleInputChange("question3")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 4 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The helpfulness of any representative of the firm who you
-                    dealt with.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question4"
-                          value={option.value}
-                          checked={question4 === option.value}
-                          onChange={handleInputChange("question4")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 5 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The way you were dealt with if you had to contact the firm’s
-                    offices for any reason.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question5"
-                          value={option.value}
-                          checked={question5 === option.value}
-                          onChange={handleInputChange("question5")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 6 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The accuracy of the information provided to you by the firm.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question6"
-                          value={option.value}
-                          checked={question6 === option.value}
-                          onChange={handleInputChange("question6")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 7 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The clarification and explanation of how the firm were to be
-                    paid.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question7"
-                          value={option.value}
-                          checked={question7 === option.value}
-                          onChange={handleInputChange("question7")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 8 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The way you were treated by the firm when raising any
-                    queries relating to service.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question8"
-                          value={option.value}
-                          checked={question8 === option.value}
-                          onChange={handleInputChange("question8")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 9 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The clarification and explanation of the firm will provide a
-                    protection review or referral to a protection specialist.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question9"
-                          value={option.value}
-                          checked={question9 === option.value}
-                          onChange={handleInputChange("question9")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <p>
-                    Please comment on the adviser who dealt with your
-                    application *
-                  </p>
-                </Col>
-              </Row>
-
-              {/* Question 10 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The process the adviser went through to gain an
-                    understanding of your financial objectives.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question10"
-                          value={option.value}
-                          checked={question10 === option.value}
-                          onChange={handleInputChange("question10")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              {/* Question 11 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The establishment, explanation and consideration of your
-                    attitude to risk.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question11"
-                          value={option.value}
-                          checked={question11 === option.value}
-                          onChange={handleInputChange("question11")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 12 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The establishment, explanation and consideration of your
-                    capacity for loss of capital.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question12"
-                          value={option.value}
-                          checked={question12 === option.value}
-                          onChange={handleInputChange("question12")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 13 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The explanation the adviser gave you on how the
-                    product/advice was to work and why it has been recommended
-                    to you?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question13"
-                          value={option.value}
-                          checked={question13 === option.value}
-                          onChange={handleInputChange("question13")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 14 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The interaction of your adviser with other professionals
-                    (e.g. accountant/solicitor)?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question14"
-                          value={option.value}
-                          checked={question14 === option.value}
-                          onChange={handleInputChange("question14")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 15 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The provision of objective and suitable advice for your
-                    needs.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question15"
-                          value={option.value}
-                          checked={question15 === option.value}
-                          onChange={handleInputChange("question15")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 16 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The ability of the adviser to put you at ease and not make
-                    you feel you were under any undue pressure to commit.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question16"
-                          value={option.value}
-                          checked={question16 === option.value}
-                          onChange={handleInputChange("question16")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 17 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The timing and delivery of the review by the adviser.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question17"
-                          value={option.value}
-                          checked={question17 === option.value}
-                          onChange={handleInputChange("question17")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-
-              {/* Question 18 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    Do you feel the broker fee paid represents fair value for
-                    the service you received?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question18"
-                          value={option.value}
-                          checked={question18 === option.value}
-                          onChange={handleInputChange("question18")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 19 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    Was the explanation of broker fees including refund policy?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question19"
-                          value={option.value}
-                          checked={question19 === option.value}
-                          onChange={handleInputChange("question19")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 20 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    Did you receive the value you expected from the broker fee
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question20"
-                          value={option.value}
-                          checked={question20 === option.value}
-                          onChange={handleInputChange("question20")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <p>Communications & Understanding *</p>
-                </Col>
-              </Row>
-              {/* Question 21 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The clarity of any letters, emails, brochures and any other
-                    documentation provided to you.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question21"
-                          value={option.value}
-                          checked={question21 === option.value}
-                          onChange={handleInputChange("question21")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 22 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The timing and arrangements made to conduct a review with
-                    you.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question22"
-                          value={option.value}
-                          checked={question22 === option.value}
-                          onChange={handleInputChange("question22")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 23 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The frequency of communications you receive from the firm.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question23"
-                          value={option.value}
-                          checked={question23 === option.value}
-                          onChange={handleInputChange("question23")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 24 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The relevance of any communications sent to you by the firm.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question24"
-                          value={option.value}
-                          checked={question24 === option.value}
-                          onChange={handleInputChange("question24")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 25 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The way you were treated by the firm when raising any
-                    queries on communications.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question25"
-                          value={option.value}
-                          checked={question25 === option.value}
-                          onChange={handleInputChange("question25")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 26 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The overall standard of communications received from the
-                    firm.
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question26"
-                          value={option.value}
-                          checked={question26 === option.value}
-                          onChange={handleInputChange("question26")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 27 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    The timely manner of receiving your letter confirming the
-                    recommendation and that it explained everything clearly?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    {ANSWER_OPTIONS.map((option) => (
-                      <div
-                        key={option.value}
-                        className="d-flex align-items-center mb-1"
-                      >
-                        <Input
-                          type="radio"
-                          name="question27"
-                          value={option.value}
-                          checked={question27 === option.value}
-                          onChange={handleInputChange("question27")}
-                          disabled={isUpdating}
-                        />
-                        <span className="ms-1">{option.label}</span>
-                      </div>
-                    ))}
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 28 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label htmlFor="do_we_better_serve_next_time">
-                    What could we do to better serve your needs next time?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      id="do_we_better_serve_next_time"
-                      name="do_we_better_serve_next_time"
-                      value={question28}
-                      onChange={handleInputChange("question28")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 28 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label htmlFor="have_any_further_comments_on_the_service_received">
-                    Do you have any further comments on the service received?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Input
-                      type="text"
-                      id="have_any_further_comments_on_the_service_received"
-                      name="have_any_further_comments_on_the_service_received"
-                      value={question29}
-                      onChange={handleInputChange("question29")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
-              {/* Question 30 */}
-              <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-                <Col md={6}>
-                  <Label>
-                    How satisfied are you with the service received?
-                  </Label>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <div className="d-flex flex-wrap justify-content-center align-items-center">
-                      {["Yes", "No"].map((option) => (
-                        <div
-                          key={option}
-                          className="d-flex align-items-center me-3"
-                        >
-                          <Input
-                            type="radio"
-                            name="question30"
-                            value={option.toUpperCase()}
-                            checked={question30 === option.toUpperCase()}
-                            onChange={handleInputChange("question30")}
-                            disabled={isUpdating}
-                          />
-                          <span className="ms-1">{option}</span>
-                        </div>
-                      ))}
+            {/* Question 2 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The clarification and explanation of the service to be
+                  provided by the firm.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question2"
+                        value={option.value}
+                        checked={question2 === option.value}
+                        onChange={handleInputChange("question2")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
                     </div>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="name">Name</Label>
-                    <Input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={name}
-                      onChange={handleInputChange("name")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="email">Email Address (optional)</Label>
-                    <Input
-                      type="text"
-                      id="email"
-                      name="email"
-                      value={email}
-                      onChange={handleInputChange("email")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="phone_number">Phone Number (optional)</Label>
-                    <Input
-                      type="text"
-                      id="phone_number"
-                      name="phone_number"
-                      value={phoneNumber}
-                      onChange={handleInputChange("phoneNumber")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="note">Additional Note (optional)</Label>
-                    <Input
-                      type="textarea"
-                      id="note"
-                      name="note"
-                      value={note}
-                      onChange={handleInputChange("note")}
-                      disabled={isUpdating}
-                    />
-                  </FormGroup>
-                </Col>
-              </Row>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
 
-              {/* Action Buttons */}
-              <div className="d-flex justify-content-end mt-4 gap-2">
-                <Button
-                  color="primary"
-                  type="button"
-                  disabled={submitting !== null || isUpdating}
-                  onClick={(e) => {
-                    void handleSubmit(e, "save");
-                  }}
-                >
-                  {submitting === "save" ? "Saving..." : "Save Changes"}
-                </Button>
+            {/* Question 3 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>The timely delivery of the service by the firm.</Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question3"
+                        value={option.value}
+                        checked={question3 === option.value}
+                        onChange={handleInputChange("question3")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 4 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The helpfulness of any representative of the firm who you
+                  dealt with.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question4"
+                        value={option.value}
+                        checked={question4 === option.value}
+                        onChange={handleInputChange("question4")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 5 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The way you were dealt with if you had to contact the firm’s
+                  offices for any reason.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question5"
+                        value={option.value}
+                        checked={question5 === option.value}
+                        onChange={handleInputChange("question5")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 6 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The accuracy of the information provided to you by the firm.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question6"
+                        value={option.value}
+                        checked={question6 === option.value}
+                        onChange={handleInputChange("question6")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 7 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The clarification and explanation of how the firm were to be
+                  paid.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question7"
+                        value={option.value}
+                        checked={question7 === option.value}
+                        onChange={handleInputChange("question7")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 8 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The way you were treated by the firm when raising any queries
+                  relating to service.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question8"
+                        value={option.value}
+                        checked={question8 === option.value}
+                        onChange={handleInputChange("question8")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 9 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The clarification and explanation of the firm will provide a
+                  protection review or referral to a protection specialist.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question9"
+                        value={option.value}
+                        checked={question9 === option.value}
+                        onChange={handleInputChange("question9")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <p>
+                  Please comment on the adviser who dealt with your application
+                  *
+                </p>
+              </Col>
+            </Row>
 
-                <Button
-                  color="secondary"
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    if (
-                      session?.user?.user_type === "CLIENT" &&
-                      selectedSurvey?.updated_by !== null
-                    ) {
+            {/* Question 10 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The process the adviser went through to gain an understanding
+                  of your financial objectives.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question10"
+                        value={option.value}
+                        checked={question10 === option.value}
+                        onChange={handleInputChange("question10")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+
+            {/* Question 11 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The establishment, explanation and consideration of your
+                  attitude to risk.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question11"
+                        value={option.value}
+                        checked={question11 === option.value}
+                        onChange={handleInputChange("question11")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 12 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The establishment, explanation and consideration of your
+                  capacity for loss of capital.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question12"
+                        value={option.value}
+                        checked={question12 === option.value}
+                        onChange={handleInputChange("question12")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 13 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The explanation the adviser gave you on how the product/advice
+                  was to work and why it has been recommended to you?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question13"
+                        value={option.value}
+                        checked={question13 === option.value}
+                        onChange={handleInputChange("question13")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 14 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The interaction of your adviser with other professionals (e.g.
+                  accountant/solicitor)?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question14"
+                        value={option.value}
+                        checked={question14 === option.value}
+                        onChange={handleInputChange("question14")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 15 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The provision of objective and suitable advice for your needs.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question15"
+                        value={option.value}
+                        checked={question15 === option.value}
+                        onChange={handleInputChange("question15")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 16 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The ability of the adviser to put you at ease and not make you
+                  feel you were under any undue pressure to commit.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question16"
+                        value={option.value}
+                        checked={question16 === option.value}
+                        onChange={handleInputChange("question16")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 17 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The timing and delivery of the review by the adviser.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question17"
+                        value={option.value}
+                        checked={question17 === option.value}
+                        onChange={handleInputChange("question17")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+
+            {/* Question 18 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  Do you feel the broker fee paid represents fair value for the
+                  service you received?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question18"
+                        value={option.value}
+                        checked={question18 === option.value}
+                        onChange={handleInputChange("question18")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 19 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  Was the explanation of broker fees including refund policy?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question19"
+                        value={option.value}
+                        checked={question19 === option.value}
+                        onChange={handleInputChange("question19")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 20 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  Did you receive the value you expected from the broker fee
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question20"
+                        value={option.value}
+                        checked={question20 === option.value}
+                        onChange={handleInputChange("question20")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <p>Communications & Understanding *</p>
+              </Col>
+            </Row>
+            {/* Question 21 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The clarity of any letters, emails, brochures and any other
+                  documentation provided to you.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question21"
+                        value={option.value}
+                        checked={question21 === option.value}
+                        onChange={handleInputChange("question21")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 22 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The timing and arrangements made to conduct a review with you.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question22"
+                        value={option.value}
+                        checked={question22 === option.value}
+                        onChange={handleInputChange("question22")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 23 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The frequency of communications you receive from the firm.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question23"
+                        value={option.value}
+                        checked={question23 === option.value}
+                        onChange={handleInputChange("question23")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 24 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The relevance of any communications sent to you by the firm.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question24"
+                        value={option.value}
+                        checked={question24 === option.value}
+                        onChange={handleInputChange("question24")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 25 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The way you were treated by the firm when raising any queries
+                  on communications.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question25"
+                        value={option.value}
+                        checked={question25 === option.value}
+                        onChange={handleInputChange("question25")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 26 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The overall standard of communications received from the firm.
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question26"
+                        value={option.value}
+                        checked={question26 === option.value}
+                        onChange={handleInputChange("question26")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 27 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  The timely manner of receiving your letter confirming the
+                  recommendation and that it explained everything clearly?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  {ANSWER_OPTIONS.map((option) => (
+                    <div
+                      key={option.value}
+                      className="d-flex align-items-center mb-1"
+                    >
+                      <Input
+                        type="radio"
+                        name="question27"
+                        value={option.value}
+                        checked={question27 === option.value}
+                        onChange={handleInputChange("question27")}
+                        disabled={isUpdating}
+                      />
+                      <span className="ms-1">{option.label}</span>
+                    </div>
+                  ))}
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 28 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label htmlFor="do_we_better_serve_next_time">
+                  What could we do to better serve your needs next time?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <Input
+                    type="text"
+                    id="do_we_better_serve_next_time"
+                    name="do_we_better_serve_next_time"
+                    value={question28}
+                    onChange={handleInputChange("question28")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 28 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label htmlFor="have_any_further_comments_on_the_service_received">
+                  Do you have any further comments on the service received?
+                </Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <Input
+                    type="text"
+                    id="have_any_further_comments_on_the_service_received"
+                    name="have_any_further_comments_on_the_service_received"
+                    value={question29}
+                    onChange={handleInputChange("question29")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            {/* Question 30 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>How satisfied are you with the service received?</Label>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <div className="d-flex flex-wrap justify-content-center align-items-center">
+                    {["Yes", "No"].map((option) => (
+                      <div
+                        key={option}
+                        className="d-flex align-items-center me-3"
+                      >
+                        <Input
+                          type="radio"
+                          name="question30"
+                          value={option.toUpperCase()}
+                          checked={question30 === option.toUpperCase()}
+                          onChange={handleInputChange("question30")}
+                          disabled={isUpdating}
+                        />
+                        <span className="ms-1">{option}</span>
+                      </div>
+                    ))}
+                  </div>
+                </FormGroup>
+                <FormGroup>
+                  <Label for="name">Name</Label>
+                  <Input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={name}
+                    onChange={handleInputChange("name")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="email">Email Address (optional)</Label>
+                  <Input
+                    type="text"
+                    id="email"
+                    name="email"
+                    value={email}
+                    onChange={handleInputChange("email")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="phone_number">Phone Number (optional)</Label>
+                  <Input
+                    type="text"
+                    id="phone_number"
+                    name="phone_number"
+                    value={phoneNumber}
+                    onChange={handleInputChange("phoneNumber")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="note">Additional Note (optional)</Label>
+                  <Input
+                    type="textarea"
+                    id="note"
+                    name="note"
+                    value={note}
+                    onChange={handleInputChange("note")}
+                    disabled={isUpdating}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            {/* Action Buttons */}
+            <div className="d-flex justify-content-end mt-4 gap-2">
+              <Button
+                color="primary"
+                type="button"
+                disabled={submitting !== null || isUpdating}
+                onClick={(e) => {
+                  void handleSubmit(e, "save");
+                }}
+              >
+                {submitting === "save" ? "Saving..." : "Save Changes"}
+              </Button>
+
+              <Button
+                color="secondary"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (
+                    session?.user?.user_type === "CLIENT" &&
+                    selectedSurvey?.updated_by !== null
+                  ) {
+                    handleNextTab();
+                  } else {
+                    const ok = await handleSubmit(e, "save_next");
+                    if (ok) {
                       handleNextTab();
-                    } else {
-                      const ok = await handleSubmit(e, "save_next");
-                      if (ok) {
-                        handleNextTab();
-                      }
                     }
-                  }}
-                  type="button"
-                  disabled={submitting !== null || isUpdating}
-                >
-                  {session?.user?.user_type === "CLIENT"
-                    ? "Go To Next"
-                    : submitting === "save_next"
-                      ? "Saving..."
-                      : "Save & Next"}
-                </Button>
-              </div>
-            </Form>
-          </>
-        ) : (
-          <p className="fs-3 text-muted text-center text-warning mb-3">
-            Client survey is not enabled. Please! contact your adviser to enable
-            it.
-          </p>
-        )}
+                  }
+                }}
+                type="button"
+                disabled={submitting !== null || isUpdating}
+              >
+                {session?.user?.user_type === "CLIENT"
+                  ? "Go To Next"
+                  : submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
+              </Button>
+            </div>
+          </Form>
+        </>
       </CardBody>
     </Card>
   );
