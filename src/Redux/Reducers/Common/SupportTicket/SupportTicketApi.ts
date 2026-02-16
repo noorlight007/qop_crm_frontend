@@ -4,7 +4,7 @@ export const SupportTicketApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     createSupportTicket: builder.mutation({
       query: ({ payload }) => ({
-        url: `/support-ticket/`,
+        url: `/api/support-ticket/`,
         method: "POST",
         body: payload,
       }),
@@ -12,15 +12,15 @@ export const SupportTicketApi = baseApi.injectEndpoints({
     }),
     fetchSupportTicket: builder.query({
       query: ({ params }) => ({
-        url: `/support-ticket/`,
+        url: `/api/support-ticket/`,
         method: "GET",
-        params
+        params,
       }),
       providesTags: ["SupportTicket"],
     }),
     updateSupportTicket: builder.mutation({
       query: ({ payload, ticket_alias }) => ({
-        url: `/support-ticket/${ticket_alias}/`,
+        url: `/api/support-ticket/${ticket_alias}/`,
         method: "PATCH",
         body: payload,
       }),
@@ -28,14 +28,14 @@ export const SupportTicketApi = baseApi.injectEndpoints({
     }),
     deleteSupportTicket: builder.mutation({
       query: ({ ticket_alias }) => ({
-        url: `/support-ticket/${ticket_alias}/`,
+        url: `/api/support-ticket/${ticket_alias}/`,
         method: "DELETE",
       }),
       invalidatesTags: ["SupportTicket"],
     }),
     fetchSupportTicketDetails: builder.query({
       query: ({ ticket_alias }) => ({
-        url: `/support-ticket/${ticket_alias}/`,
+        url: `/api/support-ticket/${ticket_alias}/`,
         method: "GET",
       }),
       providesTags: ["SupportTicket"],
