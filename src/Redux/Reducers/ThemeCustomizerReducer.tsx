@@ -49,6 +49,11 @@ const applyThemeColors = (primary: string, secondary: string) => {
     const secondaryLight = hexToRgba(secondary, 0.1);
     root.style.setProperty("--bg-light-primary", primaryLight);
     root.style.setProperty("--bg-light-secondary", secondaryLight);
+
+    // Create dynamic select arrow with primary color
+    const primaryHex = primary.replace("#", "%23");
+    const selectArrowSvg = `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='${primaryHex}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e")`;
+    root.style.setProperty("--select-arrow-icon", selectArrowSvg);
   }
 };
 

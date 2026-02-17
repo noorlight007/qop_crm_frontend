@@ -427,12 +427,13 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             <DropdownItem
                               key={opt.value}
                               toggle={false}
-                              className="d-flex align-items-center gap-2"
+                              className="d-flex align-items-center gap-2 fs-6"
                               onClick={() => toggleTicketTypeValue(opt.value)}
                             >
                               <Input
                                 type="checkbox"
                                 checked={checked}
+                                className="border-primary"
                                 readOnly
                               />
                               <span>{opt.label}</span>

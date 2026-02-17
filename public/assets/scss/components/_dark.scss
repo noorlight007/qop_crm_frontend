@@ -1332,6 +1332,7 @@
       border-color: var(--border-color) !important;
     }
   }
+  // Form select arrow is dynamic via CSS variable in _form-input.scss
   .form-select:disabled {
     background-color: var(--white);
   }
@@ -1408,11 +1409,12 @@
       }
     }
   }
-  $background-name: primary, secondary, success, danger, warning, info, light,
-    dark;
-  $background-color: var(--theme-default), var(--theme-secondary),
-    var(--success-color), var(--danger-color), var(--warning-color),
-    var(--info-color), var(--light-color), var(--body-font-color);
+  $background-name:
+    primary, secondary, success, danger, warning, info, light, dark;
+  $background-color:
+    var(--theme-default), var(--theme-secondary), var(--success-color),
+    var(--danger-color), var(--warning-color), var(--info-color),
+    var(--light-color), var(--body-font-color);
   @each $var in $background-name {
     $i: index($background-name, $var);
     .bg-#{$var} {
@@ -1491,7 +1493,9 @@
         &:checked {
           ~ {
             label {
-              box-shadow: 6px 0 var(--theme-default), 3px 1px 0 7px #000,
+              box-shadow:
+                6px 0 var(--theme-default),
+                3px 1px 0 7px #000,
                 3px 1px 0 9px var(--theme-default);
             }
           }
