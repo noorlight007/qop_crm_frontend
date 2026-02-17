@@ -1,16 +1,18 @@
 import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
 import { useDownloadApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
+import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
 import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { FaArrowRight, FaTrash } from "react-icons/fa";
 import {
   TbCircleArrowUp,
   TbCopy,
   TbDownload,
+  TbEdit,
   TbMailShare,
   TbSettings,
   TbUserPlus,
@@ -27,6 +29,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
   Row,
   Spinner,
 } from "reactstrap";
@@ -61,9 +64,23 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState(false);
   const [shouldDownload, setShouldDownload] = useState(false);
 
+  // Inline notes editing state
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [notesDraft, setNotesDraft] = useState<string>("");
+  const [localNotes, setLocalNotes] = useState<string | null>(
+    caseInfo?.notes || null,
+  );
+
+  const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
+    useUpdateCaseMutation();
+
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
   }, [caseInfo?.lead_user]);
+
+  useEffect(() => {
+    setLocalNotes(caseInfo?.notes || null);
+  }, [caseInfo?.notes]);
 
   const toggleUpdateCaseModal = () =>
     setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
@@ -118,6 +135,43 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     }
   };
 
+  // Notes editing handlers
+  const handleEditNotes = () => {
+    setNotesDraft(caseInfo?.notes || "");
+    setIsEditingNotes(true);
+  };
+
+  const handleCancelEditNotes = () => {
+    setIsEditingNotes(false);
+    setNotesDraft(caseInfo?.notes || "");
+  };
+
+  const handleSaveNotes = async () => {
+    if (!caseInfo) {
+      toast.error("Case information is not available.");
+      return;
+    }
+    try {
+      const payload = { ...caseInfo, notes: notesDraft };
+      const res = await updateCaseDetails({
+        caseAlias: caseInfo.alias,
+        payload,
+      });
+      if ((res as any).data) {
+        toast.success("Notes updated successfully.");
+        setIsEditingNotes(false);
+        setLocalNotes(notesDraft);
+      } else {
+        const errorMessage =
+          (res as any)?.error?.data?.detail || "Failed to update notes.";
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      console.error("Error updating notes:", error);
+      toast.error("Failed to update notes. Please try again.");
+    }
+  };
+
   const {
     data: blob,
     isLoading: isDownloading,
@@ -166,9 +220,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <Card>
         <CardHeader className="d-flex justify-content-between">
           <h3 className="mb-2">
-            <span className="text-primary">
-              {caseInfo?.name}
-            </span>
+            <span className="text-primary">{caseInfo?.name}</span>
           </h3>
           <ButtonGroup>
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
@@ -798,27 +850,73 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     {/* Notes Section on the right */}
                     <Col md="6" className="ps-3">
                       <h6
-                        className="text-uppercase fw-bold text-primary mb-3"
+                        className="text-uppercase fw-bold text-primary mb-3 position-relative"
                         style={{ fontSize: "11px", letterSpacing: "0.5px" }}
                       >
                         Notes
-                      </h6>
-                      <div
-                        className="p-3 bg-light rounded h-75 overflow-auto"
-                        style={{ borderLeft: "3px solid #0d6efd" }}
-                      >
-                        <p
-                          className="m-0 text-dark"
-                          style={{ whiteSpace: "pre-wrap" }}
+                        <Button
+                          color="primary"
+                          size="sm"
+                          className="position-absolute"
+                          onClick={handleEditNotes}
+                          style={{
+                            top: "30%",
+                            right: "0px",
+                            transform: "translateY(-50%)",
+                          }}
+                          disabled={isLoading}
                         >
-                          {caseInfo?.notes ? (
-                            caseInfo.notes
-                          ) : (
-                            <span className="text-muted">
-                              No notes available
-                            </span>
-                          )}
-                        </p>
+                          <TbEdit size="14" /> Edit
+                        </Button>
+                      </h6>
+                      <div className="p-3 bg-light rounded h-75 overflow-auto border-l-primary border-2">
+                        {isEditingNotes ? (
+                          <>
+                            <Input
+                              type="textarea"
+                              value={notesDraft}
+                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setNotesDraft(e.target.value)
+                              }
+                              rows={6}
+                            />
+                            <div className="mt-2 text-end">
+                              <Button
+                                color="primary"
+                                size="sm"
+                                onClick={handleSaveNotes}
+                                disabled={isUpdatingNotes}
+                              >
+                                {isUpdatingNotes ? (
+                                  <Spinner size="sm" />
+                                ) : (
+                                  "Save"
+                                )}
+                              </Button>{" "}
+                              <Button
+                                color="secondary"
+                                size="sm"
+                                onClick={handleCancelEditNotes}
+                                disabled={isUpdatingNotes}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </>
+                        ) : (
+                          <p
+                            className="m-0 text-dark"
+                            style={{ whiteSpace: "pre-wrap" }}
+                          >
+                            {localNotes ? (
+                              localNotes
+                            ) : (
+                              <span className="text-muted">
+                                No notes available
+                              </span>
+                            )}
+                          </p>
+                        )}
                       </div>
                     </Col>
                   </Row>
