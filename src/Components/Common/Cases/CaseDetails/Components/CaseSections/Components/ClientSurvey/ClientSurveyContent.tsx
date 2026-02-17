@@ -42,6 +42,7 @@ const ClientSurveyContent: React.FC = () => {
 
   // Local form state
   const [adviserName, setAdviserName] = React.useState<string>("");
+  const [question1, setQuestion1] = React.useState<string>("");
   const [question2, setQuestion2] = React.useState<string>("");
   const [question3, setQuestion3] = React.useState<string>("");
   const [question4, setQuestion4] = React.useState<string>("");
@@ -59,7 +60,6 @@ const ClientSurveyContent: React.FC = () => {
   const [question16, setQuestion16] = React.useState<string>("");
   const [question17, setQuestion17] = React.useState<string>("");
   const [question18, setQuestion18] = React.useState<string>("");
-  const [question19, setQuestion19] = React.useState<string>("");
 
   // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
@@ -85,29 +85,30 @@ const ClientSurveyContent: React.FC = () => {
   useEffect(() => {
     if (selectedSurvey && typeof selectedSurvey === "object") {
       setAdviserName(selectedSurvey.adviser_name || "");
-      setQuestion2(selectedSurvey.felt_valued_by_adviser || "");
-      setQuestion3(selectedSurvey.felt_valued_by_firm || "");
-      setQuestion4(selectedSurvey.adviser_communication_clear || "");
-      setQuestion5(selectedSurvey.firm_communication_clear || "");
-      setQuestion6(selectedSurvey.adviser_treated_client_fairly || "");
-      setQuestion7(selectedSurvey.firm_treated_client_fairly || "");
-      setQuestion8(selectedSurvey.firm_fees_information_clear || "");
-      setQuestion9(selectedSurvey.received_disclosure_document || "");
-      setQuestion10(selectedSurvey.adviser_explained_interest_rate_risks || "");
-      setQuestion11(selectedSurvey.mortgage_tailored_to_client || "");
-      setQuestion12(
+      setQuestion1(selectedSurvey.felt_valued_by_adviser || "");
+      setQuestion2(selectedSurvey.felt_valued_by_firm || "");
+      setQuestion3(selectedSurvey.adviser_communication_clear || "");
+      setQuestion4(selectedSurvey.firm_communication_clear || "");
+      setQuestion5(selectedSurvey.adviser_treated_client_fairly || "");
+      setQuestion6(selectedSurvey.firm_treated_client_fairly || "");
+      setQuestion7(selectedSurvey.firm_fees_information_clear || "");
+      setQuestion8(selectedSurvey.received_disclosure_document || "");
+      setQuestion9(selectedSurvey.adviser_explained_interest_rate_risks || "");
+      setQuestion10(selectedSurvey.mortgage_tailored_to_client || "");
+      setQuestion11(
         selectedSurvey.received_mortgage_recommendation_letter || "",
       );
-      setQuestion13(selectedSurvey.offered_mortgage_and_home_protection || "");
-      setQuestion14(selectedSurvey.satisfied_with_advice_process || "");
-      setQuestion15(selectedSurvey.overall_service_satisfaction || "");
-      setQuestion16(selectedSurvey.would_recommend_adviser || "");
-      setQuestion17(selectedSurvey.would_recommend_firm || "");
-      setQuestion18(selectedSurvey.service_improvement_suggestions || "");
-      setQuestion19(selectedSurvey.service_strengths_feedback || "");
+      setQuestion12(selectedSurvey.offered_mortgage_and_home_protection || "");
+      setQuestion13(selectedSurvey.satisfied_with_advice_process || "");
+      setQuestion14(selectedSurvey.overall_service_satisfaction || "");
+      setQuestion15(selectedSurvey.would_recommend_adviser || "");
+      setQuestion16(selectedSurvey.would_recommend_firm || "");
+      setQuestion17(selectedSurvey.service_improvement_suggestions || "");
+      setQuestion18(selectedSurvey.service_strengths_feedback || "");
     } else {
       // No existing survey — initialize as empty
       setAdviserName("");
+      setQuestion1("");
       setQuestion2("");
       setQuestion3("");
       setQuestion4("");
@@ -125,7 +126,6 @@ const ClientSurveyContent: React.FC = () => {
       setQuestion16("");
       setQuestion17("");
       setQuestion18("");
-      setQuestion19("");
     }
   }, [selectedSurvey]);
 
@@ -134,6 +134,7 @@ const ClientSurveyContent: React.FC = () => {
     (
       field:
         | "adviserName"
+        | "question1"
         | "question2"
         | "question3"
         | "question4"
@@ -151,13 +152,15 @@ const ClientSurveyContent: React.FC = () => {
         | "question16"
         | "question17"
         | "question18"
-        | "question19",
     ) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = e.target.value;
       switch (field) {
         case "adviserName":
           setAdviserName(value);
+          break;
+        case "question1":
+          setQuestion1(value);
           break;
         case "question2":
           setQuestion2(value);
@@ -210,14 +213,49 @@ const ClientSurveyContent: React.FC = () => {
         case "question18":
           setQuestion18(value);
           break;
-        case "question19":
-          setQuestion19(value);
-          break;
         default:
           console.warn(`Unknown field: ${field}`);
           break;
       }
     };
+
+  // Render radio answers as pill-style selectable options (CSS-only)
+  const renderPillOptions = (
+    fieldName: string,
+    selectedValue: string | undefined,
+    changeHandler: (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => void,
+  ) => (
+    <FormGroup className="mb-0">
+      {ANSWER_OPTIONS.map((option) => {
+        const active = selectedValue === option.value;
+        const labelClass = `me-2 d-inline-flex align-items-center mb-2 rounded-pill px-3 py-1 border border-secondary ${
+          active ? "bg-primary text-white border-primary" : "bg-white text-dark"
+        }`;
+
+        return (
+          <label
+            key={option.value}
+            className={labelClass}
+            style={{ cursor: "pointer" }}
+          >
+            <Input
+              type="radio"
+              name={fieldName}
+              value={option.value}
+              checked={selectedValue === option.value}
+              onChange={changeHandler as any}
+              className="visually-hidden"
+            />
+            <span className="ms-2" style={{ fontSize: 14 }}>
+              {option.label}
+            </span>
+          </label>
+        );
+      })}
+    </FormGroup>
+  );
 
   // === STEP 6: Navigation ===
   const currentTab: string | null = useAppSelector(
@@ -290,7 +328,7 @@ const ClientSurveyContent: React.FC = () => {
             </Col>
           </Row>
           <Form onSubmit={(e) => e.preventDefault()}>
-            {/* Question 1: Adviser Name */}
+            {/* Adviser Name */}
             <Row className="border-top border-primary border-2 p-2">
               <Col md={6}>
                 <Label htmlFor="adviserName">
@@ -312,851 +350,280 @@ const ClientSurveyContent: React.FC = () => {
               </Col>
             </Row>
 
-            {/* Question 2 */}
+            {/* Question 1 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  Throughout the process, I was made to feel valued by my
+                  1. Throughout the process, I was made to feel valued by my
                   adviser.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question2"
-                            value={option.value}
-                            checked={question2 === option.value}
-                            onChange={handleInputChange("question2")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question2"
-                            value={option.value}
-                            checked={question2 === option.value}
-                            onChange={handleInputChange("question2")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question1",
+                  question1,
+                  handleInputChange("question1"),
+                )}
               </Col>
             </Row>
 
+            {/* Question 2 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  2. Throughout the process, I was made to feel valued by the firm.
+                </Label>
+              </Col>
+              <Col md={6}>
+                {renderPillOptions(
+                  "question2",
+                  question2,
+                  handleInputChange("question2"),
+                )}
+              </Col>
+            </Row>
             {/* Question 3 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  Throughout the process, I was made to feel valued by the firm.
+                  3. My adviser communicated with me in a way that felt clear and
+                  easy to understand.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question3"
-                            value={option.value}
-                            checked={question3 === option.value}
-                            onChange={handleInputChange("question3")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question3"
-                            value={option.value}
-                            checked={question3 === option.value}
-                            onChange={handleInputChange("question3")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question3",
+                  question3,
+                  handleInputChange("question3"),
+                )}
               </Col>
             </Row>
             {/* Question 4 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  My adviser communicated with me in a way that felt clear and
+                  4. The firm communicated with me in a way that felt clear and
                   easy to understand.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question4"
-                            value={option.value}
-                            checked={question4 === option.value}
-                            onChange={handleInputChange("question4")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question4"
-                            value={option.value}
-                            checked={question4 === option.value}
-                            onChange={handleInputChange("question4")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question4",
+                  question4,
+                  handleInputChange("question4"),
+                )}
               </Col>
             </Row>
             {/* Question 5 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>
-                  The firm communicated with me in a way that felt clear and
-                  easy to understand.
-                </Label>
+                <Label>5. I feel that my advisor treated me fairly.</Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question5"
-                            value={option.value}
-                            checked={question5 === option.value}
-                            onChange={handleInputChange("question5")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question5"
-                            value={option.value}
-                            checked={question5 === option.value}
-                            onChange={handleInputChange("question5")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question5",
+                  question5,
+                  handleInputChange("question5"),
+                )}
               </Col>
             </Row>
             {/* Question 6 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>I feel that my advisor treated me fairly.</Label>
+                <Label>6. I feel that the firm treated me fairly.</Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question6"
-                            value={option.value}
-                            checked={question6 === option.value}
-                            onChange={handleInputChange("question6")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question6"
-                            value={option.value}
-                            checked={question6 === option.value}
-                            onChange={handleInputChange("question6")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question6",
+                  question6,
+                  handleInputChange("question6"),
+                )}
               </Col>
             </Row>
             {/* Question 7 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>I feel that the firm treated me fairly.</Label>
+                <Label>
+                  7. The information about the firm's fees and charges was made
+                  clear to me from the outset.
+                </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question7"
-                            value={option.value}
-                            checked={question7 === option.value}
-                            onChange={handleInputChange("question7")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question7"
-                            value={option.value}
-                            checked={question7 === option.value}
-                            onChange={handleInputChange("question7")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question7",
+                  question7,
+                  handleInputChange("question7"),
+                )}
               </Col>
             </Row>
             {/* Question 8 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  The information about the firm's fees and charges was made
-                  clear to me from the outset.
+                  8. I received a disclosure document confirming these details.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question8"
-                            value={option.value}
-                            checked={question8 === option.value}
-                            onChange={handleInputChange("question8")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question8"
-                            value={option.value}
-                            checked={question8 === option.value}
-                            onChange={handleInputChange("question8")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question8",
+                  question8,
+                  handleInputChange("question8"),
+                )}
               </Col>
             </Row>
             {/* Question 9 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  I received a disclosure document confirming these details.
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question9"
-                            value={option.value}
-                            checked={question9 === option.value}
-                            onChange={handleInputChange("question9")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question9"
-                            value={option.value}
-                            checked={question9 === option.value}
-                            onChange={handleInputChange("question9")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 10 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  My advisor clearly explained the potential risks and impacts
+                  9. My advisor clearly explained the potential risks and impacts
                   of interest rate changes once my deal expires.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question10"
-                            value={option.value}
-                            checked={question10 === option.value}
-                            onChange={handleInputChange("question10")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question10"
-                            value={option.value}
-                            checked={question10 === option.value}
-                            onChange={handleInputChange("question10")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question9",
+                  question9,
+                  handleInputChange("question9"),
+                )}
               </Col>
             </Row>
 
-            {/* Question 11 */}
+            {/* Question 10 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  I am confident that the mortgage was tailored to my personal
+                  10. I am confident that the mortgage was tailored to my personal
                   circumstances and understand why this specific mortgage was
                   recommended to me.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question11"
-                            value={option.value}
-                            checked={question11 === option.value}
-                            onChange={handleInputChange("question11")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question11"
-                            value={option.value}
-                            checked={question11 === option.value}
-                            onChange={handleInputChange("question11")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question10",
+                  question10,
+                  handleInputChange("question10"),
+                )}
+              </Col>
+            </Row>
+            {/* Question 11 */}
+            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
+              <Col md={6}>
+                <Label>
+                  11. I received a letter of recommendation detailing how the
+                  mortgage was right based on my circumstances, within a week of
+                  the application being submitted.
+                </Label>
+              </Col>
+              <Col md={6}>
+                {renderPillOptions(
+                  "question11",
+                  question11,
+                  handleInputChange("question11"),
+                )}
               </Col>
             </Row>
             {/* Question 12 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  I received a letter of recommendation detailing how the
-                  mortgage was right based on my circumstances, within a week of
-                  the application being submitted.
+                  12. I was provided the opportunity to protect my mortgage my
+                  mortgage and home.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question12"
-                            value={option.value}
-                            checked={question12 === option.value}
-                            onChange={handleInputChange("question12")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question12"
-                            value={option.value}
-                            checked={question12 === option.value}
-                            onChange={handleInputChange("question12")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question12",
+                  question12,
+                  handleInputChange("question12"),
+                )}
               </Col>
             </Row>
             {/* Question 13 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>
-                  I was provided the opportunity to protect my mortgage my
-                  mortgage and home.
-                </Label>
+                <Label>13. Overall I am satisfied with the advice process.</Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question13"
-                            value={option.value}
-                            checked={question13 === option.value}
-                            onChange={handleInputChange("question13")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question13"
-                            value={option.value}
-                            checked={question13 === option.value}
-                            onChange={handleInputChange("question13")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question13",
+                  question13,
+                  handleInputChange("question13"),
+                )}
               </Col>
             </Row>
             {/* Question 14 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>Overall I am satisfied with the advice process.</Label>
+                <Label>14. Overall I am satisfied with the service provided.</Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question14"
-                            value={option.value}
-                            checked={question14 === option.value}
-                            onChange={handleInputChange("question14")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question14"
-                            value={option.value}
-                            checked={question14 === option.value}
-                            onChange={handleInputChange("question14")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question14",
+                  question14,
+                  handleInputChange("question14"),
+                )}
               </Col>
             </Row>
             {/* Question 15 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
-                <Label>Overall I am satisfied with the service provided.</Label>
+                <Label>
+                  15. Based on my experience I would recommend the adviser to my
+                  friends and family.
+                </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question15"
-                            value={option.value}
-                            checked={question15 === option.value}
-                            onChange={handleInputChange("question15")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question15"
-                            value={option.value}
-                            checked={question15 === option.value}
-                            onChange={handleInputChange("question15")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question15",
+                  question15,
+                  handleInputChange("question15"),
+                )}
               </Col>
             </Row>
             {/* Question 16 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  Based on my experience I would recommend the adviser to my
+                  16. Based on my experience I would recommend the firm to my
                   friends and family.
                 </Label>
               </Col>
               <Col md={6}>
-                <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question16"
-                            value={option.value}
-                            checked={question16 === option.value}
-                            onChange={handleInputChange("question16")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question16"
-                            value={option.value}
-                            checked={question16 === option.value}
-                            onChange={handleInputChange("question16")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
-                </FormGroup>
+                {renderPillOptions(
+                  "question16",
+                  question16,
+                  handleInputChange("question16"),
+                )}
               </Col>
             </Row>
+
             {/* Question 17 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  Based on my experience I would recommend the firm to my
-                  friends and family.
+                  17. Do you feel the broker fee paid represents fair value for the
+                  service you received?
                 </Label>
               </Col>
               <Col md={6}>
                 <FormGroup>
-                  <Row>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(0, 3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question17"
-                            value={option.value}
-                            checked={question17 === option.value}
-                            onChange={handleInputChange("question17")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                    <Col xs={6}>
-                      {ANSWER_OPTIONS.slice(3).map((option) => (
-                        <label
-                          key={option.value}
-                          className="d-flex align-items-center mb-1"
-                          style={{ cursor: "pointer" }}
-                        >
-                          <Input
-                            type="radio"
-                            name="question17"
-                            value={option.value}
-                            checked={question17 === option.value}
-                            onChange={handleInputChange("question17")}
-                            className="border-primary"
-                          />
-                          <span className="ms-1">{option.label}</span>
-                        </label>
-                      ))}
-                    </Col>
-                  </Row>
+                  <Input
+                    type="textarea"
+                    name="question17"
+                    id="question17"
+                    placeholder="Please describe any suggestions for improving the service"
+                    value={question17}
+                    onChange={handleInputChange("question17")}
+                    rows={4}
+                  />
                 </FormGroup>
               </Col>
             </Row>
-
             {/* Question 18 */}
             <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
               <Col md={6}>
                 <Label>
-                  Do you feel the broker fee paid represents fair value for the
-                  service you received?
+                  18. Was the explanation of broker fees including refund policy?
                 </Label>
               </Col>
               <Col md={6}>
@@ -1165,30 +632,9 @@ const ClientSurveyContent: React.FC = () => {
                     type="textarea"
                     name="question18"
                     id="question18"
-                    placeholder="Please describe any suggestions for improving the service"
+                    placeholder="Please provide any feedback on strengths of the service"
                     value={question18}
                     onChange={handleInputChange("question18")}
-                    rows={4}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 19 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  Was the explanation of broker fees including refund policy?
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Input
-                    type="textarea"
-                    name="question19"
-                    id="question19"
-                    placeholder="Please provide any feedback on strengths of the service"
-                    value={question19}
-                    onChange={handleInputChange("question19")}
                     rows={4}
                   />
                 </FormGroup>
