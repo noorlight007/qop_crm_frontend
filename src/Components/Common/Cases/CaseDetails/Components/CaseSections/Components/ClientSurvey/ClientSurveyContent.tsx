@@ -1,5 +1,8 @@
 import LoadingSpinner from "@/app/loading";
-import { ANSWER_OPTIONS } from "@/Data/Common/ClientSurvey";
+import {
+  ANSWER_OPTIONS,
+  ClientSurveyQuestions,
+} from "@/Data/Common/ClientSurvey";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useGetClientSurveyQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
@@ -40,26 +43,34 @@ const ClientSurveyContent: React.FC = () => {
     isError,
   } = useGetClientSurveyQuery({ case_alias: casealias }, { skip: !casealias });
 
-  // Local form state
-  const [adviserName, setAdviserName] = React.useState<string>("");
-  const [question1, setQuestion1] = React.useState<string>("");
-  const [question2, setQuestion2] = React.useState<string>("");
-  const [question3, setQuestion3] = React.useState<string>("");
-  const [question4, setQuestion4] = React.useState<string>("");
-  const [question5, setQuestion5] = React.useState<string>("");
-  const [question6, setQuestion6] = React.useState<string>("");
-  const [question7, setQuestion7] = React.useState<string>("");
-  const [question8, setQuestion8] = React.useState<string>("");
-  const [question9, setQuestion9] = React.useState<string>("");
-  const [question10, setQuestion10] = React.useState<string>("");
-  const [question11, setQuestion11] = React.useState<string>("");
-  const [question12, setQuestion12] = React.useState<string>("");
-  const [question13, setQuestion13] = React.useState<string>("");
-  const [question14, setQuestion14] = React.useState<string>("");
-  const [question15, setQuestion15] = React.useState<string>("");
-  const [question16, setQuestion16] = React.useState<string>("");
-  const [question17, setQuestion17] = React.useState<string>("");
-  const [question18, setQuestion18] = React.useState<string>("");
+  // Local form state (single mapped object)
+  const initialFormState = {
+    adviserName: "",
+    question1: "",
+    question2: "",
+    question3: "",
+    question4: "",
+    question5: "",
+    question6: "",
+    question7: "",
+    question8: "",
+    question9: "",
+    question10: "",
+    question11: "",
+    question12: "",
+    question13: "",
+    question14: "",
+    question15: "",
+    question16: "",
+    question17: "",
+    question18: "",
+  } as const;
+
+  type FormState = { [K in keyof typeof initialFormState]: string };
+
+  const [formState, setFormState] = React.useState<FormState>({
+    ...initialFormState,
+  });
 
   // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
@@ -82,141 +93,50 @@ const ClientSurveyContent: React.FC = () => {
   }, [clientSurveyList]);
 
   // === STEP 3: Sync form state when selectedSurvey changes ===
+  const surveyFieldMap: Record<keyof FormState, string> = {
+    adviserName: "adviser_name",
+    question1: "felt_valued_by_adviser",
+    question2: "felt_valued_by_firm",
+    question3: "adviser_communication_clear",
+    question4: "firm_communication_clear",
+    question5: "adviser_treated_client_fairly",
+    question6: "firm_treated_client_fairly",
+    question7: "firm_fees_information_clear",
+    question8: "received_disclosure_document",
+    question9: "adviser_explained_interest_rate_risks",
+    question10: "mortgage_tailored_to_client",
+    question11: "received_mortgage_recommendation_letter",
+    question12: "offered_mortgage_and_home_protection",
+    question13: "satisfied_with_advice_process",
+    question14: "overall_service_satisfaction",
+    question15: "would_recommend_adviser",
+    question16: "would_recommend_firm",
+    question17: "service_improvement_suggestions",
+    question18: "service_strengths_feedback",
+  };
+
   useEffect(() => {
     if (selectedSurvey && typeof selectedSurvey === "object") {
-      setAdviserName(selectedSurvey.adviser_name || "");
-      setQuestion1(selectedSurvey.felt_valued_by_adviser || "");
-      setQuestion2(selectedSurvey.felt_valued_by_firm || "");
-      setQuestion3(selectedSurvey.adviser_communication_clear || "");
-      setQuestion4(selectedSurvey.firm_communication_clear || "");
-      setQuestion5(selectedSurvey.adviser_treated_client_fairly || "");
-      setQuestion6(selectedSurvey.firm_treated_client_fairly || "");
-      setQuestion7(selectedSurvey.firm_fees_information_clear || "");
-      setQuestion8(selectedSurvey.received_disclosure_document || "");
-      setQuestion9(selectedSurvey.adviser_explained_interest_rate_risks || "");
-      setQuestion10(selectedSurvey.mortgage_tailored_to_client || "");
-      setQuestion11(
-        selectedSurvey.received_mortgage_recommendation_letter || "",
+      const nextState: FormState = { ...initialFormState };
+      (Object.keys(surveyFieldMap) as Array<keyof FormState>).forEach(
+        (formKey) => {
+          const surveyKey = surveyFieldMap[formKey];
+          // @ts-ignore - selectedSurvey comes from API
+          nextState[formKey] = selectedSurvey[surveyKey] ?? "";
+        },
       );
-      setQuestion12(selectedSurvey.offered_mortgage_and_home_protection || "");
-      setQuestion13(selectedSurvey.satisfied_with_advice_process || "");
-      setQuestion14(selectedSurvey.overall_service_satisfaction || "");
-      setQuestion15(selectedSurvey.would_recommend_adviser || "");
-      setQuestion16(selectedSurvey.would_recommend_firm || "");
-      setQuestion17(selectedSurvey.service_improvement_suggestions || "");
-      setQuestion18(selectedSurvey.service_strengths_feedback || "");
+      setFormState(nextState);
     } else {
-      // No existing survey — initialize as empty
-      setAdviserName("");
-      setQuestion1("");
-      setQuestion2("");
-      setQuestion3("");
-      setQuestion4("");
-      setQuestion5("");
-      setQuestion6("");
-      setQuestion7("");
-      setQuestion8("");
-      setQuestion9("");
-      setQuestion10("");
-      setQuestion11("");
-      setQuestion12("");
-      setQuestion13("");
-      setQuestion14("");
-      setQuestion15("");
-      setQuestion16("");
-      setQuestion17("");
-      setQuestion18("");
+      setFormState({ ...initialFormState });
     }
   }, [selectedSurvey]);
 
   // === STEP 4: Handlers ===
   const handleInputChange =
-    (
-      field:
-        | "adviserName"
-        | "question1"
-        | "question2"
-        | "question3"
-        | "question4"
-        | "question5"
-        | "question6"
-        | "question7"
-        | "question8"
-        | "question9"
-        | "question10"
-        | "question11"
-        | "question12"
-        | "question13"
-        | "question14"
-        | "question15"
-        | "question16"
-        | "question17"
-        | "question18"
-    ) =>
+    (field: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = e.target.value;
-      switch (field) {
-        case "adviserName":
-          setAdviserName(value);
-          break;
-        case "question1":
-          setQuestion1(value);
-          break;
-        case "question2":
-          setQuestion2(value);
-          break;
-        case "question3":
-          setQuestion3(value);
-          break;
-        case "question4":
-          setQuestion4(value);
-          break;
-        case "question5":
-          setQuestion5(value);
-          break;
-        case "question6":
-          setQuestion6(value);
-          break;
-        case "question7":
-          setQuestion7(value);
-          break;
-        case "question8":
-          setQuestion8(value);
-          break;
-        case "question9":
-          setQuestion9(value);
-          break;
-        case "question10":
-          setQuestion10(value);
-          break;
-        case "question11":
-          setQuestion11(value);
-          break;
-        case "question12":
-          setQuestion12(value);
-          break;
-        case "question13":
-          setQuestion13(value);
-          break;
-        case "question14":
-          setQuestion14(value);
-          break;
-        case "question15":
-          setQuestion15(value);
-          break;
-        case "question16":
-          setQuestion16(value);
-          break;
-        case "question17":
-          setQuestion17(value);
-          break;
-        case "question18":
-          setQuestion18(value);
-          break;
-        default:
-          console.warn(`Unknown field: ${field}`);
-          break;
-      }
+      setFormState((s) => ({ ...s, [field]: value }));
     };
 
   // Render radio answers as pill-style selectable options (CSS-only)
@@ -328,318 +248,52 @@ const ClientSurveyContent: React.FC = () => {
             </Col>
           </Row>
           <Form onSubmit={(e) => e.preventDefault()}>
-            {/* Adviser Name */}
-            <Row className="border-top border-primary border-2 p-2">
-              <Col md={6}>
-                <Label htmlFor="adviserName">
-                  Your Adviser Name<span className="text-danger">*</span>
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Input
-                    type="text"
-                    id="adviserName"
-                    name="adviser_name"
-                    placeholder="Enter adviser name"
-                    required
-                    value={adviserName}
-                    onChange={handleInputChange("adviserName")}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-
-            {/* Question 1 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  1. Throughout the process, I was made to feel valued by my
-                  adviser.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question1",
-                  question1,
-                  handleInputChange("question1"),
-                )}
-              </Col>
-            </Row>
-
-            {/* Question 2 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  2. Throughout the process, I was made to feel valued by the firm.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question2",
-                  question2,
-                  handleInputChange("question2"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 3 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  3. My adviser communicated with me in a way that felt clear and
-                  easy to understand.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question3",
-                  question3,
-                  handleInputChange("question3"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 4 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  4. The firm communicated with me in a way that felt clear and
-                  easy to understand.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question4",
-                  question4,
-                  handleInputChange("question4"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 5 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>5. I feel that my advisor treated me fairly.</Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question5",
-                  question5,
-                  handleInputChange("question5"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 6 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>6. I feel that the firm treated me fairly.</Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question6",
-                  question6,
-                  handleInputChange("question6"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 7 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  7. The information about the firm's fees and charges was made
-                  clear to me from the outset.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question7",
-                  question7,
-                  handleInputChange("question7"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 8 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  8. I received a disclosure document confirming these details.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question8",
-                  question8,
-                  handleInputChange("question8"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 9 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  9. My advisor clearly explained the potential risks and impacts
-                  of interest rate changes once my deal expires.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question9",
-                  question9,
-                  handleInputChange("question9"),
-                )}
-              </Col>
-            </Row>
-
-            {/* Question 10 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  10. I am confident that the mortgage was tailored to my personal
-                  circumstances and understand why this specific mortgage was
-                  recommended to me.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question10",
-                  question10,
-                  handleInputChange("question10"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 11 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  11. I received a letter of recommendation detailing how the
-                  mortgage was right based on my circumstances, within a week of
-                  the application being submitted.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question11",
-                  question11,
-                  handleInputChange("question11"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 12 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  12. I was provided the opportunity to protect my mortgage my
-                  mortgage and home.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question12",
-                  question12,
-                  handleInputChange("question12"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 13 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>13. Overall I am satisfied with the advice process.</Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question13",
-                  question13,
-                  handleInputChange("question13"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 14 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>14. Overall I am satisfied with the service provided.</Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question14",
-                  question14,
-                  handleInputChange("question14"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 15 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  15. Based on my experience I would recommend the adviser to my
-                  friends and family.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question15",
-                  question15,
-                  handleInputChange("question15"),
-                )}
-              </Col>
-            </Row>
-            {/* Question 16 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  16. Based on my experience I would recommend the firm to my
-                  friends and family.
-                </Label>
-              </Col>
-              <Col md={6}>
-                {renderPillOptions(
-                  "question16",
-                  question16,
-                  handleInputChange("question16"),
-                )}
-              </Col>
-            </Row>
-
-            {/* Question 17 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  17. Do you feel the broker fee paid represents fair value for the
-                  service you received?
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Input
-                    type="textarea"
-                    name="question17"
-                    id="question17"
-                    placeholder="Please describe any suggestions for improving the service"
-                    value={question17}
-                    onChange={handleInputChange("question17")}
-                    rows={4}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-            {/* Question 18 */}
-            <Row className="border-2 border-l-primary border-r-primary border-b-primary p-2">
-              <Col md={6}>
-                <Label>
-                  18. Was the explanation of broker fees including refund policy?
-                </Label>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Input
-                    type="textarea"
-                    name="question18"
-                    id="question18"
-                    placeholder="Please provide any feedback on strengths of the service"
-                    value={question18}
-                    onChange={handleInputChange("question18")}
-                    rows={4}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
+            {ClientSurveyQuestions.map((q) => (
+              <Row
+                key={String(q.id)}
+                className="border-2 border-l-primary border-r-primary border-b-primary p-2"
+              >
+                <Col md={6}>
+                  <Label htmlFor={String(q.id)}>
+                    {q.label}
+                    {q.required && <span className="text-danger">*</span>}
+                  </Label>
+                </Col>
+                <Col md={6}>
+                  {q.type === "radio" ? (
+                    renderPillOptions(
+                      String(q.id),
+                      formState[q.id as keyof FormState],
+                      handleInputChange(q.id as keyof FormState),
+                    )
+                  ) : q.type === "textarea" ? (
+                    <FormGroup>
+                      <Input
+                        type="textarea"
+                        id={String(q.id)}
+                        name={String(q.id)}
+                        placeholder={q.placeholder || ""}
+                        value={formState[q.id as keyof FormState]}
+                        onChange={handleInputChange(q.id as keyof FormState)}
+                        rows={4}
+                      />
+                    </FormGroup>
+                  ) : (
+                    <FormGroup>
+                      <Input
+                        type="text"
+                        id={String(q.id)}
+                        name={String(q.id)}
+                        placeholder={q.placeholder || ""}
+                        required={q.required}
+                        value={formState[q.id as keyof FormState]}
+                        onChange={handleInputChange(q.id as keyof FormState)}
+                      />
+                    </FormGroup>
+                  )}
+                </Col>
+              </Row>
+            ))}
             {/* Action Buttons */}
             <div className="d-flex justify-content-end mt-4 gap-2">
               <Button
