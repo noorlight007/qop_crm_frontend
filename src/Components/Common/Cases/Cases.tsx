@@ -331,7 +331,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
               <tbody className="text-center">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={10} className="text-center">
+                    <td colSpan={11} className="text-center">
                       <Spinner color="primary" />
                     </td>
                   </tr>
@@ -608,7 +608,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={10} className="text-center">
+                    <td colSpan={11} className="text-center">
                       No cases found.
                     </td>
                   </tr>
