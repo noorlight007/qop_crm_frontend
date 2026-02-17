@@ -225,16 +225,12 @@ const ClientSurveyContent: React.FC = () => {
                 No survey data found. A new survey will be created when you
                 save.
               </Alert>
-            ) : new Date(selectedSurvey?.created_at)
-                .toISOString()
-                .slice(0, 16) ===
-              new Date(selectedSurvey?.updated_at)
-                .toISOString()
-                .slice(0, 16) ? (
+            ) : formatDateAndTime(selectedSurvey?.created_at) ===
+              formatDateAndTime(selectedSurvey?.updated_at) ? (
               ""
             ) : (
               session?.user?.user_type !== "CLIENT" && (
-                <p className="text-muted small mb-3">
+                <p className="small mb-3">
                   Survey submitted on{" "}
                   {formatDateAndTime(selectedSurvey?.updated_at)}
                 </p>
