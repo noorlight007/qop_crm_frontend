@@ -1,0 +1,805 @@
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import {
+  useGetVulnerableClientQuery,
+  useUpdateVulnerableClientMutation,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/VulnerableClient/VulnerableClientApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { VulnerableClientData } from "@/Types/Common/Cases/CaseDetails/CaseSections/VulnerableTypes";
+import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import {
+  Alert,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  FormGroup,
+  Input,
+  Label,
+  Row,
+  Spinner,
+} from "reactstrap";
+
+const VulnerableClientContent: React.FC = () => {
+  const { casealias } = useParams();
+  const dispatch = useAppDispatch();
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
+
+  const {
+    data: getVulnerableClientData,
+    isLoading,
+    isError,
+  } = useGetVulnerableClientQuery({
+    case_alias: casealias,
+  });
+
+  const [updateVulnerableClient, { isLoading: isUpdating }] =
+    useUpdateVulnerableClientMutation();
+
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
+
+  // State for all form data - matches API structure exactly
+  const [formData, setFormData] = useState<VulnerableClientData>({
+    vulnerability_type: "NO_VULNERABILITIES",
+    physical_disability: false,
+    chronic_or_severe_illness: false,
+    visual_impairment: false,
+    mental_health_condition: false,
+    addiction: false,
+    low_mental_capacity_to_cognitive_disability: false,
+    retirement: false,
+    divorce: false,
+    bereavement: false,
+    income_shock: false,
+    payment_shock: false,
+    relationship_breakdown: false,
+    domestic_abuse_including_financial_abuse: false,
+    caring_responsibilities: false,
+    unemployment: false,
+    new_parents: false,
+    new_job: false,
+    getting_married: false,
+    inadequate_or_erratic_income: false,
+    over_indebtedness: false,
+    low_savings: false,
+    confidence_managing_finances: false,
+    limited_literacy_or_numeracy_skills: false,
+    learning_difficulties: false,
+    low_or_no_access_to_support_and_help: false,
+    other: "",
+    are_any_additional_support_action_required: null,
+  });
+
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Load data from API when available
+  useEffect(() => {
+    if (getVulnerableClientData) {
+      setFormData(getVulnerableClientData);
+      setHasUnsavedChanges(false);
+    }
+  }, [getVulnerableClientData]);
+
+  // Single unified save function
+  const saveData = async (dataToSave: VulnerableClientData = formData) => {
+    try {
+      const res = await updateVulnerableClient({
+        case_alias: casealias,
+        payload: dataToSave,
+      }).unwrap();
+
+      if (res) {
+        setSaveSuccess(true);
+        setHasUnsavedChanges(false);
+        setTimeout(() => setSaveSuccess(false), 2000);
+
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_vulnerability: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        return true;
+      }
+    } catch (error) {
+      console.error("Failed to update vulnerability data:", error);
+      return false;
+    }
+  };
+
+  // Handle radio button change
+  const handleStatusChange = async (status: string) => {
+    const updatedData = {
+      ...formData,
+      vulnerability_type: status,
+    };
+
+    setFormData(updatedData);
+    return await saveData(updatedData);
+  };
+
+  // Manual save
+  const handleSave = async () => {
+    return await saveData();
+  };
+
+  // Handle checkbox change
+  const handleCheckboxChange = (field: keyof VulnerableClientData) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  // Handle text field change
+  const handleTextChange = (
+    field: keyof VulnerableClientData,
+    value: string,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+    setHasUnsavedChanges(true);
+  };
+
+  const currentTab: string | null = useAppSelector(
+    (state) => state.caseSections.basicTabId,
+  );
+
+  const handleNextTab = () => {
+    const nextTabNav: string | null = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!,
+    );
+    if (nextTabNav) {
+      dispatch(basicTabIndicator(nextTabNav));
+    } else {
+      toast.warning("This is the last tab.");
+    }
+  };
+
+  // Auto-save with debouncing (optional - only when disclosed)
+  useEffect(() => {
+    if (
+      formData.vulnerability_type === "CLIENT_HAS_DISCLOSED_VULNERABILITIES" &&
+      hasUnsavedChanges
+    ) {
+      const timeoutId = setTimeout(() => {
+        handleSave();
+      }, 2000); // Auto-save after 2 seconds of inactivity
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [formData, hasUnsavedChanges]);
+
+  if (isLoading) {
+    return (
+      <div className="text-center p-5">
+        <Spinner color="primary" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Alert color="danger">
+        Failed to load vulnerable client data. Please try again.
+      </Alert>
+    );
+  }
+
+  return (
+    <div className="vulnerable-client-container">
+      <Card className="shadow-sm">
+        <CardBody className="p-4">
+          {/* Save Changes and Status */}
+          <Row className="mb-4">
+            <Col
+              md={12}
+              className="d-flex justify-content-center align-items-center"
+            >
+              <div>
+                {hasUnsavedChanges && !isUpdating && (
+                  <small className="text-warning">
+                    <i className="bi bi-exclamation-circle me-1"></i>
+                    You have unsaved changes (Auto-saving in 2 seconds...)
+                  </small>
+                )}
+                {saveSuccess && (
+                  <small className="text-success">
+                    <i className="bi bi-check-circle me-1"></i>
+                    Changes saved successfully!
+                  </small>
+                )}
+                {isUpdating && (
+                  <small className="text-muted">
+                    <Spinner size="sm" className="me-1" />
+                    Saving...
+                  </small>
+                )}
+              </div>
+            </Col>
+          </Row>
+          {/* Radio buttons for vulnerability status */}
+          <FormGroup tag="fieldset" className="border rounded">
+            <Row>
+              <Col md={4}>
+                <FormGroup check>
+                  <Label
+                    check
+                    className="d-flex justify-content-center align-items-center pt-2"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Input
+                      type="radio"
+                      name="vulnerabilityStatus"
+                      checked={
+                        formData.vulnerability_type === "NO_VULNERABILITIES"
+                      }
+                      onChange={() => handleStatusChange("NO_VULNERABILITIES")}
+                      className="me-2 border-1 border-primary"
+                    />
+                    <span
+                      className="text-primary fw-medium"
+                      style={{ paddingTop: "0.15rem" }}
+                    >
+                      No Vulnerabilities
+                    </span>
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col md={4}>
+                <FormGroup check>
+                  <Label
+                    check
+                    className="d-flex justify-content-center align-items-center pt-2"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Input
+                      type="radio"
+                      name="vulnerabilityStatus"
+                      checked={
+                        formData.vulnerability_type === "NOT_YET_DISCUSSED"
+                      }
+                      onChange={() => handleStatusChange("NOT_YET_DISCUSSED")}
+                      className="me-2 border-1 border-primary"
+                    />
+                    <span
+                      className="text-primary fw-medium"
+                      style={{ paddingTop: "0.15rem" }}
+                    >
+                      Not Yet Discussed
+                    </span>
+                  </Label>
+                </FormGroup>
+              </Col>
+              <Col md={4}>
+                <FormGroup check>
+                  <Label
+                    check
+                    className="d-flex justify-content-center align-items-center pt-2"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <Input
+                      type="radio"
+                      name="vulnerabilityStatus"
+                      checked={
+                        formData.vulnerability_type ===
+                        "CLIENT_HAS_DISCLOSED_VULNERABILITIES"
+                      }
+                      onChange={() =>
+                        handleStatusChange(
+                          "CLIENT_HAS_DISCLOSED_VULNERABILITIES",
+                        )
+                      }
+                      className="me-2 border-1 border-primary"
+                    />
+                    <span
+                      className="text-primary fw-medium"
+                      style={{ paddingTop: "0.15rem" }}
+                    >
+                      Client has Disclosed Vulnerabilities
+                    </span>
+                  </Label>
+                </FormGroup>
+              </Col>
+            </Row>
+          </FormGroup>
+
+          {/* Conditional form display */}
+          {formData.vulnerability_type ===
+            "CLIENT_HAS_DISCLOSED_VULNERABILITIES" && (
+            <div className="mt-4">
+              <Row>
+                {/* Health Section */}
+                <Col md={6} className="mb-4">
+                  <Card className="h-100 border">
+                    <CardHeader className="bg-light-primary border-bottom">
+                      <h5 className="mb-0 text-primary fw-semibold">Health</h5>
+                    </CardHeader>
+                    <CardBody>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.physical_disability}
+                            onChange={() =>
+                              handleCheckboxChange("physical_disability")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Physical disability</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.chronic_or_severe_illness}
+                            onChange={() =>
+                              handleCheckboxChange("chronic_or_severe_illness")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Chronic or severe illness</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.visual_impairment}
+                            onChange={() =>
+                              handleCheckboxChange("visual_impairment")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Hearing / visual impairment</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.mental_health_condition}
+                            onChange={() =>
+                              handleCheckboxChange("mental_health_condition")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Mental health condition</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.addiction}
+                            onChange={() => handleCheckboxChange("addiction")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Addiction</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={
+                              formData.low_mental_capacity_to_cognitive_disability
+                            }
+                            onChange={() =>
+                              handleCheckboxChange(
+                                "low_mental_capacity_to_cognitive_disability",
+                              )
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>
+                            Low mental capacity to cognitive disability
+                          </span>
+                        </Label>
+                      </FormGroup>
+                    </CardBody>
+                  </Card>
+                </Col>
+
+                {/* Life Events Section */}
+                <Col md={6} className="mb-4">
+                  <Card className="h-100 border">
+                    <CardHeader className="bg-light-primary border-bottom ">
+                      <h5 className="text-primary fw-medium">Life events</h5>
+                    </CardHeader>
+                    <CardBody>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.retirement}
+                            onChange={() => handleCheckboxChange("retirement")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Retirement</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.divorce}
+                            onChange={() => handleCheckboxChange("divorce")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Divorce</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.bereavement}
+                            onChange={() => handleCheckboxChange("bereavement")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Bereavement</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.income_shock}
+                            onChange={() =>
+                              handleCheckboxChange("income_shock")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Income shock</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.payment_shock}
+                            onChange={() =>
+                              handleCheckboxChange("payment_shock")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Payment shock</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.relationship_breakdown}
+                            onChange={() =>
+                              handleCheckboxChange("relationship_breakdown")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Relationship breakdown</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={
+                              formData.domestic_abuse_including_financial_abuse
+                            }
+                            onChange={() =>
+                              handleCheckboxChange(
+                                "domestic_abuse_including_financial_abuse",
+                              )
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Domestic abuse including financial abuse</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.caring_responsibilities}
+                            onChange={() =>
+                              handleCheckboxChange("caring_responsibilities")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Caring responsibilities</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.unemployment}
+                            onChange={() =>
+                              handleCheckboxChange("unemployment")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Unemployment</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.new_parents}
+                            onChange={() => handleCheckboxChange("new_parents")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>New parents</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.new_job}
+                            onChange={() => handleCheckboxChange("new_job")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>New job</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.getting_married}
+                            onChange={() =>
+                              handleCheckboxChange("getting_married")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Getting married</span>
+                        </Label>
+                      </FormGroup>
+                    </CardBody>
+                  </Card>
+                </Col>
+
+                {/* Resilience Section */}
+                <Col md={6} className="mb-4">
+                  <Card className="h-100 border">
+                    <CardHeader className="bg-light-primary border-bottom">
+                      <h5 className="text-primary fw-medium">Resilience</h5>
+                    </CardHeader>
+                    <CardBody>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.inadequate_or_erratic_income}
+                            onChange={() =>
+                              handleCheckboxChange(
+                                "inadequate_or_erratic_income",
+                              )
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Inadequate or erratic income</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.over_indebtedness}
+                            onChange={() =>
+                              handleCheckboxChange("over_indebtedness")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Over indebtedness</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.low_savings}
+                            onChange={() => handleCheckboxChange("low_savings")}
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Low savings (under 3 months)</span>
+                        </Label>
+                      </FormGroup>
+                    </CardBody>
+                  </Card>
+                </Col>
+
+                {/* Capabilities Section */}
+                <Col md={6} className="mb-4">
+                  <Card className="h-100 border">
+                    <CardHeader className="bg-light-primary border-bottom">
+                      <h5 className="text-primary fw-medium">Capabilities</h5>
+                    </CardHeader>
+                    <CardBody>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.confidence_managing_finances}
+                            onChange={() =>
+                              handleCheckboxChange(
+                                "confidence_managing_finances",
+                              )
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>
+                            Low knowledge or confidence managing finances
+                          </span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={
+                              formData.limited_literacy_or_numeracy_skills
+                            }
+                            onChange={() =>
+                              handleCheckboxChange(
+                                "limited_literacy_or_numeracy_skills",
+                              )
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Limited literacy / numeracy skills</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={formData.learning_difficulties}
+                            onChange={() =>
+                              handleCheckboxChange("learning_difficulties")
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Learning difficulties</span>
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check className="mb-2">
+                        <Label check className="d-flex align-items-start">
+                          <Input
+                            type="checkbox"
+                            checked={
+                              formData.low_or_no_access_to_support_and_help
+                            }
+                            onChange={() =>
+                              handleCheckboxChange(
+                                "low_or_no_access_to_support_and_help",
+                              )
+                            }
+                            className="me-2 mt-1 border-1 border-primary"
+                          />
+                          <span>Low or no access to support & help</span>
+                        </Label>
+                      </FormGroup>
+                    </CardBody>
+                  </Card>
+                </Col>
+              </Row>
+
+              {/* Other Section */}
+              <Row className="mt-3">
+                <Col md={12}>
+                  <FormGroup>
+                    <Label className="text-primary fw-medium">Other</Label>
+                    <Input
+                      type="textarea"
+                      rows="3"
+                      value={formData.other || ""}
+                      onChange={(e) =>
+                        handleTextChange("other", e.target.value)
+                      }
+                      placeholder="Add any other vulnerabilities..."
+                      className="border"
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              {/* Additional Support Section */}
+              <Row className="mt-3">
+                <Col md={12}>
+                  <FormGroup>
+                    <Label className="text-primary fw-medium">
+                      Are any additional support action required?
+                    </Label>
+                    <Input
+                      type="textarea"
+                      rows="3"
+                      value={
+                        formData.are_any_additional_support_action_required ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        handleTextChange(
+                          "are_any_additional_support_action_required",
+                          e.target.value,
+                        )
+                      }
+                      placeholder="Describe any additional support actions..."
+                      className="border"
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              {/* Save Changes and Status */}
+              <Row className="mt-4">
+                <Col
+                  md={12}
+                  className="d-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    {hasUnsavedChanges && !isUpdating && (
+                      <small className="text-warning">
+                        <i className="bi bi-exclamation-circle me-1"></i>
+                        You have unsaved changes (Auto-saving in 2 seconds...)
+                      </small>
+                    )}
+                    {saveSuccess && (
+                      <small className="text-success">
+                        <i className="bi bi-check-circle me-1"></i>
+                        Changes saved successfully!
+                      </small>
+                    )}
+                    {isUpdating && (
+                      <small className="text-muted">
+                        <Spinner size="sm" className="me-1" />
+                        Saving...
+                      </small>
+                    )}
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          )}
+          {/* Action Buttons */}
+          <div className="d-flex justify-content-end mt-4 gap-2">
+            <Button
+              color="secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNextTab();
+              }}
+              type="button"
+            >
+              Go To Next
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
+    </div>
+  );
+};
+
+export default VulnerableClientContent;
