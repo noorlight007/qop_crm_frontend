@@ -65,6 +65,14 @@ const SupportTicketDetails: React.FC = () => {
     files: [],
   });
 
+  // image visibility state must be declared unconditionally (hooks order)
+  const [showCreatorImage, setShowCreatorImage] = useState<boolean>(true);
+
+  useEffect(() => {
+    // reset image visibility when ticket/creator changes
+    setShowCreatorImage(true);
+  }, [ticketDetails?.created_by?.profile_image]);
+
   const statusOptions = [
     { value: "OPEN", label: "Open" },
     { value: "IN_REVIEW", label: "In Review" },
@@ -174,13 +182,6 @@ const SupportTicketDetails: React.FC = () => {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  const [showCreatorImage, setShowCreatorImage] = useState<boolean>(true);
-
-  useEffect(() => {
-    // reset image visibility when ticket/creator changes
-    setShowCreatorImage(true);
-  }, [ticketDetails?.created_by?.profile_image]);
-
   type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
 
   const statusColorMap: Record<TicketStatus, string> = {
@@ -224,8 +225,13 @@ const SupportTicketDetails: React.FC = () => {
             <CardBody className="p-4">
               <Row className="align-items-start">
                 <Col>
-                  <div className="d-flex align-items-center gap-2 flex-wrap mb-2">
-                    <h3 className="mb-0">Subject: {ticketDetails.subject}</h3>
+                  <div className="d-flex align-items-center gap-2 flex-wrap mb-2 ">
+                    <h3 className="mb-0">
+                      Subject:{" "}
+                      <span className="text-capitalize">
+                        {ticketDetails.subject}
+                      </span>
+                    </h3>
                   </div>
                   <div className="d-flex flex-column ">
                     <span className="py-1">
