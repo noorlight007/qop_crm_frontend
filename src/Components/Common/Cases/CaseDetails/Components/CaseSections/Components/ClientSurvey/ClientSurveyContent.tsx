@@ -248,10 +248,10 @@ const ClientSurveyContent: React.FC = () => {
             </Col>
           </Row>
           <Form onSubmit={(e) => e.preventDefault()}>
-            {ClientSurveyQuestions.map((q) => (
+            {ClientSurveyQuestions.map((q, idx) => (
               <Row
                 key={String(q.id)}
-                className="border-2 border-l-primary border-r-primary border-b-primary p-2"
+                className={`border-2 border-l-primary border-r-primary border-b-primary p-2${idx === 0 ? " border-t-primary" : ""}`}
               >
                 <Col md={6}>
                   <Label htmlFor={String(q.id)}>

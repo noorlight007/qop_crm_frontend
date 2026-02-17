@@ -9,11 +9,11 @@ const ClientSurveyContainer: React.FC = () => {
   return (
     <Container fluid className="min-vh-100 py-4 px-5">
       <Row className="g-4 align-items-start">
-        <Col xs={12} md={4}>
+        <Col xs={12}>
           <Info />
         </Col>
 
-        <Col xs={12} md={8} style={{ marginTop: "clamp(0px, 3vw, 24px)" }}>
+        <Col xs={12} style={{ marginTop: "clamp(0px, 3vw, 24px)" }}>
           <SurveyForm />
         </Col>
       </Row>
