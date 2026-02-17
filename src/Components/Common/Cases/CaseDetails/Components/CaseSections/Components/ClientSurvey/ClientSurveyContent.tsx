@@ -5,7 +5,10 @@ import {
 } from "@/Data/Common/ClientSurvey";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
-import { useGetClientSurveyQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
+import {
+  useGetClientSurveyQuery,
+  useSendClientSurveyMutation,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -37,6 +40,17 @@ const ClientSurveyContent: React.FC = () => {
     { case_alias: casealias },
     { skip: !casealias },
   );
+  const [sendSurvey, { isLoading: isSendingSurvey }] =
+    useSendClientSurveyMutation();
+
+  const handlesendSurvey = async () => {
+    try {
+      await sendSurvey({ case_alias: casealias }).unwrap();
+      toast.success("Survey sent successfully.");
+    } catch (error) {
+      toast.error("Failed to send survey.");
+    }
+  };
 
   const {
     data: clientSurveyList, // Now an array
@@ -215,7 +229,12 @@ const ClientSurveyContent: React.FC = () => {
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
           <div>
-            <Button color="primary" outline>
+            <Button
+              color="primary"
+              outline
+              onClick={handlesendSurvey}
+              disabled={isSendingSurvey}
+            >
               <Send size={15} /> Send Survey From To the Client
             </Button>
           </div>
