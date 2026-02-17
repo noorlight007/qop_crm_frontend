@@ -3,7 +3,7 @@ import {
   ClientSurveyQuestions,
 } from "@/Data/Common/ClientSurvey";
 import { usePostClientSurveyMutation } from "@/Redux/Reducers/Common/ClientSurvey/ClientSurveyApi";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { toast } from "react-toastify";
 import {
@@ -21,6 +21,7 @@ import {
 const SurveyForm: React.FC = () => {
   const [clientSurvey, { isLoading }] = usePostClientSurveyMutation();
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const initialFormState = {
     adviserName: "",
@@ -202,6 +203,7 @@ const SurveyForm: React.FC = () => {
       toast.success("Survey submitted — thank you.");
       setFormState({ ...initialFormState });
       setFieldErrors({});
+      router.replace("/client-survey/submitted");
     } catch (err) {
       // Print API response for debugging
       console.error("Client survey submit error:", err);

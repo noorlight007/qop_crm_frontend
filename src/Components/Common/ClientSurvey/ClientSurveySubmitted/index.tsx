@@ -2,9 +2,54 @@
 
 import IconSvg from "@/CommonComponent/SVG/IconSvg";
 import React from "react";
-import { Card, CardBody } from "reactstrap";
+import { X } from "react-feather";
+import { Button, Card, CardBody } from "reactstrap";
 
 const ClientSurveySubmittedContainer: React.FC = () => {
+  const handleClose = React.useCallback(() => {
+    try {
+      window.close();
+    } catch {
+      // ignore
+    }
+
+    setTimeout(() => {
+      if (window.closed) return;
+      try {
+        window.open("", "_self");
+        window.close();
+      } catch {
+        // ignore
+      }
+    }, 50);
+
+    // Last best-effort: navigate to about:blank then retry close.
+    setTimeout(() => {
+      if (window.closed) return;
+      try {
+        window.location.href = "about:blank";
+      } catch {
+        // ignore
+      }
+
+      setTimeout(() => {
+        if (window.closed) return;
+        try {
+          window.close();
+        } catch {
+          // ignore
+        }
+      }, 50);
+    }, 150);
+  }, []);
+
+  React.useEffect(() => {
+    const t = window.setTimeout(() => {
+      handleClose();
+    }, 10_000);
+    return () => window.clearTimeout(t);
+  }, [handleClose]);
+
   return (
     <div
       className="d-flex align-items-center justify-content-center"
@@ -30,6 +75,12 @@ const ClientSurveySubmittedContainer: React.FC = () => {
                   We&apos;ve received your feedback. Your responses will be
                   reviewed and used to improve our service.
                 </p>
+
+                <div className="d-flex justify-content-center gap-2 mt-3">
+                  <Button color="primary" onClick={handleClose}>
+                    <X size={15} /> Close Tab
+                  </Button>
+                </div>
               </CardBody>
             </Card>
           </div>
