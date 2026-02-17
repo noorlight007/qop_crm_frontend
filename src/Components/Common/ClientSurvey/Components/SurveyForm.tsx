@@ -160,13 +160,12 @@ const SurveyForm: React.FC = () => {
             <Col md={6}>
               <Label>
                 Throughout the process, I was made to feel valued by my adviser.
-                <span className="text-danger">*</span>
               </Label>
               {/* <FormGroup className="mb-0">
                       {ANSWER_OPTIONS.map((option) => (
                         <label
                           key={option.value}
-                          className="d-flexs me-2 gap-1 align-items-center mb-2"
+                          className="me-2 gap-1 align-items-center mb-2"
                           style={{ cursor: "pointer" }}
                         >
                           <Input
@@ -184,24 +183,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question2"
-                      value={option.value}
-                      checked={question2 === option.value}
-                      onChange={handleInputChange("question2")}
-                      className="border-primary"
-                      required
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question2"
+                          value={option.value}
+                          checked={question2 === option.value}
+                          onChange={handleInputChange("question2")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question2"
+                          value={option.value}
+                          checked={question2 === option.value}
+                          onChange={handleInputChange("question2")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -211,29 +232,50 @@ const SurveyForm: React.FC = () => {
             <Col md={6}>
               <Label>
                 Throughout the process, I was made to feel valued by the firm.
-                <span className="text-danger">*</span>
               </Label>
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question3"
-                      value={option.value}
-                      checked={question3 === option.value}
-                      onChange={handleInputChange("question3")}
-                      className="border-primary"
-                      required
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question3"
+                          value={option.value}
+                          checked={question3 === option.value}
+                          onChange={handleInputChange("question3")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question3"
+                          value={option.value}
+                          checked={question3 === option.value}
+                          onChange={handleInputChange("question3")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -248,23 +290,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question4"
-                      value={option.value}
-                      checked={question4 === option.value}
-                      onChange={handleInputChange("question4")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question4"
+                          value={option.value}
+                          checked={question4 === option.value}
+                          onChange={handleInputChange("question4")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question4"
+                          value={option.value}
+                          checked={question4 === option.value}
+                          onChange={handleInputChange("question4")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -279,23 +344,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question5"
-                      value={option.value}
-                      checked={question5 === option.value}
-                      onChange={handleInputChange("question5")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question5"
+                          value={option.value}
+                          checked={question5 === option.value}
+                          onChange={handleInputChange("question5")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question5"
+                          value={option.value}
+                          checked={question5 === option.value}
+                          onChange={handleInputChange("question5")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -307,23 +395,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question6"
-                      value={option.value}
-                      checked={question6 === option.value}
-                      onChange={handleInputChange("question6")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question6"
+                          value={option.value}
+                          checked={question6 === option.value}
+                          onChange={handleInputChange("question6")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question6"
+                          value={option.value}
+                          checked={question6 === option.value}
+                          onChange={handleInputChange("question6")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -335,23 +446,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question7"
-                      value={option.value}
-                      checked={question7 === option.value}
-                      onChange={handleInputChange("question7")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question7"
+                          value={option.value}
+                          checked={question7 === option.value}
+                          onChange={handleInputChange("question7")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question7"
+                          value={option.value}
+                          checked={question7 === option.value}
+                          onChange={handleInputChange("question7")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -366,23 +500,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question8"
-                      value={option.value}
-                      checked={question8 === option.value}
-                      onChange={handleInputChange("question8")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question8"
+                          value={option.value}
+                          checked={question8 === option.value}
+                          onChange={handleInputChange("question8")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question8"
+                          value={option.value}
+                          checked={question8 === option.value}
+                          onChange={handleInputChange("question8")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -396,23 +553,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question9"
-                      value={option.value}
-                      checked={question9 === option.value}
-                      onChange={handleInputChange("question9")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question9"
+                          value={option.value}
+                          checked={question9 === option.value}
+                          onChange={handleInputChange("question9")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question9"
+                          value={option.value}
+                          checked={question9 === option.value}
+                          onChange={handleInputChange("question9")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -427,23 +607,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question10"
-                      value={option.value}
-                      checked={question10 === option.value}
-                      onChange={handleInputChange("question10")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question10"
+                          value={option.value}
+                          checked={question10 === option.value}
+                          onChange={handleInputChange("question10")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question10"
+                          value={option.value}
+                          checked={question10 === option.value}
+                          onChange={handleInputChange("question10")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -459,23 +662,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question11"
-                      value={option.value}
-                      checked={question11 === option.value}
-                      onChange={handleInputChange("question11")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question11"
+                          value={option.value}
+                          checked={question11 === option.value}
+                          onChange={handleInputChange("question11")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question11"
+                          value={option.value}
+                          checked={question11 === option.value}
+                          onChange={handleInputChange("question11")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -491,23 +717,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question12"
-                      value={option.value}
-                      checked={question12 === option.value}
-                      onChange={handleInputChange("question12")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question12"
+                          value={option.value}
+                          checked={question12 === option.value}
+                          onChange={handleInputChange("question12")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question12"
+                          value={option.value}
+                          checked={question12 === option.value}
+                          onChange={handleInputChange("question12")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -522,23 +771,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question13"
-                      value={option.value}
-                      checked={question13 === option.value}
-                      onChange={handleInputChange("question13")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question13"
+                          value={option.value}
+                          checked={question13 === option.value}
+                          onChange={handleInputChange("question13")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question13"
+                          value={option.value}
+                          checked={question13 === option.value}
+                          onChange={handleInputChange("question13")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -550,23 +822,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question14"
-                      value={option.value}
-                      checked={question14 === option.value}
-                      onChange={handleInputChange("question14")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question14"
+                          value={option.value}
+                          checked={question14 === option.value}
+                          onChange={handleInputChange("question14")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question14"
+                          value={option.value}
+                          checked={question14 === option.value}
+                          onChange={handleInputChange("question14")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -578,23 +873,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question15"
-                      value={option.value}
-                      checked={question15 === option.value}
-                      onChange={handleInputChange("question15")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question15"
+                          value={option.value}
+                          checked={question15 === option.value}
+                          onChange={handleInputChange("question15")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question15"
+                          value={option.value}
+                          checked={question15 === option.value}
+                          onChange={handleInputChange("question15")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -609,23 +927,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question16"
-                      value={option.value}
-                      checked={question16 === option.value}
-                      onChange={handleInputChange("question16")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question16"
+                          value={option.value}
+                          checked={question16 === option.value}
+                          onChange={handleInputChange("question16")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question16"
+                          value={option.value}
+                          checked={question16 === option.value}
+                          onChange={handleInputChange("question16")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>
@@ -640,23 +981,46 @@ const SurveyForm: React.FC = () => {
             </Col>
             <Col md={6}>
               <FormGroup className="mb-0">
-                {ANSWER_OPTIONS.map((option) => (
-                  <label
-                    key={option.value}
-                    className="d-flex align-items-center mb-2"
-                    style={{ cursor: "pointer" }}
-                  >
-                    <Input
-                      type="radio"
-                      name="question17"
-                      value={option.value}
-                      checked={question17 === option.value}
-                      onChange={handleInputChange("question17")}
-                      className="border-primary"
-                    />
-                    <span className="ms-2">{option.label}</span>
-                  </label>
-                ))}
+                <Row>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(0, 3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question17"
+                          value={option.value}
+                          checked={question17 === option.value}
+                          onChange={handleInputChange("question17")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                  <Col xs={6}>
+                    {ANSWER_OPTIONS.slice(3).map((option) => (
+                      <label
+                        key={option.value}
+                        className="d-flex align-items-center mb-2"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <Input
+                          type="radio"
+                          name="question17"
+                          value={option.value}
+                          checked={question17 === option.value}
+                          onChange={handleInputChange("question17")}
+                          className="border-primary"
+                        />
+                        <span className="ms-2">{option.label}</span>
+                      </label>
+                    ))}
+                  </Col>
+                </Row>
               </FormGroup>
             </Col>
           </Row>

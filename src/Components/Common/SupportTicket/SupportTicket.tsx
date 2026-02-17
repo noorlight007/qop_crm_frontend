@@ -11,7 +11,7 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   FaCheck,
   FaChevronDown,
@@ -64,12 +64,23 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     useState<SupportTicketFormData | null>(null);
 
   const [filterIcon, setFilterIcon] = useState(false);
-  const defaultFilters = {
-    ticket_type: "",
+  type SupportTicketFilters = {
+    ticket_type: string[];
+    status: string;
+    priority: string;
+    network: string;
+    organisation: string;
+    created_by: string;
+    is_removed: string;
+  };
+
+  const defaultFilters: SupportTicketFilters = {
+    ticket_type: [],
     status: "",
     priority: "",
     network: "",
     organisation: "",
+    created_by: "",
     is_removed: initialIsRemoved ?? "",
   };
   const [filters, setFilters] = useState(defaultFilters);
@@ -81,6 +92,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   const [selectedNetwork, setSelectedNetwork] = useState("");
   const [selectedOrganisation, setSelectedOrganisation] = useState("");
+  const [ticketTypeDropdownOpen, setTicketTypeDropdownOpen] = useState(false);
 
   const userType = session?.user?.user_type;
 
@@ -91,16 +103,32 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     isError,
   } = useFetchSupportTicketQuery(
     {
-      params: {
-        search: debouncedSearch || undefined,
-        page: currentPage,
-        ticket_type: filters.ticket_type || undefined,
-        status: filters.status || undefined,
-        priority: filters.priority || undefined,
-        network: filters.network || undefined,
-        organisation: filters.organisation || undefined,
-        is_removed: filters.is_removed || undefined,
-      },
+      params: useMemo(
+        () => ({
+          search: debouncedSearch || undefined,
+          page: currentPage,
+          ticket_type: filters.ticket_type.length
+            ? filters.ticket_type.join(",")
+            : undefined,
+          status: filters.status || undefined,
+          priority: filters.priority || undefined,
+          network: filters.network || undefined,
+          organisation: filters.organisation || undefined,
+          created_by: filters.created_by || undefined,
+          is_removed: filters.is_removed || undefined,
+        }),
+        [
+          debouncedSearch,
+          currentPage,
+          filters.ticket_type,
+          filters.status,
+          filters.priority,
+          filters.network,
+          filters.organisation,
+          filters.created_by,
+          filters.is_removed,
+        ],
+      ),
     },
     {
       refetchOnMountOrArgChange: true,
@@ -223,11 +251,25 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const handleFilterChange = (filterKey: string, value: string) => {
+  const handleFilterChange = <K extends keyof SupportTicketFilters>(
+    filterKey: K,
+    value: SupportTicketFilters[K],
+  ) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
       [filterKey]: value,
     }));
+    setCurrentPage(1);
+  };
+
+  const toggleTicketTypeValue = (value: string) => {
+    setFilters((prev) => {
+      const exists = prev.ticket_type.includes(value);
+      const ticket_type = exists
+        ? prev.ticket_type.filter((v) => v !== value)
+        : [...prev.ticket_type, value];
+      return { ...prev, ticket_type };
+    });
     setCurrentPage(1);
   };
 
@@ -238,7 +280,50 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
           <CardBody>
             <Row className="d-flex justify-content-between align-items-center py-4">
               <Col md="3" xs="12">
-                <h2 className="mb-0 h4 h2-md">Support Tickets</h2>
+                <div
+                  className="btn-group ms-2 bg-secondary"
+                  role="group"
+                  aria-label="Show tickets filter"
+                  style={{
+                    padding: 3,
+                    borderRadius: 999,
+                  }}
+                >
+                  <Button
+                    size="sm"
+                    color={!filters.created_by ? "primary" : ""}
+                    className={`rounded-pill px-3 py-1 ${!filters.created_by ? "" : "text-white"}`}
+                    style={{ borderRadius: 999, padding: "6px 14px" }}
+                    onClick={() => handleFilterChange("created_by", "")}
+                    aria-pressed={!filters.created_by}
+                    type="button"
+                  >
+                    All Tickets
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    color={
+                      filters.created_by === String(session?.user?.id)
+                        ? "primary"
+                        : ""
+                    }
+                    className={`rounded-pill px-3 py-1 ${filters.created_by === String(session?.user?.id) ? "" : "text-white"}`}
+                    style={{ borderRadius: 999, padding: "6px 14px" }}
+                    onClick={() =>
+                      handleFilterChange(
+                        "created_by",
+                        String(session?.user?.id) || "",
+                      )
+                    }
+                    aria-pressed={
+                      filters.created_by === String(session?.user?.id)
+                    }
+                    type="button"
+                  >
+                    My Tickets
+                  </Button>
+                </div>
               </Col>
               <Col md={3} xs="12">
                 <InputGroup className="position-relative">
@@ -309,20 +394,54 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                 <Row className="justify-content-center g-3">
                   <Col>
                     <Label>Select Ticket Type</Label>
-                    <Input
-                      type="select"
-                      id="ticketTypeFilter"
-                      className="py-1"
-                      value={filters.ticket_type}
-                      onChange={(e) =>
-                        handleFilterChange("ticket_type", e.target.value)
-                      }
+                    <Dropdown
+                      isOpen={ticketTypeDropdownOpen}
+                      toggle={() => setTicketTypeDropdownOpen((prev) => !prev)}
                     >
-                      <option value="">All Ticket Types</option>{" "}
-                      <option value="FEEDBACK">Feedback</option>
-                      <option value="BUG_REPORT">Bug Report</option>
-                      <option value="FEATURE_REQUEST">Feature Request</option>
-                    </Input>
+                      <DropdownToggle
+                        tag="button"
+                        type="button"
+                        className="form-select py-1 w-100 text-start"
+                      >
+                        <span className="text-truncate pe-4 d-block">
+                          {filters.ticket_type.length
+                            ? filters.ticket_type
+                                .map((v) => formatChoiceFieldValue(v))
+                                .join(", ")
+                            : "All Ticket Types"}
+                        </span>
+                      </DropdownToggle>
+                      <DropdownMenu className="w-100">
+                        {[
+                          { value: "FEEDBACK", label: "Feedback" },
+                          { value: "BUG_REPORT", label: "Bug Report" },
+                          {
+                            value: "FEATURE_REQUEST",
+                            label: "Feature Request",
+                          },
+                        ].map((opt) => {
+                          const checked = filters.ticket_type.includes(
+                            opt.value,
+                          );
+                          return (
+                            <DropdownItem
+                              key={opt.value}
+                              toggle={false}
+                              className="d-flex align-items-center gap-2 fs-6"
+                              onClick={() => toggleTicketTypeValue(opt.value)}
+                            >
+                              <Input
+                                type="checkbox"
+                                checked={checked}
+                                className="border-primary"
+                                readOnly
+                              />
+                              <span>{opt.label}</span>
+                            </DropdownItem>
+                          );
+                        })}
+                      </DropdownMenu>
+                    </Dropdown>
                   </Col>
                   <Col>
                     <Label>Select Ticket Status</Label>
@@ -635,12 +754,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </td>
                         <td>
                           <p className="m-0">
-                            {ticket.created_by?.title
-                              ? formatChoiceFieldValue(ticket.created_by?.title)
-                              : ""}{" "}
-                            {ticket.created_by?.first_name}{" "}
-                            {ticket.created_by?.middle_name}{" "}
-                            {ticket.created_by?.last_name}
+                            {ticket.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"

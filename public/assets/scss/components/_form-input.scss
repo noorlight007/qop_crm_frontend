@@ -158,7 +158,9 @@
     border: 1px solid var(--light-gray);
     appearance: none;
     border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
     &:focus {
       border-color: var(--theme-default) !important;
     }
@@ -226,6 +228,15 @@
   border: 1px solid var(--light-gray);
   padding: 0.5rem 1rem;
   font-family: $body-font;
+  cursor: pointer;
+  // Dynamic arrow color using CSS variable set by theme customizer
+  background-image: var(
+    --select-arrow-icon,
+    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23308e87' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e")
+  );
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
 }
 .basic-form {
   .checkbox-checked {
@@ -258,7 +269,9 @@
     border: 1px solid var(--light-gray);
     appearance: none;
     border-radius: 0.25rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
     &:focus {
       border-color: var(--theme-default) !important;
     }
