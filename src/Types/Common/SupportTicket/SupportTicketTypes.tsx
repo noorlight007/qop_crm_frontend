@@ -7,11 +7,14 @@ export interface SupportTicketFormData {
   message: string;
   files: File[];
   created_by?: {
+    profile_image?: string;
     title: string;
     first_name: string;
     middle_name: string;
     last_name: string;
     user_type: string;
+    name?: string;
+    email?: string;
   };
   created_at?: string;
 }

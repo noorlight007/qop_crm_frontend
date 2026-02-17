@@ -7,7 +7,7 @@ import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicke
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaCheck,
   FaChevronDown,
@@ -36,6 +36,7 @@ import {
 import Swal from "sweetalert2";
 import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
 import SupportTicketComments from "./SupportTicketComments";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();
@@ -151,6 +152,35 @@ const SupportTicketDetails: React.FC = () => {
     );
   }
 
+  // Creator info (used for display under the subject)
+  const _creator = ticketDetails.created_by as any;
+  const creatorName =
+    _creator?.name ||
+    [
+      _creator?.title,
+      _creator?.first_name,
+      _creator?.middle_name,
+      _creator?.last_name,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
+    "Unknown User";
+  const creatorEmail = _creator?.email || "";
+
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  const [showCreatorImage, setShowCreatorImage] = useState<boolean>(true);
+
+  useEffect(() => {
+    // reset image visibility when ticket/creator changes
+    setShowCreatorImage(true);
+  }, [ticketDetails?.created_by?.profile_image]);
+
   type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
 
   const statusColorMap: Record<TicketStatus, string> = {
@@ -224,6 +254,54 @@ const SupportTicketDetails: React.FC = () => {
                         {formatChoiceFieldValue(ticketDetails?.priority)}
                       </Badge>
                     </span>
+                  </div>
+                </Col>
+                <Col>
+                  {/* Created by (avatar + name + email + timestamp) */}
+                  <div className="d-flex align-items-start gap-3">
+                    {_creator?.profile_image && showCreatorImage ? (
+                      <img
+                        src={String(_creator.profile_image)}
+                        alt={creatorName}
+                        onError={() => setShowCreatorImage(false)}
+                        className="rounded-circle"
+                        style={{
+                          width: 48,
+                          height: 48,
+                          objectFit: "cover",
+                          flexShrink: 0,
+                        }}
+                        title={creatorName}
+                      />
+                    ) : (
+                      <div
+                        className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center"
+                        style={{ width: 48, height: 48, fontSize: 14 }}
+                        title={creatorName}
+                      >
+                        {getInitials(creatorName)}
+                      </div>
+                    )}
+
+                    <div style={{ minWidth: 0 }}>
+                      <small className="text-muted">Created by</small>
+                      <div
+                        className="fw-medium text-truncate"
+                        title={creatorName}
+                      >
+                        {creatorName}
+                      </div>
+                      {creatorEmail && (
+                        <div className="text-muted small text-truncate">
+                          {creatorEmail}
+                        </div>
+                      )}
+                      {ticketDetails.created_at && (
+                        <div className="text-muted small mt-1">
+                          Created {formatDateAndTime(ticketDetails.created_at)}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </Col>
                 <Col xs="auto">
@@ -337,7 +415,7 @@ const SupportTicketDetails: React.FC = () => {
           {/* Message Card */}
           <Card className="shadow-sm mb-4">
             <CardHeader className="bg-white">
-              <h5 className="mb-0">Message</h5>
+                <h5 className="mb-0">Ticket Description</h5>
             </CardHeader>
             <CardBody>
               <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>

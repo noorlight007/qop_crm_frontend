@@ -248,7 +248,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
           {/* Message */}
           <FormGroup>
             <Label for="message">
-              Message<span className="text-danger">*</span>
+              Description<span className="text-danger">*</span>
             </Label>
             <Input
               id="message"
