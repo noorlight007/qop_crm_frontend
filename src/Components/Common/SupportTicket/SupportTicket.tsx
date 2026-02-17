@@ -192,11 +192,12 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     FEATURE_REQUEST: "info",
   };
 
-  type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
+  type TicketStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "RESOLVED";
 
   const statusColorMap: Record<TicketStatus, string> = {
     OPEN: "danger",
-    IN_REVIEW: "warning",
+    IN_PROGRESS: "warning",
+    COMPLETED: "info",
     RESOLVED: "success",
   };
 
@@ -211,13 +212,15 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   const statusIconMap: Record<TicketStatus, JSX.Element> = {
     OPEN: <FaExclamationCircle />,
-    IN_REVIEW: <FaSpinner />,
+    IN_PROGRESS: <FaSpinner />,
+    COMPLETED: <FaCheck />,
     RESOLVED: <TbCheck />,
   };
 
   const statusOptions = [
     { value: "OPEN", label: "Open" },
-    { value: "IN_REVIEW", label: "In Review" },
+    { value: "IN_PROGRESS", label: "In Progress" },
+    { value: "COMPLETED", label: "Completed" },
     { value: "RESOLVED", label: "Resolved" },
   ];
 
@@ -456,7 +459,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     >
                       <option value="">All Statuses</option>{" "}
                       <option value="OPEN">Open</option>
-                      <option value="IN_REVIEW">In Review</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="COMPLETED">Completed</option>
                       <option value="RESOLVED">Resolved</option>
                     </Input>
                   </Col>
@@ -617,8 +621,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           {ticket.status ? (
                             userType === "ADMIN" ? (
                               <Dropdown
-                                isOpen={dropdownOpen[ticket.id] || false}
-                                toggle={() => toggleDropdown(ticket.id)}
+                                isOpen={dropdownOpen[ticket.alias] || false}
+                                toggle={() => toggleDropdown(ticket.alias)}
                               >
                                 <DropdownToggle
                                   tag="span"

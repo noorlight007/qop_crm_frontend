@@ -324,7 +324,8 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               >
                 <option value="">Select Status</option>
                 <option value="OPEN">Open</option>
-                <option value="IN_REVIEW">In Review</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
                 <option value="RESOLVED">Resolved</option>
               </Input>
               {errors.status && (
