@@ -177,7 +177,7 @@ const Menulist: React.FC<MenuListType> = ({
                 >
                   <i
                     className="fa fa-chevron-right"
-                    style={{ fontSize: "12px", color: "currentColor" }}
+                    style={{ fontSize: "12px", color: "var(--body-font-color)" }}
                   ></i>
                 </button>
               )}

@@ -179,13 +179,30 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       }
 
       if (shouldReplaceFiles) {
-        // Re-upload remaining existing files
+        // Re-upload remaining existing files (skip any entries without a URL)
         for (const file of existingFiles) {
-          const response = await fetch(file.ticket_file);
-          const blob = await response.blob();
-          const fileName = file.ticket_file.split("/").pop() || "file";
-          const realFile = new File([blob], fileName, { type: blob.type });
-          fd.append("upload_files", realFile);
+          if (!file?.ticket_file) {
+            // nothing to re-upload for this entry
+            continue;
+          }
+          try {
+            const response = await fetch(String(file.ticket_file));
+            const blob = await response.blob();
+            const fileName =
+              String(file.ticket_file).split("/").pop() ||
+              file?.alias ||
+              "file";
+            const realFile = new File([blob], fileName, { type: blob.type });
+            fd.append("upload_files", realFile);
+          } catch (err) {
+            // Skip files that cannot be fetched (keep UX resilient)
+            console.warn(
+              "Skipping existing file (failed to fetch):",
+              file,
+              err,
+            );
+            continue;
+          }
         }
 
         // Upload new files
@@ -241,9 +258,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg">
+    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader className="text-center text-primary" toggle={toggle}>
-        Update Support Ticket
+        <h3>Update Support Ticket</h3>
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={handleSubmit} id="support-ticket-form">
@@ -379,7 +396,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               >
                 {existingFiles.map((file, index) => (
                   <div
-                    key={file.alias}
+                    key={file.alias || file.ticket_file || index}
                     className={`d-flex justify-content-between align-items-center py-2 px-2 ${
                       index !== existingFiles.length - 1 ? "border-bottom" : ""
                     }`}
@@ -388,9 +405,17 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
                       <div className="flex-grow-1 min-w-0">
                         <div
                           className="fw-medium text-truncate small"
-                          title={file.ticket_file.split("/").pop()}
+                          title={
+                            (file?.ticket_file &&
+                              String(file.ticket_file).split("/").pop()) ||
+                            file?.alias ||
+                            "file"
+                          }
                         >
-                          {file.ticket_file.split("/").pop()}
+                          {(file?.ticket_file &&
+                            String(file.ticket_file).split("/").pop()) ||
+                            file?.alias ||
+                            "file"}
                         </div>
                       </div>
                     </div>

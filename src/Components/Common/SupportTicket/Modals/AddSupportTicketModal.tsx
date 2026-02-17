@@ -176,7 +176,7 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg">
       <ModalHeader className="text-center text-primary" toggle={toggle}>
-        Create Support Ticket
+        <h3>Create Support Ticket</h3>
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={handleSubmit} id="support-ticket-form">

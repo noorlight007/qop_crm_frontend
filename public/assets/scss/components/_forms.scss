@@ -73,6 +73,7 @@
 }
 .form-select {
   font-family: $body-font;
+  cursor: pointer;
   &:focus {
     border-color: var(--form-select);
     outline: 0;

@@ -366,11 +366,19 @@ const SupportTicketDetails: React.FC = () => {
               </CardHeader>
               <CardBody>
                 <Row>
-                  {ticketDetails.files.map((file: any) => {
+                  {ticketDetails.files.map((file: any, idx: number) => {
                     const fileName =
-                      file.ticket_file.split("/").pop() || "Unknown file";
+                      (file?.ticket_file &&
+                        String(file.ticket_file).split("/").pop()) ||
+                      file?.alias ||
+                      "Unknown file";
                     return (
-                      <Col key={file.alias} sm={12} md={6} className="mb-3">
+                      <Col
+                        key={file.alias || file.ticket_file || idx}
+                        sm={12}
+                        md={6}
+                        className="mb-3"
+                      >
                         <Card className="border h-100">
                           <CardBody
                             className="d-flex align-items-center p-3"
