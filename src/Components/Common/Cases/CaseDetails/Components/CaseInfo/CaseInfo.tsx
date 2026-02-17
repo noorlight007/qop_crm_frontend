@@ -486,7 +486,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   </Row>
                 ) : (
                   <Row className="pt-2">
-                    <Col xs="12">
+                    <Col
+                      xs="12"
+                      style={{
+                        height: "55px",
+                        overflowY: "auto",
+                      }}
+                    >
                       <h6 className="pt-1">
                         <span className="small">Case Category:</span>{" "}
                         <strong className="small">
