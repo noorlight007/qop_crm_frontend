@@ -1,0 +1,30 @@
+export interface VulnerableClientData {
+  vulnerability_type: string;
+  physical_disability: boolean;
+  chronic_or_severe_illness: boolean;
+  visual_impairment: boolean;
+  mental_health_condition: boolean;
+  addiction: boolean;
+  low_mental_capacity_to_cognitive_disability: boolean;
+  retirement: boolean;
+  divorce: boolean;
+  bereavement: boolean;
+  income_shock: boolean;
+  payment_shock: boolean;
+  relationship_breakdown: boolean;
+  domestic_abuse_including_financial_abuse: boolean;
+  caring_responsibilities: boolean;
+  unemployment: boolean;
+  new_parents: boolean;
+  new_job: boolean;
+  getting_married: boolean;
+  inadequate_or_erratic_income: boolean;
+  over_indebtedness: boolean;
+  low_savings: boolean;
+  confidence_managing_finances: boolean;
+  limited_literacy_or_numeracy_skills: boolean;
+  learning_difficulties: boolean;
+  low_or_no_access_to_support_and_help: boolean;
+  other: string;
+  are_any_additional_support_action_required: string | null;
+}

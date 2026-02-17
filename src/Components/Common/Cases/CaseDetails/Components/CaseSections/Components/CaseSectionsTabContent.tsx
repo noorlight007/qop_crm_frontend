@@ -23,6 +23,7 @@ import ProductContent from "./Product/ProductContent";
 import SecurityProperty from "./SecurityProperty/SecurityProperty";
 import SolicitorsAndAccountantsTab from "./SolicitorsAndAccountants/SolicitorsAndAccountantsTab";
 import SuitabilityContent from "./Suitability/SuitabilityContent";
+import VulnerableClientContent from "./VulnerableClient/VulnerableClientContent";
 
 // Define a mapping of tab names to components
 const tabComponents: Record<string, React.FC> = {
@@ -47,6 +48,7 @@ const tabComponents: Record<string, React.FC> = {
   Compliance: ComplianceTab,
   "Client Survey": ClientSurveyContent,
   Documents: Documents,
+  "Vulnerable Client": VulnerableClientContent,
 
   // Additional tabs for Insurance case
   "Insurance Overview": InsuranceOverviewContent,
