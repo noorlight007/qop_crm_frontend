@@ -124,7 +124,7 @@ const SupportTicketComments: React.FC = () => {
     formData.append("message", newComment);
 
     selectedFiles.forEach((file) => {
-      formData.append("files", file);
+      formData.append("upload_files", file);
     });
 
     try {
@@ -155,7 +155,7 @@ const SupportTicketComments: React.FC = () => {
 
     const files = replyFiles[commentId] || [];
     files.forEach((file) => {
-      formData.append("files", file);
+      formData.append("upload_files", file);
     });
 
     try {

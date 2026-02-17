@@ -4,6 +4,7 @@ import {
   useUpdateSupportTicketMutation,
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -36,7 +37,6 @@ import {
 import Swal from "sweetalert2";
 import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
 import SupportTicketComments from "./SupportTicketComments";
-import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();
@@ -415,7 +415,7 @@ const SupportTicketDetails: React.FC = () => {
           {/* Message Card */}
           <Card className="shadow-sm mb-4">
             <CardHeader className="bg-white">
-                <h5 className="mb-0">Ticket Description</h5>
+              <h5 className="mb-0">Ticket Description</h5>
             </CardHeader>
             <CardBody>
               <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
