@@ -43,6 +43,7 @@ export const publicBaseApi = createApi({
     "SetPassword",
     "ForgotPassword",
     "Enquiry",
+    "PublicClientSurvey",
 
     //Filter list
   ],
