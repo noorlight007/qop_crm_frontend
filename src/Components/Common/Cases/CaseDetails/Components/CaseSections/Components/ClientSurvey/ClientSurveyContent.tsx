@@ -12,6 +12,7 @@ import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
+import { Send } from "react-feather";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -213,6 +214,11 @@ const ClientSurveyContent: React.FC = () => {
       <CardBody>
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
+          <div>
+            <Button color="primary" outline>
+              <Send size={15} /> Send Survey From To the Client
+            </Button>
+          </div>
           <div>
             {selectedSurvey === null ? (
               <Alert color="info" className="mb-4">
