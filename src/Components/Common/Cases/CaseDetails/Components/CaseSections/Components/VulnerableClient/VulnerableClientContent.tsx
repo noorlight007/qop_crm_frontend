@@ -91,23 +91,15 @@ const VulnerableClientContent: React.FC = () => {
     }
   }, [getVulnerableClientData]);
 
-  // Handle radio button change
-  const handleStatusChange = async (status: string) => {
-    const updatedData = {
-      ...formData,
-      vulnerability_type: status,
-    };
-
-    setFormData(updatedData);
-
+  // Single unified save function
+  const saveData = async (dataToSave: VulnerableClientData = formData) => {
     try {
       const res = await updateVulnerableClient({
         case_alias: casealias,
-        payload: updatedData,
+        payload: dataToSave,
       }).unwrap();
 
       if (res) {
-        // ✅ Set success states BEFORE returning
         setSaveSuccess(true);
         setHasUnsavedChanges(false);
         setTimeout(() => setSaveSuccess(false), 2000);
@@ -123,8 +115,25 @@ const VulnerableClientContent: React.FC = () => {
         return true;
       }
     } catch (error) {
-      console.error("Failed to update vulnerability status:", error);
+      console.error("Failed to update vulnerability data:", error);
+      return false;
     }
+  };
+
+  // Handle radio button change
+  const handleStatusChange = async (status: string) => {
+    const updatedData = {
+      ...formData,
+      vulnerability_type: status,
+    };
+
+    setFormData(updatedData);
+    return await saveData(updatedData);
+  };
+
+  // Manual save
+  const handleSave = async () => {
+    return await saveData();
   };
 
   // Handle checkbox change
@@ -146,35 +155,6 @@ const VulnerableClientContent: React.FC = () => {
       [field]: value,
     }));
     setHasUnsavedChanges(true);
-  };
-
-  // Manual save function
-  const handleSave = async () => {
-    try {
-      const res = await updateVulnerableClient({
-        case_alias: casealias,
-        payload: formData,
-      }).unwrap();
-
-      if (res) {
-        // ✅ Set success states BEFORE returning
-        setSaveSuccess(true);
-        setHasUnsavedChanges(false);
-        setTimeout(() => setSaveSuccess(false), 2000);
-
-        try {
-          await updateSectionCompleteStatus({
-            case_alias: casealias,
-            section_data: { is_vulnerability: true },
-          });
-        } catch (err) {
-          console.error("Failed to update section complete status:", err);
-        }
-        return true;
-      }
-    } catch (error) {
-      console.error("Failed to update form data:", error);
-    }
   };
 
   const currentTab: string | null = useAppSelector(
