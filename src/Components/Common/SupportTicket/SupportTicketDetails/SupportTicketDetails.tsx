@@ -75,7 +75,8 @@ const SupportTicketDetails: React.FC = () => {
 
   const statusOptions = [
     { value: "OPEN", label: "Open" },
-    { value: "IN_REVIEW", label: "In Review" },
+    { value: "IN_PROGRESS", label: "In Progress" },
+    { value: "COMPLETED", label: "Completed" },
     { value: "RESOLVED", label: "Resolved" },
   ];
 
@@ -182,11 +183,12 @@ const SupportTicketDetails: React.FC = () => {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
+  type TicketStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "RESOLVED";
 
   const statusColorMap: Record<TicketStatus, string> = {
     OPEN: "danger",
-    IN_REVIEW: "warning",
+    IN_PROGRESS: "warning",
+    COMPLETED: "info",
     RESOLVED: "success",
   };
 
@@ -201,10 +203,10 @@ const SupportTicketDetails: React.FC = () => {
 
   const statusIconMap: Record<TicketStatus, JSX.Element> = {
     OPEN: <FaExclamationCircle />,
-    IN_REVIEW: <FaSpinner />,
+    IN_PROGRESS: <FaSpinner />,
+    COMPLETED: <FaCheck />,
     RESOLVED: <TbCheck />,
   };
-
   return (
     <>
       <Row>
