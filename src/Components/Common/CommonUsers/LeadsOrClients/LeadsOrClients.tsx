@@ -4,7 +4,7 @@ import {
   LeadOrClient,
   LeadsOrClientsProps,
 } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
-import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -27,6 +27,7 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import AddLeadModal from "./Modals/AddLeadModal";
 
 const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   title,
@@ -42,7 +43,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [selectedAuthUser, setSelectedAuthUser] = useState<
+  const [selectedLeadOrClient, setSelectedLeadOrClient] = useState<
     Partial<LeadOrClient>
   >({
     title: "",
@@ -51,12 +52,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     last_name: "",
     email: "",
     phone: null,
-    gender: "",
-    joining_date: "",
-    is_active: false,
     profile_image: null,
-    company_name: "",
-    company_address: "",
+    source: "",
+    other_source: null,
+    enquiry_type: "",
+    other_enquiry_type: null,
     created_at: "",
     created_by: { name: "" },
   });
@@ -72,7 +72,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
 
   const openViewModal = (LeadOrClient: LeadOrClient) => {
-    setSelectedAuthUser(LeadOrClient);
+    setSelectedLeadOrClient(LeadOrClient);
     toggleViewModal();
   };
 
@@ -81,7 +81,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   };
 
   const openUpdateModal = (LeadOrClient: LeadOrClient) => {
-    setSelectedAuthUser(LeadOrClient);
+    setSelectedLeadOrClient(LeadOrClient);
     toggleUpdateModal();
   };
 
@@ -163,10 +163,12 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            <Button color="primary" onClick={openAddUserModal}>
-              <TbCirclePlus size={18} className="me-1" />
-              Add {title.slice(0, -1)}
-            </Button>
+            {userRole === "LEAD" && (
+              <Button color="primary" onClick={openAddUserModal}>
+                <TbCirclePlus size={18} className="me-1" />
+                Add {title.slice(0, -1)}
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -176,8 +178,8 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Joining Date</th>
-                <th>Gender</th>
+                <th>Source</th>
+                <th>Enquiry Type</th>
                 <th>Created At</th>
                 <th>Created By</th>
                 <th>Action</th>
@@ -195,33 +197,38 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
               ) : currentAuthUsers.length > 0 ? (
                 currentAuthUsers.map((user) => (
                   <tr key={user.alias} className="text-center">
-                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                      <span
-                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                        style={{ width: 40, height: 40 }}
-                      >
-                        {user?.profile_image ? (
-                          <Image
-                            src={user.profile_image}
-                            alt="Profile"
-                            width={35}
-                            height={35}
-                            className="rounded-circle"
-                          />
-                        ) : (
-                          <User size={30} className="text-primary" />
-                        )}
-                      </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => {
-                          openViewModal(user);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {user?.title ? formatChoiceFieldValue(user?.title) : ""}{" "}
-                        {user?.first_name} {user?.middle_name} {user?.last_name}
-                      </span>
+                    <td>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {user?.profile_image ? (
+                            <Image
+                              src={user.profile_image}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => {
+                            openViewModal(user);
+                          }}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {user?.title
+                            ? formatChoiceFieldValue(user?.title)
+                            : ""}{" "}
+                          {user?.first_name} {user?.middle_name}{" "}
+                          {user?.last_name}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {user?.email ? (
@@ -244,18 +251,25 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                     </td>
 
                     <td>
-                      {user.joining_date ? (
-                        formatDate(user?.joining_date)
+                      {user?.source === "OTHER" ? (
+                        user?.other_source || (
+                          <small className="text-muted">Not Available</small>
+                        )
+                      ) : user?.source ? (
+                        formatChoiceFieldValue(user.source)
                       ) : (
-                        <small className="text-muted">Not Available</small>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
-
                     <td>
-                      {user?.gender ? (
-                        formatChoiceFieldValue(user?.gender)
+                      {user?.enquiry_type === "OTHER" ? (
+                        user?.other_enquiry_type || (
+                          <small className="text-muted">Not Available</small>
+                        )
+                      ) : user?.enquiry_type ? (
+                        formatChoiceFieldValue(user.enquiry_type)
                       ) : (
-                        <small className="text-muted">Not Available</small>
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
 
@@ -403,12 +417,9 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedAuthUser={selectedAuthUser}
-        />
-        <AddAuthUserModal
-          isOpen={isAddUserModalOpen}
-          toggle={toggleAddUserModal}
-        />
-        <UpdateAuthUserModal
+        /> */}
+        <AddLeadModal isOpen={isAddUserModalOpen} toggle={toggleAddUserModal} />
+        {/* <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
           selectedAuthUser={selectedAuthUser}

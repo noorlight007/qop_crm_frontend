@@ -7,17 +7,15 @@ export interface LeadOrClient {
   last_name: string;
   email: string;
   phone: string | null;
-  gender: string;
+  source: string;
+  other_source: string | null;
+  enquiry_type: string;
+  other_enquiry_type: string | null;
   created_at: string;
   created_by: {
     name: string;
   };
-  designation?: string;
-  joining_date: string;
-  is_active: boolean;
   profile_image: string | null;
-  company_name?: string;
-  company_address?: string;
   role?: string;
 }
 

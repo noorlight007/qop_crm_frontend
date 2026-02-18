@@ -209,33 +209,38 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               ) : currentAuthUsers.length > 0 ? (
                 currentAuthUsers.map((user) => (
                   <tr key={user.alias} className="text-center">
-                    <td className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                      <span
-                        className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                        style={{ width: 40, height: 40 }}
-                      >
-                        {user?.profile_image ? (
-                          <Image
-                            src={user.profile_image}
-                            alt="Profile"
-                            width={35}
-                            height={35}
-                            className="rounded-circle"
-                          />
-                        ) : (
-                          <User size={30} className="text-primary" />
-                        )}
-                      </span>
-                      <span
-                        className="text_decoration_hover"
-                        onClick={() => {
-                          openViewModal(user);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {user?.title ? formatChoiceFieldValue(user?.title) : ""}{" "}
-                        {user?.first_name} {user?.middle_name} {user?.last_name}
-                      </span>
+                    <td>
+                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                        <span
+                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                          style={{ width: 40, height: 40 }}
+                        >
+                          {user?.profile_image ? (
+                            <Image
+                              src={user.profile_image}
+                              alt="Profile"
+                              width={35}
+                              height={35}
+                              className="rounded-circle"
+                            />
+                          ) : (
+                            <User size={30} className="text-primary" />
+                          )}
+                        </span>
+                        <span
+                          className="text_decoration_hover"
+                          onClick={() => {
+                            openViewModal(user);
+                          }}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {user?.title
+                            ? formatChoiceFieldValue(user?.title)
+                            : ""}{" "}
+                          {user?.first_name} {user?.middle_name}{" "}
+                          {user?.last_name}
+                        </span>
+                      </div>
                     </td>
                     <td>
                       {user?.email ? (
