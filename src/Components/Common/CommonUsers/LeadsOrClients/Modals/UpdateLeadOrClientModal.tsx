@@ -135,11 +135,11 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
           "last_name",
           "email",
           "phone",
-          "gender",
-          "designation",
-          "joining_date",
-          "company_name",
-          "company_address",
+          "source",
+          "other_source",
+          "enquiry_type",
+          "other_enquiry_type",
+          "note",
         ];
 
         fieldsToCheck.forEach((field) => {
@@ -150,11 +150,6 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
             payload[field] = currentValue;
           }
         });
-
-        // If joining_date is empty string, send null
-        if (payload.joining_date === "") {
-          payload.joining_date = null;
-        }
 
         // If no fields changed, show message
         if (Object.keys(payload).length === 0) {
@@ -425,10 +420,15 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   className="mb-2"
                 >
                   <option value="">Select...</option>
-                  <option value="PRODUCT_INQUIRY">Product Inquiry</option>
-                  <option value="SERVICE_INQUIRY">Service Inquiry</option>
-                  <option value="SUPPORT">Support</option>
-                  <option value="FEEDBACK">Feedback</option>
+                  <option value="PURCHASE">Purchase</option>
+                  <option value="REMORTGAGE">Remortgage</option>
+                  <option value="BUY_TO_LET">Buy to Let</option>
+                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                  <option value="COMMERCIAL_MORTGAGE">
+                    Commercial Mortgage
+                  </option>
+                  <option value="PROTECTION">Protection</option>
+                  <option value="GENERAL_INSURANCE">General Insurance</option>
                   <option value="OTHER">Other</option>
                 </Input>
                 {getFieldError("enquiry_type") && (
