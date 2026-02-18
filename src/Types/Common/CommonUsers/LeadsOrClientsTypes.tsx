@@ -54,3 +54,15 @@ export interface DeleteLeadOrClientModalProps {
   toggle: () => void;
   selectedLeadOrClient: Partial<LeadOrClient>;
 }
+
+export interface ClientInvitationProps {
+  alias: string;
+  user: {
+    id?: number;
+    title: string;
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
+    email?: string;
+  };
+}

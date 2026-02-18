@@ -1,9 +1,8 @@
-
 import ClientInvitationModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/ClientInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
-import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
+import { ClientInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -51,7 +50,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
-    useState<Partial<ClientInfoProps> | null>(null);
+    useState<Partial<ClientInvitationProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
@@ -218,7 +217,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         first_name: caseInfo.lead_user.first_name,
                         last_name: caseInfo.lead_user.last_name,
                       },
-                    } as Partial<ClientInfoProps>);
+                    } as Partial<ClientInvitationProps>);
                     toggleClientInvitationModal();
                   }}
                   disabled={!caseInfo}
