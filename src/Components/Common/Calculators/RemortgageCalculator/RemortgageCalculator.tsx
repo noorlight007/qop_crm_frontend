@@ -6,12 +6,15 @@ import {
   RemortgageCalculatorState,
 } from "@/Types/Common/Calculators/RemortgageCalculatorTypes";
 import { getCurrencySign } from "@/utils/currency";
+import { formatPrice } from "@/utils/formatters";
 import React, { useMemo, useState } from "react";
 
 const toNumber = (value: number | string) => {
   const num = Number(value);
   return Number.isFinite(num) ? num : 0;
 };
+
+const toRawNumeric = (value: string) => value.replace(/[^0-9.]/g, "");
 
 const clampInt = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, Math.trunc(value)));
@@ -394,10 +397,10 @@ const RemortgageCalculator: React.FC = () => {
               <div className="input-group">
                 <span className="input-group-text">{getCurrencySign()}</span>
                 <input
-                  type="number"
+                  type="text"
                   className={`form-control ${errors.currentAmount ? "is-invalid" : ""} rounded-start-0`}
-                  value={state.current.amount}
-                  onChange={(e) => setCurrentField("amount", e.target.value)}
+                  value={formatPrice(String(state.current.amount))}
+                  onChange={(e) => setCurrentField("amount", toRawNumeric(e.target.value))}
                   min="0"
                 />
               </div>
@@ -507,10 +510,10 @@ const RemortgageCalculator: React.FC = () => {
               <div className="input-group">
                 <span className="input-group-text">{getCurrencySign()}</span>
                 <input
-                  type="number"
+                  type="text"
                   className={`form-control ${errors.newAmount ? "is-invalid" : ""} rounded-start-0`}
-                  value={state.newMortgage.amount}
-                  onChange={(e) => setNewField("amount", e.target.value)}
+                  value={formatPrice(String(state.newMortgage.amount))}
+                  onChange={(e) => setNewField("amount", toRawNumeric(e.target.value))}
                   min="0"
                 />
               </div>
@@ -526,11 +529,11 @@ const RemortgageCalculator: React.FC = () => {
               <div className="input-group">
                 <span className="input-group-text">{getCurrencySign()}</span>
                 <input
-                  type="number"
+                  type="text"
                   className={`form-control ${errors.arrangementFeeAdded ? "is-invalid" : ""} rounded-start-0`}
-                  value={state.newMortgage.arrangementFeeAdded}
+                  value={formatPrice(String(state.newMortgage.arrangementFeeAdded))}
                   onChange={(e) =>
-                    setNewField("arrangementFeeAdded", e.target.value)
+                    setNewField("arrangementFeeAdded", toRawNumeric(e.target.value))
                   }
                   min="0"
                 />
@@ -547,10 +550,10 @@ const RemortgageCalculator: React.FC = () => {
               <div className="input-group">
                 <span className="input-group-text">{getCurrencySign()}</span>
                 <input
-                  type="number"
+                  type="text"
                   className={`form-control ${errors.otherCosts ? "is-invalid" : ""} rounded-start-0`}
-                  value={state.newMortgage.otherCosts}
-                  onChange={(e) => setNewField("otherCosts", e.target.value)}
+                  value={formatPrice(String(state.newMortgage.otherCosts))}
+                  onChange={(e) => setNewField("otherCosts", toRawNumeric(e.target.value))}
                   min="0"
                 />
               </div>

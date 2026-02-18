@@ -1,4 +1,4 @@
-export interface VulnerableClientData {
+export interface VulnerabilityData {
   vulnerability_type: string;
   physical_disability: boolean;
   chronic_or_severe_illness: boolean;
