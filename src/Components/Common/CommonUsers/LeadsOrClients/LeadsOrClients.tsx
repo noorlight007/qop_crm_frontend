@@ -29,6 +29,7 @@ import {
 } from "reactstrap";
 import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
 import AddLeadModal from "./Modals/AddLeadModal";
+import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
 import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
 
 const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
@@ -452,7 +453,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
         <ViewLeadOrClientModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedLeadsOrClients={selectedLeadOrClient}
+          selectedLeadOrClient={selectedLeadOrClient}
         />
         <AddLeadModal
           isOpen={isAddUserModalOpen}
@@ -467,11 +468,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
           leadName={caseModalLeadName}
           leadData={caseModalLeadData}
         />
-        {/* <UpdateAuthUserModal
+        <UpdateLeadOrClientModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
-          selectedAuthUser={selectedAuthUser}
-        /> */}
+          selectedLeadOrClient={selectedLeadOrClient}
+        />
         {/* modals end */}
       </CardBody>
     </Card>

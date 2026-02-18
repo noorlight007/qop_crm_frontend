@@ -1,16 +1,16 @@
-import { ViewLeadsOrClientsModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+import { ViewLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
+const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
   isOpen,
   toggle,
-  selectedLeadsOrClients,
+  selectedLeadOrClient,
 }) => {
-  if (!selectedLeadsOrClients) return null;
+  if (!selectedLeadOrClient) return null;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -24,9 +24,9 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedLeadsOrClients?.profile_image ? (
+            {selectedLeadOrClient?.profile_image ? (
               <Image
-                src={selectedLeadsOrClients.profile_image}
+                src={selectedLeadOrClient.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -43,18 +43,18 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">
-            {selectedLeadsOrClients?.title
-              ? formatChoiceFieldValue(selectedLeadsOrClients.title) + ". "
+            {selectedLeadOrClient?.title
+              ? formatChoiceFieldValue(selectedLeadOrClient.title) + ". "
               : ""}
-            {selectedLeadsOrClients?.first_name}{" "}
-            {selectedLeadsOrClients?.middle_name &&
-              selectedLeadsOrClients?.middle_name + " "}
-            {selectedLeadsOrClients?.last_name}
+            {selectedLeadOrClient?.first_name}{" "}
+            {selectedLeadOrClient?.middle_name &&
+              selectedLeadOrClient?.middle_name + " "}
+            {selectedLeadOrClient?.last_name}
           </h4>
 
           <div>
             <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 {formatChoiceFieldValue(selectedLeadsOrClients.role)}
+              👤 {formatChoiceFieldValue(selectedLeadOrClient.role)}
             </Badge>
           </div>
         </div>
@@ -75,12 +75,12 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedLeadsOrClients?.email ? (
+                      {selectedLeadOrClient?.email ? (
                         <a
-                          href={`mailto:${selectedLeadsOrClients.email}`}
+                          href={`mailto:${selectedLeadOrClient.email}`}
                           className="text-decoration-none"
                         >
-                          {selectedLeadsOrClients.email}
+                          {selectedLeadOrClient.email}
                         </a>
                       ) : (
                         "-"
@@ -95,12 +95,12 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedLeadsOrClients?.phone ? (
+                      {selectedLeadOrClient?.phone ? (
                         <a
-                          href={`tel:${selectedLeadsOrClients.phone}`}
+                          href={`tel:${selectedLeadOrClient.phone}`}
                           className="text-decoration-none"
                         >
-                          {selectedLeadsOrClients.phone}
+                          {selectedLeadOrClient.phone}
                         </a>
                       ) : (
                         "-"
@@ -132,10 +132,10 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLeadsOrClients?.source === "OTHER"
-                      ? selectedLeadsOrClients?.other_source || "-"
-                      : selectedLeadsOrClients?.source
-                        ? formatChoiceFieldValue(selectedLeadsOrClients.source)
+                    {selectedLeadOrClient?.source === "OTHER"
+                      ? selectedLeadOrClient?.other_source || "-"
+                      : selectedLeadOrClient?.source
+                        ? formatChoiceFieldValue(selectedLeadOrClient.source)
                         : "-"}
                   </p>
                 </div>
@@ -146,11 +146,11 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                     Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLeadsOrClients?.enquiry_type === "OTHER"
-                      ? selectedLeadsOrClients?.other_enquiry_type || "-"
-                      : selectedLeadsOrClients?.enquiry_type
+                    {selectedLeadOrClient?.enquiry_type === "OTHER"
+                      ? selectedLeadOrClient?.other_enquiry_type || "-"
+                      : selectedLeadOrClient?.enquiry_type
                         ? formatChoiceFieldValue(
-                            selectedLeadsOrClients.enquiry_type,
+                            selectedLeadOrClient.enquiry_type,
                           )
                         : "-"}
                   </p>
@@ -161,8 +161,8 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Role</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLeadsOrClients?.role
-                      ? formatChoiceFieldValue(selectedLeadsOrClients.role)
+                    {selectedLeadOrClient?.role
+                      ? formatChoiceFieldValue(selectedLeadOrClient.role)
                       : "-"}
                   </p>
                 </div>
@@ -173,7 +173,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
           <hr className="my-3" />
 
           {/* Notes */}
-          {selectedLeadsOrClients?.note && (
+          {selectedLeadOrClient?.note && (
             <>
               <div className="mb-4">
                 <h6
@@ -195,7 +195,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                     className="m-0 text-dark"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
-                    {selectedLeadsOrClients?.note}
+                    {selectedLeadOrClient?.note}
                   </p>
                 </div>
               </div>
@@ -212,18 +212,18 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedLeadsOrClients?.created_by ? (
+            {selectedLeadOrClient?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
-                  <strong>{selectedLeadsOrClients.created_by.name}</strong>
+                  <strong>{selectedLeadOrClient.created_by.name}</strong>
                 </p>
                 <small className="text-muted">
-                  {selectedLeadsOrClients.created_by.user_type
+                  {selectedLeadOrClient.created_by.user_type
                     ? formatChoiceFieldValue(
-                        selectedLeadsOrClients.created_by.user_type,
+                        selectedLeadOrClient.created_by.user_type,
                       )
                     : ""}
                 </small>
@@ -246,9 +246,9 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                 Created At
               </small>
               <p className="m-0 text-dark fw-500">
-                {selectedLeadsOrClients?.created_at &&
-                formatDateAndTime(selectedLeadsOrClients?.created_at)
-                  ? formatDateAndTime(selectedLeadsOrClients?.created_at)
+                {selectedLeadOrClient?.created_at &&
+                formatDateAndTime(selectedLeadOrClient?.created_at)
+                  ? formatDateAndTime(selectedLeadOrClient?.created_at)
                   : "-"}
               </p>
             </div>

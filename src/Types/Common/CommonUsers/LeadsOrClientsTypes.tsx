@@ -27,10 +27,10 @@ export interface LeadsOrClientsProps {
   userRole?: string;
 }
 
-export interface ViewLeadsOrClientsModalProps {
+export interface ViewLeadOrClientModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadsOrClients: Partial<LeadOrClient>;
+  selectedLeadOrClient: Partial<LeadOrClient>;
 }
 
 export interface AddLeadsModalProps {
@@ -38,8 +38,8 @@ export interface AddLeadsModalProps {
   toggle: () => void;
 }
 
-export interface UpdateLeadsOrClientsModalProps {
+export interface UpdateLeadOrClientModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadsOrClients: Partial<LeadOrClient>;
+  selectedLeadOrClient: Partial<LeadOrClient>;
 }
