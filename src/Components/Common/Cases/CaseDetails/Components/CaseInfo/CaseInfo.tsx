@@ -1,5 +1,5 @@
-import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
-import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
+
+import ClientInvitationModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/ClientInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
@@ -8,14 +8,14 @@ import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { ChangeEvent, useEffect, useState } from "react";
-import { FaArrowRight, FaTrash } from "react-icons/fa";
+import { FaArrowRight, FaChevronDown, FaTrash } from "react-icons/fa";
+import { FiSettings } from "react-icons/fi";
 import {
   TbCircleArrowUp,
   TbCopy,
   TbDownload,
   TbEdit,
   TbMailShare,
-  TbSettings,
   TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
@@ -49,7 +49,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
-  const [isUpdateClientModalOpen, setIsUpdateClientModalOpen] = useState(false);
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInfoProps> | null>(null);
@@ -85,9 +84,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const toggleUpdateCaseModal = () =>
     setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
 
-  const toggleUpdateClientModal = () =>
-    setIsUpdateClientModalOpen((prev) => !prev);
-
   const toggleCopyCaseModal = () => setIsCopyCaseModalOpen((prev) => !prev);
 
   const openUpdateCaseModal = (caseInfo: CaseInfoPrpos) => {
@@ -114,25 +110,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const openViewJointApplicantModal = (jointApplicant: any) => {
     setSelectedJointApplicant(jointApplicant);
     toggleViewJointApplicantModal();
-  };
-
-  const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
-    if (clientData?.user) {
-      setDisplayLeadUser(
-        (prev) =>
-          ({
-            ...(prev || ({} as any)),
-            title: clientData.user!.title ?? prev?.title,
-            first_name: clientData.user!.first_name ?? prev?.first_name,
-            middle_name: clientData.user!.middle_name ?? prev?.middle_name,
-            last_name: clientData.user!.last_name ?? prev?.last_name,
-            email: clientData.user!.email ?? prev?.email,
-            phone: clientData.user!.phone ?? prev?.phone,
-            user_type: prev?.user_type || "",
-            profile_image: prev?.profile_image || "",
-          }) as any,
-      );
-    }
   };
 
   // Notes editing handlers
@@ -202,9 +179,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           </h3>
           <ButtonGroup>
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-              <DropdownToggle color="primary" caret className="me-1">
-                <TbSettings className="me-1" />
-                Actions
+              <DropdownToggle color="primary">
+                <FiSettings className="me-1" />
+                <span>Actions</span>
+                <FaChevronDown className="ms-1" />
               </DropdownToggle>
               <DropdownMenu
                 style={{
@@ -260,7 +238,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   className="opacity-100 py-3"
                   onClick={handleDownloadApplicantInfo}
                   disabled={isApplicantsInfoLoading}
-                  toggle={false} 
+                  toggle={false}
                 >
                   {isApplicantsInfoLoading ? (
                     <>
@@ -953,14 +931,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           </Col>
         </Row>
       </Card>
-      {selectedClient && (
-        <UpdateClientModal
-          isOpen={isUpdateClientModalOpen}
-          toggle={toggleUpdateClientModal}
-          onSave={handleClientSave}
-          selectedClient={selectedClient}
-        />
-      )}
+
       {selectedClient && (
         <ClientInvitationModal
           isOpen={isClientInvitationModalOpen}

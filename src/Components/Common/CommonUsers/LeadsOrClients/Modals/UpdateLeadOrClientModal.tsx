@@ -1,8 +1,9 @@
 import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { AuthUser } from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import {
-  AuthUser,
-  UpdateAuthUserModalProps,
-} from "@/Types/Common/CommonUsers/AuthUsersTypes";
+  LeadOrClient,
+  UpdateLeadOrClientModalProps,
+} from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -19,33 +20,33 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
+const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
   isOpen,
   toggle,
-  selectedAuthUser,
+  selectedLeadOrClient,
 }) => {
-  const pathname = window.location.pathname;
-  const [authUserData, setAuthUserData] =
-    useState<Partial<AuthUser>>(selectedAuthUser);
+  const [leadOrClientData, setLeadOrClientData] =
+    useState<Partial<LeadOrClient>>(selectedLeadOrClient);
   const [originalData, setOriginalData] =
-    useState<Partial<AuthUser>>(selectedAuthUser);
+    useState<Partial<LeadOrClient>>(selectedLeadOrClient);
   const [isModified, setIsModified] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
   const [updateAuthUserDetails, { isLoading }] =
     useUpdateAuthUserDetailsMutation();
 
   useEffect(() => {
-    setAuthUserData(selectedAuthUser);
-    setOriginalData(selectedAuthUser);
+    setLeadOrClientData(selectedLeadOrClient);
+    setOriginalData(selectedLeadOrClient);
     setIsModified(false);
     setErrors({});
-  }, [selectedAuthUser]);
+  }, [selectedLeadOrClient]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setAuthUserData((prev) => ({
+    setLeadOrClientData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -118,11 +119,11 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
 
   const handleUpdateAuthUser = async (
     e: React.FormEvent<HTMLFormElement>,
-    authUserData: Partial<AuthUser>,
+    leadData: Partial<LeadOrClient>,
   ) => {
     e.preventDefault();
     try {
-      if (authUserData.alias) {
+      if (leadData.alias) {
         // Build payload with only changed fields
         const payload: Record<string, any> = {};
 
@@ -142,7 +143,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         ];
 
         fieldsToCheck.forEach((field) => {
-          const currentValue = (authUserData as any)[field];
+          const currentValue = (leadData as any)[field];
           const originalValue = (originalData as any)[field];
 
           if (currentValue !== originalValue) {
@@ -163,7 +164,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
 
         const result = await updateAuthUserDetails({
           payload: payload as Partial<AuthUser>,
-          userAlias: authUserData.alias,
+          userAlias: leadData.alias,
         });
 
         if (result.data) {
@@ -223,7 +224,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
       <Form
-        onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}
+        onSubmit={(e) => handleUpdateAuthUser(e, leadOrClientData)}
         encType="multipart/form-data"
       >
         <ModalBody>
@@ -237,7 +238,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   id="title"
                   name="title"
                   type="select"
-                  value={authUserData?.title || ""}
+                  value={leadOrClientData?.title || ""}
                   onChange={handleChange}
                   required
                 >
@@ -269,7 +270,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   id="firstName"
                   name="first_name"
                   placeholder="First Name"
-                  value={authUserData?.first_name || ""}
+                  value={leadOrClientData?.first_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -289,7 +290,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   id="middleName"
                   name="middle_name"
                   placeholder="Middle Name(s)"
-                  value={authUserData?.middle_name || ""}
+                  value={leadOrClientData?.middle_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -310,7 +311,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   id="lastName"
                   name="last_name"
                   placeholder="Last Name"
-                  value={authUserData?.last_name || ""}
+                  value={leadOrClientData?.last_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -332,7 +333,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   id="email"
                   name="email"
                   placeholder="Email"
-                  value={authUserData?.email || ""}
+                  value={leadOrClientData?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -352,7 +353,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                   id="phone"
                   name="phone"
                   placeholder="Phone"
-                  value={authUserData?.phone || ""}
+                  value={leadOrClientData?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -363,112 +364,116 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-            {pathname === "/network/director/compliances" && (
-              <Col md={6}>
+
+            <Col md={6} xs={6}>
+              <FormGroup>
+                <Label for="source">Source</Label>
+                <Input
+                  type="select"
+                  id="source"
+                  name="source"
+                  placeholder="Source"
+                  value={leadOrClientData?.source || ""}
+                  onChange={handleChange}
+                  className="mb-2"
+                >
+                  <option value="">Select...</option>
+                  <option value="GOOGLE">Google</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="WEBSITE">Website</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {getFieldError("source") && (
+                  <div className="text-danger small mt-1">
+                    {getFieldError("source")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {leadOrClientData?.source === "OTHER" && (
+              <Col md={6} xs={6}>
                 <FormGroup>
-                  <Label for="designation">
-                    Designation<span className="text-danger">*</span>
-                  </Label>
+                  <Label for="otherSource">Other Source</Label>
                   <Input
-                    id="designation"
-                    name="designation"
                     type="text"
-                    value={authUserData.designation || ""}
+                    id="otherSource"
+                    name="other_source"
+                    placeholder="Other Source"
+                    value={leadOrClientData?.other_source || ""}
                     onChange={handleChange}
-                    required
+                    className="mb-2"
                   />
-                  {getFieldError("designation") && (
+                  {getFieldError("other_source") && (
                     <div className="text-danger small mt-1">
-                      {getFieldError("designation")}
+                      {getFieldError("other_source")}
                     </div>
                   )}
                 </FormGroup>
               </Col>
             )}
-            {pathname !== "/organisation/director/introducers" &&
-              pathname !== "/network/director/compliances" && (
-                <Col md={6} xs={6}>
-                  <FormGroup>
-                    <Label for="gender">Gender</Label>
-                    <Input
-                      id="gender"
-                      name="gender"
-                      type="select"
-                      value={authUserData?.gender || ""}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select...</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                    </Input>
-                    {getFieldError("gender") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("gender")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              )}
-            {pathname === "/organisation/director/introducers" && (
-              <>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="company_name">
-                      Company Name<span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      id="company_name"
-                      name="company_name"
-                      type="text"
-                      value={authUserData.company_name}
-                      onChange={handleChange}
-                      required
-                    />
-                    {getFieldError("company_name") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("company_name")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="company_address">
-                      Company Address<span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      id="company_address"
-                      name="company_address"
-                      type="text"
-                      value={authUserData.company_address}
-                      onChange={handleChange}
-                      required
-                    />
-                    {getFieldError("company_address") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("company_address")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </>
-            )}
             <Col md={6} xs={6}>
               <FormGroup>
-                <Label for="joining_date">Joining Date</Label>
+                <Label for="enquiryType">Enquiry Type</Label>
                 <Input
-                  type="date"
-                  id="joining_date"
-                  name="joining_date"
-                  placeholder="Joining Date"
-                  value={authUserData?.joining_date || ""}
+                  type="select"
+                  id="enquiryType"
+                  name="enquiry_type"
+                  placeholder="Enquiry Type"
+                  value={leadOrClientData?.enquiry_type || ""}
+                  onChange={handleChange}
+                  className="mb-2"
+                >
+                  <option value="">Select...</option>
+                  <option value="PRODUCT_INQUIRY">Product Inquiry</option>
+                  <option value="SERVICE_INQUIRY">Service Inquiry</option>
+                  <option value="SUPPORT">Support</option>
+                  <option value="FEEDBACK">Feedback</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {getFieldError("enquiry_type") && (
+                  <div className="text-danger small mt-1">
+                    {getFieldError("enquiry_type")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {leadOrClientData?.enquiry_type === "OTHER" && (
+              <Col md={6} xs={6}>
+                <FormGroup>
+                  <Label for="otherEnquiryType">Other Enquiry Type</Label>
+                  <Input
+                    type="text"
+                    id="otherEnquiryType"
+                    name="other_enquiry_type"
+                    placeholder="Other Enquiry Type"
+                    value={leadOrClientData?.other_enquiry_type || ""}
+                    onChange={handleChange}
+                    className="mb-2"
+                  />
+                  {getFieldError("other_enquiry_type") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("other_enquiry_type")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+            <Col xs={12}>
+              <FormGroup>
+                <Label for="note">Note</Label>
+                <Input
+                  type="textarea"
+                  id="note"
+                  name="note"
+                  placeholder="Note"
+                  value={leadOrClientData?.note || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
-                {getFieldError("joining_date") && (
+                {getFieldError("note") && (
                   <div className="text-danger small mt-1">
-                    {getFieldError("joining_date")}
+                    {getFieldError("note")}
                   </div>
                 )}
               </FormGroup>
@@ -491,4 +496,4 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     </Modal>
   );
 };
-export default UpdateAuthUserModal;
+export default UpdateLeadOrClientModal;

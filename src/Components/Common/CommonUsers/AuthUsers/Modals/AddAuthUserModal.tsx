@@ -462,7 +462,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={toggle}>
+            <Button color="danger" onClick={toggle}>
               Cancel
             </Button>
             <Button color="primary">

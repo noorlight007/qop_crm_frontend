@@ -1,7 +1,5 @@
-import { useAddLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
+import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -17,14 +15,14 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+
 const AddLeadModal: React.FC<AddLeadModalProps> = ({
   isOpen,
   toggle,
   onLeadCreated,
   onOpenCase,
 }) => {
-  const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();
-  const router = useRouter();
+  const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -40,21 +38,12 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
     note: "",
   });
 
-  // Hold per-field validation errors returned from API
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-
-  const [createdLeadId, setCreatedLeadId] = useState<number | null>(null);
   const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
   const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
 
-  const { data: session } = useSession();
-  const userType = session?.user?.user_type;
-
-  // Helper to extract an informative error message from RTK Query results or thrown errors
   const extractErrorDetail = (err: any): string => {
-    // RTK Query error result (result.error)
     if (!err) return "An error occurred. Please try again.";
-    // If it's an RTK Query result object containing .error
     if (err.error) {
       const data =
         (err.error as any).data ||
@@ -66,7 +55,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         JSON.stringify(err.error)
       );
     }
-    // If it's an exception thrown
     const data = err?.response?.data || err?.data || err;
     return (
       (data && (data.detail || data?.message)) ||
@@ -75,26 +63,23 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
     );
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-
-    // Clear any existing error for this specific field when user edits it
     setErrors((prev) => {
       if (!prev) return prev;
       const copy = { ...prev };
-      // input `name` uses camelCase for some fields and snake_case for others
-      // remove both possible keys to be safe
       delete copy[name];
-      // also try mapping snake_case to camelCase and vice-versa
       if (name === "firstName") delete copy["first_name"];
       if (name === "middleName") delete copy["middle_name"];
       if (name === "lastName") delete copy["last_name"];
-      if (name === "reason_for_enquiry") delete copy["reason_for_enquiry"];
       return copy;
     });
   };
@@ -107,7 +92,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       err?.data ||
       err;
 
-    // If nested user errors exist (e.g., data.user.email -> ["..."])
     if (data?.user && typeof data.user === "object") {
       const user = data.user as Record<string, any>;
       if (user.first_name)
@@ -130,78 +114,108 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         newErrors.phone = Array.isArray(user.phone)
           ? user.phone
           : [String(user.phone)];
+      if (user.title)
+        newErrors.title = Array.isArray(user.title)
+          ? user.title
+          : [String(user.title)];
     }
 
-    // Top-level field errors
-    if (data?.gender)
-      newErrors.gender = Array.isArray(data.gender)
-        ? data.gender
-        : [String(data.gender)];
-    if (data?.reason_for_enquiry)
-      newErrors.reason_for_enquiry = Array.isArray(data.reason_for_enquiry)
-        ? data.reason_for_enquiry
-        : [String(data.reason_for_enquiry)];
+    // Also support flat (non-nested) field errors returned by /auth/user-list/
+    if (data?.first_name)
+      newErrors.firstName = Array.isArray(data.first_name)
+        ? data.first_name
+        : [String(data.first_name)];
+    if (data?.middle_name)
+      newErrors.middleName = Array.isArray(data.middle_name)
+        ? data.middle_name
+        : [String(data.middle_name)];
+    if (data?.last_name)
+      newErrors.lastName = Array.isArray(data.last_name)
+        ? data.last_name
+        : [String(data.last_name)];
+    if (data?.email)
+      newErrors.email = Array.isArray(data.email)
+        ? data.email
+        : [String(data.email)];
+    if (data?.phone)
+      newErrors.phone = Array.isArray(data.phone)
+        ? data.phone
+        : [String(data.phone)];
+
     if (data?.title)
       newErrors.title = Array.isArray(data.title)
         ? data.title
         : [String(data.title)];
+    if (data?.source)
+      newErrors.source = Array.isArray(data.source)
+        ? data.source
+        : [String(data.source)];
+    if (data?.other_source)
+      newErrors.other_source = Array.isArray(data.other_source)
+        ? data.other_source
+        : [String(data.other_source)];
+    if (data?.enquiry_type)
+      newErrors.enquiry_type = Array.isArray(data.enquiry_type)
+        ? data.enquiry_type
+        : [String(data.enquiry_type)];
+    if (data?.other_enquiry_type)
+      newErrors.other_enquiry_type = Array.isArray(data.other_enquiry_type)
+        ? data.other_enquiry_type
+        : [String(data.other_enquiry_type)];
+    if (data?.note)
+      newErrors.note = Array.isArray(data.note)
+        ? data.note
+        : [String(data.note)];
 
-    // If API returns a detail/message, attach it as a general error under _general
     if (data?.detail && typeof data.detail === "string")
       newErrors._general = [data.detail];
 
     return newErrors;
   };
 
-  const handleSaveAndCreateCase = async (e: React.FormEvent) => {
+  const buildPayload = () => ({
+    // /auth/user-list/ expects a flat payload.
+    title: formData.title,
+    first_name: formData.firstName,
+    middle_name: formData.middleName,
+    last_name: formData.lastName,
+    email: formData.email,
+    phone: formData.phone || null,
+    role: "LEAD",
+    source: formData.source || "",
+    other_source: formData.other_source,
+    enquiry_type: formData.enquiry_type,
+    other_enquiry_type: formData.other_enquiry_type,
+    note: formData.note,
+  });
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      source: "",
+      other_source: "",
+      enquiry_type: "",
+      other_enquiry_type: "",
+      note: "",
+    });
+  };
+
+  const handleSaveLead = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {
-      user: {
-        title: formData.title,
-        first_name: formData.firstName,
-        middle_name: formData.middleName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || null,
-      },
-      source: formData.source || "",
-      other_source: formData.other_source,
-      enquiry_type: formData.enquiry_type,
-      note: formData.note,
-    };
+    const payload = buildPayload();
 
     try {
-      const result = await addLeadDetails({ payload });
+      const result = await addAuthUser({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
-        const leadId = result.data.user?.id;
-        setCreatedLeadId(leadId);
+        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
         setCreatedLeadData(result.data);
-        // If a parent provided onLeadCreated, notify it as well
-        // so it can update any dependent UI (e.g., lead dropdown).
-        if (onLeadCreated && result.data) {
-          onLeadCreated(result.data as any);
-        }
-        // Tell parent to open the Case modal (so it can render the case modal
-        // outside this component) then clear + close the Add Lead modal.
-        onOpenCase?.({
-          leadId,
-          leadName: computedLeadName,
-          leadData: result.data,
-        });
-        setFormData({
-          title: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          source: "",
-          other_source: "",
-          enquiry_type: "",
-          other_enquiry_type: "",
-          note: "",
-        });
+        resetForm();
         setErrors({});
         toggle();
       } else if ("error" in result) {
@@ -225,55 +239,61 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       toast.error(firstMsg);
       console.error("Error creating lead:", error);
     } finally {
-      // Clear which button was submitting so only clicked button shows loading while active
       setSubmitType(null);
     }
   };
 
-  const handleSaveLead = async (e: React.FormEvent) => {
+  const computedLeadName = createdLeadData?.user
+    ? [
+        createdLeadData.user.title,
+        createdLeadData.user.first_name,
+        createdLeadData.user.middle_name,
+        createdLeadData.user.last_name,
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : createdLeadData
+      ? [
+          createdLeadData.title,
+          createdLeadData.first_name,
+          createdLeadData.middle_name,
+          createdLeadData.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ")
+      : formData.firstName || formData.lastName
+        ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
+        : undefined;
+
+  const handleSaveAndCreateCase = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = {
-      user: {
-        title: formData.title,
-        first_name: formData.firstName,
-        middle_name: formData.middleName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || null,
-      },
-      source: formData.source || "",
-      other_source: formData.other_source,
-      enquiry_type: formData.enquiry_type,
-      note: formData.note,
-    };
+    const payload = buildPayload();
 
     try {
-      const result = await addLeadDetails({ payload });
+      const result = await addAuthUser({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
-        // Notify parent with the full created lead payload so it
-        // can derive ID and display name as needed.
-        if (onLeadCreated && result.data) {
-          onLeadCreated(result.data as any);
-        }
-        // Clear form data
-        setFormData({
-          title: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          source: "",
-          other_source: "",
-          enquiry_type: "",
-          other_enquiry_type: "",
-          note: "",
-        });
-        // Clear any existing errors on success
-        setErrors({});
+        const leadId =
+          (result.data as any)?.id ?? (result.data as any)?.user?.id;
         setCreatedLeadData(result.data);
-        toggle(); // Close the modal
+        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
+
+        const leadName = (() => {
+          const d: any = result.data;
+          const u = d?.user || d;
+          return [u?.title, u?.first_name, u?.middle_name, u?.last_name]
+            .filter(Boolean)
+            .join(" ");
+        })();
+
+        onOpenCase?.({
+          leadId,
+          leadName: leadName || computedLeadName,
+          leadData: result.data,
+        });
+        resetForm();
+        setErrors({});
+        toggle();
       } else if ("error" in result) {
         const normalized = normalizeApiErrors(result);
         setErrors(normalized);
@@ -282,7 +302,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           extractErrorDetail(result) ||
           "Invalid Request...";
         toast.error(firstMsg);
-        // toast.error((result.error as any)?.data);
       } else {
         toast.error("Invalid Request...");
       }
@@ -299,21 +318,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       setSubmitType(null);
     }
   };
-
-  // derive leadName to pass to AddNewCaseModal — prefer API-returned data so the name
-  // remains available after we clear the form when opening the case modal.
-  const computedLeadName = createdLeadData?.user
-    ? [
-        createdLeadData.user.title,
-        createdLeadData.user.first_name,
-        createdLeadData.user.middle_name,
-        createdLeadData.user.last_name,
-      ]
-        .filter(Boolean)
-        .join(" ")
-    : formData.firstName || formData.lastName
-      ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
-      : undefined;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -459,6 +463,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
                 )}
               </FormGroup>
             </Col>
+
             <Col md={6}>
               <FormGroup>
                 <Label for="source">Source</Label>
@@ -534,7 +539,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
             {formData.enquiry_type === "OTHER" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="other_enquiry_type">Other Enquiry</Label>
+                  <Label for="other_enquiry_type">Other Enquiry Type</Label>
                   <Input
                     id="other_enquiry_type"
                     name="other_enquiry_type"
@@ -550,17 +555,15 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
                 </FormGroup>
               </Col>
             )}
-
-            <Col md={6}>
+            <Col md={12}>
               <FormGroup>
-                <Label className="text-muted">Note</Label>
+                <Label for="note">Note</Label>
                 <Input
-                  type="textarea"
-                  name="note"
                   id="note"
+                  name="note"
+                  type="textarea"
                   value={formData.note || ""}
                   onChange={handleInputChange}
-                  placeholder="Additional information about the lead..."
                 />
                 {errors.note && (
                   <div className="text-danger small mt-1">
@@ -582,7 +585,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           </Button>
           <Button
             type="submit"
-            color="success"
+            color="secondary"
             disabled={isLoading}
             onClick={() => setSubmitType("case")}
           >
@@ -590,7 +593,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
               ? "Saving..."
               : "Save & Create Case"}
           </Button>
-          <Button color="secondary" onClick={toggle}>
+          <Button color="danger" onClick={toggle}>
             Cancel
           </Button>
         </ModalFooter>

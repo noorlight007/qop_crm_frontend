@@ -1,16 +1,16 @@
-import { ViewLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
+import { ViewLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
+const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
   isOpen,
   toggle,
-  selectedLead,
+  selectedLeadOrClient,
 }) => {
-  if (!selectedLead) return null;
+  if (!selectedLeadOrClient) return null;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -24,9 +24,9 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedLead?.user?.profile_image ? (
+            {selectedLeadOrClient?.profile_image ? (
               <Image
-                src={selectedLead.user.profile_image}
+                src={selectedLeadOrClient.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -43,18 +43,18 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">
-            {selectedLead?.user?.title
-              ? formatChoiceFieldValue(selectedLead.user.title) + ". "
+            {selectedLeadOrClient?.title
+              ? formatChoiceFieldValue(selectedLeadOrClient.title) + ". "
               : ""}
-            {selectedLead?.user?.first_name}{" "}
-            {selectedLead?.user?.middle_name &&
-              selectedLead?.user?.middle_name + " "}
-            {selectedLead?.user?.last_name}
+            {selectedLeadOrClient?.first_name}{" "}
+            {selectedLeadOrClient?.middle_name &&
+              selectedLeadOrClient?.middle_name + " "}
+            {selectedLeadOrClient?.last_name}
           </h4>
 
           <div>
             <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 {formatChoiceFieldValue(selectedLead.role)}
+              👤 {formatChoiceFieldValue(selectedLeadOrClient.role)}
             </Badge>
           </div>
         </div>
@@ -75,12 +75,12 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedLead?.user?.email ? (
+                      {selectedLeadOrClient?.email ? (
                         <a
-                          href={`mailto:${selectedLead.user.email}`}
+                          href={`mailto:${selectedLeadOrClient.email}`}
                           className="text-decoration-none"
                         >
-                          {selectedLead.user.email}
+                          {selectedLeadOrClient.email}
                         </a>
                       ) : (
                         "-"
@@ -95,12 +95,12 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedLead?.user?.phone ? (
+                      {selectedLeadOrClient?.phone ? (
                         <a
-                          href={`tel:${selectedLead.user.phone}`}
+                          href={`tel:${selectedLeadOrClient.phone}`}
                           className="text-decoration-none"
                         >
-                          {selectedLead.user.phone}
+                          {selectedLeadOrClient.phone}
                         </a>
                       ) : (
                         "-"
@@ -132,10 +132,10 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.source === "OTHER"
-                      ? selectedLead?.other_source || "-"
-                      : selectedLead?.source
-                        ? formatChoiceFieldValue(selectedLead.source)
+                    {selectedLeadOrClient?.source === "OTHER"
+                      ? selectedLeadOrClient?.other_source || "-"
+                      : selectedLeadOrClient?.source
+                        ? formatChoiceFieldValue(selectedLeadOrClient.source)
                         : "-"}
                   </p>
                 </div>
@@ -146,30 +146,23 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                     Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.enquiry_type === "OTHER"
-                      ? selectedLead?.other_enquiry_type || "-"
-                      : selectedLead?.enquiry_type
-                        ? formatChoiceFieldValue(selectedLead.enquiry_type)
+                    {selectedLeadOrClient?.enquiry_type === "OTHER"
+                      ? selectedLeadOrClient?.other_enquiry_type || "-"
+                      : selectedLeadOrClient?.enquiry_type
+                        ? formatChoiceFieldValue(
+                            selectedLeadOrClient.enquiry_type,
+                          )
                         : "-"}
                   </p>
                 </div>
               </Col>
-              <Col md="6" className="mb-3">
-                <div>
-                  <small className="text-muted d-block fw-500">User Type</small>
-                  <p className="m-0 text-dark fw-500">
-                    {selectedLead?.user?.user_type
-                      ? formatChoiceFieldValue(selectedLead.user.user_type)
-                      : "-"}
-                  </p>
-                </div>
-              </Col>
+
               <Col md="6" className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">Role</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.role
-                      ? formatChoiceFieldValue(selectedLead.role)
+                    {selectedLeadOrClient?.role
+                      ? formatChoiceFieldValue(selectedLeadOrClient.role)
                       : "-"}
                   </p>
                 </div>
@@ -180,7 +173,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
           <hr className="my-3" />
 
           {/* Notes */}
-          {selectedLead?.note && (
+          {selectedLeadOrClient?.note && (
             <>
               <div className="mb-4">
                 <h6
@@ -202,7 +195,7 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                     className="m-0 text-dark"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
-                    {selectedLead.note}
+                    {selectedLeadOrClient?.note}
                   </p>
                 </div>
               </div>
@@ -219,26 +212,19 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedLead?.created_by ? (
+            {selectedLeadOrClient?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
-                  <strong>
-                    {selectedLead.created_by.title
-                      ? formatChoiceFieldValue(
-                          selectedLead.created_by.title,
-                        ).trim() + " "
-                      : ""}
-                    {selectedLead.created_by.first_name}{" "}
-                    {selectedLead.created_by.middle_name}{" "}
-                    {selectedLead.created_by.last_name}
-                  </strong>
+                  <strong>{selectedLeadOrClient.created_by.name}</strong>
                 </p>
                 <small className="text-muted">
-                  {selectedLead.created_by.user_type
-                    ? formatChoiceFieldValue(selectedLead.created_by.user_type)
+                  {selectedLeadOrClient.created_by.user_type
+                    ? formatChoiceFieldValue(
+                        selectedLeadOrClient.created_by.user_type,
+                      )
                     : ""}
                 </small>
               </div>
@@ -260,9 +246,9 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
                 Created At
               </small>
               <p className="m-0 text-dark fw-500">
-                {selectedLead?.created_at &&
-                formatDateAndTime(selectedLead?.created_at)
-                  ? formatDateAndTime(selectedLead?.created_at)
+                {selectedLeadOrClient?.created_at &&
+                formatDateAndTime(selectedLeadOrClient?.created_at)
+                  ? formatDateAndTime(selectedLeadOrClient?.created_at)
                   : "-"}
               </p>
             </div>
@@ -273,4 +259,4 @@ const ViewLeadModal: React.FC<ViewLeadModalProps> = ({
   );
 };
 
-export default ViewLeadModal;
+export default ViewLeadOrClientModal;

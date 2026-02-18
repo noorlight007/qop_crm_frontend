@@ -26,10 +26,26 @@ export const AuthUsersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AuthUsers"],
     }),
+    deleteAuthUser: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/auth/user-list/${userAlias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AuthUsers"],
+    }),
+    clientInvitation: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/director/users/${userAlias}/invitation/`,
+        method: "GET",
+      }),
+      invalidatesTags: ["AuthUsers"],
+    }),
   }),
 });
 export const {
   useGetAuthUsersQuery,
   useAddAuthUserMutation,
   useUpdateAuthUserDetailsMutation,
+  useDeleteAuthUserMutation,
+  useClientInvitationMutation,
 } = AuthUsersApi;
