@@ -1,9 +1,10 @@
 import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
 import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
-import { useDownloadApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
+import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
 import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -38,7 +39,6 @@ import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
-import getCurrencySign from "@/utils/currency";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({
   caseInfo,
@@ -63,7 +63,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState<any>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
-  const [shouldDownload, setShouldDownload] = useState(false);
 
   // Inline notes editing state
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -173,47 +172,25 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     }
   };
 
-  const {
-    data: blob,
-    isLoading: isDownloading,
-    isSuccess,
-    isError,
-  } = useDownloadApplicantInfoQuery(
-    { case_alias: caseInfo?.alias },
-    { skip: !shouldDownload || !caseInfo },
-  );
+  const [applicantsInfo, { isLoading: isApplicantsInfoLoading }] =
+    useDownloadApplicantInfoMutation();
 
-  // Handle download when data is ready
-  useEffect(() => {
-    if (isSuccess && blob && shouldDownload) {
-      // Create download link
+  const handleDownloadApplicantInfo = async () => {
+    try {
+      const blob = await applicantsInfo({
+        case_alias: caseInfo?.alias,
+      }).unwrap();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = `applicants-info(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
       link.click();
-
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      setShouldDownload(false);
+    } catch (err) {
+      toast.error("Failed to download report. Please try again.");
     }
-  }, [isSuccess, blob, shouldDownload, caseInfo]);
-
-  // Handle errors
-  useEffect(() => {
-    if (isError && shouldDownload) {
-      toast.error("Failed to download applicant info. Please try again.");
-      setShouldDownload(false); // Reset
-    }
-  }, [isError, shouldDownload]);
-
-  const handleDownloadApplicantInfo = () => {
-    if (!caseInfo) {
-      toast.error("Case information is not available for download.");
-      return;
-    }
-    setShouldDownload(true);
   };
 
   return (
@@ -282,9 +259,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 <DropdownItem
                   className="opacity-100 py-3"
                   onClick={handleDownloadApplicantInfo}
-                  disabled={isDownloading}
+                  disabled={isApplicantsInfoLoading}
+                  toggle={false} 
                 >
-                  {isDownloading ? (
+                  {isApplicantsInfoLoading ? (
                     <>
                       <Spinner size="sm" className="me-1" />
                       Downloading...

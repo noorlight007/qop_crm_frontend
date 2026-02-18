@@ -46,7 +46,7 @@ export const FeesApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Fees"],
     }),
-    downloadFeesSummary: builder.query({
+    downloadFeesSummary: builder.mutation({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/fees/pdf/`,
         method: "GET",
@@ -63,5 +63,5 @@ export const {
   useAddFeesOutDetailsMutation,
   useDeleteFeesInOutMutation,
   useCalculateFeesQuery,
-  useDownloadFeesSummaryQuery,
+  useDownloadFeesSummaryMutation,
 } = FeesApi;
