@@ -225,6 +225,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   // Custom Option Component for beautiful display
   const CustomOption = (props: any) => {
     const { data } = props;
+    const displayRole = data?.role || data?.user_type;
     return (
       <components.Option {...props}>
         <div className="d-flex align-items-center gap-2">
@@ -267,19 +268,19 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               >
                 {data.name}
               </div>
-              {data.user_type && (
+              {displayRole && (
                 <span
                   style={{
                     backgroundColor:
-                      data.user_type === "CLIENT" ? "#d1ecf1" : "#fff3cd",
-                    color: data.user_type === "CLIENT" ? "#0c5460" : "#856404",
+                      displayRole === "CLIENT" ? "#d1ecf1" : "#fff3cd",
+                    color: displayRole === "CLIENT" ? "#0c5460" : "#856404",
                     padding: "2px 6px",
                     borderRadius: "4px",
                     fontSize: "12px",
                     fontWeight: 600,
                   }}
                 >
-                  {formatChoiceFieldValue(data.user_type) || ""}
+                  {formatChoiceFieldValue(displayRole) || ""}
                 </span>
               )}
             </div>
@@ -304,6 +305,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   // Custom SingleValue Component for selected value
   const CustomSingleValue = (props: any) => {
     const { data } = props;
+    const displayRole = data?.role || data?.user_type;
     return (
       <components.SingleValue {...props}>
         <div className="d-flex align-items-center gap-2">
@@ -340,19 +342,19 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               className="d-flex gap-2"
             >
               <div>{data.name}</div>
-              {data.user_type && (
+              {displayRole && (
                 <span
                   style={{
                     backgroundColor:
-                      data.user_type === "CLIENT" ? "#d1ecf1" : "#fff3cd",
-                    color: data.user_type === "CLIENT" ? "#0c5460" : "#856404",
+                      displayRole === "CLIENT" ? "#d1ecf1" : "#fff3cd",
+                    color: displayRole === "CLIENT" ? "#0c5460" : "#856404",
                     padding: "2px 6px",
                     borderRadius: "4px",
                     fontSize: "12px",
                     fontWeight: 600,
                   }}
                 >
-                  {formatChoiceFieldValue(data.user_type) || ""}
+                  {formatChoiceFieldValue(displayRole) || ""}
                 </span>
               )}
             </div>
@@ -386,6 +388,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         lead?.phone_number ||
         null;
       const userType = user?.user_type || lead?.user_type;
+      const role = user?.role || lead?.role || userType;
       const profileImage = user?.profile_image || lead?.profile_image;
 
       return {
@@ -394,6 +397,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         name: name,
         email: email,
         phone: phone,
+        role: role,
         user_type: userType,
         profile_image: profileImage,
       };
