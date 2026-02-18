@@ -325,7 +325,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                         <>
                           <span>{user?.created_by?.name}</span>
                           <small className="text-muted d-block">
-                            {user?.created_by?.user_type}
+                            (
+                            {formatChoiceFieldValue(
+                              user?.created_by?.user_type,
+                            )}
+                            )
                           </small>
                         </>
                       ) : (

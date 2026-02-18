@@ -1,4 +1,4 @@
-import { useAddLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
+import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -23,7 +23,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   onLeadCreated,
   onOpenCase,
 }) => {
-  const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();
+  const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -130,7 +130,33 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         newErrors.phone = Array.isArray(user.phone)
           ? user.phone
           : [String(user.phone)];
+      if (user.title)
+        newErrors.title = Array.isArray(user.title)
+          ? user.title
+          : [String(user.title)];
     }
+
+    // Also support flat (non-nested) field errors returned by /auth/user-list/
+    if (data?.first_name)
+      newErrors.firstName = Array.isArray(data.first_name)
+        ? data.first_name
+        : [String(data.first_name)];
+    if (data?.middle_name)
+      newErrors.middleName = Array.isArray(data.middle_name)
+        ? data.middle_name
+        : [String(data.middle_name)];
+    if (data?.last_name)
+      newErrors.lastName = Array.isArray(data.last_name)
+        ? data.last_name
+        : [String(data.last_name)];
+    if (data?.email)
+      newErrors.email = Array.isArray(data.email)
+        ? data.email
+        : [String(data.email)];
+    if (data?.phone)
+      newErrors.phone = Array.isArray(data.phone)
+        ? data.phone
+        : [String(data.phone)];
 
     // Top-level field errors
     if (data?.gender)
@@ -146,6 +172,25 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         ? data.title
         : [String(data.title)];
 
+    if (data?.source)
+      newErrors.source = Array.isArray(data.source)
+        ? data.source
+        : [String(data.source)];
+    if (data?.other_source)
+      newErrors.other_source = Array.isArray(data.other_source)
+        ? data.other_source
+        : [String(data.other_source)];
+    if (data?.enquiry_type)
+      newErrors.enquiry_type = Array.isArray(data.enquiry_type)
+        ? data.enquiry_type
+        : [String(data.enquiry_type)];
+    if (data?.other_enquiry_type)
+      newErrors.other_enquiry_type = Array.isArray(data.other_enquiry_type)
+        ? data.other_enquiry_type
+        : [String(data.other_enquiry_type)];
+    if (data?.note)
+      newErrors.note = Array.isArray(data.note) ? data.note : [String(data.note)];
+
     // If API returns a detail/message, attach it as a general error under _general
     if (data?.detail && typeof data.detail === "string")
       newErrors._general = [data.detail];
@@ -156,25 +201,25 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   const handleSaveAndCreateCase = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      user: {
-        title: formData.title,
-        first_name: formData.firstName,
-        middle_name: formData.middleName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || null,
-      },
+      title: formData.title,
+      first_name: formData.firstName,
+      middle_name: formData.middleName,
+      last_name: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || null,
+      role: "LEAD",
       source: formData.source || "",
       other_source: formData.other_source,
       enquiry_type: formData.enquiry_type,
+      other_enquiry_type: formData.other_enquiry_type,
       note: formData.note,
     };
 
     try {
-      const result = await addLeadDetails({ payload });
+      const result = await addAuthUser({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
-        const leadId = result.data.user?.id;
+        const leadId = (result.data as any)?.id ?? (result.data as any)?.user?.id;
         setCreatedLeadId(leadId);
         setCreatedLeadData(result.data);
         // If a parent provided onLeadCreated, notify it as well
@@ -233,22 +278,22 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   const handleSaveLead = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      user: {
-        title: formData.title,
-        first_name: formData.firstName,
-        middle_name: formData.middleName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || null,
-      },
+      title: formData.title,
+      first_name: formData.firstName,
+      middle_name: formData.middleName,
+      last_name: formData.lastName,
+      email: formData.email,
+      phone: formData.phone || null,
+      role: "LEAD",
       source: formData.source || "",
       other_source: formData.other_source,
       enquiry_type: formData.enquiry_type,
+      other_enquiry_type: formData.other_enquiry_type,
       note: formData.note,
     };
 
     try {
-      const result = await addLeadDetails({ payload });
+      const result = await addAuthUser({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         // Notify parent with the full created lead payload so it
@@ -311,6 +356,15 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       ]
         .filter(Boolean)
         .join(" ")
+    : createdLeadData
+      ? [
+          createdLeadData.title,
+          createdLeadData.first_name,
+          createdLeadData.middle_name,
+          createdLeadData.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ")
     : formData.firstName || formData.lastName
       ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
       : undefined;

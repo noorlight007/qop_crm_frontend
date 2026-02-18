@@ -1,4 +1,4 @@
-import { useAddLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
+import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -22,7 +22,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   onLeadCreated,
   onOpenCase,
 }) => {
-  const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();
+  const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -120,6 +120,28 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           : [String(user.title)];
     }
 
+    // Also support flat (non-nested) field errors returned by /auth/user-list/
+    if (data?.first_name)
+      newErrors.firstName = Array.isArray(data.first_name)
+        ? data.first_name
+        : [String(data.first_name)];
+    if (data?.middle_name)
+      newErrors.middleName = Array.isArray(data.middle_name)
+        ? data.middle_name
+        : [String(data.middle_name)];
+    if (data?.last_name)
+      newErrors.lastName = Array.isArray(data.last_name)
+        ? data.last_name
+        : [String(data.last_name)];
+    if (data?.email)
+      newErrors.email = Array.isArray(data.email)
+        ? data.email
+        : [String(data.email)];
+    if (data?.phone)
+      newErrors.phone = Array.isArray(data.phone)
+        ? data.phone
+        : [String(data.phone)];
+
     if (data?.title)
       newErrors.title = Array.isArray(data.title)
         ? data.title
@@ -152,14 +174,14 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
   };
 
   const buildPayload = () => ({
-    user: {
-      title: formData.title,
-      first_name: formData.firstName,
-      middle_name: formData.middleName,
-      last_name: formData.lastName,
-      email: formData.email,
-      phone: formData.phone || null,
-    },
+    // /auth/user-list/ expects a flat payload.
+    title: formData.title,
+    first_name: formData.firstName,
+    middle_name: formData.middleName,
+    last_name: formData.lastName,
+    email: formData.email,
+    phone: formData.phone || null,
+    role: "LEAD",
     source: formData.source || "",
     other_source: formData.other_source,
     enquiry_type: formData.enquiry_type,
@@ -188,7 +210,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadDetails({ payload });
+      const result = await addAuthUser({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         if (onLeadCreated && result.data) onLeadCreated(result.data as any);
@@ -230,24 +252,43 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       ]
         .filter(Boolean)
         .join(" ")
-    : formData.firstName || formData.lastName
-      ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
-      : undefined;
+    : createdLeadData
+      ? [
+          createdLeadData.title,
+          createdLeadData.first_name,
+          createdLeadData.middle_name,
+          createdLeadData.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ")
+      : formData.firstName || formData.lastName
+        ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
+        : undefined;
 
   const handleSaveAndCreateCase = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = buildPayload();
 
     try {
-      const result = await addLeadDetails({ payload });
+      const result = await addAuthUser({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
-        const leadId = result.data.user?.id;
+        const leadId =
+          (result.data as any)?.id ?? (result.data as any)?.user?.id;
         setCreatedLeadData(result.data);
         if (onLeadCreated && result.data) onLeadCreated(result.data as any);
+
+        const leadName = (() => {
+          const d: any = result.data;
+          const u = d?.user || d;
+          return [u?.title, u?.first_name, u?.middle_name, u?.last_name]
+            .filter(Boolean)
+            .join(" ");
+        })();
+
         onOpenCase?.({
           leadId,
-          leadName: computedLeadName,
+          leadName: leadName || computedLeadName,
           leadData: result.data,
         });
         resetForm();
@@ -544,7 +585,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           </Button>
           <Button
             type="submit"
-            color="success"
+            color="secondary"
             disabled={isLoading}
             onClick={() => setSubmitType("case")}
           >
@@ -552,7 +593,7 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
               ? "Saving..."
               : "Save & Create Case"}
           </Button>
-          <Button color="secondary" onClick={toggle}>
+          <Button color="danger" onClick={toggle}>
             Cancel
           </Button>
         </ModalFooter>
