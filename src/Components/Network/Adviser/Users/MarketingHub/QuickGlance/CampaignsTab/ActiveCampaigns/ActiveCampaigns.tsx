@@ -1,3 +1,4 @@
+import getCurrencySign from "@/utils/currency";
 import { Badge, Button, Card, CardBody, Col, Progress, Row } from "reactstrap";
 
 const ActiveCampaigns: React.FC = () => {
@@ -41,14 +42,14 @@ const ActiveCampaigns: React.FC = () => {
                     <p className="mb-1">
                       <span className="text-muted">Budget</span>
                       <br />
-                      <strong>£500</strong>
+                      <strong>{getCurrencySign()}500</strong>
                     </p>
                   </Col>
                   <Col xs={4} md={2}>
                     <p className="mb-1">
                       <span className="text-muted">Spent</span>
                       <br />
-                      <strong>£245</strong>
+                      <strong>{getCurrencySign()}245</strong>
                     </p>
                   </Col>
                   <Col xs={4} md={2}>
@@ -76,7 +77,7 @@ const ActiveCampaigns: React.FC = () => {
                     <p className="mb-1">
                       <span className="text-muted">Cost/Lead</span>
                       <br />
-                      <strong>£13.61</strong>
+                      <strong>{getCurrencySign()}13.61</strong>
                     </p>
                   </Col>
                 </Row>
@@ -135,14 +136,14 @@ const ActiveCampaigns: React.FC = () => {
                     <p className="mb-1">
                       <span className="text-muted">Budget</span>
                       <br />
-                      <strong>£800</strong>
+                      <strong>{getCurrencySign()}800</strong>
                     </p>
                   </Col>
                   <Col xs={4} md={2}>
                     <p className="mb-1">
                       <span className="text-muted">Spent</span>
                       <br />
-                      <strong>£245</strong>
+                      <strong>{getCurrencySign()}245</strong>
                     </p>
                   </Col>
                   <Col xs={4} md={2}>
@@ -170,7 +171,7 @@ const ActiveCampaigns: React.FC = () => {
                     <p className="mb-1">
                       <span className="text-muted">Cost/Lead</span>
                       <br />
-                      <strong>£47.25</strong>
+                      <strong>{getCurrencySign()}47.25</strong>
                     </p>
                   </Col>
                 </Row>
@@ -229,14 +230,14 @@ const ActiveCampaigns: React.FC = () => {
                     <p className="mb-1">
                       <span className="text-muted">Budget</span>
                       <br />
-                      <strong>£500</strong>
+                      <strong>{getCurrencySign()}500</strong>
                     </p>
                   </Col>
                   <Col xs={4} md={2}>
                     <p className="mb-1">
                       <span className="text-muted">Spent</span>
                       <br />
-                      <strong>£245</strong>
+                      <strong>{getCurrencySign()}245</strong>
                     </p>
                   </Col>
                   <Col xs={4} md={2}>
@@ -264,7 +265,7 @@ const ActiveCampaigns: React.FC = () => {
                     <p className="mb-1">
                       <span className="text-muted">Cost/Lead</span>
                       <br />
-                      <strong>£13.61</strong>
+                      <strong>{getCurrencySign()}13.61</strong>
                     </p>
                   </Col>
                 </Row>

@@ -1,5 +1,6 @@
 import { useAddDMPsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { AddNewDMPsModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -134,7 +135,7 @@ const AddNewDMPsModal: React.FC<AddNewDMPsModalProps> = ({
               <FormGroup>
                 <Label for="outstanding_balance">Outstanding Balance</Label>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     id="outstanding_balance"
                     name="outstanding_balance"

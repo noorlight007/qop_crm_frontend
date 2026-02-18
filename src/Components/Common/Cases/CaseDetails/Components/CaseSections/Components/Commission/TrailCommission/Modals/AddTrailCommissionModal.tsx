@@ -1,5 +1,6 @@
 import { useAddTrailCommissionMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Commission/CommissionApi";
 import { AddLumpSumAndTrailModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -189,7 +190,7 @@ const AddTrailCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
             </Col>
 
             <Col md={6}>
-              <Label>Monthly Payment(£)</Label>
+              <Label>Monthly Payment({getCurrencySign()})</Label>
               <Input
                 type="number"
                 min={0}

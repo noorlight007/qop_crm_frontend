@@ -2,6 +2,7 @@ import {
   useGetCaseLoanDetailsQuery,
   useGetLoanDetailsQuery,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/LoanDetails/LoanDetailsApi";
+import getCurrencySign from "@/utils/currency";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useParams } from "next/navigation";
 import { FC } from "react";
@@ -48,7 +49,7 @@ const PropertyValuationCard: FC = () => {
               <FormGroup>
                 <Label for="property_value">Property Purchase Price</Label>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     id="property_value"
                     name="property_value"
@@ -68,7 +69,7 @@ const PropertyValuationCard: FC = () => {
                 Property Estimated Valuation
               </Label>
               <InputGroup>
-                <InputGroupText>£</InputGroupText>
+                <InputGroupText>{getCurrencySign()}</InputGroupText>
                 <Input
                   id="estimated_valuation"
                   name="estimated_valuation"

@@ -1,3 +1,4 @@
+import getCurrencySign from "@/utils/currency";
 import { BiSend } from "react-icons/bi";
 import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { TbMessage2, TbTag, TbUser } from "react-icons/tb";
@@ -72,7 +73,7 @@ const SocialMediaInbox: React.FC = () => {
       },
       {
         from: "user",
-        text: "I'm looking to buy a £250k property and have a £50k deposit. I'm employed full-time with a £45k salary.",
+        text: `I'm looking to buy a ${getCurrencySign()}250k property and have a ${getCurrencySign()}50k deposit. I'm employed full-time with a ${getCurrencySign()}45k salary.`,
         time: "2:35 PM",
       },
       {

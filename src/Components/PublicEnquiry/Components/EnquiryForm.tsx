@@ -1,6 +1,7 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useSubmitEnquiryMutation } from "@/Redux/Reducers/PublicEnquiry/PublicEnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -603,7 +604,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Estimated Property Value (£)</Label>
+                        <Label>Estimated Property Value ({getCurrencySign()})</Label>
                         <Input
                           name="estimated_property_value"
                           type="number"
@@ -626,7 +627,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Mortgage Required (£)</Label>
+                        <Label>Approximate Mortgage Required ({getCurrencySign()})</Label>
                         <Input
                           name="approximate_mortgage_required"
                           type="number"
@@ -649,7 +650,7 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Deposit Available (£ or %)</Label>
+                        <Label>Approximate Deposit Available ({getCurrencySign()} or %)</Label>
                         <Input
                           name="approximate_deposit_available"
                           type="number"
@@ -798,15 +799,15 @@ const InitialEnquiryForm: React.FC = () => {
                         )}
 
                         <p>
-                          <strong>Property Value:</strong> £
+                          <strong>Property Value:</strong> {getCurrencySign()}
                           {formData.estimated_property_value || 0}
                         </p>
                         <p>
-                          <strong>Mortgage Required:</strong> £
+                          <strong>Mortgage Required:</strong> {getCurrencySign()}
                           {formData.approximate_mortgage_required || 0}
                         </p>
                         <p>
-                          <strong>Deposit Available:</strong> £
+                          <strong>Deposit Available:</strong> {getCurrencySign()}
                           {formData.approximate_deposit_available || 0}
                         </p>
                       </div>

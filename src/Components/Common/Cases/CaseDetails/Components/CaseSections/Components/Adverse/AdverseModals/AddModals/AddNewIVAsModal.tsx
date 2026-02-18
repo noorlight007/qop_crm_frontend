@@ -1,5 +1,6 @@
 import { useAddIVAsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { AddNewIVAsModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
@@ -90,7 +91,7 @@ const AddNewIVAsModal: React.FC<AddNewIVAsModalProps> = ({
               <FormGroup>
                 <Label for="outstanding_balance">Outstanding Balance</Label>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     id="outstanding_balance"
                     name="outstanding_balance"

@@ -1,3 +1,4 @@
+import getCurrencySign from "@/utils/currency";
 import React from "react";
 import { Card, Badge, Row, Col } from "reactstrap";
 
@@ -27,7 +28,7 @@ const ClientLists = () => {
 
               <div className="w-100 d-flex justify-content-between align-items-center">
                 <span className="text-muted">Value:</span>
-                <span className="fw-medium">£450K</span>
+                <span className="fw-medium">{getCurrencySign()}450K</span>
               </div>
 
               <div className="w-100 d-flex justify-content-between align-items-center">
@@ -76,7 +77,7 @@ const ClientLists = () => {
 
               <div className="w-100 d-flex justify-content-between align-items-center">
                 <span className="text-muted">Value:</span>
-                <span className="fw-medium">£450K</span>
+                <span className="fw-medium">{getCurrencySign()}450K</span>
               </div>
 
               <div className="w-100 d-flex justify-content-between align-items-center">
@@ -125,7 +126,7 @@ const ClientLists = () => {
 
               <div className="w-100 d-flex justify-content-between align-items-center">
                 <span className="text-muted">Value:</span>
-                <span className="fw-medium">£450K</span>
+                <span className="fw-medium">{getCurrencySign()}450K</span>
               </div>
 
               <div className="w-100 d-flex justify-content-between align-items-center">

@@ -5,6 +5,7 @@ import { FC } from "react";
 import { Card, Col, Row } from "reactstrap";
 import FeeInTable from "./FeesTabContents/FeesInTable";
 import FeeOutTable from "./FeesTabContents/FeesOutTable";
+import getCurrencySign from "@/utils/currency";
 
 export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
   const { casealias } = useParams();
@@ -33,7 +34,7 @@ export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
           <Col>
             <div className="d-flex justify-content-center gap-2 mt-3 bg-light-primary p-3 rounded">
               <h6 className="mb-0">Total Fees In:</h6>
-              <h5>£{feesCaculateData?.total_fees_in || "0.00"}</h5>
+              <h5>{getCurrencySign()}{feesCaculateData?.total_fees_in || "0.00"}</h5>
             </div>
           </Col>
         </Row>
@@ -41,7 +42,7 @@ export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
           <Col>
             <div className="d-flex justify-content-center gap-2 mt-3 bg-light-info p-3 rounded">
               <h6 className="mb-0">Total Fees Out:</h6>
-              <h5>£{feesCaculateData?.total_fees_out || "0.00"}</h5>
+              <h5>{getCurrencySign()}{feesCaculateData?.total_fees_out || "0.00"}</h5>
             </div>
           </Col>
         </Row>
@@ -49,7 +50,7 @@ export const FeesTabContent: FC<FeesTabContentProps> = ({ tabId }) => {
           <Col>
             <div className="d-flex justify-content-center gap-2 mt-3 bg-primary p-3 rounded">
               <h6 className="mb-0">Net Fees:</h6>
-              <h5>£{feesCaculateData?.net_fees || "0.00"}</h5>
+              <h5>{getCurrencySign()}{feesCaculateData?.net_fees || "0.00"}</h5>
             </div>
           </Col>
         </Row>

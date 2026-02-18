@@ -1,5 +1,6 @@
 import { useGetCaseBudgetPlannerQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerApi";
 import { DebtRepaymentTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
+import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useState } from "react";
@@ -422,7 +423,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
             </Label>
             <Col sm={6}>
               <InputGroup>
-                <InputGroupText>£</InputGroupText>
+                <InputGroupText>{getCurrencySign()}</InputGroupText>
                 <Input
                   type="number"
                   name={fieldName}
@@ -566,7 +567,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               </Label>
               <Col sm={6}>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     type="number"
                     name={`${prefix}.TotalDebtRepayment`}
@@ -601,7 +602,7 @@ const DebtRepaymentTabContent: FC<DebtRepaymentTabContentProps> = ({
               </Label>
               <Col sm={6}>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     type="number"
                     name={`${prefix}.TotalDebt`}
