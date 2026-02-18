@@ -34,6 +34,15 @@ export interface AddLeadModalProps {
   isOpen: boolean;
   toggle: () => void;
   onLeadCreated?: (lead: Partial<LeadsInfo> | any) => void;
+  /**
+   * Optional callback to open the AddNewCaseModal from the parent.
+   * Called when user clicks "Save & Create Case" and a lead was created.
+   */
+  onOpenCase?: (payload: {
+    leadId?: number;
+    leadName?: string | undefined;
+    leadData?: any;
+  }) => void;
 }
 export interface ViewLeadModalProps {
   isOpen: boolean;

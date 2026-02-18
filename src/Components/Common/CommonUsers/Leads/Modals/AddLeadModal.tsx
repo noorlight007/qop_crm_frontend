@@ -1,6 +1,5 @@
 import { useAddLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
 import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
-import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -18,12 +17,11 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import AddNewCaseModal from "../../../Cases/Modals/AddNewCaseModal";
-
 const AddLeadModal: React.FC<AddLeadModalProps> = ({
   isOpen,
   toggle,
   onLeadCreated,
+  onOpenCase,
 }) => {
   const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();
   const router = useRouter();
@@ -44,10 +42,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
 
   // Hold per-field validation errors returned from API
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-
-  // Add state for AddNewCaseModal
-  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
-  const toggleCaseModal = () => setIsCaseModalOpen((prev) => !prev);
 
   const [createdLeadId, setCreatedLeadId] = useState<number | null>(null);
   const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
@@ -188,8 +182,28 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
         if (onLeadCreated && result.data) {
           onLeadCreated(result.data as any);
         }
-        setIsCaseModalOpen(true);
+        // Tell parent to open the Case modal (so it can render the case modal
+        // outside this component) then clear + close the Add Lead modal.
+        onOpenCase?.({
+          leadId,
+          leadName: computedLeadName,
+          leadData: result.data,
+        });
+        setFormData({
+          title: "",
+          firstName: "",
+          middleName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          source: "",
+          other_source: "",
+          enquiry_type: "",
+          other_enquiry_type: "",
+          note: "",
+        });
         setErrors({});
+        toggle();
       } else if ("error" in result) {
         const normalized = normalizeApiErrors(result);
         setErrors(normalized);
@@ -214,12 +228,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       // Clear which button was submitting so only clicked button shows loading while active
       setSubmitType(null);
     }
-  };
-
-  const handleCaseCreated = (caseAlias: string) => {
-    setIsCaseModalOpen(false);
-    toggle();
-    router.push(getCaseUrl(caseAlias, userType as string));
   };
 
   const handleSaveLead = async (e: React.FormEvent) => {
@@ -291,6 +299,21 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
       setSubmitType(null);
     }
   };
+
+  // derive leadName to pass to AddNewCaseModal — prefer API-returned data so the name
+  // remains available after we clear the form when opening the case modal.
+  const computedLeadName = createdLeadData?.user
+    ? [
+        createdLeadData.user.title,
+        createdLeadData.user.first_name,
+        createdLeadData.user.middle_name,
+        createdLeadData.user.last_name,
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : formData.firstName || formData.lastName
+      ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
+      : undefined;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -572,22 +595,6 @@ const AddLeadModal: React.FC<AddLeadModalProps> = ({
           </Button>
         </ModalFooter>
       </Form>
-      <AddNewCaseModal
-        isOpen={isCaseModalOpen}
-        toggle={toggleCaseModal}
-        leadId={createdLeadId || undefined}
-        leadName={
-          formData.firstName || formData.lastName
-            ? `${formData.title ? formData.title + " " : ""}${
-                formData.firstName
-              }${formData.middleName ? " " + formData.middleName : ""} ${
-                formData.lastName
-              }`
-            : undefined
-        }
-        leadData={createdLeadData}
-        onCaseCreated={handleCaseCreated}
-      />
     </Modal>
   );
 };

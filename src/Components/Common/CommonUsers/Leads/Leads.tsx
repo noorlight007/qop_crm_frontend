@@ -23,6 +23,7 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
 import AddLeadModal from "./Modals/AddLeadModal";
 import DeleteLeadModal from "./Modals/DeleteLeadModal";
 import UpdateLeadModal from "./Modals/UpdateLeadModal";
@@ -40,6 +41,18 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 12 }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState<LeadsInfo | null>(null);
+  // State to host AddNewCaseModal when opened from AddLeadModal so closing the AddLead
+  // modal doesn't unmount the case modal.
+  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+  const [caseModalLeadId, setCaseModalLeadId] = useState<number | undefined>(
+    undefined,
+  );
+  const [caseModalLeadName, setCaseModalLeadName] = useState<
+    string | undefined
+  >(undefined);
+  const [caseModalLeadData, setCaseModalLeadData] = useState<any | undefined>(
+    undefined,
+  );
   // rtk hooks - pass pagination and debounced search params to the query
   const { data: leadData, isLoading } = useGetLeadDetailsQuery({
     page: currentPage,
@@ -90,6 +103,26 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 12 }) => {
   // openmodals
   const openAddModal = () => {
     toggleModal();
+  };
+
+  // Open AddNewCaseModal from AddLeadModal (keeps case modal mounted at the page
+  // level so it survives closing the Add Lead modal).
+  const openCaseModalFromLead = (payload: {
+    leadId?: number;
+    leadName?: string | undefined;
+    leadData?: any;
+  }) => {
+    setCaseModalLeadId(payload.leadId);
+    setCaseModalLeadName(payload.leadName);
+    setCaseModalLeadData(payload.leadData);
+    setIsCaseModalOpen(true);
+  };
+
+  const closeCaseModal = () => {
+    setIsCaseModalOpen(false);
+    setCaseModalLeadId(undefined);
+    setCaseModalLeadName(undefined);
+    setCaseModalLeadData(undefined);
   };
 
   // Debounce search input to avoid firing API on every keystroke
@@ -430,7 +463,11 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 12 }) => {
         </Row>
 
         {/* Modals */}
-        <AddLeadModal isOpen={isModalOpen} toggle={toggleModal} />
+        <AddLeadModal
+          isOpen={isModalOpen}
+          toggle={toggleModal}
+          onOpenCase={openCaseModalFromLead}
+        />
         <ViewLeadModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
@@ -458,6 +495,15 @@ const Leads: React.FC<LeadsProps> = ({ leadsPerPage = 12 }) => {
               ? leadToDelete?.user?.middle_name + " "
               : ""
           }${leadToDelete?.user?.last_name}`}
+        />
+
+        {/* AddNewCaseModal opened from AddLeadModal (kept at page-level) */}
+        <AddNewCaseModal
+          isOpen={isCaseModalOpen}
+          toggle={closeCaseModal}
+          leadId={caseModalLeadId}
+          leadName={caseModalLeadName}
+          leadData={caseModalLeadData}
         />
         {/* modals end */}
       </CardBody>
