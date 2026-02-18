@@ -4,6 +4,7 @@ import {
   LeaseTerm,
 } from "@/Types/Common/Calculators/StampDutyCalculatorTypes";
 import getCurrencySign from "@/utils/currency";
+import { formatPrice } from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -773,8 +774,7 @@ const StampDutyCalculator: React.FC = () => {
                               newErrors.sharedOwnershipMarketValue =
                                 "Please enter a valid price";
                             } else if (value > 500000) {
-                              newErrors.sharedOwnershipMarketValue =
-                                `Market value cannot exceed ${getCurrencySign()}500,000 for this option`;
+                              newErrors.sharedOwnershipMarketValue = `Market value cannot exceed ${getCurrencySign()}500,000 for this option`;
                             }
                           }
                         } else if (
@@ -794,8 +794,7 @@ const StampDutyCalculator: React.FC = () => {
                               newErrors.sharedOwnershipInitialShare =
                                 "Please enter a valid price";
                             } else if (value > 500000) {
-                              newErrors.sharedOwnershipInitialShare =
-                                `Initial share price cannot exceed ${getCurrencySign()}500,000 for this option`;
+                              newErrors.sharedOwnershipInitialShare = `Initial share price cannot exceed ${getCurrencySign()}500,000 for this option`;
                             }
                           }
                         }
@@ -946,11 +945,6 @@ const StampDutyCalculator: React.FC = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
-  };
-
-  const formatNumber = (value: string): string => {
-    const numericValue = value.replace(/[^0-9]/g, "");
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   const resetCalculator = () => {
@@ -1681,9 +1675,7 @@ const StampDutyCalculator: React.FC = () => {
                                     : formData.sharedOwnershipInitialShare
                                 }
                                 onChange={(e) => {
-                                  const formatted = formatNumber(
-                                    e.target.value,
-                                  );
+                                  const formatted = formatPrice(e.target.value);
                                   if (
                                     formData.sharedMarketValueElection ===
                                     "market"
@@ -1897,7 +1889,7 @@ const StampDutyCalculator: React.FC = () => {
                 type="text"
                 value={formData.purchasePrice}
                 onChange={(e) => {
-                  const formatted = formatNumber(e.target.value);
+                  const formatted = formatPrice(e.target.value);
                   setFormData({ ...formData, purchasePrice: formatted });
                 }}
                 placeholder="e.g., 300,000"
@@ -1968,7 +1960,7 @@ const StampDutyCalculator: React.FC = () => {
                   id={`year${index + 1}Rent`}
                   value={formData.yearlyRents[index] || ""}
                   onChange={(e) => {
-                    const formatted = formatNumber(e.target.value);
+                    const formatted = formatPrice(e.target.value);
                     const newRents = [...formData.yearlyRents];
                     newRents[index] = formatted;
                     setFormData({ ...formData, yearlyRents: newRents });
@@ -2277,11 +2269,7 @@ const StampDutyCalculator: React.FC = () => {
               {/* Navigation Buttons */}
               <div className="mt-4 d-flex justify-content-between">
                 {currentStep > 1 ? (
-                  <Button
-                    color="secondary"
-                    outline
-                    onClick={handleBack}
-                  >
+                  <Button color="secondary" outline onClick={handleBack}>
                     ← Back
                   </Button>
                 ) : (
