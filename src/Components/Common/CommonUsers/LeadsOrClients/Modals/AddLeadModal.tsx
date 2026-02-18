@@ -1,5 +1,5 @@
 import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
-import { AddAuthUserModalProps } from "@/Types/Common/CommonUsers/AuthUsersTypes";
+import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -16,7 +16,7 @@ import {
   Row,
 } from "reactstrap";
 
-const AddLeadModal: React.FC<AddAuthUserModalProps> = ({ isOpen, toggle }) => {
+const AddLeadModal: React.FC<AddLeadsModalProps> = ({ isOpen, toggle }) => {
   const pathname = window.location.pathname;
   const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
   const [formData, setFormData] = useState({
@@ -26,12 +26,11 @@ const AddLeadModal: React.FC<AddAuthUserModalProps> = ({ isOpen, toggle }) => {
     lastName: "",
     email: "",
     phone: "",
-    password: "",
-    gender: "",
-    designation: "",
-    joining_date: "",
-    company_name: "",
-    company_address: "",
+    source: "",
+    other_source: "",
+    enquiry_type: "",
+    other_enquiry_type: "",
+    note: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -120,24 +119,12 @@ const AddLeadModal: React.FC<AddAuthUserModalProps> = ({ isOpen, toggle }) => {
       last_name: formData.lastName,
       email: formData.email,
       phone: formData.phone || null,
-      password: formData.password,
-      gender: formData.gender ? formData.gender : null,
-      designation: formData.designation,
-      joining_date: formData.joining_date ? formData.joining_date : null,
-      role:
-        pathname === "/network/director/advisers"
-          ? "NETWORK_ADVISER"
-          : pathname === "/network/director/compliances"
-            ? "NETWORK_COMPLIANCE"
-            : pathname === "/organisation/director/advisers"
-              ? "ORGANISATION_ADVISER"
-              : pathname === "/organisation/director/admins"
-                ? "ORGANISATION_ADMIN"
-                : pathname === "/organisation/director/introducers"
-                  ? "INTRODUCER"
-                  : "",
-      company_name: formData.company_name,
-      company_address: formData.company_address,
+      source: formData.source,
+      other_source: formData.other_source || null,
+      enquiry_type: formData.enquiry_type,
+      other_enquiry_type: formData.other_enquiry_type || null,
+      role: "LEAD",
+      note: formData.note || null,
     };
 
     try {
@@ -152,12 +139,11 @@ const AddLeadModal: React.FC<AddAuthUserModalProps> = ({ isOpen, toggle }) => {
           lastName: "",
           email: "",
           phone: "",
-          password: "",
-          gender: "",
-          designation: "",
-          joining_date: "",
-          company_name: "",
-          company_address: "",
+          source: "",
+          other_source: "",
+          enquiry_type: "",
+          other_enquiry_type: "",
+          note: "",
         });
         setErrors({});
         toggle();
@@ -344,114 +330,110 @@ const AddLeadModal: React.FC<AddAuthUserModalProps> = ({ isOpen, toggle }) => {
                 </FormGroup>
               </Col>
 
-              {pathname === "/network/director/compliances" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="source">Source</Label>
+                  <Input
+                    id="source"
+                    name="source"
+                    type="select"
+                    value={formData.source || ""}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select...</option>
+                    <option value="GOOGLE">Google</option>
+                    <option value="SOCIAL_MEDIA">Social Media</option>
+                    <option value="REFERRAL">Referral</option>
+                    <option value="WEBSITE">Website</option>
+                    <option value="OTHER">Other</option>
+                  </Input>
+                  {getFieldError("source") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("source")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+              {formData.source === "OTHER" && (
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="designation">
-                      Designation<span className="text-danger">*</span>
-                    </Label>
+                    <Label for="other_source">Other Source</Label>
                     <Input
-                      id="designation"
-                      name="designation"
+                      id="other_source"
+                      name="other_source"
                       type="text"
-                      value={formData.designation || ""}
+                      value={formData.other_source || ""}
                       onChange={handleInputChange}
-                      required
                     />
-                    {getFieldError("designation") && (
+                    {getFieldError("other_source") && (
                       <div className="text-danger small mt-1">
-                        {getFieldError("designation")}
+                        {getFieldError("other_source")}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
               )}
-
-              {pathname !== "/organisation/director/introducers" &&
-                pathname !== "/network/director/compliances" && (
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label for="gender">
-                        Gender<span className="text-danger">*</span>
-                      </Label>
-                      <Input
-                        id="gender"
-                        name="gender"
-                        type="select"
-                        value={formData.gender}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Select...</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                        <option value="OTHER">Other</option>
-                      </Input>
-                      {getFieldError("gender") && (
-                        <div className="text-danger small mt-1">
-                          {getFieldError("gender")}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Col>
-                )}
-              {pathname === "/organisation/director/introducers" && (
-                <>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label for="company_name">
-                        Company Name<span className="text-danger">*</span>
-                      </Label>
-                      <Input
-                        id="company_name"
-                        name="company_name"
-                        type="text"
-                        value={formData.company_name}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      {getFieldError("company_name") && (
-                        <div className="text-danger small mt-1">
-                          {getFieldError("company_name")}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Col>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label for="company_address">
-                        Company Address<span className="text-danger">*</span>
-                      </Label>
-                      <Input
-                        id="company_address"
-                        name="company_address"
-                        type="text"
-                        value={formData.company_address}
-                        onChange={handleInputChange}
-                        required
-                      />
-                      {getFieldError("company_address") && (
-                        <div className="text-danger small mt-1">
-                          {getFieldError("company_address")}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Col>
-                </>
-              )}
               <Col md={6}>
                 <FormGroup>
-                  <Label for="joining_date">Joining Date</Label>
+                  <Label for="enquiry_type">Enquiry Type</Label>
                   <Input
-                    id="joining_date"
-                    name="joining_date"
-                    type="date"
-                    value={formData.joining_date}
+                    id="enquiry_type"
+                    name="enquiry_type"
+                    type="select"
+                    value={formData.enquiry_type || ""}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select...</option>
+                    <option value="PURCHASE">Purchase</option>
+                    <option value="REMORTGAGE">Remortgage</option>
+                    <option value="BUY_TO_LET">Buy to Let</option>
+                    <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                    <option value="COMMERCIAL_MORTGAGE">
+                      Commercial Mortgage
+                    </option>
+                    <option value="PROTECTION">Protection</option>
+                    <option value="GENERAL_INSURANCE">General Insurance</option>
+                    <option value="OTHER">Other</option>
+                  </Input>
+                  {getFieldError("enquiry_type") && (
+                    <div className="text-danger small mt-1">
+                      {getFieldError("enquiry_type")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+              {formData.enquiry_type === "OTHER" && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="other_enquiry_type">Other Enquiry Type</Label>
+                    <Input
+                      id="other_enquiry_type"
+                      name="other_enquiry_type"
+                      type="text"
+                      value={formData.other_enquiry_type || ""}
+                      onChange={handleInputChange}
+                    />
+                    {getFieldError("other_enquiry_type") && (
+                      <div className="text-danger small mt-1">
+                        {getFieldError("other_enquiry_type")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+              <Col md={12}>
+                <FormGroup>
+                  <Label for="note">Note</Label>
+                  <Input
+                    id="note"
+                    name="note"
+                    type="textarea"
+                    value={formData.note || ""}
                     onChange={handleInputChange}
                   />
-                  {getFieldError("joining_date") && (
+                  {getFieldError("note") && (
                     <div className="text-danger small mt-1">
-                      {getFieldError("joining_date")}
+                      {getFieldError("note")}
                     </div>
                   )}
                 </FormGroup>
@@ -459,7 +441,7 @@ const AddLeadModal: React.FC<AddAuthUserModalProps> = ({ isOpen, toggle }) => {
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={toggle}>
+            <Button color="danger" onClick={toggle}>
               Cancel
             </Button>
             <Button color="primary">

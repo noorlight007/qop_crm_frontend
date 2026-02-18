@@ -28,6 +28,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddLeadModal from "./Modals/AddLeadModal";
+import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
 
 const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   title,
@@ -413,11 +414,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
         </Row>
 
         {/* Modals */}
-        {/* <ViewAuthUserModal
+        <ViewLeadOrClientModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedAuthUser={selectedAuthUser}
-        /> */}
+          selectedLeadsOrClients={selectedLeadOrClient}
+        />
         <AddLeadModal isOpen={isAddUserModalOpen} toggle={toggleAddUserModal} />
         {/* <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}

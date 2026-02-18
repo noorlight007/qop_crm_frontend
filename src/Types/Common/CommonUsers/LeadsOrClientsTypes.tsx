@@ -14,9 +14,11 @@ export interface LeadOrClient {
   created_at: string;
   created_by: {
     name: string;
+    user_type?: string;
   };
   profile_image: string | null;
   role?: string;
+  note?: string | null;
 }
 
 export interface LeadsOrClientsProps {
