@@ -33,6 +33,13 @@ export const AuthUsersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AuthUsers"],
     }),
+    clientInvitation: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/director/users/${userAlias}/invitation/`,
+        method: "GET",
+      }),
+      invalidatesTags: ["AuthUsers"],
+    }),
   }),
 });
 export const {
@@ -40,4 +47,5 @@ export const {
   useAddAuthUserMutation,
   useUpdateAuthUserDetailsMutation,
   useDeleteAuthUserMutation,
+  useClientInvitationMutation,
 } = AuthUsersApi;

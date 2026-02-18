@@ -1,5 +1,4 @@
-import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
-import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
+import ClientInvitationModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/ClientInvitationModal";
 import { useDownloadApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
@@ -48,7 +47,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
-  const [isUpdateClientModalOpen, setIsUpdateClientModalOpen] = useState(false);
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInfoProps> | null>(null);
@@ -85,9 +83,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const toggleUpdateCaseModal = () =>
     setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
 
-  const toggleUpdateClientModal = () =>
-    setIsUpdateClientModalOpen((prev) => !prev);
-
   const toggleCopyCaseModal = () => setIsCopyCaseModalOpen((prev) => !prev);
 
   const openUpdateCaseModal = (caseInfo: CaseInfoPrpos) => {
@@ -114,25 +109,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const openViewJointApplicantModal = (jointApplicant: any) => {
     setSelectedJointApplicant(jointApplicant);
     toggleViewJointApplicantModal();
-  };
-
-  const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
-    if (clientData?.user) {
-      setDisplayLeadUser(
-        (prev) =>
-          ({
-            ...(prev || ({} as any)),
-            title: clientData.user!.title ?? prev?.title,
-            first_name: clientData.user!.first_name ?? prev?.first_name,
-            middle_name: clientData.user!.middle_name ?? prev?.middle_name,
-            last_name: clientData.user!.last_name ?? prev?.last_name,
-            email: clientData.user!.email ?? prev?.email,
-            phone: clientData.user!.phone ?? prev?.phone,
-            user_type: prev?.user_type || "",
-            profile_image: prev?.profile_image || "",
-          }) as any,
-      );
-    }
   };
 
   // Notes editing handlers
@@ -975,14 +951,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           </Col>
         </Row>
       </Card>
-      {selectedClient && (
-        <UpdateClientModal
-          isOpen={isUpdateClientModalOpen}
-          toggle={toggleUpdateClientModal}
-          onSave={handleClientSave}
-          selectedClient={selectedClient}
-        />
-      )}
+
       {selectedClient && (
         <ClientInvitationModal
           isOpen={isClientInvitationModalOpen}

@@ -24,7 +24,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import AddLeadModal from "../../CommonUsers/Leads/Modals/AddLeadModal";
+import AddLeadModal from "../../CommonUsers/LeadsOrClients/Modals/AddLeadModal";
 
 const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,
