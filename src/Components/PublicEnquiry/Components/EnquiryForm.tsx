@@ -24,7 +24,7 @@ import {
   Row,
 } from "reactstrap";
 
-const InitialEnquiryForm: React.FC = () => {
+const EnquiryForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -873,4 +873,4 @@ const InitialEnquiryForm: React.FC = () => {
   );
 };
 
-export default InitialEnquiryForm;
+export default EnquiryForm;
