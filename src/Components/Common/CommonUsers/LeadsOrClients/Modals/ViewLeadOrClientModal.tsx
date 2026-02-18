@@ -192,7 +192,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                   style={{ borderLeft: "3px solid #0d6efd" }}
                 >
                   <p
-                    className="m-0 text-dark"
+                    className="m-0 text-dark text-capitalize"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
                     {selectedLeadOrClient?.note}

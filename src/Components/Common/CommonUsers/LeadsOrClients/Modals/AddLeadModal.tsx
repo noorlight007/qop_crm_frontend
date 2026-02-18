@@ -1,5 +1,5 @@
 import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
-import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
+import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -16,7 +16,7 @@ import {
   Row,
 } from "reactstrap";
 
-const AddLeadModal: React.FC<AddLeadModalProps> = ({
+const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   isOpen,
   toggle,
   onLeadCreated,

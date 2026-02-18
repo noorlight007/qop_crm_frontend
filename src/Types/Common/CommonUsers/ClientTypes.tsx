@@ -26,28 +26,3 @@ export interface ClientInfoProps {
   };
   created_at: string;
 }
-export interface ClientsProps {
-  clientsPerPage?: number;
-}
-export interface AddClientModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
-
-export interface ViewClientModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  selectedClient: Partial<ClientInfoProps>;
-}
-export interface UpdateClientModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  onSave: (clientData: Partial<ClientInfoProps>) => void;
-  selectedClient: Partial<ClientInfoProps>;
-}
-export interface DeleteClientModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  clientName: string;
-  clientAlias: string;
-}

@@ -36,6 +36,12 @@ export interface ViewLeadOrClientModalProps {
 export interface AddLeadsModalProps {
   isOpen: boolean;
   toggle: () => void;
+  onLeadCreated?: (lead: Partial<LeadOrClient> | any) => void;
+  onOpenCase?: (payload: {
+    leadId?: number;
+    leadName?: string | undefined;
+    leadData?: any;
+  }) => void;
 }
 
 export interface UpdateLeadOrClientModalProps {
