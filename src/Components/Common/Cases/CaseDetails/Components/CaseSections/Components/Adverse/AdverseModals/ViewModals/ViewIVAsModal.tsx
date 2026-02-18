@@ -3,6 +3,7 @@ import {
   IVAItemProps,
   ViewIVAsModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -51,7 +52,7 @@ const ViewIVAsModal: React.FC<ViewIVAsModalProps> = ({
                   <td>{iva.date_registered || "-"}</td>
                   <td>
                     {iva.outstanding_balance
-                      ? `£${parseFloat(iva.outstanding_balance).toLocaleString(
+                      ? `${getCurrencySign()}${parseFloat(iva.outstanding_balance).toLocaleString(
                           "en-GB",
                           {
                             minimumFractionDigits: 2,

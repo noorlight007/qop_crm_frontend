@@ -1,3 +1,4 @@
+import getCurrencySign from "@/utils/currency";
 import {
   TbCirclePlusFilled,
   TbCoinPound,
@@ -48,8 +49,8 @@ const LeadAdCampaigns: React.FC = () => {
               <CardBody className="d-flex justify-content-between p-2">
                 <div>
                   <p className="mb-1">Total Spent</p>
-                  <h4>£992</h4>
-                  <Badge className="bg-light-dark">£1,600 budget</Badge>
+                  <h4>{getCurrencySign()}992</h4>
+                  <Badge className="bg-light-dark">{getCurrencySign()}1,600 budget</Badge>
                 </div>
                 <div>
                   <span
@@ -67,8 +68,8 @@ const LeadAdCampaigns: React.FC = () => {
               <CardBody className="d-flex justify-content-between p-2">
                 <div>
                   <p className="mb-1">Avg Cost Per Lead</p>
-                  <h4>£28.34</h4>
-                  <Badge className="bg-light-dark">Industry avg: £45</Badge>
+                  <h4>{getCurrencySign()}28.34</h4>
+                  <Badge className="bg-light-dark">Industry avg: {getCurrencySign()}45</Badge>
                 </div>
                 <div>
                   <span

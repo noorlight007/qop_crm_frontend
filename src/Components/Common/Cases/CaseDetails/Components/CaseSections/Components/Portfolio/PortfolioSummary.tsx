@@ -1,4 +1,5 @@
 import { useGetPortfolioSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioSummaryApi";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
@@ -22,7 +23,7 @@ const PortfolioSummary: React.FC = () => {
                   <i className="fa-solid fa-building"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{portfolioSummary?.total_property_value || "0"}
+                  {getCurrencySign()}{portfolioSummary?.total_property_value || "0"}
                 </span>
               </div>
             </CardBody>
@@ -39,7 +40,7 @@ const PortfolioSummary: React.FC = () => {
                   <i className="fa-solid fa-circle-info"></i>
                 </span>
                 <span className="h2 text-secondary font-weight-bold">
-                  £{portfolioSummary?.total_current_mortgage_balance || "0"}
+                  {getCurrencySign()}{portfolioSummary?.total_current_mortgage_balance || "0"}
                 </span>
               </div>
             </CardBody>
@@ -76,7 +77,7 @@ const PortfolioSummary: React.FC = () => {
                   <i className="fa-solid fa-users"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{portfolioSummary?.total_monthly_rental_income || "0"}
+                  {getCurrencySign()}{portfolioSummary?.total_monthly_rental_income || "0"}
                 </span>
               </div>
             </CardBody>
@@ -93,7 +94,7 @@ const PortfolioSummary: React.FC = () => {
                   <i className="fa-solid fa-arrow-right"></i>
                 </span>
                 <span className="h2 text-secondary font-weight-bold">
-                  £{portfolioSummary?.total_monthly_mortgage_payment || "0"}
+                  {getCurrencySign()}{portfolioSummary?.total_monthly_mortgage_payment || "0"}
                 </span>
               </div>
             </CardBody>

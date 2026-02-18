@@ -38,6 +38,7 @@ import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
+import getCurrencySign from "@/utils/currency";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({
   caseInfo,
@@ -793,7 +794,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </small>
                             <p className="m-0 text-dark fw-500">
                               {caseInfo?.property_valuation ? (
-                                `£${caseInfo.property_valuation}`
+                                `${getCurrencySign()}${caseInfo.property_valuation}`
                               ) : (
                                 <span className="text-muted">
                                   Not available
@@ -809,7 +810,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </small>
                             <p className="m-0 text-dark fw-500">
                               {caseInfo?.purchase_price ? (
-                                `£${caseInfo.purchase_price}`
+                                `${getCurrencySign()}${caseInfo.purchase_price}`
                               ) : (
                                 <span className="text-muted">
                                   Not available
@@ -825,7 +826,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </small>
                             <p className="m-0 text-dark fw-500">
                               {caseInfo?.loan_amount ? (
-                                `£${caseInfo.loan_amount}`
+                                `${getCurrencySign()}${caseInfo.loan_amount}`
                               ) : (
                                 <span className="text-muted">
                                   Not available

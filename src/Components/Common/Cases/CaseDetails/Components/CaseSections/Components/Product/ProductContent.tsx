@@ -7,6 +7,7 @@ import {
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ProductDetails/ProductDetailsApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import getCurrencySign from "@/utils/currency";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useSession } from "next-auth/react";
@@ -649,7 +650,7 @@ const ProductContent: React.FC = () => {
         <Col md={4}>
           <FormGroup>
             <Label for="initialMonthlyPayment">
-              Initial Monthly Payment (£)
+              Initial Monthly Payment ({getCurrencySign()})
             </Label>
             <Input
               id="initialMonthlyPayment"
@@ -671,7 +672,7 @@ const ProductContent: React.FC = () => {
         <Col md={4}>
           <FormGroup>
             <Label for="initialMonthlyPaymentIncludingFees">
-              Initial Monthly Payment Including Fees (£)
+              Initial Monthly Payment Including Fees ({getCurrencySign()})
             </Label>
             <Input
               id="initialMonthlyPaymentIncludingFees"
@@ -700,7 +701,7 @@ const ProductContent: React.FC = () => {
         <Col md={4}>
           <FormGroup>
             <Label for="monthlyPaymentAfterInitial">
-              Monthly Payment After Initial Period (£)
+              Monthly Payment After Initial Period ({getCurrencySign()})
             </Label>
             <Input
               id="monthlyPaymentAfterInitial"
@@ -785,7 +786,7 @@ const ProductContent: React.FC = () => {
         <Col md={4}>
           <FormGroup>
             <Label for="loanRequiredIncludingFees">
-              Loan Required Including Fees (£)
+              Loan Required Including Fees ({getCurrencySign()})
             </Label>
             <Input
               id="loanRequiredIncludingFees"
@@ -806,7 +807,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="lender_product_fee">Lender Product Fee (£)</Label>
+            <Label for="lender_product_fee">Lender Product Fee ({getCurrencySign()})</Label>
             <Input
               id="lender_product_fee"
               name="lender_product_fee"
@@ -850,7 +851,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="lender_solicitor_fee">Lender Solicitors Fee (£)</Label>
+            <Label for="lender_solicitor_fee">Lender Solicitors Fee ({getCurrencySign()})</Label>
             <Input
               id="lender_solicitor_fee"
               name="lender_solicitor_fee"
@@ -870,7 +871,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="valuationFee">Valuation Fee (£)</Label>
+            <Label for="valuationFee">Valuation Fee ({getCurrencySign()})</Label>
             <Input
               id="valuationFee"
               name="valuation_fee"
@@ -890,7 +891,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="bookingFee">Booking Fee (£)</Label>
+            <Label for="bookingFee">Booking Fee ({getCurrencySign()})</Label>
             <Input
               id="bookingFee"
               name="booking_fee"
@@ -933,7 +934,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="procurationFee">Procuration Fee (£)</Label>
+            <Label for="procurationFee">Procuration Fee ({getCurrencySign()})</Label>
             <Input
               id="procurationFee"
               name="procuration_fee"

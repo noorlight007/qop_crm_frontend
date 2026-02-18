@@ -1,6 +1,7 @@
 import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
 import { AdditionalInfoProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
+import getCurrencySign from "@/utils/currency";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Col, FormGroup, Input, InputGroup, Label, Row } from "reactstrap";
@@ -520,7 +521,7 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                       <FormGroup>
                         <Label for="discounted_price">Discounted Price</Label>
                         <InputGroup>
-                          <span className="input-group-text">£</span>
+                          <span className="input-group-text">{getCurrencySign()}</span>
                           <Input
                             type="number"
                             name="discounted_price"

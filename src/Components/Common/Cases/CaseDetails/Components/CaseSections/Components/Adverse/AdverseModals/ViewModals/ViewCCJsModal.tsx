@@ -3,6 +3,7 @@ import {
   CCJProps,
   ViewCCJsModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -51,7 +52,7 @@ const ViewCCJsModal: React.FC<ViewCCJsModalProps> = ({
                 <tr key={index}>
                   <td>
                     {ccj.amount
-                      ? `£${parseFloat(ccj.amount).toLocaleString("en-GB", {
+                      ? `${getCurrencySign()}${parseFloat(ccj.amount).toLocaleString("en-GB", {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         })}`

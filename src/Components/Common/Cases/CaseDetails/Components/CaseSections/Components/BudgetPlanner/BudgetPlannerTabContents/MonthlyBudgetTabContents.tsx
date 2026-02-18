@@ -1,5 +1,6 @@
 import { RootState } from "@/Redux/Store";
 import { MonthlyBudgetTabContentsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
+import getCurrencySign from "@/utils/currency";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
@@ -229,7 +230,7 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
               </Label>
               <Col sm={6}>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     type="number"
                     name={`${prefix}.${field.id}`}
@@ -304,7 +305,7 @@ const MonthlyBudgetTabContents: FC<MonthlyBudgetTabContentsProps> = ({
             </Label>
             <Col sm={6}>
               <InputGroup>
-                <InputGroupText>£</InputGroupText>
+                <InputGroupText>{getCurrencySign()}</InputGroupText>
                 <Input
                   type="number"
                   name={`${prefix}.${availableIncomeField.id}`}

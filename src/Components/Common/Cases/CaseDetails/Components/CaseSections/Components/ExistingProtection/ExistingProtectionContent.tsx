@@ -24,6 +24,7 @@ import {
   Row,
 } from "reactstrap";
 import AddExistingProtectionModal from "./Modals/AddExistingProtectionModal";
+import getCurrencySign from "@/utils/currency";
 
 const ExistingProtectionContent: React.FC<
   ExistingProtectionTabContentProps
@@ -411,11 +412,11 @@ const ExistingProtectionContent: React.FC<
                   <Row>
                     <Col md={4}>
                       <FormGroup>
-                        <Label for="sum_assured">Sum Assured(£)</Label>
+                        <Label for="sum_assured">Sum Assured({getCurrencySign()})</Label>
                         <Input
                           type="number"
                           id="sum_assured"
-                          placeholder="£"
+                          placeholder={getCurrencySign()}
                           value={formValues?.sum_assured || ""}
                           onChange={(e) =>
                             handleInputChange("sum_assured", e.target.value)
@@ -430,11 +431,11 @@ const ExistingProtectionContent: React.FC<
                     </Col>
                     <Col md={4}>
                       <FormGroup>
-                        <Label for="premium">Premium(£)</Label>
+                        <Label for="premium">Premium({getCurrencySign()})</Label>
                         <Input
                           type="number"
                           id="premium"
-                          placeholder="£"
+                          placeholder={getCurrencySign()}
                           value={formValues?.premium || ""}
                           onChange={(e) =>
                             handleInputChange("premium", e.target.value)

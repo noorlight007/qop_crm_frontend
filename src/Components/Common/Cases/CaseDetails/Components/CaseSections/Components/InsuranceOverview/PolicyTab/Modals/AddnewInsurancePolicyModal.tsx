@@ -1,6 +1,7 @@
 import { useAddNewInsurancePolicyMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { AddNewInsurancePolicyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/InsuranceOverviewTypes";
+import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -524,7 +525,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Monthly Sum Assured(£)</Label>
+                    <Label>Monthly Sum Assured({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -749,7 +750,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
               formData.policy_type === "BUILDINGS_AND_CONTENTS_INSURANCE") && (
               <Col sm={12} md={6} lg={4}>
                 <FormGroup>
-                  <Label>Full Rebuild Value of your Home(£)</Label>
+                  <Label>Full Rebuild Value of your Home({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     step="0.01"
@@ -789,7 +790,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                     />
                     <Label check>
                       Do you have any specific item of contents worth more than
-                      £1500 to replace?
+                      {getCurrencySign()}1500 to replace?
                     </Label>  
                     {errors.high_value_items_over_1500 && (
                       <div className="text-danger">{errors.high_value_items_over_1500}</div>
@@ -824,7 +825,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
                 </Col>
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Contents(£)</Label>
+                    <Label>Contents({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -842,7 +843,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Premium(£)</Label>
+                <Label>Premium({getCurrencySign()})</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -1030,7 +1031,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Final Premium(£)</Label>
+                <Label>Final Premium({getCurrencySign()})</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -1048,7 +1049,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Premium Quoted(£)</Label>
+                <Label>Premium Quoted({getCurrencySign()})</Label>
                 <Input
                   type="number"
                   step="0.01"

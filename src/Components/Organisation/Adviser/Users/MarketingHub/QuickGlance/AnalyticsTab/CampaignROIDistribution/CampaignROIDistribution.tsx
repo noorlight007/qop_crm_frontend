@@ -1,3 +1,4 @@
+import getCurrencySign from "@/utils/currency";
 import React from "react";
 import Chart from "react-apexcharts";
 import { Card, CardBody } from "reactstrap";
@@ -33,7 +34,7 @@ const options = {
   tooltip: {
     y: {
       formatter: (val: number, opts: any) => {
-        return `£${val}`;
+        return `${getCurrencySign()}${val}`;
       },
     },
   },
