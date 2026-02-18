@@ -6,6 +6,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
+  useDownloadClientSurveyQuery,
   useGetClientSurveyQuery,
   useSendClientSurveyMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
@@ -14,8 +15,9 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Send } from "react-feather";
+import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -34,6 +36,7 @@ const ClientSurveyContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
+  const [triggerDownload, setTriggerDownload] = useState(false);
 
   // RTK Queries
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -43,6 +46,11 @@ const ClientSurveyContent: React.FC = () => {
   const [sendSurvey, { isLoading: isSendingSurvey }] =
     useSendClientSurveyMutation();
 
+  const { data: clientSurveyBlob, isLoading: isDownloadingSurvey } =
+    useDownloadClientSurveyQuery(
+      { case_alias: casealias },
+      { skip: !casealias },
+    );
   const handlesendSurvey = async () => {
     try {
       await sendSurvey({ case_alias: casealias }).unwrap();
@@ -50,6 +58,28 @@ const ClientSurveyContent: React.FC = () => {
     } catch (error) {
       toast.error("Failed to send survey.");
     }
+  };
+
+  useEffect(() => {
+    if (clientSurveyBlob && triggerDownload) {
+      const url = window.URL.createObjectURL(clientSurveyBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `client-survey(${caseData.name}).pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      setTriggerDownload(false);
+    }
+  }, [clientSurveyBlob, triggerDownload]);
+
+  const downloadSurvey = () => {
+    if (!casealias) {
+      toast.error("No survey available for download.");
+      return;
+    }
+    setTriggerDownload(true);
   };
 
   const {
@@ -228,7 +258,7 @@ const ClientSurveyContent: React.FC = () => {
       <CardBody>
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
-          <div>
+          <div className="d-flex gap-2 mb-4">
             <Button
               color="primary"
               outline
@@ -236,6 +266,13 @@ const ClientSurveyContent: React.FC = () => {
               disabled={isSendingSurvey}
             >
               <Send size={15} /> Send Survey From To the Client
+            </Button>
+            <Button
+              color="secondary"
+              onClick={downloadSurvey}
+              disabled={isDownloadingSurvey}
+            >
+              <FaDownload size={15} /> Download Survey
             </Button>
           </div>
           <div>
