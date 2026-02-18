@@ -1,6 +1,6 @@
-import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
-import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
-import { useState } from "react";
+import { useAddLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
+import { AddLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -16,9 +16,14 @@ import {
   Row,
 } from "reactstrap";
 
-const AddLeadModal: React.FC<AddLeadsModalProps> = ({ isOpen, toggle }) => {
-  const pathname = window.location.pathname;
-  const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
+const AddLeadModal: React.FC<AddLeadModalProps> = ({
+  isOpen,
+  toggle,
+  onLeadCreated,
+  onOpenCase,
+}) => {
+  const [addLeadDetails, { isLoading }] = useAddLeadDetailsMutation();
+
   const [formData, setFormData] = useState({
     title: "",
     firstName: "",
@@ -32,70 +37,36 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({ isOpen, toggle }) => {
     other_enquiry_type: "",
     note: "",
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const getErrorMessage = (err: any) => {
-    if (!err) return "Unknown error";
-    if (typeof err === "string") return err;
-    if (typeof err?.data === "string") return err.data;
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
+  const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
 
-    const collect = (value: any): string[] => {
-      if (value == null) return [];
-      if (typeof value === "string") return [value];
-      if (Array.isArray(value))
-        return value.map((v) =>
-          typeof v === "string" ? v : JSON.stringify(v),
-        );
-      if (typeof value === "object") {
-        try {
-          return Object.values(value).flatMap((v) => collect(v));
-        } catch {
-          return [String(value)];
-        }
-      }
-      return [String(value)];
-    };
-
-    // If the error itself is an object mapping fields to messages/arrays,
-    // collect and return those messages directly (e.g. { email: ["..."] }).
-    if (err && typeof err === "object") {
-      const msgs = collect(err);
-      if (msgs.length) return msgs.join(", ");
+  const extractErrorDetail = (err: any): string => {
+    if (!err) return "An error occurred. Please try again.";
+    if (err.error) {
+      const data =
+        (err.error as any).data ||
+        (err.error as any).originalStatus ||
+        (err.error as any);
+      return (
+        (data && (data.detail || data?.message)) ||
+        (err.error as any).statusText ||
+        JSON.stringify(err.error)
+      );
     }
-
-    if (err?.data?.message) return String(err.data.message);
-
-    if (err?.data && typeof err.data === "object") {
-      const msgs = collect(err.data);
-      if (msgs.length) return msgs.join(", ");
-    }
-
-    if (err?.error) return String(err.error);
-    if (err?.message) {
-      if (/status code/i.test(err.message)) return "Server returned an error";
-      return String(err.message);
-    }
-
-    try {
-      return JSON.stringify(err);
-    } catch {
-      return String(err);
-    }
-  };
-
-  const camelToSnake = (s: string) =>
-    s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
-
-  const getFieldError = (name: string) => {
-    if (!errors) return undefined;
-    if (errors[name]) return errors[name];
-    const snake = camelToSnake(name);
-    if (errors[snake]) return errors[snake];
-    return undefined;
+    const data = err?.response?.data || err?.data || err;
+    return (
+      (data && (data.detail || data?.message)) ||
+      err.message ||
+      "An error occurred. Please try again."
+    );
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -103,353 +74,489 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({ isOpen, toggle }) => {
       [name]: value,
     }));
     setErrors((prev) => {
+      if (!prev) return prev;
       const copy = { ...prev };
       delete copy[name];
-      delete copy[camelToSnake(name)];
+      if (name === "firstName") delete copy["first_name"];
+      if (name === "middleName") delete copy["middle_name"];
+      if (name === "lastName") delete copy["last_name"];
       return copy;
     });
   };
-  const handleSaveUser = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-    const payload = {
+  const normalizeApiErrors = (err: any): Record<string, string[]> => {
+    const newErrors: Record<string, string[]> = {};
+    const data =
+      (err?.error && (err.error as any).data) ||
+      err?.response?.data ||
+      err?.data ||
+      err;
+
+    if (data?.user && typeof data.user === "object") {
+      const user = data.user as Record<string, any>;
+      if (user.first_name)
+        newErrors.firstName = Array.isArray(user.first_name)
+          ? user.first_name
+          : [String(user.first_name)];
+      if (user.middle_name)
+        newErrors.middleName = Array.isArray(user.middle_name)
+          ? user.middle_name
+          : [String(user.middle_name)];
+      if (user.last_name)
+        newErrors.lastName = Array.isArray(user.last_name)
+          ? user.last_name
+          : [String(user.last_name)];
+      if (user.email)
+        newErrors.email = Array.isArray(user.email)
+          ? user.email
+          : [String(user.email)];
+      if (user.phone)
+        newErrors.phone = Array.isArray(user.phone)
+          ? user.phone
+          : [String(user.phone)];
+      if (user.title)
+        newErrors.title = Array.isArray(user.title)
+          ? user.title
+          : [String(user.title)];
+    }
+
+    if (data?.title)
+      newErrors.title = Array.isArray(data.title)
+        ? data.title
+        : [String(data.title)];
+    if (data?.source)
+      newErrors.source = Array.isArray(data.source)
+        ? data.source
+        : [String(data.source)];
+    if (data?.other_source)
+      newErrors.other_source = Array.isArray(data.other_source)
+        ? data.other_source
+        : [String(data.other_source)];
+    if (data?.enquiry_type)
+      newErrors.enquiry_type = Array.isArray(data.enquiry_type)
+        ? data.enquiry_type
+        : [String(data.enquiry_type)];
+    if (data?.other_enquiry_type)
+      newErrors.other_enquiry_type = Array.isArray(data.other_enquiry_type)
+        ? data.other_enquiry_type
+        : [String(data.other_enquiry_type)];
+    if (data?.note)
+      newErrors.note = Array.isArray(data.note)
+        ? data.note
+        : [String(data.note)];
+
+    if (data?.detail && typeof data.detail === "string")
+      newErrors._general = [data.detail];
+
+    return newErrors;
+  };
+
+  const buildPayload = () => ({
+    user: {
       title: formData.title,
       first_name: formData.firstName,
       middle_name: formData.middleName,
       last_name: formData.lastName,
       email: formData.email,
       phone: formData.phone || null,
-      source: formData.source,
-      other_source: formData.other_source || null,
-      enquiry_type: formData.enquiry_type,
-      other_enquiry_type: formData.other_enquiry_type || null,
-      role: "LEAD",
-      note: formData.note || null,
-    };
+    },
+    source: formData.source || "",
+    other_source: formData.other_source,
+    enquiry_type: formData.enquiry_type,
+    other_enquiry_type: formData.other_enquiry_type,
+    note: formData.note,
+  });
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      firstName: "",
+      middleName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      source: "",
+      other_source: "",
+      enquiry_type: "",
+      other_enquiry_type: "",
+      note: "",
+    });
+  };
+
+  const handleSaveLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = buildPayload();
 
     try {
-      const result = await addAuthUser({ payload });
+      const result = await addLeadDetails({ payload });
       if (result.data) {
-        toast.success("User added successfully.");
-        // Reset form and close modal
-        setFormData({
-          title: "",
-          firstName: "",
-          middleName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          source: "",
-          other_source: "",
-          enquiry_type: "",
-          other_enquiry_type: "",
-          note: "",
-        });
+        toast.success("Lead added successfully.");
+        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
+        setCreatedLeadData(result.data);
+        resetForm();
         setErrors({});
         toggle();
       } else if ("error" in result) {
-        const errData = (result.error as any)?.data;
-        if (errData && typeof errData === "object") {
-          const collect = (value: any): string[] => {
-            if (value == null) return [];
-            if (typeof value === "string") return [value];
-            if (Array.isArray(value))
-              return value.map((v) =>
-                typeof v === "string" ? v : JSON.stringify(v),
-              );
-            if (typeof value === "object") {
-              try {
-                return Object.values(value).flatMap((v) => collect(v));
-              } catch {
-                return [String(value)];
-              }
-            }
-            return [String(value)];
-          };
-          const fieldErrors: Record<string, string> = {};
-          Object.entries(errData).forEach(([k, v]) => {
-            const msgs = collect(v);
-            if (msgs.length) fieldErrors[k] = msgs.join(", ");
-          });
-          if (Object.keys(fieldErrors).length) {
-            setErrors(fieldErrors);
-            const firstMsg = Object.values(fieldErrors)[0];
-            toast.error(firstMsg);
-          } else {
-            const errorMessage = getErrorMessage(errData);
-            toast.error(errorMessage);
-          }
-        } else {
-          const errorMessage = getErrorMessage(result.error as any);
-          toast.error(errorMessage);
-        }
+        const normalized = normalizeApiErrors(result);
+        setErrors(normalized);
+        const firstMsg =
+          Object.values(normalized).flat()[0] ||
+          extractErrorDetail(result) ||
+          "Invalid Request...";
+        toast.error(firstMsg);
       } else {
-        toast.error("Invalid request. Please try again.");
+        toast.error("Invalid Request...");
       }
-    } catch (error) {
-      const errorMessage = getErrorMessage(error);
-      toast.error(errorMessage);
-      console.error("Error adding advisor:", error);
+    } catch (error: any) {
+      const normalized = normalizeApiErrors(error);
+      setErrors(normalized);
+      const firstMsg =
+        Object.values(normalized).flat()[0] ||
+        extractErrorDetail(error) ||
+        "An error occurred. Please try again.";
+      toast.error(firstMsg);
+      console.error("Error creating lead:", error);
+    } finally {
+      setSubmitType(null);
+    }
+  };
+
+  const computedLeadName = createdLeadData?.user
+    ? [
+        createdLeadData.user.title,
+        createdLeadData.user.first_name,
+        createdLeadData.user.middle_name,
+        createdLeadData.user.last_name,
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : formData.firstName || formData.lastName
+      ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
+      : undefined;
+
+  const handleSaveAndCreateCase = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = buildPayload();
+
+    try {
+      const result = await addLeadDetails({ payload });
+      if (result.data) {
+        toast.success("Lead added successfully.");
+        const leadId = result.data.user?.id;
+        setCreatedLeadData(result.data);
+        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
+        onOpenCase?.({
+          leadId,
+          leadName: computedLeadName,
+          leadData: result.data,
+        });
+        resetForm();
+        setErrors({});
+        toggle();
+      } else if ("error" in result) {
+        const normalized = normalizeApiErrors(result);
+        setErrors(normalized);
+        const firstMsg =
+          Object.values(normalized).flat()[0] ||
+          extractErrorDetail(result) ||
+          "Invalid Request...";
+        toast.error(firstMsg);
+      } else {
+        toast.error("Invalid Request...");
+      }
+    } catch (error: any) {
+      const normalized = normalizeApiErrors(error);
+      setErrors(normalized);
+      const firstMsg =
+        Object.values(normalized).flat()[0] ||
+        extractErrorDetail(error) ||
+        "An error occurred. Please try again.";
+      toast.error(firstMsg);
+      console.error("Error creating lead:", error);
+    } finally {
+      setSubmitType(null);
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <h2 className="text-primary text-capitalize">
-          Add {pathname.split("/").pop()?.replace(/-/g, " ").slice(0, -1)}
-        </h2>
+        <span className="fs-4 text-primary">Add Lead</span>
       </ModalHeader>
-      <ModalBody>
-        <Form onSubmit={handleSaveUser} encType="multipart/form-data">
-          <ModalBody>
-            <Row>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="title">
-                    Title<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    id="title"
-                    name="title"
-                    type="select"
-                    value={formData.title || ""}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="">Select...</option>
-                    <option value="MR">Mr</option>
-                    <option value="MRS">Mrs</option>
-                    <option value="MS">Ms</option>
-                    <option value="DR">Dr</option>
-                    <option value="MISS">Miss</option>
-                    <option value="MADAM">Madam</option>
-                    <option value="MAIDEN">Maiden</option>
-                    <option value="PROFESSOR">Professor</option>
-                    <option value="DOCTOR">Doctor</option>
-                  </Input>
-                  {getFieldError("title") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("title")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="firstName">
-                    First Name<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  {getFieldError("firstName") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("firstName")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="middleName">Middle Name(s)</Label>
-                  <Input
-                    id="middleName"
-                    name="middleName"
-                    type="text"
-                    value={formData.middleName || ""}
-                    onChange={handleInputChange}
-                  />
-                  {getFieldError("middleName") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("middleName")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="lastName">
-                    Last Name<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  {getFieldError("lastName") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("lastName")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="email">
-                    Email<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                  {getFieldError("email") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("email")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="number"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                  />
-                  {getFieldError("phone") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("phone")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
+      <Form
+        onSubmit={(e) => {
+          if (submitType === "lead") {
+            handleSaveLead(e);
+          } else if (submitType === "case") {
+            handleSaveAndCreateCase(e);
+          }
+        }}
+      >
+        <ModalBody>
+          <Row>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="title">
+                  Title<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="title"
+                  name="title"
+                  type="select"
+                  value={formData.title || ""}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select...</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
+                </Input>
+                {errors.title && (
+                  <div className="text-danger small mt-1">
+                    {errors.title.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="firstName">
+                  First Name<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.firstName && (
+                  <div className="text-danger small mt-1">
+                    {errors.firstName.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="middleName">Middle Name(s)</Label>
+                <Input
+                  id="middleName"
+                  name="middleName"
+                  type="text"
+                  value={formData.middleName || ""}
+                  onChange={handleInputChange}
+                />
+                {errors.middleName && (
+                  <div className="text-danger small mt-1">
+                    {errors.middleName.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="lastName">
+                  Last Name<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.lastName && (
+                  <div className="text-danger small mt-1">
+                    {errors.lastName.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="email">
+                  Email<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.email && (
+                  <div className="text-danger small mt-1">
+                    {errors.email.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="phone">
+                  Mobile Number<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="number"
+                  value={formData.phone || ""}
+                  onChange={handleInputChange}
+                  required
+                />
+                {errors.phone && (
+                  <div className="text-danger small mt-1">
+                    {errors.phone.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
 
+            <Col md={6}>
+              <FormGroup>
+                <Label for="source">Source</Label>
+                <Input
+                  id="source"
+                  name="source"
+                  type="select"
+                  value={formData.source || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="GOOGLE">Google</option>
+                  <option value="SOCIAL_MEDIA">Social Media</option>
+                  <option value="REFERRAL">Referral</option>
+                  <option value="WEBSITE">Website</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {errors.source && (
+                  <div className="text-danger small mt-1">
+                    {errors.source.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {formData.source === "OTHER" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="source">Source</Label>
+                  <Label for="other_source">Other Source</Label>
                   <Input
-                    id="source"
-                    name="source"
-                    type="select"
-                    value={formData.source || ""}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select...</option>
-                    <option value="GOOGLE">Google</option>
-                    <option value="SOCIAL_MEDIA">Social Media</option>
-                    <option value="REFERRAL">Referral</option>
-                    <option value="WEBSITE">Website</option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                  {getFieldError("source") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("source")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              {formData.source === "OTHER" && (
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="other_source">Other Source</Label>
-                    <Input
-                      id="other_source"
-                      name="other_source"
-                      type="text"
-                      value={formData.other_source || ""}
-                      onChange={handleInputChange}
-                    />
-                    {getFieldError("other_source") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("other_source")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              )}
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="enquiry_type">Enquiry Type</Label>
-                  <Input
-                    id="enquiry_type"
-                    name="enquiry_type"
-                    type="select"
-                    value={formData.enquiry_type || ""}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select...</option>
-                    <option value="PURCHASE">Purchase</option>
-                    <option value="REMORTGAGE">Remortgage</option>
-                    <option value="BUY_TO_LET">Buy to Let</option>
-                    <option value="FIRST_TIME_BUYER">First Time Buyer</option>
-                    <option value="COMMERCIAL_MORTGAGE">
-                      Commercial Mortgage
-                    </option>
-                    <option value="PROTECTION">Protection</option>
-                    <option value="GENERAL_INSURANCE">General Insurance</option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                  {getFieldError("enquiry_type") && (
-                    <div className="text-danger small mt-1">
-                      {getFieldError("enquiry_type")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              {formData.enquiry_type === "OTHER" && (
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="other_enquiry_type">Other Enquiry Type</Label>
-                    <Input
-                      id="other_enquiry_type"
-                      name="other_enquiry_type"
-                      type="text"
-                      value={formData.other_enquiry_type || ""}
-                      onChange={handleInputChange}
-                    />
-                    {getFieldError("other_enquiry_type") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("other_enquiry_type")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              )}
-              <Col md={12}>
-                <FormGroup>
-                  <Label for="note">Note</Label>
-                  <Input
-                    id="note"
-                    name="note"
-                    type="textarea"
-                    value={formData.note || ""}
+                    id="other_source"
+                    name="other_source"
+                    type="text"
+                    value={formData.other_source || ""}
                     onChange={handleInputChange}
                   />
-                  {getFieldError("note") && (
+                  {errors.other_source && (
                     <div className="text-danger small mt-1">
-                      {getFieldError("note")}
+                      {errors.other_source.join(" ")}
                     </div>
                   )}
                 </FormGroup>
               </Col>
-            </Row>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" onClick={toggle}>
-              Cancel
-            </Button>
-            <Button color="primary">
-              {isLoading ? "Saving..." : "Save User"}
-            </Button>
-          </ModalFooter>
-        </Form>
-      </ModalBody>
+            )}
+            <Col md={6}>
+              <Label for="reasonForEnquiry">Enquiry Type</Label>
+              <FormGroup>
+                <Input
+                  id="reasonForEnquiry"
+                  name="enquiry_type"
+                  type="select"
+                  value={formData.enquiry_type || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="PURCHASE">Purchase</option>
+                  <option value="REMORTGAGE">Remortgage</option>
+                  <option value="BUY_TO_LET">Buy to Let</option>
+                  <option value="FIRST_TIME_BUYER">First Time Buyer</option>
+                  <option value="COMMERCIAL_MORTGAGE">
+                    Commercial Mortgage
+                  </option>
+                  <option value="PROTECTION">Protection</option>
+                  <option value="GENERAL_INSURANCE">General Insurance</option>
+                  <option value="OTHER">Other</option>
+                </Input>
+                {errors.enquiry_type && (
+                  <div className="text-danger small mt-1">
+                    {errors.enquiry_type.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            {formData.enquiry_type === "OTHER" && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="other_enquiry_type">Other Enquiry Type</Label>
+                  <Input
+                    id="other_enquiry_type"
+                    name="other_enquiry_type"
+                    type="text"
+                    value={formData.other_enquiry_type || ""}
+                    onChange={handleInputChange}
+                  />
+                  {errors.other_enquiry_type && (
+                    <div className="text-danger small mt-1">
+                      {errors.other_enquiry_type.join(" ")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+            <Col md={12}>
+              <FormGroup>
+                <Label for="note">Note</Label>
+                <Input
+                  id="note"
+                  name="note"
+                  type="textarea"
+                  value={formData.note || ""}
+                  onChange={handleInputChange}
+                />
+                {errors.note && (
+                  <div className="text-danger small mt-1">
+                    {errors.note.join(" ")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+          </Row>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            type="submit"
+            color="primary"
+            disabled={isLoading}
+            onClick={() => setSubmitType("lead")}
+          >
+            {isLoading && submitType === "lead" ? "Saving..." : "Save Lead"}
+          </Button>
+          <Button
+            type="submit"
+            color="success"
+            disabled={isLoading}
+            onClick={() => setSubmitType("case")}
+          >
+            {isLoading && submitType === "case"
+              ? "Saving..."
+              : "Save & Create Case"}
+          </Button>
+          <Button color="secondary" onClick={toggle}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Form>
     </Modal>
   );
 };

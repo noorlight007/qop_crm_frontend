@@ -156,16 +156,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadsOrClientsModalProps> = ({
                   </p>
                 </div>
               </Col>
-              <Col md="6" className="mb-3">
-                <div>
-                  <small className="text-muted d-block fw-500">User Type</small>
-                  <p className="m-0 text-dark fw-500">
-                    {selectedLeadsOrClients?.role
-                      ? formatChoiceFieldValue(selectedLeadsOrClients.role)
-                      : "-"}
-                  </p>
-                </div>
-              </Col>
+
               <Col md="6" className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">Role</small>

@@ -27,6 +27,7 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
 import AddLeadModal from "./Modals/AddLeadModal";
 import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
 
@@ -35,7 +36,6 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   leadsOrClientsPerPage = 12,
   userRole,
 }) => {
-  const pathname = window.location.pathname;
   const [authUsers, setAuthUsers] = useState<LeadOrClient[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,6 +44,18 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  // Host AddNewCaseModal at page-level so it can open after AddLeadModal closes.
+  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+  const [caseModalLeadId, setCaseModalLeadId] = useState<number | undefined>(
+    undefined,
+  );
+  const [caseModalLeadName, setCaseModalLeadName] = useState<
+    string | undefined
+  >(undefined);
+  const [caseModalLeadData, setCaseModalLeadData] = useState<any | undefined>(
+    undefined,
+  );
   const [selectedLeadOrClient, setSelectedLeadOrClient] = useState<
     Partial<LeadOrClient>
   >({
@@ -59,7 +71,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     enquiry_type: "",
     other_enquiry_type: null,
     created_at: "",
-    created_by: { name: "" },
+    created_by: { name: "", user_type: "" },
   });
 
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
@@ -71,6 +83,24 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+
+  const openCaseModalFromLead = (payload: {
+    leadId?: number;
+    leadName?: string | undefined;
+    leadData?: any;
+  }) => {
+    setCaseModalLeadId(payload.leadId);
+    setCaseModalLeadName(payload.leadName);
+    setCaseModalLeadData(payload.leadData);
+    setIsCaseModalOpen(true);
+  };
+
+  const closeCaseModal = () => {
+    setIsCaseModalOpen(false);
+    setCaseModalLeadId(undefined);
+    setCaseModalLeadName(undefined);
+    setCaseModalLeadData(undefined);
+  };
 
   const openViewModal = (LeadOrClient: LeadOrClient) => {
     setSelectedLeadOrClient(LeadOrClient);
@@ -180,9 +210,9 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
-                <th>Enquiry Type</th>
-                <th>Created At</th>
-                <th>Created By</th>
+                <th className="text-truncate">Enquiry Type</th>
+                <th className="text-truncate">Created At</th>
+                <th className="text-truncate">Created By</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -281,7 +311,12 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                     </td>
                     <td>
                       {user?.created_by ? (
-                        <span>{user?.created_by?.name}</span>
+                        <>
+                          <span>{user?.created_by?.name}</span>
+                          <small className="text-muted d-block">
+                            {user?.created_by?.user_type}
+                          </small>
+                        </>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -419,7 +454,19 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
           toggle={toggleViewModal}
           selectedLeadsOrClients={selectedLeadOrClient}
         />
-        <AddLeadModal isOpen={isAddUserModalOpen} toggle={toggleAddUserModal} />
+        <AddLeadModal
+          isOpen={isAddUserModalOpen}
+          toggle={toggleAddUserModal}
+          onOpenCase={openCaseModalFromLead}
+        />
+
+        <AddNewCaseModal
+          isOpen={isCaseModalOpen}
+          toggle={closeCaseModal}
+          leadId={caseModalLeadId}
+          leadName={caseModalLeadName}
+          leadData={caseModalLeadData}
+        />
         {/* <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
