@@ -26,10 +26,18 @@ export const AuthUsersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["AuthUsers"],
     }),
+    deleteAuthUser: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/auth/user-list/${userAlias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AuthUsers"],
+    }),
   }),
 });
 export const {
   useGetAuthUsersQuery,
   useAddAuthUserMutation,
   useUpdateAuthUserDetailsMutation,
+  useDeleteAuthUserMutation,
 } = AuthUsersApi;

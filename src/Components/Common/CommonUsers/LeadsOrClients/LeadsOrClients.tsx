@@ -6,6 +6,7 @@ import {
 } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
@@ -29,6 +30,7 @@ import {
 } from "reactstrap";
 import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
 import AddLeadModal from "./Modals/AddLeadModal";
+import DeleteLeadOrClientModal from "./Modals/DeleteLeadOrClientModal";
 import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
 import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
 
@@ -37,6 +39,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   leadsOrClientsPerPage = 12,
   userRole,
 }) => {
+  const { data: session } = useSession();
   const [authUsers, setAuthUsers] = useState<LeadOrClient[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,6 +48,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Host AddNewCaseModal at page-level so it can open after AddLeadModal closes.
   const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
@@ -84,6 +88,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
 
   const openCaseModalFromLead = (payload: {
     leadId?: number;
@@ -115,6 +120,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   const openUpdateModal = (LeadOrClient: LeadOrClient) => {
     setSelectedLeadOrClient(LeadOrClient);
     toggleUpdateModal();
+  };
+
+  const openDeleteModal = (LeadOrClient: LeadOrClient) => {
+    setSelectedLeadOrClient(LeadOrClient);
+    toggleDeleteModal();
   };
 
   useEffect(() => {
@@ -332,6 +342,21 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
+                        {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
+                          session?.user?.user_type === "NETWORK_COMPLIANCE" ||
+                          session?.user?.user_type ===
+                            "ORGANISATION_DIRECTOR") && (
+                          <Button
+                            color="danger"
+                            size="sm"
+                            title="Delete User"
+                            onClick={() => {
+                              openDeleteModal(user);
+                            }}
+                          >
+                            <i className="icon-trash"></i>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -471,6 +496,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
         <UpdateLeadOrClientModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
+          selectedLeadOrClient={selectedLeadOrClient}
+        />
+        <DeleteLeadOrClientModal
+          isOpen={isDeleteModalOpen}
+          toggle={toggleDeleteModal}
           selectedLeadOrClient={selectedLeadOrClient}
         />
         {/* modals end */}

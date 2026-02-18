@@ -43,3 +43,8 @@ export interface UpdateLeadOrClientModalProps {
   toggle: () => void;
   selectedLeadOrClient: Partial<LeadOrClient>;
 }
+export interface DeleteLeadOrClientModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedLeadOrClient: Partial<LeadOrClient>;
+}
