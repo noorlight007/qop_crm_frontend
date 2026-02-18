@@ -7,14 +7,14 @@ import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { ChangeEvent, useEffect, useState } from "react";
-import { FaArrowRight, FaTrash } from "react-icons/fa";
+import { FaArrowRight, FaChevronDown, FaTrash } from "react-icons/fa";
+import { FiSettings } from "react-icons/fi";
 import {
   TbCircleArrowUp,
   TbCopy,
   TbDownload,
   TbEdit,
   TbMailShare,
-  TbSettings,
   TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
@@ -224,9 +224,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           </h3>
           <ButtonGroup>
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-              <DropdownToggle color="primary" caret className="me-1">
-                <TbSettings className="me-1" />
-                Actions
+              <DropdownToggle color="primary">
+                <FiSettings className="me-1" />
+                <span>Actions</span>
+                <FaChevronDown className="ms-1" />
               </DropdownToggle>
               <DropdownMenu
                 style={{
