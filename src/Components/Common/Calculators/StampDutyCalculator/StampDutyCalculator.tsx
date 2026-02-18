@@ -774,7 +774,7 @@ const StampDutyCalculator: React.FC = () => {
                                 "Please enter a valid price";
                             } else if (value > 500000) {
                               newErrors.sharedOwnershipMarketValue =
-                                "Market value cannot exceed £500,000 for this option";
+                                `Market value cannot exceed ${getCurrencySign()}500,000 for this option`;
                             }
                           }
                         } else if (
@@ -795,7 +795,7 @@ const StampDutyCalculator: React.FC = () => {
                                 "Please enter a valid price";
                             } else if (value > 500000) {
                               newErrors.sharedOwnershipInitialShare =
-                                "Initial share price cannot exceed £500,000 for this option";
+                                `Initial share price cannot exceed ${getCurrencySign()}500,000 for this option`;
                             }
                           }
                         }

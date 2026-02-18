@@ -3,6 +3,7 @@ import {
   DMPItemProps,
   ViewDMPsModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -55,7 +56,7 @@ const ViewDMPsModal: React.FC<ViewDMPsModalProps> = ({
                   <td>{dmp.date_registered || "-"}</td>
                   <td>
                     {dmp.outstanding_balance
-                      ? `£${parseFloat(dmp.outstanding_balance).toLocaleString(
+                      ? `${getCurrencySign()}${parseFloat(dmp.outstanding_balance).toLocaleString(
                           "en-GB",
                           {
                             minimumFractionDigits: 2,

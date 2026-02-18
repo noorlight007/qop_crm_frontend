@@ -2,7 +2,7 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 
 export const DownloadApplicantInfoApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    downloadApplicantInfo: builder.query({
+    downloadApplicantInfo: builder.mutation({
       query: ({ case_alias }) => ({
         url: `/cases/${case_alias}/client-joint-user-pdf/`,
         method: "GET",
@@ -12,4 +12,4 @@ export const DownloadApplicantInfoApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useDownloadApplicantInfoQuery } = DownloadApplicantInfoApi;
+export const { useDownloadApplicantInfoMutation } = DownloadApplicantInfoApi;

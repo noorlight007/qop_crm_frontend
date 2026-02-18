@@ -1,4 +1,5 @@
 import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
+import getCurrencySign from "@/utils/currency";
 import dynamic from "next/dynamic";
 import React from "react";
 import { Card } from "reactstrap";
@@ -71,13 +72,13 @@ const MonthlyRevenueTrend: React.FC<OrganisationDirectorDashboardProps> = ({
     },
     yaxis: {
       labels: {
-        formatter: (value: number) => `£${value.toLocaleString()}`,
+        formatter: (value: number) => `${getCurrencySign()}${value.toLocaleString()}`,
         style: { colors: "#666", fontSize: "12px" },
       },
     },
     grid: { borderColor: "#f1f1f1", strokeDashArray: 4 },
     tooltip: {
-      y: { formatter: (value: number) => `£${value.toLocaleString()}` },
+      y: { formatter: (value: number) => `${getCurrencySign()}${value.toLocaleString()}` },
     },
     colors: ["#7c3aed"],
   };

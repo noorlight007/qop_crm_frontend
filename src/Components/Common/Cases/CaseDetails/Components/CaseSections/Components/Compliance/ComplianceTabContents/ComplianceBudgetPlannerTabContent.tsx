@@ -9,6 +9,7 @@ import { ComplianceState } from "@/Types/Common/Cases/CaseDetails/CaseSections/C
 import { useParams } from "next/navigation";
 import { FC } from "react";
 import { DisclosureItem } from "./components/DisclosureItem";
+import getCurrencySign from "@/utils/currency";
 
 const ComplianceBudgetPlannerTabContent: FC = () => {
   const { casealias } = useParams();
@@ -40,7 +41,7 @@ const ComplianceBudgetPlannerTabContent: FC = () => {
     {
       reference: "5.11",
       title:
-        "If any credit commitments, is it clear if the commitments will continue or are being repaid? (debts with less 12 months to run, less than £500 or 0% interest free can not be consolidated)",
+        `If any credit commitments, is it clear if the commitments will continue or are being repaid? (debts with less 12 months to run, less than ${getCurrencySign()}500 or 0% interest free can not be consolidated)`,
       name: "is_any_credit_commitments",
       textName: "is_any_credit_commitments_text",
       answer:

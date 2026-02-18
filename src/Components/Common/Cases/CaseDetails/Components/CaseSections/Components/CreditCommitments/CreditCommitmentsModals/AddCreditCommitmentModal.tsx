@@ -3,6 +3,7 @@ import { useAddCreditCommitmentsDetailsMutation } from "@/Redux/Reducers/Common/
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { AddCreditCommitmentModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsTypes";
+import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -334,7 +335,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>OS Balance* (£)</Label>
+                  <Label>OS Balance* ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="os_balance"
@@ -376,7 +377,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Settlement Balance (£)</Label>
+                  <Label>Settlement Balance ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="settlement_balance"
@@ -415,7 +416,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Monthly Repayment (£)</Label>
+                  <Label>Monthly Repayment ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="monthly_repayment"
@@ -471,7 +472,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "BNPL") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Card Limit (£)</Label>
+                  <Label>Card Limit ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="card_limit"
@@ -519,7 +520,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
             {formData.type === "PCP" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Balloon Payment (£)</Label>
+                  <Label>Balloon Payment ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="balloon_payment"
@@ -576,7 +577,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Cost of Credit (£)</Label>
+                  <Label>Cost of Credit ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="cost_of_credit"

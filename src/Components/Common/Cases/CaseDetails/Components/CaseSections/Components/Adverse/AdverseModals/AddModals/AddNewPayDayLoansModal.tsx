@@ -1,5 +1,6 @@
 import { useAddPayDayLoansMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { AddNewPayDayLoansModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -75,7 +76,7 @@ const AddNewPayDayLoansModal: React.FC<AddNewPayDayLoansModalProps> = ({
               <FormGroup>
                 <Label for="loan_amount">Loan Amount*</Label>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     id="loan_amount"
                     name="loan_amount"

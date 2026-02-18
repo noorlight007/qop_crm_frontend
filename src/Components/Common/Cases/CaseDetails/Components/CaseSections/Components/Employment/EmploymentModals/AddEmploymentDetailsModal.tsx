@@ -24,6 +24,7 @@ import {
   Row,
 } from "reactstrap";
 import GetAddressModal from "../../../CommonModals/GetAddressModal";
+import getCurrencySign from "@/utils/currency";
 
 const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
   isOpen,
@@ -901,7 +902,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="grossMonthlyIncome">
-                    Gross Monthly Income(£)*
+                    Gross Monthly Income({getCurrencySign()})*
                   </Label>
                   <Input
                     type="number"
@@ -924,7 +925,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
             {formValues?.employment_status === "EMPLOYED" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="netMonthlyIncome">Net Monthly Income(£)</Label>
+                  <Label for="netMonthlyIncome">Net Monthly Income({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     id="netMonthlyIncome"
@@ -1051,7 +1052,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Row className="d-flex justify-content-between">
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="bonus">Bonus(£)*</Label>
+                    <Label for="bonus">Bonus({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       id="bonus"
@@ -1126,7 +1127,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Row className="d-flex justify-content-between">
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="overtime">Overtime(£)*</Label>
+                    <Label for="overtime">Overtime({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       id="overtime"
@@ -1201,7 +1202,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Row className="d-flex justify-content-between">
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="allowance">Allowance(£)*</Label>
+                    <Label for="allowance">Allowance({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       id="allowance"
@@ -1711,7 +1712,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       <Col md={6}>
                         <FormGroup>
                           <Label for="year1_net_profit">
-                            Year 1 net profit(£)*
+                            Year 1 net profit({getCurrencySign()})*
                           </Label>
                           <Input
                             type="number"
@@ -1755,7 +1756,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       <Col md={6}>
                         <FormGroup>
                           <Label for="year2_net_profit">
-                            Year 2 net profit(£)
+                            Year 2 net profit({getCurrencySign()})
                           </Label>
                           <Input
                             type="number"
@@ -1798,7 +1799,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                       <Col md={6}>
                         <FormGroup>
                           <Label for="year3_net_profit">
-                            Year 3 net profit(£)
+                            Year 3 net profit({getCurrencySign()})
                           </Label>
                           <Input
                             type="number"
@@ -1877,7 +1878,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="salary">Salary(£)*</Label>
+                    <Label for="salary">Salary({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       id="salary"
@@ -1897,7 +1898,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="dividends">Dividends(£)*</Label>
+                    <Label for="dividends">Dividends({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       id="dividends"
@@ -1917,7 +1918,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="turnover">Turn Over(£)</Label>
+                    <Label for="turnover">Turn Over({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       id="turnover"
@@ -1942,7 +1943,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Row>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="other_income">Other Income(£)</Label>
+                    <Label for="other_income">Other Income({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       id="other_income"
@@ -2152,7 +2153,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="day_rate">Day Rate(£)*</Label>
+                    <Label for="day_rate">Day Rate({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       id="day_rate"
@@ -2172,7 +2173,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="hourly_rate">Hourly Rate(£)</Label>
+                    <Label for="hourly_rate">Hourly Rate({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       id="hourly_rate"

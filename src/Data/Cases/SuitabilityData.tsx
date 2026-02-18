@@ -1,3 +1,5 @@
+import getCurrencySign from "@/utils/currency";
+
 export const defaultAnswersData = {
   // circumstancesAndObjectives
   circumstancesAndObjectives_G_A1: `During our Factfind, you told me your aims and objectives of this transaction are:
@@ -5,7 +7,7 @@ export const defaultAnswersData = {
 2.`,
   circumstancesAndObjectives_G_A2: `Consolidating debts You have accumulated a significant level of debt and you wished to reduce the overall cost of repaying this over the long termreduce your monthly payments reduce your monthly expenditure reduce the interest rates that you are paying in order to insert reason for consolidating debt.
 1. `,
-  circumstancesAndObjectives_G_A3: `Remortgage Your current mortgage is with {current-lender} . You have an outstanding balance of approximately £{current-balance} on a {repayment-method} basis, over a remaining term of {mortgage-term}{term-months}. Early repayment charges may apply to your current mortgage and we have taken these into consideration when recommending your new deal. We have decided to pay the early repayment charge because: 
+  circumstancesAndObjectives_G_A3: `Remortgage Your current mortgage is with {current-lender} . You have an outstanding balance of approximately ${getCurrencySign()}{current-balance} on a {repayment-method} basis, over a remaining term of {mortgage-term}{term-months}. Early repayment charges may apply to your current mortgage and we have taken these into consideration when recommending your new deal. We have decided to pay the early repayment charge because: 
 1. 
 There are no early repayment charges connected to your existing mortgage, however your lender may charge you an administration fee which you have confirmed you are happy to pay.`,
   circumstancesAndObjectives_S_A1: `During our Factfind, you told me your aims and objectives of this transaction are:
@@ -19,17 +21,17 @@ There are no early repayment charges connected to your existing mortgage, howeve
 
 You wanted to refinance a property that you currently own. 
 
-Your current finance is with XXXX. You have an outstanding balance of approximately £xxx on a Diminishing Musharakah (acquisition) and Ijara (rent) or Ijara (rent only). 
+Your current finance is with XXXX. You have an outstanding balance of approximately ${getCurrencySign()}xxx on a Diminishing Musharakah (acquisition) and Ijara (rent) or Ijara (rent only). 
 
 There are no early repayment charges connected to your existing finance, however your lender may charge you an administration fee which you have confirmed you are happy to pay.`,
   // Budget and affordability
-  budgetAndAffordability_G_A1: `We discussed your income and expenditure in detail and recorded this in full. From these discussions we established you have a budget of £ per month to meet the mortgage payments and associated costs.
+  budgetAndAffordability_G_A1: `We discussed your income and expenditure in detail and recorded this in full. From these discussions we established you have a budget of ${getCurrencySign()} per month to meet the mortgage payments and associated costs.
 
 We also considered if this was likely to change in the foreseeable future and you have confirmed this amount remains readily available. 
 
 We discussed the impact that interest rate increases may have on your monthly mortgage payments as detailed in the Mortgage Illustration and on your cost of living in general. You have confirmed to me that you do not expect to see any future changes at this time. `,
   budgetAndAffordability_G_A2: `Buy to Let As part of its decision on the buy-to-let mortgage application, the lender will assess whether the mortgage is affordable. This will be determined based on your net income, and the rent you are going to charge. Each lender has their own ICR calculation and it may be determined on your tax status.`,
-  budgetAndAffordability_S_A1: `We discussed your income and expenditure in detail and recorded this in full. From these discussions we established you have a budget of £xxx per month to meet the finance payments and associated costs.  
+  budgetAndAffordability_S_A1: `We discussed your income and expenditure in detail and recorded this in full. From these discussions we established you have a budget of ${getCurrencySign()}xxx per month to meet the finance payments and associated costs.  
 
 We also considered if this was likely to change in the foreseeable future.  
 You have confirmed to me that you do not expect any significant changes now or in the foreseeable future. 
@@ -43,11 +45,11 @@ In your case, the bank / financier requires this to be 145% of the finance payme
 OR
 In your case, the bank/financier does not stress test the finance payment like it would a 2 year product  as this finance product has been arranged on a 5 year fixed rate. `,
   // New Mortgage Details
-  newMortgageDetails_G_A1: `You confirmed you wish to pay a deposit of £xxx in relation to the new mortgage.
+  newMortgageDetails_G_A1: `You confirmed you wish to pay a deposit of ${getCurrencySign()}xxx in relation to the new mortgage.
 
 You provided evidence of the source of the deposit through your savings account statement/bank account statements/a letter from each family member who has contributed to the deposit/a letter from your family/other.`,
   newMortgageDetails_G_A2: `You confirmed the deposit for the new mortgage is coming from equity within your current property`,
-  newMortgageDetails_S_A1: `You confirmed you wish to pay a deposit of £xxx in relation to the new finance agreement. The deposit was set at this level because XXXXXXX
+  newMortgageDetails_S_A1: `You confirmed you wish to pay a deposit of ${getCurrencySign()}xxx in relation to the new finance agreement. The deposit was set at this level because XXXXXXX
 
 You provided evidence of the source of the deposit by providing your personal bank statement/gift declaration form along with giftors 6 months bank statement insert other, as appropriate.`,
   newMortgageDetails_S_A2: `You confirmed the deposit for the new finance agreement is coming from equity within your current property.`,
@@ -77,9 +79,9 @@ It is important to note, lenders may change their acceptance criteria for intere
 
 I provided you with two Key Facts Illustrations, one for the whole mortgage on a capital and interest repayment basis and one part repayment and part interest-only. We discussed the differences in the cost. Based on our discussion I have recommended a combination of repayment methods because you intend to repay part of the loan with insert details of repayment vehicle. 
 
-Therefore £Repayment Loan Amount of your mortgage will be on a capital and interest repayment basis. This amount is guaranteed to be repaid by the end of the mortgage term provided you make the required monthly payments when due. 
+Therefore ${getCurrencySign()}Repayment Loan Amount of your mortgage will be on a capital and interest repayment basis. This amount is guaranteed to be repaid by the end of the mortgage term provided you make the required monthly payments when due. 
 
-£interest Only Loan Amount of your mortgage will be on an interest-only basis. I explained that for this portion of your loan, your monthly payments to the lender will only consist of interest.
+${getCurrencySign()}interest Only Loan Amount of your mortgage will be on an interest-only basis. I explained that for this portion of your loan, your monthly payments to the lender will only consist of interest.
 
 The amount of your loan will not go down and the outstanding amount will be repayable in full at the end of the mortgage term. 
 
@@ -166,7 +168,7 @@ I am recommending a loan which will be secured on the same property as your exis
   recommendingMortgageAmount_G_A1: `This is the amount you need in order to complete on your property transaction taking into account the deposit you have put towards this transaction.`,
   recommendingMortgageAmount_G_A2: `This mortgage application has an element of debt consolidation
 
-I have carefully considered your position prior to the further advance/remortgage/ second charge mortgage, fully reviewing your expenditure and bank statements. To meet your needs I recommended you consolidate the debts described below into your mortgage. Based on the information provided by you the total value of these outstanding debts is approximately £xxx.
+I have carefully considered your position prior to the further advance/remortgage/ second charge mortgage, fully reviewing your expenditure and bank statements. To meet your needs I recommended you consolidate the debts described below into your mortgage. Based on the information provided by you the total value of these outstanding debts is approximately ${getCurrencySign()}xxx.
 
 I made you aware of the impact of consolidating these debts into the new mortgage, increasing the term of the interest over a longer period and the implications and risks of securing a previously unsecured loan against your property.  
 
@@ -178,7 +180,7 @@ THINK CAREFULLY BEFORE SECURING OTHER DEBTS AGAINST YOUR HOME. YOUR HOME MAY BE 
 `,
   recommendingMortgageAmount_G_A3: `Debt Consolidation on a Buy to Let transaction
 
-I have carefully considered your position prior to the further advance/remortgage/ second charge mortgage, fully reviewing your expenditure and bank statements. To meet your needs I recommended you consolidate the debts described below into your mortgage. Based on the information provided by you the total value of these outstanding debts is approximately £xxx.
+I have carefully considered your position prior to the further advance/remortgage/ second charge mortgage, fully reviewing your expenditure and bank statements. To meet your needs I recommended you consolidate the debts described below into your mortgage. Based on the information provided by you the total value of these outstanding debts is approximately ${getCurrencySign()}xxx.
 
 I made you aware of the impact of consolidating these debts into the new mortgage, increasing the term of the interest over a longer period and the implications and risks of securing a previously unsecured loan against your property.  
 
@@ -187,7 +189,7 @@ I have provided you with a copy of the debt consolidation calculator and also pr
 Your lender may require these debts to be repaid as a condition of the loan agreement. They may also instruct the appointed conveyancing solicitor to repay the outstanding balances directly to the creditor(s).
 
 THINK CAREFULLY BEFORE SECURING OTHER DEBTS AGAINST YOUR PROPERTY. YOUR PROPERTY MAY BE REPOSSESSED IF YOU DO NOT KEEP UP REPAYMENTS ON YOUR MORTGAGE OR ANY OTHER DEBTS SECURED ON IT`,
-  recommendingMortgageAmount_S_A1: `We are recommending the finance amount of £{loan-amount} because your income/rental income allows you to support this or it falls within your budget of xx and xx amount.`,
+  recommendingMortgageAmount_S_A1: `We are recommending the finance amount of ${getCurrencySign()}{loan-amount} because your income/rental income allows you to support this or it falls within your budget of xx and xx amount.`,
   // What are the costs and fees?
   costsAndFees_G_A1: `The costs in relation to your mortgage application are included in your Mortgage Illustration.
 
@@ -197,7 +199,7 @@ You have chosen to add fees to the loan amount because you wanted to keep your u
 
 You should be aware that interest will be charged on these for the term of the loan. Please refer to your comparative mortgage Illustration for full details.`,
   costsAndFees_G_A2: `You preferred to pay the lender arrangement fees directly, so no fees have been added to your loan.`,
-  costsAndFees_G_A3: `There was a deal with (LENDER) with no lender arrangement fee which was X.XX% and £XXX.XX per month. When comparing the difference in monthly cost to this deal, it was a difference of £XX.XX per month. Over (months of fixed deal, e.g 24) months this equates to £XXX.XX in extra payments. You saw the benefit of paying £(LENDER ARR FEE) to save £XXX.XX in extra payments.`,
+  costsAndFees_G_A3: `There was a deal with (LENDER) with no lender arrangement fee which was X.XX% and ${getCurrencySign()}XXX.XX per month. When comparing the difference in monthly cost to this deal, it was a difference of ${getCurrencySign()}XX.XX per month. Over (months of fixed deal, e.g 24) months this equates to ${getCurrencySign()}XXX.XX in extra payments. You saw the benefit of paying ${getCurrencySign()}(LENDER ARR FEE) to save ${getCurrencySign()}XXX.XX in extra payments.`,
   costsAndFees_S_A1: `Any associated fees and charges, which you are happy to pay upfront as the bank/financier will not allow to add this to the finance application.`,
   // What are the disadvantages and risks
   disadvantageAndRisks_G_A1: `No Portability Option
@@ -242,7 +244,7 @@ Please refer to the Scheme Details for further information and the full terms an
 
 This Help to Buy Mortgage is only available on a repayment basis.  This means each monthly repayment you make to the lender will contain an element of capital in addition to the interest payable on the loan.  The proportion of capital repaid increases with each monthly repayment.  As long as all the repayments due to the lender are made in full and on time, the mortgage will be repaid at the end of the term.
 
-You don’t pay any interest or fees on the government’s equity loan for the first five years. In the sixth year, you will be charged 1.75%.  After that, the fee rises by inflation based on the Retail Price Index (RPI) plus 1% each year. RPI figures are put together by the Office for National Statistics. Your forecasted monthly repayment in Year 6 will be £XX.XX.  This payment could go up or down dependent on RPI. This still fits within your specified budget when paying the lender’s current standard variable rate.   
+You don’t pay any interest or fees on the government’s equity loan for the first five years. In the sixth year, you will be charged 1.75%.  After that, the fee rises by inflation based on the Retail Price Index (RPI) plus 1% each year. RPI figures are put together by the Office for National Statistics. Your forecasted monthly repayment in Year 6 will be ${getCurrencySign()}XX.XX.  This payment could go up or down dependent on RPI. This still fits within your specified budget when paying the lender’s current standard variable rate.   
 
 The equity loan must be repaid after 25 years or earlier if you sell your home. You must repay the same percentage of the proceeds of the sale as the initial equity loan (i.e. if you received an equity loan for 20% of the purchase price of your home, you must repay 20% of the proceeds of the sale).  Please refer to your Loan Agreement from the Agency.                                                                                                                       
 I have discussed the features of the Help to Buy scheme. However I have not given you any advice as to the suitability of the scheme.  You should discuss the scheme with your Legal Adviser if you are in any doubt about the features or its suitability for you.  `,
@@ -254,7 +256,7 @@ I have not provided you with advice on the shared ownership scheme itself. I hav
 
 Your property interest is Leasehold. The percentage share to be purchased is xx% and the percentage share to be rented is xx%. You may have the option to increase your share of the property ownership, subject to the scheme terms and conditions. 
 
-The amount of rent initially payable will be £xx. This this will be reviewed on a please insert timescale/date basis.
+The amount of rent initially payable will be ${getCurrencySign()}xx. This this will be reviewed on a please insert timescale/date basis.
 
 You will not own the property outright at the end of the mortgage term if you do not increase your ownership to 100% during the term of the mortgage. The scheme will usually charge administration fees if you want to increase your ownership share or make alterations or improvements to your property. 
 
@@ -331,7 +333,7 @@ You have received my recommendation(s) for buildings insurance but you have deci
 You have confirmed that you are going to arrange your own cover and do not need my advice with regard to this matter.`,
   // Wills
   wills_G_A1: `You do not currently have a Will. I recommend that you seek advice from a solicitor with regard to this matter. There can be tax-planning advantages from having a will written and this can ensure that as much as possible of your estate goes to those intended. `,
-  wills_G_A2: `You do not currently have a Will. I recommend that you seek advice and have referred you to detail company name who specialise in providing Will writing services. If you decide to proceed, I shall receive a fee of £xxx from the above company.`,
+  wills_G_A2: `You do not currently have a Will. I recommend that you seek advice and have referred you to detail company name who specialise in providing Will writing services. If you decide to proceed, I shall receive a fee of ${getCurrencySign()}xxx from the above company.`,
   wills_G_A3: `You confirmed you have a Will in place. I emphasised that it is important that revisions are made whenever significant changes occur in your personal or financial situation or your intentions.`,
   wills_S_A1: `You do not currently have a Will. I recommend that you seek advice from a solicitor or qualified will writer with regards to this matter. There can be tax-planning advantages from having a will written and this can ensure that as much as possible of your estate goes to those intended. `,
 };

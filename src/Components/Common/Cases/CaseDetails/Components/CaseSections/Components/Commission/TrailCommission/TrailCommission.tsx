@@ -31,6 +31,7 @@ import {
 } from "reactstrap";
 import AddTrailCommissionModal from "./Modals/AddTrailCommissionModal";
 import DeleteTrailCommissionModal from "./Modals/DeleteTrailCommissionModal";
+import getCurrencySign from "@/utils/currency";
 
 type Trail = {
   id: string;
@@ -398,7 +399,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
                       <FormGroup>
                         <Label>Monthly Payment</Label>
                         <div className="input-group">
-                          <InputGroupText>£</InputGroupText>
+                          <InputGroupText>{getCurrencySign()}</InputGroupText>
                           <Input
                             type="number"
                             value={trail.monthlyPayment}
@@ -507,7 +508,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
                       <FormGroup>
                         <Label>Total Trail Commission</Label>
                         <div className="input-group">
-                          <InputGroupText>£</InputGroupText>
+                          <InputGroupText>{getCurrencySign()}</InputGroupText>
                           <Input
                             type="text"
                             readOnly

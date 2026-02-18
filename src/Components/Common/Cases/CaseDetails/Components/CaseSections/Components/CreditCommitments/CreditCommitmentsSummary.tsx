@@ -1,4 +1,5 @@
 import { useGetCreditCommitmentsSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/CreditCommitmentsSummaryApi";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import { Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 
@@ -22,7 +23,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-sterling-sign"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{summaryData?.total_balance || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_balance || "0.00"}
                 </span>
               </div>
             </CardBody>
@@ -39,7 +40,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-sterling-sign"></i>
                 </span>
                 <span className="h2 text-secondary font-weight-bold">
-                  £{summaryData?.total_balance_to_be_repaid || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_balance_to_be_repaid || "0.00"}
                 </span>
               </div>
             </CardBody>
@@ -56,7 +57,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-sterling-sign"></i>
                 </span>
                 <span className="h2 text-success font-weight-bold">
-                  £{summaryData?.total_balance_to_remain || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_balance_to_remain || "0.00"}
                 </span>
               </div>
             </CardBody>
@@ -76,7 +77,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-calendar-days"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{summaryData?.total_monthly_payment || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_monthly_payment || "0.00"}
                 </span>
               </div>
             </CardBody>
@@ -93,7 +94,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-calendar-days"></i>
                 </span>
                 <span className="h2 text-secondary font-weight-bold">
-                  £{summaryData?.total_monthly_payment_to_be_repaid || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_monthly_payment_to_be_repaid || "0.00"}
                 </span>
               </div>
             </CardBody>
@@ -110,7 +111,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-calendar-days"></i>
                 </span>
                 <span className="h2 text-success font-weight-bold">
-                  £{summaryData?.total_monthly_payment_to_remain || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_monthly_payment_to_remain || "0.00"}
                 </span>
               </div>
             </CardBody>
@@ -130,7 +131,7 @@ const CreditCommitmentsSummary: React.FC = () => {
                   <i className="fa-solid fa-sterling-sign"></i>
                 </span>
                 <span className="h2 text-primary font-weight-bold">
-                  £{summaryData?.total_settlement_balance || "0.00"}
+                  {getCurrencySign()}{summaryData?.total_settlement_balance || "0.00"}
                 </span>
               </div>
             </CardBody>

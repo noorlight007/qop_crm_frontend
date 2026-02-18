@@ -1,11 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
-import { useDownloadFeesSummaryQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import { useDownloadFeesSummaryMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { TbDownload } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
@@ -31,47 +31,26 @@ const FeesTab: FC = () => {
   );
 
   const [basicTab, setBasicTab] = useState("1");
-  const [shouldDownload, setShouldDownload] = useState(false);
 
-  const {
-    data: feesSummaryBlob,
-    isLoading: isFeesSummaryDownloading,
-    isSuccess,
-    isError,
-  } = useDownloadFeesSummaryQuery(
-    { case_alias: casealias },
-    { skip: !shouldDownload || !casealias },
-  );
+  const [downloadFeesSummary, { isLoading: isFeesSummaryDownloading }] =
+    useDownloadFeesSummaryMutation();
 
-  useEffect(() => {
-    if (isSuccess && feesSummaryBlob && shouldDownload) {
-      // Create download link
-      const url = window.URL.createObjectURL(feesSummaryBlob);
+  const handleDownloadFeesSummary = async () => {
+    try {
+      const blob = await downloadFeesSummary({
+        case_alias: casealias,
+      }).unwrap();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `fees-summary(${caseData.name}).pdf`;
+      link.download = `fees-summary(${caseData?.name}).pdf`;
       document.body.appendChild(link);
       link.click();
-
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      setShouldDownload(false);
+    } catch (err) {
+      toast.error("Failed to download report. Please try again.");
     }
-  }, [isSuccess, feesSummaryBlob, shouldDownload, caseData]);
-  // Handle errors
-  useEffect(() => {
-    if (isError && shouldDownload) {
-      toast.error("Failed to download fees summary. Please try again.");
-      setShouldDownload(false);
-    }
-  }, [isError, shouldDownload]);
-
-  const handleDownloadFeesSummary = () => {
-    if (!casealias) {
-      toast.error("Fees summary is not available for download.");
-      return;
-    }
-    setShouldDownload(true);
   };
 
   const currentTab: string | null = useAppSelector(

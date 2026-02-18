@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useAddExistingProtectionDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
 import { AddExistingProtectionModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -343,7 +344,7 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   name="sum_assured"
                   value={formData.sum_assured || ""}
                   onChange={handleInputChange}
-                  placeholder="£"
+                  placeholder={getCurrencySign()}
                 />
                 {errors.sum_assured && (
                   <div className="text-danger">{errors.sum_assured}</div>
@@ -359,7 +360,7 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
                   name="premium"
                   value={formData.premium || ""}
                   onChange={handleInputChange}
-                  placeholder="£"
+                  placeholder={getCurrencySign()}
                 />
                 {errors.premium && (
                   <div className="text-danger">{errors.premium}</div>

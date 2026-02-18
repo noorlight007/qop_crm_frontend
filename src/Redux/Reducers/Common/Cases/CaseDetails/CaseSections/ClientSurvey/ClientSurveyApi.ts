@@ -16,8 +16,15 @@ export const ClientSurveyApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["ClientSurvey"],
     }),
+    downloadClientSurvey: builder.mutation({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/client-survey/pdf/`,
+        method: "GET",
+        responseHandler: (response) => response.blob(),
+      }),
+    }),
   }),
 });
 
-export const { useGetClientSurveyQuery, useSendClientSurveyMutation } =
+export const { useGetClientSurveyQuery, useSendClientSurveyMutation, useDownloadClientSurveyMutation } =
   ClientSurveyApi;

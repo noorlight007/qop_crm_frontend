@@ -1,6 +1,7 @@
 import { updateProperty } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { RootState } from "@/Redux/Store";
 import { PropertyDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
+import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -389,7 +390,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
                   Service Charge per Month
                 </Label>
                 <InputGroup>
-                  <span className="input-group-text">£</span>
+                  <span className="input-group-text">{getCurrencySign()}</span>
                   <Input
                     type="number"
                     id="service_charge_per_month"
@@ -414,7 +415,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               <FormGroup>
                 <Label for="ground_rent_per_annum">Ground Rent per Annum</Label>
                 <InputGroup>
-                  <span className="input-group-text">£</span>
+                  <span className="input-group-text">{getCurrencySign()}</span>
                   <Input
                     type="number"
                     id="ground_rent_per_annum"
@@ -442,7 +443,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
             <FormGroup>
               <Label for="estimated_value">Estimated Value</Label>
               <InputGroup>
-                <span className="input-group-text">£</span>
+                <span className="input-group-text">{getCurrencySign()}</span>
                 <Input
                   type="number"
                   id="estimated_value"

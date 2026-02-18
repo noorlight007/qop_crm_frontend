@@ -6,6 +6,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
+  useDownloadClientSurveyMutation,
   useGetClientSurveyQuery,
   useSendClientSurveyMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
@@ -16,6 +17,7 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
 import { Send } from "react-feather";
+import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -28,6 +30,7 @@ import {
   Input,
   Label,
   Row,
+  Spinner,
 } from "reactstrap";
 
 const ClientSurveyContent: React.FC = () => {
@@ -43,12 +46,30 @@ const ClientSurveyContent: React.FC = () => {
   const [sendSurvey, { isLoading: isSendingSurvey }] =
     useSendClientSurveyMutation();
 
+  const [clientSurveyBlob, { isLoading: isDownloadingSurvey }] =
+    useDownloadClientSurveyMutation();
   const handlesendSurvey = async () => {
     try {
       await sendSurvey({ case_alias: casealias }).unwrap();
       toast.success("Survey sent successfully.");
     } catch (error) {
       toast.error("Failed to send survey.");
+    }
+  };
+
+  const downloadSurvey = async () => {
+    try {
+      const blob = await clientSurveyBlob({ case_alias: casealias }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `client-survey(${caseData?.name}).pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error("Failed to download report. Please try again.");
     }
   };
 
@@ -228,7 +249,7 @@ const ClientSurveyContent: React.FC = () => {
       <CardBody>
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
-          <div>
+          <div className="d-flex gap-2 mb-4">
             <Button
               color="primary"
               outline
@@ -236,6 +257,23 @@ const ClientSurveyContent: React.FC = () => {
               disabled={isSendingSurvey}
             >
               <Send size={15} /> Send Survey From To the Client
+            </Button>
+            <Button
+              color="secondary"
+              onClick={downloadSurvey}
+              disabled={isDownloadingSurvey}
+            >
+              {isDownloadingSurvey ? (
+                <>
+                  <Spinner size="sm" className="me-2" />
+                  Downloading...
+                </>
+              ) : (
+                <>
+                  <FaDownload className="me-2" />
+                  Download Survey
+                </>
+              )}
             </Button>
           </div>
           <div>

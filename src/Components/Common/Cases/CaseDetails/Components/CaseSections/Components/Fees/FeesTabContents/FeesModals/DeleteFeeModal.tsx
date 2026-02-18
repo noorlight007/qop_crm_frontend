@@ -1,5 +1,6 @@
 import { useDeleteFeesInOutMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import { DeleteFeeModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalHeader } from "reactstrap";
@@ -37,7 +38,7 @@ const DeleteFeeModal: React.FC<DeleteFeeModalProps> = ({
         <p>
           Are you sure you want to delete{" "}
           <b className="text-danger">
-            £{feeData?.fee ?? feeData?.amount ?? "0.00"}
+            {getCurrencySign()}{feeData?.fee ?? feeData?.amount ?? "0.00"}
           </b>{" "}
           fee?
         </p>

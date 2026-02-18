@@ -3,6 +3,7 @@ import {
   PayDayLoanProps,
   ViewPayDayLoansModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -51,7 +52,7 @@ const ViewPayDayLoansModal: React.FC<ViewPayDayLoansModalProps> = ({
                 <tr key={index}>
                   <td>
                     {loan.loan_amount
-                      ? `£${parseFloat(loan.loan_amount).toLocaleString(
+                      ? `${getCurrencySign()}${parseFloat(loan.loan_amount).toLocaleString(
                           "en-GB",
                           {
                             minimumFractionDigits: 2,

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeOutModal from "./FeesModals/AddFeeOutModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
+import getCurrencySign from "@/utils/currency";
 
 const FeeOutTable = () => {
   const { data: session } = useSession();
@@ -153,7 +154,7 @@ const FeeOutTable = () => {
                         <span className="fw-bold">{index + 1}</span>
                       </td>
                       <td className="text-center align-middle">
-                        £{feeOut.fee || "0.00"}
+                        {getCurrencySign()}{feeOut.fee || "0.00"}
                       </td>
                       <td className="text-center align-middle">
                         {feeTypes.find((type) => type.value === feeOut.feeType)
