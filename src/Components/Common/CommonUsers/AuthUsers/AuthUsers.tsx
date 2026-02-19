@@ -53,7 +53,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     last_name: "",
     email: "",
     phone: null,
-    gender: "",
     joining_date: "",
     is_active: false,
     profile_image: null,
@@ -182,10 +181,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   <th>Designation</th>
                 )}
                 <th>Joining Date</th>
-                {pathname !== "/organisation/director/introducers" &&
-                  pathname !== "/network/director/compliances" && (
-                    <th>Gender</th>
-                  )}
                 {pathname === "/organisation/director/introducers" && (
                   <>
                     <th>Company Name</th>
@@ -280,16 +275,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
 
-                    {pathname !== "/organisation/director/introducers" &&
-                      pathname !== "/network/director/compliances" && (
-                        <td>
-                          {user?.gender ? (
-                            formatChoiceFieldValue(user?.gender)
-                          ) : (
-                            <small className="text-muted">Not Available</small>
-                          )}
-                        </td>
-                      )}
                     {pathname === "/organisation/director/introducers" && (
                       <>
                         <td>
