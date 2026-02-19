@@ -13,6 +13,7 @@ import {
   FaReply,
   FaSpinner,
   FaTimes,
+  FaUser,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
@@ -191,15 +192,21 @@ const SupportTicketComments: React.FC = () => {
     >
       <div className="d-flex align-items-start gap-3 p-3 bg-light-dark rounded">
         <div className="flex-shrink-0">
-          <img
-            src={
-              reply.author.profile_image ||
-              "https://via.placeholder.com/40x40?text=User"
-            }
-            alt={reply.author.name}
-            className="rounded-circle"
-            style={{ width: "40px", height: "40px", objectFit: "cover" }}
-          />
+          {reply.author.profile_image ? (
+            <img
+              src={reply.author.profile_image}
+              alt={reply.author.name}
+              className="rounded-circle"
+              style={{ width: "40px", height: "40px", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              className="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white"
+              style={{ width: "40px", height: "40px", flexShrink: 0 }}
+            >
+              <FaUser size={18} />
+            </div>
+          )}
         </div>
         <div className="flex-grow-1">
           <div className="d-flex align-items-center gap-2 mb-1">
@@ -248,15 +255,21 @@ const SupportTicketComments: React.FC = () => {
       <CardBody>
         <div className="d-flex align-items-start gap-3">
           <div className="flex-shrink-0">
-            <img
-              src={
-                comment.author.profile_image ||
-                "https://via.placeholder.com/50x50?text=User"
-              }
-              alt={comment.author.name}
-              className="rounded-circle"
-              style={{ width: "50px", height: "50px", objectFit: "cover" }}
-            />
+            {comment.author.profile_image ? (
+              <img
+                src={comment.author.profile_image}
+                alt={comment.author.name}
+                className="rounded-circle"
+                style={{ width: "50px", height: "50px", objectFit: "cover" }}
+              />
+            ) : (
+              <div
+                className="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white"
+                style={{ width: "50px", height: "50px", flexShrink: 0 }}
+              >
+                <FaUser size={22} />
+              </div>
+            )}
           </div>
           <div className="flex-grow-1">
             <div className="d-flex align-items-center gap-2 mb-2">
@@ -424,15 +437,25 @@ const SupportTicketComments: React.FC = () => {
           <Form onSubmit={handleSubmitComment}>
             <div className="d-flex align-items-start gap-3 mb-3">
               <div className="flex-shrink-0">
-                <img
-                  src={
-                    session?.user?.profile_image ||
-                    "https://via.placeholder.com/50x50?text=You"
-                  }
-                  alt="Your Avatar"
-                  className="rounded-circle"
-                  style={{ width: "50px", height: "50px", objectFit: "cover" }}
-                />
+                {session?.user?.profile_image ? (
+                  <img
+                    src={session.user.profile_image}
+                    alt="Your Avatar"
+                    className="rounded-circle"
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <div
+                    className="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white"
+                    style={{ width: "50px", height: "50px", flexShrink: 0 }}
+                  >
+                    <FaUser size={22} />
+                  </div>
+                )}
               </div>
               <div className="flex-grow-1">
                 <Input
