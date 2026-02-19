@@ -13,7 +13,7 @@ const ClientSurveyContainer: React.FC = () => {
           <Info />
         </Col>
 
-        <Col xs={12} style={{ marginTop: "clamp(0px, 3vw, 24px)" }}>
+        <Col xs={12} style={{ marginTop: "clamp(0px, 3vw, 10px)" }}>
           <SurveyForm />
         </Col>
       </Row>

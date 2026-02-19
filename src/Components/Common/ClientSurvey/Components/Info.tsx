@@ -6,7 +6,7 @@ import imageTwo from "../../../../../public/assets/images/logo/logo-dark.png";
 const Info: React.FC = () => {
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
   return (
-    <div className="sticky-top" style={{ top: "1rem" }}>
+    <div className="sticky-top" style={{ top: "2rem" }}>
       <Card className="shadow bg-light-primary">
         <CardBody>
           <div className="d-flex flex-column flex-md-row align-items-center justify-content-between">
