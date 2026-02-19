@@ -430,15 +430,19 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedAuthUser={selectedAuthUser}
+          userRole={userRole}
         />
         <AddAuthUserModal
           isOpen={isAddUserModalOpen}
           toggle={toggleAddUserModal}
+          userRole={userRole}
+          userTitle={title}
         />
         <UpdateAuthUserModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
           selectedAuthUser={selectedAuthUser}
+          userRole={userRole}
         />
         {/* modals end */}
       </CardBody>

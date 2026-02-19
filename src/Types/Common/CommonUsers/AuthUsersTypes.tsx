@@ -29,17 +29,21 @@ interface ViewAuthUserModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
+  userRole?: string;
 }
 
 export interface AddAuthUserModalProps {
   isOpen: boolean;
   toggle: () => void;
+  userRole?: string;
+  userTitle: string;
 }
 
 interface UpdateAuthUserModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
+  userRole?: string;
 }
 
 export type {

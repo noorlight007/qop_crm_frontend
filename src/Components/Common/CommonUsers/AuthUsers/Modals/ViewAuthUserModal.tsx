@@ -9,10 +9,8 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
   isOpen,
   toggle,
   selectedAuthUser,
+  userRole,
 }) => {
-  const pathname =
-    typeof window !== "undefined" ? window.location.pathname : "";
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
@@ -137,7 +135,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
               Personal Details
             </h6>
             <Row>
-              {pathname !== "/organisation/director/introducers" && (
+              {userRole !== "Introducers" && (
                 <>
                   <Col md="6" className="mb-3">
                     <div>
@@ -170,7 +168,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                   </Col>
                 </>
               )}
-              {pathname === "/organisation/director/introducers" && (
+              {userRole === "Introducers" && (
                 <>
                   <Col md="4" className="mb-3">
                     <div>
