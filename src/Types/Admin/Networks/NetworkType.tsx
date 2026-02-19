@@ -12,6 +12,7 @@ export interface Network {
 export interface NetworkFormData {
   network: {
     name: string;
+    subdomain: string;
     address: string;
     primary_mobile: string;
     email: string;
