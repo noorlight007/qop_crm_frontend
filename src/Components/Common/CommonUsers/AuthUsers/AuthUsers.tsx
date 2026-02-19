@@ -37,7 +37,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 12,
   userRole,
 }) => {
-  const pathname = window.location.pathname;
   const [authUsers, setAuthUsers] = useState<AuthUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -177,11 +176,9 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                {pathname === "/network/director/compliances" && (
-                  <th>Designation</th>
-                )}
+                {userRole === "NETWORK_COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
-                {pathname === "/organisation/director/introducers" && (
+                {userRole === "INTRODUCER" && (
                   <>
                     <th>Company Name</th>
                     <th>Company Address</th>
@@ -257,7 +254,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
 
-                    {pathname === "/network/director/compliances" && (
+                    {userRole === "NETWORK_COMPLIANCE" && (
                       <td>
                         {user?.designation ? (
                           user?.designation
@@ -275,7 +272,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
 
-                    {pathname === "/organisation/director/introducers" && (
+                    {userRole === "INTRODUCER" && (
                       <>
                         <td>
                           {user?.company_name || (
