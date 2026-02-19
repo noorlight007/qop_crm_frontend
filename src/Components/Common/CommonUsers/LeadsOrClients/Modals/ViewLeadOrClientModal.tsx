@@ -15,7 +15,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Lead Information</span>
+        <span className="fs-5 fw-bold text-primary">User Information</span>
       </ModalHeader>
       <ModalBody
         className="p-0"
