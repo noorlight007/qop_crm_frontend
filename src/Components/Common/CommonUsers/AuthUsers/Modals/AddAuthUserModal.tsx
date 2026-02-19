@@ -19,8 +19,9 @@ import {
 const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
   isOpen,
   toggle,
+  userRole,
+  userTitle,
 }) => {
-  const pathname = window.location.pathname;
   const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
   const [formData, setFormData] = useState({
     title: "",
@@ -123,18 +124,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       phone: formData.phone || null,
       designation: formData.designation,
       joining_date: formData.joining_date ? formData.joining_date : null,
-      role:
-        pathname === "/network/director/advisers"
-          ? "NETWORK_ADVISER"
-          : pathname === "/network/director/compliances"
-            ? "NETWORK_COMPLIANCE"
-            : pathname === "/organisation/director/advisers"
-              ? "ORGANISATION_ADVISER"
-              : pathname === "/organisation/director/admins"
-                ? "ORGANISATION_ADMIN"
-                : pathname === "/organisation/director/introducers"
-                  ? "INTRODUCER"
-                  : "",
+      role: userRole, 
       company_name: formData.company_name,
       company_address: formData.company_address,
     };
@@ -208,7 +198,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
         <h2 className="text-primary text-capitalize">
-          Add {pathname.split("/").pop()?.replace(/-/g, " ").slice(0, -1)}
+          Add {userTitle.slice(0, -1)}
         </h2>
       </ModalHeader>
       <ModalBody>
@@ -341,7 +331,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
 
-              {pathname === "/network/director/compliances" && (
+              {userRole === "NETWORK_COMPLIANCE" && (
                 <Col md={6}>
                   <FormGroup>
                     <Label for="designation">
@@ -364,7 +354,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 </Col>
               )}
 
-              {pathname === "/organisation/director/introducers" && (
+              {userRole === "INTRODUCER" && (
                 <>
                   <Col md={6}>
                     <FormGroup>

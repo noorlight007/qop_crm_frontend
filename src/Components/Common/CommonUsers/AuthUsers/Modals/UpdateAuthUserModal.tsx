@@ -23,8 +23,8 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   isOpen,
   toggle,
   selectedAuthUser,
+  userRole,
 }) => {
-  const pathname = window.location.pathname;
   const [authUserData, setAuthUserData] =
     useState<Partial<AuthUser>>(selectedAuthUser);
   const [originalData, setOriginalData] =
@@ -362,7 +362,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-            {pathname === "/network/director/compliances" && (
+            {userRole === "Network Compliances" && (
               <Col md={6}>
                 <FormGroup>
                   <Label for="designation">
@@ -384,7 +384,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
             )}
-            {pathname === "/organisation/director/introducers" && (
+            {userRole === "Introducers" && (
               <>
                 <Col md={6}>
                   <FormGroup>

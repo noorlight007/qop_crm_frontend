@@ -45,7 +45,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 12,
   roles,
 }) => {
-  const pathname = window.location.pathname;
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -248,7 +247,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
-          {pathname !== "/admin/users/compliances" && (
+          {roles !== "COMPLIANCE" && (
             <Col md={3}>
               <Input
                 type="select"
@@ -301,9 +300,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                {pathname === "/admin/users/compliances" && (
-                  <th>Designation</th>
-                )}
+                {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
@@ -375,7 +372,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {pathname === "/admin/users/compliances" && (
+                    {roles === "COMPLIANCE" && (
                       <td>
                         {user?.designation ? (
                           user?.designation
