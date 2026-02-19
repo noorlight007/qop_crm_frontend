@@ -19,7 +19,7 @@ const AboutOrg: React.FC = () => {
     <Card
       className="shadow-lg border-0"
       style={{
-        minHeight: "500px",
+        minHeight: "560px",
         display: "flex",
         flexDirection: "column",
       }}
