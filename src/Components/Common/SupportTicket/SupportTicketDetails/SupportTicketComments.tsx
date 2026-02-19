@@ -187,8 +187,7 @@ const SupportTicketComments: React.FC = () => {
   const renderReply = (reply: Reply, depth: number = 0) => (
     <div
       key={reply.id}
-      className={`${depth > 0 ? "ms-4" : ""} mt-3`}
-      style={{ borderLeft: "2px solid #e9ecef" }}
+      className={`${depth > 0 ? "ms-4" : ""} mt-3 border-l-primary border-2 rounded`}
     >
       <div className="d-flex align-items-start gap-3 p-3 bg-light-dark rounded">
         <div className="flex-shrink-0">
