@@ -240,6 +240,7 @@ export const baseApi = createApi({
     "Commission",
     "InsuranceOverview",
     "InsurancePolicies",
+    "VulnerableClient",
     // Case details end
     //Common components end
 

@@ -75,7 +75,8 @@ const SupportTicketDetails: React.FC = () => {
 
   const statusOptions = [
     { value: "OPEN", label: "Open" },
-    { value: "IN_REVIEW", label: "In Review" },
+    { value: "IN_PROGRESS", label: "In Progress" },
+    { value: "COMPLETED", label: "Completed" },
     { value: "RESOLVED", label: "Resolved" },
   ];
 
@@ -182,11 +183,12 @@ const SupportTicketDetails: React.FC = () => {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  type TicketStatus = "OPEN" | "IN_REVIEW" | "RESOLVED";
+  type TicketStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "RESOLVED";
 
   const statusColorMap: Record<TicketStatus, string> = {
     OPEN: "danger",
-    IN_REVIEW: "warning",
+    IN_PROGRESS: "warning",
+    COMPLETED: "info",
     RESOLVED: "success",
   };
 
@@ -201,10 +203,10 @@ const SupportTicketDetails: React.FC = () => {
 
   const statusIconMap: Record<TicketStatus, JSX.Element> = {
     OPEN: <FaExclamationCircle />,
-    IN_REVIEW: <FaSpinner />,
+    IN_PROGRESS: <FaSpinner />,
+    COMPLETED: <FaCheck />,
     RESOLVED: <TbCheck />,
   };
-
   return (
     <>
       <Row>
@@ -418,17 +420,108 @@ const SupportTicketDetails: React.FC = () => {
             </CardBody>
           </Card>
 
-          {/* Message Card */}
-          <Card className="shadow-sm mb-4">
-            <CardHeader className="bg-white">
-              <h5 className="mb-0">Ticket Description</h5>
-            </CardHeader>
-            <CardBody>
-              <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
-                {ticketDetails.message}
-              </p>
-            </CardBody>
-          </Card>
+          <Row>
+            {/* Message Card */}
+            <Col md={6} className="mb-3">
+              <Card className="shadow-sm mb-4">
+                <CardHeader className="bg-white">
+                  <h5 className="mb-0">Ticket Description</h5>
+                </CardHeader>
+                <CardBody style={{ height: "200px", overflowY: "auto" }}>
+                  <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
+                    {ticketDetails.message}
+                  </p>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md={6} className="mb-3">
+              {/* Attachments Card */}
+              {ticketDetails.files && ticketDetails.files.length > 0 ? (
+                <Card className="shadow-sm">
+                  <CardHeader className="bg-white">
+                    <h5 className="mb-0">
+                      Attachments({ticketDetails.files.length})
+                    </h5>
+                  </CardHeader>
+                  <CardBody style={{ height: "200px", overflowY: "auto" }}>
+                    <Row>
+                      {ticketDetails.files.map((file: any, idx: number) => {
+                        const fileName =
+                          (file?.file && String(file.file).split("/").pop()) ||
+                          file?.alias ||
+                          "Unknown file";
+                        return (
+                          <Col
+                            key={file.alias || file.file || idx}
+                            sm={12}
+                            md={6}
+                            className="mb-3"
+                          >
+                            <Card className="border h-100">
+                              <CardBody
+                                className="d-flex align-items-center p-3"
+                                style={{ gap: "12px" }}
+                              >
+                                <div className="flex-shrink-0">
+                                  <FaFileAlt
+                                    className="text-muted"
+                                    style={{ fontSize: "1.5rem" }}
+                                  />
+                                </div>
+                                <div
+                                  className="flex-grow-1"
+                                  style={{ minWidth: 0, overflow: "hidden" }}
+                                >
+                                  <p
+                                    className="mb-0 fw-medium text-truncate"
+                                    style={{
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      whiteSpace: "nowrap",
+                                    }}
+                                  >
+                                    {fileName}
+                                  </p>
+                                  <small className="text-muted">
+                                    Click to download
+                                  </small>
+                                </div>
+                                <div className="flex-shrink-0">
+                                  <Button
+                                    color="primary"
+                                    outline
+                                    size="sm"
+                                    onClick={() =>
+                                      handleDownload(file.file, fileName)
+                                    }
+                                    title="Download file"
+                                  >
+                                    <FaDownload />
+                                  </Button>
+                                </div>
+                              </CardBody>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                    </Row>
+                  </CardBody>
+                </Card>
+              ) : (
+                <Card className="shadow-sm">
+                  <CardHeader className="bg-white">
+                    <h5 className="mb-0">Attachments</h5>
+                  </CardHeader>
+                  <CardBody
+                    className="d-flex align-items-center justify-content-center"
+                    style={{ height: "200px" }}
+                  >
+                    <p className="text-muted mb-0">No attachments found.</p>
+                  </CardBody>
+                </Card>
+              )}
+            </Col>
+          </Row>
 
           {/* Comments Card */}
           <Card className="shadow-sm mb-4">
@@ -439,81 +532,6 @@ const SupportTicketDetails: React.FC = () => {
               <SupportTicketComments />
             </CardBody>
           </Card>
-
-          {/* Attachments Card */}
-          {ticketDetails.files && ticketDetails.files.length > 0 && (
-            <Card className="shadow-sm">
-              <CardHeader className="bg-white">
-                <h5 className="mb-0">
-                  Attachments ({ticketDetails.files.length})
-                </h5>
-              </CardHeader>
-              <CardBody>
-                <Row>
-                  {ticketDetails.files.map((file: any, idx: number) => {
-                    const fileName =
-                      (file?.ticket_file &&
-                        String(file.ticket_file).split("/").pop()) ||
-                      file?.alias ||
-                      "Unknown file";
-                    return (
-                      <Col
-                        key={file.alias || file.ticket_file || idx}
-                        sm={12}
-                        md={6}
-                        className="mb-3"
-                      >
-                        <Card className="border h-100">
-                          <CardBody
-                            className="d-flex align-items-center p-3"
-                            style={{ gap: "12px" }}
-                          >
-                            <div className="flex-shrink-0">
-                              <FaFileAlt
-                                className="text-muted"
-                                style={{ fontSize: "1.5rem" }}
-                              />
-                            </div>
-                            <div
-                              className="flex-grow-1"
-                              style={{ minWidth: 0, overflow: "hidden" }}
-                            >
-                              <p
-                                className="mb-0 fw-medium text-truncate"
-                                style={{
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                {fileName}
-                              </p>
-                              <small className="text-muted">
-                                Click to download
-                              </small>
-                            </div>
-                            <div className="flex-shrink-0">
-                              <Button
-                                color="primary"
-                                outline
-                                size="sm"
-                                onClick={() =>
-                                  handleDownload(file.ticket_file, fileName)
-                                }
-                                title="Download file"
-                              >
-                                <FaDownload />
-                              </Button>
-                            </div>
-                          </CardBody>
-                        </Card>
-                      </Col>
-                    );
-                  })}
-                </Row>
-              </CardBody>
-            </Card>
-          )}
         </Col>
       </Row>
       <UpdateSupportTicketModal

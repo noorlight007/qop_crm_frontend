@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
+  Col,
   Form,
   FormGroup,
   Input,
@@ -16,6 +17,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Row,
 } from "reactstrap";
 
 const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
@@ -181,17 +183,15 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       if (shouldReplaceFiles) {
         // Re-upload remaining existing files (skip any entries without a URL)
         for (const file of existingFiles) {
-          if (!file?.ticket_file) {
+          if (!file?.file) {
             // nothing to re-upload for this entry
             continue;
           }
           try {
-            const response = await fetch(String(file.ticket_file));
+            const response = await fetch(String(file.file));
             const blob = await response.blob();
             const fileName =
-              String(file.ticket_file).split("/").pop() ||
-              file?.alias ||
-              "file";
+              String(file.file).split("/").pop() || file?.alias || "file";
             const realFile = new File([blob], fileName, { type: blob.type });
             fd.append("upload_files", realFile);
           } catch (err) {
@@ -264,50 +264,55 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       </ModalHeader>
       <ModalBody>
         <Form onSubmit={handleSubmit} id="support-ticket-form">
-          <FormGroup>
-            <Label for="ticket_type">
-              Ticket Type<span className="text-danger">*</span>
-            </Label>
-            <Input
-              id="ticket_type"
-              name="ticket_type"
-              type="select"
-              value={formData.ticket_type}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select ticket type</option>
-              <option value="FEEDBACK">Feedback</option>
-              <option value="BUG_REPORT">Bug Report</option>
-              <option value="FEATURE_REQUEST">Feature Request</option>
-            </Input>
-            {errors.ticket_type && (
-              <div className="text-danger">{errors.ticket_type}</div>
-            )}
-          </FormGroup>
-
-          <FormGroup>
-            <Label for="priority">
-              Priority<span className="text-danger">*</span>
-            </Label>
-            <Input
-              id="priority"
-              name="priority"
-              type="select"
-              value={formData.priority}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select Priority</option>
-              <option value="URGENT">Urgent</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="NORMAL">Normal</option>
-              <option value="WHEN_POSSIBLE">When Possible</option>
-            </Input>
-            {errors.priority && (
-              <div className="text-danger">{errors.priority}</div>
-            )}
-          </FormGroup>
+          <Row>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="ticket_type">
+                  Ticket Type<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="ticket_type"
+                  name="ticket_type"
+                  type="select"
+                  value={formData.ticket_type}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select ticket type</option>
+                  <option value="FEEDBACK">Feedback</option>
+                  <option value="BUG_REPORT">Bug Report</option>
+                  <option value="FEATURE_REQUEST">Feature Request</option>
+                </Input>
+                {errors.ticket_type && (
+                  <div className="text-danger">{errors.ticket_type}</div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="priority">
+                  Priority<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="priority"
+                  name="priority"
+                  type="select"
+                  value={formData.priority}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Priority</option>
+                  <option value="URGENT">Urgent</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="WHEN_POSSIBLE">When Possible</option>
+                </Input>
+                {errors.priority && (
+                  <div className="text-danger">{errors.priority}</div>
+                )}
+              </FormGroup>
+            </Col>
+          </Row>
 
           {userType === "ADMIN" && (
             <FormGroup>
@@ -324,7 +329,8 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               >
                 <option value="">Select Status</option>
                 <option value="OPEN">Open</option>
-                <option value="IN_REVIEW">In Review</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
                 <option value="RESOLVED">Resolved</option>
               </Input>
               {errors.status && (
@@ -358,7 +364,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               id="message"
               name="message"
               type="textarea"
-              rows={10}
+              rows={8}
               value={formData.message}
               onChange={handleChange}
               required
@@ -396,7 +402,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               >
                 {existingFiles.map((file, index) => (
                   <div
-                    key={file.alias || file.ticket_file || index}
+                    key={file.alias || file.file || index}
                     className={`d-flex justify-content-between align-items-center py-2 px-2 ${
                       index !== existingFiles.length - 1 ? "border-bottom" : ""
                     }`}
@@ -406,14 +412,13 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
                         <div
                           className="fw-medium text-truncate small"
                           title={
-                            (file?.ticket_file &&
-                              String(file.ticket_file).split("/").pop()) ||
+                            (file?.file &&
+                              String(file.file).split("/").pop()) ||
                             file?.alias ||
                             "file"
                           }
                         >
-                          {(file?.ticket_file &&
-                            String(file.ticket_file).split("/").pop()) ||
+                          {(file?.file && String(file.file).split("/").pop()) ||
                             file?.alias ||
                             "file"}
                         </div>

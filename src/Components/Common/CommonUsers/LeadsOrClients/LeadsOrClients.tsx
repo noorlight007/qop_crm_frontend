@@ -1,17 +1,17 @@
-import { useGetClientDetailsQuery } from "@/Redux/Reducers/Common/CommonUsers/ClientsApi";
-import {
-  ClientInfoProps,
-  ClientsProps,
-} from "@/Types/Common/CommonUsers/ClientTypes";
 import LoadingSpinner from "@/app/loading";
+import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import {
+  LeadOrClient,
+  LeadsOrClientsProps,
+} from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "react-feather";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
-import { TbMailShare } from "react-icons/tb";
+import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -28,109 +28,128 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
-import AddClientModal from "./Modals/AddClientModal";
-import ClientInvitationModal from "./Modals/ClientInvitationModal";
-import DeleteClientModal from "./Modals/DeleteClientModal";
-import UpdateClientModal from "./Modals/UpdateClientModal";
-import ViewClientModal from "./Modals/ViewClientModal";
+import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
+import AddLeadModal from "./Modals/AddLeadModal";
+import DeleteLeadOrClientModal from "./Modals/DeleteLeadOrClientModal";
+import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
+import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
 
-const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
+const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
+  title,
+  leadsOrClientsPerPage = 12,
+  userRole,
+}) => {
   const { data: session } = useSession();
-  const [clients, setClients] = useState<ClientInfoProps[]>([]);
+  const [authUsers, setAuthUsers] = useState<LeadOrClient[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false);
-  const [clientToDelete, setClientToDelete] = useState<ClientInfoProps | null>(
-    null,
-  );
 
-  const { data: clientData, isLoading } = useGetClientDetailsQuery({
+  // Host AddNewCaseModal at page-level so it can open after AddLeadModal closes.
+  const [isCaseModalOpen, setIsCaseModalOpen] = useState(false);
+  const [caseModalLeadId, setCaseModalLeadId] = useState<number | undefined>(
+    undefined,
+  );
+  const [caseModalLeadName, setCaseModalLeadName] = useState<
+    string | undefined
+  >(undefined);
+  const [caseModalLeadData, setCaseModalLeadData] = useState<any | undefined>(
+    undefined,
+  );
+  const [selectedLeadOrClient, setSelectedLeadOrClient] = useState<
+    Partial<LeadOrClient>
+  >({
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    email: "",
+    phone: null,
+    profile_image: null,
+    source: "",
+    other_source: null,
+    enquiry_type: "",
+    other_enquiry_type: null,
+    created_at: "",
+    created_by: { name: "", user_type: "" },
+  });
+
+  const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
+    role: userRole,
     page: currentPage,
     search: debouncedSearch || undefined,
   });
 
-  const [selectedClient, setSelectedClient] = useState<
-    Partial<ClientInfoProps>
-  >({
-    user: {
-      title: "",
-      first_name: "",
-      middle_name: "",
-      last_name: "",
-      profile_image: "",
-      user_type: "",
-    },
-    source: "",
-  });
-
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
+  const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
   const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
-  const openDeleteModal = (client: ClientInfoProps) => {
-    setClientToDelete(client);
+
+  const openCaseModalFromLead = (payload: {
+    leadId?: number;
+    leadName?: string | undefined;
+    leadData?: any;
+  }) => {
+    setCaseModalLeadId(payload.leadId);
+    setCaseModalLeadName(payload.leadName);
+    setCaseModalLeadData(payload.leadData);
+    setIsCaseModalOpen(true);
+  };
+
+  const closeCaseModal = () => {
+    setIsCaseModalOpen(false);
+    setCaseModalLeadId(undefined);
+    setCaseModalLeadName(undefined);
+    setCaseModalLeadData(undefined);
+  };
+
+  const openViewModal = (LeadOrClient: LeadOrClient) => {
+    setSelectedLeadOrClient(LeadOrClient);
+    toggleViewModal();
+  };
+
+  const openAddUserModal = () => {
+    toggleAddUserModal();
+  };
+
+  const openUpdateModal = (LeadOrClient: LeadOrClient) => {
+    setSelectedLeadOrClient(LeadOrClient);
+    toggleUpdateModal();
+  };
+
+  const openDeleteModal = (LeadOrClient: LeadOrClient) => {
+    setSelectedLeadOrClient(LeadOrClient);
     toggleDeleteModal();
   };
-  const toggleInvitationModal = () =>
-    setIsInvitationModalOpen(!isInvitationModalOpen);
 
   useEffect(() => {
-    if (clientData) {
-      if (Array.isArray(clientData)) {
-        setClients(clientData || []);
-        setTotalCount(clientData.length || 0);
-      } else if ((clientData as any).results) {
-        setClients((clientData as any).results || []);
-        setTotalCount((clientData as any).count || 0);
-      } else if ((clientData as any).clients) {
-        setClients((clientData as any).clients || []);
-        setTotalCount(((clientData as any).clients || []).length || 0);
+    if (authUsersData) {
+      if (Array.isArray(authUsersData)) {
+        setAuthUsers(authUsersData || []);
+        setTotalCount(authUsersData.length || 0);
+      } else if (authUsersData.results) {
+        setAuthUsers(authUsersData.results || []);
+        setTotalCount(authUsersData.count || 0);
       } else {
-        setClients([]);
+        setAuthUsers([]);
         setTotalCount(0);
       }
     }
-  }, [clientData]);
+  }, [authUsersData]);
 
-  // openmodals
-  const openAddModal = () => {
-    toggleModal();
-  };
-
-  const openUpdateModal = (client: ClientInfoProps) => {
-    setSelectedClient(client);
-    toggleUpdateModal();
-  };
-  // openmodals end
-
-  // Server-side search/pagination is used. `clients` contains current page results.
-  const currentClients = clients;
-  const totalPages = Math.ceil(totalCount / clientsPerPage) || 1;
-
-  // debounce search input to avoid firing on every keystroke
-  const searchTimeout = useRef<number | null>(null);
+  // Debounce search input
   useEffect(() => {
-    if (searchTimeout.current) {
-      window.clearTimeout(searchTimeout.current);
-    }
-    // set a 300ms debounce
-    searchTimeout.current = window.setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-      setCurrentPage(1);
-    }, 300) as unknown as number;
-
-    return () => {
-      if (searchTimeout.current) {
-        window.clearTimeout(searchTimeout.current);
-      }
-    };
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(t);
   }, [searchQuery]);
+
+  const currentAuthUsers = authUsers;
+  const totalPages = Math.ceil(totalCount / leadsOrClientsPerPage) || 1;
 
   if (isLoading) {
     return (
@@ -143,11 +162,11 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
   return (
     <Card>
       <CardBody>
-        <Row className="flex justify-content-between py-4">
-          <Col md="3">
-            <h2>Clients</h2>
+        <Row className="d-flex justify-content-between py-4">
+          <Col md="3" xs="12">
+            <h2>{title}</h2>
           </Col>
-          <Col md={3} xs={12}>
+          <Col md={3} xs="12">
             <InputGroup className="position-relative">
               <FaSearch
                 className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
@@ -157,19 +176,22 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                 type="text"
                 placeholder="Search... "
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "10px 27px 10px 25px" }}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1);
+                }}
+                style={{ padding: "10px 10px 10px 25px" }}
                 className="rounded-end-1"
               />
               <FaInfoCircle
-                id="clientSearchSuggestion"
+                id="complianceAssistantSearch"
                 className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
                 style={{ cursor: "pointer", zIndex: 10 }}
               />
 
               <UncontrolledPopover
                 placement="right"
-                target="clientSearchSuggestion"
+                target="complianceAssistantSearch"
                 trigger="hover"
               >
                 <PopoverBody className="bg-white rounded text-dark p-3 small">
@@ -183,16 +205,12 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
             xs="12"
             className="d-flex justify-content-end mt-sm-0 mt-2"
           >
-            {/* {session?.user?.user_type !== "NETWORK_COMPLIANCE" && (
-              <Button
-                color="primary"
-                onClick={openAddModal}
-                className="d-flex justify-content-center align-items-center gap-1"
-              >
-                <TbCirclePlus size={18} />
-                <span>Add Client</span>
+            {userRole === "LEAD" && (
+              <Button color="primary" onClick={openAddUserModal}>
+                <TbCirclePlus size={18} className="me-1" />
+                Add {title.slice(0, -1)}
               </Button>
-            )} */}
+            )}
           </Col>
         </Row>
         <Row>
@@ -203,13 +221,12 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
-                <th>Enquiry Type</th>
-                <th>Created By</th>
-                <th>Created At</th>
+                <th className="text-truncate">Enquiry Type</th>
+                <th className="text-truncate">Created At</th>
+                <th className="text-truncate">Created By</th>
                 <th>Action</th>
               </tr>
             </thead>
-
             <tbody>
               {isLoading ? (
                 <tr>
@@ -219,18 +236,18 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                     </div>
                   </td>
                 </tr>
-              ) : currentClients.length > 0 ? (
-                currentClients.map((client: any) => (
-                  <tr key={client.alias} className="text-center">
+              ) : currentAuthUsers.length > 0 ? (
+                currentAuthUsers.map((user) => (
+                  <tr key={user.alias} className="text-center">
                     <td>
                       <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                         <span
                           className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                           style={{ width: 40, height: 40 }}
                         >
-                          {client.user?.profile_image ? (
+                          {user?.profile_image ? (
                             <Image
-                              src={client.user.profile_image}
+                              src={user.profile_image}
                               alt="Profile"
                               width={35}
                               height={35}
@@ -243,105 +260,89 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                         <span
                           className="text_decoration_hover"
                           onClick={() => {
-                            setSelectedClient(client);
-                            toggleViewModal();
+                            openViewModal(user);
                           }}
                           style={{ cursor: "pointer" }}
                         >
-                          {client.user?.title
-                            ? formatChoiceFieldValue(client.user?.title)
+                          {user?.title
+                            ? formatChoiceFieldValue(user?.title)
                             : ""}{" "}
-                          {client?.user?.first_name} {client?.user?.middle_name}{" "}
-                          {client?.user?.last_name}
+                          {user?.first_name} {user?.middle_name}{" "}
+                          {user?.last_name}
                         </span>
                       </div>
                     </td>
                     <td>
-                      {client?.user?.email || (
+                      {user?.email ? (
+                        user.email
+                      ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {client?.user?.phone ? (
+                      {user?.phone ? (
                         <a
-                          href={`tel:${client?.user?.phone}`}
+                          href={`tel:${user?.phone}`}
                           className="text-black text_decoration_hover"
                         >
-                          {client?.user?.phone}
+                          {user?.phone}
                         </a>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
+
                     <td>
-                      {client?.source === "OTHER" ? (
-                        client?.other_source || (
+                      {user?.source === "OTHER" ? (
+                        user?.other_source || (
                           <small className="text-muted">Not Available</small>
                         )
-                      ) : client?.source ? (
-                        formatChoiceFieldValue(client.source)
+                      ) : user?.source ? (
+                        formatChoiceFieldValue(user.source)
                       ) : (
                         <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
-                      {client?.enquiry_type === "OTHER" ? (
-                        client?.other_enquiry_type || (
+                      {user?.enquiry_type === "OTHER" ? (
+                        user?.other_enquiry_type || (
                           <small className="text-muted">Not Available</small>
                         )
-                      ) : client?.enquiry_type ? (
-                        formatChoiceFieldValue(client.enquiry_type)
+                      ) : user?.enquiry_type ? (
+                        formatChoiceFieldValue(user.enquiry_type)
                       ) : (
                         <small className="text-muted">Not specified</small>
                       )}
                     </td>
+
                     <td>
-                      {client?.created_by === null ? (
-                        <small className="text-muted">Not specified</small>
-                      ) : (
+                      {formatDateAndTime(user?.created_at) || (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </td>
+                    <td>
+                      {user?.created_by ? (
                         <>
-                          <p className="m-0">
-                            {client.created_by?.title
-                              ? formatChoiceFieldValue(client.created_by?.title)
-                              : ""}{" "}
-                            {client?.created_by?.first_name}{" "}
-                            {client?.created_by?.middle_name}{" "}
-                            {client?.created_by?.last_name}
-                          </p>
-                          <p
-                            className="m-0 opacity-75"
-                            style={{ fontSize: "9px" }}
-                          >
+                          <span>{user?.created_by?.name}</span>
+                          <small className="text-muted d-block">
                             (
-                            {client.created_by?.user_type
-                              ? formatChoiceFieldValue(
-                                  client.created_by?.user_type,
-                                )
-                              : "N/A"}
+                            {formatChoiceFieldValue(
+                              user?.created_by?.user_type,
+                            )}
                             )
-                          </p>
+                          </small>
                         </>
+                      ) : (
+                        <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    <td>{formatDateAndTime(client?.created_at)}</td>
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
-                        <Button
-                          color="info"
-                          size="sm"
-                          title="Send Client Invitation"
-                          onClick={() => {
-                            setSelectedClient(client);
-                            toggleInvitationModal();
-                          }}
-                        >
-                          <TbMailShare size="16" />
-                        </Button>
                         <Button
                           color="primary"
                           size="sm"
                           title="Update User"
-                          onClick={() => openUpdateModal(client)}
+                          onClick={() => openUpdateModal(user)}
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
@@ -353,7 +354,9 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                             color="danger"
                             size="sm"
                             title="Delete User"
-                            onClick={() => openDeleteModal(client)}
+                            onClick={() => {
+                              openDeleteModal(user);
+                            }}
                           >
                             <i className="icon-trash"></i>
                           </Button>
@@ -365,7 +368,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
               ) : (
                 <tr>
                   <td colSpan={8} className="text-center">
-                    No clients available.
+                    No users available.
                   </td>
                 </tr>
               )}
@@ -379,13 +382,13 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                 Showing{" "}
                 {totalCount === 0
                   ? "0"
-                  : (currentPage - 1) * clientsPerPage + 1}{" "}
+                  : (currentPage - 1) * leadsOrClientsPerPage + 1}{" "}
                 to{" "}
-                {currentClients.length === 0
+                {currentAuthUsers.length === 0
                   ? 0
-                  : (currentPage - 1) * clientsPerPage +
-                    currentClients.length}{" "}
-                of {totalCount} Clients
+                  : (currentPage - 1) * leadsOrClientsPerPage +
+                    currentAuthUsers.length}{" "}
+                of {totalCount} Users
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -399,7 +402,7 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
                 />
               </PaginationItem>
 
-              {totalPages <= clientsPerPage ? (
+              {totalPages <= 7 ? (
                 Array.from({ length: totalPages }, (_, i) => i + 1).map(
                   (pageNumber) => (
                     <PaginationItem
@@ -475,39 +478,34 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
           </div>
         </Row>
 
-        {/* modals */}
-        <AddClientModal isOpen={isModalOpen} toggle={toggleModal} />
-        <ViewClientModal
+        {/* Modals */}
+        <ViewLeadOrClientModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedClient={selectedClient}
+          selectedLeadOrClient={selectedLeadOrClient}
         />
-        <UpdateClientModal
+        <AddLeadModal
+          isOpen={isAddUserModalOpen}
+          toggle={toggleAddUserModal}
+          onOpenCase={openCaseModalFromLead}
+        />
+
+        <AddNewCaseModal
+          isOpen={isCaseModalOpen}
+          toggle={closeCaseModal}
+          leadId={caseModalLeadId}
+          leadName={caseModalLeadName}
+          leadData={caseModalLeadData}
+        />
+        <UpdateLeadOrClientModal
           isOpen={isUpdateModalOpen}
           toggle={toggleUpdateModal}
-          onSave={() => {
-            toggleUpdateModal();
-          }}
-          selectedClient={selectedClient}
+          selectedLeadOrClient={selectedLeadOrClient}
         />
-        <DeleteClientModal
+        <DeleteLeadOrClientModal
           isOpen={isDeleteModalOpen}
           toggle={toggleDeleteModal}
-          clientAlias={clientToDelete?.alias || ""}
-          clientName={`${
-            clientToDelete?.user?.title
-              ? formatChoiceFieldValue(clientToDelete?.user?.title) + " "
-              : ""
-          }${clientToDelete?.user?.first_name} ${
-            clientToDelete?.user?.middle_name
-              ? clientToDelete?.user?.middle_name + " "
-              : ""
-          }${clientToDelete?.user?.last_name}`}
-        />
-        <ClientInvitationModal
-          isOpen={isInvitationModalOpen}
-          toggle={toggleInvitationModal}
-          selectedClient={selectedClient}
+          selectedLeadOrClient={selectedLeadOrClient}
         />
         {/* modals end */}
       </CardBody>
@@ -515,4 +513,4 @@ const Clients: React.FC<ClientsProps> = ({ clientsPerPage = 12 }) => {
   );
 };
 
-export default Clients;
+export default LeadsOrClients;

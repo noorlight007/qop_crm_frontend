@@ -1,21 +1,23 @@
-import { useDeleteLeadDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsApi";
-import { DeleteLeadModalProps } from "@/Types/Common/CommonUsers/LeadTypes";
+import { useDeleteAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { DeleteLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteLeadModal: React.FC<DeleteLeadModalProps> = ({
+const DeleteLeadOrClientModal: React.FC<DeleteLeadOrClientModalProps> = ({
   isOpen,
   toggle,
-  leadAlias,
-  leadName,
+  selectedLeadOrClient,
 }) => {
-  const [deleteLeadDetails, { isLoading }] = useDeleteLeadDetailsMutation();
+  const [deleteLeadOrClient, { isLoading }] = useDeleteAuthUserMutation();
 
   const handleDelete = async () => {
-    if (!leadAlias) return;
+    if (!selectedLeadOrClient?.alias) return;
     try {
-      const response = await deleteLeadDetails({ leadAlias });
+      const response = await deleteLeadOrClient({
+        userAlias: selectedLeadOrClient.alias,
+      });
+
       if ("data" in response) {
         toast.success("Lead deleted successfully.");
         toggle();
@@ -37,8 +39,8 @@ const DeleteLeadModal: React.FC<DeleteLeadModalProps> = ({
       </ModalHeader>
       <ModalBody>
         Are you sure you want to delete the lead{" "}
-        <strong className="text-danger">{leadName}</strong>? This action cannot
-        be undone.
+        <strong className="text-danger">{selectedLeadOrClient?.name}</strong>?
+        This action cannot be undone.
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDelete}>
@@ -52,4 +54,4 @@ const DeleteLeadModal: React.FC<DeleteLeadModalProps> = ({
   );
 };
 
-export default DeleteLeadModal;
+export default DeleteLeadOrClientModal;

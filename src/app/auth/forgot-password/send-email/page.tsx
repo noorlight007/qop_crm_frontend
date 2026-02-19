@@ -86,9 +86,9 @@ export default function ForgotPasswordSendEmail() {
       if ((res as any).data) {
         toast.success("Reset email sent. Check your inbox.");
         setSentOnce(true);
-        const expiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+        const expiry = Date.now() + 1 * 60 * 1000; // 1 minute
         localStorage.setItem(RESEND_KEY, expiry.toString());
-        setCooldown(5 * 60);
+        setCooldown(1 * 60);
       } else if ((res as any).error) {
         const errorMessage =
           (res as any).error?.data?.error ||

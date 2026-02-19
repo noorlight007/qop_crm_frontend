@@ -1,6 +1,6 @@
 // Utility formatters used across the app
 export const formatChoiceFieldValue = (
-  choiceFieldValue?: string | null
+  choiceFieldValue?: string | null,
 ): string => {
   if (!choiceFieldValue) return "";
   return choiceFieldValue
@@ -37,4 +37,9 @@ export const calculateAge = (dob?: string | null) => {
     years--;
   }
   return years >= 0 ? `${years}` : "";
+};
+
+export const formatPrice = (value: string): string => {
+  const numericValue = value.replace(/[^0-9]/g, "");
+  return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };

@@ -3,6 +3,7 @@ import {
   AddFeeOutModalProps,
   FeeDataProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/FeeTypes";
+import getCurrencySign from "@/utils/currency";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { FC, useState } from "react";
 import { toast } from "react-toastify";
@@ -152,7 +153,7 @@ const AddFeeOutModal: FC<AddFeeOutModalProps> = ({
               <FormGroup>
                 <Label for="amount">Amount</Label>
                 <InputGroup>
-                  <InputGroupText>£</InputGroupText>
+                  <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input
                     type="number"
                     id="amount"

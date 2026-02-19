@@ -29,8 +29,6 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
     lastName: "",
     email: "",
     phone: "",
-    password: "",
-    gender: "",
     designation: "",
     joining_date: "",
     company_name: "",
@@ -123,8 +121,6 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       last_name: formData.lastName,
       email: formData.email,
       phone: formData.phone || null,
-      password: formData.password,
-      gender: formData.gender ? formData.gender : null,
       designation: formData.designation,
       joining_date: formData.joining_date ? formData.joining_date : null,
       role:
@@ -155,8 +151,6 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
           lastName: "",
           email: "",
           phone: "",
-          password: "",
-          gender: "",
           designation: "",
           joining_date: "",
           company_name: "",
@@ -370,34 +364,6 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 </Col>
               )}
 
-              {pathname !== "/organisation/director/introducers" &&
-                pathname !== "/network/director/compliances" && (
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label for="gender">
-                        Gender<span className="text-danger">*</span>
-                      </Label>
-                      <Input
-                        id="gender"
-                        name="gender"
-                        type="select"
-                        value={formData.gender}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">Select...</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                        <option value="OTHER">Other</option>
-                      </Input>
-                      {getFieldError("gender") && (
-                        <div className="text-danger small mt-1">
-                          {getFieldError("gender")}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Col>
-                )}
               {pathname === "/organisation/director/introducers" && (
                 <>
                   <Col md={6}>
@@ -462,7 +428,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={toggle}>
+            <Button color="danger" onClick={toggle}>
               Cancel
             </Button>
             <Button color="primary">

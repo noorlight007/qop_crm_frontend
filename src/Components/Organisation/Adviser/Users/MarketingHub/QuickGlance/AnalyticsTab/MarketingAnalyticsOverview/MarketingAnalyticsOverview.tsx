@@ -1,3 +1,4 @@
+import getCurrencySign from "@/utils/currency";
 import { FaRegChartBar } from "react-icons/fa";
 import { TbCoinPound, TbEye, TbTrendingUp, TbUsers } from "react-icons/tb";
 import { Badge, Card, CardBody, Col, Row } from "reactstrap";
@@ -83,7 +84,7 @@ const MarketingAnalyticsOverview: React.FC = () => {
                 <CardBody className="d-flex justify-content-between">
                   <div>
                     <h6>Cost Per Lead</h6>
-                    <h2>£12.50</h2>
+                    <h2>{getCurrencySign()}12.50</h2>
                     <Badge className="bg-light-info">+12% vs last month</Badge>
                   </div>
                   <div>

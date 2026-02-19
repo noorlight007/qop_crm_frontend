@@ -1,6 +1,7 @@
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useSubmitEnquiryMutation } from "@/Redux/Reducers/PublicEnquiry/PublicEnquiryApi";
 import { InitialEnquiryData } from "@/Types/Enquiry/EnquiryTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import React, { useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
@@ -23,7 +24,7 @@ import {
   Row,
 } from "reactstrap";
 
-const InitialEnquiryForm: React.FC = () => {
+const EnquiryForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -137,6 +138,29 @@ const InitialEnquiryForm: React.FC = () => {
     } catch {
       return String(err);
     }
+  };
+
+  const FIELD_TO_STEP: Record<string, number> = {
+    // Step 1 — Applicant Details
+    title: 1,
+    first_name: 1,
+    middle_name: 1,
+    last_name: 1,
+    email: 1,
+    phone: 1,
+    // Step 2 — Mortgage Requirements
+    enquiry_type: 2,
+    other_enquiry_type: 2,
+    estimated_property_value: 2,
+    approximate_mortgage_required: 2,
+    approximate_deposit_available: 2,
+    // Step 3 — Additional Information
+    source: 3,
+    other_source: 3,
+    notes: 3,
+    referral_user: 3,
+    // Step 4 — Review & Confirm
+    contact_consent: 4,
   };
 
   const validateStep = (step: number): boolean => {
@@ -292,11 +316,23 @@ const InitialEnquiryForm: React.FC = () => {
         newApiErrors.push(getErrorMessage(e));
       }
 
-      if (Object.keys(newFieldErrors).length) {
+      // ✅ NEW: redirect to the earliest step that has a field error
+      if (Object.keys(newFieldErrors).length > 0) {
         setErrors((prev) => ({ ...prev, ...newFieldErrors }));
+
+        const earliestStep = Object.keys(newFieldErrors)
+          .map((field) => FIELD_TO_STEP[field] ?? 99)
+          .reduce((min, step) => Math.min(min, step), 99);
+
+        if (earliestStep !== 99) {
+          setCurrentStep(earliestStep);
+        }
       }
 
-      if (newApiErrors.length === 0) {
+      if (
+        newApiErrors.length === 0 &&
+        Object.keys(newFieldErrors).length === 0
+      ) {
         const summary = getErrorMessage(e);
         if (summary) newApiErrors.push(summary);
       }
@@ -356,7 +392,7 @@ const InitialEnquiryForm: React.FC = () => {
         <Card
           className="shadow-lg border-0 justify-content-center"
           style={{
-            minHeight: "500px",
+            minHeight: "560px",
             display: "flex",
             flexDirection: "column",
           }}
@@ -374,12 +410,12 @@ const InitialEnquiryForm: React.FC = () => {
                 </Alert>
               </div>
             )}
-            <Nav className="mb-4 d-flex justify-content-center align-items-center gap-2 pb-2 p-0">
+            <Nav className="mb-4 d-flex justify-content-center align-items-center gap-2 pb-2 pt-4">
               {initialEnquiryTabTitleData.map((item, index) => {
                 const step = index + 1;
 
                 return (
-                  <NavItem key={index}>
+                  <NavItem key={index} className="pb-3">
                     <NavLink
                       role="button"
                       onClick={() => setCurrentStep(step)}
@@ -603,7 +639,9 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Estimated Property Value (£)</Label>
+                        <Label>
+                          Estimated Property Value ({getCurrencySign()})
+                        </Label>
                         <Input
                           name="estimated_property_value"
                           type="number"
@@ -626,7 +664,9 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Mortgage Required (£)</Label>
+                        <Label>
+                          Approximate Mortgage Required ({getCurrencySign()})
+                        </Label>
                         <Input
                           name="approximate_mortgage_required"
                           type="number"
@@ -649,7 +689,10 @@ const InitialEnquiryForm: React.FC = () => {
 
                     <Col md={6}>
                       <FormGroup>
-                        <Label>Approximate Deposit Available (£ or %)</Label>
+                        <Label>
+                          Approximate Deposit Available ({getCurrencySign()} or
+                          %)
+                        </Label>
                         <Input
                           name="approximate_deposit_available"
                           type="number"
@@ -798,15 +841,17 @@ const InitialEnquiryForm: React.FC = () => {
                         )}
 
                         <p>
-                          <strong>Property Value:</strong> £
+                          <strong>Property Value:</strong> {getCurrencySign()}
                           {formData.estimated_property_value || 0}
                         </p>
                         <p>
-                          <strong>Mortgage Required:</strong> £
+                          <strong>Mortgage Required:</strong>{" "}
+                          {getCurrencySign()}
                           {formData.approximate_mortgage_required || 0}
                         </p>
                         <p>
-                          <strong>Deposit Available:</strong> £
+                          <strong>Deposit Available:</strong>{" "}
+                          {getCurrencySign()}
                           {formData.approximate_deposit_available || 0}
                         </p>
                       </div>
@@ -833,11 +878,17 @@ const InitialEnquiryForm: React.FC = () => {
                 </>
               )}
 
-              <hr className="mt-2" />
+              <hr className="my-3" />
 
               <div className="d-flex justify-content-between">
                 {currentStep > 1 && (
-                  <Button color="secondary" outline onClick={handlePrev}>
+                  <Button
+                    color="secondary"
+                    type="button"
+                    className="my-3"
+                    outline
+                    onClick={handlePrev}
+                  >
                     Back
                   </Button>
                 )}
@@ -845,7 +896,8 @@ const InitialEnquiryForm: React.FC = () => {
                 {currentStep < 4 ? (
                   <Button
                     color="primary"
-                    className="ms-auto"
+                    className="ms-auto my-3"
+                    type="button"
                     onClick={handleNext}
                     disabled={
                       (currentStep === 1 && !formData.first_name) ||
@@ -856,8 +908,9 @@ const InitialEnquiryForm: React.FC = () => {
                   </Button>
                 ) : (
                   <Button
+                    type="submit"
                     color="primary"
-                    className="ms-auto"
+                    className="ms-auto my-3"
                     disabled={!formData.contact_consent}
                   >
                     {isLoading ? "Submitting..." : "Submit Application"}
@@ -872,4 +925,4 @@ const InitialEnquiryForm: React.FC = () => {
   );
 };
 
-export default InitialEnquiryForm;
+export default EnquiryForm;

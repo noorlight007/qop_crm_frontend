@@ -1,4 +1,5 @@
 import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
+import getCurrencySign from "@/utils/currency";
 import Image from "next/image";
 import { User } from "react-feather";
 import { Card, CardBody } from "reactstrap";
@@ -8,7 +9,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
   organisationDirectorDashboardData,
 }) => {
   const formatCurrency = (amount: number): string => {
-    if (!isFinite(amount)) return "£0";
+    if (!isFinite(amount)) return  `${getCurrencySign()}0`;
     const sign = amount < 0 ? "-" : "";
     const abs = Math.abs(amount);
 
@@ -22,10 +23,10 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
     for (const unit of units) {
       if (abs >= unit.value) {
         const formatted = (abs / unit.value).toFixed(1).replace(/\.0$/, "");
-        return `£${sign}${formatted}${unit.symbol}`;
+        return `${getCurrencySign()}${sign}${formatted}${unit.symbol}`;
       }
     }
-    return `£${sign}${abs.toLocaleString()}`;
+    return `${getCurrencySign()}${sign}${abs.toLocaleString()}`;
   };
 
   return (

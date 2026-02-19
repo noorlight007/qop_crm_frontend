@@ -35,6 +35,7 @@ import {
 } from "reactstrap";
 import AddLumpSumCommissionModal from "./Modals/AddLumpSumCommissionModal";
 import DeleteLumpSumCommissionModal from "./Modals/DeleteLumpSumCommissionModal";
+import getCurrencySign from "@/utils/currency";
 
 const LumpSumCommission: React.FC<CommissionProps> = ({
   caseAlias,
@@ -419,7 +420,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       <FormGroup>
                         <Label>Commission Amount</Label>
                         <div className="input-group">
-                          <InputGroupText>£</InputGroupText>
+                          <InputGroupText>{getCurrencySign()}</InputGroupText>
                           <Input
                             type="number"
                             value={lump.commissionAmount}
@@ -476,7 +477,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       <FormGroup>
                         <Label>Clawback Amount</Label>
                         <div className="input-group">
-                          <InputGroupText>£</InputGroupText>
+                          <InputGroupText>{getCurrencySign()}</InputGroupText>
                           <Input
                             type="number"
                             value={lump.clawbackAmount}
@@ -531,7 +532,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       <FormGroup>
                         <Label>Reconciled Amount</Label>
                         <div className="input-group">
-                          <InputGroupText>£</InputGroupText>
+                          <InputGroupText>{getCurrencySign()}</InputGroupText>
                           <Input
                             type="text"
                             readOnly

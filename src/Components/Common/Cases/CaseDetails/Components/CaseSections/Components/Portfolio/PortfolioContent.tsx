@@ -26,6 +26,7 @@ import {
 import AddPropertyModal from "./Modals/AddPropertyModal";
 import DeletePropertyModal from "./Modals/DeletePropertyModal";
 import PortfolioSummary from "./PortfolioSummary";
+import getCurrencySign from "@/utils/currency";
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -240,26 +241,26 @@ const PortfolioContent: React.FC = () => {
                                 </td>
                                 <td>{`${item?.house_name_or_number}, ${item?.address_1}, ${item?.city}, ${item?.postcode}`}</td>
                                 <td>
-                                  £
+                                  {getCurrencySign()}
                                   {Number(
                                     item?.property_value,
                                   ).toLocaleString()}
                                 </td>
                                 <td>
-                                  £
+                                  {getCurrencySign()}
                                   {Number(
                                     item?.monthly_rental_income,
                                   ).toLocaleString()}
                                 </td>
                                 <td>{item?.mortgage_lender || "-"}</td>
                                 <td>
-                                  £
+                                  {getCurrencySign()}
                                   {Number(
                                     item?.current_mortgage_balance,
                                   ).toLocaleString()}
                                 </td>
                                 <td>
-                                  £
+                                  {getCurrencySign()}
                                   {Number(
                                     item?.value_at_purchase,
                                   ).toLocaleString()}
@@ -270,7 +271,7 @@ const PortfolioContent: React.FC = () => {
                                     : "-"}
                                 </td>
                                 <td>
-                                  £
+                                  {getCurrencySign()}
                                   {Number(
                                     item?.monthly_mortgage_payment,
                                   ).toLocaleString()}

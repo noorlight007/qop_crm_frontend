@@ -31,6 +31,7 @@ import {
 } from "reactstrap";
 import AddnewInsurancePolicyModal from "./Modals/AddnewInsurancePolicyModal";
 import DeleteInsurancePolicyModal from "./Modals/DeleteInsurancePolicyModal";
+import getCurrencySign from "@/utils/currency";
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
@@ -566,7 +567,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                     <Col sm={12} md={6} lg={4}>
                       <FormGroup>
-                        <Label>Monthly Sum Assured(£)</Label>
+                        <Label>Monthly Sum Assured({getCurrencySign()})</Label>
                         <Input
                           type="number"
                           step="0.01"
@@ -783,7 +784,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     "BUILDINGS_AND_CONTENTS_INSURANCE") && (
                   <Col sm={12} md={6} lg={4}>
                     <FormGroup>
-                      <Label>Full Rebuild Value of your Home(£)</Label>
+                      <Label>Full Rebuild Value of your Home({getCurrencySign()})</Label>
                       <Input
                         type="number"
                         step="0.01"
@@ -826,7 +827,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                         />
                         <Label check>
                           Do you have any specific item of contents worth more
-                          than £1500 to replace?
+                          than {getCurrencySign()}1500 to replace?
                         </Label>
                       </FormGroup>
                     </Col>
@@ -860,7 +861,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     </Col>
                     <Col sm={12} md={6} lg={4}>
                       <FormGroup>
-                        <Label>Contents(£)</Label>
+                        <Label>Contents({getCurrencySign()})</Label>
                         <Input
                           type="number"
                           step="0.01"
@@ -878,7 +879,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Premium(£)</Label>
+                    <Label>Premium({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -1063,7 +1064,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Final Premium(£)</Label>
+                    <Label>Final Premium({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -1079,7 +1080,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Premium Quoted(£)</Label>
+                    <Label>Premium Quoted({getCurrencySign()})</Label>
                     <Input
                       type="number"
                       step="0.01"

@@ -28,6 +28,7 @@ import {
 } from "reactstrap";
 import GetAddressModal from "../../CommonModals/GetAddressModal";
 import AddEmploymentDetailsModal from "./EmploymentModals/AddEmploymentDetailsModal";
+import getCurrencySign from "@/utils/currency";
 
 export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   activeTab,
@@ -1083,7 +1084,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             formValues?.employment_status === "RETIRED") && (
             <Col md={6}>
               <FormGroup>
-                <Label for="grossMonthlyIncome">Gross Monthly Income(£)*</Label>
+                <Label for="grossMonthlyIncome">Gross Monthly Income({getCurrencySign()})*</Label>
                 <Input
                   type="number"
                   id="grossMonthlyIncome"
@@ -1105,7 +1106,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
           {formValues?.employment_status === "EMPLOYED" && (
             <Col md={6}>
               <FormGroup>
-                <Label for="netMonthlyIncome">Net Monthly Income(£)</Label>
+                <Label for="netMonthlyIncome">Net Monthly Income({getCurrencySign()})*</Label>
                 <Input
                   type="number"
                   id="netMonthlyIncome"
@@ -1232,7 +1233,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <Row className="d-flex justify-content-between">
               <Col md={4}>
                 <FormGroup>
-                  <Label for="bonus">Bonus(£)*</Label>
+                  <Label for="bonus">Bonus({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     id="bonus"
@@ -1305,7 +1306,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <Row className="d-flex justify-content-between">
               <Col md={4}>
                 <FormGroup>
-                  <Label for="overtime">Overtime(£)*</Label>
+                  <Label for="overtime">Overtime({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     id="overtime"
@@ -1380,7 +1381,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <Row className="d-flex justify-content-between">
               <Col md={4}>
                 <FormGroup>
-                  <Label for="allowance">Allowance(£)*</Label>
+                  <Label for="allowance">Allowance({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     id="allowance"
@@ -1900,7 +1901,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <Col md={6}>
                       <FormGroup>
                         <Label for="year1_net_profit">
-                          Year 1 net profit(£)*
+                          Year 1 net profit({getCurrencySign()})*
                         </Label>
                         <Input
                           type="number"
@@ -1944,7 +1945,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <Col md={6}>
                       <FormGroup>
                         <Label for="year2_net_profit">
-                          Year 2 net profit(£)
+                          Year 2 net profit({getCurrencySign()})
                         </Label>
                         <Input
                           type="number"
@@ -1987,7 +1988,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                     <Col md={6}>
                       <FormGroup>
                         <Label for="year3_net_profit">
-                          Year 3 net profit(£)
+                          Year 3 net profit({getCurrencySign()})
                         </Label>
                         <Input
                           type="number"
@@ -2066,7 +2067,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="salary">Salary(£)*</Label>
+                  <Label for="salary">Salary({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     id="salary"
@@ -2086,7 +2087,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="dividends">Dividends(£)*</Label>
+                  <Label for="dividends">Dividends({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     id="dividends"
@@ -2106,7 +2107,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="turnover">Turn Over(£)</Label>
+                  <Label for="turnover">Turn Over({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     id="turnover"
@@ -2131,7 +2132,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <Row>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="other_income">Other Income(£)</Label>
+                  <Label for="other_income">Other Income({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     id="other_income"
@@ -2332,7 +2333,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="day_rate">Day Rate(£)*</Label>
+                  <Label for="day_rate">Day Rate({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     id="day_rate"
@@ -2352,7 +2353,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="hourly_rate">Hourly Rate(£)</Label>
+                  <Label for="hourly_rate">Hourly Rate({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     id="hourly_rate"

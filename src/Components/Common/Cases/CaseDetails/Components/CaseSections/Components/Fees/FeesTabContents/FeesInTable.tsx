@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeInModal from "./FeesModals/AddFeeInModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
+import getCurrencySign from "@/utils/currency";
 
 const FeeInTable = () => {
   const { data: session } = useSession();
@@ -157,7 +158,7 @@ const FeeInTable = () => {
                         <span className="fw-bold">{index + 1}</span>
                       </td>
                       <td className="text-center align-middle">
-                        £{feeIn.fee || "0.00"}
+                        {getCurrencySign()}{feeIn.fee || "0.00"}
                       </td>
                       <td className="text-center align-middle">
                         {feeTypes.find((type) => type.value === feeIn.feeType)

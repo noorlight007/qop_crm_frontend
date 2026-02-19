@@ -10,6 +10,7 @@ import {
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { LoanDetailsTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/LoanDetailsTypes";
+import getCurrencySign from "@/utils/currency";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import LenderList from "@/utils/LenderList";
@@ -831,7 +832,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               {formDataTab2?.mortgage_type === "PURCHASE" ? (
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="purchase_price">Purchase Price(£)*</Label>
+                    <Label for="purchase_price">Purchase Price({getCurrencySign()})*</Label>
                     <Input
                       type="number"
                       name="purchase_price"
@@ -856,7 +857,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="property_valuation">
-                      Property Valuation(£)*
+                      Property Valuation({getCurrencySign()})*
                     </Label>
                     <Input
                       type="number"
@@ -881,7 +882,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               )}
               <Col md={6}>
                 <FormGroup>
-                  <Label for="loan_amount">Loan Amount(£)*</Label>
+                  <Label for="loan_amount">Loan Amount({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     name="loan_amount"
@@ -913,7 +914,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               </Col>
               <Col md={6}>
                 <FormGroup>
-                  <Label for="estimated_value">Estimated Value(£)*</Label>
+                  <Label for="estimated_value">Estimated Value({getCurrencySign()})*</Label>
                   <Input
                     type="number"
                     name="estimated_value"

@@ -134,7 +134,6 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
           "last_name",
           "email",
           "phone",
-          "gender",
           "designation",
           "joining_date",
           "company_name",
@@ -167,7 +166,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         });
 
         if (result.data) {
-          toast.success("Admin updated successfully.");
+          toast.success("User updated successfully.");
           setErrors({});
           toggle();
         } else if ("error" in result) {
@@ -385,31 +384,6 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
             )}
-            {pathname !== "/organisation/director/introducers" &&
-              pathname !== "/network/director/compliances" && (
-                <Col md={6} xs={6}>
-                  <FormGroup>
-                    <Label for="gender">Gender</Label>
-                    <Input
-                      id="gender"
-                      name="gender"
-                      type="select"
-                      value={authUserData?.gender || ""}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select...</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                    </Input>
-                    {getFieldError("gender") && (
-                      <div className="text-danger small mt-1">
-                        {getFieldError("gender")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              )}
             {pathname === "/organisation/director/introducers" && (
               <>
                 <Col md={6}>

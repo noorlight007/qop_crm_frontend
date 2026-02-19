@@ -17,6 +17,7 @@ import AddCreditCommitmentModal from "./CreditCommitmentsModals/AddCreditCommitm
 import DeleteCreditCommitmentModal from "./CreditCommitmentsModals/DeleteCreditCommitmentModal";
 import UpdateCreditCommitmentModal from "./CreditCommitmentsModals/UpdateCreditCommitmentModal";
 import CreditCommitmentsSummary from "./CreditCommitmentsSummary";
+import getCurrencySign from "@/utils/currency";
 
 const CreditCommitmentsContent: React.FC = () => {
   const { casealias } = useParams();
@@ -130,15 +131,15 @@ const CreditCommitmentsContent: React.FC = () => {
                 <th>Type</th>
                 <th>Company</th>
                 <th>Account No.</th>
-                <th>OS Balance (£)</th>
-                <th>Settlement Balance (£)</th>
-                <th>Monthly Repayment (£)</th>
+                <th>OS Balance ({getCurrencySign()})</th>
+                <th>Settlement Balance ({getCurrencySign()})</th>
+                <th>Monthly Repayment ({getCurrencySign()})</th>
                 <th>Interest Rate (%)</th>
-                <th>Card Limit (£)</th>
+                <th>Card Limit ({getCurrencySign()})</th>
                 <th>Term Remaining (Months)</th>
-                <th>Balloon Payment (£)</th>
+                <th>Balloon Payment ({getCurrencySign()})</th>
                 <th>Court Ordered</th>
-                <th>Cost of Credit (£)</th>
+                <th>Cost of Credit ({getCurrencySign()})</th>
                 <th>Paid on Completion</th>
                 <th>Source</th>
                 <th>Note</th>
@@ -206,17 +207,17 @@ const CreditCommitmentsContent: React.FC = () => {
                     <td>{item.account_no || "-"}</td>
                     <td>
                       {item.os_balance ? (
-                        `£${item.os_balance.toFixed(2)}`
+                        `${getCurrencySign()}${item.os_balance.toFixed(2)}`
                       ) : (
-                        <span className="text-danger opacity-50">£0.00</span>
+                        <span className="text-danger opacity-50">{getCurrencySign()}0.00</span>
                       )}
                     </td>
-                    <td>£{item.settlement_balance?.toFixed(2) || "0.00"}</td>
-                    <td>£{item.monthly_repayment?.toFixed(2) || "0.00"}</td>
+                    <td>{getCurrencySign()}{item.settlement_balance?.toFixed(2) || "0.00"}</td>
+                    <td>{getCurrencySign()}{item.monthly_repayment?.toFixed(2) || "0.00"}</td>
                     <td>{item.interest_rate?.toFixed(2) || "0.00"}%</td>
-                    <td>£{item.card_limit?.toFixed(2) || "0.00"}</td>
+                    <td>{getCurrencySign()}{item.card_limit?.toFixed(2) || "0.00"}</td>
                     <td>{item.term_remaining || "0"}</td>
-                    <td>£{item.balloon_payment?.toFixed(2) || "0.00"}</td>
+                    <td>{getCurrencySign()}{item.balloon_payment?.toFixed(2) || "0.00"}</td>
                     <td>
                       <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.court_ordered?.toLowerCase() === "yes" ? (
@@ -228,7 +229,7 @@ const CreditCommitmentsContent: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td>£{item.cost_of_credit?.toFixed(2) || "0.00"}</td>
+                    <td>{getCurrencySign()}{item.cost_of_credit?.toFixed(2) || "0.00"}</td>
                     <td>
                       <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.paid_on_completion?.toLowerCase() === "yes" ? (

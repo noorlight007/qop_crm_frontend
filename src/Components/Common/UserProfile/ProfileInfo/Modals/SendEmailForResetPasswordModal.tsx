@@ -26,7 +26,7 @@ const SendEmailForResetPasswordModal: React.FC<UserProfileModalProps> = ({
   const [cooldown, setCooldown] = useState(0);
   const [sentOnce, setSentOnce] = useState(false);
 
-  const RESEND_KEY = "forgot_password_resend_expiry";
+  const RESEND_KEY = "forgot_password_resend_expiry_modal";
   useEffect(() => {
     try {
       const raw = localStorage.getItem(RESEND_KEY);
@@ -81,9 +81,9 @@ const SendEmailForResetPasswordModal: React.FC<UserProfileModalProps> = ({
       toast.success("Reset password email sent successfully.");
       onClose();
       setSentOnce(true);
-      const expiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+      const expiry = Date.now() + 1 * 60 * 1000; // 1 minute
       localStorage.setItem(RESEND_KEY, expiry.toString());
-      setCooldown(5 * 60);
+      setCooldown(1 * 60);
     } catch (error) {
       console.error("Error sending reset password email:", error);
       toast.error("Failed to send reset password email.");

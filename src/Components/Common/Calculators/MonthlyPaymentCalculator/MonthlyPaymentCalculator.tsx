@@ -3,6 +3,7 @@ import {
   CalculationResults,
   CalculatorState,
 } from "@/Types/Common/Calculators/MonthlyPaymentCalculatorTypes";
+import { formatPrice } from "@/utils/formatters";
 import React, { useState } from "react";
 import { getCurrencySign } from "../../../../utils/currency";
 
@@ -27,10 +28,17 @@ const MonthlyPaymentCalculator: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [calculated, setCalculated] = useState(false);
 
+  const toNumber = (value: number | string): number => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : 0;
+  };
+
+  const toRawNumeric = (value: string) => value.replace(/[^0-9.]/g, "");
+
   const validate = () => {
     const e: Record<string, string> = {};
 
-    const mortgageAmountNum = Number(state.mortgageAmount);
+    const mortgageAmountNum = toNumber(state.mortgageAmount);
     if (
       !state.mortgageAmount ||
       isNaN(mortgageAmountNum) ||
@@ -39,7 +47,7 @@ const MonthlyPaymentCalculator: React.FC = () => {
       e.mortgageAmount = "Enter a mortgage amount greater than 0";
     }
 
-    const interestRateNum = Number(state.interestRate);
+    const interestRateNum = toNumber(state.interestRate);
     if (
       state.interestRate === "" ||
       isNaN(interestRateNum) ||
@@ -66,8 +74,8 @@ const MonthlyPaymentCalculator: React.FC = () => {
 
   const calculatePayment = () => {
     // parse values (safe default to 0 where appropriate)
-    const mortgageAmount = Number(state.mortgageAmount) || 0;
-    const arrangementFee = Number(state.arrangementFee) || 0;
+    const mortgageAmount = toNumber(state.mortgageAmount) || 0;
+    const arrangementFee = toNumber(state.arrangementFee) || 0;
     const mortgageType = state.mortgageType as "interest-only" | "repayment";
     const interestRate = Number(state.interestRate) || 0;
     const years = Number(state.years) || 0;
@@ -141,10 +149,13 @@ const MonthlyPaymentCalculator: React.FC = () => {
               <span className="input-group-text">{getCurrencySign()}</span>
               <input
                 id="mortgageAmount"
-                type="number"
-                value={state.mortgageAmount}
+                type="text"
+                value={formatPrice(String(state.mortgageAmount))}
                 onChange={(e) =>
-                  handleInputChange("mortgageAmount", e.target.value)
+                  handleInputChange(
+                    "mortgageAmount",
+                    toRawNumeric(e.target.value),
+                  )
                 }
                 className={`form-control ${errors.mortgageAmount ? "is-invalid" : ""} rounded-start-0`}
                 min="0"
@@ -165,10 +176,13 @@ const MonthlyPaymentCalculator: React.FC = () => {
               <span className="input-group-text">{getCurrencySign()}</span>
               <input
                 id="arrangementFee"
-                type="number"
-                value={state.arrangementFee}
+                type="text"
+                value={formatPrice(String(state.arrangementFee))}
                 onChange={(e) =>
-                  handleInputChange("arrangementFee", Number(e.target.value))
+                  handleInputChange(
+                    "arrangementFee",
+                    toRawNumeric(e.target.value),
+                  )
                 }
                 className="form-control rounded-start-0"
                 min="0"

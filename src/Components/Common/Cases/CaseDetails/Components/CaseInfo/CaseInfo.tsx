@@ -1,18 +1,20 @@
-import ClientInvitationModal from "@/Components/Common/CommonUsers/Clients/Modals/ClientInvitationModal";
-import UpdateClientModal from "@/Components/Common/CommonUsers/Clients/Modals/UpdateClientModal";
-import { useDownloadApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
+import ClientInvitationModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/ClientInvitationModal";
+import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
+import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
-import { ClientInfoProps } from "@/Types/Common/CommonUsers/ClientTypes";
+import { ClientInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { FaArrowRight, FaTrash } from "react-icons/fa";
+import { ChangeEvent, useEffect, useState } from "react";
+import { FaArrowRight, FaChevronDown, FaTrash } from "react-icons/fa";
+import { FiSettings } from "react-icons/fi";
 import {
   TbCircleArrowUp,
   TbCopy,
   TbDownload,
+  TbEdit,
   TbMailShare,
-  TbSettings,
   TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
@@ -27,6 +29,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
   Row,
   Spinner,
 } from "reactstrap";
@@ -45,10 +48,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
-  const [isUpdateClientModalOpen, setIsUpdateClientModalOpen] = useState(false);
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
-    useState<Partial<ClientInfoProps> | null>(null);
+    useState<Partial<ClientInvitationProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
@@ -59,17 +61,27 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState<any>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
-  const [shouldDownload, setShouldDownload] = useState(false);
+
+  // Inline notes editing state
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [notesDraft, setNotesDraft] = useState<string>("");
+  const [localNotes, setLocalNotes] = useState<string | null>(
+    caseInfo?.notes || null,
+  );
+
+  const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
+    useUpdateCaseMutation();
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.lead_user);
   }, [caseInfo?.lead_user]);
 
+  useEffect(() => {
+    setLocalNotes(caseInfo?.notes || null);
+  }, [caseInfo?.notes]);
+
   const toggleUpdateCaseModal = () =>
     setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
-
-  const toggleUpdateClientModal = () =>
-    setIsUpdateClientModalOpen((prev) => !prev);
 
   const toggleCopyCaseModal = () => setIsCopyCaseModalOpen((prev) => !prev);
 
@@ -99,66 +111,62 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     toggleViewJointApplicantModal();
   };
 
-  const handleClientSave = (clientData: Partial<ClientInfoProps>) => {
-    if (clientData?.user) {
-      setDisplayLeadUser(
-        (prev) =>
-          ({
-            ...(prev || ({} as any)),
-            title: clientData.user!.title ?? prev?.title,
-            first_name: clientData.user!.first_name ?? prev?.first_name,
-            middle_name: clientData.user!.middle_name ?? prev?.middle_name,
-            last_name: clientData.user!.last_name ?? prev?.last_name,
-            email: clientData.user!.email ?? prev?.email,
-            phone: clientData.user!.phone ?? prev?.phone,
-            user_type: prev?.user_type || "",
-            profile_image: prev?.profile_image || "",
-          }) as any,
-      );
+  // Notes editing handlers
+  const handleEditNotes = () => {
+    setNotesDraft(caseInfo?.notes || "");
+    setIsEditingNotes(true);
+  };
+
+  const handleCancelEditNotes = () => {
+    setIsEditingNotes(false);
+    setNotesDraft(caseInfo?.notes || "");
+  };
+
+  const handleSaveNotes = async () => {
+    if (!caseInfo) {
+      toast.error("Case information is not available.");
+      return;
+    }
+    try {
+      const payload = { ...caseInfo, notes: notesDraft };
+      const res = await updateCaseDetails({
+        caseAlias: caseInfo.alias,
+        payload,
+      });
+      if ((res as any).data) {
+        toast.success("Notes updated successfully.");
+        setIsEditingNotes(false);
+        setLocalNotes(notesDraft);
+      } else {
+        const errorMessage =
+          (res as any)?.error?.data?.detail || "Failed to update notes.";
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      console.error("Error updating notes:", error);
+      toast.error("Failed to update notes. Please try again.");
     }
   };
 
-  const {
-    data: blob,
-    isLoading: isDownloading,
-    isSuccess,
-    isError,
-  } = useDownloadApplicantInfoQuery(
-    { case_alias: caseInfo?.alias },
-    { skip: !shouldDownload || !caseInfo },
-  );
+  const [applicantsInfo, { isLoading: isApplicantsInfoLoading }] =
+    useDownloadApplicantInfoMutation();
 
-  // Handle download when data is ready
-  useEffect(() => {
-    if (isSuccess && blob && shouldDownload) {
-      // Create download link
+  const handleDownloadApplicantInfo = async () => {
+    try {
+      const blob = await applicantsInfo({
+        case_alias: caseInfo?.alias,
+      }).unwrap();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = `applicants-info(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
       link.click();
-
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      setShouldDownload(false);
+    } catch (err) {
+      toast.error("Failed to download report. Please try again.");
     }
-  }, [isSuccess, blob, shouldDownload, caseInfo]);
-
-  // Handle errors
-  useEffect(() => {
-    if (isError && shouldDownload) {
-      toast.error("Failed to download applicant info. Please try again.");
-      setShouldDownload(false); // Reset
-    }
-  }, [isError, shouldDownload]);
-
-  const handleDownloadApplicantInfo = () => {
-    if (!caseInfo) {
-      toast.error("Case information is not available for download.");
-      return;
-    }
-    setShouldDownload(true);
   };
 
   return (
@@ -166,15 +174,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <Card>
         <CardHeader className="d-flex justify-content-between">
           <h3 className="mb-2">
-            <span className="text-primary">
-              {caseInfo?.name}
-            </span>
+            <span className="text-primary">{caseInfo?.name}</span>
           </h3>
           <ButtonGroup>
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-              <DropdownToggle color="primary" caret className="me-1">
-                <TbSettings className="me-1" />
-                Actions
+              <DropdownToggle color="primary">
+                <FiSettings className="me-1" />
+                <span>Actions</span>
+                <FaChevronDown className="ms-1" />
               </DropdownToggle>
               <DropdownMenu
                 style={{
@@ -210,7 +217,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         first_name: caseInfo.lead_user.first_name,
                         last_name: caseInfo.lead_user.last_name,
                       },
-                    } as Partial<ClientInfoProps>);
+                    } as Partial<ClientInvitationProps>);
                     toggleClientInvitationModal();
                   }}
                   disabled={!caseInfo}
@@ -229,9 +236,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 <DropdownItem
                   className="opacity-100 py-3"
                   onClick={handleDownloadApplicantInfo}
-                  disabled={isDownloading}
+                  disabled={isApplicantsInfoLoading}
+                  toggle={false}
                 >
-                  {isDownloading ? (
+                  {isApplicantsInfoLoading ? (
                     <>
                       <Spinner size="sm" className="me-1" />
                       Downloading...
@@ -434,7 +442,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   </Row>
                 ) : (
                   <Row className="pt-2">
-                    <Col xs="12">
+                    <Col
+                      xs="12"
+                      style={{
+                        height: "55px",
+                        overflowY: "auto",
+                      }}
+                    >
                       <h6 className="pt-1">
                         <span className="small">Case Category:</span>{" "}
                         <strong className="small">
@@ -735,7 +749,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </small>
                             <p className="m-0 text-dark fw-500">
                               {caseInfo?.property_valuation ? (
-                                `£${caseInfo.property_valuation}`
+                                `${getCurrencySign()}${caseInfo.property_valuation}`
                               ) : (
                                 <span className="text-muted">
                                   Not available
@@ -751,7 +765,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </small>
                             <p className="m-0 text-dark fw-500">
                               {caseInfo?.purchase_price ? (
-                                `£${caseInfo.purchase_price}`
+                                `${getCurrencySign()}${caseInfo.purchase_price}`
                               ) : (
                                 <span className="text-muted">
                                   Not available
@@ -767,7 +781,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </small>
                             <p className="m-0 text-dark fw-500">
                               {caseInfo?.loan_amount ? (
-                                `£${caseInfo.loan_amount}`
+                                `${getCurrencySign()}${caseInfo.loan_amount}`
                               ) : (
                                 <span className="text-muted">
                                   Not available
@@ -798,27 +812,73 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     {/* Notes Section on the right */}
                     <Col md="6" className="ps-3">
                       <h6
-                        className="text-uppercase fw-bold text-primary mb-3"
+                        className="text-uppercase fw-bold text-primary mb-3 position-relative"
                         style={{ fontSize: "11px", letterSpacing: "0.5px" }}
                       >
                         Notes
-                      </h6>
-                      <div
-                        className="p-3 bg-light rounded h-75 overflow-auto"
-                        style={{ borderLeft: "3px solid #0d6efd" }}
-                      >
-                        <p
-                          className="m-0 text-dark"
-                          style={{ whiteSpace: "pre-wrap" }}
+                        <Button
+                          color="primary"
+                          size="sm"
+                          className="position-absolute"
+                          onClick={handleEditNotes}
+                          style={{
+                            top: "30%",
+                            right: "0px",
+                            transform: "translateY(-50%)",
+                          }}
+                          disabled={isLoading}
                         >
-                          {caseInfo?.notes ? (
-                            caseInfo.notes
-                          ) : (
-                            <span className="text-muted">
-                              No notes available
-                            </span>
-                          )}
-                        </p>
+                          <TbEdit size="14" /> Edit
+                        </Button>
+                      </h6>
+                      <div className="p-3 bg-light rounded h-75 overflow-auto border-l-primary border-2">
+                        {isEditingNotes ? (
+                          <>
+                            <Input
+                              type="textarea"
+                              value={notesDraft}
+                              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setNotesDraft(e.target.value)
+                              }
+                              rows={6}
+                            />
+                            <div className="mt-2 text-end">
+                              <Button
+                                color="primary"
+                                size="sm"
+                                onClick={handleSaveNotes}
+                                disabled={isUpdatingNotes}
+                              >
+                                {isUpdatingNotes ? (
+                                  <Spinner size="sm" />
+                                ) : (
+                                  "Save"
+                                )}
+                              </Button>{" "}
+                              <Button
+                                color="secondary"
+                                size="sm"
+                                onClick={handleCancelEditNotes}
+                                disabled={isUpdatingNotes}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </>
+                        ) : (
+                          <p
+                            className="m-0 text-dark"
+                            style={{ whiteSpace: "pre-wrap" }}
+                          >
+                            {localNotes ? (
+                              localNotes
+                            ) : (
+                              <span className="text-muted">
+                                No notes available
+                              </span>
+                            )}
+                          </p>
+                        )}
                       </div>
                     </Col>
                   </Row>
@@ -870,14 +930,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           </Col>
         </Row>
       </Card>
-      {selectedClient && (
-        <UpdateClientModal
-          isOpen={isUpdateClientModalOpen}
-          toggle={toggleUpdateClientModal}
-          onSave={handleClientSave}
-          selectedClient={selectedClient}
-        />
-      )}
+
       {selectedClient && (
         <ClientInvitationModal
           isOpen={isClientInvitationModalOpen}

@@ -134,6 +134,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
       Fees: "is_fees",
       Compliance: "is_compliance",
       "Client Survey": "is_client_survey",
+      "Vulnerability": "is_vulnerability",
       Documents: "is_documents",
 
       // Additional tabs for Insurance case

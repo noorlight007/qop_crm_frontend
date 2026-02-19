@@ -13,6 +13,7 @@ import {
   NavLink,
 } from "reactstrap";
 import ExistingProtectionContent from "./ExistingProtectionContent";
+import getCurrencySign from "@/utils/currency";
 
 const ExistingProtectionTab: React.FC = () => {
   const [activeUser, setActiveUser] = useState<number | null>(null); // State for active user
@@ -134,7 +135,7 @@ const ExistingProtectionTab: React.FC = () => {
                             : ""
                         } ${user.first_name} ${user.middle_name} ${
                           user.last_name
-                        } (£${
+                        } (${getCurrencySign()}${
                           userSumAssured[user.id]?.total
                             ? parseFloat(
                                 userSumAssured[user.id].total.toString(),

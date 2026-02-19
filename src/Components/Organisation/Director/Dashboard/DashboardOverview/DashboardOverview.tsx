@@ -1,4 +1,5 @@
 import { OrganisationDirectorDashboardProps } from "@/Types/Organisation/Director/DashboardTypes";
+import getCurrencySign from "@/utils/currency";
 import { TbBriefcase2Filled, TbCoinPound, TbUsers } from "react-icons/tb";
 import { Card, CardBody, CardTitle, Col, Row } from "reactstrap";
 
@@ -101,7 +102,7 @@ const DashboardOverview: React.FC<OrganisationDirectorDashboardProps> = ({
                       Revenue This Month
                     </CardTitle>
                     <h4 className="mb-1 text-dark">
-                      £
+                      {getCurrencySign()}
                       {organisationDirectorDashboardData?.revenue_this_month ||
                         0}
                     </h4>

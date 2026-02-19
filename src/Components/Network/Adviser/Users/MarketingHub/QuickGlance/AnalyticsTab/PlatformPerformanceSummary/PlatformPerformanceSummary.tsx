@@ -1,3 +1,4 @@
+import { getCurrencySign } from "@/utils/currency";
 import { Badge, Card, CardBody, Table } from "reactstrap";
 
 const PlatformPerformanceSummary: React.FC = () => {
@@ -8,7 +9,7 @@ const PlatformPerformanceSummary: React.FC = () => {
       reach: 8900,
       engagement: 456,
       leads: 15,
-      costPerLead: "£16.67",
+      costPerLead: `${getCurrencySign()}16.67`,
       roi: "11900%",
     },
     {
@@ -17,7 +18,7 @@ const PlatformPerformanceSummary: React.FC = () => {
       reach: 12400,
       engagement: 789,
       leads: 8,
-      costPerLead: "£31.25",
+      costPerLead: `${getCurrencySign()}31.25`,
       roi: "6300%",
     },
     {
@@ -26,7 +27,7 @@ const PlatformPerformanceSummary: React.FC = () => {
       reach: 3200,
       engagement: 234,
       leads: 12,
-      costPerLead: "£20.83",
+      costPerLead: `${getCurrencySign()}20.83`,
       roi: "9500%",
     },
     {
@@ -35,7 +36,7 @@ const PlatformPerformanceSummary: React.FC = () => {
       reach: 2100,
       engagement: 145,
       leads: 3,
-      costPerLead: "£83.33",
+      costPerLead: `${getCurrencySign()}83.33`,
       roi: "2300%",
     },
   ];
