@@ -648,7 +648,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       <Row>
         <form ref={formRef} id="applicant-form" onSubmit={handleSubmit}>
           {applicationType === "RESIDENTIAL_MORTGAGE" ||
-          applicationType === "SELECT_APPLICATION_TYPE" ? (
+          applicationType === "" ? (
             ""
           ) : (
             <Row className="mb-3 border-primary rounded-2 p-3">
