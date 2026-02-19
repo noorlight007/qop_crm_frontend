@@ -436,7 +436,7 @@ const SupportTicketDetails: React.FC = () => {
             </Col>
             <Col md={6} className="mb-3">
               {/* Attachments Card */}
-              {ticketDetails.files && ticketDetails.files.length > 0 && (
+              {ticketDetails.files && ticketDetails.files.length > 0 ? (
                 <Card className="shadow-sm">
                   <CardHeader className="bg-white">
                     <h5 className="mb-0">
@@ -447,13 +447,12 @@ const SupportTicketDetails: React.FC = () => {
                     <Row>
                       {ticketDetails.files.map((file: any, idx: number) => {
                         const fileName =
-                          (file?.ticket_file &&
-                            String(file.ticket_file).split("/").pop()) ||
+                          (file?.file && String(file.file).split("/").pop()) ||
                           file?.alias ||
                           "Unknown file";
                         return (
                           <Col
-                            key={file.alias || file.ticket_file || idx}
+                            key={file.alias || file.file || idx}
                             sm={12}
                             md={6}
                             className="mb-3"
@@ -493,7 +492,7 @@ const SupportTicketDetails: React.FC = () => {
                                     outline
                                     size="sm"
                                     onClick={() =>
-                                      handleDownload(file.ticket_file, fileName)
+                                      handleDownload(file.file, fileName)
                                     }
                                     title="Download file"
                                   >
@@ -506,6 +505,18 @@ const SupportTicketDetails: React.FC = () => {
                         );
                       })}
                     </Row>
+                  </CardBody>
+                </Card>
+              ) : (
+                <Card className="shadow-sm">
+                  <CardHeader className="bg-white">
+                    <h5 className="mb-0">Attachments</h5>
+                  </CardHeader>
+                  <CardBody
+                    className="d-flex align-items-center justify-content-center"
+                    style={{ height: "200px" }}
+                  >
+                    <p className="text-muted mb-0">No attachments found.</p>
                   </CardBody>
                 </Card>
               )}

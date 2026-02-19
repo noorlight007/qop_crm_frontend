@@ -181,17 +181,15 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       if (shouldReplaceFiles) {
         // Re-upload remaining existing files (skip any entries without a URL)
         for (const file of existingFiles) {
-          if (!file?.ticket_file) {
+          if (!file?.file) {
             // nothing to re-upload for this entry
             continue;
           }
           try {
-            const response = await fetch(String(file.ticket_file));
+            const response = await fetch(String(file.file));
             const blob = await response.blob();
             const fileName =
-              String(file.ticket_file).split("/").pop() ||
-              file?.alias ||
-              "file";
+              String(file.file).split("/").pop() || file?.alias || "file";
             const realFile = new File([blob], fileName, { type: blob.type });
             fd.append("upload_files", realFile);
           } catch (err) {
@@ -397,7 +395,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               >
                 {existingFiles.map((file, index) => (
                   <div
-                    key={file.alias || file.ticket_file || index}
+                    key={file.alias || file.file || index}
                     className={`d-flex justify-content-between align-items-center py-2 px-2 ${
                       index !== existingFiles.length - 1 ? "border-bottom" : ""
                     }`}
@@ -407,14 +405,13 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
                         <div
                           className="fw-medium text-truncate small"
                           title={
-                            (file?.ticket_file &&
-                              String(file.ticket_file).split("/").pop()) ||
+                            (file?.file &&
+                              String(file.file).split("/").pop()) ||
                             file?.alias ||
                             "file"
                           }
                         >
-                          {(file?.ticket_file &&
-                            String(file.ticket_file).split("/").pop()) ||
+                          {(file?.file && String(file.file).split("/").pop()) ||
                             file?.alias ||
                             "file"}
                         </div>
