@@ -53,7 +53,7 @@ export const MortgageFMATabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
-  { id: "20", nav: "Vulnerability" },
+  // { id: "20", nav: "Vulnerability" },
   { id: "21", nav: "Documents" },
 ];
 
@@ -77,7 +77,7 @@ export const MortgageSubmissionTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
-  { id: "20", nav: "Vulnerability" },
+  // { id: "20", nav: "Vulnerability" },
   { id: "21", nav: "Documents" },
 ];
 
