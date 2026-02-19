@@ -735,7 +735,16 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           </span>
                         </td>
                         <td>
-                          <span>{ticket.subject}</span>
+                          <span
+                            style={{
+                              maxWidth: "200px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {ticket.subject}
+                          </span>
                         </td>
                         <td>
                           <div
