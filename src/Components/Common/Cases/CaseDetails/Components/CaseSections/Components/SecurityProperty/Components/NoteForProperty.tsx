@@ -154,21 +154,12 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
 
   return (
     <Card className="mb-3">
-      <CardFooter
-        style={{
-          border: "2px solid #ececec",
-          padding: "20px",
-          backgroundColor: "#fff",
-        }}
-      >
+      <CardFooter>
         <Row>
           <Col xs={12}>
             <FormGroup>
               <Label className="fw-semibold" for="PropertyNotes">
-                Notes
-                <span className="required" style={{ visibility: "hidden" }}>
-                  *
-                </span>
+                Note
               </Label>
               <Input
                 type="textarea"
