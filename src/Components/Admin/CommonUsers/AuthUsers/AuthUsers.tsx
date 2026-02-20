@@ -395,12 +395,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     {session?.user?.user_type === "ADMIN" && (
                       <>
                         <td className="text-truncate">
-                          {user.network?.name || (
+                          {user.network || (
                             <small className="text-muted">Not Specified</small>
                           )}
                         </td>
                         <td className="text-truncate">
-                          {user.organisation?.name || (
+                          {user.organisation || (
                             <small className="text-muted">Not Specified</small>
                           )}
                         </td>
