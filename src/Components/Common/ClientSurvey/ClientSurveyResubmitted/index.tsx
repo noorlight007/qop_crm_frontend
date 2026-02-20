@@ -5,7 +5,7 @@ import React from "react";
 import { X } from "react-feather";
 import { Button, Card, CardBody } from "reactstrap";
 
-const ClientSurveySubmittedContainer: React.FC = () => {
+const ClientSurveyResubmittedContainer: React.FC = () => {
   const handleClose = React.useCallback(() => {
     try {
       window.close();
@@ -70,7 +70,7 @@ const ClientSurveySubmittedContainer: React.FC = () => {
                   />
                 </div>
 
-                <h2 className="mb-2">Survey submitted successfully — Thank you</h2>
+                <h2 className="mb-2">Survey already submitted — thank you</h2>
                 <p className="text-muted mb-3">
                   We&apos;ve received your feedback. Your responses will be
                   reviewed and used to improve our service.
@@ -90,4 +90,4 @@ const ClientSurveySubmittedContainer: React.FC = () => {
   );
 };
 
-export default ClientSurveySubmittedContainer;
+export default ClientSurveyResubmittedContainer;
