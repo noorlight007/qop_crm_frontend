@@ -236,7 +236,8 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               height: "40px",
               borderRadius: "50%",
               overflow: "hidden",
-              backgroundColor: "#e9ecef",
+              /* theme-aware avatar background */
+              backgroundColor: "var(--light-color)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -253,7 +254,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 }}
               />
             ) : (
-              <User size={20} color="#6c757d" />
+              <User size={20} color="var(--font-color)" />
             )}
           </div>
           <div className="flex-grow-1">
@@ -262,7 +263,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 style={{
                   fontWeight: 600,
                   fontSize: "14px",
-                  color: "#2c3e50",
+                  color: "var(--body-font-color)",
                   marginBottom: "2px",
                 }}
               >
@@ -272,8 +273,13 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 <span
                   style={{
                     backgroundColor:
-                      displayRole === "CLIENT" ? "#d1ecf1" : "#fff3cd",
-                    color: displayRole === "CLIENT" ? "#0c5460" : "#856404",
+                      displayRole === "CLIENT"
+                        ? "var(--bg-light-primary)"
+                        : "var(--bg-light-secondary)",
+                    color:
+                      displayRole === "CLIENT"
+                        ? "var(--info-color)"
+                        : "var(--warning-color)",
                     padding: "2px 6px",
                     borderRadius: "4px",
                     fontSize: "12px",
@@ -288,7 +294,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
             <div
               style={{
                 fontSize: "12px",
-                color: "#6c757d",
+                color: "var(--font-color)",
                 display: "flex",
                 gap: "8px",
                 flexWrap: "wrap",
@@ -316,7 +322,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               height: "32px",
               borderRadius: "50%",
               overflow: "hidden",
-              backgroundColor: "#e9ecef",
+              backgroundColor: "var(--light-color)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -333,7 +339,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 }}
               />
             ) : (
-              <User size={16} color="#6c757d" />
+              <User size={16} color="var(--font-color)" />
             )}
           </div>
           <div>
@@ -346,8 +352,13 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                 <span
                   style={{
                     backgroundColor:
-                      displayRole === "CLIENT" ? "#d1ecf1" : "#fff3cd",
-                    color: displayRole === "CLIENT" ? "#0c5460" : "#856404",
+                      displayRole === "CLIENT"
+                        ? "var(--bg-light-primary)"
+                        : "var(--bg-light-secondary)",
+                    color:
+                      displayRole === "CLIENT"
+                        ? "var(--info-color)"
+                        : "var(--warning-color)",
                     padding: "2px 6px",
                     borderRadius: "4px",
                     fontSize: "12px",
@@ -359,7 +370,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               )}
             </div>
             {data.email && (
-              <div style={{ fontSize: "11px", color: "#6c757d" }}>
+              <div style={{ fontSize: "11px", color: "var(--font-color)" }}>
                 {data.email}
               </div>
             )}
