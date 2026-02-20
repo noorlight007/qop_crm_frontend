@@ -7,6 +7,7 @@
 
     &:hover {
       border-color: var(--primary-color);
+      cursor: pointer;
     }
 
     &--is-focused {
@@ -20,13 +21,12 @@
     cursor: pointer;
 
     &--is-selected {
-      background-color: var(--primary-color);
-      color: white !important;
+      background-color: rgb(228, 227, 227);
+      color: black !important;
 
       // Override all text colors inside selected option
-      div
-       {
-        color: white !important;
+      div {
+        color: black !important;
       }
     }
 
@@ -34,25 +34,21 @@
       background-color: #f8f9fa;
 
       &.lead-select__option--is-selected {
-        background-color: var(--primary-color);
-        color: white !important;
-
-        // Override all text colors inside selected option
-        div
-         {
-          color: white !important;
+        background-color: rgb(228, 227, 227);
+        color: black !important;
+        div {
+          color: black !important;
         }
       }
     }
 
     &:active {
-      background-color: var(--primary-color);
-      color: white !important;
+      background-color: rgb(228, 227, 227);
+      color: black !important;
 
       // Override all text colors inside selected option
-      div
-       {
-        color: white !important;
+      div {
+        color: black !important;
       }
     }
   }
@@ -80,6 +76,76 @@
 
     &:hover {
       color: #495057;
+    }
+  }
+}
+
+/* Dark-mode overrides for Lead/Client select */
+[data-theme="dark"] .lead-select,
+.dark-only .lead-select {
+  .lead-select__control {
+    background-color: var(--body-color);
+    border-color: var(--border-color);
+    color: var(--body-font-color);
+    box-shadow: none;
+
+    &:hover {
+      border-color: var(--border-color);
+      cursor: pointer;
+    }
+  }
+
+  .lead-select__control--is-focused {
+    border-color: var(--theme-default);
+    box-shadow: 0 0 0 1px rgba(48, 142, 135, 0.12);
+  }
+
+  .lead-select__menu {
+    background-color: var(--body-color);
+    border: 1px solid var(--border-color);
+    color: var(--body-font-color);
+    z-index: 9999;
+  }
+
+  .lead-select__option {
+    background: transparent;
+    color: var(--body-font-color);
+
+    &--is-focused {
+      background-color: var(--active-bg-color);
+      color: var(--body-font-color);
+    }
+
+    &--is-selected {
+      background-color: gray;
+      color: var(--white) !important;
+      div {
+        color: var(--white) !important;
+      }
+    }
+
+    &:active {
+      background-color: gray;
+      color: var(--white) !important;
+      div {
+        color: var(--white) !important;
+      }
+    }
+  }
+
+  .lead-select__placeholder {
+    color: var(--font-color);
+  }
+
+  .lead-select__indicator-separator {
+    background-color: var(--border-color);
+  }
+
+  .lead-select__clear-indicator,
+  .lead-select__dropdown-indicator {
+    color: var(--font-color);
+    &:hover {
+      color: var(--body-font-color);
     }
   }
 }

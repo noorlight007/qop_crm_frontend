@@ -18,5 +18,5 @@
 }
 
 .form-control::placeholder {
-  color: #adb5bd;
+  color: var(--font-color);
 }
