@@ -10,6 +10,7 @@ import {
 } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
@@ -45,6 +46,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 12,
   roles,
 }) => {
+  const { data: session } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -302,6 +304,8 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Phone</th>
                 {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
+                {session?.user?.user_type === "ADMIN" && <th>Network</th>}
+                {session?.user?.user_type === "ADMIN" && <th>Organisation</th>}
                 <th>Created By</th>
                 <th>Created At</th>
                 {roles !== "LEAD" && roles !== "CLIENT" && <th>Status</th>}
@@ -388,6 +392,20 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
+                    {session?.user?.user_type === "ADMIN" && (
+                      <>
+                        <td className="text-truncate">
+                          {user?.network || (
+                            <small className="text-muted">Not Specified</small>
+                          )}
+                        </td>
+                        <td className="text-truncate">
+                          {user?.organisation || (
+                            <small className="text-muted">Not Specified</small>
+                          )}
+                        </td>
+                      </>
+                    )}
                     {user?.created_by?.name ? (
                       <td>
                         <p className="m-0">{user?.created_by.name}</p>
