@@ -27,7 +27,8 @@
     border-radius: 0.5rem !important;
   }
   &::placeholder {
-    color: rgba($body-font-color, 0.4);
+    /* use theme-aware CSS variable so placeholder adapts to light/dark */
+    color: var(--font-color);
   }
 }
 .input-group {

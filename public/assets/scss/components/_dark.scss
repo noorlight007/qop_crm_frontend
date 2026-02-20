@@ -951,6 +951,27 @@
     opacity: unset;
     background-color: var(--body-color) !important;
   }
+
+  /* Dark-mode skeleton loader (overrides global .skeleton-loading) */
+  .skeleton-loading {
+    background-color: var(--body-color);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 25%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.03) 75%
+    );
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    /* make sure rounded variants look correct */
+    &.rounded,
+    &.rounded-2,
+    &.rounded-3,
+    &.rounded-circle {
+      background-clip: padding-box;
+    }
+  }
+
   div {
     &:where(.swal2-container) {
       .swal2-radio {
@@ -1437,12 +1458,25 @@
       color: var(--black) !important;
     }
   }
-  select {
+  /* Keep native selects visible in dark mode when focused/open */
+  select,
+  .form-select {
+    background-color: var(--body-color);
+    color: var(--body-font-color);
+    border: 1px solid var(--border-color);
     &:focus-visible {
       outline: none;
     }
     &:focus {
-      border: 0;
+      border-color: var(--border-color);
+      box-shadow: none;
+      background-color: var(--body-color);
+      color: var(--body-font-color);
+    }
+    /* ensure option text remains readable in dark mode */
+    option {
+      background-color: var(--body-color);
+      color: var(--body-font-color);
     }
   }
   .product-wrapper {
@@ -2018,6 +2052,8 @@
   .is-focused .choices__inner,
   .is-open .choices__inner {
     border-color: var(--border-color);
+    background: var(--body-color);
+    color: var(--body-font-color);
   }
   .choices__list--dropdown .choices__item--selectable.is-highlighted,
   .choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
@@ -2068,22 +2104,116 @@
   }
   .select2-container--default {
     .select2-selection--single {
-      background: var(--white);
+      /* dropdown control background should match dark theme */
+      background: var(--body-color);
       border-color: var(--border-color);
+      .select2-selection__rendered {
+        color: var(--body-font-color);
+      }
     }
   }
   .select2-dropdown {
-    background: var(--white);
+    background: var(--body-color);
     border-color: var(--border-color);
+    .select2-results__option {
+      color: var(--body-font-color);
+      background: var(--body-color);
+    }
+    /* highlighted/hover state for list items */
+    .select2-results__option--highlighted[aria-selected],
+    .select2-results__option:hover {
+      background: var(--active-bg-color);
+      color: var(--body-font-color);
+    }
   }
   .select2-container--default {
     .select2-search--dropdown {
       .select2-search__field {
-        background: var(--white);
+        background: var(--body-color);
+        color: var(--body-font-color);
         border-color: var(--border-color);
+        &::placeholder {
+          color: var(--font-color);
+        }
         &:focus-visible {
           outline: 0;
         }
+      }
+    }
+  }
+
+  // Dark-mode overrides for Lead/Client react-select (.lead-select)
+  .lead-select {
+    .lead-select__control {
+      background-color: var(--body-color);
+      border-color: var(--border-color);
+      color: var(--body-font-color);
+      box-shadow: none;
+      &:hover {
+        border-color: var(--border-color);
+      }
+    }
+
+    /* focused control (react-select adds --is-focused modifier) */
+    .lead-select__control--is-focused {
+      border-color: var(--theme-default);
+      box-shadow: 0 0 0 1px rgba(48, 142, 135, 0.12);
+    }
+
+    .lead-select__menu {
+      background-color: var(--body-color);
+      border: 1px solid var(--border-color);
+      box-shadow: none;
+      color: var(--body-font-color);
+    }
+
+    .lead-select__option {
+      padding: 10px;
+      cursor: pointer;
+      background: var(--body-color);
+      color: var(--body-font-color);
+
+      &--is-focused {
+        background-color: var(--active-bg-color);
+        color: var(--body-font-color);
+      }
+
+      &--is-selected {
+        background-color: var(--theme-default);
+        color: var(--white) !important;
+        div {
+          color: var(--white) !important;
+        }
+      }
+
+      &:active {
+        background-color: var(--theme-default);
+        color: var(--white) !important;
+        div {
+          color: var(--white) !important;
+        }
+      }
+    }
+
+    .lead-select__single-value {
+      color: var(--body-font-color);
+      display: flex;
+      align-items: center;
+    }
+
+    .lead-select__placeholder {
+      color: var(--font-color);
+    }
+
+    .lead-select__indicator-separator {
+      background-color: var(--border-color);
+    }
+
+    .lead-select__clear-indicator,
+    .lead-select__dropdown-indicator {
+      color: var(--font-color);
+      &:hover {
+        color: var(--body-font-color);
       }
     }
   }

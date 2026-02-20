@@ -581,6 +581,12 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <th>Subject</th>
                     <th>Message</th>
                     <th>Files</th>
+                    {session?.user?.user_type === "ADMIN" && (
+                      <>
+                        <th>Network</th>
+                        <th>Organisation</th>
+                      </>
+                    )}
                     <th>Created By</th>
                     <th>Created At</th>
                     <th>Action</th>
@@ -589,7 +595,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                 <tbody>
                   {isLoading || isFetching ? (
                     <tr>
-                      <td colSpan={10} className="text-center">
+                      <td colSpan={12} className="text-center">
                         <div className="d-flex justify-content-center align-items-center">
                           <Spinner color="primary" />
                         </div>
@@ -735,7 +741,16 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           </span>
                         </td>
                         <td>
-                          <span>{ticket.subject}</span>
+                          <span
+                            style={{
+                              maxWidth: "200px",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {ticket.subject}
+                          </span>
                         </td>
                         <td>
                           <div
@@ -756,6 +771,24 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             <span className="text-muted">No files</span>
                           )}
                         </td>
+                        {session?.user?.user_type === "ADMIN" && (
+                          <>
+                            <td className="text-truncate">
+                              {ticket.network?.name || (
+                                <small className="text-muted">
+                                  Not Specified
+                                </small>
+                              )}
+                            </td>
+                            <td className="text-truncate">
+                              {ticket.organisation?.name || (
+                                <small className="text-muted">
+                                  Not Specified
+                                </small>
+                              )}
+                            </td>
+                          </>
+                        )}
                         <td>
                           <p className="m-0">
                             {ticket.created_by?.name || "Unknown User"}
@@ -804,7 +837,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={10} className="text-center">
+                      <td colSpan={12} className="text-center">
                         No support tickets available.
                       </td>
                     </tr>

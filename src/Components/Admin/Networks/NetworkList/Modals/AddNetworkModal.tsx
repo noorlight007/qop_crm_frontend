@@ -1,5 +1,8 @@
 import { useAddNetworkMutation } from "@/Redux/Reducers/Admin/Networks/NetworksApi";
-import { AddNetworkModalProps, NetworkFormData } from "@/Types/Admin/Networks/NetworkType";
+import {
+  AddNetworkModalProps,
+  NetworkFormData,
+} from "@/Types/Admin/Networks/NetworkType";
 import { validateAndSanitizePhone } from "@/utils/inputHandlers";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -74,6 +77,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
   const [formData, setFormData] = useState<NetworkFormData>({
     network: {
       name: "",
+      subdomain: "",
       address: "",
       primary_mobile: "",
       email: "",
@@ -89,23 +93,23 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
 
   // API validation errors keyed by dot-notated field paths
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
-  
+
   // Local phone validation errors
   const [phoneErrors, setPhoneErrors] = useState({
     primary_mobile: "",
     user_phone: "",
   });
-  
+
   // RTK hooks
   const [addNetwork, { isLoading }] = useAddNetworkMutation();
 
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("network");
-  
+
   // API validation state (used when user clicks "Go Next")
   const [validating, setValidating] = useState(false);
   const [networkValidated, setNetworkValidated] = useState(false);
-  
+
   // Form ref for native validity/reporting
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -120,12 +124,12 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     // Special handling for primary_mobile: validate and sanitize using utility
     if (name === "primary_mobile") {
       const result = validateAndSanitizePhone(value);
-      
-      setPhoneErrors(prev => ({
+
+      setPhoneErrors((prev) => ({
         ...prev,
         primary_mobile: result.errorMessage,
       }));
-      
+
       setFormData((prevState) => ({
         ...prevState,
         network: {
@@ -148,16 +152,16 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
   // Handle user text input changes
   const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // Special handling for phone: validate and sanitize using utility
     if (name === "phone") {
       const result = validateAndSanitizePhone(value);
-      
-      setPhoneErrors(prev => ({
+
+      setPhoneErrors((prev) => ({
         ...prev,
         user_phone: result.errorMessage,
       }));
-      
+
       setFormData((prevState) => ({
         ...prevState,
         user: {
@@ -167,7 +171,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
       }));
       return;
     }
-    
+
     setFormData((prevState) => ({
       ...prevState,
       user: {
@@ -180,11 +184,12 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
   // Validate required network fields
   const validateNetwork = () => {
     const name = formData.network.name.trim();
+    const subdomain = formData.network.subdomain.trim();
     const primary = formData.network.primary_mobile.trim();
     const email = formData.network.email.trim();
     const address = formData.network.address.trim();
 
-    return !!(name && primary && email && address);
+    return !!(name && subdomain && primary && email && address);
   };
 
   // Helper to flatten nested validation error payloads into [{ field, messages[] }]
@@ -232,7 +237,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     if (!validateNetwork()) {
       // Show native browser validation on the first invalid network field
       if (formRef.current) {
-        const ids = ["name", "address", "primary_mobile", "email"];
+        const ids = ["name", "subdomain", "address", "primary_mobile", "email"];
         for (const id of ids) {
           const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
           if (el && !el.checkValidity()) {
@@ -249,7 +254,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     setValidating(true);
     try {
       const payload = { network: { ...formData.network } };
-      const res = await addNetwork({payload}).unwrap();
+      const res = await addNetwork({ payload }).unwrap();
       // Consider success as validation success (server did not return field errors)
       setApiErrors({});
       setNetworkValidated(true);
@@ -295,7 +300,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     // Final validation: ensure network required fields
     if (!validateNetwork()) {
       if (formRef.current) {
-        const ids = ["name", "address", "primary_mobile", "email"];
+        const ids = ["name", "subdomain", "address", "primary_mobile", "email"];
         for (const id of ids) {
           const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
           if (el && !el.checkValidity()) {
@@ -321,7 +326,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
         user: { ...formData.user },
       };
 
-      const response = await addNetwork({payload}).unwrap();
+      const response = await addNetwork({ payload }).unwrap();
 
       if (response) {
         toast.success("Network added successfully!");
@@ -329,6 +334,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
         setFormData({
           network: {
             name: "",
+            subdomain: "",
             address: "",
             primary_mobile: "",
             email: "",
@@ -390,6 +396,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     setFormData({
       network: {
         name: "",
+        subdomain: "",
         address: "",
         primary_mobile: "",
         email: "",
@@ -463,6 +470,30 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                     {apiErrors["network.name"] ? (
                       <div className="text-danger small mt-1">
                         {apiErrors["network.name"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="subdomain">
+                      Subdomain<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="subdomain"
+                      name="subdomain"
+                      value={formData.network.subdomain}
+                      onChange={handleChange}
+                      placeholder="Enter subdomain (e.g., acme)"
+                      required
+                      pattern="^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$"
+                      title="Only lowercase letters, numbers and hyphens — cannot start or end with a hyphen"
+                    />
+                    {apiErrors["network.subdomain"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["network.subdomain"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -672,7 +703,11 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
             ) : null}
           </div>
           <div className="d-flex gap-1">
-            <Button color="warning" onClick={handleClose} disabled={isLoading || validating}>
+            <Button
+              color="warning"
+              onClick={handleClose}
+              disabled={isLoading || validating}
+            >
               Cancel
             </Button>
             {activeTab === "network" ? (

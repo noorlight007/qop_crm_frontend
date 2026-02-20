@@ -323,14 +323,15 @@ const NetworkDetails: React.FC = () => {
                         >
                           <Mail size={18} />
                         </div>
-                        <div className="flex-grow-1">
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
                           <p className="small text-muted mb-1">Email</p>
                           {getNetworkDetails?.network?.email ? (
                             <span
-                              className="fw-500 text-dark text-decoration-none text-break"
+                              className="fw-500 text-dark text-decoration-none text-truncate d-block"
                               style={{
                                 transition: "color 0.2s",
-                                wordBreak: "break-word",
+                                minWidth: 0,
+                                maxWidth: "100%",
                               }}
                               onMouseEnter={(e) =>
                                 (e.currentTarget.style.color =
@@ -380,8 +381,11 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.network?.license_no ??
+                      <div className="text-truncate">
+                        {getNetworkDetails?.network?.license_no ??
                         "License number not provided"}
+                      </div>
+                      
                     </Card>
                   </Col>
                 </Row>
@@ -395,7 +399,7 @@ const NetworkDetails: React.FC = () => {
                       {getNetworkDetails?.network?.other_contact ? (
                         getNetworkDetails.network.other_contact
                       ) : (
-                        <small className="text-muted">
+                        <small className="text-muted text-truncate">
                           Secondary contact not provided
                         </small>
                       )}

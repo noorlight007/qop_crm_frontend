@@ -10,6 +10,7 @@ import {
 } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
@@ -45,7 +46,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   authUsersPerPage = 12,
   roles,
 }) => {
-  const pathname = window.location.pathname;
+  const { data: session } = useSession();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -248,7 +249,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
               )}
             </Input>
           </Col>
-          {pathname !== "/admin/users/compliances" && (
+          {roles !== "COMPLIANCE" && (
             <Col md={3}>
               <Input
                 type="select"
@@ -301,13 +302,13 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                {pathname === "/admin/users/compliances" && (
-                  <th>Designation</th>
-                )}
+                {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
+                {session?.user?.user_type === "ADMIN" && <th>Network</th>}
+                {session?.user?.user_type === "ADMIN" && <th>Organisation</th>}
                 <th>Created By</th>
                 <th>Created At</th>
-                <th>Status</th>
+                {roles !== "LEAD" && roles !== "CLIENT" && <th>Status</th>}
                 <th>Action</th>
               </tr>
             </thead>
@@ -375,7 +376,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {pathname === "/admin/users/compliances" && (
+                    {roles === "COMPLIANCE" && (
                       <td>
                         {user?.designation ? (
                           user?.designation
@@ -391,6 +392,20 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
+                    {session?.user?.user_type === "ADMIN" && (
+                      <>
+                        <td className="text-truncate">
+                          {user?.network || (
+                            <small className="text-muted">Not Specified</small>
+                          )}
+                        </td>
+                        <td className="text-truncate">
+                          {user?.organisation || (
+                            <small className="text-muted">Not Specified</small>
+                          )}
+                        </td>
+                      </>
+                    )}
                     {user?.created_by?.name ? (
                       <td>
                         <p className="m-0">{user?.created_by.name}</p>
@@ -419,76 +434,84 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    <td>
-                      <div style={{ position: "relative" }}>
-                        <Dropdown
-                          isOpen={dropdownOpen[user.alias] || false}
-                          toggle={() => toggleDropdown(user.alias)}
-                        >
-                          <DropdownToggle
-                            tag="span"
-                            style={{ cursor: "pointer" }}
-                            caret={false}
+                    {/* Status with Dropdown */}
+                    {roles !== "LEAD" && roles !== "CLIENT" && (
+                      <td>
+                        <div style={{ position: "relative" }}>
+                          <Dropdown
+                            isOpen={dropdownOpen[user.alias] || false}
+                            toggle={() => toggleDropdown(user.alias)}
                           >
-                            <Badge
-                              color={user?.is_active ? "success" : "danger"}
-                              className="d-flex justify-content-center align-items-center gap-1"
+                            <DropdownToggle
+                              tag="span"
                               style={{ cursor: "pointer" }}
+                              caret={false}
                             >
-                              <span>
-                                {user?.is_active ? "Approved" : "Pending"}
-                              </span>
-                              <FaChevronDown size={10} />
-                            </Badge>
-                          </DropdownToggle>
+                              <Badge
+                                color={user?.is_active ? "success" : "danger"}
+                                className="d-flex justify-content-center align-items-center gap-1"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <span>
+                                  {user?.is_active ? "Approved" : "Pending"}
+                                </span>
+                                <FaChevronDown size={10} />
+                              </Badge>
+                            </DropdownToggle>
 
-                          <DropdownMenu
-                            className="shadow-sm py-2"
-                            style={{
-                              minWidth: "140px",
-                              backgroundColor: "white",
-                              zIndex: 1050,
-                            }}
-                            container="body"
-                          >
-                            {statusOptions.map((option) => {
-                              const isActive = user.is_active === option.value;
-                              const colorClass =
-                                statusColorMap[
-                                  option.value.toString() as "true" | "false"
-                                ];
+                            <DropdownMenu
+                              className="shadow-sm py-2"
+                              style={{
+                                minWidth: "140px",
+                                backgroundColor: "white",
+                                zIndex: 1050,
+                              }}
+                              container="body"
+                            >
+                              {statusOptions.map((option) => {
+                                const isActive =
+                                  user.is_active === option.value;
+                                const colorClass =
+                                  statusColorMap[
+                                    option.value.toString() as "true" | "false"
+                                  ];
 
-                              return (
-                                <DropdownItem
-                                  key={option.value.toString()}
-                                  onClick={() =>
-                                    handleStatusChange(user.alias, option.value)
-                                  }
-                                  className="d-flex align-items-center gap-3 px-3 py-2"
-                                  active={isActive}
-                                  style={{
-                                    backgroundColor: isActive
-                                      ? "rgba(0,0,0,0.05)"
-                                      : "white",
-                                  }}
-                                >
-                                  <span
-                                    className={`rounded-circle bg-${colorClass}`}
-                                    style={{ width: "8px", height: "8px" }}
-                                  />
-                                  <span className={isActive ? "fw-bold" : ""}>
-                                    {option.label}
-                                  </span>
-                                  {isActive && (
-                                    <span className="ms-auto">✓</span>
-                                  )}
-                                </DropdownItem>
-                              );
-                            })}
-                          </DropdownMenu>
-                        </Dropdown>
-                      </div>
-                    </td>
+                                return (
+                                  <DropdownItem
+                                    key={option.value.toString()}
+                                    onClick={() =>
+                                      handleStatusChange(
+                                        user.alias,
+                                        option.value,
+                                      )
+                                    }
+                                    className="d-flex align-items-center gap-3 px-3 py-2"
+                                    active={isActive}
+                                    style={{
+                                      backgroundColor: isActive
+                                        ? "rgba(0,0,0,0.05)"
+                                        : "white",
+                                    }}
+                                  >
+                                    <span
+                                      className={`rounded-circle bg-${colorClass}`}
+                                      style={{ width: "8px", height: "8px" }}
+                                    />
+                                    <span className={isActive ? "fw-bold" : ""}>
+                                      {option.label}
+                                    </span>
+                                    {isActive && (
+                                      <span className="ms-auto">✓</span>
+                                    )}
+                                  </DropdownItem>
+                                );
+                              })}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
+                      </td>
+                    )}
+
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
