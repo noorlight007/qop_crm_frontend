@@ -78,7 +78,6 @@ const PerformanceOverview: React.FC<NetworkDirectorDashboardProps> = ({
                             style={{
                               width: "80%",
                               height: "16px",
-                              backgroundColor: "#e0e0e0",
                             }}
                           />
                           <div
@@ -86,7 +85,6 @@ const PerformanceOverview: React.FC<NetworkDirectorDashboardProps> = ({
                             style={{
                               width: "50%",
                               height: "24px",
-                              backgroundColor: "#e0e0e0",
                             }}
                           />
                         </div>

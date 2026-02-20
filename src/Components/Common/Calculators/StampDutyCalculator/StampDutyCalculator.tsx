@@ -6,6 +6,8 @@ import {
 import getCurrencySign from "@/utils/currency";
 import { formatPrice } from "@/utils/formatters";
 import React, { useEffect, useState } from "react";
+import { FaArrowAltCircleDown, FaArrowCircleDown } from "react-icons/fa";
+import { TbRotateClockwise } from "react-icons/tb";
 import {
   Alert,
   Badge,
@@ -2289,7 +2291,13 @@ const StampDutyCalculator: React.FC = () => {
 
               {/* Reset option */}
               <div className="mt-3 text-center">
-                <Button color="link" size="sm" onClick={resetCalculator}>
+                <Button
+                  color="warning"
+                  outline
+                  size="sm"
+                  onClick={resetCalculator}
+                >
+                 <TbRotateClockwise size={18} className="me-1" />
                   Start Over
                 </Button>
               </div>
