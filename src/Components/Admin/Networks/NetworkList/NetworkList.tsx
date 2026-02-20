@@ -93,7 +93,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
         payload: formDataToSend,
       }).unwrap();
 
-      toast.success("Profile image updated");
+      toast.success("Network logo updated successfully");
     } catch (err: any) {
       const msg = err?.data?.detail || err?.message || "Upload failed";
       toast.error(msg);
@@ -211,7 +211,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
             </Col>
           ) : (
             getNetworkList?.results?.map((network: Network) => (
-              <Col xs="12" md="6" lg="4" className="mb-4" key={network.slug}>
+              <Col xs="12" lg="6" xxl="4" className="mb-4" key={network.slug}>
                 <Card className="h-100 shadow-sm border-0" style={{ position: "relative", overflow: "hidden" }}>
                   <Link
                     href={`/admin/networks/${network.slug}`}
@@ -274,7 +274,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                       </div>
 
                       <div className="flex-grow-1" style={{ minWidth: 0, paddingRight: "25px" }}>
-                        <h5 className="fw-bold text-dark mb-1" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                        <h5 className="fw-bold text-dark mb-1 text-truncate" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
                           <Link
                             className="text_decoration_hover"
                             href={`/admin/networks/${network.slug}`}
@@ -282,9 +282,9 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             {network.name}
                           </Link>
                         </h5>
-                        <p className="text-muted small mb-2" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
-                          <FaGlobe className="me-1" />
-                          {network.subdomain}
+                        <p className="text-muted small mb-2 text-truncate" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                          <FaGlobe className="me-2" />
+                          {`${"https://"}${network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
                         </p>
                         <div className="mb-1">
                           <small className="text-muted d-flex align-items-center" style={{ minWidth: 0 }}>

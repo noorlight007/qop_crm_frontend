@@ -130,12 +130,15 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
             organisationList?.results?.map((organisation: Organisation) => (
               <Col
                 xs="12"
-                md="6"
-                lg="4"
+                lg="6"
+                xxl="4"
                 className="mb-4"
                 key={organisation.slug}
               >
-                <Card className="h-100 shadow-sm border-0" style={{ position: "relative", overflow: "hidden" }}>
+                <Card
+                  className="h-100 shadow-sm border-0"
+                  style={{ position: "relative", overflow: "hidden" }}
+                >
                   <Link
                     href={`/admin/organisations/${organisation.slug}`}
                     title="Website"
@@ -162,7 +165,11 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                         ) : (
                           <div
                             className="bg-primary bg-gradient text-center rounded d-flex align-items-center justify-content-center"
-                            style={{ width: "160px", height: "80px", maxWidth: "100%" }}
+                            style={{
+                              width: "160px",
+                              height: "80px",
+                              maxWidth: "100%",
+                            }}
                           >
                             <h3 className="text-white fw-bold mb-0">
                               {organisation.name.charAt(0).toUpperCase()}
@@ -171,8 +178,17 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                         )}
                       </div>
 
-                      <div className="flex-grow-1" style={{ minWidth: 0, paddingRight: "25px" }}>
-                        <h5 className="fw-bold text-dark mb-1" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                      <div
+                        className="flex-grow-1"
+                        style={{ minWidth: 0, paddingRight: "25px" }}
+                      >
+                        <h5
+                          className="fw-bold text-dark mb-1 text-truncate"
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
                           <Link
                             className="text_decoration_hover"
                             href={`${getOrganisationUrl(session)}/${organisation.slug}`}
@@ -180,20 +196,42 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                             {organisation.name}
                           </Link>
                         </h5>
-                        <p className="text-muted small mb-2" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
-                          <FaGlobe className="me-1" />
-                          {organisation.subdomain}
+                        <p
+                          className="text-muted small mb-2 text-truncate"
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
+                          <FaGlobe className="me-2" />
+                          {`${"https://"}${organisation?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
                         </p>
                         <div className="mb-1">
-                          <small className="text-muted d-flex align-items-center" style={{ minWidth: 0 }}>
+                          <small
+                            className="text-muted d-flex align-items-center"
+                            style={{ minWidth: 0 }}
+                          >
                             <FaEnvelope className="me-2 text-primary flex-shrink-0" />
-                            <span className="text-truncate" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            <span
+                              className="text-truncate"
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
                               {organisation.email}
                             </span>
                           </small>
                         </div>
                         <div className="mb-2">
-                          <small className="text-muted d-flex align-items-center" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                          <small
+                            className="text-muted d-flex align-items-center"
+                            style={{
+                              wordBreak: "break-word",
+                              overflowWrap: "break-word",
+                            }}
+                          >
                             <FaPhone className="me-2 text-primary flex-shrink-0" />
                             {organisation.primary_mobile}
                           </small>
