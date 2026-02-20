@@ -304,7 +304,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Joining Date</th>
                 <th>Created By</th>
                 <th>Created At</th>
-                <th>Status</th>
+                {roles !== "LEAD" && roles !== "CLIENT" && <th>Status</th>}
                 <th>Action</th>
               </tr>
             </thead>
@@ -416,76 +416,84 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    <td>
-                      <div style={{ position: "relative" }}>
-                        <Dropdown
-                          isOpen={dropdownOpen[user.alias] || false}
-                          toggle={() => toggleDropdown(user.alias)}
-                        >
-                          <DropdownToggle
-                            tag="span"
-                            style={{ cursor: "pointer" }}
-                            caret={false}
+                    {/* Status with Dropdown */}
+                    {roles !== "LEAD" && roles !== "CLIENT" && (
+                      <td>
+                        <div style={{ position: "relative" }}>
+                          <Dropdown
+                            isOpen={dropdownOpen[user.alias] || false}
+                            toggle={() => toggleDropdown(user.alias)}
                           >
-                            <Badge
-                              color={user?.is_active ? "success" : "danger"}
-                              className="d-flex justify-content-center align-items-center gap-1"
+                            <DropdownToggle
+                              tag="span"
                               style={{ cursor: "pointer" }}
+                              caret={false}
                             >
-                              <span>
-                                {user?.is_active ? "Approved" : "Pending"}
-                              </span>
-                              <FaChevronDown size={10} />
-                            </Badge>
-                          </DropdownToggle>
+                              <Badge
+                                color={user?.is_active ? "success" : "danger"}
+                                className="d-flex justify-content-center align-items-center gap-1"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <span>
+                                  {user?.is_active ? "Approved" : "Pending"}
+                                </span>
+                                <FaChevronDown size={10} />
+                              </Badge>
+                            </DropdownToggle>
 
-                          <DropdownMenu
-                            className="shadow-sm py-2"
-                            style={{
-                              minWidth: "140px",
-                              backgroundColor: "white",
-                              zIndex: 1050,
-                            }}
-                            container="body"
-                          >
-                            {statusOptions.map((option) => {
-                              const isActive = user.is_active === option.value;
-                              const colorClass =
-                                statusColorMap[
-                                  option.value.toString() as "true" | "false"
-                                ];
+                            <DropdownMenu
+                              className="shadow-sm py-2"
+                              style={{
+                                minWidth: "140px",
+                                backgroundColor: "white",
+                                zIndex: 1050,
+                              }}
+                              container="body"
+                            >
+                              {statusOptions.map((option) => {
+                                const isActive =
+                                  user.is_active === option.value;
+                                const colorClass =
+                                  statusColorMap[
+                                    option.value.toString() as "true" | "false"
+                                  ];
 
-                              return (
-                                <DropdownItem
-                                  key={option.value.toString()}
-                                  onClick={() =>
-                                    handleStatusChange(user.alias, option.value)
-                                  }
-                                  className="d-flex align-items-center gap-3 px-3 py-2"
-                                  active={isActive}
-                                  style={{
-                                    backgroundColor: isActive
-                                      ? "rgba(0,0,0,0.05)"
-                                      : "white",
-                                  }}
-                                >
-                                  <span
-                                    className={`rounded-circle bg-${colorClass}`}
-                                    style={{ width: "8px", height: "8px" }}
-                                  />
-                                  <span className={isActive ? "fw-bold" : ""}>
-                                    {option.label}
-                                  </span>
-                                  {isActive && (
-                                    <span className="ms-auto">✓</span>
-                                  )}
-                                </DropdownItem>
-                              );
-                            })}
-                          </DropdownMenu>
-                        </Dropdown>
-                      </div>
-                    </td>
+                                return (
+                                  <DropdownItem
+                                    key={option.value.toString()}
+                                    onClick={() =>
+                                      handleStatusChange(
+                                        user.alias,
+                                        option.value,
+                                      )
+                                    }
+                                    className="d-flex align-items-center gap-3 px-3 py-2"
+                                    active={isActive}
+                                    style={{
+                                      backgroundColor: isActive
+                                        ? "rgba(0,0,0,0.05)"
+                                        : "white",
+                                    }}
+                                  >
+                                    <span
+                                      className={`rounded-circle bg-${colorClass}`}
+                                      style={{ width: "8px", height: "8px" }}
+                                    />
+                                    <span className={isActive ? "fw-bold" : ""}>
+                                      {option.label}
+                                    </span>
+                                    {isActive && (
+                                      <span className="ms-auto">✓</span>
+                                    )}
+                                  </DropdownItem>
+                                );
+                              })}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
+                      </td>
+                    )}
+
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
                         <Button
