@@ -163,7 +163,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const handleStatusChange = async (userAlias: string, newStatus: boolean) => {
     try {
       const result = await updateStatusData({
-        userAlias: userAlias, // Changed from 'alias' to 'userAlias'
+        user_alias: userAlias, // Changed from 'alias' to 'userAlias'
         payload: { is_active: newStatus },
       }).unwrap();
       Swal.fire("Success", "Status Updated Successfully!", "success");
