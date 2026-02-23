@@ -38,6 +38,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import Swal from "sweetalert2";
+import DeleteAuthUserModal from "./Modals/DeleteAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
@@ -56,8 +57,10 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const [selectedOrganisation, setSelectedOrganisation] = useState("");
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleUpdateModal = () => setIsUpdateModalOpen(!isUpdateModalOpen);
+  const toggleDeleteModal = () => setIsDeleteModalOpen(!isDeleteModalOpen);
 
   const role = roles;
 
@@ -177,6 +180,11 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const openUpdateModal = (authUser: AuthUser) => {
     setSelectedAuthUser(authUser);
     toggleUpdateModal();
+  };
+
+  const openDeleteModal = (authUser: AuthUser) => {
+    setSelectedAuthUser(authUser);
+    toggleDeleteModal();
   };
 
   const currentAuthUsers = authUsers;
@@ -304,8 +312,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th>Phone</th>
                 {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
-                {session?.user?.user_type === "ADMIN" && <th>Network</th>}
-                {session?.user?.user_type === "ADMIN" && <th>Organisation</th>}
+                {session?.user?.user_type === "ADMIN" &&
+                  roles !== "LEAD" &&
+                  roles !== "CLIENT" && <th>Network</th>}
+                {session?.user?.user_type === "ADMIN" &&
+                  roles !== "LEAD" &&
+                  roles !== "CLIENT" && <th>Organisation</th>}
                 <th>Created By</th>
                 <th>Created At</th>
                 {roles !== "LEAD" && roles !== "CLIENT" && <th>Status</th>}
@@ -315,7 +327,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
             <tbody>
               {isLoading || isFetching ? (
                 <tr>
-                  <td colSpan={9} className="text-center">
+                  <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -392,20 +404,26 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {session?.user?.user_type === "ADMIN" && (
-                      <>
-                        <td className="text-truncate">
-                          {user?.network || (
-                            <small className="text-muted">Not Specified</small>
-                          )}
-                        </td>
-                        <td className="text-truncate">
-                          {user?.organisation || (
-                            <small className="text-muted">Not Specified</small>
-                          )}
-                        </td>
-                      </>
-                    )}
+                    {session?.user?.user_type === "ADMIN" &&
+                      roles !== "LEAD" &&
+                      roles !== "CLIENT" && (
+                        <>
+                          <td className="text-truncate">
+                            {user?.network || (
+                              <small className="text-muted">
+                                Not Specified
+                              </small>
+                            )}
+                          </td>
+                          <td className="text-truncate">
+                            {user?.organisation || (
+                              <small className="text-muted">
+                                Not Specified
+                              </small>
+                            )}
+                          </td>
+                        </>
+                      )}
                     {user?.created_by?.name ? (
                       <td>
                         <p className="m-0">{user?.created_by.name}</p>
@@ -522,13 +540,23 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                         >
                           <i className="icon-pencil-alt"></i>
                         </Button>
+                        {roles !== "DIRECTOR" && (
+                          <Button
+                            color="danger"
+                            size="sm"
+                            title="Delete User"
+                            onClick={() => openDeleteModal(user)}
+                          >
+                            <i className="fa-regular fa-trash-can"></i>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center">
+                  <td colSpan={10} className="text-center">
                     No users available.
                   </td>
                 </tr>
@@ -649,6 +677,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
         title={title}
         isOpen={isUpdateModalOpen}
         toggle={toggleUpdateModal}
+        selectedAuthUser={selectedAuthUser}
+      />
+
+      <DeleteAuthUserModal
+        isOpen={isDeleteModalOpen}
+        toggle={toggleDeleteModal}
         selectedAuthUser={selectedAuthUser}
       />
     </Card>

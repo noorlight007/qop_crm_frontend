@@ -35,3 +35,9 @@ export interface UpdateAuthUserModalProps {
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
 }
+
+export interface DeleteAuthUserModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedAuthUser: Partial<AuthUser>;
+}
