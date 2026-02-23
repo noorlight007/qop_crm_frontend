@@ -1,7 +1,5 @@
-
 import { useDeleteAuthUserMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
 import { DeleteAuthUserModalProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
-import { useRouter } from "next/navigation";
 
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -11,10 +9,8 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
   toggle,
   selectedAuthUser,
 }) => {
-  const router = useRouter();
-  console.log("user data: ", selectedAuthUser);
-
-  const [ deleteUser, {isLoading: isDeletingUser}] = useDeleteAuthUserMutation();
+  const [deleteUser, { isLoading: isDeletingUser }] =
+    useDeleteAuthUserMutation();
 
   const handleDelete = async () => {
     try {
@@ -48,8 +44,8 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
             This action is irreversible.
           </p>
           <small className="text-muted">
-            Deleting this network will permanently remove all associated data and all historical records. This data cannot be
-            restored.
+            Deleting this network will permanently remove all associated data
+            and all historical records. This data cannot be restored.
           </small>
         </div>
       </ModalBody>
