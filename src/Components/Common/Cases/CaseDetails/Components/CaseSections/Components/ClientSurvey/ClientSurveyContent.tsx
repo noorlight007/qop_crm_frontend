@@ -15,7 +15,7 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Send } from "react-feather";
 import { FaDownload } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -29,6 +29,10 @@ import {
   FormGroup,
   Input,
   Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Row,
   Spinner,
 } from "reactstrap";
@@ -37,6 +41,10 @@ const ClientSurveyContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
+
+  // Confirmation modal state
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const toggleConfirmModal = () => setIsConfirmModalOpen((prev) => !prev);
 
   // RTK Queries
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
@@ -48,10 +56,12 @@ const ClientSurveyContent: React.FC = () => {
 
   const [clientSurveyBlob, { isLoading: isDownloadingSurvey }] =
     useDownloadClientSurveyMutation();
+
   const handlesendSurvey = async () => {
     try {
       await sendSurvey({ case_alias: casealias }).unwrap();
       toast.success("Survey sent successfully.");
+      toggleConfirmModal(); // close modal on success
     } catch (error) {
       toast.error("Failed to send survey.");
     }
@@ -74,12 +84,11 @@ const ClientSurveyContent: React.FC = () => {
   };
 
   const {
-    data: clientSurveyList, // Now an array
+    data: clientSurveyList,
     isLoading: isSurveyLoading,
     isError,
   } = useGetClientSurveyQuery({ case_alias: casealias }, { skip: !casealias });
 
-  // Local form state (single mapped object)
   const initialFormState = {
     adviserName: "",
     question1: "",
@@ -108,11 +117,8 @@ const ClientSurveyContent: React.FC = () => {
     ...initialFormState,
   });
 
-  // === STEP 1: Extract the Most Relevant Survey Record ===
   const selectedSurvey = useMemo(() => {
     if (!clientSurveyList) return null;
-
-    // If API returned an array, pick the newest by created_at
     if (Array.isArray(clientSurveyList)) {
       if (clientSurveyList.length === 0) return null;
       const sorted = [...clientSurveyList].sort(
@@ -121,14 +127,10 @@ const ClientSurveyContent: React.FC = () => {
       );
       return sorted[0];
     }
-
-    // If API returned a single object (not an array), use it directly
     if (typeof clientSurveyList === "object") return clientSurveyList as any;
-
     return null;
   }, [clientSurveyList]);
 
-  // === STEP 3: Sync form state when selectedSurvey changes ===
   const surveyFieldMap: Record<keyof FormState, string> = {
     adviserName: "adviser_name",
     question1: "felt_valued_by_adviser",
@@ -153,11 +155,12 @@ const ClientSurveyContent: React.FC = () => {
 
   useEffect(() => {
     if (selectedSurvey && typeof selectedSurvey === "object") {
-      const nextState: FormState = { ...initialFormState };
+      const nextState = { ...initialFormState } as {
+        -readonly [K in keyof FormState]: string;
+      };
       (Object.keys(surveyFieldMap) as Array<keyof FormState>).forEach(
         (formKey) => {
           const surveyKey = surveyFieldMap[formKey];
-          // @ts-ignore - selectedSurvey comes from API
           nextState[formKey] = selectedSurvey[surveyKey] ?? "";
         },
       );
@@ -167,7 +170,6 @@ const ClientSurveyContent: React.FC = () => {
     }
   }, [selectedSurvey]);
 
-  // === STEP 4: Handlers ===
   const handleInputChange =
     (field: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -175,13 +177,13 @@ const ClientSurveyContent: React.FC = () => {
       setFormState((s) => ({ ...s, [field]: value }));
     };
 
-  // Render radio answers as pill-style selectable options (CSS-only)
   const renderPillOptions = (
     fieldName: string,
     selectedValue: string | undefined,
     changeHandler: (
       e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => void,
+    disabled = false,
   ) => (
     <FormGroup className="mb-0">
       {ANSWER_OPTIONS.map((option) => {
@@ -189,20 +191,23 @@ const ClientSurveyContent: React.FC = () => {
         const labelClass = `me-2 d-inline-flex align-items-center mb-2 rounded-pill px-3 py-1 border border-secondary ${
           active ? "bg-primary text-white border-primary" : "bg-white text-dark"
         }`;
-
         return (
           <label
             key={option.value}
             className={labelClass}
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: disabled ? "not-allowed" : "pointer", // 👈 use disabled
+              opacity: disabled && !active ? 0.5 : 1, // 👈 use disabled
+            }}
           >
             <Input
               type="radio"
               name={fieldName}
               value={option.value}
-              checked={selectedValue === option.value}
+              checked={active}
               onChange={changeHandler as any}
               className="visually-hidden"
+              disabled={disabled} // 👈 use disabled
             />
             <span className="ms-2" style={{ fontSize: 14 }}>
               {option.label}
@@ -213,7 +218,6 @@ const ClientSurveyContent: React.FC = () => {
     </FormGroup>
   );
 
-  // === STEP 6: Navigation ===
   const currentTab: string | null = useAppSelector(
     (state) => state.caseSections.basicTabId,
   );
@@ -231,7 +235,6 @@ const ClientSurveyContent: React.FC = () => {
     }
   };
 
-  // === STEP 7: Loading & Error States ===
   if (isSurveyLoading) {
     return (
       <div className="d-flex justify-content-center my-4">
@@ -247,17 +250,58 @@ const ClientSurveyContent: React.FC = () => {
   return (
     <Card>
       <CardBody>
-        {/* Info Banner */}
-        <div className="d-flex justify-content-between">
-          <div className="d-flex gap-2 mb-4">
+        {/* Confirmation Modal */}
+        <Modal isOpen={isConfirmModalOpen} toggle={toggleConfirmModal}>
+          <ModalHeader toggle={toggleConfirmModal} className="bg-primary">
+            Send Survey to Client
+          </ModalHeader>
+          <ModalBody className="text-center">
+            Are you sure you want to send the survey form to the client? They
+            will receive an email with a link to submit the survey.
+          </ModalBody>
+          <ModalFooter>
             <Button
               color="primary"
-              outline
               onClick={handlesendSurvey}
               disabled={isSendingSurvey}
             >
-              <Send size={15} /> Send Survey From To the Client
+              {isSendingSurvey ? (
+                <>
+                  <Spinner size="sm" className="me-2" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send size={14} className="me-2" />
+                  Yes, Send
+                </>
+              )}
             </Button>
+            <Button
+              color="secondary"
+              outline
+              onClick={toggleConfirmModal}
+              disabled={isSendingSurvey}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        {/* Info Banner */}
+        <div className="d-flex justify-content-between">
+          <div className="d-flex gap-2 mb-4">
+            {!selectedSurvey?.adviser_name && (
+              <Button
+                color="primary"
+                outline
+                onClick={toggleConfirmModal}
+                disabled={isSendingSurvey}
+              >
+                <Send size={15} className="me-1" /> Send Survey Form To the
+                Client
+              </Button>
+            )}
             <Button
               color="secondary"
               onClick={downloadSurvey}
@@ -297,7 +341,6 @@ const ClientSurveyContent: React.FC = () => {
         </div>
 
         <>
-          {/* Header */}
           <Row className="mb-3 d-flex justify-content-between gap-3">
             <Col className="border-b-primary border-2">
               <h3 className="text-center">Questions</h3>
@@ -324,6 +367,7 @@ const ClientSurveyContent: React.FC = () => {
                       String(q.id),
                       formState[q.id as keyof FormState],
                       handleInputChange(q.id as keyof FormState),
+                      true,
                     )
                   ) : q.type === "textarea" ? (
                     <FormGroup>
@@ -335,6 +379,8 @@ const ClientSurveyContent: React.FC = () => {
                         value={formState[q.id as keyof FormState]}
                         onChange={handleInputChange(q.id as keyof FormState)}
                         rows={4}
+                        readOnly
+                        disabled
                       />
                     </FormGroup>
                   ) : (
@@ -347,13 +393,14 @@ const ClientSurveyContent: React.FC = () => {
                         required={q.required}
                         value={formState[q.id as keyof FormState]}
                         onChange={handleInputChange(q.id as keyof FormState)}
+                        readOnly
+                        disabled
                       />
                     </FormGroup>
                   )}
                 </Col>
               </Row>
             ))}
-            {/* Action Buttons */}
             <div className="d-flex justify-content-end mt-4 gap-2">
               <Button
                 color="secondary"

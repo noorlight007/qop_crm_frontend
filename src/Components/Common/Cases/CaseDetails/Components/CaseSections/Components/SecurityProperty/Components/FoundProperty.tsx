@@ -53,7 +53,7 @@ const FoundProperty: React.FC<FoundPropertyProps> = ({
               <div className="d-flex align-items-center">
                 <Label
                   className="mb-0 fw-semibold me-4"
-                  style={{ fontSize: "15px", color: "#495057" }}
+                  style={{ fontSize: "15px" }}
                   for="have_you_found_a_property_yet"
                 >
                   Is a property being insured? If so, do you know which property

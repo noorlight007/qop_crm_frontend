@@ -11,12 +11,19 @@ export const AuthUsersApi = baseApi.injectEndpoints({
       providesTags: ["AuthUsers"],
     }),
     updateAuthUserDetails: builder.mutation({
-      query: ({ payload, userAlias }) => ({
-        url: `/auth/admin/user-list/${userAlias}/`,
+      query: ({ payload, user_alias }) => ({
+        url: `/auth/admin/user-list/${user_alias}/`,
         method: "PATCH",
         body: payload,
       }),
       invalidatesTags: ["AuthUsers"],
+    }),
+    deleteAuthUser: builder.mutation({
+       query: ({ user_alias }) => ({
+        url: `/auth/admin/user-list/${user_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["AuthUsers"], 
     }),
     getNetworkList: builder.query({
       query: () => ({
@@ -39,6 +46,7 @@ export const AuthUsersApi = baseApi.injectEndpoints({
 export const {
   useGetAuthUsersQuery,
   useUpdateAuthUserDetailsMutation,
+  useDeleteAuthUserMutation,
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
 } = AuthUsersApi;

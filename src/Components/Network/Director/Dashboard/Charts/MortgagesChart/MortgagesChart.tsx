@@ -140,7 +140,6 @@ const MortgagesChart: React.FC<NetworkDirectorDashboardProps> = ({
                 width: "280px",
                 height: "280px",
                 borderRadius: "50%",
-                backgroundColor: "#e0e0e0",
               }}
             />
             <div
@@ -148,7 +147,6 @@ const MortgagesChart: React.FC<NetworkDirectorDashboardProps> = ({
               style={{
                 width: "50%",
                 height: "100px",
-                backgroundColor: "#e0e0e0",
               }}
             />
           </div>

@@ -26,7 +26,8 @@ export const MortgageFFDTabTitleData = [
   { id: "16", nav: "Insurance Health" },
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
-  { id: "19", nav: "Documents" },
+  { id: "19", nav: "Vulnerability" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const MortgageRCCTabTitleData = [...MortgageFFDTabTitleData];
@@ -53,8 +54,7 @@ export const MortgageFMATabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
-  // { id: "20", nav: "Vulnerability" },
-  { id: "21", nav: "Documents" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const MortgageSubmissionTabTitleData = [
@@ -77,8 +77,7 @@ export const MortgageSubmissionTabTitleData = [
   { id: "17", nav: "Fees" },
   { id: "18", nav: "Compliance" },
   { id: "19", nav: "Client Survey" },
-  // { id: "20", nav: "Vulnerability" },
-  { id: "21", nav: "Documents" },
+  { id: "20", nav: "Documents" },
 ];
 
 export const MortgageOFBTabTitleData = [...MortgageSubmissionTabTitleData];
@@ -115,7 +114,8 @@ export const InsuranceFFDTabTitleData = [
   { id: "11", nav: "Commission" },
   { id: "12", nav: "Fees" },
   { id: "13", nav: "Compliance" },
-  { id: "14", nav: "Documents" },
+  { id: "14", nav: "Vulnerability" },
+  { id: "15", nav: "Documents" },
 ];
 
 export const InsuranceSubmissionTabTitleData = [...InsuranceFFDTabTitleData];

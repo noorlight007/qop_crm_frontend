@@ -1,4 +1,4 @@
-import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
 import {
   AuthUser,
   UpdateAuthUserModalProps,
@@ -155,7 +155,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
 
         const result = await updateAuthUserDetails({
           payload: payload as Partial<AuthUser>,
-          userAlias: authUserData.alias,
+          user_alias: authUserData.alias,
         });
 
         if (result.data) {
