@@ -44,6 +44,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   const [submitting, setSubmitting] = useState<"save" | "save_next" | null>(
     null,
   );
+  const [attemptedTabs, setAttemptedTabs] = useState<Set<string>>(new Set());
 
   const camelToSnake = (s: string) =>
     s.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -299,19 +300,24 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
 
   // LTV calculation used by Tab 2
   const calculateLTV = (): string => {
-    const purchaseBase = formDataTab2.purchase_price || 0;
-    const valuationBase = formDataTab2.property_valuation || 0;
-    const base =
-      formDataTab2.mortgage_type === "PURCHASE" ? purchaseBase : valuationBase;
-    if (!base || !formDataTab2.loan_amount) return "";
-    if (
-      formDataTab2.loan_amount <= purchaseBase ||
-      formDataTab2.loan_amount <= valuationBase
-    ) {
-      const ltv = (formDataTab2.loan_amount / base) * 100;
-      return Math.min(ltv, 100).toFixed(2);
-    }
-    return "";
+    const estimatedValue =
+      parseFloat(String(formDataTab2.estimated_value)) || 0;
+    const loanAmount = parseFloat(String(formDataTab2.loan_amount)) || 0;
+
+    if (!estimatedValue || !loanAmount) return "";
+
+    const ltv = (loanAmount / estimatedValue) * 100;
+    return ltv.toFixed(2);
+  };
+
+  const isLoanExceedingBase = (): boolean => {
+    const estimatedValue =
+      parseFloat(String(formDataTab2.estimated_value)) || 0;
+    const loanAmount = parseFloat(String(formDataTab2.loan_amount)) || 0;
+
+    if (!loanAmount || !estimatedValue) return false;
+
+    return loanAmount > estimatedValue;
   };
 
   // Sync calculated LTV into form state when relevant fields change
@@ -354,7 +360,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   const handleNext = async () => {
     const nextId = (parseInt(tabId) + 1).toString();
 
-    // pick current form ref based on active tab
+    // Mark this tab as attempted so inline warnings show
+    setAttemptedTabs((prev) => new Set(prev).add(tabId));
+
     const currentForm =
       tabId === "1"
         ? formRef1.current
@@ -364,18 +372,20 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
             ? formRef3.current
             : formRef4.current;
 
-    // If a form exists, use HTML5 validation (reportValidity)
     if (currentForm) {
       try {
         const ok = currentForm.reportValidity();
-        if (!ok) return; // don't navigate on invalid
+        if (!ok) return;
       } catch (err) {
-        // reportValidity may not be available in some test environments; fallback to navigate
         console.warn("reportValidity failed", err);
       }
     }
 
-    // Call validation API before navigating to the next tab
+    if (tabId === "2" && isLoanExceedingBase()) {
+      toast.error("Loan Amount cannot be more than the Estimated Value");
+      return;
+    }
+
     try {
       const mergedData = {
         ...formDataTab1,
@@ -390,11 +400,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
         mergedData,
       }).unwrap();
 
-      // validation passed
       setErrors({});
       setTabId(nextId);
     } catch (err: any) {
-      // validation failed - parse and set errors, then switch to the first tab with an error
       const parsed = parseApiErrors(err);
       setErrors(parsed);
       const target = findTabFromErrors(parsed);
@@ -402,6 +410,14 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
       const firstMessage = Object.values(parsed)[0];
       toast.error(firstMessage || "Validation failed");
     }
+  };
+
+  const showFieldWarning = (tabId: string, value: any): boolean => {
+    if (!attemptedTabs.has(tabId)) return false; // tab not submitted yet
+    if (value === null || value === undefined) return true;
+    if (typeof value === "string" && value.trim() === "") return true;
+    if (typeof value === "number" && value <= 0) return true;
+    return false;
   };
 
   const handleBack = () => setTabId((parseInt(tabId) - 1).toString());
@@ -832,7 +848,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               {formDataTab2?.mortgage_type === "PURCHASE" ? (
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="purchase_price">Purchase Price({getCurrencySign()})*</Label>
+                    <Label for="purchase_price">
+                      Purchase Price({getCurrencySign()})*
+                    </Label>
                     <Input
                       type="number"
                       name="purchase_price"
@@ -846,6 +864,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {showFieldWarning("2", formDataTab2.purchase_price) && (
+                      <FormText className="text-danger">
+                        Purchase Price is required
+                      </FormText>
+                    )}
                     {getFieldError("purchase_price") && (
                       <FormText className="text-danger">
                         {getFieldError("purchase_price")}
@@ -872,6 +895,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {showFieldWarning("2", formDataTab2.property_valuation) && (
+                      <FormText className="text-danger">
+                        Property Valuation is required
+                      </FormText>
+                    )}
                     {getFieldError("property_valuation") && (
                       <FormText className="text-danger">
                         {getFieldError("property_valuation")}
@@ -882,7 +910,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               )}
               <Col md={6}>
                 <FormGroup>
-                  <Label for="loan_amount">Loan Amount({getCurrencySign()})*</Label>
+                  <Label for="loan_amount">
+                    Loan Amount({getCurrencySign()})*
+                  </Label>
                   <Input
                     type="number"
                     name="loan_amount"
@@ -897,14 +927,17 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     }
                   />
                   <FormText className=" text-danger">
-                    {calculateLTV() === ""
-                      ? `Loan Amount can not be more than the ${
-                          formDataTab2.mortgage_type === "PURCHASE"
-                            ? "Purchase Price"
-                            : "Property Valuation"
-                        }*`
-                      : ""}
+                    {isLoanExceedingBase() && (
+                      <FormText className="text-danger">
+                        Loan Amount cannot be more than the Estimated Value
+                      </FormText>
+                    )}
                   </FormText>
+                  {showFieldWarning("2", formDataTab2.loan_amount) && (
+                    <FormText className="text-danger">
+                      Loan Amount is required
+                    </FormText>
+                  )}
                   {getFieldError("loan_amount") && (
                     <FormText className="text-danger">
                       {getFieldError("loan_amount")}
@@ -914,7 +947,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               </Col>
               <Col md={6}>
                 <FormGroup>
-                  <Label for="estimated_value">Estimated Value({getCurrencySign()})*</Label>
+                  <Label for="estimated_value">
+                    Estimated Value({getCurrencySign()})*
+                  </Label>
                   <Input
                     type="number"
                     name="estimated_value"
@@ -928,6 +963,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                       handleFormChange(2, e.target.name, e.target.value)
                     }
                   />
+                  {showFieldWarning("2", formDataTab2.estimated_value) && (
+                    <FormText className="text-danger">
+                      Estimated Value is required
+                    </FormText>
+                  )}
                   {getFieldError("estimated_value") && (
                     <FormText className="text-danger">
                       {getFieldError("estimated_value")}
@@ -945,12 +985,14 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     value={calculateLTV()}
                     readOnly
                   />
-                  {getFieldError("ltv") && (
-                    <FormText className="text-danger">
-                      {getFieldError("ltv")}
-                    </FormText>
-                  )}
                   <FormText>Calculated automatically</FormText>
+                  <div>
+                    {getFieldError("ltv") && (
+                      <FormText className="text-danger">
+                        {getFieldError("ltv")}
+                      </FormText>
+                    )}
+                  </div>
                 </FormGroup>
               </Col>
               <Col md={6}>
@@ -969,12 +1011,21 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
-                      {getFieldError("term_years") && (
-                        <FormText className="text-danger">
-                          {getFieldError("term_years")}
-                        </FormText>
-                      )}
                       <FormText>*In years</FormText>
+                      <div>
+                        {showFieldWarning("2", formDataTab2.term_years) && (
+                          <FormText className="text-danger">
+                            Term (years) is required
+                          </FormText>
+                        )}
+                      </div>
+                      <div>
+                        {getFieldError("term_years") && (
+                          <FormText className="text-danger">
+                            {getFieldError("term_years")}
+                          </FormText>
+                        )}
+                      </div>
                     </FormGroup>
                   </Col>
                   <Col md="6">
@@ -991,12 +1042,21 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
-                      {getFieldError("term_months") && (
-                        <FormText className="text-danger">
-                          {getFieldError("term_months")}
-                        </FormText>
-                      )}
                       <FormText>*In months (0-11)</FormText>
+                      <div>
+                        {showFieldWarning("2", formDataTab2.term_months) && (
+                          <FormText className="text-danger">
+                            Term (months) is required
+                          </FormText>
+                        )}
+                      </div>
+                      <div>
+                        {getFieldError("term_months") && (
+                          <FormText className="text-danger">
+                            {getFieldError("term_months")}
+                          </FormText>
+                        )}
+                      </div>
                     </FormGroup>
                   </Col>
                 </Row>
