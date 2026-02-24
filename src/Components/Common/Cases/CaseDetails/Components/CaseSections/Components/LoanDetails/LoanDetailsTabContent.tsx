@@ -300,33 +300,24 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
 
   // LTV calculation used by Tab 2
   const calculateLTV = (): string => {
-    const purchaseBase = parseFloat(String(formDataTab2.purchase_price)) || 0;
-    const valuationBase =
-      parseFloat(String(formDataTab2.property_valuation)) || 0;
+    const estimatedValue =
+      parseFloat(String(formDataTab2.estimated_value)) || 0;
     const loanAmount = parseFloat(String(formDataTab2.loan_amount)) || 0;
-    const base =
-      formDataTab2.mortgage_type === "PURCHASE" ? purchaseBase : valuationBase;
 
-    if (!base || !loanAmount) return "";
+    if (!estimatedValue || !loanAmount) return "";
 
-    const ltv = (loanAmount / base) * 100;
-    return ltv.toFixed(2); // Always calculate, no cap/condition
+    const ltv = (loanAmount / estimatedValue) * 100;
+    return ltv.toFixed(2);
   };
 
   const isLoanExceedingBase = (): boolean => {
-    const purchaseBase = parseFloat(String(formDataTab2.purchase_price)) || 0;
-    const valuationBase =
-      parseFloat(String(formDataTab2.property_valuation)) || 0;
+    const estimatedValue =
+      parseFloat(String(formDataTab2.estimated_value)) || 0;
     const loanAmount = parseFloat(String(formDataTab2.loan_amount)) || 0;
 
-    if (!loanAmount) return false; // don't show error if loan not entered yet
+    if (!loanAmount || !estimatedValue) return false;
 
-    const base =
-      formDataTab2.mortgage_type === "PURCHASE" ? purchaseBase : valuationBase;
-
-    if (!base) return false; // don't show error if base not entered yet
-
-    return loanAmount > base;
+    return loanAmount > estimatedValue;
   };
 
   // Sync calculated LTV into form state when relevant fields change
@@ -391,13 +382,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     }
 
     if (tabId === "2" && isLoanExceedingBase()) {
-      toast.error(
-        `Loan Amount cannot be more than the ${
-          formDataTab2.mortgage_type === "PURCHASE"
-            ? "Purchase Price"
-            : "Property Valuation"
-        }`,
-      );
+      toast.error("Loan Amount cannot be more than the Estimated Value");
       return;
     }
 
@@ -879,6 +864,11 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         handleFormChange(2, e.target.name, e.target.value)
                       }
                     />
+                    {showFieldWarning("2", formDataTab2.purchase_price) && (
+                      <FormText className="text-danger">
+                        Purchase Price is required
+                      </FormText>
+                    )}
                     {getFieldError("purchase_price") && (
                       <FormText className="text-danger">
                         {getFieldError("purchase_price")}
@@ -939,11 +929,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   <FormText className=" text-danger">
                     {isLoanExceedingBase() && (
                       <FormText className="text-danger">
-                        {`Loan Amount cannot be more than the ${
-                          formDataTab2.mortgage_type === "PURCHASE"
-                            ? "Purchase Price"
-                            : "Property Valuation"
-                        }`}
+                        Loan Amount cannot be more than the Estimated Value
                       </FormText>
                     )}
                   </FormText>
