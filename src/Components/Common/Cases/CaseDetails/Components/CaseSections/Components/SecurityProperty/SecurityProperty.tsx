@@ -43,7 +43,6 @@ const SecurityProperty: React.FC = () => {
   return (
     <div>
       <PropertyValuationCard />
-      {/* Question about whether property is found has been removed; always display property sections */}
       <section>
         <Card className="shadow-sm">
           <CardHeader className="bg-white border-bottom">
