@@ -56,6 +56,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const defaultFilters = {
     created_by__id: "",
     assigned_to__id: "",
+    assigned_to_admin__id: "",
     case_category: "",
     case_stage: "",
     // allow parent components to set initial is_removed filter
@@ -83,6 +84,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
 
   const { data: adviserData, isLoading: isAdviserLoading } =
     useGetUserListQuery({ role: getAdviserRole() });
+
+  const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({ role: "ORGANISATION_ADMIN" });
 
   const { data: usersData } = useGetUsersQuery(undefined);
 
@@ -223,7 +226,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   </Input>
                 </Col>
                 <Col>
-                  <Label>Select Assigned To</Label>
+                  <Label>Select Adviser</Label>
                   <Input
                     type="select"
                     id="employeeFilter"
@@ -241,6 +244,27 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     ))}
                   </Input>
                 </Col>
+                {getAdviserRole() === "ORGANISATION_ADVISER" && (
+                  <Col>
+                    <Label>Select Admin</Label>
+                    <Input
+                      type="select"
+                      id="employeeFilter"
+                      className="py-1"
+                      value={filters.assigned_to_admin__id}
+                      onChange={(e) =>
+                        handleFilterChange("assigned_to_admin__id", e.target.value)
+                      }
+                    >
+                      <option value="">All Users</option>
+                      {adminData?.map((admin: any) => (
+                        <option key={admin.alias} value={admin.id}>
+                          {admin.name}
+                        </option>
+                      ))}
+                    </Input>
+                  </Col>
+                )}
                 <Col>
                   <Label>Select Category</Label>
                   <Input
