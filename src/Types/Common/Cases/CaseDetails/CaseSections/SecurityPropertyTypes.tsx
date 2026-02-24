@@ -5,7 +5,6 @@ export interface SecurityPropertyFormStateProps {
     case?: Case; // Case
     property_purchase_price: number; // 0.0
     property_estimated_valuation: number; // 0.0
-    have_you_found_a_property_yet: boolean; // false
     notes: string; // ""
 
     // Address Details
@@ -117,7 +116,6 @@ export interface PropertyData {
   case: Case;
   property_purchase_price: number;
   property_estimated_valuation: number;
-  have_you_found_a_property_yet: boolean;
   notes: string;
 
   postcode: string;
@@ -196,11 +194,6 @@ export interface PropertyData {
   updated_at: string;
   created_by: User;
   updated_by: User | null;
-}
-
-export interface FoundPropertyProps {
-  onPropertyFound: (value: boolean) => void;
-  property: any;
 }
 
 export interface AdditionalInfoProps {
