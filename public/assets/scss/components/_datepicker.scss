@@ -338,6 +338,65 @@
     }
   }
 }
+
+
+.dark-only {
+  .flatpickr-calendar {
+    background-color: var(--card-color);
+    border-color: var(--border-color);
+    color: var(--body-font-color);
+
+    .flatpickr-months {
+      background-color: var(--card-color);
+
+      .flatpickr-month,
+      .flatpickr-prev-month,
+      .flatpickr-next-month {
+        background-color: var(--card-color);
+        color: var(--body-font-color);
+        fill: var(--body-font-color);
+      }
+    }
+
+    .flatpickr-current-month {
+      color: var(--body-font-color);
+
+      input,
+      select.flatpickr-monthDropdown-months {
+        background-color: var(--card-color);
+        color: var(--body-font-color);
+      }
+    }
+
+    .flatpickr-weekdays,
+    .flatpickr-weekday {
+      background-color: var(--card-color);
+      color: var(--theme-default);
+    }
+
+    .flatpickr-innerContainer {
+      background-color: var(--card-color);
+    }
+
+    .flatpickr-day {
+      color: var(--body-font-color);
+
+      &.today { border-color: var(--theme-default); }
+      &.selected { background: var(--theme-default); border-color: var(--theme-default); color: var(--white); }
+      &.prevMonthDay,
+      &.nextMonthDay { opacity: 0.4; }
+      &:hover { background: var(--theme-default); border-color: var(--theme-default); color: var(--white); }
+    }
+
+    .flatpickr-time {
+      background-color: var(--card-color);
+      border-top-color: var(--border-color);
+
+      input,
+      .flatpickr-am-pm { color: var(--body-font-color); }
+    }
+  }
+}
 /**=====================
      2.13 Datapicker CSS End 
   ==========================**/
