@@ -24,6 +24,14 @@ export const PortfolioApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Portfolio"],
     }),
+    updatePropertyDetails: builder.mutation({
+      query: ({ case_alias, property_alias, propertyDetails }) => ({
+        url: `/cases/${case_alias}/properties/${property_alias}/`,
+        method: "PATCH",
+        body: propertyDetails,
+      }),
+      invalidatesTags: ["Portfolio"], 
+    }),
     deletePropertyDetails: builder.mutation({
       query: ({ case_alias, property_alias }) => ({
         url: `/cases/${case_alias}/properties/${property_alias}/`,
@@ -46,6 +54,7 @@ export const {
   useGetPortfolioDetailsQuery,
   useGetPortfolioApplicantsQuery,
   useAddPropertyDetailsMutation,
+  useUpdatePropertyDetailsMutation,
   useDeletePropertyDetailsMutation,
   useExportPropertiesCSVMutation,
 } = PortfolioApi;

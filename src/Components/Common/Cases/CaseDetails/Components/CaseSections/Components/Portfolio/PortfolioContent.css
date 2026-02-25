@@ -7,12 +7,17 @@
   max-height: 200px;
   overflow-y: auto;
 }
-.dropdown_close span:hover {
+.dropdown_close span {
   cursor: pointer;
   color: red;
 }
 
+.dropdown_item {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
 .dropdown_item:hover {
-  background-color: #308e8899;
+  background-color: var(--bs-tertiary-bg);
   cursor: pointer;
 }
