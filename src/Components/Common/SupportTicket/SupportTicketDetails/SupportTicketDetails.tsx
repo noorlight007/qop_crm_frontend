@@ -464,7 +464,7 @@ const SupportTicketDetails: React.FC = () => {
 
           <Row>
             {/* Message Card */}
-            <Col md={6} className="mb-3">
+            <Col md={8} className="mb-3">
               <Card className="shadow-sm mb-4">
                 <CardHeader className="bg-white">
                   <h5 className="mb-0">Ticket Description</h5>
@@ -476,7 +476,7 @@ const SupportTicketDetails: React.FC = () => {
                 </CardBody>
               </Card>
             </Col>
-            <Col md={6} className="mb-3">
+            <Col md={4} className="mb-3">
               {/* Attachments Card */}
               {ticketDetails.files && ticketDetails.files.length > 0 ? (
                 <Card className="shadow-sm">
@@ -496,7 +496,6 @@ const SupportTicketDetails: React.FC = () => {
                           <Col
                             key={file.alias || file.file || idx}
                             sm={12}
-                            md={6}
                             className="mb-3"
                           >
                             <Card className="border h-100">
