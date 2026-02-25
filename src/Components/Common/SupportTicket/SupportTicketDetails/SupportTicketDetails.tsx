@@ -17,7 +17,7 @@ import {
   FaFileAlt,
   FaSpinner,
 } from "react-icons/fa";
-import { TbCheck } from "react-icons/tb";
+import { TbCheck, TbCopy, TbCopyCheckFilled } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -83,6 +83,39 @@ const SupportTicketDetails: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  // copy ticket id state
+  const [copiedTicketId, setCopiedTicketId] = useState(false);
+
+  const handleCopyTicketId = () => {
+    if (!ticketDetails?.ticket_id) return;
+    const text = String(ticketDetails.ticket_id);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => {
+          setCopiedTicketId(true);
+          setTimeout(() => setCopiedTicketId(false), 2000);
+        })
+        .catch((err) => {
+          console.error("Failed to copy ticket id:", err);
+        });
+    } else {
+      // fallback for older browsers
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        setCopiedTicketId(true);
+        setTimeout(() => setCopiedTicketId(false), 2000);
+      } catch (err) {
+        console.error("Fallback copy failed:", err);
+      }
+      document.body.removeChild(textarea);
+    }
+  };
 
   const toggleDropdown = (ticketId: string) => {
     setDropdownOpen((prev) => ({
@@ -411,8 +444,17 @@ const SupportTicketDetails: React.FC = () => {
                     <div className="small text-end text-muted fw-bold">
                       Ticket ID
                     </div>
-                    <div className="text-end small">
-                      {ticketDetails?.ticket_id}
+                    <div className="text-end d-flex align-items-center justify-content-end gap-1">
+                      <span className="small">{ticketDetails?.ticket_id}</span>
+                      <span
+                        role="button"
+                        className="text-secondary"
+                        style={{ cursor: "pointer" }}
+                        onClick={handleCopyTicketId}
+                        title={copiedTicketId ? "Copied" : "Copy Ticket ID"}
+                      >
+                        {copiedTicketId ? <TbCopyCheckFilled /> : <TbCopy />}
+                      </span>
                     </div>
                   </div>
                 </Col>

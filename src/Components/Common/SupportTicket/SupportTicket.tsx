@@ -657,7 +657,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                                 </DropdownToggle>
                                 <DropdownMenu
                                   className="shadow-sm py-2"
-                                  style={{ minWidth: "160px" }}
+                                  container="body"
+                                  style={{ minWidth: "160px", zIndex: 1050 }}
                                 >
                                   {statusOptions.map((option) => {
                                     const isActive =

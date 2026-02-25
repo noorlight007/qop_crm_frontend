@@ -589,7 +589,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     <div className="position-absolute w-100 bg-white border mt-1 rounded-2 dropdown_style">
                       {/* Close Button - Moved to top */}
                       <div
-                        className="text-end p-1 bg-primary sticky-top border-bottom dropdown_close"
+                        className="text-end p-1 bg-light sticky-top border-bottom dropdown_close"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         <span className="fw-bold fs-5">

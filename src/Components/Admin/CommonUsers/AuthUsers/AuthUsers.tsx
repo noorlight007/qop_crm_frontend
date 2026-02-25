@@ -481,7 +481,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                               className="shadow-sm py-2"
                               style={{
                                 minWidth: "140px",
-                                backgroundColor: "white",
                                 zIndex: 1050,
                               }}
                               container="body"
@@ -508,7 +507,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                                     style={{
                                       backgroundColor: isActive
                                         ? "rgba(0,0,0,0.05)"
-                                        : "white",
+                                        : "transparent",
                                     }}
                                   >
                                     <span

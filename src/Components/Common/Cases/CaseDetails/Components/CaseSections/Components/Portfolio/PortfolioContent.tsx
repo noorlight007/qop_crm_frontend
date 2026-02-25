@@ -7,6 +7,7 @@ import {
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import getCurrencySign from "@/utils/currency";
 import { formatDate } from "@/utils/dateAndTimeFormatter";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -25,12 +26,13 @@ import {
 } from "reactstrap";
 import AddPropertyModal from "./Modals/AddPropertyModal";
 import DeletePropertyModal from "./Modals/DeletePropertyModal";
+import UpdatePropertyModal from "./Modals/UpdatePropertyModal";
 import PortfolioSummary from "./PortfolioSummary";
-import getCurrencySign from "@/utils/currency";
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Delete modal state (moved up to avoid conditional hook rendering)
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any | null>(null);
   const prams = useParams();
@@ -72,8 +74,13 @@ const PortfolioContent: React.FC = () => {
     );
   }
   const toggleModal = () => setIsModalOpen(!isModalOpen);
-
+  const toggleEditModal = () => setEditModalOpen((s) => !s);
   const toggleDeleteModal = () => setDeleteModalOpen((s) => !s);
+
+  const handleEditClick = (property: any) => {
+    setSelectedProperty(property);
+    setEditModalOpen(true);
+  };
 
   const handleDeleteClick = (property: any) => {
     setSelectedProperty(property);
@@ -202,16 +209,26 @@ const PortfolioContent: React.FC = () => {
                             {data?.map((item: any) => (
                               <tr key={item?.alias}>
                                 <td>
-                                  <div className="text-center d-flex justify-content-center align-items-center">
+                                  <div className="text-center d-flex justify-content-center align-items-center gap-2">
                                     <Button
                                       color="danger"
-                                      size="sm"
+                                      size="xs"
                                       outline
                                       onClick={() => handleDeleteClick(item)}
                                       className="text-truncate d-flex gap-1"
                                     >
                                       <i className="fa-solid fa-trash"></i>
                                       Delete
+                                    </Button>
+                                    <Button
+                                      color="success"
+                                      size="xs"
+                                      outline
+                                      onClick={() => handleEditClick(item)}
+                                      className="text-truncate d-flex gap-1"
+                                    >
+                                      <i className="fa-regular fa-pen-to-square"></i>
+                                      Edit
                                     </Button>
                                   </div>
                                 </td>
@@ -382,6 +399,13 @@ const PortfolioContent: React.FC = () => {
       </Container>
 
       <AddPropertyModal isOpen={isModalOpen} toggle={toggleModal} />
+
+      <UpdatePropertyModal
+        isOpen={editModalOpen}
+        toggle={toggleEditModal}
+        property={selectedProperty}
+      />
+
       <DeletePropertyModal
         isOpen={deleteModalOpen}
         toggle={toggleDeleteModal}

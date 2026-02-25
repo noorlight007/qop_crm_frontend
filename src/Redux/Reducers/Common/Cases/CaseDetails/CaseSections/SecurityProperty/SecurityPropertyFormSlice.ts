@@ -5,7 +5,6 @@ const initialState: SecurityPropertyFormStateProps = {
   Properties: {
     property_purchase_price: 0,
     property_estimated_valuation: 0,
-    have_you_found_a_property_yet: false,
     notes: "",
 
     postcode: "",

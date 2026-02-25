@@ -391,7 +391,7 @@ const OrganisationDetails: React.FC = () => {
                         size={25}
                       />
                       <div className="text-truncate">
-                        {getOrganisationDetails?.organization?.license_no ??
+                        {getOrganisationDetails?.organization?.license_no ||
                         "License number not provided"}
                       </div>
                       
