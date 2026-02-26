@@ -9,6 +9,26 @@ const SessionMonitor = ({ children }: { children: ReactNode }) => {
   const { data: session, status } = useSession();
 
   useEffect(() => {
+    if (status !== "authenticated") return;
+    if (typeof window === "undefined") return;
+
+    const accessToken = session?.user?.accessToken;
+    const refreshToken = session?.user?.refreshToken;
+
+    if (!accessToken) return;
+
+    try {
+      // Keep existing behavior where BaseApi prefers localStorage tokens.
+      localStorage.setItem("token", accessToken);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [status, session]);
+
+  useEffect(() => {
     // Listen for logout signals from other tabs via localStorage
     const handleStorage = (e: StorageEvent) => {
       if (e.key === "qop_logout") {
