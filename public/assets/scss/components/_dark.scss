@@ -15,6 +15,12 @@
     opacity: 1 !important;
   }
 
+  /* undo Bootstrap muted text lowering opacity */
+  .text-muted {
+    opacity: 0.5 !important;
+    color: var(--body-font-color) !important;
+  }
+
   .page-sidebar {
     .logo-wrapper {
       background-color: var(--body-color);
