@@ -86,8 +86,10 @@ const refreshAccessToken = async (): Promise<string | null> => {
       }
 
       if (!refreshToken) {
-        console.error("No refresh token available");
-        await logOut();
+        // This can happen transiently right after login on a fresh device
+        // before the session is fully available in the client.
+        // Do not hard-logout in this case; just surface the 401 to the caller.
+        console.warn("No refresh token available; skipping refresh");
         return null;
       }
 
