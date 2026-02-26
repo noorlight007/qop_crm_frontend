@@ -224,7 +224,8 @@ const OrgCases: React.FC = () => {
                       <th>Review Date</th>
                       <th>Created At</th>
                       <th>Created By</th>
-                      <th>Assigned To</th>
+                      <th>Assigned Adviser</th>
+                      <th>Assigned Admin</th>
                     </tr>
                   </thead>
                   <tbody className="text-center">
@@ -453,6 +454,18 @@ const OrgCases: React.FC = () => {
                                   style={{ fontSize: "9px" }}
                                 >
                                   (
+                                  {caseItem.created_by?.email
+                                    ? formatChoiceFieldValue(
+                                        caseItem.created_by?.email,
+                                      )
+                                    : ""}
+                                  )
+                                </p>
+                                <p
+                                  className="m-0 opacity-75"
+                                  style={{ fontSize: "9px" }}
+                                >
+                                  (
                                   {caseItem.created_by?.user_type
                                     ? formatChoiceFieldValue(
                                         caseItem.created_by?.user_type,
@@ -483,6 +496,16 @@ const OrgCases: React.FC = () => {
                                   style={{ fontSize: "9px" }}
                                 >
                                   (
+                                  {caseItem.assigned_user.email
+                                    ? caseItem.assigned_user.email
+                                    : "-"}
+                                  )
+                                </p>
+                                <p
+                                  className="m-0 opacity-75"
+                                  style={{ fontSize: "9px" }}
+                                >
+                                  (
                                   {caseItem.assigned_user.user_type
                                     ? formatChoiceFieldValue(
                                         caseItem.assigned_user.user_type,
@@ -492,7 +515,49 @@ const OrgCases: React.FC = () => {
                                 </p>
                               </>
                             ) : (
-                              <span className="text-muted">Not Assigned</span>
+                              <small className="text-muted">Not Assigned</small>
+                            )}
+                          </td>
+                          <td>
+                            {caseItem.assigned_admin ? (
+                              <>
+                                <p className="m-0">
+                                  {caseItem.assigned_admin.title
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_admin.title,
+                                      ) + " "
+                                    : ""}
+                                  {caseItem.assigned_admin.first_name}{" "}
+                                  {caseItem.assigned_admin.middle_name
+                                    ? caseItem.assigned_admin.middle_name + " "
+                                    : ""}
+                                  {caseItem.assigned_admin.last_name}
+                                </p>
+                                <p
+                                  className="m-0 opacity-75"
+                                  style={{ fontSize: "9px" }}
+                                >
+                                  (
+                                  {caseItem.assigned_admin.email
+                                    ? caseItem.assigned_admin.email
+                                    : "-"}
+                                  )
+                                </p>
+                                <p
+                                  className="m-0 opacity-75"
+                                  style={{ fontSize: "9px" }}
+                                >
+                                  (
+                                  {caseItem.assigned_admin.user_type
+                                    ? formatChoiceFieldValue(
+                                        caseItem.assigned_admin.user_type,
+                                      )
+                                    : "-"}
+                                  )
+                                </p>
+                              </>
+                            ) : (
+                              <small className="text-muted">Not Assigned</small>
                             )}
                           </td>
                         </tr>

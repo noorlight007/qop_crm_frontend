@@ -7,6 +7,14 @@
   }
 }
 .dark-only {
+  /* enforce full opacity on any text within dark mode */
+  *,
+  *::before,
+  *::after {
+    color: var(--body-font-color) !important;
+    opacity: 1 !important;
+  }
+
   .page-sidebar {
     .logo-wrapper {
       background-color: var(--body-color);
