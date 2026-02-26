@@ -11,13 +11,14 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   FaCheck,
+  FaCheckCircle,
   FaChevronDown,
   FaDownload,
   FaExclamationCircle,
   FaFileAlt,
   FaSpinner,
 } from "react-icons/fa";
-import { TbCheck, TbCopy, TbCopyCheckFilled } from "react-icons/tb";
+import { TbCheck, TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -448,12 +449,15 @@ const SupportTicketDetails: React.FC = () => {
                       <span className="small">{ticketDetails?.ticket_id}</span>
                       <span
                         role="button"
-                        className="text-secondary"
                         style={{ cursor: "pointer" }}
                         onClick={handleCopyTicketId}
                         title={copiedTicketId ? "Copied" : "Copy Ticket ID"}
                       >
-                        {copiedTicketId ? <TbCopyCheckFilled /> : <TbCopy />}
+                        {copiedTicketId ? (
+                          <FaCheckCircle className="text-success" />
+                        ) : (
+                          <TbCopy className="text-secondary" />
+                        )}
                       </span>
                     </div>
                   </div>
