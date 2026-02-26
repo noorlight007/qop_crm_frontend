@@ -45,7 +45,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   isLoading,
   jointApplicantInfo,
 }) => {
-  console.log("case info: ", caseInfo);
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
