@@ -11,7 +11,32 @@
   *,
   *::before,
   *::after {
-    color: var(--body-font-color);
+    color: var(--body-font-color) !important;
+  }
+
+  /* allow semantic Bootstrap text utilities to keep their own colors */
+  :is(.text-primary, .link-primary) {
+    color: var(--theme-default) !important;
+  }
+
+  :is(.text-secondary, .link-secondary) {
+    color: var(--theme-secondary) !important;
+  }
+
+  :is(.text-success, .link-success) {
+    color: var(--success-color) !important;
+  }
+
+  :is(.text-danger, .link-danger) {
+    color: var(--danger-color) !important;
+  }
+
+  :is(.text-warning, .link-warning) {
+    color: var(--warning-color) !important;
+  }
+
+  :is(.text-info, .link-info) {
+    color: var(--info-color) !important;
   }
 
   /* undo Bootstrap muted text lowering opacity */
@@ -2481,5 +2506,43 @@
         box-shadow: none;
       }
     }
+  }
+
+  /* SVG icons (e.g. react-feather) with semantic text utilities:
+     reset stroke to currentColor so it tracks the color property */
+  svg.text-primary,
+  svg.text-primary * {
+    stroke: currentColor !important;
+    color: var(--theme-default) !important;
+  }
+
+  svg.text-secondary,
+  svg.text-secondary * {
+    stroke: currentColor !important;
+    color: var(--theme-secondary) !important;
+  }
+
+  svg.text-success,
+  svg.text-success * {
+    stroke: currentColor !important;
+    color: var(--success-color) !important;
+  }
+
+  svg.text-danger,
+  svg.text-danger * {
+    stroke: currentColor !important;
+    color: var(--danger-color) !important;
+  }
+
+  svg.text-warning,
+  svg.text-warning * {
+    stroke: currentColor !important;
+    color: var(--warning-color) !important;
+  }
+
+  svg.text-info,
+  svg.text-info * {
+    stroke: currentColor !important;
+    color: var(--info-color) !important;
   }
 }
