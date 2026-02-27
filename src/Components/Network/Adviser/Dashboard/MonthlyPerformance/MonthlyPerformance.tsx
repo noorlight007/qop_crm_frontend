@@ -44,10 +44,10 @@ const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
   ];
 
   const performanceData = monthsOrder.map((m) =>
-    Number(adviserSummaryData?.performances?.[m]?.performance ?? 0)
+    Number(adviserSummaryData?.performances?.[m]?.performance ?? 0),
   );
   const targetData = monthsOrder.map((m) =>
-    Number(adviserSummaryData?.performances?.[m]?.target ?? 0)
+    Number(adviserSummaryData?.performances?.[m]?.target ?? 0),
   );
 
   const options = {
@@ -195,7 +195,7 @@ const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
   if (isLoading) {
     // Render skeleton loader when data is being fetched
     return (
-      <Card className="border-0 p-4 shadow-sm bg-white">
+      <Card className="border-0 p-4 shadow-sm">
         <CardBody className="p-0">
           <div
             className="skeleton-loading mb-4"
@@ -216,7 +216,7 @@ const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
 
   if (!adviserSummaryData) {
     return (
-      <Card className="bg-white p-3 shadow-sm " style={{ height: "390px" }}>
+      <Card className="p-3 shadow-sm " style={{ height: "390px" }}>
         <h4 className="mb-2 text-md font-semibold">
           Monthly Performance vs Target
         </h4>
@@ -228,7 +228,7 @@ const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
   }
 
   return (
-    <Card className="border-0 p-4 shadow-sm bg-white">
+    <Card className="border-0 p-4 shadow-sm">
       <h4 className="text-lg font-semibold mb-4 text-slate-800">
         Monthly Performance vs Target
       </h4>

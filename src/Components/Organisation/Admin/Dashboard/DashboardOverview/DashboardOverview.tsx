@@ -10,7 +10,7 @@ const DashboardOverview: React.FC<AdminDashboardProps> = ({
     <Row>
       {/* New Clients This Month  */}
       <Col lg>
-        <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
+        <Card className="border-0 p-2 rounded-2 shadow-sm">
           <CardBody className="p-3">
             <div className="d-flex justify-content-between">
               <div>
@@ -43,7 +43,7 @@ const DashboardOverview: React.FC<AdminDashboardProps> = ({
 
       {/* Case Completed */}
       <Col lg>
-        <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
+        <Card className="border-0 p-2 rounded-2 shadow-sm">
           <CardBody className="p-3">
             <div className="d-flex justify-content-between">
               <div>
@@ -76,7 +76,7 @@ const DashboardOverview: React.FC<AdminDashboardProps> = ({
 
       {/* Upcoming Tasks */}
       <Col lg>
-        <Card className="border-0 p-2 rounded-2 shadow-sm bg-white">
+        <Card className="border-0 p-2 rounded-2 shadow-sm">
           <CardBody className="p-3">
             <div className="d-flex justify-content-between">
               <div>

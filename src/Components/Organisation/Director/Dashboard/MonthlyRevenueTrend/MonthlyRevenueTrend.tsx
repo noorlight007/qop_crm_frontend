@@ -29,7 +29,7 @@ const MonthlyRevenueTrend: React.FC<OrganisationDirectorDashboardProps> = ({
     (m) =>
       organisationDirectorDashboardData?.monthly_revenue_trend?.[m]?.[
         "monthly-revenue"
-      ] ?? 0
+      ] ?? 0,
   );
 
   const hasData = values.some((v) => v > 0);
@@ -72,13 +72,17 @@ const MonthlyRevenueTrend: React.FC<OrganisationDirectorDashboardProps> = ({
     },
     yaxis: {
       labels: {
-        formatter: (value: number) => `${getCurrencySign()}${value.toLocaleString()}`,
+        formatter: (value: number) =>
+          `${getCurrencySign()}${value.toLocaleString()}`,
         style: { colors: "#666", fontSize: "12px" },
       },
     },
     grid: { borderColor: "#f1f1f1", strokeDashArray: 4 },
     tooltip: {
-      y: { formatter: (value: number) => `${getCurrencySign()}${value.toLocaleString()}` },
+      y: {
+        formatter: (value: number) =>
+          `${getCurrencySign()}${value.toLocaleString()}`,
+      },
     },
     colors: ["#7c3aed"],
   };
@@ -91,7 +95,7 @@ const MonthlyRevenueTrend: React.FC<OrganisationDirectorDashboardProps> = ({
   ];
 
   return (
-    <Card className="border-0 p-3 shadow-sm bg-white">
+    <Card className="border-0 p-3 shadow-sm">
       <h4 className="text-xl font-semibold mb-4">Monthly Revenue Trend</h4>
       {isLoading ? (
         <div className="skeleton-loading" style={{ height: 300 }} />

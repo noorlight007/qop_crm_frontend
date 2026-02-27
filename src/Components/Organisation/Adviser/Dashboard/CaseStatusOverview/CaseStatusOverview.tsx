@@ -142,7 +142,7 @@ const CaseStatusOverview: React.FC<CommonAdviserSummaryProps> = ({
   }
 
   return (
-    <Card className="bg-white p-3 shadow-sm">
+    <Card className="p-3 shadow-sm">
       <h4 className="mb-2 text-md font-semibold">Case Status Overview</h4>
       <div className="google-chart">
         <Chart

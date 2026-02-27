@@ -105,7 +105,7 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
 
   if (isLoading) {
     return (
-      <Card className="border-0 p-2 shadow-sm bg-white">
+      <Card className="border-0 p-2 shadow-sm">
         <CardBody className="mb-1">
           <div
             className="skeleton-loading mb-4"
@@ -122,7 +122,7 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
 
   if (!advisers || advisers.length === 0) {
     return (
-      <Card className="bg-white p-3 shadow-sm" style={{ height: "390px" }}>
+      <Card className="p-3 shadow-sm" style={{ height: "390px" }}>
         <h4 className="text-xl font-semibold mb-4">Case Progress by Adviser</h4>
         <div className="text-muted d-flex justify-content-center align-items-center h-75">
           No adviser progress data available
@@ -132,7 +132,7 @@ const CaseProgress: React.FC<AdminDashboardProps> = ({
   }
 
   return (
-    <Card className="border-0 p-3 shadow-sm bg-white">
+    <Card className="border-0 p-3 shadow-sm">
       <h4 className="text-xl font-semibold mb-4">Case Progress by Adviser</h4>
       <ReactApexChart
         options={options as any}

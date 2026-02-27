@@ -129,11 +129,11 @@ const CaseCompletionOverTime: React.FC<OrganisationDirectorDashboardProps> = ({
   const completed = MonthKeys.map(
     (k) =>
       organisationDirectorDashboardData?.monthly_cases?.[k]?.completed_cases ??
-      0
+      0,
   );
   const pending = MonthKeys.map(
     (k) =>
-      organisationDirectorDashboardData?.monthly_cases?.[k]?.pending_cases ?? 0
+      organisationDirectorDashboardData?.monthly_cases?.[k]?.pending_cases ?? 0,
   );
 
   const hasData = [...completed, ...pending].some((v) => v > 0);
@@ -150,7 +150,7 @@ const CaseCompletionOverTime: React.FC<OrganisationDirectorDashboardProps> = ({
   ];
 
   return (
-    <Card className="border-0 p-3 shadow-sm bg-white">
+    <Card className="border-0 p-3 shadow-sm">
       <h4 className="text-xl font-semibold mb-4">Case Completion Over Time</h4>
       <div className="apex-chart w-100">
         {isLoading ? (
