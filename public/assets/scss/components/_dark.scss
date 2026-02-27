@@ -11,7 +11,7 @@
   *,
   *::before,
   *::after {
-    color: var(--body-font-color) !important;
+    color: var(--body-font-color);
   }
 
   /* undo Bootstrap muted text lowering opacity */
