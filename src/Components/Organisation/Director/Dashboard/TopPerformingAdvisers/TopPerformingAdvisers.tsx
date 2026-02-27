@@ -9,7 +9,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
   organisationDirectorDashboardData,
 }) => {
   const formatCurrency = (amount: number): string => {
-    if (!isFinite(amount)) return  `${getCurrencySign()}0`;
+    if (!isFinite(amount)) return `${getCurrencySign()}0`;
     const sign = amount < 0 ? "-" : "";
     const abs = Math.abs(amount);
 
@@ -30,7 +30,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
   };
 
   return (
-    <Card className="border-0 rounded-lg bg-white shadow-sm mb-0">
+    <Card className="border-0 rounded-lg shadow-sm mb-0">
       <CardBody className="p-3">
         <h4>Top Performing Advisers</h4>
         {isLoading ? (

@@ -38,7 +38,7 @@ const MonthlyClients: React.FC<OrganisationDirectorDashboardProps> = ({
   organisationDirectorDashboardData,
 }) => {
   const values = Months.map(
-    (m) => organisationDirectorDashboardData?.monthly_clients?.[m]?.client ?? 0
+    (m) => organisationDirectorDashboardData?.monthly_clients?.[m]?.client ?? 0,
   );
 
   const series = [
@@ -90,7 +90,7 @@ const MonthlyClients: React.FC<OrganisationDirectorDashboardProps> = ({
   const hasData = values.some((v) => v > 0);
 
   return (
-    <Card className="bg-white shadow-sm mb-0">
+    <Card className="shadow-sm mb-0">
       <CardBody className="p-4">
         <h4 className="mb-4 text-lg font-semibold">Monthly Clients</h4>
         {isLoading ? (

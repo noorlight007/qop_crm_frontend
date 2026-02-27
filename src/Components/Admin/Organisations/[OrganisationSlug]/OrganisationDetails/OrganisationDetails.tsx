@@ -197,34 +197,43 @@ const OrganisationDetails: React.FC = () => {
                     <Col md="auto">
                       {/* Organisation Logo */}
                       <div
-                        className="position-relative mb-3"
-                        style={{ width: 150, height: 100 }}
+                        className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center"
+                        style={{
+                          width: "150px",
+                          height: "100px",
+                          border: "5px solid white",
+                          overflow: "hidden",
+                        }}
                       >
-                        <Image
-                          width={150}
-                          height={100}
+                        <img
                           src={
                             getOrganisationDetails?.organization?.logo ||
                             "/assets/images/network/logo.jpg"
                           }
                           alt="Logo"
-                          className="rounded-3 object-fit-cover bg-white p-1"
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
                         />
                         {/* Camera overlay for logo upload */}
                         <button
                           title="Change organization logo"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0"
                           style={{
-                            width: 32,
-                            height: 32,
-                            right: 0,
-                            bottom: 0,
+                            right: "-5px",
+                            bottom: "-5px",
+                            width: "35px",
+                            height: "35px",
+                            background: "rgba(0,0,0,0.65)",
+                            color: "#fff",
                             cursor: "pointer",
                           }}
                           onClick={handleProfileImageUpload}
                           disabled={isUpdating}
                         >
-                          <FaCamera size={14} className="text-primary" />
+                          <FaCamera size={14} />
                         </button>
                         {/* Hidden file input */}
                         <input
@@ -392,9 +401,8 @@ const OrganisationDetails: React.FC = () => {
                       />
                       <div className="text-truncate">
                         {getOrganisationDetails?.organization?.license_no ||
-                        "License number not provided"}
+                          "License number not provided"}
                       </div>
-                      
                     </Card>
                   </Col>
                 </Row>
@@ -488,7 +496,10 @@ const OrganisationDetails: React.FC = () => {
                 <div className="d-flex justify-content-center organisation-avatar-container">
                   <div className="position-relative">
                     {getOrganisationDetails?.user?.profile_image ? (
-                      <div className="position-relative">
+                      <div
+                        className="position-relative rounded-circle"
+                        style={{ width: 90, height: 90, overflow: "hidden" }}
+                      >
                         <Image
                           src={getOrganisationDetails.user.profile_image}
                           alt={getOrganisationDetails?.user?.name ?? "Director"}
@@ -498,13 +509,15 @@ const OrganisationDetails: React.FC = () => {
                         />
                         <button
                           title="Change profile image"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0"
                           style={{
                             width: 30,
                             height: 30,
-                            right: 3,
-                            bottom: 3,
-                            zIndex: 10,
+                            right: 0,
+                            bottom: 0,
+                            background: "rgba(0, 0, 0, 0.65)",
+                            borderRadius: "50%",
+                            transform: "translate(-15%, -15%)",
                             cursor: "pointer",
                           }}
                           onClick={() => {
@@ -512,34 +525,37 @@ const OrganisationDetails: React.FC = () => {
                           }}
                           disabled={isUpdating}
                         >
-                          <FaCamera size={12} className="text-primary" />
+                          <FaCamera size={12} className="text-white" />
                         </button>
                       </div>
                     ) : (
-                      <div className="position-relative">
-                        <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
-                          {getOrganisationDetails?.user?.name
-                            ?.split(" ")
-                            .map((n: any) => n[0])
-                            .join("")
-                            .toUpperCase()
-                            .slice(0, 2) || "ND"}
-                        </div>
+                      <div
+                        className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials"
+                        style={{ width: 90, height: 90, overflow: "hidden" }}
+                      >
+                        {getOrganisationDetails?.user?.name
+                          ?.split(" ")
+                          .map((n: any) => n[0])
+                          .join("")
+                          .toUpperCase()
+                          .slice(0, 2) || "ND"}
                         <button
                           title="Change profile image"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0"
                           style={{
                             width: 30,
                             height: 30,
-                            right: 3,
-                            bottom: 3,
-                            zIndex: 10,
+                            right: 0,
+                            bottom: 0,
+                            background: "rgba(0, 0, 0, 0.65)",
+                            borderRadius: "50%",
+                            transform: "translate(-15%, -15%)",
                             cursor: "pointer",
                           }}
                           onClick={handleDirectorProfileImageUpload}
                           disabled={isUpdating}
                         >
-                          <FaCamera size={12} className="text-primary" />
+                          <FaCamera size={12} className="text-white" />
                         </button>
                       </div>
                     )}

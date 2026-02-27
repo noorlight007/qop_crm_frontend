@@ -212,7 +212,10 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
           ) : (
             getNetworkList?.results?.map((network: Network) => (
               <Col xs="12" lg="6" xxl="4" className="mb-4" key={network.slug}>
-                <Card className="h-100 shadow-sm border-0" style={{ position: "relative", overflow: "hidden" }}>
+                <Card
+                  className="h-100 shadow-sm border-0"
+                  style={{ position: "relative", overflow: "hidden" }}
+                >
                   <Link
                     href={`/admin/networks/${network.slug}`}
                     title="Website"
@@ -233,13 +236,17 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             alt={network.name}
                             width={160}
                             height={80}
-                            className="rounded p-1 shadow"
+                            className="rounded shadow"
                             style={{ objectFit: "cover" }}
                           />
                         ) : (
                           <div
                             className="bg-primary bg-gradient text-center rounded d-flex align-items-center justify-content-center"
-                            style={{ width: "160px", height: "80px", maxWidth: "100%" }}
+                            style={{
+                              width: "160px",
+                              height: "80px",
+                              maxWidth: "100%",
+                            }}
                           >
                             <h3 className="text-white fw-bold mb-0">
                               {network.name.charAt(0).toUpperCase()}
@@ -249,13 +256,14 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
 
                         <button
                           title="Change network logo"
-                          className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
+                          className="position-absolute d-flex align-items-center justify-content-center rounded-circle shadow-sm border-0"
                           style={{
                             width: 32,
                             height: 32,
                             right: 0,
                             bottom: 0,
                             cursor: "pointer",
+                            background: "rgba(0, 0, 0, 0.65)",
                           }}
                           // LOGIC FIX: Pass the specific network slug
                           onClick={() => handleProfileImageUpload(network.slug)}
@@ -268,13 +276,22 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                           uploadingSlug === network.slug ? (
                             <Spinner size="sm" color="primary" />
                           ) : (
-                            <FaCamera size={14} className="text-primary" />
+                            <FaCamera size={14} className="text-white" />
                           )}
                         </button>
                       </div>
 
-                      <div className="flex-grow-1" style={{ minWidth: 0, paddingRight: "25px" }}>
-                        <h5 className="fw-bold text-dark mb-1 text-truncate" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                      <div
+                        className="flex-grow-1"
+                        style={{ minWidth: 0, paddingRight: "25px" }}
+                      >
+                        <h5
+                          className="fw-bold text-dark mb-1 text-truncate"
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
                           <Link
                             className="text_decoration_hover"
                             href={`/admin/networks/${network.slug}`}
@@ -282,20 +299,42 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             {network.name}
                           </Link>
                         </h5>
-                        <p className="text-muted small mb-2 text-truncate" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                        <p
+                          className="text-muted small mb-2 text-truncate"
+                          style={{
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                          }}
+                        >
                           <FaGlobe className="me-2" />
                           {`${"https://"}${network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
                         </p>
                         <div className="mb-1">
-                          <small className="text-muted d-flex align-items-center" style={{ minWidth: 0 }}>
+                          <small
+                            className="text-muted d-flex align-items-center"
+                            style={{ minWidth: 0 }}
+                          >
                             <FaEnvelope className="me-2 text-primary flex-shrink-0" />
-                            <span className="text-truncate" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            <span
+                              className="text-truncate"
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
                               {network.email}
                             </span>
                           </small>
                         </div>
                         <div className="mb-2">
-                          <small className="text-muted d-flex align-items-center" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                          <small
+                            className="text-muted d-flex align-items-center"
+                            style={{
+                              wordBreak: "break-word",
+                              overflowWrap: "break-word",
+                            }}
+                          >
                             <FaPhone className="me-2 text-primary flex-shrink-0" />
                             {network.primary_mobile}
                           </small>
@@ -305,7 +344,13 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
 
                     <hr className="my-3" />
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                      <small className="text-muted" style={{ wordBreak: "break-word", overflowWrap: "break-word" }}>
+                      <small
+                        className="text-muted"
+                        style={{
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                        }}
+                      >
                         <FaCalendarAlt className="me-1" />
                         Created {formatDateAndTime(network.created_at)}
                       </small>

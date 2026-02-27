@@ -1,6 +1,5 @@
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
@@ -171,41 +170,56 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 <Col md="auto">
                   {/* Organisation Logo */}
                   <div
-                    className="position-relative mb-3"
-                    style={{ width: 150, height: 100 }}
+                    className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "150px",
+                      height: "100px",
+                      border: "5px solid white",
+                      overflow: "hidden",
+                    }}
                   >
-                    <Image
-                      width={150}
-                      height={100}
+                    <img
                       src={
                         singleOrgInfo?.organization?.logo ||
                         "/assets/images/network/logo.jpg"
                       }
                       alt="Logo"
-                      className="rounded-3 object-fit-cover bg-white p-1"
-                    />
-                    {/* Camera overlay for logo upload */}
-                    <button
-                      title="Change organisation logo"
-                      className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
                       style={{
-                        width: 32,
-                        height: 32,
-                        right: 0,
-                        bottom: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+
+                    {/* Upload overlay: camera on hover */}
+                    <button
+                      type="button"
+                      aria-label="Change Organization Logo"
+                      className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0"
+                      style={{
+                        right: "-5px",
+                        bottom: "-5px",
+                        width: "35px",
+                        height: "35px",
+                        background: "rgba(0,0,0,0.65)",
+                        color: "#fff",
                         cursor: "pointer",
                       }}
                       onClick={handleProfileImageUpload}
-                      disabled={isUpdating}
                     >
-                      <FaCamera size={14} className="text-primary" />
+                      {isUpdating ? (
+                        <Spinner size="sm" color="light" />
+                      ) : (
+                        <FaCamera size={12} />
+                      )}
                     </button>
+
                     {/* Hidden file input */}
                     <input
                       ref={fileInputRef}
                       type="file"
                       accept="image/*"
-                      style={{ display: "none" }}
+                      className="d-none"
                       onChange={handleFileSelected}
                     />
                   </div>
@@ -227,7 +241,8 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         {`${"https://"}${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
                       </Badge>
                     )}
-                    {(singleOrgInfo?.organization?.license_no || singleOrgInfo?.organization?.license_image) && (
+                    {(singleOrgInfo?.organization?.license_no ||
+                      singleOrgInfo?.organization?.license_image) && (
                       <>
                         <Badge
                           id="licensePopover"
