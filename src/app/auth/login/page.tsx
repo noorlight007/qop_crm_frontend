@@ -1,16 +1,35 @@
 "use client";
 import { LoginForm } from "@/Components/Auth/LoginForm";
-import { signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
 
 const UserLogin = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (!session) return;
+    // Only act once NextAuth has resolved auth state.
+    if (status !== "authenticated") return;
+    if (!session?.user?.accessToken) return;
+
+    // On some browsers/devices right after first login, `user_type` can be briefly
+    // missing even though the session has been established. Avoid signing out
+    // or redirecting until it is available.
+    if (!session.user?.user_type) {
+      const timeoutId = window.setTimeout(async () => {
+        const refreshed = await getSession();
+        if (refreshed?.user?.user_type) {
+          // Session now has role; the effect will re-run and redirect.
+          return;
+        }
+        // Still no role after waiting; sign out to avoid being stuck.
+        await signOut({ redirect: false });
+      }, 800);
+
+      return () => window.clearTimeout(timeoutId);
+    }
 
     if (session.user?.user_type === "ADMIN") {
       router.push("/admin/dashboard");
@@ -28,14 +47,13 @@ const UserLogin = () => {
       router.push("/organisation/admin/dashboard");
     } else if (session.user?.user_type === "CLIENT") {
       router.push("/client/dashboard");
-    } else if (session.user?.accessToken) {
-      // Unknown role but still have a session; force sign-out
-      // without relying on redirects to avoid loops.
+    } else {
+      // Unknown role but authenticated; sign out without relying on redirects.
       signOut({ redirect: false });
     }
-  }, [session, router]);
+  }, [session, status, router]);
 
-  if (session) return null;
+  if (status === "authenticated") return null;
   return (
     <Container fluid className="p-0">
       <Row className="m-0">

@@ -66,8 +66,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const [filterIcon, setFilterIcon] = useState(false);
   type SupportTicketFilters = {
     ticket_type: string[];
-    status: string;
-    priority: string;
+    status: string[];
+    priority: string[];
     network: string;
     organisation: string;
     created_by: string;
@@ -76,8 +76,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
 
   const defaultFilters: SupportTicketFilters = {
     ticket_type: [],
-    status: "",
-    priority: "",
+    status: [],
+    priority: [],
     network: "",
     organisation: "",
     created_by: "",
@@ -93,6 +93,8 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const [selectedNetwork, setSelectedNetwork] = useState("");
   const [selectedOrganisation, setSelectedOrganisation] = useState("");
   const [ticketTypeDropdownOpen, setTicketTypeDropdownOpen] = useState(false);
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
 
   const userType = session?.user?.user_type;
 
@@ -110,8 +112,10 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
           ticket_type: filters.ticket_type.length
             ? filters.ticket_type.join(",")
             : undefined,
-          status: filters.status || undefined,
-          priority: filters.priority || undefined,
+          status: filters.status.length ? filters.status.join(",") : undefined,
+          priority: filters.priority.length
+            ? filters.priority.join(",")
+            : undefined,
           network: filters.network || undefined,
           organisation: filters.organisation || undefined,
           created_by: filters.created_by || undefined,
@@ -276,6 +280,28 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     setCurrentPage(1);
   };
 
+  const toggleStatusValue = (value: string) => {
+    setFilters((prev) => {
+      const exists = prev.status.includes(value);
+      const status = exists
+        ? prev.status.filter((v) => v !== value)
+        : [...prev.status, value];
+      return { ...prev, status };
+    });
+    setCurrentPage(1);
+  };
+
+  const togglePriorityValue = (value: string) => {
+    setFilters((prev) => {
+      const exists = prev.priority.includes(value);
+      const priority = exists
+        ? prev.priority.filter((v) => v !== value)
+        : [...prev.priority, value];
+      return { ...prev, priority };
+    });
+    setCurrentPage(1);
+  };
+
   return (
     <Row>
       <Col>
@@ -408,9 +434,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       >
                         <span className="text-truncate pe-4 d-block">
                           {filters.ticket_type.length
-                            ? filters.ticket_type
-                                .map((v) => formatChoiceFieldValue(v))
-                                .join(", ")
+                            ? `Selected (${filters.ticket_type.length})`
                             : "All Ticket Types"}
                         </span>
                       </DropdownToggle>
@@ -431,6 +455,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               key={opt.value}
                               toggle={false}
                               className="d-flex align-items-center gap-2 fs-6"
+                              style={{ opacity: 1 }}
                               onClick={() => toggleTicketTypeValue(opt.value)}
                             >
                               <Input
@@ -448,39 +473,96 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                   </Col>
                   <Col>
                     <Label>Select Ticket Status</Label>
-                    <Input
-                      type="select"
-                      id="ticketStatusFilter"
-                      className="py-1"
-                      value={filters.status}
-                      onChange={(e) =>
-                        handleFilterChange("status", e.target.value)
-                      }
+                    <Dropdown
+                      isOpen={statusDropdownOpen}
+                      toggle={() => setStatusDropdownOpen((prev) => !prev)}
                     >
-                      <option value="">All Statuses</option>{" "}
-                      <option value="OPEN">Open</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="COMPLETED">Completed</option>
-                      <option value="RESOLVED">Resolved</option>
-                    </Input>
+                      <DropdownToggle
+                        tag="button"
+                        type="button"
+                        className="form-select py-1 w-100 text-start"
+                      >
+                        <span className="text-truncate pe-4 d-block">
+                          {filters.status.length
+                            ? `Selected (${filters.status.length})`
+                            : "All Statuses"}
+                        </span>
+                      </DropdownToggle>
+                      <DropdownMenu className="w-100">
+                        {[
+                          { value: "OPEN", label: "Open" },
+                          { value: "IN_PROGRESS", label: "In Progress" },
+                          { value: "COMPLETED", label: "Completed" },
+                          { value: "RESOLVED", label: "Resolved" },
+                        ].map((opt) => {
+                          const checked = filters.status.includes(opt.value);
+                          return (
+                            <DropdownItem
+                              key={opt.value}
+                              toggle={false}
+                              className="d-flex align-items-center gap-2 fs-6"
+                              style={{ opacity: 1 }}
+                              onClick={() => toggleStatusValue(opt.value)}
+                            >
+                              <Input
+                                type="checkbox"
+                                checked={checked}
+                                className="border-primary"
+                                readOnly
+                              />
+                              <span>{opt.label}</span>
+                            </DropdownItem>
+                          );
+                        })}
+                      </DropdownMenu>
+                    </Dropdown>
                   </Col>
+
                   <Col>
                     <Label>Select Ticket Priority</Label>
-                    <Input
-                      type="select"
-                      id="ticketPriorityFilter"
-                      className="py-1"
-                      value={filters.priority}
-                      onChange={(e) =>
-                        handleFilterChange("priority", e.target.value)
-                      }
+                    <Dropdown
+                      isOpen={priorityDropdownOpen}
+                      toggle={() => setPriorityDropdownOpen((prev) => !prev)}
                     >
-                      <option value="">All Priorities</option>{" "}
-                      <option value="URGENT">Urgent</option>
-                      <option value="MEDIUM">Medium</option>
-                      <option value="NORMAL">Normal</option>
-                      <option value="WHEN_POSSIBLE">When Possible</option>
-                    </Input>
+                      <DropdownToggle
+                        tag="button"
+                        type="button"
+                        className="form-select py-1 w-100 text-start"
+                      >
+                        <span className="text-truncate pe-4 d-block">
+                          {filters.priority.length
+                            ? `Selected (${filters.priority.length})`
+                            : "All Priorities"}
+                        </span>
+                      </DropdownToggle>
+                      <DropdownMenu className="w-100">
+                        {[
+                          { value: "URGENT", label: "Urgent" },
+                          { value: "MEDIUM", label: "Medium" },
+                          { value: "NORMAL", label: "Normal" },
+                          { value: "WHEN_POSSIBLE", label: "When Possible" },
+                        ].map((opt) => {
+                          const checked = filters.priority.includes(opt.value);
+                          return (
+                            <DropdownItem
+                              key={opt.value}
+                              toggle={false}
+                              className="d-flex align-items-center gap-2 fs-6"
+                              style={{ opacity: 1 }}
+                              onClick={() => togglePriorityValue(opt.value)}
+                            >
+                              <Input
+                                type="checkbox"
+                                checked={checked}
+                                className="border-primary"
+                                readOnly
+                              />
+                              <span>{opt.label}</span>
+                            </DropdownItem>
+                          );
+                        })}
+                      </DropdownMenu>
+                    </Dropdown>
                   </Col>
                   {userType === "ADMIN" && (
                     <>

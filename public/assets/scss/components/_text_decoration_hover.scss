@@ -1,7 +1,8 @@
 .text_decoration_hover {
   text-decoration: none;
-  color: var(--primary-color);
+  color: var(--primary-color) !important;
   position: relative;
+  opacity: 1 !important;
 }
 
 .text_decoration_hover::after {

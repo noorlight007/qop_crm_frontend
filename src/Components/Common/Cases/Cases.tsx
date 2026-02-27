@@ -85,7 +85,9 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const { data: adviserData, isLoading: isAdviserLoading } =
     useGetUserListQuery({ role: getAdviserRole() });
 
-  const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({ role: "ORGANISATION_ADMIN" });
+  const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
+    role: "ORGANISATION_ADMIN",
+  });
 
   const { data: usersData } = useGetUsersQuery(undefined);
 
@@ -253,7 +255,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       className="py-1"
                       value={filters.assigned_to_admin__id}
                       onChange={(e) =>
-                        handleFilterChange("assigned_to_admin__id", e.target.value)
+                        handleFilterChange(
+                          "assigned_to_admin__id",
+                          e.target.value,
+                        )
                       }
                     >
                       <option value="">All Users</option>
@@ -554,10 +559,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               style={{ fontSize: "9px" }}
                             >
                               (
-                              {caseItem.assigned_user.user_type
-                                ? formatChoiceFieldValue(
-                                    caseItem.assigned_user.user_type,
-                                  )
+                              {caseItem.assigned_user.email
+                                ? caseItem.assigned_user.email
                                 : ""}
                               )
                             </p>
@@ -586,10 +589,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                               style={{ fontSize: "9px" }}
                             >
                               (
-                              {caseItem.assigned_admin.user_type
-                                ? formatChoiceFieldValue(
-                                    caseItem.assigned_admin.user_type,
-                                  )
+                              {caseItem.assigned_admin.email
+                                ? caseItem.assigned_admin.email
                                 : ""}
                               )
                             </p>

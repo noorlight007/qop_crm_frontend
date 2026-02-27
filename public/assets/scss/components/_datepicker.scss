@@ -177,7 +177,7 @@
       padding: 12px;
       background-color: var(--theme-default);
       border: 1px solid var(--theme-default);
-      +.fc-h-event {
+      + .fc-h-event {
         margin-top: 10px;
       }
       .fc-event-main {
@@ -186,7 +186,7 @@
     }
   }
   .calendar-default {
-    .fc-scrollgrid{
+    .fc-scrollgrid {
       border: 1px solid var(--border-color) !important;
     }
     .fc-daygrid-dot-event {
@@ -215,7 +215,7 @@
     }
     .fc-toolbar-chunk {
       .fc-button-group {
-        ~.fc-today-button {
+        ~ .fc-today-button {
           margin: 0 8px;
         }
       }
@@ -226,7 +226,6 @@
   padding: 10px;
   background-color: var(--theme-default);
 }
-
 
 .fc {
   .fc-toolbar {
@@ -304,7 +303,7 @@
 }
 .flatpickr-calendar {
   &.animate {
-    @media (max-width:400px) {
+    @media (max-width: 400px) {
       width: 77%;
       left: 50% !important;
       transform: translateX(-50%);
@@ -321,12 +320,15 @@
 }
 .flatpicker-calender {
   .form-control {
-    @media (max-width:768px) {
+    @media (max-width: 768px) {
       font-size: 14px;
     }
   }
 }
-.input-group> :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+.input-group
+  > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(
+    .valid-feedback
+  ):not(.invalid-tooltip):not(.invalid-feedback) {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
@@ -339,61 +341,53 @@
   }
 }
 
-
-.dark-only {
-  .flatpickr-calendar {
+.dark-only,
+[data-theme="dark"] {
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  input[type="month"],
+  input[type="week"] {
+    color-scheme: dark;
     background-color: var(--card-color);
-    border-color: var(--border-color);
     color: var(--body-font-color);
+    border: 1px solid var(--border-color);
 
-    .flatpickr-months {
-      background-color: var(--card-color);
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.8;
+    }
 
-      .flatpickr-month,
-      .flatpickr-prev-month,
-      .flatpickr-next-month {
-        background-color: var(--card-color);
-        color: var(--body-font-color);
-        fill: var(--body-font-color);
+    // In browsers that support `color-scheme`, the UA already renders a
+    // light calendar icon for dark controls; applying an invert filter would
+    // turn it dark again.
+    @supports (color-scheme: dark) {
+      &::-webkit-calendar-picker-indicator {
+        filter: none;
       }
     }
 
-    .flatpickr-current-month {
-      color: var(--body-font-color);
-
-      input,
-      select.flatpickr-monthDropdown-months {
-        background-color: var(--card-color);
-        color: var(--body-font-color);
+    // Fallback for older engines that don't support `color-scheme`.
+    @supports not (color-scheme: dark) {
+      &::-webkit-calendar-picker-indicator {
+        filter: invert(1) brightness(2);
       }
     }
 
-    .flatpickr-weekdays,
-    .flatpickr-weekday {
-      background-color: var(--card-color);
-      color: var(--theme-default);
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
+  }
 
-    .flatpickr-innerContainer {
-      background-color: var(--card-color);
-    }
-
-    .flatpickr-day {
+  input[type="date"] {
+    &::-webkit-datetime-edit {
       color: var(--body-font-color);
-
-      &.today { border-color: var(--theme-default); }
-      &.selected { background: var(--theme-default); border-color: var(--theme-default); color: var(--white); }
-      &.prevMonthDay,
-      &.nextMonthDay { opacity: 0.4; }
-      &:hover { background: var(--theme-default); border-color: var(--theme-default); color: var(--white); }
     }
 
-    .flatpickr-time {
-      background-color: var(--card-color);
-      border-top-color: var(--border-color);
-
-      input,
-      .flatpickr-am-pm { color: var(--body-font-color); }
+    &::-webkit-datetime-edit-fields-wrapper {
+      color: var(--body-font-color);
     }
   }
 }
