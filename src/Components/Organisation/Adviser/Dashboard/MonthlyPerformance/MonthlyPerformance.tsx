@@ -44,10 +44,10 @@ const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
   ];
 
   const performanceData = monthsOrder.map((m) =>
-    Number(adviserSummaryData?.performances?.[m]?.performance ?? 0)
+    Number(adviserSummaryData?.performances?.[m]?.performance ?? 0),
   );
   const targetData = monthsOrder.map((m) =>
-    Number(adviserSummaryData?.performances?.[m]?.target ?? 0)
+    Number(adviserSummaryData?.performances?.[m]?.target ?? 0),
   );
 
   const options = {
@@ -224,7 +224,7 @@ const MonthlyPerformance: React.FC<CommonAdviserSummaryProps> = ({
   }
 
   return (
-    <Card className="border-0 p-4 shadow-sm bg-white">
+    <Card className="border-0 p-4 shadow-sm">
       <h4 className="text-lg font-semibold mb-4 text-slate-800">
         Monthly Performance vs Target
       </h4>

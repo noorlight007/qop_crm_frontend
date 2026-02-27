@@ -126,7 +126,10 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
             <div className="d-flex justify-content-center organisation-avatar-container">
               <div className="position-relative">
                 {singleOrgInfo?.user?.profile_image ? (
-                  <div className="position-relative">
+                  <div
+                    className="position-relative rounded-circle"
+                    style={{ width: 90, height: 90, overflow: "hidden" }}
+                  >
                     <Image
                       src={singleOrgInfo.user.profile_image}
                       alt={singleOrgInfo?.user?.name ?? "Director"}
@@ -134,31 +137,48 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                       height={90}
                       className="rounded-circle organisation-avatar-img"
                     />
-                    {/* Camera overlay badge (bottom-right) */}
+                    {/* Camera overlay — clipped by parent overflow: hidden */}
                     <button
                       title="Change profile image"
-                      className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                      style={{ width: 30, height: 30, right: 3, bottom: 3 }}
+                      className="position-absolute d-flex align-items-center justify-content-center border-0"
+                      style={{
+                        width: 30,
+                        height: 30,
+                        right: 0,
+                        bottom: 0,
+                        background: "rgba(0, 0, 0, 0.65)",
+                        borderRadius: "50%",
+                        transform: "translate(-15%, -15%)",
+                      }}
                       onClick={handleProfileImageUpload}
                       disabled={isUpdating}
                     >
-                      <FaCamera size={12} className="text-dark" />
+                      <FaCamera size={12} className="text-white" />
                     </button>
                   </div>
                 ) : (
-                  <div className="position-relative">
-                    <div className="rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials">
-                      {initials(singleOrgInfo?.user?.name)}
-                    </div>
-                    {/* Camera overlay badge (bottom-right) for initials avatar */}
+                  <div
+                    className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials"
+                    style={{ width: 90, height: 90, overflow: "hidden" }}
+                  >
+                    {initials(singleOrgInfo?.user?.name)}
+                    {/* Same camera overlay for initials */}
                     <button
                       title="Change profile image"
-                      className="position-absolute d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm border-0"
-                      style={{ width: 30, height: 30, right: 3, bottom: 3 }}
+                      className="position-absolute d-flex align-items-center justify-content-center border-0"
+                      style={{
+                        width: 30,
+                        height: 30,
+                        right: 0,
+                        bottom: 0,
+                        background: "rgba(0, 0, 0, 0.65)",
+                        borderRadius: "50%",
+                        transform: "translate(-15%, -15%)",
+                      }}
                       onClick={handleProfileImageUpload}
                       disabled={isUpdating}
                     >
-                      <FaCamera size={12} className="text-dark" />
+                      <FaCamera size={12} className="text-white" />
                     </button>
                   </div>
                 )}

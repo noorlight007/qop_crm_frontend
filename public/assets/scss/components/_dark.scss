@@ -12,7 +12,31 @@
   *::before,
   *::after {
     color: var(--body-font-color) !important;
-    opacity: 1 !important;
+  }
+
+  /* allow semantic Bootstrap text utilities to keep their own colors */
+  :is(.text-primary, .link-primary) {
+    color: var(--theme-default) !important;
+  }
+
+  :is(.text-secondary, .link-secondary) {
+    color: var(--theme-secondary) !important;
+  }
+
+  :is(.text-success, .link-success) {
+    color: var(--success-color) !important;
+  }
+
+  :is(.text-danger, .link-danger) {
+    color: var(--danger-color) !important;
+  }
+
+  :is(.text-warning, .link-warning) {
+    color: var(--warning-color) !important;
+  }
+
+  :is(.text-info, .link-info) {
+    color: var(--info-color) !important;
   }
 
   /* undo Bootstrap muted text lowering opacity */
@@ -673,6 +697,23 @@
       border: 1px solid var(--light-gray);
     }
   }
+
+  .Toastify__toast-theme--light {
+    background-color: var(--body-color) !important;
+    color: var(--body-font-color) !important;
+    border: 1px solid var(--border-color);
+  }
+
+  .Toastify__toast-body,
+  .Toastify__close-button {
+    color: var(--body-font-color) !important;
+    opacity: 1 !important;
+  }
+
+  .Toastify__progress-bar-theme--light {
+    background: var(--theme-default) !important;
+  }
+
   .filepond--panel-root {
     background-color: var(--body-color) !important;
   }
@@ -2465,5 +2506,62 @@
         box-shadow: none;
       }
     }
+  }
+
+  /* SVG icons (e.g. react-feather) with semantic text utilities:
+     reset stroke to currentColor so it tracks the color property */
+  svg.text-primary,
+  svg.text-primary * {
+    stroke: currentColor !important;
+    color: var(--theme-default) !important;
+  }
+
+  svg.text-secondary,
+  svg.text-secondary * {
+    stroke: currentColor !important;
+    color: var(--theme-secondary) !important;
+  }
+
+  svg.text-success,
+  svg.text-success * {
+    stroke: currentColor !important;
+    color: var(--success-color) !important;
+  }
+
+  svg.text-danger,
+  svg.text-danger * {
+    stroke: currentColor !important;
+    color: var(--danger-color) !important;
+  }
+
+  svg.text-warning,
+  svg.text-warning * {
+    stroke: currentColor !important;
+    color: var(--warning-color) !important;
+  }
+
+  svg.text-info,
+  svg.text-info * {
+    stroke: currentColor !important;
+    color: var(--info-color) !important;
+  }
+
+  /* Override browser autofill background in dark mode */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--body-color) inset !important;
+    box-shadow: 0 0 0 1000px var(--body-color) inset !important;
+    -webkit-text-fill-color: var(--body-font-color) !important;
+    caret-color: var(--body-font-color) !important;
+    border-color: var(--border-color) !important;
+    transition: background-color 5000s ease-in-out 0s;
   }
 }

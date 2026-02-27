@@ -80,7 +80,7 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             {displayApplicant?.joint_user_details?.title
               ? formatChoiceFieldValue(
                   displayApplicant.joint_user_details.title,
-                ) + ". "
+                ) + " "
               : ""}
             {displayApplicant?.joint_user_details?.first_name}{" "}
             {displayApplicant?.joint_user_details?.middle_name &&

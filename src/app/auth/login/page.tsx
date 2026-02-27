@@ -1,35 +1,16 @@
 "use client";
 import { LoginForm } from "@/Components/Auth/LoginForm";
-import { getSession, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
 
 const UserLogin = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    // Only act once NextAuth has resolved auth state.
-    if (status !== "authenticated") return;
-    if (!session?.user?.accessToken) return;
-
-    // On some browsers/devices right after first login, `user_type` can be briefly
-    // missing even though the session has been established. Avoid signing out
-    // or redirecting until it is available.
-    if (!session.user?.user_type) {
-      const timeoutId = window.setTimeout(async () => {
-        const refreshed = await getSession();
-        if (refreshed?.user?.user_type) {
-          // Session now has role; the effect will re-run and redirect.
-          return;
-        }
-        // Still no role after waiting; sign out to avoid being stuck.
-        await signOut({ redirect: false });
-      }, 800);
-
-      return () => window.clearTimeout(timeoutId);
-    }
+    if (!session) return;
 
     if (session.user?.user_type === "ADMIN") {
       router.push("/admin/dashboard");
@@ -48,12 +29,11 @@ const UserLogin = () => {
     } else if (session.user?.user_type === "CLIENT") {
       router.push("/client/dashboard");
     } else {
-      // Unknown role but authenticated; sign out without relying on redirects.
       signOut({ redirect: false });
     }
-  }, [session, status, router]);
+  }, [session, router]);
 
-  if (status === "authenticated") return null;
+  if (session) return null;
   return (
     <Container fluid className="p-0">
       <Row className="m-0">

@@ -18,7 +18,7 @@ const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
 
   if (isLoading) {
     return (
-      <Card className="border-0 p-4 rounded-3 shadow-sm bg-white mt-4">
+      <Card className="border-0 p-4 rounded-3 shadow-sm mt-4">
         <CardBody>
           <div className="d-flex align-items-center mb-4">
             <div
@@ -47,7 +47,7 @@ const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
 
   if (!advisers || advisers.length === 0) {
     return (
-      <Card className="border-0 p-4 rounded-3 shadow-sm bg-white mt-4">
+      <Card className="border-0 p-4 rounded-3 shadow-sm mt-4">
         <div className="d-flex align-items-center mb-4">
           <div
             className="bg-primary rounded-circle p-2 me-3"
@@ -73,7 +73,7 @@ const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
   }
 
   return (
-    <Card className="border-0 p-4 rounded-3 shadow-sm bg-white mt-4">
+    <Card className="border-0 p-4 rounded-3 shadow-sm mt-4">
       <div className="d-flex align-items-center justify-content-between mb-4">
         <h5 className="mb-0 fw-bold text-dark">Adviser Task Overview</h5>
         {advisers.length > itemsPerPage && (
@@ -126,8 +126,8 @@ const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
                         efficiency >= 80
                           ? "bg-success"
                           : efficiency >= 60
-                          ? "bg-warning"
-                          : "bg-danger"
+                            ? "bg-warning"
+                            : "bg-danger"
                       }`}
                     >
                       {efficiency}%
@@ -156,8 +156,8 @@ const AdviserTaskOverview: React.FC<AdminDashboardProps> = ({
                         completionRate >= 80
                           ? "success"
                           : completionRate >= 60
-                          ? "warning"
-                          : "danger"
+                            ? "warning"
+                            : "danger"
                       }
                     />
                   </div>

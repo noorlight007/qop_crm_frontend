@@ -44,7 +44,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
           </div>
           <h4 className="mb-1 text-dark fw-bold">
             {selectedLeadOrClient?.title
-              ? formatChoiceFieldValue(selectedLeadOrClient.title) + ". "
+              ? formatChoiceFieldValue(selectedLeadOrClient.title) + " "
               : ""}
             {selectedLeadOrClient?.first_name}{" "}
             {selectedLeadOrClient?.middle_name &&

@@ -506,17 +506,17 @@ const MyTask: React.FC = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="text-dark text-truncate">
+                        <span className="text-truncate">
                           {task.client_name || "-"}
                         </span>
                       </td>
                       <td>
-                        <span className="text-muted">
+                        <span>
                           {task.current_case_lender || "-"}
                         </span>
                       </td>
                       <td>
-                        <span className="text-muted">
+                        <span>
                           {task.current_case_workflow || "-"}
                         </span>
                       </td>
