@@ -4,12 +4,14 @@ import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
   FaCamera,
+  FaCheckCircle,
   FaDownload,
   FaGlobe,
   FaIdCard,
   FaNetworkWired,
   FaPhoneAlt,
 } from "react-icons/fa";
+import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -120,6 +122,29 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       // Fallback to opening in new tab if download fails
       window.open(licenseImageUrl, "_blank");
     }
+  };
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyDomain = () => {
+    const url = `https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = url;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      });
   };
 
   return (
@@ -236,9 +261,19 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       </Badge>
                     )}
                     {singleOrgInfo?.organization?.subdomain && (
-                      <Badge className="bg-warning text-truncate">
-                        <FaGlobe className="me-1" />
-                        {`${"https://"}${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
+                      <Badge className="bg-warning text-truncate d-flex gap-2 align-items-center">
+                        <span className="d-flex align-items-center">
+                          <FaGlobe className="me-1" />
+                          <span style={{ paddingTop: "0.15rem" }}>
+                            {`https://${singleOrgInfo?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                          </span>
+                        </span>
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={handleCopyDomain}
+                        >
+                          {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                        </span>
                       </Badge>
                     )}
                     {(singleOrgInfo?.organization?.license_no ||
