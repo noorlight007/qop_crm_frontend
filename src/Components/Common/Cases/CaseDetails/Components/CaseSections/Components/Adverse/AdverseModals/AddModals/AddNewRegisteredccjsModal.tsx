@@ -73,7 +73,7 @@ const AddNewRegisteredCCJsModal: React.FC<AddNewRegisteredCCJsModalProps> = ({
           <Row>
             <Col sm={6}>
               <FormGroup>
-                <Label for="amount">Amount*</Label>
+                <Label for="amount">Amount<span className="text-danger">*</span></Label>
                 <InputGroup>
                   <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input

@@ -994,7 +994,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Policy Term*</Label>
+                    <Label>Policy Term<span className="text-danger">*</span></Label>
                     <Input
                       type="number"
                       step="1"

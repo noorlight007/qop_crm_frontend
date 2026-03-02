@@ -219,7 +219,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
           <Row>
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Policy Type*</Label>
+                <Label>Policy Type<span className="text-danger">*</span></Label>
                 <Input
                   type="select"
                   value={formData.policy_type ?? ""}
@@ -302,7 +302,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
             </Col>
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Provider*</Label>
+                <Label>Provider<span className="text-danger">*</span></Label>
                 <Input
                   type="select"
                   value={formData.provider ?? ""}
@@ -960,7 +960,7 @@ const AddnewInsurancePolicyModal: React.FC<AddNewInsurancePolicyModalProps> = ({
 
             <Col sm={12} md={6} lg={4}>
               <FormGroup>
-                <Label>Policy Term*</Label>
+                <Label>Policy Term<span className="text-danger">*</span></Label>
                 <Input
                   type="number"
                   step="1"

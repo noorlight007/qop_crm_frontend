@@ -331,7 +331,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="solicitorName">Solicitor Full Name*</Label>
+                    <Label for="solicitorName">Solicitor Full Name<span className="text-danger">*</span></Label>
                     <Input
                       id="solicitorName"
                       name="solicitorName"
@@ -373,7 +373,7 @@ const AddSolicitorModal: React.FC<AddSolicitorModalProps> = ({
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="postcode">Postcode*</Label>
+                    <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                     <InputGroup className="d-flex align-items-center gap-2">
                       <Input
                         id="postcode"

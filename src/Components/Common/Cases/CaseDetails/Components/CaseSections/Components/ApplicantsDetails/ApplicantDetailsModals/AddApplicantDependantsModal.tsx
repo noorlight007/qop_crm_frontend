@@ -139,7 +139,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="name" className="small">
-                Name*
+                Name<span className="text-danger">*</span>
               </Label>
               <Input
                 type="text"
@@ -201,7 +201,7 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
 
             <FormGroup>
               <Label for="date_of_birth" className="small">
-                Date of Birth*
+                Date of Birth<span className="text-danger">*</span>
               </Label>
               <Row className="g-2 align-items-center">
                 <Col>

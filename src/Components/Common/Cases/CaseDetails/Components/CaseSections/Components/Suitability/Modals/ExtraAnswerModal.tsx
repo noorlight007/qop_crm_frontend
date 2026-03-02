@@ -77,7 +77,7 @@ const ExtraAnswerModal: React.FC<ExtraAnswerModalProps> = ({
         </ModalHeader>
         <ModalBody>
           <Col md={8}>
-            <Label for="section_choices">Question Type*</Label>
+            <Label for="section_choices">Question Type<span className="text-danger">*</span></Label>
             <FormGroup>
               <Input
                 type="select"
@@ -130,7 +130,7 @@ const ExtraAnswerModal: React.FC<ExtraAnswerModalProps> = ({
           </Col>
 
           <FormGroup>
-            <Label for="answer">Answer*</Label>
+            <Label for="answer">Answer<span className="text-danger">*</span></Label>
             <Input
               type="textarea"
               id="answer"

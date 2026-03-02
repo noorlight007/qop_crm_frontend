@@ -170,7 +170,7 @@ const AddTrailCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
         <ModalBody>
           <Row className="g-3">
             <Col md={6}>
-              <Label>Policy*</Label>
+              <Label>Policy<span className="text-danger">*</span></Label>
               <Input
                 type="select"
                 value={policy ?? ""}

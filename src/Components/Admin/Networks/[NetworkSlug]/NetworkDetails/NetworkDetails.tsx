@@ -10,12 +10,14 @@ import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
   FaCamera,
+  FaCheckCircle,
   FaGlobe,
   FaIdCard,
   FaPhoneAlt,
   FaRegCalendarAlt,
   FaShieldAlt,
 } from "react-icons/fa";
+import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -141,6 +143,29 @@ const NetworkDetails: React.FC = () => {
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyDomain = () => {
+    const url = `https://${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = url;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      });
+  };
+
   return (
     <>
       <Row>
@@ -246,9 +271,19 @@ const NetworkDetails: React.FC = () => {
                       </h2>
                       <div className="d-flex align-items-center gap-2 mb-2">
                         {getNetworkDetails?.network?.subdomain && (
-                          <Badge className="bg-warning">
-                            <FaGlobe className="me-1" />
-                            {`${"https://"}${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
+                          <Badge className="bg-warning text-truncate d-flex gap-2 align-items-center">
+                            <span className="d-flex align-items-center">
+                              <FaGlobe className="me-1" />
+                              <span style={{ paddingTop: "0.175rem" }}>
+                                {`${"https://"}${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                              </span>
+                            </span>
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={handleCopyDomain}
+                            >
+                              {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                            </span>
                           </Badge>
                         )}
                       </div>

@@ -78,7 +78,7 @@ const AddNewDefaultsModal: React.FC<AddNewDefaultsModalProps> = ({
           <Row>
             <Col sm={6}>
               <FormGroup>
-                <Label for="amount">Amount*</Label>
+                <Label for="amount">Amount<span className="text-danger">*</span></Label>
                 <div className="input-group">
                   <Input
                     id="amount"
@@ -132,7 +132,7 @@ const AddNewDefaultsModal: React.FC<AddNewDefaultsModalProps> = ({
             <Col sm={6}>
               <FormGroup>
                 <Label for="has_satisfied">
-                  Has the Default been satisfied?*
+                  Has the Default been satisfied?<span className="text-danger">*</span>
                 </Label>
                 <div className="d-flex align-items-center">
                   <div>

@@ -336,7 +336,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="name">Accountant Full Name*</Label>
+                <Label for="name">Accountant Full Name<span className="text-danger">*</span></Label>
                 <Input
                   id="name"
                   name="name"
@@ -384,7 +384,7 @@ const AddAccountantModal: React.FC<AddAccountantModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="postcode">Postcode*</Label>
+                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"

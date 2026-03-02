@@ -168,7 +168,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
           <Row>
             <Col md="6">
               <FormGroup>
-                <Label for="postcode">Postcode*</Label>
+                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                 <Input
                   id="postcode"
                   name="postcode"
@@ -186,7 +186,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="house_name_or_number">House Name or Number*</Label>
+                <Label for="house_name_or_number">House Name or Number<span className="text-danger">*</span></Label>
                 <Input
                   id="house_name_or_number"
                   name="house_name_or_number"
@@ -203,7 +203,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="address_line1">Address Line 1*</Label>
+                <Label for="address_line1">Address Line 1<span className="text-danger">*</span></Label>
                 <Input
                   id="address_line1"
                   name="address_line1"
@@ -220,7 +220,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="city">City*</Label>
+                <Label for="city">City<span className="text-danger">*</span></Label>
                 <Input
                   id="city"
                   name="city"
@@ -253,7 +253,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="country">Country*</Label>
+                <Label for="country">Country<span className="text-danger">*</span></Label>
                 <Input
                   id="country"
                   name="country"
@@ -270,7 +270,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="pre_effective_from">Effective From*</Label>
+                <Label for="pre_effective_from">Effective From<span className="text-danger">*</span></Label>
                 <Input
                   id="pre_effective_from"
                   name="pre_effective_from"
@@ -305,7 +305,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="pre_effective_to">Effective To*</Label>
+                <Label for="pre_effective_to">Effective To<span className="text-danger">*</span></Label>
                 <Input
                   id="pre_effective_to"
                   name="pre_effective_to"
@@ -355,7 +355,7 @@ const AddPreviousAddressModal: React.FC<AddPreviousAddressModalProps> = ({
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label for="residential_status">Residential Status*</Label>
+                <Label for="residential_status">Residential Status<span className="text-danger">*</span></Label>
                 <Input
                   id="residential_status"
                   name="residential_status"
