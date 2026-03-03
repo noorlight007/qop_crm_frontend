@@ -62,11 +62,3 @@ export interface ClientData {
   phone: string;
   total_cases: number;
 }
-export interface CommonAdviserClientProps {
-  isLoading: boolean;
-  adviserClientData: ClientData[];
-}
-export interface CommonAdviserDocumentProps {
-  isLoading: boolean;
-  adviserDocumentData: DocumentData[];
-}
