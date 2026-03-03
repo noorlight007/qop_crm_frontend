@@ -1,5 +1,4 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import MyTask from "@/Components/Common/MyTask/MyTasks";
 import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import {
@@ -54,16 +53,10 @@ const NetworkAdviserContainer: React.FC = () => {
         {/* 3rd row  */}
         <Row>
           <Col>
-            <MyTask />
-          </Col>
-        </Row>
-        {/* 4th row  */}
-        <Row>
-          <Col>
             <OrganisationList maxItems={8} />
           </Col>
         </Row>
-        {/* 5th row  */}
+        {/* 4th row  */}
         <Row>
           <Col md={6} sm={12}>
             <DocumentStatus
