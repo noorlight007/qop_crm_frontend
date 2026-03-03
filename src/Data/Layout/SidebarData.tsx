@@ -195,34 +195,6 @@ const NetworkDirectorMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/network/director/support-ticket",
       },
-      // {
-      //   title: "Reports & Tasks",
-      //   type: "sub",
-      //   icon: "Edit",
-      //   lanClass: "lan-4",
-      //   children: [
-      //     {
-      //       path: "/network/director/usermanagement",
-      //       title: "User Management",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/director/systemreports",
-      //       title: "System Reports",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/director/auditlog",
-      //       title: "Audit Log",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/director/securitypolicy",
-      //       title: "Security Policy",
-      //       type: "link",
-      //     },
-      //   ],
-      // },
     ],
   },
 ];
@@ -394,11 +366,6 @@ const NetworkAdviserMenu: MenuItem[] = [
           //   type: "link",
           //   path: "/network/adviser/marketinghub",
           // },
-          // {
-          //   title: "Tasks & Reminders",
-          //   type: "link",
-          //   path: "/network/adviser/tasksandreminders",
-          // },
         ],
       },
       {
@@ -543,29 +510,6 @@ const OrganisationDirectorMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/organisation/director/support-ticket",
       },
-      // {
-      //   title: "Reports & Tasks",
-      //   type: "sub",
-      //   icon: "Edit",
-      //   lanClass: "lan-4",
-      //   children: [
-      //     {
-      //       path: "/organisation/director/usersandroles",
-      //       title: "Users & Roles",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/organisation/director/workflowsandintegrations",
-      //       title: "Workflows & Integrations",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/organisation/director/systemreportsandlogs",
-      //       title: "System Reports & Logs",
-      //       type: "link",
-      //     },
-      //   ],
-      // },
     ],
   },
 ];
@@ -664,11 +608,6 @@ const OrganisationAdviserMenu: MenuItem[] = [
       //       type: "link",
       //       path: "/organisation/adviser/marketinghub",
       //     },
-      //     {
-      //       title: "Tasks & Reminders",
-      //       type: "link",
-      //       path: "/organisation/adviser/tasksandreminders",
-      //     },
       //   ],
       // },
     ],
@@ -722,20 +661,6 @@ const OrganisationAdminMenu: MenuItem[] = [
           },
         ],
       },
-      // {
-      //   title: "Tasks & Reminders",
-      //   icon: "Edit",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/orgstaff/tasksandreminders",
-      // },
-      // {
-      //   title: "Adviser Clients",
-      //   icon: "Profile",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/organisation/admin/adviserclient",
-      // },
       {
         title: "Calculators",
         icon: <FaCalculator />,
@@ -771,27 +696,6 @@ const OrganisationAdminMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/organisation/admin/support-ticket",
       },
-      // {
-      //   title: "Document Management",
-      //   icon: "Paper",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/organisation/admin/documentmanagement",
-      // },
-      // {
-      //   title: "Chat & Communication",
-      //   icon: "Chat",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/organisation/admin/chatandcommunication",
-      // },
-      // {
-      //   title: "Comments",
-      //   icon: "Message",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/organisation/admin/comments",
-      // },
     ],
   },
 ];
