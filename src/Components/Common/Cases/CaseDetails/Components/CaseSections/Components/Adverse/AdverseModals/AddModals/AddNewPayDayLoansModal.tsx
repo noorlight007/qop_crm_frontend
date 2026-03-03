@@ -74,7 +74,7 @@ const AddNewPayDayLoansModal: React.FC<AddNewPayDayLoansModalProps> = ({
           <Row>
             <Col sm={6}>
               <FormGroup>
-                <Label for="loan_amount">Loan Amount*</Label>
+                <Label for="loan_amount">Loan Amount<span className="text-danger">*</span></Label>
                 <InputGroup>
                   <InputGroupText>{getCurrencySign()}</InputGroupText>
                   <Input

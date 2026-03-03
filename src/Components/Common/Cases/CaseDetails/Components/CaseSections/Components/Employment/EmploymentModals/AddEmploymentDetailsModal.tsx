@@ -4,6 +4,7 @@ import {
   AddEmploymentDetailsModalProps,
   EmploymentDetailsProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
+import getCurrencySign from "@/utils/currency";
 import { calculateMonthsDuration } from "@/utils/dateAndTimeFormatter";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,7 +25,6 @@ import {
   Row,
 } from "reactstrap";
 import GetAddressModal from "../../../CommonModals/GetAddressModal";
-import getCurrencySign from "@/utils/currency";
 
 const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
   isOpen,
@@ -584,23 +584,23 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
             {formValues?.employment_status === "EMPLOYED" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="employers_name_for_reference">
+                  <Label for="employer_name_for_reference">
                     Employer's Name for Reference
                   </Label>
                   <Input
                     type="text"
-                    id="employers_name_for_reference"
-                    value={formValues?.employers_name_for_reference || ""}
+                    id="employer_name_for_reference"
+                    value={formValues?.employer_name_for_reference || ""}
                     onChange={(e) =>
                       handleInputChange(
-                        "employers_name_for_reference",
+                        "employer_name_for_reference",
                         e.target.value,
                       )
                     }
                   />
-                  {getFieldError("employers_name_for_reference") && (
+                  {getFieldError("employer_name_for_reference") && (
                     <div className="text-danger small">
-                      {getFieldError("employers_name_for_reference")}
+                      {getFieldError("employer_name_for_reference")}
                     </div>
                   )}
                 </FormGroup>
@@ -925,7 +925,9 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
             {formValues?.employment_status === "EMPLOYED" && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="netMonthlyIncome">Net Monthly Income({getCurrencySign()})</Label>
+                  <Label for="netMonthlyIncome">
+                    Net Monthly Income({getCurrencySign()})
+                  </Label>
                   <Input
                     type="number"
                     id="netMonthlyIncome"
@@ -1202,7 +1204,9 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Row className="d-flex justify-content-between">
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="allowance">Allowance({getCurrencySign()})*</Label>
+                    <Label for="allowance">
+                      Allowance({getCurrencySign()})*
+                    </Label>
                     <Input
                       type="number"
                       id="allowance"
@@ -1898,7 +1902,9 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="dividends">Dividends({getCurrencySign()})*</Label>
+                    <Label for="dividends">
+                      Dividends({getCurrencySign()})*
+                    </Label>
                     <Input
                       type="number"
                       id="dividends"
@@ -1943,7 +1949,9 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               <Row>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="other_income">Other Income({getCurrencySign()})</Label>
+                    <Label for="other_income">
+                      Other Income({getCurrencySign()})
+                    </Label>
                     <Input
                       type="number"
                       id="other_income"
@@ -2173,7 +2181,9 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <Label for="hourly_rate">Hourly Rate({getCurrencySign()})</Label>
+                    <Label for="hourly_rate">
+                      Hourly Rate({getCurrencySign()})
+                    </Label>
                     <Input
                       type="number"
                       id="hourly_rate"

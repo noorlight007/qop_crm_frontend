@@ -160,7 +160,7 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label>Lender*</Label>
+                <Label>Lender<span className="text-danger">*</span></Label>
                 <Input
                   type="select"
                   name="lender"
@@ -353,7 +353,7 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label>DIP Decision*</Label>
+                <Label>DIP Decision<span className="text-danger">*</span></Label>
                 <Input
                   type="select"
                   name="dip_decision"

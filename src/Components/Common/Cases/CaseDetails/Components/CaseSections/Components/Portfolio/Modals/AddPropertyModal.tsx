@@ -541,7 +541,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicants">Applicant/s*</Label>
+                <Label for="applicants">Applicant/s<span className="text-danger">*</span></Label>
                 <div className="position-relative" ref={dropdownRef}>
                   {/* Custom Input Field */}
                   <div
@@ -627,7 +627,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="postcode">Postcode*</Label>
+                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -664,7 +664,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="houseNumber">House Name Or Number*</Label>
+                <Label for="houseNumber">House Name Or Number<span className="text-danger">*</span></Label>
                 <Input
                   id="houseNumber"
                   name="houseNumber"
@@ -687,7 +687,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="address1">Address 1*</Label>
+                <Label for="address1">Address 1<span className="text-danger">*</span></Label>
                 <Input
                   id="address1"
                   name="address1"
@@ -734,7 +734,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="city">City*</Label>
+                <Label for="city">City<span className="text-danger">*</span></Label>
                 <Input
                   id="city"
                   name="city"
@@ -779,7 +779,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="country">Country*</Label>
+                <Label for="country">Country<span className="text-danger">*</span></Label>
                 <Input
                   id="country"
                   name="country"
@@ -805,7 +805,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="propertyValue">Property Value*</Label>
+                <Label for="propertyValue">Property Value<span className="text-danger">*</span></Label>
                 <Input
                   id="propertyValue"
                   name="propertyValue"
@@ -828,7 +828,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="currentMortgageBalance">
-                  Current Mortgage Balance*
+                  Current Mortgage Balance<span className="text-danger">*</span>
                 </Label>
                 <Input
                   id="currentMortgageBalance"
@@ -851,7 +851,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthlyRental">Monthly Rental Income*</Label>
+                <Label for="monthlyRental">Monthly Rental Income<span className="text-danger">*</span></Label>
                 <Input
                   id="monthlyRental"
                   name="monthlyRental"
@@ -1122,7 +1122,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="propertyType">Property Type*</Label>
+                <Label for="propertyType">Property Type<span className="text-danger">*</span></Label>
                 <Input
                   id="propertyType"
                   name="propertyType"
@@ -1141,7 +1141,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ownership">Ownership*</Label>
+                <Label for="ownership">Ownership<span className="text-danger">*</span></Label>
                 <Input id="ownership" name="ownership" type="text" required />
                 {getFieldError("ownership") && (
                   <small
@@ -1193,7 +1193,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="numberOfBedrooms">Number of Bedrooms*</Label>
+                <Label for="numberOfBedrooms">Number of Bedrooms<span className="text-danger">*</span></Label>
                 <Input
                   id="numberOfBedrooms"
                   name="numberOfBedrooms"

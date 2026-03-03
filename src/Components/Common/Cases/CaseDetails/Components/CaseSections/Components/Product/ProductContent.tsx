@@ -398,7 +398,7 @@ const ProductContent: React.FC = () => {
       <Row>
         <Col md={4}>
           <FormGroup>
-            <Label for="productDescription">Product Description*</Label>
+            <Label for="productDescription">Product Description<span className="text-danger">*</span></Label>
             <Input
               id="productDescription"
               name="product_description"
@@ -416,7 +416,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="initialRate">Initial Rate*</Label>
+            <Label for="initialRate">Initial Rate<span className="text-danger">*</span></Label>
             <Input
               id="initialRate"
               name="initial_rate"
@@ -438,7 +438,7 @@ const ProductContent: React.FC = () => {
 
         <Col md={4}>
           <FormGroup>
-            <Label for="initialRateType">Initial Rate Type*</Label>
+            <Label for="initialRateType">Initial Rate Type<span className="text-danger">*</span></Label>
             <Input
               id="initialRateType"
               name="initial_rate_type"
@@ -463,7 +463,7 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="initialRatePeriodType">Initial Rate Period Type*</Label>
+            <Label for="initialRatePeriodType">Initial Rate Period Type<span className="text-danger">*</span></Label>
             <Input
               id="initialRatePeriodType"
               name="initial_rate_period_type"

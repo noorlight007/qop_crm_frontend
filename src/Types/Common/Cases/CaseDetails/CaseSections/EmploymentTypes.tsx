@@ -18,7 +18,7 @@ export interface EmploymentDetailsProps {
   industry: string | null;
   employer_name: string | null;
   employer_telephone: string | null;
-  employers_name_for_reference: string | null;
+  employer_name_for_reference: string | null;
   employer_email_for_reference: string | null;
   employer_postcode: string | null;
   employer_house_name_or_number: string | null;

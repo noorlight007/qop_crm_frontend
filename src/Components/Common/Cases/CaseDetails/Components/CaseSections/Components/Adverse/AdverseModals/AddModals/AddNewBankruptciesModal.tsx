@@ -63,7 +63,7 @@ const AddNewBankruptciesModal: React.FC<AddNewBankruptciesModalProps> = ({
           <Row className="justify-content-center">
             <Col sm={12}>
               <FormGroup>
-                <Label for="date_discharged">Date Discharged*</Label>
+                <Label for="date_discharged">Date Discharged<span className="text-danger">*</span></Label>
                 <Input
                   id="date_discharged"
                   name="date_discharged"

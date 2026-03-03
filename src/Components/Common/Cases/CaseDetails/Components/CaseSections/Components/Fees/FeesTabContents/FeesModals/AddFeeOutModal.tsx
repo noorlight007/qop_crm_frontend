@@ -191,7 +191,7 @@ const AddFeeOutModal: FC<AddFeeOutModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="method">Payment Method*</Label>
+                <Label for="method">Payment Method<span className="text-danger">*</span></Label>
                 <Input
                   type="select"
                   id="method"

@@ -849,7 +849,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="purchase_price">
-                      Purchase Price({getCurrencySign()})*
+                      Purchase Price({getCurrencySign()})<span className="text-danger">*</span>
                     </Label>
                     <Input
                       type="number"
@@ -880,7 +880,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="property_valuation">
-                      Property Valuation({getCurrencySign()})*
+                      Property Valuation({getCurrencySign()})<span className="text-danger">*</span>
                     </Label>
                     <Input
                       type="number"
@@ -911,7 +911,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="loan_amount">
-                    Loan Amount({getCurrencySign()})*
+                    Loan Amount({getCurrencySign()})<span className="text-danger">*</span>
                   </Label>
                   <Input
                     type="number"
@@ -948,7 +948,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="estimated_value">
-                    Estimated Value({getCurrencySign()})*
+                    Estimated Value({getCurrencySign()})<span className="text-danger">*</span>
                   </Label>
                   <Input
                     type="number"
@@ -996,7 +996,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 </FormGroup>
               </Col>
               <Col md={6}>
-                <Label for="term_years">Term*</Label>
+                <Label for="term_years">Term<span className="text-danger">*</span></Label>
                 <Row>
                   <Col md="6">
                     <FormGroup>
@@ -1011,7 +1011,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
-                      <FormText>*In years</FormText>
+                      <FormText>In years</FormText>
                       <div>
                         {showFieldWarning("2", formDataTab2.term_years) && (
                           <FormText className="text-danger">
@@ -1042,7 +1042,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                           handleFormChange(2, e.target.name, e.target.value)
                         }
                       />
-                      <FormText>*In months (0-11)</FormText>
+                      <FormText>In months (0-11)</FormText>
                       <div>
                         {showFieldWarning("2", formDataTab2.term_months) && (
                           <FormText className="text-danger">

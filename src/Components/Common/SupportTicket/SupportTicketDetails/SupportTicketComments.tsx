@@ -175,9 +175,10 @@ const SupportTicketComments: React.FC = () => {
   };
 
   const formatUserType = (userType: string) => {
+    if (!userType) return "";
     return userType
       .split("_")
-      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(" ");
   };
 
