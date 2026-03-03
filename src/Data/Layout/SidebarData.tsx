@@ -158,6 +158,11 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/advisers-status",
           },
+          {
+            title: "Login History",
+            type: "link",
+            path: "/network/director/login-history",
+          },
         ],
       },
       {
@@ -195,34 +200,6 @@ const NetworkDirectorMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/network/director/support-ticket",
       },
-      // {
-      //   title: "Reports & Tasks",
-      //   type: "sub",
-      //   icon: "Edit",
-      //   lanClass: "lan-4",
-      //   children: [
-      //     {
-      //       path: "/network/director/usermanagement",
-      //       title: "User Management",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/director/systemreports",
-      //       title: "System Reports",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/director/auditlog",
-      //       title: "Audit Log",
-      //       type: "link",
-      //     },
-      //     {
-      //       path: "/network/director/securitypolicy",
-      //       title: "Security Policy",
-      //       type: "link",
-      //     },
-      //   ],
-      // },
     ],
   },
 ];
@@ -291,6 +268,11 @@ const NetworkComplianceMenu: MenuItem[] = [
             title: "Advisers Status",
             type: "link",
             path: "/network/director/advisers-status",
+          },
+          {
+            title: "Login History",
+            type: "link",
+            path: "/network/director/login-history",
           },
         ],
       },
@@ -393,11 +375,6 @@ const NetworkAdviserMenu: MenuItem[] = [
           //   title: "Marketing Hub",
           //   type: "link",
           //   path: "/network/adviser/marketinghub",
-          // },
-          // {
-          //   title: "Tasks & Reminders",
-          //   type: "link",
-          //   path: "/network/adviser/tasksandreminders",
           // },
         ],
       },
@@ -771,13 +748,6 @@ const OrganisationAdminMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/organisation/admin/support-ticket",
       },
-      // {
-      //   title: "Document Management",
-      //   icon: "Paper",
-      //   type: "link",
-      //   lanClass: "lan-3",
-      //   path: "/organisation/admin/documentmanagement",
-      // },
       // {
       //   title: "Chat & Communication",
       //   icon: "Chat",
