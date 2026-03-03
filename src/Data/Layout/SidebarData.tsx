@@ -158,11 +158,6 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/advisers-status",
           },
-          {
-            title: "Login History",
-            type: "link",
-            path: "/network/director/login-history",
-          },
         ],
       },
       {
@@ -268,11 +263,6 @@ const NetworkComplianceMenu: MenuItem[] = [
             title: "Advisers Status",
             type: "link",
             path: "/network/director/advisers-status",
-          },
-          {
-            title: "Login History",
-            type: "link",
-            path: "/network/director/login-history",
           },
         ],
       },
