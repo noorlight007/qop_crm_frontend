@@ -702,7 +702,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.title">Title*</Label>
+                <Label for="applicant.title">Title<span className="text-danger">*</span></Label>
                 <Input
                   id="applicant.title"
                   type="select"
@@ -733,7 +733,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.first_name">First Name*</Label>
+                <Label for="applicant.first_name">First Name<span className="text-danger">*</span></Label>
                 <Input
                   id="applicant.first_name"
                   type="text"
@@ -770,7 +770,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.last_name">Last Name*</Label>
+                <Label for="applicant.last_name">Last Name<span className="text-danger">*</span></Label>
                 <Input
                   id="applicant.last_name"
                   type="text"
@@ -830,7 +830,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             <Col md={6}>
               <Row>
                 <Col md={8}>
-                  <Label for="date_of_birth">Date of Birth*</Label>
+                  <Label for="date_of_birth">Date of Birth<span className="text-danger">*</span></Label>
                   <FormGroup className="d-flex justify-content-center align-items-center">
                     <Input
                       id="date_of_birth"
@@ -896,7 +896,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="anticipated_retirement_age">
-                  Anticipated Retirement Age*
+                  Anticipated Retirement Age<span className="text-danger">*</span>
                 </Label>
                 <Input
                   id="anticipated_retirement_age"
@@ -1283,7 +1283,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.phone">Mobile Number*</Label>
+                <Label for="applicant.phone">Mobile Number<span className="text-danger">*</span></Label>
                 <Input
                   id="applicant.phone"
                   type="text"
@@ -1490,7 +1490,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="postcode">Postcode*</Label>
+                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                 <InputGroup className="d-flex align-items-stretch gap-2">
                   <Input
                     id="postcode"
@@ -1526,7 +1526,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="house_number_or_name">House Name or Number*</Label>
+                <Label for="house_number_or_name">House Name or Number<span className="text-danger">*</span></Label>
                 <Input
                   id="house_number_or_name"
                   type="text"
@@ -1548,7 +1548,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="address_line1">Address Line 1*</Label>
+                <Label for="address_line1">Address Line 1<span className="text-danger">*</span></Label>
                 <Input
                   id="address_line1"
                   type="text"
@@ -1567,7 +1567,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="city">City*</Label>
+                <Label for="city">City<span className="text-danger">*</span></Label>
                 <Input
                   id="city"
                   type="text"
@@ -1603,7 +1603,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="country">Country*</Label>
+                <Label for="country">Country<span className="text-danger">*</span></Label>
                 <Input
                   id="country"
                   type="text"
@@ -1624,7 +1624,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="effective_from">
-                  Effective From*
+                  Effective From<span className="text-danger">*</span>
                   {formValues.effective_from &&
                   new Date(formValues.effective_from) <
                     new Date(
@@ -1732,7 +1732,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="residential_status">Residential Status*</Label>
+                <Label for="residential_status">Residential Status<span className="text-danger">*</span></Label>
                 <Input
                   id="residential_status"
                   type="select"

@@ -10,6 +10,8 @@ import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
   FaCamera,
+  FaCheckCircle,
+  FaDownload,
   FaGlobe,
   FaIdCard,
   FaNetworkWired,
@@ -17,6 +19,7 @@ import {
   FaRegCalendarAlt,
   FaShieldAlt,
 } from "react-icons/fa";
+import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -25,6 +28,9 @@ import {
   CardBody,
   CardHeader,
   Col,
+  Popover,
+  PopoverBody,
+  PopoverHeader,
   Row,
   Spinner,
 } from "reactstrap";
@@ -146,6 +152,68 @@ const OrganisationDetails: React.FC = () => {
     }
   };
 
+  const [licensePopoverOpen, setLicensePopoverOpen] = useState(false);
+  
+    const toggleLicensePopover = () => setLicensePopoverOpen(!licensePopoverOpen);
+  
+    const handleLicenseImageDownload = async () => {
+      const licenseImageUrl = getOrganisationDetails?.organization?.license_image;
+  
+      if (!licenseImageUrl) return;
+  
+      try {
+        // Fetch the image as a blob
+        const response = await fetch(licenseImageUrl);
+        const blob = await response.blob();
+  
+        // Create a temporary URL for the blob
+        const blobUrl = window.URL.createObjectURL(blob);
+  
+        // Create a temporary anchor element
+        const link = document.createElement("a");
+        link.href = blobUrl;
+  
+        // Extract filename from URL or use a default name
+        const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
+        link.download = fileName;
+  
+        // Append to body, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+  
+        // Clean up the blob URL
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (error) {
+        console.error("Download failed:", error);
+        // Fallback to opening in new tab if download fails
+        window.open(licenseImageUrl, "_blank");
+      }
+    };
+
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyDomain = () => {
+    const url = `https://${getOrganisationDetails?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = url;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      });
+  };
+
   return (
     <>
       <Row>
@@ -251,10 +319,105 @@ const OrganisationDetails: React.FC = () => {
                       </h2>
                       <div className="d-flex align-items-center gap-2 mb-2">
                         {getOrganisationDetails?.organization?.subdomain && (
-                          <Badge className="bg-warning">
-                            <FaGlobe className="me-1" />
-                            {`${"https://"}${getOrganisationDetails?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}{" "}
+                          <Badge className="bg-warning text-truncate d-flex gap-2 align-items-center">
+                            <span className="d-flex align-items-center">
+                              <FaGlobe className="me-1" />
+                              <span style={{ paddingTop: "0.175rem" }}>
+                                {`${"https://"}${getOrganisationDetails?.organization?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                              </span>
+                            </span>
+                            <span
+                              style={{ cursor: "pointer" }}
+                              onClick={handleCopyDomain}
+                            >
+                              {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                            </span>
                           </Badge>
+                        )}
+                        {(getOrganisationDetails?.organization?.license_no ||
+                          getOrganisationDetails?.organization
+                            ?.license_image) && (
+                          <>
+                            <Badge
+                              id="licensePopover"
+                              color="secondary"
+                              onClick={toggleLicensePopover}
+                              style={{ cursor: "pointer", padding: "0.3rem" }}
+                            >
+                              <FaIdCard />
+                            </Badge>
+
+                            <Popover
+                              placement="bottom"
+                              isOpen={licensePopoverOpen}
+                              target="licensePopover"
+                              toggle={toggleLicensePopover}
+                              trigger="legacy"
+                            >
+                              <PopoverHeader className="bg-primary text-light">
+                                <FaIdCard className="me-2" />
+                                License Information
+                              </PopoverHeader>
+                              <PopoverBody>
+                                <div className="mb-3">
+                                  <small className="text-muted d-block mb-1">
+                                    License Number
+                                  </small>
+                                  {getOrganisationDetails?.organization
+                                    ?.license_no ? (
+                                    <strong>
+                                      {
+                                        getOrganisationDetails.organization
+                                          .license_no
+                                      }
+                                    </strong>
+                                  ) : (
+                                    <small className="text-danger fst-italic">
+                                      Not added yet
+                                    </small>
+                                  )}
+                                </div>
+
+                                <div>
+                                  <small className="text-muted d-block mb-1">
+                                    License Image
+                                  </small>
+                                  {getOrganisationDetails?.organization
+                                    ?.license_image ? (
+                                    <div>
+                                      <img
+                                        src={
+                                          getOrganisationDetails.organization
+                                            .license_image
+                                        }
+                                        alt="License"
+                                        className="img-fluid rounded border mb-2"
+                                        style={{
+                                          maxHeight: "200px",
+                                          width: "100%",
+                                          maxWidth: "100%",
+                                          objectFit: "contain",
+                                        }}
+                                      />
+                                      <Button
+                                        color="primary"
+                                        size="sm"
+                                        onClick={handleLicenseImageDownload}
+                                        style={{ width: "100%" }}
+                                      >
+                                        <FaDownload className="me-1" />
+                                        Download
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <small className="text-danger fst-italic">
+                                      Not added yet
+                                    </small>
+                                  )}
+                                </div>
+                              </PopoverBody>
+                            </Popover>
+                          </>
                         )}
                       </div>
                     </Col>

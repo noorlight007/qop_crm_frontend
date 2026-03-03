@@ -101,7 +101,7 @@ const AddNewCommitmentPaymentsMissedModal: React.FC<
           <Row>
             <Col sm={6}>
               <FormGroup>
-                <Label for="commitment_type">Commitment Type*</Label>
+                <Label for="commitment_type">Commitment Type<span className="text-danger">*</span></Label>
                 <Input
                   id="commitment_type"
                   name="commitment_type"

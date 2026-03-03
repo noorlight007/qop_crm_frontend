@@ -61,6 +61,20 @@ const baseQuery = fetchBaseQuery({
 let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
+const shouldBypassReauthOn401 = (url: string | undefined) => {
+  if (!url) return false;
+  // Public/auth flows can legitimately return 401 (e.g., invalid/expired token)
+  // and should NOT force a global sign-out + redirect.
+  const bypassPaths = [
+    "/auth/reset-password/",
+    "/auth/forgot-password/",
+    "/auth/set-password/",
+    "/auth/send-email/",
+  ];
+
+  return bypassPaths.some((path) => url.includes(path));
+};
+
 // Centralized token refresh function with mutex
 const refreshAccessToken = async (): Promise<string | null> => {
   // If already refreshing, wait for the existing promise
@@ -158,8 +172,14 @@ const baseQueryWithReauth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
 
+  const requestUrl = typeof args === "string" ? args : args?.url;
+
   // Handle 401 Unauthorized
-  if (result.error && result.error.status === 401) {
+  if (
+    result.error &&
+    result.error.status === 401 &&
+    !shouldBypassReauthOn401(requestUrl)
+  ) {
     // Attempt to refresh the token
     const newToken = await refreshAccessToken();
 

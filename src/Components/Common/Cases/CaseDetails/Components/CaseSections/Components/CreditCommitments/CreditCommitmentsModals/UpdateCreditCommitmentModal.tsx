@@ -144,7 +144,7 @@ const UpdateCreditCommitmentModal: React.FC<
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label>Applicant*</Label>
+                <Label>Applicant<span className="text-danger">*</span></Label>
                 <Input
                   type="select"
                   name="applicant"
@@ -252,7 +252,7 @@ const UpdateCreditCommitmentModal: React.FC<
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Company*</Label>
+                  <Label>Company<span className="text-danger">*</span></Label>
                   <Input
                     type="text"
                     name="company"
@@ -314,7 +314,7 @@ const UpdateCreditCommitmentModal: React.FC<
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>OS Balance* ({getCurrencySign()})</Label>
+                  <Label>OS Balance<span className="text-danger">*</span> ({getCurrencySign()})</Label>
                   <Input
                     type="number"
                     name="os_balance"

@@ -665,7 +665,7 @@ const Solicitor: React.FC = () => {
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="qualifications">Qualification*</Label>
+                    <Label for="qualifications">Qualification<span className="text-danger">*</span></Label>
                     <Input
                       id="qualifications"
                       name="qualifications"
@@ -700,7 +700,7 @@ const Solicitor: React.FC = () => {
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="postcode">Postcode*</Label>
+                    <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                     <InputGroup className="d-flex align-items-center gap-2">
                       <Input
                         id="postcode"

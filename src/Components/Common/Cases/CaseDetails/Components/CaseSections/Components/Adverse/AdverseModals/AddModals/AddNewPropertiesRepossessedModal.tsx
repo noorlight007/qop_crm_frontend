@@ -69,7 +69,7 @@ const AddNewPropertiesRepossessedModal: React.FC<
             {/* Lender Name Field */}
             <Col sm={6}>
               <FormGroup>
-                <Label for="LenderName">Lender*</Label>
+                <Label for="LenderName">Lender<span className="text-danger">*</span></Label>
                 <Input
                   id="LenderName"
                   name="LenderName"

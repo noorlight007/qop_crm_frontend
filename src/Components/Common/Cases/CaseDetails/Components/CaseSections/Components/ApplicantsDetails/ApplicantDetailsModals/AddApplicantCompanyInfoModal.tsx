@@ -504,7 +504,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label className="small">Company Registration Number*</Label>
+                <Label className="small">Company Registration Number<span className="text-danger">*</span></Label>
                 <InputGroup>
                   <Input
                     type="text"
@@ -535,7 +535,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="small">Company Name*</Label>
+                <Label className="small">Company Name<span className="text-danger">*</span></Label>
                 <Input
                   type="text"
                   name="company_name"

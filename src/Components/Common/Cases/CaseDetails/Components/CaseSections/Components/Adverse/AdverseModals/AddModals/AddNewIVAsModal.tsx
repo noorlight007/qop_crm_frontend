@@ -74,7 +74,7 @@ const AddNewIVAsModal: React.FC<AddNewIVAsModalProps> = ({
           <Row>
             <Col sm={12} className="mb-3">
               <FormGroup>
-                <Label for="date_registered">Date Registered*</Label>
+                <Label for="date_registered">Date Registered<span className="text-danger">*</span></Label>
                 <Input
                   id="date_registered"
                   name="date_registered"

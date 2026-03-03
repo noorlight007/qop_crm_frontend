@@ -611,7 +611,7 @@ const Accountant: React.FC = () => {
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label for="name">Name*</Label>
+                  <Label for="name">Name<span className="text-danger">*</span></Label>
                   <Input
                     id="name"
                     name="name"
@@ -659,7 +659,7 @@ const Accountant: React.FC = () => {
             <Row>
               <Col md={6}>
                 <FormGroup>
-                  <Label for="postcode">Postcode*</Label>
+                  <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                   <InputGroup className="d-flex align-items-center gap-2">
                     <Input
                       id="postcode"

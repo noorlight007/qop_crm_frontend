@@ -118,7 +118,7 @@ const AddNewDMPsModal: React.FC<AddNewDMPsModalProps> = ({
 
             <Col sm={6} className="mb-3">
               <FormGroup>
-                <Label for="loan_company_name">Loan Company Name*</Label>
+                <Label for="loan_company_name">Loan Company Name<span className="text-danger">*</span></Label>
                 <Input
                   id="loan_company_name"
                   name="loan_company_name"
