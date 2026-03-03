@@ -1,3 +1,4 @@
+import ConfigDB from "@/Config/ThemeConfig";
 import {
   EmailAddressLogIn,
   ForgotPassword,
@@ -5,23 +6,57 @@ import {
   SignIn,
   SignInToAccount,
 } from "@/Constant";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import { addSideBarBackGround } from "@/Redux/Reducers/ThemeCustomizerReducer";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { BiMoon, BiSolidSun } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
 import imageTwo from "../../../public/assets/images/logo/logo-dark.png";
 import imageOne from "../../../public/assets/images/logo/logo1.png";
 
 export const LoginForm = () => {
+  const dispatch = useAppDispatch();
+  const currentTheme = useAppSelector(
+    (state) => state.themeCustomizer.mix_background_layout,
+  );
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      ConfigDB.color.mix_background_layout = savedTheme;
+      document.body.className = `${
+        document.body.className.split(" ").find((cls) => cls.includes("__")) ||
+        ""
+      } ${savedTheme}`.trim();
+
+      if (currentTheme !== savedTheme) {
+        dispatch(addSideBarBackGround(savedTheme));
+      }
+    }
+  }, [dispatch, currentTheme]);
+
+  const handleThemeToggle = () => {
+    const nextTheme = currentTheme !== "light" ? "light" : "dark-only";
+    ConfigDB.color.mix_background_layout = nextTheme;
+    dispatch(addSideBarBackGround(nextTheme));
+
+    const fontClass =
+      document.body.className.split(" ").find((cls) => cls.includes("__")) ||
+      "";
+    document.body.className = `${fontClass} ${nextTheme}`.trim();
+    localStorage.setItem("theme", nextTheme);
+  };
 
   const formSubmitHandle = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -70,7 +105,30 @@ export const LoginForm = () => {
         className="theme-form"
         onSubmit={(event) => formSubmitHandle(event)}
       >
-        <div>
+        <div className="position-relative">
+          <Button
+            type="button"
+            color="black"
+            className={
+              currentTheme === "light" ? "bg-light-dark" : "bg-light-primary"
+            }
+            onClick={handleThemeToggle}
+            aria-label="Toggle theme"
+            title={
+              currentTheme === "light"
+                ? "Switch to dark mode"
+                : "Switch to light mode"
+            }
+            style={{
+              position: "absolute",
+              top: "-20px",
+              right: "-20px",
+            }}
+          >
+            {currentTheme === "light" ? <BiMoon /> : <BiSolidSun />}
+          </Button>
+        </div>
+        <div className="d-flex align-items-start justify-content-center">
           <Link className="logo mb-2" href="/">
             <Image
               width={300}

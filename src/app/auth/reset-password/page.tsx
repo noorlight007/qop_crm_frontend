@@ -1,15 +1,26 @@
 "use client";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useResetUserPasswordMutation } from "@/Redux/Reducers/Common/UserProfile/ResetUserPasswordApi";
-import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
+import {
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+  Spinner,
+} from "reactstrap";
 import imageTwo from "../../../../public/assets/images/logo/logo-dark.png";
 import imageOne from "../../../../public/assets/images/logo/logo1.png";
+
+type FieldErrors = Partial<
+  Record<"current_password" | "new_password" | "confirm_password", string[]>
+>;
 
 export default function ResetPassword() {
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
@@ -48,6 +59,8 @@ export default function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [show, setShow] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState<string>("");
 
   // RTK Hooks
   const [resetPassword, { isLoading }] = useResetUserPasswordMutation();
@@ -71,22 +84,94 @@ export default function ResetPassword() {
     validation.number &&
     validation.special;
 
+  const normalizeToStringArray = (value: unknown): string[] => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.map(String).filter(Boolean);
+    if (typeof value === "string") return value ? [value] : [];
+    return [String(value)];
+  };
+
+  const extractFieldErrors = (
+    errorData: any,
+  ): {
+    fieldErrors: FieldErrors;
+    formError: string;
+  } => {
+    const nextFieldErrors: FieldErrors = {};
+    let nextFormError = "";
+
+    if (!errorData || typeof errorData !== "object") {
+      return { fieldErrors: nextFieldErrors, formError: nextFormError };
+    }
+
+    // Django REST Framework common patterns
+    if (errorData.detail) {
+      nextFormError = String(errorData.detail);
+    }
+
+    (["current_password", "new_password", "confirm_password"] as const).forEach(
+      (key) => {
+        if (key in errorData) {
+          const messages = normalizeToStringArray(errorData[key]);
+          if (messages.length) nextFieldErrors[key] = messages;
+        }
+      },
+    );
+
+    // Some backends use { error: "..." }
+    if (!nextFormError && errorData.error) {
+      nextFormError = String(errorData.error);
+    }
+
+    return { fieldErrors: nextFieldErrors, formError: nextFormError };
+  };
+
+  const renderFieldErrors = (name: keyof FieldErrors) => {
+    const errors = fieldErrors[name];
+    if (!errors?.length) return null;
+    return (
+      <FormFeedback className="d-block">
+        {errors.map((msg, idx) => (
+          <div key={`${name}-${idx}`}>{msg}</div>
+        ))}
+      </FormFeedback>
+    );
+  };
+
   const formSubmitHandle = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!newPassword || !confirmPassword) {
-      toast.error("Please fill both new and confirm password fields.");
+    setFieldErrors({});
+    setFormError("");
+
+    const nextErrors: FieldErrors = {};
+    if (!currentPassword) {
+      nextErrors.current_password = ["Current password is required."];
+    }
+    if (!newPassword) {
+      nextErrors.new_password = ["New password is required."];
+    }
+    if (!confirmPassword) {
+      nextErrors.confirm_password = ["Confirm password is required."];
+    }
+    if (newPassword && !isPasswordValid) {
+      nextErrors.new_password = [
+        ...(nextErrors.new_password ?? []),
+        "Password does not meet all requirements.",
+      ];
+    }
+    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+      nextErrors.confirm_password = [
+        ...(nextErrors.confirm_password ?? []),
+        "Passwords do not match.",
+      ];
+    }
+    if (Object.keys(nextErrors).length) {
+      setFieldErrors(nextErrors);
       return;
     }
-    if (!isPasswordValid) {
-      toast.error("Password does not meet all requirements.");
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
+
     if (!uid || !token || !subdomain) {
-      toast.error("Invalid or missing credentials. Please try again.");
+      setFormError("Invalid or missing credentials. Please try again.");
       return;
     }
 
@@ -106,45 +191,30 @@ export default function ResetPassword() {
       // console.log("Res:", res.data);
 
       if (res.data) {
-        // Notify other tabs and force sign-out
-        if (typeof window !== "undefined") {
-          try {
-            localStorage.setItem("qop_logout", Date.now().toString());
-          } catch (err) {
-            // ignore
-            console.error("LocalStorage error:", err);
-          }
-          try {
-            if ((window as any).BroadcastChannel) {
-              const bc = new BroadcastChannel("qop_channel");
-              bc.postMessage("logout");
-              bc.close();
-            }
-          } catch (err) {
-            // ignore
-            console.error("BroadcastChannel error:", err);
-          }
-        }
-
-        await signOut({ redirect: false });
         toast.success("Password updated. Redirecting to login...");
         // Small delay so the user can see the toast
         setTimeout(() => router.push("/auth/login"), 900);
       } else if (res.error) {
+        const errorData = (res.error as any)?.data;
+        const extracted = extractFieldErrors(errorData);
+        if (Object.keys(extracted.fieldErrors).length) {
+          setFieldErrors(extracted.fieldErrors);
+        }
         const errorMessage =
-          (res.error as any)?.data?.error ||
+          extracted.formError ||
           (res.error as any)?.message ||
           "Unable to update password.";
-        toast.error(errorMessage);
+        setFormError(errorMessage);
       } else {
-        toast.error("Unable to update password.");
+        setFormError("Unable to update password.");
       }
     } catch (err: any) {
       const errorMessage =
         err?.data?.error ||
+        err?.data?.detail ||
         err?.message ||
         "Network error while updating password.";
-      toast.error(errorMessage);
+      setFormError(errorMessage);
     }
   };
 
@@ -190,10 +260,20 @@ export default function ResetPassword() {
                     <Input
                       type="password"
                       value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      onChange={(e) => {
+                        setCurrentPassword(e.target.value);
+                        if (fieldErrors.current_password?.length) {
+                          setFieldErrors((prev) => ({
+                            ...prev,
+                            current_password: undefined,
+                          }));
+                        }
+                      }}
                       placeholder="Enter current password"
                       required
+                      invalid={Boolean(fieldErrors.current_password?.length)}
                     />
+                    {renderFieldErrors("current_password")}
                   </FormGroup>
                   <FormGroup>
                     <Label className="col-form-label">New Password</Label>
@@ -201,10 +281,19 @@ export default function ResetPassword() {
                       <Input
                         type={show ? "text" : "password"}
                         value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
+                        onChange={(e) => {
+                          setNewPassword(e.target.value);
+                          if (fieldErrors.new_password?.length) {
+                            setFieldErrors((prev) => ({
+                              ...prev,
+                              new_password: undefined,
+                            }));
+                          }
+                        }}
                         placeholder="Enter new password"
                         minLength={8}
                         required
+                        invalid={Boolean(fieldErrors.new_password?.length)}
                       />
                       <div
                         className="show-hide top-50"
@@ -214,6 +303,7 @@ export default function ResetPassword() {
                         <span className="show fs-4">{show ? "🫣" : "🤫"}</span>
                       </div>
                     </div>
+                    {renderFieldErrors("new_password")}
 
                     <div className="mt-2">
                       <ul className="mb-0 ps-3">
@@ -278,11 +368,21 @@ export default function ResetPassword() {
                     <Input
                       type={show ? "text" : "password"}
                       value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        if (fieldErrors.confirm_password?.length) {
+                          setFieldErrors((prev) => ({
+                            ...prev,
+                            confirm_password: undefined,
+                          }));
+                        }
+                      }}
                       placeholder="Repeat new password"
                       minLength={8}
                       required
+                      invalid={Boolean(fieldErrors.confirm_password?.length)}
                     />
+                    {renderFieldErrors("confirm_password")}
                   </FormGroup>
 
                   <div className="d-grid mt-3">

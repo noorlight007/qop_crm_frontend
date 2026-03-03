@@ -8,6 +8,7 @@ import {
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { getSupportTicketUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -161,14 +162,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     message: "",
     files: [],
   });
-
-  const formatChoiceFieldValue = (value: string) => {
-    if (!value) return "";
-    return value
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
-  };
 
   const tickets =
     isFetching || isError ? [] : (supportTicketData?.results ?? []);

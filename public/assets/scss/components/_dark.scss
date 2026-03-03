@@ -1651,11 +1651,25 @@
       color: var(--font-color);
     }
   }
-  .theme-form input[type="text"] {
-    background-color: var(--body-color);
-    border: 1px solid var(--border-color);
+  .login-main .theme-form input[type="text"],
+  .login-main .theme-form input[type="email"],
+  .login-main .theme-form input[type="password"],
+  .login-main .theme-form .form-control {
+    background-color: var(--body-color) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--body-font-color) !important;
+
     &::placeholder {
       color: var(--font-color);
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      background-color: var(--body-color) !important;
+      border-color: var(--border-color) !important;
+      color: var(--body-font-color) !important;
+      box-shadow: none !important;
     }
   }
   .theme-form textarea {
@@ -2563,5 +2577,32 @@
     caret-color: var(--body-font-color) !important;
     border-color: var(--border-color) !important;
     transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Keep login inputs dark in all interaction states */
+  .login-card .login-main .theme-form .form-control,
+  .login-card .login-main .theme-form input[type="email"],
+  .login-card .login-main .theme-form input[type="password"],
+  .login-card .login-main .theme-form input[type="text"] {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+    border-color: var(--bs-border-color) !important;
+    background-image: none !important;
+    -webkit-text-fill-color: var(--bs-body-color) !important;
+    -webkit-box-shadow: 0 0 0 1000px var(--bs-body-bg) inset !important;
+    box-shadow: 0 0 0 1000px var(--bs-body-bg) inset !important;
+
+    &:hover,
+    &:focus,
+    &:active,
+    &:focus-visible {
+      background-color: var(--bs-body-bg) !important;
+      color: var(--bs-body-color) !important;
+      border-color: var(--bs-border-color) !important;
+      background-image: none !important;
+      -webkit-text-fill-color: var(--bs-body-color) !important;
+      -webkit-box-shadow: 0 0 0 1000px var(--bs-body-bg) inset !important;
+      box-shadow: 0 0 0 1000px var(--bs-body-bg) inset !important;
+    }
   }
 }
