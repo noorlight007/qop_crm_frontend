@@ -1,6 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import LoginHistory from "@/Components/Common/LoginHistory/LoginHistory";
-import MyTask from "@/Components/Common/MyTask/MyTask";
 import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetNetworkDirectorDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
@@ -36,11 +35,6 @@ const ContainerNetworkDirector = () => {
           isLoading={isLoading}
           networkDirectorDashboardData={networkDirectorDashboardData}
         />
-        <Row>
-          <Col>
-            <MyTask />
-          </Col>
-        </Row>
         <Row>
           <Col>
             <LoginHistory />

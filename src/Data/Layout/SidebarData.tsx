@@ -107,24 +107,29 @@ const NetworkDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/network/director/leads",
             title: "Leads",
             type: "link",
+            path: "/network/director/leads",
           },
           {
-            path: "/network/director/cases",
             title: "All Cases",
             type: "link",
+            path: "/network/director/cases",
           },
           {
-            path: "/network/director/clients",
             title: "Clients",
             type: "link",
+            path: "/network/director/clients",
           },
           {
-            path: "/network/director/reports",
             title: "Reports",
             type: "link",
+            path: "/network/director/reports",
+          },
+          {
+            title: "My Tasks",
+            type: "link",
+            path: "/network/director/tasks",
           },
         ],
       },
@@ -134,26 +139,24 @@ const NetworkDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/network/director/organisations",
             title: "Organisations",
             type: "link",
+            path: "/network/director/organisations",
           },
           {
-            path: "/network/director/compliances",
             title: "Compliances",
             type: "link",
-            children: [],
+            path: "/network/director/compliances",
           },
           {
-            path: "/network/director/advisers",
             title: "Advisers",
             type: "link",
-            children: [],
+            path: "/network/director/advisers",
           },
           {
-            path: "/network/director/advisers-status",
             title: "Advisers Status",
             type: "link",
+            path: "/network/director/advisers-status",
           },
         ],
       },
@@ -243,24 +246,29 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/network/director/leads",
             title: "Leads",
             type: "link",
+            path: "/network/director/leads",
           },
           {
-            path: "/network/director/cases",
             title: "All Cases",
             type: "link",
+            path: "/network/director/cases",
           },
           {
-            path: "/network/director/clients",
             title: "Clients",
             type: "link",
+            path: "/network/director/clients",
           },
           {
-            path: "/network/director/reports",
             title: "Reports",
             type: "link",
+            path: "/network/director/reports",
+          },
+          {
+            title: "My Tasks",
+            type: "link",
+            path: "/network/director/tasks",
           },
         ],
       },
@@ -270,19 +278,19 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/network/director/organisations",
             title: "Organisations",
             type: "link",
+            path: "/network/director/organisations",
           },
           {
-            path: "/network/director/advisers",
             title: "Registered Advisers",
             type: "link",
+            path: "/network/director/advisers",
           },
           {
-            path: "/network/director/advisers-status",
             title: "Advisers Status",
             type: "link",
+            path: "/network/director/advisers-status",
           },
         ],
       },
@@ -345,14 +353,14 @@ const NetworkAdviserMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/network/adviser/leads",
             title: "Leads",
             type: "link",
+            path: "/network/adviser/leads",
           },
           {
-            path: "/network/adviser/cases",
             title: "All Cases",
             type: "link",
+            path: "/network/adviser/cases",
           },
           {
             title: "Clients",
@@ -360,9 +368,14 @@ const NetworkAdviserMenu: MenuItem[] = [
             path: "/network/adviser/clients",
           },
           {
-            path: "/network/adviser/reports",
             title: "Reports",
             type: "link",
+            path: "/network/adviser/reports",
+          },
+          {
+            title: "My Tasks",
+            type: "link",
+            path: "/network/adviser/tasks",
           },
         ],
       },
@@ -373,18 +386,18 @@ const NetworkAdviserMenu: MenuItem[] = [
         children: [
           {
             title: "Organisations",
-            path: "/network/adviser/organisations",
             type: "link",
+            path: "/network/adviser/organisations",
           },
           // {
-          //   path: "/network/adviser/marketinghub",
           //   title: "Marketing Hub",
           //   type: "link",
+          //   path: "/network/adviser/marketinghub",
           // },
           // {
-          //   path: "/network/adviser/tasksandreminders",
           //   title: "Tasks & Reminders",
           //   type: "link",
+          //   path: "/network/adviser/tasksandreminders",
           // },
         ],
       },
@@ -447,24 +460,29 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/organisation/director/leads",
             title: "Leads",
             type: "link",
+            path: "/organisation/director/leads",
           },
           {
-            path: "/organisation/director/cases",
             title: "All Cases",
             type: "link",
+            path: "/organisation/director/cases",
           },
           {
-            path: "/organisation/director/clients",
             title: "Clients",
             type: "link",
+            path: "/organisation/director/clients",
           },
           {
-            path: "/organisation/director/reports",
             title: "Reports",
             type: "link",
+            path: "/organisation/director/reports",
+          },
+          {
+            title: "My Tasks",
+            type: "link",
+            path: "/organisation/director/tasks",
           },
         ],
       },
@@ -474,19 +492,19 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            path: "/organisation/director/advisers",
             title: "Advisers",
             type: "link",
+            path: "/organisation/director/advisers",
           },
           {
-            path: "/organisation/director/admins",
             title: "Admins",
             type: "link",
+            path: "/organisation/director/admins",
           },
           {
-            path: "/organisation/director/introducers",
             title: "Introducers",
             type: "link",
+            path: "/organisation/director/introducers",
           },
         ],
       },
@@ -563,8 +581,8 @@ const OrganisationAdviserMenu: MenuItem[] = [
         title: "Dashboard",
         icon: "Chart",
         lanClass: "lan-3",
-        path: "/organisation/adviser/dashboard",
         type: "link",
+        path: "/organisation/adviser/dashboard",
       },
       {
         title: "Cases",
@@ -573,14 +591,14 @@ const OrganisationAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            path: "/organisation/adviser/leads",
             title: "Leads",
             type: "link",
+            path: "/organisation/adviser/leads",
           },
           {
-            path: "/organisation/adviser/cases",
             title: "All Cases",
             type: "link",
+            path: "/organisation/adviser/cases",
           },
           {
             title: "Clients",
@@ -588,9 +606,14 @@ const OrganisationAdviserMenu: MenuItem[] = [
             path: "/organisation/adviser/clients",
           },
           {
-            path: "/organisation/adviser/reports",
             title: "Reports",
             type: "link",
+            path: "/organisation/adviser/reports",
+          },
+          {
+            title: "My Tasks",
+            type: "link",
+            path: "/organisation/adviser/tasks",
           },
         ],
       },
@@ -637,14 +660,14 @@ const OrganisationAdviserMenu: MenuItem[] = [
       //   lanClass: "lan-4",
       //   children: [
       //     {
-      //       path: "/organisation/adviser/marketinghub",
       //       title: "Marketing Hub",
       //       type: "link",
+      //       path: "/organisation/adviser/marketinghub",
       //     },
       //     {
-      //       path: "/organisation/adviser/tasksandreminders",
       //       title: "Tasks & Reminders",
       //       type: "link",
+      //       path: "/organisation/adviser/tasksandreminders",
       //     },
       //   ],
       // },
@@ -691,6 +714,11 @@ const OrganisationAdminMenu: MenuItem[] = [
             title: "Reports",
             type: "link",
             path: "/organisation/admin/reports",
+          },
+          {
+            title: "My Tasks",
+            type: "link",
+            path: "/organisation/admin/tasks",
           },
         ],
       },

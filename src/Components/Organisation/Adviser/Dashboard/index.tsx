@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import MyTask from "@/Components/Common/MyTask/MyTask";
+import MyTask from "@/Components/Common/MyTask/MyTasks";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import {
   useGetAdviserDashboardClientDataQuery,

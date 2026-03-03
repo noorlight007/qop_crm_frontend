@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
-import { useGetMyTasksQuery } from "@/Redux/Reducers/Common/MyTask/MyTasksApi";
+import { useGetMyTasksQuery } from "@/Redux/Reducers/Common/MyTasks/MyTasksApi";
 import { MyTaskProps } from "@/Types/Common/MyTask/MyTaskTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
-const MyTask: React.FC = () => {
+const MyTasks: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [tasksPerPage] = useState(12);
 
@@ -511,14 +511,10 @@ const MyTask: React.FC = () => {
                         </span>
                       </td>
                       <td>
-                        <span>
-                          {task.current_case_lender || "-"}
-                        </span>
+                        <span>{task.current_case_lender || "-"}</span>
                       </td>
                       <td>
-                        <span>
-                          {task.current_case_workflow || "-"}
-                        </span>
+                        <span>{task.current_case_workflow || "-"}</span>
                       </td>
                       <td>
                         <span className="fw-bold text-start">
@@ -658,4 +654,4 @@ const MyTask: React.FC = () => {
   );
 };
 
-export default MyTask;
+export default MyTasks;
