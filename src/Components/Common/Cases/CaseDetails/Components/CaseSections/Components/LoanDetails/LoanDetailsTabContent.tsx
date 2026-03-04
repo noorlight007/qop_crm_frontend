@@ -849,7 +849,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="purchase_price">
-                      Purchase Price({getCurrencySign()})<span className="text-danger">*</span>
+                      Purchase Price({getCurrencySign()})
+                      <span className="text-danger">*</span>
                     </Label>
                     <Input
                       type="number"
@@ -880,7 +881,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="property_valuation">
-                      Property Valuation({getCurrencySign()})<span className="text-danger">*</span>
+                      Property Valuation({getCurrencySign()})
+                      <span className="text-danger">*</span>
                     </Label>
                     <Input
                       type="number"
@@ -911,7 +913,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="loan_amount">
-                    Loan Amount({getCurrencySign()})<span className="text-danger">*</span>
+                    Loan Amount({getCurrencySign()})
+                    <span className="text-danger">*</span>
                   </Label>
                   <Input
                     type="number"
@@ -948,7 +951,8 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="estimated_value">
-                    Estimated Value({getCurrencySign()})<span className="text-danger">*</span>
+                    Estimated Value({getCurrencySign()})
+                    <span className="text-danger">*</span>
                   </Label>
                   <Input
                     type="number"
@@ -996,7 +1000,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 </FormGroup>
               </Col>
               <Col md={6}>
-                <Label for="term_years">Term<span className="text-danger">*</span></Label>
+                <Label for="term_years">
+                  Term<span className="text-danger">*</span>
+                </Label>
                 <Row>
                   <Col md="6">
                     <FormGroup>
@@ -1343,32 +1349,28 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   )}
                 </FormGroup>
               </Col>
-              {caseData?.case_stage !== "COMPLETION" &&
-                caseData?.case_stage !== "FULL_MORTGAGE_APPLICATION" &&
-                caseData?.case_stage !== "OFFER_FROM_BANK" &&
-                caseData?.case_stage !== "LEGAL" &&
-                caseData?.case_stage !== "COMPLETION" &&
-                caseData?.case_stage !== "FUTURE_OPPORTUNITY" &&
-                caseData?.case_stage !== "NOT_PROCEED" && (
-                  <Col md={4}>
-                    <FormGroup>
-                      <Label for="dip_expiry_date">DIP Expiry Date</Label>
-                      <Input
-                        type="date"
-                        name="dip_expiry_date"
-                        value={formDataTab3.dip_expiry_date || ""}
-                        onChange={(e) =>
-                          handleFormChange(3, e.target.name, e.target.value)
-                        }
-                      />
-                      {getFieldError("dip_expiry_date") && (
-                        <FormText className="text-danger">
-                          {getFieldError("dip_expiry_date")}
-                        </FormText>
-                      )}
-                    </FormGroup>
-                  </Col>
-                )}
+              {caseData?.case_stage === "RESEARCH_COMPLIANCE_CHECK" ||
+              caseData?.case_stage === "DECISION_IN_PRINCIPLE" ||
+              caseData?.case_stage === "FUTURE_OPPORTUNITY" ? (
+                <Col md={4}>
+                  <FormGroup>
+                    <Label for="dip_expiry_date">DIP Expiry Date</Label>
+                    <Input
+                      type="date"
+                      name="dip_expiry_date"
+                      value={formDataTab3.dip_expiry_date || ""}
+                      onChange={(e) =>
+                        handleFormChange(3, e.target.name, e.target.value)
+                      }
+                    />
+                    {getFieldError("dip_expiry_date") && (
+                      <FormText className="text-danger">
+                        {getFieldError("dip_expiry_date")}
+                      </FormText>
+                    )}
+                  </FormGroup>
+                </Col>
+              ) : null}
               {caseData?.case_stage !== "ENQUIRY" &&
                 caseData?.case_stage !== "FACT_FIND" &&
                 caseData?.case_stage !== "RESEARCH_COMPLIANCE_CHECK" &&
