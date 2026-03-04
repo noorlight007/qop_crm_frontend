@@ -1,13 +1,10 @@
 "use client";
-import { signOut } from "next-auth/react";
+import { logOut } from "@/services/auth/logout";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Button, Col, Container } from "reactstrap";
 
 const FallbackLogout: React.FC = () => {
-  const router = useRouter();
-
   useEffect(() => {
     // Create a new Audio instance and play it
     const audio = new Audio("/assets/audio/error_sound.mp3");
@@ -21,8 +18,7 @@ const FallbackLogout: React.FC = () => {
   }, []);
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push("/auth/login");
+    await logOut();
   };
 
   return (

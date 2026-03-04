@@ -1,6 +1,7 @@
 "use client";
 import { LoginForm } from "@/Components/Auth/LoginForm";
-import { signOut, useSession } from "next-auth/react";
+import { logOut } from "@/services/auth/logout";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
@@ -29,7 +30,7 @@ const UserLogin = () => {
     } else if (session.user?.user_type === "CLIENT") {
       router.push("/client/dashboard");
     } else {
-      signOut({ redirect: false });
+      logOut();
     }
   }, [session, router]);
 

@@ -1,6 +1,6 @@
 import { Href, ImagePath } from "@/Constant";
-import { logOut } from "@/Redux/Api/BaseApi";
-import formatChoiceFieldValue, { formatUserRole } from "@/utils/formatters";
+import { logOut } from "@/services/auth/logout";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
