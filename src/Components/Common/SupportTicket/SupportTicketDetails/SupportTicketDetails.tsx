@@ -8,7 +8,7 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   FaCheck,
   FaCheckCircle,
@@ -33,7 +33,9 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
   Row,
+  Spinner,
 } from "reactstrap";
 import Swal from "sweetalert2";
 import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
@@ -65,6 +67,15 @@ const SupportTicketDetails: React.FC = () => {
     message: "",
     files: [],
   });
+  const [isEditingMessage, setIsEditingMessage] = useState(false);
+  const [messageDraft, setMessageDraft] = useState("");
+  const [localMessage, setLocalMessage] = useState(
+    ticketDetails?.message || "",
+  );
+
+  useEffect(() => {
+    setLocalMessage(ticketDetails?.message || "");
+  }, [ticketDetails?.message]);
 
   // image visibility state must be declared unconditionally (hooks order)
   const [showCreatorImage, setShowCreatorImage] = useState<boolean>(true);
@@ -153,6 +164,72 @@ const SupportTicketDetails: React.FC = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download failed:", error);
+    }
+  };
+
+  const handleEditMessage = () => {
+    setMessageDraft(localMessage);
+    setIsEditingMessage(true);
+  };
+
+  const handleCancelEditMessage = () => {
+    setIsEditingMessage(false);
+    setMessageDraft("");
+  };
+
+  const getErrorMessage = (err: any) => {
+    if (!err) return "Unknown error";
+    if (typeof err === "string") return err;
+    if (typeof err?.data === "string") return err.data;
+
+    const collect = (value: any): string[] => {
+      if (value == null) return [];
+      if (typeof value === "string") return [value];
+      if (Array.isArray(value))
+        return value.map((v) =>
+          typeof v === "string" ? v : JSON.stringify(v),
+        );
+      if (typeof value === "object") {
+        try {
+          return Object.values(value).flatMap((v) => collect(v));
+        } catch {
+          return [String(value)];
+        }
+      }
+      return [String(value)];
+    };
+
+    if (err?.data?.message) return String(err.data.message);
+
+    if (err?.data && typeof err.data === "object") {
+      const msgs = collect(err.data);
+      if (msgs.length) return msgs.join(", ");
+    }
+
+    if (err?.error) return String(err.error);
+    if (err?.message) {
+      if (/status code/i.test(err.message)) return "Server returned an error";
+      return String(err.message);
+    }
+
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return String(err);
+    }
+  };
+
+  const handleSaveMessage = async () => {
+    try {
+      await updateSupportTicket({
+        ticket_alias: ticketDetails.alias,
+        payload: { message: messageDraft },
+      }).unwrap();
+      setLocalMessage(messageDraft);
+      setIsEditingMessage(false);
+      Swal.fire("Success", "Message Updated Successfully!", "success");
+    } catch (error: any) {
+      toast.error(getErrorMessage(error));
     }
   };
 
@@ -470,13 +547,63 @@ const SupportTicketDetails: React.FC = () => {
             {/* Message Card */}
             <Col md={8} className="mb-3">
               <Card className="shadow-sm mb-4">
-                <CardHeader className="bg-white">
+                <CardHeader className="bg-white d-flex align-items-center justify-content-between">
                   <h5 className="mb-0">Ticket Description</h5>
+                  {!isEditingMessage && (
+                    <Button
+                      color="primary"
+                      size="sm"
+                      onClick={handleEditMessage}
+                      disabled={isLoading}
+                    >
+                      <i className="icon-pencil-alt me-1" /> Edit
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardBody style={{ height: "200px", overflowY: "auto" }}>
-                  <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
-                    {ticketDetails.message}
-                  </p>
+                  {isEditingMessage ? (
+                    <>
+                      <Input
+                        type="textarea"
+                        value={messageDraft}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          setMessageDraft(e.target.value)
+                        }
+                        rows={5}
+                        style={{ resize: "none", height: "120px" }}
+                      />
+                      <div className="mt-2 text-end">
+                        <Button
+                          color="primary"
+                          size="sm"
+                          onClick={handleSaveMessage}
+                          disabled={updateSupTicketLoading}
+                        >
+                          {updateSupTicketLoading ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            "Save"
+                          )}
+                        </Button>{" "}
+                        <Button
+                          color="secondary"
+                          size="sm"
+                          onClick={handleCancelEditMessage}
+                          disabled={updateSupTicketLoading}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
+                      {localMessage || (
+                        <span className="text-muted">
+                          No description available
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </CardBody>
               </Card>
             </Col>

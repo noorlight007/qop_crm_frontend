@@ -32,7 +32,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     priority: "",
     status: "",
     subject: "",
-    message: "",
     files: [],
   });
   const { data: session } = useSession();
@@ -54,7 +53,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
         priority: selected.priority || "",
         status: selected.status || "",
         subject: selected.subject || "",
-        message: selected.message || "",
         files: [],
       });
       setExistingFiles(selected.files || []);
@@ -71,7 +69,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
         priority: "",
         status: "",
         subject: "",
-        message: "",
         files: [],
       });
       setExistingFiles([]);
@@ -353,24 +350,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
             />
             {errors.subject && (
               <div className="text-danger">{errors.subject}</div>
-            )}
-          </FormGroup>
-
-          <FormGroup>
-            <Label for="message">
-              Description<span className="text-danger">*</span>
-            </Label>
-            <Input
-              id="message"
-              name="message"
-              type="textarea"
-              rows={8}
-              value={formData.message}
-              onChange={handleChange}
-              required
-            />
-            {errors.message && (
-              <div className="text-danger">{errors.message}</div>
             )}
           </FormGroup>
 

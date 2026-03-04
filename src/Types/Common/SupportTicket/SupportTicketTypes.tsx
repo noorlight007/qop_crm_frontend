@@ -4,7 +4,7 @@ export interface SupportTicketFormData {
   priority?: string;
   status?: string;
   subject: string;
-  message: string;
+  message?: string;
   files: File[];
   created_by?: {
     profile_image?: string;
