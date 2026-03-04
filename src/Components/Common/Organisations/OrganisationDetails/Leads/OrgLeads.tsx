@@ -226,12 +226,7 @@ const OrgLeads: React.FC = () => {
                       ) : (
                         <>
                           <p className="m-0">
-                            {lead.created_by?.title
-                              ? formatChoiceFieldValue(lead.created_by?.title)
-                              : ""}{" "}
-                            {lead?.created_by?.first_name}{" "}
-                            {lead?.created_by?.middle_name}{" "}
-                            {lead?.created_by?.last_name}
+                            {lead.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
@@ -242,7 +237,7 @@ const OrgLeads: React.FC = () => {
                               ? formatChoiceFieldValue(
                                   lead.created_by?.user_type,
                                 )
-                              : ""}
+                              : "Not Found"}
                             )
                           </p>
                         </>
