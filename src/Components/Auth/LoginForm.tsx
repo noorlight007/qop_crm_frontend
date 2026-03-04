@@ -121,8 +121,8 @@ export const LoginForm = () => {
             }
             style={{
               position: "absolute",
-              top: "-20px",
-              right: "-20px",
+              top: "-15px",
+              right: "-15px",
             }}
           >
             {currentTheme === "light" ? <BiMoon /> : <BiSolidSun />}
