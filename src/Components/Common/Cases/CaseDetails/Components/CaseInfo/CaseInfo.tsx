@@ -71,6 +71,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
+  console.log("case info: ", caseInfo);
+
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
     useUpdateCaseMutation();
 
@@ -315,9 +317,15 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     )}
                   </DropdownItem>
                 )}
-                {caseInfo?.case_stage !== "ENQUIRY" &&
-                  caseInfo?.case_stage !== "FACT_FIND" &&
-                  caseInfo?.case_stage !== "RESEARCH_COMPLIANCE_CHECK" && (
+                {caseInfo?.case_category === "MORTGAGE" &&
+                  (caseInfo?.case_stage === "DECISION_IN_PRINCIPLE" ||
+                    caseInfo?.case_stage === "FULL_MORTGAGE_APPLICATION" ||
+                    caseInfo?.case_stage === "SUBMISSION" ||
+                    caseInfo?.case_stage === "OFFER_FROM_BANK" ||
+                    caseInfo?.case_stage === "LEGAL" ||
+                    caseInfo?.case_stage === "COMPLETION" ||
+                    caseInfo?.case_stage === "FUTURE_OPPORTUNITY" ||
+                    caseInfo?.case_stage === "NOT_PROCEED") && (
                     <DropdownItem
                       className="opacity-100 py-3"
                       onClick={handleDownloadDIPCertificate}
