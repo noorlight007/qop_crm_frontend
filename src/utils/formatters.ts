@@ -10,7 +10,7 @@ export const formatChoiceFieldValue = (
 };
 export default formatChoiceFieldValue;
 
-export function formatUserTypeName(userType?: string | null): string {
+export function formatUserRole(userType?: string | null): string {
   if (!userType) {
     return "";
   }

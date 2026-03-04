@@ -1,26 +1,15 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import MyTask from "@/Components/Common/MyTask/MyTask";
 import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
-import {
-  useGetAdviserDashboardClientDataQuery,
-  useGetAdviserDashboardDocumentDataQuery,
-  useGetAdviserDashboardSummaryDataQuery,
-} from "@/Redux/Reducers/Common/CommonAdviserDashboard/CommonAdviserDashboardApi";
+import { useGetAdviserDashboardSummaryDataQuery } from "@/Redux/Reducers/Common/CommonAdviserDashboard/CommonAdviserDashboardApi";
 import { Col, Container, Row } from "reactstrap";
 import CaseStatusOverview from "./CaseStatusOverview/CaseStatusOverview";
 import DashboardOverview from "./DashboardOverview/DashboardOverview";
-import DocumentStatus from "./DocumentStatus/DocumentStatus";
 import MonthlyPerformance from "./MonthlyPerformance/MonthlyPerformance";
-import MyClients from "./MyClients/MyClients";
 
 const NetworkAdviserContainer: React.FC = () => {
   const { data: adviserSummary, isLoading: isSummaryLoading } =
     useGetAdviserDashboardSummaryDataQuery(undefined);
-  const { data: adviserClients, isLoading: isClientsLoading } =
-    useGetAdviserDashboardClientDataQuery(undefined);
-  const { data: adviserDocuments, isLoading: isDocumentsLoading } =
-    useGetAdviserDashboardDocumentDataQuery(undefined);
 
   return (
     <>
@@ -54,28 +43,7 @@ const NetworkAdviserContainer: React.FC = () => {
         {/* 3rd row  */}
         <Row>
           <Col>
-            <MyTask />
-          </Col>
-        </Row>
-        {/* 4th row  */}
-        <Row>
-          <Col>
             <OrganisationList maxItems={8} />
-          </Col>
-        </Row>
-        {/* 5th row  */}
-        <Row>
-          <Col md={6} sm={12}>
-            <DocumentStatus
-              isLoading={isDocumentsLoading}
-              adviserDocumentData={adviserDocuments}
-            />
-          </Col>
-          <Col md={6} sm={12}>
-            <MyClients
-              isLoading={isClientsLoading}
-              adviserClientData={adviserClients}
-            />
           </Col>
         </Row>
       </Container>

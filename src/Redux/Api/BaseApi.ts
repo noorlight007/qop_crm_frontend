@@ -1,10 +1,11 @@
+import { logOut } from "@/services/auth/logout";
 import type {
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { getSession, signOut } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
@@ -299,95 +300,4 @@ export const baseApi = createApi({
   endpoints: () => ({}),
 });
 
-export const logOut = async () => {
-  // Collect tokens from localStorage or session
-  let accessToken: string | null = null;
-  let refreshToken: string | null = null;
-
-  if (typeof window !== "undefined") {
-    try {
-      accessToken = localStorage.getItem("token");
-      refreshToken = localStorage.getItem("refreshToken");
-    } catch (e) {
-      console.error("Error reading localStorage during logout", e);
-    }
-  } else {
-    try {
-      const session = await getSession();
-      accessToken = session?.user?.accessToken ?? null;
-      refreshToken = session?.user?.refreshToken ?? null;
-    } catch (e) {
-      console.error("Error reading session during logout", e);
-    }
-  }
-
-  // Call logout API if tokens are available
-  if (refreshToken) {
-    try {
-      const formData = new FormData();
-      formData.append("refresh", refreshToken);
-
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout/`, {
-        method: "POST",
-        headers: {
-          Authorization: `JWT ${accessToken}`,
-        },
-        body: formData,
-      }).catch((error) => {
-        console.error("Logout API call failed:", error);
-      });
-    } catch (e) {
-      console.error("Error calling logout API", e);
-    }
-  }
-
-  // Clear local storage and session storage
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      sessionStorage.clear();
-
-      // Clear NextAuth cookies manually for subdomain compatibility
-      // This ensures cookies are removed regardless of subdomain
-      const domain = window.location.hostname.split(".").slice(-2).join(".");
-      const cookiesToClear = [
-        "next-auth.session-token",
-        "__Secure-next-auth.session-token",
-        "next-auth.csrf-token",
-        "__Host-next-auth.csrf-token",
-        "next-auth.callback-url",
-        "__Secure-next-auth.callback-url",
-      ];
-
-      cookiesToClear.forEach((cookieName) => {
-        // Clear for current path
-        document.cookie = `${cookieName}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-        // Clear for root domain
-        document.cookie = `${cookieName}=; path=/; domain=.${domain}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-        // Clear for current subdomain
-        document.cookie = `${cookieName}=; path=/; domain=${window.location.hostname}; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-      });
-    } catch (e) {
-      console.error("Error clearing storage/cookies during logout", e);
-    }
-  }
-
-  // Use NextAuth signOut without automatic redirect
-  // Build login URL with current origin to maintain subdomain context
-  try {
-    await signOut({ redirect: false });
-
-    if (typeof window !== "undefined") {
-      // Force redirect to login page on the same subdomain
-      const loginUrl = `${window.location.origin}/auth/login`;
-      window.location.href = loginUrl;
-    }
-  } catch (e) {
-    console.error("Error during signOut", e);
-    // Fallback: force redirect even if signOut fails
-    if (typeof window !== "undefined") {
-      window.location.href = `${window.location.origin}/auth/login`;
-    }
-  }
-};
+export { logOut };

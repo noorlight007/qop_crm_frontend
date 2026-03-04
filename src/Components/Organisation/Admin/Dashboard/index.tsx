@@ -1,5 +1,4 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import MyTask from "@/Components/Common/MyTask/MyTask";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetAdminDashboardDataQuery } from "@/Redux/Reducers/Organisation/Admin/Dashboard/AdminDashboardApi";
 import { Col, Container, Row } from "reactstrap";
@@ -42,12 +41,6 @@ const OrganisationAdminDashboardContainer: React.FC = () => {
           </Col>
         </Row>
         {/* 3rd row  */}
-        <Row>
-          <Col>
-            <MyTask />
-          </Col>
-        </Row>
-        {/* 4th row  */}
         <Row>
           <Col>
             <AdviserTaskOverview
