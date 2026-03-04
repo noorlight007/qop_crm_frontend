@@ -440,14 +440,7 @@ const OrgCases: React.FC = () => {
                             ) : (
                               <>
                                 <p className="m-0">
-                                  {caseItem.created_by?.title
-                                    ? formatChoiceFieldValue(
-                                        caseItem.created_by?.title,
-                                      )
-                                    : ""}{" "}
-                                  {caseItem?.created_by?.first_name}{" "}
-                                  {caseItem?.created_by?.middle_name}{" "}
-                                  {caseItem?.created_by?.last_name}
+                                  {caseItem.created_by?.name}
                                 </p>
                                 <p
                                   className="m-0 opacity-75"
@@ -470,7 +463,7 @@ const OrgCases: React.FC = () => {
                                     ? formatChoiceFieldValue(
                                         caseItem.created_by?.user_type,
                                       )
-                                    : ""}
+                                    : "Not Found"}
                                   )
                                 </p>
                               </>
@@ -498,7 +491,7 @@ const OrgCases: React.FC = () => {
                                   (
                                   {caseItem.assigned_user.email
                                     ? caseItem.assigned_user.email
-                                    : "-"}
+                                    : "Not Found"}
                                   )
                                 </p>
                                 <p
@@ -510,7 +503,7 @@ const OrgCases: React.FC = () => {
                                     ? formatChoiceFieldValue(
                                         caseItem.assigned_user.user_type,
                                       )
-                                    : "-"}
+                                    : "Not Found"}
                                   )
                                 </p>
                               </>
@@ -540,7 +533,7 @@ const OrgCases: React.FC = () => {
                                   (
                                   {caseItem.assigned_admin.email
                                     ? caseItem.assigned_admin.email
-                                    : "-"}
+                                    : "Not Found"}
                                   )
                                 </p>
                                 <p
@@ -552,7 +545,7 @@ const OrgCases: React.FC = () => {
                                     ? formatChoiceFieldValue(
                                         caseItem.assigned_admin.user_type,
                                       )
-                                    : "-"}
+                                    : "Not Found"}
                                   )
                                 </p>
                               </>
