@@ -53,7 +53,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
     >,
   ) => {
     const { name, value } = e.target;
-    // clear per-field API error on change
     setErrors((prev) => {
       if (!prev[name]) return prev;
       const copy = { ...prev };
@@ -80,7 +79,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
         return;
       }
 
-      // clear file related api errors
       setErrors((prev) => {
         const copy = { ...prev };
         delete copy.upload_files;
@@ -127,7 +125,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
 
       if (result && result.alias) {
         toast.success("Ticket Created Successfully!!!");
-        // Reset form
         setFormData({
           ticket_type: "",
           priority: "",
@@ -139,7 +136,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
         toggle();
       }
     } catch (error: any) {
-      // parse API validation errors and show under fields
       const parsed: Record<string, string> = {};
 
       const sanitize = (s: string) => s.replace(/^\s*\d+,\s*/g, "").trim();
@@ -158,7 +154,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
         parsed.non_field_error = sanitize(data);
       }
 
-      // If there are nested field keys like upload_files.0, flatten to upload_files
       const flattened: Record<string, string> = {};
       Object.keys(parsed).forEach((k) => {
         const base = k.split(".")[0];
@@ -232,7 +227,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
             </Col>
           </Row>
 
-          {/* Subject */}
           <FormGroup>
             <Label for="subject">
               Subject<span className="text-danger">*</span>
@@ -251,7 +245,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
             )}
           </FormGroup>
 
-          {/* Message */}
           <FormGroup>
             <Label for="message">
               Description<span className="text-danger">*</span>
@@ -271,7 +264,6 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
             )}
           </FormGroup>
 
-          {/* Attachments */}
           <FormGroup>
             <Label for="files">Attachments (optional)</Label>
             <Input
@@ -289,11 +281,9 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
             </small>
           </FormGroup>
 
-          {/* File Preview Section */}
           {formData.files.length > 0 && (
             <FormGroup>
               <Label>Attached Files ({formData.files.length})</Label>
-
               <div
                 className="border rounded p-2 overflow-auto"
                 style={{ maxHeight: "200px" }}
@@ -313,13 +303,11 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
                         >
                           {file.name}
                         </div>
-
                         <div className="text-muted small">
                           {(file.size / 1024).toFixed(2)} KB
                         </div>
                       </div>
                     </div>
-
                     <button
                       type="button"
                       onClick={() => handleRemoveFile(index)}
@@ -334,6 +322,28 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
             </FormGroup>
           )}
         </Form>
+
+        {/* Tips Section */}
+         {/* Tips Section */}
+        <div className="mt-3 p-3 border rounded bg-light-warning">
+          <p className="fw-semibold text-primary mb-2 d-flex align-items-center gap-2">
+            <span>💡</span> To help us review your request quickly, please provide:
+          </p>
+          <ul className="mb-0 ps-3" style={{ listStyleType: "disc" }}>
+            <li className="mb-1 small">
+              <span className="fw-semibold">URL Link</span>
+              <span className="text-muted"> – Share the exact page URL related to your ticket.</span>
+            </li>
+            <li className="mb-1 small">
+              <span className="fw-semibold">Screenshot</span>
+              <span className="text-muted"> – Attach a full-page screenshot. If possible, mark the exact point.</span>
+            </li>
+            <li className="mb-0 small">
+              <span className="fw-semibold">Description</span>
+              <span className="text-muted"> – Write a short and clear explanation.</span>
+            </li>
+          </ul>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button
