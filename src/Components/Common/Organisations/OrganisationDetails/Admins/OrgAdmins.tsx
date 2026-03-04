@@ -234,12 +234,7 @@ const OrgAdmins: React.FC = () => {
                       ) : (
                         <>
                           <p className="m-0">
-                            {admin.created_by?.title
-                              ? formatChoiceFieldValue(admin.created_by?.title)
-                              : ""}{" "}
-                            {admin?.created_by?.first_name}{" "}
-                            {admin?.created_by?.middle_name}{" "}
-                            {admin?.created_by?.last_name}
+                            {admin.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
@@ -250,7 +245,7 @@ const OrgAdmins: React.FC = () => {
                               ? formatChoiceFieldValue(
                                   admin.created_by?.user_type,
                                 )
-                              : ""}
+                              : "Not Found"}
                             )
                           </p>
                         </>

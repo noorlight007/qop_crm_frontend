@@ -261,14 +261,7 @@ const OrgIntroducers: React.FC = () => {
                       ) : (
                         <>
                           <p className="m-0">
-                            {introducer.created_by?.title
-                              ? formatChoiceFieldValue(
-                                  introducer.created_by?.title,
-                                )
-                              : ""}{" "}
-                            {introducer?.created_by?.first_name}{" "}
-                            {introducer?.created_by?.middle_name}{" "}
-                            {introducer?.created_by?.last_name}
+                            {introducer.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
@@ -279,7 +272,7 @@ const OrgIntroducers: React.FC = () => {
                               ? formatChoiceFieldValue(
                                   introducer.created_by?.user_type,
                                 )
-                              : ""}
+                              : "Not Found"}
                             )
                           </p>
                         </>

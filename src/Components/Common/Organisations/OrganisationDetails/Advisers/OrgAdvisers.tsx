@@ -239,14 +239,7 @@ const OrgAdvisers: React.FC = () => {
                       ) : (
                         <>
                           <p className="m-0">
-                            {adviser.created_by?.title
-                              ? formatChoiceFieldValue(
-                                  adviser.created_by?.title,
-                                )
-                              : ""}{" "}
-                            {adviser?.created_by?.first_name}{" "}
-                            {adviser?.created_by?.middle_name}{" "}
-                            {adviser?.created_by?.last_name}
+                            {adviser.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
@@ -257,7 +250,7 @@ const OrgAdvisers: React.FC = () => {
                               ? formatChoiceFieldValue(
                                   adviser.created_by?.user_type,
                                 )
-                              : ""}
+                              : "Not Found"}
                             )
                           </p>
                         </>
