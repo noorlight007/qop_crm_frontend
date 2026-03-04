@@ -1,5 +1,6 @@
 import ClientInvitationModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/ClientInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
+import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
@@ -155,6 +156,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [factFindDownload, { isLoading: isFactFindDownloading }] =
     useDownloadFactFindMutation();
 
+  const [dipCertificateDownload, { isLoading: isDIPCertificateDownloading }] =
+    useDownloadDIPCertificateMutation();
+
   const handleDownloadApplicantInfo = async () => {
     try {
       const blob = await applicantsInfo({
@@ -182,6 +186,24 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       const link = document.createElement("a");
       link.href = url;
       link.download = `fact-find(${caseInfo?.name}).pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error("Failed to download report. Please try again.");
+    }
+  };
+
+  const handleDownloadDIPCertificate = async () => {
+    try {
+      const blob = await dipCertificateDownload({
+        case_alias: caseInfo?.alias,
+      }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `dip(${caseInfo?.name}).pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -293,6 +315,28 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     )}
                   </DropdownItem>
                 )}
+                {caseInfo?.case_stage !== "ENQUIRY" &&
+                  caseInfo?.case_stage !== "FACT_FIND" &&
+                  caseInfo?.case_stage !== "RESEARCH_COMPLIANCE_CHECK" && (
+                    <DropdownItem
+                      className="opacity-100 py-3"
+                      onClick={handleDownloadDIPCertificate}
+                      disabled={isDIPCertificateDownloading}
+                      toggle={false}
+                    >
+                      {isDIPCertificateDownloading ? (
+                        <>
+                          <Spinner size="sm" className="me-1" />
+                          Downloading...
+                        </>
+                      ) : (
+                        <>
+                          <TbDownload size="16" className="me-1" />
+                          Download DIP PDF
+                        </>
+                      )}
+                    </DropdownItem>
+                  )}
                 {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
                   session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                   session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
