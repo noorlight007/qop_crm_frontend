@@ -198,6 +198,7 @@ const PortfolioContent: React.FC = () => {
                               <th>Account Number</th>
                               <th>Ownership</th>
                               <th>Is Ltd Co</th>
+                              <th>Company Name</th>
                               <th>Remaining Mortgage Term</th>
                               <th>Bedrooms</th>
                               <th>Year Built</th>
@@ -339,6 +340,7 @@ const PortfolioContent: React.FC = () => {
                                     )}
                                   </div>
                                 </td>
+                                <td>{item?.company_name || "-"}</td>
                                 <td>{item?.remaining_mortgage_term || "-"}</td>
                                 <td>{item?.number_of_bedrooms || "-"}</td>
                                 <td>{item?.year_built || "-"}</td>

@@ -91,6 +91,8 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   const [isMUFB, setIsMUFB] = useState(false);
   const [isLimitedCompany, setIsLimitedCompany] = useState(false);
 
+  const [companyName, setCompanyName] = useState("");
+
   // Other state
   const [fetchedEpcRating, setFetchedEpcRating] = useState("");
   const [note, setNote] = useState("");
@@ -144,6 +146,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
       setIsHMO(property.is_hmo || false);
       setIsMUFB(property.is_mufb || false);
       setIsLimitedCompany(property.is_limited_company || false);
+      setCompanyName(property.company_name || "");
       setFetchedEpcRating(property.epc_rating || "");
       setNote(property.note || "");
       setSelectedApplicants(
@@ -186,6 +189,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
       setIsHMO(false);
       setIsMUFB(false);
       setIsLimitedCompany(false);
+      setCompanyName("");
       setFetchedEpcRating("");
       setNote("");
       setSelectedApplicants([]);
@@ -418,6 +422,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
         number_of_bedrooms: numberOfBedrooms || null,
         remaining_mortgage_term: remainingMortgageTerm || null,
         is_limited_company: isLimitedCompany,
+        company_name: isLimitedCompany ? companyName || null : null,
         epc_rating: fetchedEpcRating || null,
         note: note || null,
       };
@@ -602,21 +607,21 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             {[
               {
-                id: "houseNumber",
+                id: "house_name_or_number",
                 label: "House Name Or Number*",
                 value: houseNumber,
                 setter: setHouseNumber,
                 required: true,
               },
               {
-                id: "address1",
+                id: "address_1",
                 label: "Address 1*",
                 value: address1,
                 setter: setAddress1,
                 required: true,
               },
               {
-                id: "address2",
+                id: "address_2",
                 label: "Address 2",
                 value: address2,
                 setter: setAddress2,
@@ -698,10 +703,10 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="propertyValue">Property Value*</Label>
+                <Label for="property_value">Property Value*</Label>
                 <Input
-                  id="propertyValue"
-                  name="propertyValue"
+                  id="property_value"
+                  name="property_value"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
@@ -710,21 +715,21 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onChange={(e) => setPropertyValue(e.target.value)}
                   required
                 />
-                {getFieldError("propertyValue") && (
+                {getFieldError("property_value") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("propertyValue")}
+                    {getFieldError("property_value")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="currentMortgageBalance">
+                <Label for="current_mortgage_balance">
                   Current Mortgage Balance*
                 </Label>
                 <Input
-                  id="currentMortgageBalance"
-                  name="currentMortgageBalance"
+                  id="current_mortgage_balance"
+                  name="current_mortgage_balance"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
@@ -733,19 +738,21 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onChange={(e) => setCurrentMortgageBalance(e.target.value)}
                   required
                 />
-                {getFieldError("currentMortgageBalance") && (
+                {getFieldError("current_mortgage_balance") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("currentMortgageBalance")}
+                    {getFieldError("current_mortgage_balance")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthlyRental">Monthly Rental Income*</Label>
+                <Label for="monthly_rental_income">
+                  Monthly Rental Income*
+                </Label>
                 <Input
-                  id="monthlyRental"
-                  name="monthlyRental"
+                  id="monthly_rental_income"
+                  name="monthly_rental_income"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
@@ -754,9 +761,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onChange={(e) => setMonthlyRental(e.target.value)}
                   required
                 />
-                {getFieldError("monthlyRental") && (
+                {getFieldError("monthly_rental_income") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("monthlyRental")}
+                    {getFieldError("monthly_rental_income")}
                   </small>
                 )}
               </FormGroup>
@@ -765,10 +772,12 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthlyPayment">Monthly Mortgage Payment</Label>
+                <Label for="monthly_mortgage_payment">
+                  Monthly Mortgage Payment
+                </Label>
                 <Input
-                  id="monthlyPayment"
-                  name="monthlyPayment"
+                  id="monthly_mortgage_payment"
+                  name="monthly_mortgage_payment"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
@@ -776,19 +785,19 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   value={monthlyPayment}
                   onChange={(e) => setMonthlyPayment(e.target.value)}
                 />
-                {getFieldError("monthlyPayment") && (
+                {getFieldError("monthly_mortgage_payment") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("monthlyPayment")}
+                    {getFieldError("monthly_mortgage_payment")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="valueAtPurchase">Value At Purchase</Label>
+                <Label for="value_at_purchase">Value At Purchase</Label>
                 <Input
-                  id="valueAtPurchase"
-                  name="valueAtPurchase"
+                  id="value_at_purchase"
+                  name="value_at_purchase"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
@@ -796,26 +805,26 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   value={valueAtPurchase}
                   onChange={(e) => setValueAtPurchase(e.target.value)}
                 />
-                {getFieldError("valueAtPurchase") && (
+                {getFieldError("value_at_purchase") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("valueAtPurchase")}
+                    {getFieldError("value_at_purchase")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="datePurchased">Date Purchased</Label>
+                <Label for="date_purchased">Date Purchased</Label>
                 <Input
-                  id="datePurchased"
-                  name="datePurchased"
+                  id="date_purchased"
+                  name="date_purchased"
                   type="date"
                   value={datePurchased}
                   onChange={(e) => setDatePurchased(e.target.value)}
                 />
-                {getFieldError("datePurchased") && (
+                {getFieldError("date_purchased") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("datePurchased")}
+                    {getFieldError("date_purchased")}
                   </small>
                 )}
               </FormGroup>
@@ -829,7 +838,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 <Label check>
                   <Input
                     type="checkbox"
-                    name="isHMO"
+                    name="is_hmo"
                     checked={isHMO}
                     onChange={(e) => setIsHMO(e.target.checked)}
                     className="border-primary"
@@ -841,7 +850,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 <Label check>
                   <Input
                     type="checkbox"
-                    name="isMUFB"
+                    name="is_mufb"
                     checked={isMUFB}
                     onChange={(e) => setIsMUFB(e.target.checked)}
                     className="border-primary"
@@ -852,34 +861,34 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="mortgageLender">Mortgage Lender</Label>
+                <Label for="mortgage_lender">Mortgage Lender</Label>
                 <Input
-                  id="mortgageLender"
-                  name="mortgageLender"
+                  id="mortgage_lender"
+                  name="mortgage_lender"
                   type="text"
                   value={mortgageLender}
                   onChange={(e) => setMortgageLender(e.target.value)}
                 />
-                {getFieldError("mortgageLender") && (
+                {getFieldError("mortgage_lender") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("mortgageLender")}
+                    {getFieldError("mortgage_lender")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="repaymentType">Repayment Type</Label>
+                <Label for="repayment_type">Repayment Type</Label>
                 <Input
-                  id="repaymentType"
-                  name="repaymentType"
+                  id="repayment_type"
+                  name="repayment_type"
                   type="text"
                   value={repaymentType}
                   onChange={(e) => setRepaymentType(e.target.value)}
                 />
-                {getFieldError("repaymentType") && (
+                {getFieldError("repayment_type") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("repaymentType")}
+                    {getFieldError("repayment_type")}
                   </small>
                 )}
               </FormGroup>
@@ -890,10 +899,10 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="currentRate">Current Rate (%)</Label>
+                <Label for="current_rate">Current Rate (%)</Label>
                 <Input
-                  id="currentRate"
-                  name="currentRate"
+                  id="current_rate"
+                  name="current_rate"
                   type="number"
                   step="0.01"
                   min="0"
@@ -902,19 +911,19 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   value={currentRate}
                   onChange={(e) => setCurrentRate(e.target.value)}
                 />
-                {getFieldError("currentRate") && (
+                {getFieldError("current_rate") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("currentRate")}
+                    {getFieldError("current_rate")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="rateType">Rate Type</Label>
+                <Label for="rate_type">Rate Type</Label>
                 <Input
-                  id="rateType"
-                  name="rateType"
+                  id="rate_type"
+                  name="rate_type"
                   type="select"
                   value={rateType}
                   onChange={(e) => setRateType(e.target.value)}
@@ -933,19 +942,19 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   <option value="LIFETIME">Lifetime</option>
                   <option value="OTHER">Other</option>
                 </Input>
-                {getFieldError("rateType") && (
+                {getFieldError("rate_type") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("rateType")}
+                    {getFieldError("rate_type")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="toBeRepaid">To Be Repaid</Label>
+                <Label for="to_be_repaid">To Be Repaid</Label>
                 <Input
-                  id="toBeRepaid"
-                  name="toBeRepaid"
+                  id="to_be_repaid"
+                  name="to_be_repaid"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
@@ -953,9 +962,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   value={toBeRepaid}
                   onChange={(e) => setToBeRepaid(e.target.value)}
                 />
-                {getFieldError("toBeRepaid") && (
+                {getFieldError("to_be_repaid") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("toBeRepaid")}
+                    {getFieldError("to_be_repaid")}
                   </small>
                 )}
               </FormGroup>
@@ -964,51 +973,51 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="currentRateEndDate">Current Rate End Date</Label>
+                <Label for="current_rate_end_date">Current Rate End Date</Label>
                 <Input
-                  id="currentRateEndDate"
-                  name="currentRateEndDate"
+                  id="current_rate_end_date"
+                  name="current_rate_end_date"
                   type="date"
                   value={currentRateEndDate}
                   onChange={(e) => setCurrentRateEndDate(e.target.value)}
                 />
-                {getFieldError("currentRateEndDate") && (
+                {getFieldError("current_rate_end_date") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("currentRateEndDate")}
+                    {getFieldError("current_rate_end_date")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ercEndDate">ERC End Date</Label>
+                <Label for="erc_end_date">ERC End Date</Label>
                 <Input
-                  id="ercEndDate"
-                  name="ercEndDate"
+                  id="erc_end_date"
+                  name="erc_end_date"
                   type="date"
                   value={ercEndDate}
                   onChange={(e) => setErcEndDate(e.target.value)}
                 />
-                {getFieldError("ercEndDate") && (
+                {getFieldError("erc_end_date") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("ercEndDate")}
+                    {getFieldError("erc_end_date")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="accountNumber">Account Number</Label>
+                <Label for="account_number">Account Number</Label>
                 <Input
-                  id="accountNumber"
-                  name="accountNumber"
+                  id="account_number"
+                  name="account_number"
                   type="text"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                 />
-                {getFieldError("accountNumber") && (
+                {getFieldError("account_number") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("accountNumber")}
+                    {getFieldError("account_number")}
                   </small>
                 )}
               </FormGroup>
@@ -1019,18 +1028,18 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="propertyType">Property Type*</Label>
+                <Label for="property_type">Property Type*</Label>
                 <Input
-                  id="propertyType"
-                  name="propertyType"
+                  id="property_type"
+                  name="property_type"
                   type="text"
                   value={propertyType}
                   onChange={(e) => setPropertyType(e.target.value)}
                   required
                 />
-                {getFieldError("propertyType") && (
+                {getFieldError("property_type") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("propertyType")}
+                    {getFieldError("property_type")}
                   </small>
                 )}
               </FormGroup>
@@ -1078,58 +1087,58 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="yearBuilt">Year Built</Label>
+                <Label for="year_built">Year Built</Label>
                 <Input
-                  id="yearBuilt"
-                  name="yearBuilt"
+                  id="year_built"
+                  name="year_built"
                   type="number"
                   step="1"
                   value={yearBuilt}
                   onChange={(e) => setYearBuilt(e.target.value)}
                 />
-                {getFieldError("yearBuilt") && (
+                {getFieldError("year_built") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("yearBuilt")}
+                    {getFieldError("year_built")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="numberOfBedrooms">Number of Bedrooms*</Label>
+                <Label for="number_of_bedrooms">Number of Bedrooms*</Label>
                 <Input
-                  id="numberOfBedrooms"
-                  name="numberOfBedrooms"
+                  id="number_of_bedrooms"
+                  name="number_of_bedrooms"
                   type="number"
                   step="1"
                   value={numberOfBedrooms}
                   onChange={(e) => setNumberOfBedrooms(e.target.value)}
                   required
                 />
-                {getFieldError("numberOfBedrooms") && (
+                {getFieldError("number_of_bedrooms") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("numberOfBedrooms")}
+                    {getFieldError("number_of_bedrooms")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="remainingMortgageTerm">
+                <Label for="remaining_mortgage_term">
                   Remaining Mortgage Term
                 </Label>
                 <Input
-                  id="remainingMortgageTerm"
-                  name="remainingMortgageTerm"
+                  id="remaining_mortgage_term"
+                  name="remaining_mortgage_term"
                   type="number"
                   step="1"
                   placeholder="Years"
                   value={remainingMortgageTerm}
                   onChange={(e) => setRemainingMortgageTerm(e.target.value)}
                 />
-                {getFieldError("remainingMortgageTerm") && (
+                {getFieldError("remaining_mortgage_term") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("remainingMortgageTerm")}
+                    {getFieldError("remaining_mortgage_term")}
                   </small>
                 )}
               </FormGroup>
@@ -1143,34 +1152,58 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 <Label check>
                   <Input
                     type="checkbox"
-                    name="isLimitedCompany"
+                    name="is_limited_company"
                     checked={isLimitedCompany}
                     onChange={(e) => setIsLimitedCompany(e.target.checked)}
                     className="border-primary"
                   />
                   Is Limited Company
                 </Label>
-                {getFieldError("isLimitedCompany") && (
+                {getFieldError("is_limited_company") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("isLimitedCompany")}
+                    {getFieldError("is_limited_company")}
                   </small>
                 )}
               </FormGroup>
             </Col>
+
+            {isLimitedCompany && (
+              <Col md={4}>
+                <FormGroup>
+                  <Label for="company_name">Company Name</Label>
+                  <Input
+                    id="company_name"
+                    name="company_name"
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                  />
+                  {getFieldError("company_name") && (
+                    <small
+                      className="text-danger"
+                      style={{ marginTop: "5px", display: "block" }}
+                    >
+                      {getFieldError("company_name")}
+                    </small>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
             <Col md={4}>
               <FormGroup>
-                <Label for="epcRating">EPC Rating</Label>
+                <Label for="epc_rating">EPC Rating</Label>
                 <Input
-                  id="epcRating"
-                  name="epcRating"
+                  id="epc_rating"
+                  name="epc_rating"
                   type="text"
                   value={fetchedEpcRating}
                   onChange={(e) => setFetchedEpcRating(e.target.value)}
                   placeholder={isEpcLoading ? "Fetching..." : "e.g. C"}
                 />
-                {getFieldError("epcRating") && (
+                {getFieldError("epc_rating") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("epcRating")}
+                    {getFieldError("epc_rating")}
                   </small>
                 )}
               </FormGroup>

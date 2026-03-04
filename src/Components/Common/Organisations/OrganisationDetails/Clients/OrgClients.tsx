@@ -264,12 +264,7 @@ const OrgClients: React.FC = () => {
                       ) : (
                         <>
                           <p className="m-0">
-                            {client.created_by?.title
-                              ? formatChoiceFieldValue(client.created_by?.title)
-                              : ""}{" "}
-                            {client?.created_by?.first_name}{" "}
-                            {client?.created_by?.middle_name}{" "}
-                            {client?.created_by?.last_name}
+                            {client.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
@@ -280,7 +275,7 @@ const OrgClients: React.FC = () => {
                               ? formatChoiceFieldValue(
                                   client.created_by?.user_type,
                                 )
-                              : ""}
+                              : "Not Found"}
                             )
                           </p>
                         </>

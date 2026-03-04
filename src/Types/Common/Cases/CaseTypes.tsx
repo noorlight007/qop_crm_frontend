@@ -24,6 +24,7 @@ export interface CaseInfoPrpos {
   is_removed: boolean;
   created_at: string;
   created_by: {
+    name: string;
     title: string;
     email: string;
     phone: string;
@@ -38,6 +39,7 @@ export interface CaseInfoPrpos {
     title: string;
     email: string;
     phone: string;
+    name: string;
     first_name: string;
     middle_name: string;
     last_name: string;
@@ -49,6 +51,7 @@ export interface CaseInfoPrpos {
     title: string;
     email: string;
     phone: string;
+    name: string;
     first_name: string;
     middle_name: string;
     last_name: string;
@@ -61,6 +64,7 @@ export interface CaseInfoPrpos {
     title: string;
     email: string;
     phone: string;
+    name: string;
     first_name: string;
     middle_name: string;
     last_name: string;
@@ -100,6 +104,7 @@ export interface CaseUser {
   alias?: string;
   email?: string;
   phone?: string | null;
+  name?: string;
   title?: string | null;
   first_name: string;
   middle_name?: string | null;
