@@ -22,6 +22,13 @@ const FallbackLogout: React.FC = () => {
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
+
+    try {
+      await fetch("/api/logout", { method: "POST", credentials: "include" });
+    } catch (e) {
+      console.warn("Failed to clear cookies via /api/logout", e);
+    }
+
     router.push("/auth/login");
   };
 

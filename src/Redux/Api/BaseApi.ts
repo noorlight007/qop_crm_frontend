@@ -378,6 +378,16 @@ export const logOut = async () => {
   try {
     await signOut({ redirect: false });
 
+    // Clear ALL cookies for this site (including HttpOnly cookies)
+    // by asking the server to expire them.
+    if (typeof window !== "undefined") {
+      try {
+        await fetch("/api/logout", { method: "POST", credentials: "include" });
+      } catch (e) {
+        console.error("Error calling /api/logout to clear cookies", e);
+      }
+    }
+
     if (typeof window !== "undefined") {
       // Force redirect to login page on the same subdomain
       const loginUrl = `${window.location.origin}/auth/login`;
@@ -387,6 +397,11 @@ export const logOut = async () => {
     console.error("Error during signOut", e);
     // Fallback: force redirect even if signOut fails
     if (typeof window !== "undefined") {
+      try {
+        await fetch("/api/logout", { method: "POST", credentials: "include" });
+      } catch {
+        // ignore
+      }
       window.location.href = `${window.location.origin}/auth/login`;
     }
   }

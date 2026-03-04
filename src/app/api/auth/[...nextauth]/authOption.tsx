@@ -53,9 +53,9 @@ declare module "next-auth" {
 export const authoption: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    // Auto logout after 24 hours.
+    // Auto logout after 7 days of inactivity. This is a fallback; the API should also enforce token expiration.
     // NOTE: access tokens may still be short-lived; API layer refreshes them on 401.
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 7 * 24 * 60 * 60, // 7 days
     updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
   },
   pages: {
@@ -148,7 +148,7 @@ export const authoption: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         const userWithToken = user as UserWithToken;
-        
+
         token.id = userWithToken.id;
         token.name = userWithToken.name;
         if (userWithToken.accessToken) {
