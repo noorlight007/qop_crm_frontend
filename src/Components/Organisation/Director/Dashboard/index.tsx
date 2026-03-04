@@ -19,7 +19,7 @@ const OrganisationDirectorDashboardContainer = () => {
       <Breadcrumbs
         title="Dashboard"
         subTitle="Hello there! Welcome back"
-        parent="Dashboard"
+        items={[{ label: "Dashboard", active: true }]}
       />
       <Container fluid>
         <WelcomeBanner />

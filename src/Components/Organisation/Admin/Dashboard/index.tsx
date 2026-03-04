@@ -16,7 +16,7 @@ const OrganisationAdminDashboardContainer: React.FC = () => {
       <Breadcrumbs
         title="Dashboard"
         subTitle="Welcome to your dashboard"
-        parent="Dashboard"
+        items={[{ label: "Dashboard", active: true }]}
       />
       <Container fluid>
         <WelcomeBanner />

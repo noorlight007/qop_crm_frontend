@@ -217,8 +217,7 @@ const OrganisationAdminReportsContainer: React.FC = () => {
       <Breadcrumbs
         title="Organisation Admin Reports"
         subTitle="Generate and analyze comprehensive organisation reports"
-        parent="Cases"
-        child="Reports"
+        items={[{ label: "Cases" }, { label: "Reports", active: true }]}
       />
       <Container fluid>
         <Row className="mb-4">

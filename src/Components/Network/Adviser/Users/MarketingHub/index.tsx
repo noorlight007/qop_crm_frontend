@@ -10,8 +10,7 @@ const NetworkAdviserMarketingHubContainer: React.FC = () => {
       <Breadcrumbs
         title="Marketing Hub"
         subTitle="Manage your social media and WhatsApp campaigns"
-        parent="Users"
-        child="Marketing Hub"
+        items={[{ label: "Users" }, { label: "Marketing Hub", active: true }]}
       />
       <Container fluid>
         <MarketingHubOverview />

@@ -8,8 +8,7 @@ const OrganisationDirectorIntroducersContainer: React.FC = () => {
       <Breadcrumbs
         title="Introducer Overview"
         subTitle="Manage organisation introducers"
-        parent="Users"
-        child="Introducers"
+        items={[{ label: "Users" }, { label: "Introducers", active: true }]}
       />
       <Container fluid>
         <AuthUsers userRole="INTRODUCER" title="Introducers" />

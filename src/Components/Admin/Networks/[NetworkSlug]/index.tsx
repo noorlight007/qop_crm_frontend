@@ -9,7 +9,7 @@ const NetworkDetailsContainer: React.FC = () => {
       <Breadcrumbs
         title="Network Status"
         subTitle="Welcome! Continue your journey."
-        parent="Networks"
+        items={[{ label: "Networks", active: true }]}
       />
       <Container fluid>
         <NetworkDetails />

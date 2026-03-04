@@ -8,8 +8,7 @@ const IntroducerContainer: React.FC = () => {
       <Breadcrumbs
         title="Introducers Overview"
         subTitle="Welcome back! Check all the Introducerss"
-        parent="Users"
-        child="Introducerss"
+        items={[{ label: "Users" }, { label: "Introducerss", active: true }]}
       />
       <Container fluid>
         <Row>

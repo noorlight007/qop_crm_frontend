@@ -7,8 +7,7 @@ const NetworkDirectorCaseDetailsContainer: React.FC = () => {
       <Breadcrumbs
         title="Network Case Status"
         subTitle="Hello there!"
-        parent="Cases"
-        child="Case"
+        items={[{ label: "Cases" }, { label: "Case", active: true }]}
       />
       <CaseDetails />
     </>

@@ -8,8 +8,10 @@ const MonthlyPaymentCalculatorContainer: React.FC = () => {
       <Breadcrumbs
         title="Monthly Payment Calculator"
         subTitle="Calculate your monthly payments with ease"
-        parent="Calculator"
-        child="Monthly Payment Calculator"
+        items={[
+          { label: "Calculator" },
+          { label: "Monthly Payment Calculator", active: true },
+        ]}
       />
       <Container fluid>
         <MonthlyPaymentCalculator />

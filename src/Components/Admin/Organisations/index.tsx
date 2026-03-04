@@ -8,7 +8,7 @@ const AdminOrganisationsContainer: React.FC = () => {
       <Breadcrumbs
         title="Organisations Overview"
         subTitle="Welcome back! Check all the Organisations"
-        parent="Organisations"
+        items={[{ label: "Organisations", active: true }]}
       />
       <Container fluid>
         <Row>

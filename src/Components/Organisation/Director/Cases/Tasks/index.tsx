@@ -7,8 +7,7 @@ const TasksContainer: React.FC = () => {
       <Breadcrumbs
         title="Tasks Overview"
         subTitle="This is the tasks overview page."
-        parent="Cases"
-        child="Tasks"
+        items={[{ label: "Cases" }, { label: "Tasks", active: true }]}
       />
       <MyTasks />
     </div>

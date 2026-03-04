@@ -8,8 +8,7 @@ const UserProfileContainer: React.FC = () => {
       <Breadcrumbs
         title="User Profile"
         subTitle="User profile management"
-        parent="User"
-        child="Profile"
+        items={[{ label: "User" }, { label: "Profile", active: true }]}
       />
       <Row>
         <Col>

@@ -8,8 +8,7 @@ const NetworkAdviserLeadsContainer: React.FC = () => {
       <Breadcrumbs
         title="Lead Overview"
         subTitle="Manage all leads"
-        parent="Cases"
-        child="Leads"
+        items={[{ label: "Cases" }, { label: "Leads", active: true }]}
       />
       <Container fluid>
         <LeadsOrClients userRole="LEAD" title="Leads" />

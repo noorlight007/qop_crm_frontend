@@ -9,7 +9,5 @@ export interface BreadcrumbItemConfig {
 export interface BreadcrumbsProps {
   title: string | ReactNode;
   subTitle: string;
-  parent?: string;
-  child?: string;
   items?: BreadcrumbItemConfig[];
 }
