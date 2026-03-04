@@ -63,6 +63,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const [city, setCity] = useState<string>("");
   const [county, setCounty] = useState<string>("");
   const [country, setCountry] = useState<string>("");
+  const [isLimitedCompany, setIsLimitedCompany] = useState(false);
 
   const LONDON_CENTER = { lat: 51.5074, lng: -0.1278 };
   const DEFAULT_ZOOM = 10;
@@ -219,38 +220,40 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       const payload = {
         applicant_ids: selectedApplicants.map((id) => Number(id)),
         postcode: formData.get("postcode"),
-        house_name_or_number: formData.get("houseNumber"),
-        address_1: formData.get("address1"),
-        address_2: formData.get("address2") || null,
+        house_name_or_number: formData.get("house_name_or_number"),
+        address_1: formData.get("address_1"),
+        address_2: formData.get("address_2") || null,
         city: formData.get("city"),
         county: formData.get("county") || null,
         country: formData.get("country"),
         latitude: mapCoords?.lat ?? 0,
         longitude: mapCoords?.lng ?? 0,
-        property_value: formData.get("propertyValue"),
-        current_mortgage_balance: formData.get("currentMortgageBalance"),
-        monthly_rental_income: formData.get("monthlyRental"),
-        monthly_mortgage_payment: formData.get("monthlyPayment"),
-        value_at_purchase: formData.get("valueAtPurchase"),
-        date_purchased: formData.get("datePurchased") || null,
-        is_hmo: formData.get("isHMO") === "on",
-        is_mufb: formData.get("isMUFB") === "on",
-        mortgage_lender: formData.get("mortgageLender") || null,
-        repayment_type: formData.get("repaymentType") || null,
-        to_be_repaid: formData.get("toBeRepaid") || null,
-        current_rate: formData.get("currentRate") || null,
-        rate_type: formData.get("rateType") || null,
-        current_rate_end_date: formData.get("currentRateEndDate") || null,
-        erc_end_date: formData.get("ercEndDate") || null,
-        account_number: formData.get("accountNumber"),
-        property_type: formData.get("propertyType"),
+        property_value: formData.get("property_value"),
+        current_mortgage_balance: formData.get("current_mortgage_balance"),
+        monthly_rental_income: formData.get("monthly_rental_income"),
+        monthly_mortgage_payment: formData.get("monthly_mortgage_payment"),
+        value_at_purchase: formData.get("value_at_purchase"),
+        date_purchased: formData.get("date_purchased") || null,
+        is_hmo: formData.get("is_hmo") === "on",
+        is_mufb: formData.get("is_mufb") === "on",
+        mortgage_lender: formData.get("mortgage_lender") || null,
+        repayment_type: formData.get("repayment_type") || null,
+        to_be_repaid: formData.get("to_be_repaid") || null,
+        current_rate: formData.get("current_rate") || null,
+        rate_type: formData.get("rate_type") || null,
+        current_rate_end_date: formData.get("current_rate_end_date") || null,
+        erc_end_date: formData.get("erc_end_date") || null,
+        account_number: formData.get("account_number"),
+        property_type: formData.get("property_type"),
         ownership: formData.get("ownership") || null,
         leasehold: formData.get("leasehold") || null,
-        year_built: formData.get("yearBuilt") || null,
-        number_of_bedrooms: formData.get("numberOfBedrooms") || null,
-        remaining_mortgage_term: formData.get("remainingMortgageTerm") || null,
-        is_limited_company: true,
-        epc_rating: formData.get("epcRating") || null,
+        year_built: formData.get("year_built") || null,
+        number_of_bedrooms: formData.get("number_of_bedrooms") || null,
+        remaining_mortgage_term:
+          formData.get("remaining_mortgage_term") || null,
+        is_limited_company: formData.get("is_limited_company") === "on",
+        company_name: formData.get("company_name") || null,
+        epc_rating: formData.get("epc_rating") || null,
         note: formData.get("note") || null,
       };
       const response = await addPropertyDetails({
@@ -541,7 +544,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicants">Applicant/s<span className="text-danger">*</span></Label>
+                <Label for="applicants">
+                  Applicant/s<span className="text-danger">*</span>
+                </Label>
                 <div className="position-relative" ref={dropdownRef}>
                   {/* Custom Input Field */}
                   <div
@@ -627,7 +632,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
+                <Label for="postcode">
+                  Postcode<span className="text-danger">*</span>
+                </Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -664,10 +671,12 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="houseNumber">House Name Or Number<span className="text-danger">*</span></Label>
+                <Label for="house_name_or_number">
+                  House Name Or Number<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="houseNumber"
-                  name="houseNumber"
+                  id="house_name_or_number"
+                  name="house_name_or_number"
                   type="text"
                   value={houseNumber}
                   onChange={(e) =>
@@ -675,22 +684,24 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   }
                   required
                 />
-                {getFieldError("houseNumber") && (
+                {getFieldError("house_name_or_number") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("houseNumber")}
+                    {getFieldError("house_name_or_number")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="address1">Address 1<span className="text-danger">*</span></Label>
+                <Label for="address_1">
+                  Address 1<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="address1"
-                  name="address1"
+                  id="address_1"
+                  name="address_1"
                   type="text"
                   value={address1}
                   onChange={(e) =>
@@ -698,34 +709,34 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   }
                   required
                 />
-                {getFieldError("address1") && (
+                {getFieldError("address_1") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("address1")}
+                    {getFieldError("address_1")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="address2">Address 2</Label>
+                <Label for="address_2">Address 2</Label>
                 <Input
-                  id="address2"
-                  name="address2"
+                  id="address_2"
+                  name="address_2"
                   type="text"
                   value={address2}
                   onChange={(e) =>
                     handleManualAddressChange(setAddress2, e.target.value)
                   }
                 />
-                {getFieldError("address2") && (
+                {getFieldError("address_2") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("address2")}
+                    {getFieldError("address_2")}
                   </small>
                 )}
               </FormGroup>
@@ -734,7 +745,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="city">City<span className="text-danger">*</span></Label>
+                <Label for="city">
+                  City<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="city"
                   name="city"
@@ -779,7 +792,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="country">Country<span className="text-danger">*</span></Label>
+                <Label for="country">
+                  Country<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="country"
                   name="country"
@@ -805,68 +820,72 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="propertyValue">Property Value<span className="text-danger">*</span></Label>
+                <Label for="property_value">
+                  Property Value<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="propertyValue"
-                  name="propertyValue"
+                  id="property_value"
+                  name="property_value"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                   required
                 />
-                {getFieldError("propertyValue") && (
+                {getFieldError("property_value") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("propertyValue")}
+                    {getFieldError("property_value")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="currentMortgageBalance">
+                <Label for="current_mortgage_balance">
                   Current Mortgage Balance<span className="text-danger">*</span>
                 </Label>
                 <Input
-                  id="currentMortgageBalance"
-                  name="currentMortgageBalance"
+                  id="current_mortgage_balance"
+                  name="current_mortgage_balance"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                   required
                 />
-                {getFieldError("currentMortgageBalance") && (
+                {getFieldError("current_mortgage_balance") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("currentMortgageBalance")}
+                    {getFieldError("current_mortgage_balance")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthlyRental">Monthly Rental Income<span className="text-danger">*</span></Label>
+                <Label for="monthly_rental_income">
+                  Monthly Rental Income<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="monthlyRental"
-                  name="monthlyRental"
+                  id="monthly_rental_income"
+                  name="monthly_rental_income"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                   required
                 />
-                {getFieldError("monthlyRental") && (
+                {getFieldError("monthly_rental_income") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("monthlyRental")}
+                    {getFieldError("monthly_rental_income")}
                   </small>
                 )}
               </FormGroup>
@@ -875,56 +894,58 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthlyPayment">Monthly Mortgage Payment</Label>
+                <Label for="monthly_mortgage_payment">
+                  Monthly Mortgage Payment
+                </Label>
                 <Input
-                  id="monthlyPayment"
-                  name="monthlyPayment"
+                  id="monthly_mortgage_payment"
+                  name="monthly_mortgage_payment"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                 />
-                {getFieldError("monthlyPayment") && (
+                {getFieldError("monthly_mortgage_payment") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("monthlyPayment")}
+                    {getFieldError("monthly_mortgage_payment")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="valueAtPurchase">Value At Purchase</Label>
+                <Label for="value_at_purchase">Value At Purchase</Label>
                 <Input
-                  id="valueAtPurchase"
-                  name="valueAtPurchase"
+                  id="value_at_purchase"
+                  name="value_at_purchase"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                 />
-                {getFieldError("valueAtPurchase") && (
+                {getFieldError("value_at_purchase") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("valueAtPurchase")}
+                    {getFieldError("value_at_purchase")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="datePurchased">Date Purchased</Label>
-                <Input id="datePurchased" name="datePurchased" type="date" />
-                {getFieldError("datePurchased") && (
+                <Label for="date_purchased">Date Purchased</Label>
+                <Input id="date_purchased" name="date_purchased" type="date" />
+                {getFieldError("date_purchased") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("datePurchased")}
+                    {getFieldError("date_purchased")}
                   </small>
                 )}
               </FormGroup>
@@ -936,7 +957,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 <Label check>
                   <Input
                     type="checkbox"
-                    name="isHMO"
+                    name="is_hmo"
                     className="border-primary"
                   />
                   Is the property an HMO
@@ -946,53 +967,57 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 <Label check>
                   <Input
                     type="checkbox"
-                    name="isMUFB"
+                    name="is_mufb"
                     className="border-primary"
                   />
                   Is the property a MUFB
                 </Label>
               </FormGroup>
-              {getFieldError("isHMO") && (
+              {getFieldError("is_hmo") && (
                 <small
                   className="text-danger"
                   style={{ marginTop: "5px", display: "block" }}
                 >
-                  {getFieldError("isHMO")}
+                  {getFieldError("is_hmo")}
                 </small>
               )}
-              {getFieldError("isMUFB") && (
+              {getFieldError("is_mufb") && (
                 <small
                   className="text-danger"
                   style={{ marginTop: "5px", display: "block" }}
                 >
-                  {getFieldError("isMUFB")}
+                  {getFieldError("is_mufb")}
                 </small>
               )}
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="mortgageLender">Mortgage Lender</Label>
-                <Input id="mortgageLender" name="mortgageLender" type="text" />
-                {getFieldError("mortgageLender") && (
+                <Label for="mortgage_lender">Mortgage Lender</Label>
+                <Input
+                  id="mortgage_lender"
+                  name="mortgage_lender"
+                  type="text"
+                />
+                {getFieldError("mortgage_lender") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("mortgageLender")}
+                    {getFieldError("mortgage_lender")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="repaymentType">Repayment Type</Label>
-                <Input id="repaymentType" name="repaymentType" type="text" />
-                {getFieldError("repaymentType") && (
+                <Label for="repayment_type">Repayment Type</Label>
+                <Input id="repayment_type" name="repayment_type" type="text" />
+                {getFieldError("repayment_type") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("repaymentType")}
+                    {getFieldError("repayment_type")}
                   </small>
                 )}
               </FormGroup>
@@ -1001,30 +1026,30 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="currentRate">Current Rate (%)</Label>
+                <Label for="current_rate">Current Rate (%)</Label>
                 <Input
-                  id="currentRate"
-                  name="currentRate"
+                  id="current_rate"
+                  name="current_rate"
                   type="number"
                   step="0.01"
                   min="0"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                 />
-                {getFieldError("currentRate") && (
+                {getFieldError("current_rate") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("currentRate")}
+                    {getFieldError("current_rate")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="rateType">Rate Type</Label>
-                <Input id="rateType" name="rateType" type="select">
+                <Label for="rate_type">Rate Type</Label>
+                <Input id="rate_type" name="rate_type" type="select">
                   <option value="">Select...</option>
                   <option value="UNKNOWN">Unknown</option>
                   <option value="FIXED">Fixed</option>
@@ -1039,33 +1064,33 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   <option value="LIFETIME">Lifetime</option>
                   <option value="OTHER">Other</option>
                 </Input>
-                {getFieldError("rateType") && (
+                {getFieldError("rate_type") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("rateType")}
+                    {getFieldError("rate_type")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="toBeRepaid">To Be Repaid</Label>
+                <Label for="to_be_repaid">To Be Repaid</Label>
                 <Input
-                  id="toBeRepaid"
-                  name="toBeRepaid"
+                  id="to_be_repaid"
+                  name="to_be_repaid"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
                   onInput={limitDecimalPlaces}
                 />
-                {getFieldError("toBeRepaid") && (
+                {getFieldError("to_be_repaid") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("toBeRepaid")}
+                    {getFieldError("to_be_repaid")}
                   </small>
                 )}
               </FormGroup>
@@ -1074,46 +1099,46 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="currentRateEndDate">Current Rate End Date</Label>
+                <Label for="current_rate_end_date">Current Rate End Date</Label>
                 <Input
-                  id="currentRateEndDate"
-                  name="currentRateEndDate"
+                  id="current_rate_end_date"
+                  name="current_rate_end_date"
                   type="date"
                 />
-                {getFieldError("currentRateEndDate") && (
+                {getFieldError("current_rate_end_date") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("currentRateEndDate")}
+                    {getFieldError("current_rate_end_date")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ercEndDate">ERC End Date</Label>
-                <Input id="ercEndDate" name="ercEndDate" type="date" />
-                {getFieldError("ercEndDate") && (
+                <Label for="erc_end_date">ERC End Date</Label>
+                <Input id="erc_end_date" name="erc_end_date" type="date" />
+                {getFieldError("erc_end_date") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("ercEndDate")}
+                    {getFieldError("erc_end_date")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="accountNumber">Account Number</Label>
-                <Input id="accountNumber" name="accountNumber" type="text" />
-                {getFieldError("accountNumber") && (
+                <Label for="account_number">Account Number</Label>
+                <Input id="account_number" name="account_number" type="text" />
+                {getFieldError("account_number") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("accountNumber")}
+                    {getFieldError("account_number")}
                   </small>
                 )}
               </FormGroup>
@@ -1122,26 +1147,30 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="propertyType">Property Type<span className="text-danger">*</span></Label>
+                <Label for="property_type">
+                  Property Type<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="propertyType"
-                  name="propertyType"
+                  id="property_type"
+                  name="property_type"
                   type="text"
                   required
                 />
-                {getFieldError("propertyType") && (
+                {getFieldError("property_type") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("propertyType")}
+                    {getFieldError("property_type")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ownership">Ownership<span className="text-danger">*</span></Label>
+                <Label for="ownership">
+                  Ownership<span className="text-danger">*</span>
+                </Label>
                 <Input id="ownership" name="ownership" type="text" required />
                 {getFieldError("ownership") && (
                   <small
@@ -1179,56 +1208,63 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label for="yearBuilt">Year Built</Label>
-                <Input id="yearBuilt" name="yearBuilt" type="number" step="1" />
-                {getFieldError("yearBuilt") && (
+                <Label for="year_built">Year Built</Label>
+                <Input
+                  id="year_built"
+                  name="year_built"
+                  type="number"
+                  step="1"
+                />
+                {getFieldError("year_built") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("yearBuilt")}
+                    {getFieldError("year_built")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="numberOfBedrooms">Number of Bedrooms<span className="text-danger">*</span></Label>
+                <Label for="number_of_bedrooms">
+                  Number of Bedrooms<span className="text-danger">*</span>
+                </Label>
                 <Input
-                  id="numberOfBedrooms"
-                  name="numberOfBedrooms"
+                  id="number_of_bedrooms"
+                  name="number_of_bedrooms"
                   type="number"
                   step="1"
                   required
                 />
-                {getFieldError("numberOfBedrooms") && (
+                {getFieldError("number_of_bedrooms") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("numberOfBedrooms")}
+                    {getFieldError("number_of_bedrooms")}
                   </small>
                 )}
               </FormGroup>
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="remainingMortgageTerm">
+                <Label for="remaining_mortgage_term">
                   Remaining Mortgage Term
                 </Label>
                 <Input
-                  id="remainingMortgageTerm"
-                  name="remainingMortgageTerm"
+                  id="remaining_mortgage_term"
+                  name="remaining_mortgage_term"
                   type="number"
                   step="1"
                   placeholder="Years"
                 />
-                {getFieldError("remainingMortgageTerm") && (
+                {getFieldError("remaining_mortgage_term") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("remainingMortgageTerm")}
+                    {getFieldError("remaining_mortgage_term")}
                   </small>
                 )}
               </FormGroup>
@@ -1240,27 +1276,45 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 <Label check>
                   <Input
                     type="checkbox"
-                    name="isLimitedCompany"
+                    name="is_limited_company"
                     className="border-primary"
+                    checked={isLimitedCompany}
+                    onChange={(e) => setIsLimitedCompany(e.target.checked)}
                   />
                   Is Limited Company
                 </Label>
-                {getFieldError("isLimitedCompany") && (
+                {getFieldError("is_limited_company") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("isLimitedCompany")}
+                    {getFieldError("is_limited_company")}
                   </small>
                 )}
               </FormGroup>
             </Col>
+            {isLimitedCompany && (
+              <Col md={4}>
+                <FormGroup>
+                  <Label for="company_name">Company Name</Label>
+                  <Input id="company_name" name="company_name" type="text" />
+                  {getFieldError("company_name") && (
+                    <small
+                      className="text-danger"
+                      style={{ marginTop: "5px", display: "block" }}
+                    >
+                      {getFieldError("company_name")}
+                    </small>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
             <Col md={4}>
               <FormGroup>
-                <Label for="epcRating">EPC Rating</Label>
+                <Label for="epc_rating">EPC Rating</Label>
                 <Input
-                  id="epcRating"
-                  name="epcRating"
+                  id="epc_rating"
+                  name="epc_rating"
                   type="text"
                   value={fetchedEpcRating}
                   onChange={(e) => setFetchedEpcRating(e.target.value)}
@@ -1274,12 +1328,12 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     No EPC rating found for this address.
                   </small>
                 )}
-                {getFieldError("epcRating") && (
+                {getFieldError("epc_rating") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("epcRating")}
+                    {getFieldError("epc_rating")}
                   </small>
                 )}
               </FormGroup>
