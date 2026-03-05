@@ -146,7 +146,6 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                         height: 30,
                         right: 0,
                         bottom: 0,
-                        // background: "rgba(0, 0, 0, 0.65)",
                         borderRadius: "50%",
                         transform: "translate(-15%, -15%)",
                       }}
