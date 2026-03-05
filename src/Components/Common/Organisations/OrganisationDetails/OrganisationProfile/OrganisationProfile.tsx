@@ -226,7 +226,6 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         bottom: "-6px",
                         width: "35px",
                         height: "35px",
-                        // background: "rgba(0,0,0,0.65)",
                         color: "#fff",
                         cursor: "pointer",
                       }}

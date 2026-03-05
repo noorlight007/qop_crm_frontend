@@ -153,43 +153,43 @@ const OrganisationDetails: React.FC = () => {
   };
 
   const [licensePopoverOpen, setLicensePopoverOpen] = useState(false);
-  
-    const toggleLicensePopover = () => setLicensePopoverOpen(!licensePopoverOpen);
-  
-    const handleLicenseImageDownload = async () => {
-      const licenseImageUrl = getOrganisationDetails?.organization?.license_image;
-  
-      if (!licenseImageUrl) return;
-  
-      try {
-        // Fetch the image as a blob
-        const response = await fetch(licenseImageUrl);
-        const blob = await response.blob();
-  
-        // Create a temporary URL for the blob
-        const blobUrl = window.URL.createObjectURL(blob);
-  
-        // Create a temporary anchor element
-        const link = document.createElement("a");
-        link.href = blobUrl;
-  
-        // Extract filename from URL or use a default name
-        const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
-        link.download = fileName;
-  
-        // Append to body, click, and remove
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-  
-        // Clean up the blob URL
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (error) {
-        console.error("Download failed:", error);
-        // Fallback to opening in new tab if download fails
-        window.open(licenseImageUrl, "_blank");
-      }
-    };
+
+  const toggleLicensePopover = () => setLicensePopoverOpen(!licensePopoverOpen);
+
+  const handleLicenseImageDownload = async () => {
+    const licenseImageUrl = getOrganisationDetails?.organization?.license_image;
+
+    if (!licenseImageUrl) return;
+
+    try {
+      // Fetch the image as a blob
+      const response = await fetch(licenseImageUrl);
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      // Extract filename from URL or use a default name
+      const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
+      link.download = fileName;
+
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Fallback to opening in new tab if download fails
+      window.open(licenseImageUrl, "_blank");
+    }
+  };
 
   const [isCopied, setIsCopied] = useState(false);
 
@@ -269,7 +269,6 @@ const OrganisationDetails: React.FC = () => {
                         style={{
                           width: "150px",
                           height: "100px",
-                          // border: "5px solid white",
                           overflow: "hidden",
                         }}
                       >
@@ -294,7 +293,6 @@ const OrganisationDetails: React.FC = () => {
                             bottom: "-5px",
                             width: "35px",
                             height: "35px",
-                            // background: "rgba(0,0,0,0.65)",
                             color: "#fff",
                             cursor: "pointer",
                           }}

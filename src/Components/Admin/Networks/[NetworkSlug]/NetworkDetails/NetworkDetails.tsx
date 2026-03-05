@@ -221,7 +221,6 @@ const NetworkDetails: React.FC = () => {
                         style={{
                           width: "150px",
                           height: "100px",
-                          // border: "5px solid white",
                           overflow: "hidden",
                         }}
                       >
@@ -246,7 +245,6 @@ const NetworkDetails: React.FC = () => {
                             bottom: "-5px",
                             width: "35px",
                             height: "35px",
-                            // background: "rgba(0,0,0,0.65)",
                             color: "#fff",
                             cursor: "pointer",
                           }}
