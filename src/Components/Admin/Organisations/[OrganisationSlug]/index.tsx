@@ -9,7 +9,10 @@ const OrganisationDetailsContainer: React.FC = () => {
       <Breadcrumbs
         title="Organisation Status"
         subTitle="Welcome! Continue your journey."
-        items={[{ label: "Organisations", active: true }]}
+        items={[
+          { label: "Organisations" },
+          { label: "Organisation Details", active: true },
+        ]}
       />
       <Container fluid>
         <OrganisationDetails />
