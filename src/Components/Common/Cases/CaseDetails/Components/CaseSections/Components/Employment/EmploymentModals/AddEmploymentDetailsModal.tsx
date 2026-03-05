@@ -901,22 +901,22 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
               formValues?.employment_status === "RETIRED") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="grossMonthlyIncome">
-                    Gross Monthly Income({getCurrencySign()})*
+                  <Label for="grossAnnualIncome">
+                    Gross Annual Income({getCurrencySign()})*
                   </Label>
                   <Input
                     type="number"
-                    id="grossMonthlyIncome"
+                    id="grossAnnualIncome"
                     placeholder="0"
-                    value={formValues?.gross_monthly_income || ""}
+                    value={formValues?.gross_annual_income || ""}
                     onChange={(e) =>
-                      handleInputChange("gross_monthly_income", e.target.value)
+                      handleInputChange("gross_annual_income", e.target.value)
                     }
                     required
                   />
-                  {getFieldError("gross_monthly_income") && (
+                  {getFieldError("gross_annual_income") && (
                     <div className="text-danger small">
-                      {getFieldError("gross_monthly_income")}
+                      {getFieldError("gross_annual_income")}
                     </div>
                   )}
                 </FormGroup>
