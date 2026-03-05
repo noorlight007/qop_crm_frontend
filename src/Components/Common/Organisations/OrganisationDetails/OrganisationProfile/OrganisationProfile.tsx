@@ -438,7 +438,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       <p className="small text-muted mb-1">Email</p>
                       {singleOrgInfo?.organization?.email ? (
                         <span
-                          className="fw-500 text-dark text-decoration-none text-break"
+                          className="fw-500 text-dark text-decoration-none text-truncate"
                           style={{
                             transition: "color 0.2s",
                             wordBreak: "break-word",
