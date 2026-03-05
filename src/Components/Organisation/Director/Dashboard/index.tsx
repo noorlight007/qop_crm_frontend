@@ -1,5 +1,4 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import LoginHistory from "@/Components/Common/LoginHistory/LoginHistory";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetOrganisationDirectorDashboardQuery } from "@/Redux/Reducers/Network/Director/Dashboard/DashdoardApi";
 import { Col, Container, Row } from "reactstrap";
@@ -64,12 +63,6 @@ const OrganisationDirectorDashboardContainer = () => {
                 organisationDirectorDashboardData
               }
             />
-          </Col>
-        </Row>
-        {/* 4th row */}
-        <Row>
-          <Col>
-            <LoginHistory />
           </Col>
         </Row>
       </Container>
