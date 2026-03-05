@@ -1085,21 +1085,21 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="grossMonthlyIncome">
-                  Gross Monthly Income({getCurrencySign()})<span className="text-danger">*</span>
+                  Gross Annual Income({getCurrencySign()})<span className="text-danger">*</span>
                 </Label>
                 <Input
                   type="number"
                   id="grossMonthlyIncome"
                   placeholder="0"
-                  value={formValues?.gross_monthly_income || ""}
+                  value={formValues?.gross_annual_income || ""}
                   onChange={(e) =>
-                    handleInputChange("gross_monthly_income", e.target.value)
+                    handleInputChange("gross_annual_income", e.target.value)
                   }
                   required
                 />
-                {getFieldError("gross_monthly_income") && (
+                {getFieldError("gross_annual_income") && (
                   <div className="text-danger small">
-                    {getFieldError("gross_monthly_income")}
+                    {getFieldError("gross_annual_income")}
                   </div>
                 )}
               </FormGroup>
@@ -1109,7 +1109,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
             <Col md={6}>
               <FormGroup>
                 <Label for="netMonthlyIncome">
-                  Net Monthly Income({getCurrencySign()})<span className="text-danger">*</span>
+                  Net Monthly Income({getCurrencySign()})
                 </Label>
                 <Input
                   type="number"

@@ -31,7 +31,7 @@ export interface EmploymentDetailsProps {
   employer_longitude?: number | null;
   employment_commenced: string | null;
   employment_ended: string | null;
-  gross_monthly_income: number | null;
+  gross_annual_income: number | null;
   net_monthly_income: number | null;
   is_probationary_period: boolean;
   is_income_in_foreign_currency: boolean;
