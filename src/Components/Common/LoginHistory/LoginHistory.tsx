@@ -3,7 +3,7 @@ import { LoginHistoryItem } from "@/Types/Common/LoginHistory/LoginHistoryTypes"
 import formatChoiceFieldValue from "@/utils/formatters";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaClock, FaGlobe, FaMapMarkerAlt } from "react-icons/fa";
 import {
   Badge,
@@ -18,15 +18,27 @@ import {
 
 const LoginHistory: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  // track elapsed time while a fetch is in-flight
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  // countdown (in seconds) until the next polling refresh
+  const [nextRefreshIn, setNextRefreshIn] = useState<number | null>(null);
+  const timeInterval = 20000; // 20 seconds
+
+  const formatSeconds = (seconds: number | null) => {
+    if (seconds === null || Number.isNaN(seconds)) return "--";
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    return `${String(safeSeconds).padStart(2, "0")}s`;
+  };
 
   const {
     data: loginHistoryData,
     isLoading,
     isFetching,
+    fulfilledTimeStamp,
   } = useGetLoginHistoryQuery(
     { page: currentPage },
     {
-      pollingInterval: 20000,
+      pollingInterval: timeInterval,
     },
   );
 
@@ -68,6 +80,45 @@ const LoginHistory: React.FC = () => {
     }
   };
 
+  // keep an interval running while we fetch to show elapsed time
+  useEffect(() => {
+    let timer: ReturnType<typeof setInterval> | undefined;
+    if (isFetching) {
+      const start = Date.now();
+      timer = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - start) / 1000));
+      }, 1000);
+    } else {
+      setElapsedTime(0);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isFetching]);
+
+  // countdown until the next poll based on the last successful fetch time
+  useEffect(() => {
+    if (!fulfilledTimeStamp) {
+      setNextRefreshIn(null);
+      return;
+    }
+
+    const tick = () => {
+      if (isFetching) {
+        setNextRefreshIn(0);
+        return;
+      }
+
+      const elapsedSinceFulfilled = Date.now() - fulfilledTimeStamp;
+      const remainingMs = Math.max(0, timeInterval - elapsedSinceFulfilled);
+      setNextRefreshIn(Math.ceil(remainingMs / 1000));
+    };
+
+    tick();
+    const intervalId = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
+  }, [fulfilledTimeStamp, isFetching, timeInterval]);
+
   // Pagination logic from API
   const totalCount = loginHistoryData?.count || 0;
   const currentResults = loginHistoryData?.results || [];
@@ -81,15 +132,23 @@ const LoginHistory: React.FC = () => {
       <Card className="border-0 shadow h-100">
         <CardBody className="p-4">
           <div className="d-flex align-items-center mb-4">
-            <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3">
+            <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3 position-relative">
               <i
                 className="fa fa-history text-primary fs-4"
                 style={{
                   animation: isFetching ? "rotate360 0.6s ease-in-out" : "none",
                 }}
               ></i>
+              <small
+                className="position-absolute top-0 end-1 translate-middle bg-primary text-white rounded-circle px-1"
+                style={{ fontSize: "0.6rem" }}
+              >
+                {formatSeconds(nextRefreshIn)}
+              </small>
             </div>
-            <h4 className="mb-0 fw-bold text-dark">Login History</h4>
+            <div>
+              <h4 className="mb-0 fw-bold text-dark">Login History</h4>
+            </div>
           </div>
           <div className="text-center py-5">
             <div className="spinner-border text-primary" role="status">
@@ -107,13 +166,19 @@ const LoginHistory: React.FC = () => {
         {/* Header Section */}
         <div className="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
           <div className="d-flex align-items-center">
-            <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3">
+            <div className="bg-light-primary bg-opacity-10 p-3 rounded-3 me-3 position-relative">
               <i
                 className="fa fa-history text-primary fs-4"
                 style={{
                   animation: isFetching ? "rotate360 0.6s ease-in-out" : "none",
                 }}
               ></i>
+              <small
+                className="position-absolute top-0 end-1 translate-middle bg-primary text-white rounded-circle px-1"
+                style={{ fontSize: "0.6rem" }}
+              >
+                {formatSeconds(nextRefreshIn)}
+              </small>
             </div>
             <div>
               <h4 className="mb-0 fw-bold text-dark">Login History</h4>
@@ -128,7 +193,7 @@ const LoginHistory: React.FC = () => {
         <div
           className="login-history-container"
           style={{
-            maxHeight: "500px",
+            maxHeight: "700px",
             overflowY: "auto",
             overflowX: "hidden",
             paddingRight: "8px",

@@ -2,6 +2,7 @@ import { MenuItem } from "@/Types/LayoutTypes";
 import {
   FaBriefcase,
   FaCalculator,
+  FaHistory,
   FaNetworkWired,
   FaUsers,
 } from "react-icons/fa";
@@ -195,6 +196,13 @@ const NetworkDirectorMenu: MenuItem[] = [
         lanClass: "lan-3",
         path: "/network/director/support-ticket",
       },
+      {
+        title: "Login History",
+        icon: <FaHistory />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/login-history",
+      },
     ],
   },
 ];
@@ -300,6 +308,13 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "link",
         lanClass: "lan-3",
         path: "/network/director/support-ticket",
+      },
+      {
+        title: "Login History",
+        icon: <FaHistory />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/login-history",
       },
     ],
   },
@@ -509,6 +524,13 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "link",
         lanClass: "lan-3",
         path: "/organisation/director/support-ticket",
+      },
+      {
+        title: "Login History",
+        icon: <FaHistory />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/organisation/director/login-history",
       },
     ],
   },
