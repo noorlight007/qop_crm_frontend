@@ -153,43 +153,43 @@ const OrganisationDetails: React.FC = () => {
   };
 
   const [licensePopoverOpen, setLicensePopoverOpen] = useState(false);
-  
-    const toggleLicensePopover = () => setLicensePopoverOpen(!licensePopoverOpen);
-  
-    const handleLicenseImageDownload = async () => {
-      const licenseImageUrl = getOrganisationDetails?.organization?.license_image;
-  
-      if (!licenseImageUrl) return;
-  
-      try {
-        // Fetch the image as a blob
-        const response = await fetch(licenseImageUrl);
-        const blob = await response.blob();
-  
-        // Create a temporary URL for the blob
-        const blobUrl = window.URL.createObjectURL(blob);
-  
-        // Create a temporary anchor element
-        const link = document.createElement("a");
-        link.href = blobUrl;
-  
-        // Extract filename from URL or use a default name
-        const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
-        link.download = fileName;
-  
-        // Append to body, click, and remove
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-  
-        // Clean up the blob URL
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (error) {
-        console.error("Download failed:", error);
-        // Fallback to opening in new tab if download fails
-        window.open(licenseImageUrl, "_blank");
-      }
-    };
+
+  const toggleLicensePopover = () => setLicensePopoverOpen(!licensePopoverOpen);
+
+  const handleLicenseImageDownload = async () => {
+    const licenseImageUrl = getOrganisationDetails?.organization?.license_image;
+
+    if (!licenseImageUrl) return;
+
+    try {
+      // Fetch the image as a blob
+      const response = await fetch(licenseImageUrl);
+      const blob = await response.blob();
+
+      // Create a temporary URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary anchor element
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      // Extract filename from URL or use a default name
+      const fileName = licenseImageUrl.split("/").pop() || "license-image.jpg";
+      link.download = fileName;
+
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the blob URL
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Fallback to opening in new tab if download fails
+      window.open(licenseImageUrl, "_blank");
+    }
+  };
 
   const [isCopied, setIsCopied] = useState(false);
 
@@ -265,11 +265,10 @@ const OrganisationDetails: React.FC = () => {
                     <Col md="auto">
                       {/* Organisation Logo */}
                       <div
-                        className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center"
+                        className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center border border-5 border-secondary"
                         style={{
                           width: "150px",
                           height: "100px",
-                          border: "5px solid white",
                           overflow: "hidden",
                         }}
                       >
@@ -288,13 +287,12 @@ const OrganisationDetails: React.FC = () => {
                         {/* Camera overlay for logo upload */}
                         <button
                           title="Change organization logo"
-                          className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0 bg-secondary"
                           style={{
                             right: "-5px",
                             bottom: "-5px",
                             width: "35px",
                             height: "35px",
-                            background: "rgba(0,0,0,0.65)",
                             color: "#fff",
                             cursor: "pointer",
                           }}
@@ -668,17 +666,17 @@ const OrganisationDetails: React.FC = () => {
                           alt={getOrganisationDetails?.user?.name ?? "Director"}
                           width={90}
                           height={90}
-                          className="rounded-circle organisation-avatar-img"
+                          className="rounded-circle organisation-avatar-img border border-2 border-secondary"
                         />
                         <button
                           title="Change profile image"
-                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0 bg-secondary"
                           style={{
                             width: 30,
                             height: 30,
                             right: 0,
                             bottom: 0,
-                            background: "rgba(0, 0, 0, 0.65)",
+                            // background: "rgba(0, 0, 0, 0.65)",
                             borderRadius: "50%",
                             transform: "translate(-15%, -15%)",
                             cursor: "pointer",
@@ -693,7 +691,7 @@ const OrganisationDetails: React.FC = () => {
                       </div>
                     ) : (
                       <div
-                        className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials"
+                        className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials border border-2 border-secondary"
                         style={{ width: 90, height: 90, overflow: "hidden" }}
                       >
                         {getOrganisationDetails?.user?.name
@@ -704,13 +702,13 @@ const OrganisationDetails: React.FC = () => {
                           .slice(0, 2) || "ND"}
                         <button
                           title="Change profile image"
-                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0 bg-secondary"
                           style={{
                             width: 30,
                             height: 30,
                             right: 0,
                             bottom: 0,
-                            background: "rgba(0, 0, 0, 0.65)",
+                            // background: "rgba(0, 0, 0, 0.65)",
                             borderRadius: "50%",
                             transform: "translate(-15%, -15%)",
                             cursor: "pointer",

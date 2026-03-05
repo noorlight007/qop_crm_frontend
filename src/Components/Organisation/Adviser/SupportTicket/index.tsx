@@ -7,7 +7,7 @@ const SupportTicketContainer: React.FC = () => {
       <Breadcrumbs
         title="Support Tickets"
         subTitle="This is the support ticket page"
-        parent="Support Tickets"
+        items={[{ label: "Support Tickets", active: true }]}
       />
       <SupportTicket />
     </div>

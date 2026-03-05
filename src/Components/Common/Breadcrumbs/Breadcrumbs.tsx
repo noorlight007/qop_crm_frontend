@@ -7,8 +7,7 @@ import { Breadcrumb, BreadcrumbItem, Col, Container, Row } from "reactstrap";
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
   title,
   subTitle,
-  parent,
-  child,
+  items,
 }) => {
   const { data: session } = useSession();
   return (
@@ -25,10 +24,23 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 <i className="iconly-Home icli svg-color" />
               </Link>
             </BreadcrumbItem>
-            {parent && <BreadcrumbItem>{parent}</BreadcrumbItem>}
-            {child && (
-              <BreadcrumbItem className="active">{child}</BreadcrumbItem>
-            )}
+            {items?.length
+              ? items.map((item, index) => {
+                  const isActive = item.active ?? index === items.length - 1;
+                  return (
+                    <BreadcrumbItem
+                      key={index}
+                      className={isActive ? "active" : undefined}
+                    >
+                      {item.href && !isActive ? (
+                        <Link href={item.href}>{item.label}</Link>
+                      ) : (
+                        item.label
+                      )}
+                    </BreadcrumbItem>
+                  );
+                })
+              : null}
           </Breadcrumb>
         </Col>
       </Row>

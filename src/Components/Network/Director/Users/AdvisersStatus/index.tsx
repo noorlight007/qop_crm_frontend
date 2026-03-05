@@ -58,8 +58,10 @@ const NetworkDirectorAdvisersStatusContainer: React.FC = () => {
       <Breadcrumbs
         title="Adviser Status Overview"
         subTitle="Overview of Adviser Status"
-        parent="Network"
-        child="Adviser Status"
+        items={[
+          { label: "Network" },
+          { label: "Adviser Status", active: true },
+        ]}
       />
       <Row>
         <Col xs={12}>

@@ -8,8 +8,7 @@ const AdminDirectorsContainer: React.FC = () => {
       <Breadcrumbs
         title="Directors Overview"
         subTitle="Welcome back! Check all the Network Directors"
-        parent="Users"
-        child="Directors"
+        items={[{ label: "Users" }, { label: "Directors", active: true }]}
       />
       <Container fluid>
         <Row>

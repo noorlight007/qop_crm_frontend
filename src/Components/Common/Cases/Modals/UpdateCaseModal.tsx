@@ -36,6 +36,36 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     };
   };
 
+  const getChangedFields = (
+    original: CaseInfoPrpos | null,
+    current: CaseInfoPrpos | null,
+  ): Partial<CaseInfoPrpos> => {
+    if (!original || !current) return {};
+
+    // Only diff fields that are editable in this modal.
+    const editableKeys: Array<keyof CaseInfoPrpos> = [
+      "case_stage",
+      "assigned_to",
+      "assigned_to_admin",
+      "notes",
+    ];
+
+    const normalize = (value: unknown) => {
+      if (value === null || value === undefined) return "";
+      return String(value);
+    };
+
+    return editableKeys.reduce<Partial<CaseInfoPrpos>>((acc, key) => {
+      const originalValue = normalize((original as any)[key]);
+      const currentValue = normalize((current as any)[key]);
+
+      if (originalValue !== currentValue) {
+        (acc as any)[key] = (current as any)[key];
+      }
+      return acc;
+    }, {});
+  };
+
   const [formData, setFormData] = useState<CaseInfoPrpos | null>(
     getInitialFormData(caseData),
   );
@@ -53,11 +83,9 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     role: "ORGANISATION_ADMIN",
   });
 
-  // Compare current data with the original data
-  const hasChanges =
-    formData && caseData
-      ? JSON.stringify(formData) !== JSON.stringify(caseData)
-      : false;
+  const baselineFormData = getInitialFormData(caseData);
+  const changedFields = getChangedFields(baselineFormData, formData);
+  const hasChanges = Object.keys(changedFields).length > 0;
 
   useEffect(() => {
     if (caseData) {
@@ -81,9 +109,12 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
   const handleSubmit = async () => {
     try {
+      if (!caseData?.alias || !formData) return;
+      if (!hasChanges) return;
+
       const res = await updateCaseDetails({
         caseAlias: caseData?.alias,
-        payload: formData,
+        payload: changedFields,
       });
       if (res.data) {
         toast.success("Case updated successfully.");

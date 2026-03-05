@@ -10,8 +10,7 @@ const AppearanceContainer: React.FC = () => {
       <Breadcrumbs
         title="Appearance"
         subTitle="Appearance settings"
-        parent="Dashboard"
-        child="Appearance"
+        items={[{ label: "Appearance", active: true }]}
       />
       <Row>
         <Col xxl="6" xl="12">

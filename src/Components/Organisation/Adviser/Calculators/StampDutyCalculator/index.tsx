@@ -8,8 +8,10 @@ const StampDutyCalculatorContainer: React.FC = () => {
       <Breadcrumbs
         title="Stamp Duty Calculator"
         subTitle="Calculate your stamp duty payments with ease"
-        parent="Calculator"
-        child="Stamp Duty Calculator"
+        items={[
+          { label: "Calculators" },
+          { label: "Stamp Duty Calculator", active: true },
+        ]}
       />
       <Container fluid>
         <StampDutyCalculator />

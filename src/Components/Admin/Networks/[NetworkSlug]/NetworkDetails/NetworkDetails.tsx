@@ -217,11 +217,10 @@ const NetworkDetails: React.FC = () => {
                     <Col md="auto">
                       {/* Network Logo */}
                       <div
-                        className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center"
+                        className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center border border-5 border-secondary"
                         style={{
                           width: "150px",
                           height: "100px",
-                          border: "5px solid white",
                           overflow: "hidden",
                         }}
                       >
@@ -240,13 +239,12 @@ const NetworkDetails: React.FC = () => {
                         {/* Camera overlay for logo upload */}
                         <button
                           title="Change network logo"
-                          className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0 bg-secondary"
                           style={{
                             right: "-5px",
                             bottom: "-5px",
                             width: "35px",
                             height: "35px",
-                            background: "rgba(0,0,0,0.65)",
                             color: "#fff",
                             cursor: "pointer",
                           }}
@@ -530,17 +528,17 @@ const NetworkDetails: React.FC = () => {
                           alt={getNetworkDetails?.user?.name ?? "Director"}
                           width={90}
                           height={90}
-                          className="rounded-circle organisation-avatar-img"
+                          className="rounded-circle organisation-avatar-img border border-2 border-secondary"
                         />
                         <button
                           title="Change profile image"
-                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0 bg-secondary"
                           style={{
                             width: 30,
                             height: 30,
                             right: 0,
                             bottom: 0,
-                            background: "rgba(0, 0, 0, 0.65)",
+                            // background: "rgba(0, 0, 0, 0.65)",
                             borderRadius: "50%",
                             transform: "translate(-15%, -15%)",
                             cursor: "pointer",
@@ -553,7 +551,7 @@ const NetworkDetails: React.FC = () => {
                       </div>
                     ) : (
                       <div
-                        className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials"
+                        className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials border border-2 border-secondary"
                         style={{ width: 90, height: 90, overflow: "hidden" }}
                       >
                         {getNetworkDetails?.user?.name
@@ -564,13 +562,13 @@ const NetworkDetails: React.FC = () => {
                           .slice(0, 2) || "ND"}
                         <button
                           title="Change profile image"
-                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0"
+                          className="camera-btn position-absolute d-flex align-items-center justify-content-center border-0 bg-secondary"
                           style={{
                             width: 30,
                             height: 30,
                             right: 0,
                             bottom: 0,
-                            background: "rgba(0, 0, 0, 0.65)",
+                            // background: "rgba(0, 0, 0, 0.65)",
                             borderRadius: "50%",
                             transform: "translate(-15%, -15%)",
                             cursor: "pointer",

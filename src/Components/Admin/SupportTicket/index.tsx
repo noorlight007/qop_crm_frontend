@@ -8,7 +8,7 @@ const SupportTicketContainer: React.FC = () => {
       <Breadcrumbs
         title="Support Ticket Overview"
         subTitle="Welcome back! Check all the Support Tickets"
-        parent="Support Tickets"
+        items={[{ label: "Support Tickets", active: true }]}
       />
       <Container fluid>
         <Row>

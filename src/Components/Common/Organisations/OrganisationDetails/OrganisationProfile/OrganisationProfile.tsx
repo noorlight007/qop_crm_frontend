@@ -195,11 +195,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                 <Col md="auto">
                   {/* Organisation Logo */}
                   <div
-                    className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center"
+                    className="position-relative avatar-wrapper rounded bg-white shadow-lg d-flex align-items-center justify-content-center border border-5 border-secondary"
                     style={{
                       width: "150px",
                       height: "100px",
-                      border: "5px solid white",
+                      // border: "5px solid white",
                       overflow: "hidden",
                     }}
                   >
@@ -220,13 +220,12 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     <button
                       type="button"
                       aria-label="Change Organization Logo"
-                      className="camera-btn position-absolute d-flex align-items-center justify-content-center rounded-circle border-0"
+                      className="camera-btn position-absolute bg-secondary d-flex align-items-center justify-content-center rounded-circle border-0"
                       style={{
-                        right: "-5px",
-                        bottom: "-5px",
+                        right: "-6px",
+                        bottom: "-6px",
                         width: "35px",
                         height: "35px",
-                        background: "rgba(0,0,0,0.65)",
                         color: "#fff",
                         cursor: "pointer",
                       }}
@@ -439,7 +438,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                       <p className="small text-muted mb-1">Email</p>
                       {singleOrgInfo?.organization?.email ? (
                         <span
-                          className="fw-500 text-dark text-decoration-none text-break"
+                          className="fw-500 text-dark text-decoration-none text-truncate"
                           style={{
                             transition: "color 0.2s",
                             wordBreak: "break-word",

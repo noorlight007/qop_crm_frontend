@@ -1,9 +1,8 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import LoginHistory from "@/Components/Common/LoginHistory/LoginHistory";
 import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetNetworkDirectorDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
-import { Col, Container, Row } from "reactstrap";
+import { Container } from "reactstrap";
 import AdviserStatus from "./AdviserStatus/AdviserStatus";
 import Charts from "./Charts/Charts";
 import PerformanceOverview from "./PerformanceOverview/PerformanceOverview";
@@ -18,7 +17,7 @@ const ContainerNetworkDirector = () => {
       <Breadcrumbs
         title="Dashboard"
         subTitle="Welcome to the Network Dashboard"
-        parent="Dashboard"
+        items={[{ label: "Dashboard", active: true }]}
       />
       <Container fluid>
         <WelcomeBanner />
@@ -35,11 +34,6 @@ const ContainerNetworkDirector = () => {
           isLoading={isLoading}
           networkDirectorDashboardData={networkDirectorDashboardData}
         />
-        <Row>
-          <Col>
-            <LoginHistory />
-          </Col>
-        </Row>
       </Container>
     </>
   );

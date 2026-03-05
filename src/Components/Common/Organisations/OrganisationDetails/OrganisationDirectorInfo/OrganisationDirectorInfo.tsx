@@ -140,13 +140,12 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                     {/* Camera overlay — clipped by parent overflow: hidden */}
                     <button
                       title="Change profile image"
-                      className="position-absolute d-flex align-items-center justify-content-center border-0"
+                      className="position-absolute d-flex align-items-center justify-content-center border-0 bg-secondary"
                       style={{
                         width: 30,
                         height: 30,
                         right: 0,
                         bottom: 0,
-                        background: "rgba(0, 0, 0, 0.65)",
                         borderRadius: "50%",
                         transform: "translate(-15%, -15%)",
                       }}
@@ -158,20 +157,20 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                   </div>
                 ) : (
                   <div
-                    className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials"
+                    className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials border-2 border-secondary"
                     style={{ width: 90, height: 90, overflow: "hidden" }}
                   >
                     {initials(singleOrgInfo?.user?.name)}
                     {/* Same camera overlay for initials */}
                     <button
                       title="Change profile image"
-                      className="position-absolute d-flex align-items-center justify-content-center border-0"
+                      className="position-absolute d-flex align-items-center justify-content-center border-0 bg-secondary"
                       style={{
                         width: 30,
                         height: 30,
                         right: 0,
                         bottom: 0,
-                        background: "rgba(0, 0, 0, 0.65)",
+                        // background: "rgba(0, 0, 0, 0.65)",
                         borderRadius: "50%",
                         transform: "translate(-15%, -15%)",
                       }}

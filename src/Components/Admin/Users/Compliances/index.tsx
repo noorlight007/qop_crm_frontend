@@ -8,8 +8,7 @@ const ComplianceContainer: React.FC = () => {
       <Breadcrumbs
         title="Compliances Overview"
         subTitle="Welcome back! Check all the Compliances"
-        parent="Users"
-        child="Compliances"
+        items={[{ label: "Users" }, { label: "Compliances", active: true }]}
       />
       <Container fluid>
         <Row>
