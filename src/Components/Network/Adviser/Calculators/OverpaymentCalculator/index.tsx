@@ -9,7 +9,7 @@ const OverpaymentCalculatorContainer: React.FC = () => {
         title="Overpayment Calculator"
         subTitle="Calculate your overpayment savings with ease"
         items={[
-          { label: "Calculator" },
+          { label: "Calculators" },
           { label: "Overpayment Calculator", active: true },
         ]}
       />

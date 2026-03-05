@@ -7,7 +7,11 @@ const OrganisationDirectorCaseDetailsContainer: React.FC = () => {
       <Breadcrumbs
         title="Case Status"
         subTitle="Hello there!"
-        items={[{ label: "Cases" }, { label: "Case", active: true }]}
+        items={[
+          { label: "Cases" },
+          { label: "All Cases" },
+          { label: "Case Details", active: true },
+        ]}
       />
       <CaseDetails />
     </>

@@ -9,7 +9,7 @@ const RemortgageCalculatorContainer: React.FC = () => {
         title="Remortgage Calculator"
         subTitle="Calculate your remortgage payments with ease"
         items={[
-          { label: "Calculator" },
+          { label: "Calculators" },
           { label: "Remortgage Calculator", active: true },
         ]}
       />

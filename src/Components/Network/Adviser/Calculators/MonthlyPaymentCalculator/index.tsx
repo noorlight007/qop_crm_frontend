@@ -9,7 +9,7 @@ const MonthlyPaymentCalculatorContainer: React.FC = () => {
         title="Monthly Payment Calculator"
         subTitle="Calculate your monthly payments with ease"
         items={[
-          { label: "Calculator" },
+          { label: "Calculators" },
           { label: "Monthly Payment Calculator", active: true },
         ]}
       />

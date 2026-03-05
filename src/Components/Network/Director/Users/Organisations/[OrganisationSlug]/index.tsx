@@ -7,7 +7,11 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
       <Breadcrumbs
         title="Organisation Status"
         subTitle="Welcome! Continue your journey."
-        items={[{ label: "Users" }, { label: "Organisation", active: true }]}
+        items={[
+          { label: "Users" },
+          { label: "Organisations" },
+          { label: "Organisation Details", active: true },
+        ]}
       />
       <OrganisationDetails />
     </>

@@ -9,7 +9,7 @@ const StampDutyCalculatorContainer: React.FC = () => {
         title="Stamp Duty Calculator"
         subTitle="Calculate your stamp duty payments with ease"
         items={[
-          { label: "Calculator" },
+          { label: "Calculators" },
           { label: "Stamp Duty Calculator", active: true },
         ]}
       />
