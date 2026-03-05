@@ -8,14 +8,10 @@ const NetworkCompliancesContainer: React.FC = () => {
       <Breadcrumbs
         title="Compliance Overview"
         subTitle="Welcome to the Compliance Overview"
-        parent="Users"
-        child="Compliances"
+        items={[{ label: "Users" }, { label: "Compliances", active: true }]}
       />
       <Container fluid>
-        <AuthUsers
-          userRole="NETWORK_COMPLIANCE"
-          title="Compliances"
-        />
+        <AuthUsers userRole="NETWORK_COMPLIANCE" title="Compliances" />
       </Container>
     </>
   );

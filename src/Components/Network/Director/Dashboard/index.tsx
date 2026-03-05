@@ -18,7 +18,7 @@ const ContainerNetworkDirector = () => {
       <Breadcrumbs
         title="Dashboard"
         subTitle="Welcome to the Network Dashboard"
-        parent="Dashboard"
+        items={[{ label: "Dashboard", active: true }]}
       />
       <Container fluid>
         <WelcomeBanner />

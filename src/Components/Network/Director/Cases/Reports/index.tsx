@@ -222,8 +222,7 @@ const NetworkDirectorReportsContainer: React.FC = () => {
       <Breadcrumbs
         title="Network Director Reports"
         subTitle="Generate and analyze comprehensive organisation reports"
-        parent="Cases"
-        child="Reports"
+        items={[{ label: "Cases" }, { label: "Reports", active: true }]}
       />
       <Container fluid>
         <Row className="mb-4">

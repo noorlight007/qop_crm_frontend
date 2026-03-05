@@ -7,7 +7,7 @@ const OrganisationAdminCaseUpdates = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Organisation/Admin/Caseupdates")
+          await import("@/Components/Organisation/Admin/Cases/Cases")
         ).default;
         setClient(() => newClient);
       }

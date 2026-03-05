@@ -8,8 +8,10 @@ const OverpaymentCalculatorContainer: React.FC = () => {
       <Breadcrumbs
         title="Overpayment Calculator"
         subTitle="Calculate your overpayment savings with ease"
-        parent="Calculator"
-        child="Overpayment Calculator"
+        items={[
+          { label: "Calculators" },
+          { label: "Overpayment Calculator", active: true },
+        ]}
       />
       <Container fluid>
         <OverpaymentCalculator />

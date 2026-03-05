@@ -8,8 +8,7 @@ const OrganisationAdminsContainer: React.FC = () => {
       <Breadcrumbs
         title="Admin Overview"
         subTitle="Manage organisation admins"
-        parent="Users"
-        child="Admins"
+        items={[{ label: "Users" }, { label: "Admins", active: true }]}
       />
       <Container fluid>
         <AuthUsers title="Admins" userRole="ORGANISATION_ADMIN" />
