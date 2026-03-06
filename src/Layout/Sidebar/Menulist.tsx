@@ -37,7 +37,12 @@ const Menulist: React.FC<MenuListType> = ({
     return false;
   };
 
-  const handleClick = (e: React.MouseEvent, item: any) => {
+  const handleClick = (
+    e: React.MouseEvent,
+    item: any,
+    itemKey: string,
+    hasChildren: boolean,
+  ) => {
     e.preventDefault();
 
     // Update active menu state
@@ -45,8 +50,16 @@ const Menulist: React.FC<MenuListType> = ({
     newActive[level] = newActive[level] === item.title ? "" : item.title;
     setActiveMenu(newActive);
 
-    // Navigate if it's a link
-    if (item.path) {
+    // If this item has children, toggle collapse state regardless of click location
+    if (hasChildren) {
+      setCollapsed((prev) => ({
+        ...prev,
+        [itemKey]: !prev[itemKey],
+      }));
+    }
+
+    // Navigate if it's a link and it doesn't have children (collapse takes precedence)
+    if (item.path && !hasChildren) {
       window.location.href = item.path;
     }
   };
@@ -95,14 +108,13 @@ const Menulist: React.FC<MenuListType> = ({
   return (
     <>
       {items.map((item, index) => {
-        const hasChildren = item.children && item.children.length > 0;
-        const isCurrentActive =
-          initialLoad || isActive(item) || activeMenu[level] === item.title;
-
+        const hasChildren = !!(item.children && item.children.length > 0);
         // unique key for collapsed state per item & level
         const itemKey = `${level}-${index}-${item.title}`;
         const isHidden = !!collapsed[itemKey];
         const isExpanded = !isHidden; // default: expanded (visible)
+        const isCurrentActive =
+          initialLoad || isActive(item) || activeMenu[level] === item.title;
 
         return (
           <li
@@ -118,7 +130,7 @@ const Menulist: React.FC<MenuListType> = ({
                   ? `sidebar-link ${isCurrentActive ? "bg-light-primary" : ""}`
                   : ""
               } ${isCurrentActive ? "active" : ""}`}
-              onClick={(e) => handleClick(e, item)}
+              onClick={(e) => handleClick(e, item, itemKey, hasChildren)}
               style={{ cursor: "pointer", width: "220px" }}
             >
               {item.icon &&
@@ -134,52 +146,20 @@ const Menulist: React.FC<MenuListType> = ({
               ) : (
                 <h6 className={`mb-0 position-relative ${item.lanClass || ""}`}>
                   {t(item.title)}
-                  {/* Badge number  */}
-                  {/* {item.badge && (
-                    <span className="badge rounded-pill bg-primary position-absolute" 
-                      style={{
-                        top: '-8px',
-                        right: '-15px',
-                        fontSize: '10px',
-                        padding: '4px 5px'
-                      }}>
-                      {item.badge}
-                    </span>
-                  )} */}
                 </h6>
               )}
 
               {hasChildren && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setCollapsed((prev) => ({
-                      ...prev,
-                      [itemKey]: !prev[itemKey],
-                    }));
-                  }}
-                  aria-expanded={isExpanded}
-                  title={isExpanded ? t("Collapse") : t("Expand")}
+                <i
+                  className="fa fa-chevron-right"
                   style={{
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
-                    transform: isExpanded ? "rotate(90deg)" : "rotate(0)",
-                    transition: "transform 0.3s ease",
+                    fontSize: "12px",
+                    color: "var(--body-font-color)",
                     marginLeft: "auto",
-                    padding: "4px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    transform: isExpanded ? "rotate(0)" : "rotate(90deg)",
+                    transition: "transform 0.3s ease",
                   }}
-                  className="ms-auto"
-                >
-                  <i
-                    className="fa fa-chevron-right"
-                    style={{ fontSize: "12px", color: "var(--body-font-color)" }}
-                  ></i>
-                </button>
+                ></i>
               )}
             </a>
 
@@ -189,7 +169,8 @@ const Menulist: React.FC<MenuListType> = ({
                   level === 0 ? "sidebar-submenu" : "according-submenu"
                 }`}
                 style={{
-                  display: isExpanded ? "block" : "none",
+                  // display: isExpanded ? "block" : "none",
+                  display: isExpanded ? "none" : "block",
                   width: "100%",
                 }}
               >
