@@ -74,12 +74,12 @@ const MyApplications: React.FC = () => {
                     : ""}
                 </td>
                 <td>
-                  <a
+                  <span
                     className="text-dark"
                     style={{ cursor: "pointer" }}
                   >
                     {app.lead_user.phone || "-"}
-                  </a>
+                  </span>
                 </td>
                 <td>
                   <Link href={`client/${app.alias}`}>

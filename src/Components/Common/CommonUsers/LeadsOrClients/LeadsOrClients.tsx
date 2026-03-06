@@ -281,11 +281,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                     </td>
                     <td>
                       {user?.phone ? (
-                        <a
+                        <span
                           className="text-black"
                         >
                           {user?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

@@ -425,7 +425,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     </td>
                     <td>
                       {user?.phone ? (
-                        <a className="text-black">{user?.phone}</a>
+                        <span className="text-black">{user?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

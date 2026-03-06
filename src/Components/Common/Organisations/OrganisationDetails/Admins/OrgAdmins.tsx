@@ -210,11 +210,11 @@ const OrgAdmins: React.FC = () => {
                     </td>
                     <td>
                       {admin?.phone ? (
-                        <a
+                        <span
                           className="text-black"
                         >
                           {admin?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
