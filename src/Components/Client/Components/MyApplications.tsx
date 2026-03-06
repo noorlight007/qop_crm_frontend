@@ -75,9 +75,8 @@ const MyApplications: React.FC = () => {
                 </td>
                 <td>
                   <a
-                    className="text-dark text_decoration_hover"
+                    className="text-dark"
                     style={{ cursor: "pointer" }}
-                    href={`tel:${app.lead_user.phone}`}
                   >
                     {app.lead_user.phone || "-"}
                   </a>

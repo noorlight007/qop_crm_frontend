@@ -307,12 +307,9 @@ const OrgCases: React.FC = () => {
                           </td>
                           <td>
                             {caseItem.lead_user.phone ? (
-                              <a
-                                href={`tel:${caseItem.lead_user.phone}`}
-                                className="text-black text_decoration_hover"
-                              >
+                              <span className="text-black">
                                 {caseItem.lead_user.phone}
-                              </a>
+                              </span>
                             ) : (
                               <small className="text-muted">
                                 Not Available

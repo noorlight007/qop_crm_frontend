@@ -244,8 +244,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     <td>
                       {user?.phone ? (
                         <a
-                          href={`tel:${user?.phone}`}
-                          className="text-black text_decoration_hover"
+                          className="text-black"
                         >
                           {user?.phone}
                         </a>

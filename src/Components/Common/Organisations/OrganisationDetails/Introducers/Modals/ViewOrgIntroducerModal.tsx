@@ -97,12 +97,11 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedIntroducer?.phone ? (
-                        <a
-                          href={`tel:${selectedIntroducer.phone}`}
+                        <span
                           className="text-decoration-none"
                         >
                           {selectedIntroducer.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

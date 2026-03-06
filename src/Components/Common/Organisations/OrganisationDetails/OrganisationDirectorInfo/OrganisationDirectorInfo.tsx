@@ -4,7 +4,13 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
-import { FaCamera, FaPhoneAlt, FaShieldAlt } from "react-icons/fa";
+import {
+  FaCamera,
+  FaCheckCircle,
+  FaPhoneAlt,
+  FaShieldAlt,
+} from "react-icons/fa";
+import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import UpdateOrgDirectorInfoModal from "../Modals/UpdateOrgDirectorInfoModal";
@@ -74,6 +80,30 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
       .join("")
       .slice(0, 2)
       .toUpperCase();
+
+  const [isDirectorEmailCopied, setIsDirectorEmailCopied] = useState(false);
+
+  const handleCopyDirectorEmail = () => {
+    const email = singleOrgInfo?.user?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsDirectorEmailCopied(true);
+        setTimeout(() => setIsDirectorEmailCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsDirectorEmailCopied(true);
+        setTimeout(() => setIsDirectorEmailCopied(false), 2000);
+      });
+  };
 
   return (
     <>
@@ -209,7 +239,23 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
               <Col sm="12">
                 <Card className="bg-light-primary p-2 d-flex flex-row justify-content-center align-items-center mb-2">
                   <Mail className="me-2 bg-primary p-1 rounded-1" size={25} />
-                  {singleOrgInfo?.user?.email ?? "Email not provided"}
+                  {singleOrgInfo?.user?.email ? (
+                    <>
+                      <span className="me-2 text-truncate">
+                        {singleOrgInfo?.user?.email}
+                      </span>
+                      <span
+                        onClick={handleCopyDirectorEmail}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {isDirectorEmailCopied ? <FaCheckCircle /> : <TbCopy />}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-muted">Not Available</span>
+                    </>
+                  )}
                 </Card>
               </Col>
             </Row>

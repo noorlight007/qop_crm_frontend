@@ -72,12 +72,11 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedLead?.phone ? (
-                        <a
-                          href={`tel:${selectedLead.phone}`}
+                        <span
                           className="text-decoration-none"
                         >
                           {selectedLead.phone}
-                        </a>
+                        </span>
                       ) : (
                         "-"
                       )}

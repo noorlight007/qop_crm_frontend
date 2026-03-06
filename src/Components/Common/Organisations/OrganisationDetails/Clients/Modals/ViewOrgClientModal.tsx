@@ -72,12 +72,11 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedClient?.phone ? (
-                        <a
-                          href={`tel:${selectedClient.phone}`}
+                        <span
                           className="text-decoration-none"
                         >
                           {selectedClient?.phone}
-                        </a>
+                        </span>
                       ) : (
                         "-"
                       )}

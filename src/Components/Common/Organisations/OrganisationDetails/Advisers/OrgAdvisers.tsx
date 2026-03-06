@@ -215,12 +215,9 @@ const OrgAdvisers: React.FC = () => {
                     </td>
                     <td>
                       {adviser?.phone ? (
-                        <a
-                          href={`tel:${adviser?.phone}`}
-                          className="text-black text_decoration_hover"
-                        >
+                        <span className="text-black text_decoration_hover">
                           {adviser?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

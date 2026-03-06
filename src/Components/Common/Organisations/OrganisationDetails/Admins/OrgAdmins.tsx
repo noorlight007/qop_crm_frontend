@@ -211,8 +211,7 @@ const OrgAdmins: React.FC = () => {
                     <td>
                       {admin?.phone ? (
                         <a
-                          href={`tel:${admin?.phone}`}
-                          className="text-black text_decoration_hover"
+                          className="text-black"
                         >
                           {admin?.phone}
                         </a>

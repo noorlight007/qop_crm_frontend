@@ -96,12 +96,11 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedLeadOrClient?.phone ? (
-                        <a
-                          href={`tel:${selectedLeadOrClient.phone}`}
-                          className="text-decoration-none"
+                        <span
+                          className="text-primary text-decoration-none"
                         >
                           {selectedLeadOrClient.phone}
-                        </a>
+                        </span>
                       ) : (
                         "-"
                       )}

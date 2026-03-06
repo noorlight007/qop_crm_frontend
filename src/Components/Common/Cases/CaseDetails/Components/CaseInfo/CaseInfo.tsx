@@ -408,12 +408,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           <>
                             <span className="small">Phone:</span>{" "}
                             <strong>
-                              <a
-                                className="text-dark text_decoration_hover small"
-                                href={`tel:${displayLeadUser?.phone}`}
+                              <span
+                                className="text-dark small"
                               >
                                 {displayLeadUser?.phone}
-                              </a>
+                              </span>
                             </strong>
                           </>
                         ) : (
