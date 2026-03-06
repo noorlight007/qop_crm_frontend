@@ -209,8 +209,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Add validation for applicants
-    if (selectedApplicants.length === 0) {
+    // Add validation for applicants (not required for limited companies)
+    if (!isLimitedCompany && selectedApplicants.length === 0) {
       toast.error("Please select at least one applicant!");
       return;
     }
@@ -311,6 +311,13 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
       setSelectedApplicants([...selectedApplicants, id]);
     }
   };
+
+  // if switching to limited company clear any selected applicants since they're irrelevant
+  useEffect(() => {
+    if (isLimitedCompany) {
+      setSelectedApplicants([]);
+    }
+  }, [isLimitedCompany]);
 
   const handleManualAddressChange = (
     setter: React.Dispatch<React.SetStateAction<string>>,
@@ -543,94 +550,142 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
               </div>
             </Col>
             <Col md={6}>
-              <FormGroup>
-                <Label for="applicants">
-                  Applicant/s<span className="text-danger">*</span>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    name="is_limited_company"
+                    className="border-primary"
+                    checked={isLimitedCompany}
+                    onChange={(e) => setIsLimitedCompany(e.target.checked)}
+                  />
+                  Is Limited Company
                 </Label>
-                <div className="position-relative" ref={dropdownRef}>
-                  {/* Custom Input Field */}
-                  <div
-                    className="form-control d-flex flex-wrap align-items-center position-relative custom_input_field"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    {selectedApplicants.length === 0 && (
-                      <span className="text-muted">Select applicants...</span>
-                    )}
-                    {selectedApplicants.map((id) => {
-                      const applicant = data.find(
-                        (a: any) => a.id === Number(id),
-                      );
-                      return (
-                        <span
-                          key={id}
-                          className="badge bg-primary me-1 mb-1 d-flex align-items-center"
-                          style={{ cursor: "pointer" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeApplicant(id);
-                          }}
-                        >
-                          {applicant?.title
-                            ? formatChoiceFieldValue(applicant?.title)
-                            : ""}{" "}
-                          {applicant?.first_name} {applicant?.middle_name}{" "}
-                          {applicant?.last_name}
-                          <span className="ms-1">x</span>
-                        </span>
-                      );
-                    })}
-                    <i
-                      className="fa-solid fa-angle-down position-absolute"
-                      style={{
-                        right: "10px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                      }}
-                    ></i>
-                  </div>
-
-                  {/* Dropdown */}
-                  {isDropdownOpen && (
-                    <div className="position-absolute w-100 bg-white border mt-1 rounded-2 dropdown_style">
-                      {/* Close Button - Moved to top */}
-                      <div
-                        className="text-end p-1 bg-light sticky-top border-bottom dropdown_close"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        <span className="fw-bold fs-5">
-                          <X size={20} />
-                        </span>
-                      </div>
-                      {/* Dropdown Options */}
-                      {filteredData?.map((applicant: any) => (
-                        <div
-                          key={applicant.id}
-                          className="px-2 py-1 dropdown_item"
-                          onClick={() => handleSelect(applicant.id)}
-                        >
-                          {applicant?.title
-                            ? formatChoiceFieldValue(applicant?.title)
-                            : ""}{" "}
-                          {applicant?.first_name} {applicant?.middle_name}{" "}
-                          {applicant?.last_name}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {(getFieldError("applicant_ids") ||
-                  getFieldError("applicants")) && (
+                {getFieldError("is_limited_company") && (
                   <small
                     className="text-danger"
                     style={{ marginTop: "5px", display: "block" }}
                   >
-                    {getFieldError("applicant_ids") ||
-                      getFieldError("applicants")}
+                    {getFieldError("is_limited_company")}
                   </small>
                 )}
               </FormGroup>
             </Col>
-            <Col md={6}>
+            {isLimitedCompany && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="company_name">
+                    Company Name<span className="text-danger">*</span>
+                  </Label>
+                  <Input
+                    id="company_name"
+                    name="company_name"
+                    type="text"
+                    required
+                  />
+                  {getFieldError("company_name") && (
+                    <small
+                      className="text-danger"
+                      style={{ marginTop: "5px", display: "block" }}
+                    >
+                      {getFieldError("company_name")}
+                    </small>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+            {isLimitedCompany === false && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="applicants">
+                    Applicant&apos;s<span className="text-danger">*</span>
+                  </Label>
+                  <div className="position-relative" ref={dropdownRef}>
+                    {/* Custom Input Field */}
+                    <div
+                      className="form-control d-flex flex-wrap align-items-center position-relative custom_input_field"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      {selectedApplicants.length === 0 && (
+                        <span className="text-muted">Select applicants...</span>
+                      )}
+                      {selectedApplicants.map((id) => {
+                        const applicant = data.find(
+                          (a: any) => a.id === Number(id),
+                        );
+                        return (
+                          <span
+                            key={id}
+                            className="badge bg-primary me-1 mb-1 d-flex align-items-center"
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeApplicant(id);
+                            }}
+                          >
+                            {applicant?.title
+                              ? formatChoiceFieldValue(applicant?.title)
+                              : ""}{" "}
+                            {applicant?.first_name} {applicant?.middle_name}{" "}
+                            {applicant?.last_name}
+                            <span className="ms-1">x</span>
+                          </span>
+                        );
+                      })}
+                      <i
+                        className="fa-solid fa-angle-down position-absolute"
+                        style={{
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                      ></i>
+                    </div>
+
+                    {/* Dropdown */}
+                    {isDropdownOpen && (
+                      <div className="position-absolute w-100 bg-white border mt-1 rounded-2 dropdown_style">
+                        {/* Close Button - Moved to top */}
+                        <div
+                          className="text-end p-1 bg-light sticky-top border-bottom dropdown_close"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <span className="fw-bold fs-5">
+                            <X size={20} />
+                          </span>
+                        </div>
+                        {/* Dropdown Options */}
+                        {filteredData?.map((applicant: any) => (
+                          <div
+                            key={applicant.id}
+                            className="px-2 py-1 dropdown_item"
+                            onClick={() => handleSelect(applicant.id)}
+                          >
+                            {applicant?.title
+                              ? formatChoiceFieldValue(applicant?.title)
+                              : ""}{" "}
+                            {applicant?.first_name} {applicant?.middle_name}{" "}
+                            {applicant?.last_name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {(getFieldError("applicant_ids") ||
+                    getFieldError("applicants")) && (
+                    <small
+                      className="text-danger"
+                      style={{ marginTop: "5px", display: "block" }}
+                    >
+                      {getFieldError("applicant_ids") ||
+                        getFieldError("applicants")}
+                    </small>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
+            <Col md={12}>
               <FormGroup>
                 <Label for="postcode">
                   Postcode<span className="text-danger">*</span>
@@ -667,8 +722,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="house_name_or_number">
@@ -741,8 +795,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="city">
@@ -815,9 +868,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <hr className="border-secondary" />
-          <Row>
+
+            <hr className="border-secondary" />
+
             <Col md={4}>
               <FormGroup>
                 <Label for="property_value">
@@ -890,8 +943,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="monthly_mortgage_payment">
@@ -950,8 +1002,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup check>
                 <Label check>
@@ -1022,8 +1073,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="current_rate">Current Rate (%)</Label>
@@ -1095,8 +1145,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="current_rate_end_date">Current Rate End Date</Label>
@@ -1143,8 +1192,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="property_type">
@@ -1204,8 +1252,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="year_built">Year Built</Label>
@@ -1269,46 +1316,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
-            <Col md={4}>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    name="is_limited_company"
-                    className="border-primary"
-                    checked={isLimitedCompany}
-                    onChange={(e) => setIsLimitedCompany(e.target.checked)}
-                  />
-                  Is Limited Company
-                </Label>
-                {getFieldError("is_limited_company") && (
-                  <small
-                    className="text-danger"
-                    style={{ marginTop: "5px", display: "block" }}
-                  >
-                    {getFieldError("is_limited_company")}
-                  </small>
-                )}
-              </FormGroup>
-            </Col>
-            {isLimitedCompany && (
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="company_name">Company Name</Label>
-                  <Input id="company_name" name="company_name" type="text" />
-                  {getFieldError("company_name") && (
-                    <small
-                      className="text-danger"
-                      style={{ marginTop: "5px", display: "block" }}
-                    >
-                      {getFieldError("company_name")}
-                    </small>
-                  )}
-                </FormGroup>
-              </Col>
-            )}
+
             <Col md={4}>
               <FormGroup>
                 <Label for="epc_rating">EPC Rating</Label>
@@ -1338,8 +1346,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col sm={12}>
               <FormGroup>
                 <Label for="note">Note</Label>
