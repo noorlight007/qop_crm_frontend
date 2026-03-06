@@ -156,7 +156,8 @@ const Menulist: React.FC<MenuListType> = ({
                     fontSize: "12px",
                     color: "var(--body-font-color)",
                     marginLeft: "auto",
-                    transform: isExpanded ? "rotate(0)" : "rotate(90deg)",
+                    // transform: isExpanded ? "rotate(0)" : "rotate(90deg)",
+                    transform: isExpanded ? "rotate(90deg)" : "rotate(0)",
                     transition: "transform 0.3s ease",
                   }}
                 ></i>
@@ -169,8 +170,8 @@ const Menulist: React.FC<MenuListType> = ({
                   level === 0 ? "sidebar-submenu" : "according-submenu"
                 }`}
                 style={{
-                  // display: isExpanded ? "block" : "none",
-                  display: isExpanded ? "none" : "block",
+                  // display: isExpanded ? "none" : "block",
+                  display: isExpanded ? "block" : "none",
                   width: "100%",
                 }}
               >
