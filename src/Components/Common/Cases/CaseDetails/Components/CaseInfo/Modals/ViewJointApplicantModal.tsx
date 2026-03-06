@@ -135,12 +135,11 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {displayApplicant?.joint_user_details?.phone ? (
-                        <a
-                          href={`tel:${displayApplicant.joint_user_details.phone}`}
-                          className="text-decoration-none"
+                        <span
+                          className="text-decoration-none text-primary"
                         >
                           {displayApplicant.joint_user_details.phone}
-                        </a>
+                        </span>
                       ) : (
                         "-"
                       )}

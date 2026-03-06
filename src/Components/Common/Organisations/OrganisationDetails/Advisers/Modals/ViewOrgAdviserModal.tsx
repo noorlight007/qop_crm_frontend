@@ -91,12 +91,9 @@ const ViewOrgAdviserModal: React.FC<ViewOrgAdviserModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedAdviser?.phone ? (
-                        <a
-                          href={`tel:${selectedAdviser.phone}`}
-                          className="text-decoration-none"
-                        >
+                        <span className="text-decoration-none text-primary">
                           {selectedAdviser.phone}
-                        </a>
+                        </span>
                       ) : (
                         "-"
                       )}

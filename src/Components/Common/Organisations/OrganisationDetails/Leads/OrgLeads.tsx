@@ -203,12 +203,11 @@ const OrgLeads: React.FC = () => {
                     </td>
                     <td>
                       {lead?.phone ? (
-                        <a
-                          href={`tel:${lead?.phone}`}
-                          className="text-black text_decoration_hover"
+                        <span
+                          className="text-black"
                         >
                           {lead?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

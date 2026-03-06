@@ -224,12 +224,11 @@ const OrgIntroducers: React.FC = () => {
                     </td>
                     <td>
                       {introducer?.phone ? (
-                        <a
-                          href={`tel:${introducer?.phone}`}
-                          className="text-black text_decoration_hover"
+                        <span
+                          className="text-black"
                         >
                           {introducer?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

@@ -95,12 +95,9 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedAdmin?.phone ? (
-                        <a
-                          href={`tel:${selectedAdmin.phone}`}
-                          className="text-decoration-none"
-                        >
+                        <span className="text-decoration-none text-primary">
                           {selectedAdmin.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

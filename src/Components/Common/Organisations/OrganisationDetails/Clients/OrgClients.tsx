@@ -241,12 +241,11 @@ const OrgClients: React.FC = () => {
                     </td>
                     <td>
                       {client?.phone ? (
-                        <a
-                          href={`tel:${client?.phone}`}
-                          className="text-black text_decoration_hover"
+                        <span
+                          className="text-black"
                         >
                           {client?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
