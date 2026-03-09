@@ -71,7 +71,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
-  console.log("case info: ", caseInfo);
+  // console.log("case info: ", caseInfo);
 
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
     useUpdateCaseMutation();
@@ -408,9 +408,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           <>
                             <span className="small">Phone:</span>{" "}
                             <strong>
-                              <span
-                                className="text-dark small"
-                              >
+                              <span className="text-dark small">
                                 {displayLeadUser?.phone}
                               </span>
                             </strong>
@@ -813,10 +811,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                               : pd.country;
                             const parts = [
                               pd.house_name_or_number,
-                              pd.address_line_1,
-                              pd.address_line_2,
+                              pd.address_one,
+                              pd.address_two,
                               pd.city,
                               pd.county,
+                              formatChoiceFieldValue(pd.region),
                               pd.postcode,
                               countryFormatted,
                             ].filter(

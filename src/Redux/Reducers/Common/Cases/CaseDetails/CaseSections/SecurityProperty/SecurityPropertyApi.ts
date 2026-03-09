@@ -15,7 +15,7 @@ export const SecurityPropertyApi = baseApi.injectEndpoints({
         method: "PUT",
         body: updatedSecurityProperty,
       }),
-      invalidatesTags: ["SecurityProperty"],
+      invalidatesTags: ["SecurityProperty", "CaseDetails"],
     }),
     // Validation-only mutation (server returns validation errors without persisting when possible)
     validateProperty: builder.mutation({
