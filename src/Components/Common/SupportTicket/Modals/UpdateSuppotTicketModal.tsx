@@ -142,7 +142,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.ticket_type || !formData.subject || !formData.message) {
+    if (!formData.ticket_type || !formData.subject) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -161,7 +161,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
         priority: formData.priority,
         status: formData.status,
         subject: formData.subject,
-        message: formData.message,
         upload_files: [],
       };
     }
@@ -170,7 +169,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       const fd = new FormData();
       fd.append("ticket_type", formData.ticket_type);
       fd.append("subject", formData.subject);
-      fd.append("message", formData.message);
       fd.append("priority", formData.priority || "");
 
       if (userType === "ADMIN") {
