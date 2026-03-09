@@ -165,7 +165,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                       alt={singleOrgInfo?.user?.name ?? "Director"}
                       width={90}
                       height={90}
-                      className="rounded-circle organisation-avatar-img"
+                      className="rounded-circle organisation-avatar-img border-2 border-secondary"
                     />
                     {/* Camera overlay — clipped by parent overflow: hidden */}
                     <button
@@ -248,7 +248,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                         onClick={handleCopyDirectorEmail}
                         style={{ cursor: "pointer" }}
                       >
-                        {isDirectorEmailCopied ? <FaCheckCircle /> : <TbCopy />}
+                        {isDirectorEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
                       </span>
                     </>
                   ) : (

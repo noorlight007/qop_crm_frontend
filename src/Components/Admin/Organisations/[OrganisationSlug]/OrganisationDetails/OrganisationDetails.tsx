@@ -376,7 +376,7 @@ const OrganisationDetails: React.FC = () => {
                               style={{ cursor: "pointer" }}
                               onClick={handleCopyDomain}
                             >
-                              {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                              {isCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
                             </span>
                           </Badge>
                         )}
@@ -579,7 +579,7 @@ const OrganisationDetails: React.FC = () => {
                                 style={{ cursor: "pointer", flexShrink: 0 }}
                                 onClick={handleCopyEmail}
                               >
-                                {isEmailCopied ? <FaCheckCircle /> : <TbCopy />}
+                                {isEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
                               </span>
                             </span>
                           ) : (
@@ -822,7 +822,7 @@ const OrganisationDetails: React.FC = () => {
                             style={{ cursor: "pointer" }}
                           >
                             {isDirectorEmailCopied ? (
-                              <FaCheckCircle />
+                              <FaCheckCircle className="text-success"/>
                             ) : (
                               <TbCopy />
                             )}
