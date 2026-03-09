@@ -18,25 +18,62 @@
   :is(.text-primary, .link-primary) {
     color: var(--theme-default) !important;
   }
+  /* also force any SVG inside to inherit the text colour, and ensure paths use currentColor */
+  :is(.text-primary, .link-primary) svg,
+  :is(.text-primary, .link-primary) svg * {
+    color: var(--theme-default) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
 
   :is(.text-secondary, .link-secondary) {
     color: var(--theme-secondary) !important;
+  }
+  :is(.text-secondary, .link-secondary) svg,
+  :is(.text-secondary, .link-secondary) svg * {
+    color: var(--theme-secondary) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
   }
 
   :is(.text-success, .link-success) {
     color: var(--success-color) !important;
   }
+  :is(.text-success, .link-success) svg,
+  :is(.text-success, .link-success) svg * {
+    color: var(--success-color) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
 
   :is(.text-danger, .link-danger) {
     color: var(--danger-color) !important;
+  }
+  :is(.text-danger, .link-danger) svg,
+  :is(.text-danger, .link-danger) svg * {
+    color: var(--danger-color) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
   }
 
   :is(.text-warning, .link-warning) {
     color: var(--warning-color) !important;
   }
+  :is(.text-warning, .link-warning) svg,
+  :is(.text-warning, .link-warning) svg * {
+    color: var(--warning-color) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
+  }
 
   :is(.text-info, .link-info) {
     color: var(--info-color) !important;
+  }
+  :is(.text-info, .link-info) svg,
+  :is(.text-info, .link-info) svg * {
+    color: var(--info-color) !important;
+    stroke: currentColor !important;
+    fill: currentColor !important;
   }
 
   /* undo Bootstrap muted text lowering opacity */

@@ -529,7 +529,7 @@ const SupportTicketDetails: React.FC = () => {
                               height: "23px",
                             }}
                           >
-                            <FaRegQuestionCircle style={{ fontSize: "12px" }} />
+                            <FaRegQuestionCircle />
                           </span>
 
                           <>

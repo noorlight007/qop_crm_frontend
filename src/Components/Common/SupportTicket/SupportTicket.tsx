@@ -18,6 +18,7 @@ import {
   FaChevronDown,
   FaExclamationCircle,
   FaInfoCircle,
+  FaRegQuestionCircle,
   FaSearch,
   FaSpinner,
 } from "react-icons/fa";
@@ -212,7 +213,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     OPEN: <FaExclamationCircle />,
     IN_PROGRESS: <FaSpinner />,
     COMPLETED: <FaCheck />,
-    RESOLVED: <TbChecks size={12}/>,
+    RESOLVED: <TbChecks size={12} />,
   };
 
   const statusOptions = [
@@ -670,8 +671,9 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <th>Ticket Type</th>
                     <th>
                       Status{" "}
-                      <FaInfoCircle
+                      <FaRegQuestionCircle
                         id="statusInfoIcon"
+                        className="text-primary"
                         style={{ cursor: "pointer" }}
                       />
                       <>
@@ -679,6 +681,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                           .status-popover {
                             max-width: 380px !important;
                             width: 380px !important;
+                            z-index: 1050;
                           }
                         `}</style>
                         <UncontrolledPopover
