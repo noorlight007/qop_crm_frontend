@@ -90,10 +90,11 @@ export interface CaseInfoPrpos {
   loan_amount?: number;
   property_details: {
     house_name_or_number?: string;
-    address_line_1?: string;
-    address_line_2?: string;
+    address_one?: string;
+    address_two?: string;
     city?: string;
     county?: string;
+    region?: string;
     postcode?: string;
     country?: string;
   };
