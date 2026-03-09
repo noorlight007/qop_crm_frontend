@@ -413,7 +413,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                             }
                           >
                             {copiedEmailAlias === user.alias ? (
-                              <FaCheckCircle size={12}/>
+                              <FaCheckCircle size={12} className="text-success"/>
                             ) : (
                               <TbCopy size={12}/>
                             )}
