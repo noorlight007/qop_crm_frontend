@@ -11,6 +11,7 @@ import MainProvider from "./MainProvider";
 import { authoption } from "./api/auth/[...nextauth]/authOption";
 import { I18nProvider } from "./i18n/i18n-context";
 import { detectLanguage } from "./i18n/server";
+import ProgressBar from "./progressbar";
 
 const nunito = Nunito_Sans({
   weight: ["200", "300", "400", "500", "600", "700", "800", "900", "1000"],
@@ -224,6 +225,7 @@ export default async function RootLayout({
           <NoSsr>
             <SessionWrapper session={session}>
               <MainProvider>
+                <ProgressBar /> 
                 <DynamicFavicon />
                 <DynamicTitle />
                 {children}

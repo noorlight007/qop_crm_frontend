@@ -3,7 +3,8 @@ import { getMenuByRole } from "@/Data/Layout/SidebarData";
 import { useAppSelector } from "@/Redux/Hooks";
 import { MenuListType } from "@/Types/LayoutTypes";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +16,7 @@ const Menulist: React.FC<MenuListType> = ({
 }) => {
   const { pinedMenu } = useAppSelector((state) => state.layout);
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useTranslation("common");
   const [initialLoad, setInitialLoad] = useState(true);
   const { data: session } = useSession();
@@ -43,25 +45,15 @@ const Menulist: React.FC<MenuListType> = ({
     itemKey: string,
     hasChildren: boolean,
   ) => {
-    e.preventDefault();
+    // Only prevent default for items with children (toggles submenu)
+    if (hasChildren) {
+      e.preventDefault();
+      setCollapsed((prev) => ({ ...prev, [itemKey]: !prev[itemKey] }));
+    }
 
-    // Update active menu state
     const newActive = [...activeMenu];
     newActive[level] = newActive[level] === item.title ? "" : item.title;
     setActiveMenu(newActive);
-
-    // If this item has children, toggle collapse state regardless of click location
-    if (hasChildren) {
-      setCollapsed((prev) => ({
-        ...prev,
-        [itemKey]: !prev[itemKey],
-      }));
-    }
-
-    // Navigate if it's a link and it doesn't have children (collapse takes precedence)
-    if (item.path && !hasChildren) {
-      window.location.href = item.path;
-    }
   };
 
   // Set active menu items recursively on mount and route change
@@ -123,7 +115,7 @@ const Menulist: React.FC<MenuListType> = ({
               pinedMenu.includes(item.title) ? "pined" : ""
             } ${isCurrentActive ? "active" : ""}`}
           >
-            <a
+            <Link
               href={item.path || "#"}
               className={`nav-link d-flex align-items-center gap-1 my-1 w-full ${
                 level === 0
@@ -162,7 +154,7 @@ const Menulist: React.FC<MenuListType> = ({
                   }}
                 ></i>
               )}
-            </a>
+            </Link>
 
             {hasChildren && (
               <ul
