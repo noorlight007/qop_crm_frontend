@@ -391,10 +391,10 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // applicants only required when not a limited company
-    if (!isLimitedCompany && selectedApplicants.length === 0) {
-      toast.error("Please select at least one applicant!");
-      return;
-    }
+    // if (!isLimitedCompany && selectedApplicants.length === 0) {
+    //   toast.error("Please select at least one applicant!");
+    //   return;
+    // }
     try {
       const payload = {
         applicant_ids: selectedApplicants.map(Number),
@@ -518,7 +518,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label for="company_name">
-                    Company Name<span className="text-danger">*</span>
+                    Company Name
                   </Label>
                   <Input
                     id="company_name"
@@ -526,7 +526,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                     type="text"
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
-                    required
                   />
                   {getFieldError("company_name") && (
                     <small
@@ -545,7 +544,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
               <Col md={6}>
                 <FormGroup>
                   <Label>
-                    Applicant&apos;s<span className="text-danger">*</span>
+                    Applicant&apos;s
                   </Label>
                   <div className="position-relative" ref={dropdownRef}>
                     <div
@@ -640,7 +639,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                     onChange={(e) =>
                       handleManualAddressChange(setPostcode, e.target.value)
                     }
-                    required
                   />
                   <Button
                     color="primary"
@@ -667,14 +665,14 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 label: "House Name Or Number",
                 value: houseNumber,
                 setter: setHouseNumber,
-                required: true,
+                required: false,
               },
               {
                 id: "address_1",
                 label: "Address 1",
                 value: address1,
                 setter: setAddress1,
-                required: true,
+                required: false,
               },
               {
                 id: "address_2",
@@ -686,10 +684,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             ].map(({ id, label, value, setter, required }) => (
               <Col md={4} key={id}>
                 <FormGroup>
-                  <Label for={id}>
-                    {label}
-                    {required && <span className="text-danger">*</span>}
-                  </Label>
+                  <Label for={id}>{label}</Label>
                   <Input
                     id={id}
                     name={id}
@@ -715,7 +710,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 label: "City",
                 value: city,
                 setter: setCity,
-                required: true,
+                required: false,
               },
               {
                 id: "county",
@@ -729,15 +724,12 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 label: "Country",
                 value: country,
                 setter: setCountry,
-                required: true,
+                required: false,
               },
             ].map(({ id, label, value, setter, required }) => (
               <Col md={4} key={id}>
                 <FormGroup>
-                  <Label for={id}>
-                    {label}
-                    {required && <span className="text-danger">*</span>}
-                  </Label>
+                  <Label for={id}>{label}</Label>
                   <Input
                     id={id}
                     name={id}
@@ -764,7 +756,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="property_value">
-                  Property Value<span className="text-danger">*</span>
+                  Property Value
                 </Label>
                 <Input
                   id="property_value"
@@ -775,7 +767,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={propertyValue}
                   onChange={(e) => setPropertyValue(e.target.value)}
-                  required
                 />
                 {getFieldError("property_value") && (
                   <small className="text-danger d-block mt-1">
@@ -787,7 +778,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="current_mortgage_balance">
-                  Current Mortgage Balance<span className="text-danger">*</span>
+                  Current Mortgage Balance
                 </Label>
                 <Input
                   id="current_mortgage_balance"
@@ -798,7 +789,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={currentMortgageBalance}
                   onChange={(e) => setCurrentMortgageBalance(e.target.value)}
-                  required
                 />
                 {getFieldError("current_mortgage_balance") && (
                   <small className="text-danger d-block mt-1">
@@ -810,7 +800,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="monthly_rental_income">
-                  Monthly Rental Income<span className="text-danger">*</span>
+                  Monthly Rental Income
                 </Label>
                 <Input
                   id="monthly_rental_income"
@@ -821,7 +811,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={monthlyRental}
                   onChange={(e) => setMonthlyRental(e.target.value)}
-                  required
                 />
                 {getFieldError("monthly_rental_income") && (
                   <small className="text-danger d-block mt-1">
@@ -1086,7 +1075,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="property_type">
-                  Property Type<span className="text-danger">*</span>
+                  Property Type
                 </Label>
                 <Input
                   id="property_type"
@@ -1094,7 +1083,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   type="text"
                   value={propertyType}
                   onChange={(e) => setPropertyType(e.target.value)}
-                  required
                 />
                 {getFieldError("property_type") && (
                   <small className="text-danger d-block mt-1">
@@ -1106,7 +1094,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="ownership">
-                  Ownership<span className="text-danger">*</span>
+                  Ownership
                 </Label>
                 <Input
                   id="ownership"
@@ -1114,7 +1102,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   type="text"
                   value={ownership}
                   onChange={(e) => setOwnership(e.target.value)}
-                  required
                 />
                 {getFieldError("ownership") && (
                   <small className="text-danger d-block mt-1">
@@ -1166,7 +1153,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="number_of_bedrooms">
-                  Number of Bedrooms<span className="text-danger">*</span>
+                  Number of Bedrooms
                 </Label>
                 <Input
                   id="number_of_bedrooms"
@@ -1175,7 +1162,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   step="1"
                   value={numberOfBedrooms}
                   onChange={(e) => setNumberOfBedrooms(e.target.value)}
-                  required
                 />
                 {getFieldError("number_of_bedrooms") && (
                   <small className="text-danger d-block mt-1">
