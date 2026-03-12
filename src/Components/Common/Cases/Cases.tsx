@@ -488,11 +488,11 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             : pd.country;
                           const parts = [
                             pd.house_name_or_number,
-                            pd.address_line_1,
-                            pd.address_line_2,
+                            pd.address_one,
+                            pd.address_two,
                             pd.city,
                             pd.county,
-                            pd.postcode,
+                            formatChoiceFieldValue(pd.region),
                             countryFormatted,
                           ].filter(
                             (v) =>
