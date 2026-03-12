@@ -578,10 +578,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         <span className="small">Case Status:</span>{" "}
                         <strong
                           className={`rounded-1 px-1 small ${
-                            caseInfo?.is_removed ? "bg-danger" : "bg-success"
+                            caseInfo?.case_stage === "NOT_PROCEED" ? "bg-danger" : "bg-success"
                           }`}
                         >
-                          {caseInfo?.is_removed ? "Removed" : "Active"}
+                          {caseInfo?.case_stage === "NOT_PROCEED" ? "Inactive" : "Active"}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
