@@ -108,12 +108,11 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedAuthUser?.phone ? (
-                        <a
-                          href={`tel:${selectedAuthUser.phone}`}
-                          className="text-decoration-none"
+                        <span
+                          className="text-primary text-decoration-none"
                         >
                           {selectedAuthUser.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

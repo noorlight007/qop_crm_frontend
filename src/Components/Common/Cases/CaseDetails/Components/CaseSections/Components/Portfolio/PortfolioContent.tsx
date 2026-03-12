@@ -9,6 +9,7 @@ import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import getCurrencySign from "@/utils/currency";
 import { formatDate } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -175,7 +176,10 @@ const PortfolioContent: React.FC = () => {
                           <thead className="table-light">
                             <tr>
                               <th className="text-center">Action</th>
-                              <th>Applicant/s</th>
+                              <th className="text-center">
+                                Applicant&apos;s/Company
+                              </th>
+                              <th>Is Ltd Company</th>
                               <th>Full Address</th>
                               <th>Property Value</th>
                               <th>Monthly Rental</th>
@@ -197,8 +201,6 @@ const PortfolioContent: React.FC = () => {
                               <th>ERC End Date</th>
                               <th>Account Number</th>
                               <th>Ownership</th>
-                              <th>Is Ltd Co</th>
-                              <th>Company Name</th>
                               <th>Remaining Mortgage Term</th>
                               <th>Bedrooms</th>
                               <th>Year Built</th>
@@ -246,7 +248,7 @@ const PortfolioContent: React.FC = () => {
                                       {item.applicant.map(
                                         (app: any, idx: number) => (
                                           <li key={app?.id ?? idx}>
-                                            {`${app?.first_name || ""} ${
+                                            {`${formatChoiceFieldValue(app?.title) || ""} ${app?.first_name || ""} ${app?.middle_name || ""} ${
                                               app?.last_name || ""
                                             }`.trim() || "-"}
                                           </li>
@@ -254,8 +256,19 @@ const PortfolioContent: React.FC = () => {
                                       )}
                                     </ul>
                                   ) : (
-                                    "-"
+                                    <ul className="text-center">
+                                      {item?.company_name || "-"}
+                                    </ul>
                                   )}
+                                </td>
+                                <td>
+                                  <div className="d-flex justify-content-center fs-6">
+                                    {item?.is_limited_company ? (
+                                      <i className="fa-solid fa-circle-check text-success"></i>
+                                    ) : (
+                                      <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                    )}
+                                  </div>
                                 </td>
                                 <td>{`${item?.house_name_or_number}, ${item?.address_1}, ${item?.city}, ${item?.postcode}`}</td>
                                 <td>
@@ -331,16 +344,6 @@ const PortfolioContent: React.FC = () => {
                                 </td>
                                 <td>{item?.account_number || "-"}</td>
                                 <td>{item?.ownership || "-"}</td>
-                                <td>
-                                  <div className="d-flex justify-content-center fs-6">
-                                    {item?.is_limited_company ? (
-                                      <i className="fa-solid fa-circle-check text-success"></i>
-                                    ) : (
-                                      <i className="fa-solid fa-circle-xmark text-danger"></i>
-                                    )}
-                                  </div>
-                                </td>
-                                <td>{item?.company_name || "-"}</td>
                                 <td>{item?.remaining_mortgage_term || "-"}</td>
                                 <td>{item?.number_of_bedrooms || "-"}</td>
                                 <td>{item?.year_built || "-"}</td>

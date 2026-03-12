@@ -23,7 +23,12 @@ export const CasesApi = baseApi.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["CaseDetails", "LeadDetails", "AuthUserList"],
+      invalidatesTags: [
+        "CaseDetails",
+        "LeadDetails",
+        "AuthUserList",
+        "AuthUsers",
+      ],
     }),
     updateCase: builder.mutation({
       query: ({ caseAlias, payload }) => ({
@@ -31,14 +36,25 @@ export const CasesApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload,
       }),
-      invalidatesTags: ["CaseDetails", "LeadDetails", "Tasks", "AuthUserList"],
+      invalidatesTags: [
+        "CaseDetails",
+        "LeadDetails",
+        "Tasks",
+        "AuthUserList",
+        "AuthUsers",
+      ],
     }),
     deleteCase: builder.mutation({
       query: ({ caseAlias }) => ({
         url: `/cases/${caseAlias}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["CaseDetails", "LeadDetails", "AuthUserList"],
+      invalidatesTags: [
+        "CaseDetails",
+        "LeadDetails",
+        "AuthUserList",
+        "AuthUsers",
+      ],
     }),
   }),
 });

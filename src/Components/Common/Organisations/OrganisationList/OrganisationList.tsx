@@ -206,7 +206,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                           )}
                         </h5>
                       </div>
-                      <div className="mt-2 mb-4">{item.email}</div>
+                      <div className="mt-2 mb-4 text-truncate">{item.email}</div>
                       <div className="d-flex justify-content-between mt-3 pt-2 border-top">
                         <Col className="border-end">
                           <div className="text-center ">

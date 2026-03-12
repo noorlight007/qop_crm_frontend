@@ -71,7 +71,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
-  console.log("case info: ", caseInfo);
+  // console.log("case info: ", caseInfo);
 
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
     useUpdateCaseMutation();
@@ -408,12 +408,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           <>
                             <span className="small">Phone:</span>{" "}
                             <strong>
-                              <a
-                                className="text-dark text_decoration_hover small"
-                                href={`tel:${displayLeadUser?.phone}`}
-                              >
+                              <span className="text-dark small">
                                 {displayLeadUser?.phone}
-                              </a>
+                              </span>
                             </strong>
                           </>
                         ) : (
@@ -581,10 +578,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         <span className="small">Case Status:</span>{" "}
                         <strong
                           className={`rounded-1 px-1 small ${
-                            caseInfo?.is_removed ? "bg-danger" : "bg-success"
+                            caseInfo?.case_stage === "NOT_PROCEED" ? "bg-danger" : "bg-success"
                           }`}
                         >
-                          {caseInfo?.is_removed ? "Removed" : "Active"}
+                          {caseInfo?.case_stage === "NOT_PROCEED" ? "Inactive" : "Active"}
                         </strong>
                       </h6>
                       <h6 className="pt-1">
@@ -814,10 +811,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                               : pd.country;
                             const parts = [
                               pd.house_name_or_number,
-                              pd.address_line_1,
-                              pd.address_line_2,
+                              pd.address_one,
+                              pd.address_two,
                               pd.city,
                               pd.county,
+                              formatChoiceFieldValue(pd.region),
                               pd.postcode,
                               countryFormatted,
                             ].filter(

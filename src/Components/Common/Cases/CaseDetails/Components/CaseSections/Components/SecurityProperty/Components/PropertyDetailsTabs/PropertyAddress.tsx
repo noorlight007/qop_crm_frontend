@@ -115,20 +115,6 @@ const AddressDetails: React.FC<AddressDetailsProps> = ({ propertyData }) => {
     }
   };
 
-  // Show errors for required fields immediately on mount
-  useEffect(() => {
-    const newErrors: { [key: string]: string } = {};
-    if (!propertyState.postcode)
-      newErrors.postcode = getErrorMessage("postcode");
-    if (!propertyState.house_name_or_number)
-      newErrors.house_name_or_number = getErrorMessage("house_name_or_number");
-    if (!propertyState.address_one)
-      newErrors.address_one = getErrorMessage("address_one");
-    if (!propertyState.city) newErrors.city = getErrorMessage("city");
-    setErrors(newErrors);
-    // eslint-disable-next-line
-  }, []);
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {

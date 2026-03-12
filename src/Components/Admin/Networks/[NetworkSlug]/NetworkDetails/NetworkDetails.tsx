@@ -166,6 +166,54 @@ const NetworkDetails: React.FC = () => {
       });
   };
 
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    const email = getNetworkDetails?.network?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsEmailCopied(true);
+        setTimeout(() => setIsEmailCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsEmailCopied(true);
+        setTimeout(() => setIsEmailCopied(false), 2000);
+      });
+  };
+
+  const [isDirectorEmailCopied, setIsDirectorEmailCopied] = useState(false);
+
+  const handleCopyDirectorEmail = () => {
+    const email = getNetworkDetails?.user?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsDirectorEmailCopied(true);
+        setTimeout(() => setIsDirectorEmailCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsDirectorEmailCopied(true);
+        setTimeout(() => setIsDirectorEmailCopied(false), 2000);
+      });
+  };
+
   return (
     <>
       <Row>
@@ -280,7 +328,7 @@ const NetworkDetails: React.FC = () => {
                               style={{ cursor: "pointer" }}
                               onClick={handleCopyDomain}
                             >
-                              {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                              {isCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
                             </span>
                           </Badge>
                         )}
@@ -369,21 +417,33 @@ const NetworkDetails: React.FC = () => {
                           <p className="small text-muted mb-1">Email</p>
                           {getNetworkDetails?.network?.email ? (
                             <span
-                              className="fw-500 text-dark text-decoration-none text-truncate d-block"
-                              style={{
-                                transition: "color 0.2s",
-                                minWidth: 0,
-                                maxWidth: "100%",
-                              }}
-                              onMouseEnter={(e) =>
-                                (e.currentTarget.style.color =
-                                  "var(--primary-color)")
-                              }
-                              onMouseLeave={(e) =>
-                                (e.currentTarget.style.color = "inherit")
-                              }
+                              className="d-flex align-items-center gap-2"
+                              style={{ minWidth: 0 }}
                             >
-                              {getNetworkDetails?.network?.email}
+                              <span
+                                className="fw-500 text-dark text-decoration-none text-truncate d-block"
+                                style={{
+                                  transition: "color 0.2s",
+                                  minWidth: 0,
+                                  maxWidth: "100%",
+                                }}
+                                onMouseEnter={(e) =>
+                                  (e.currentTarget.style.color =
+                                    "var(--primary-color)")
+                                }
+                                onMouseLeave={(e) =>
+                                  (e.currentTarget.style.color = "inherit")
+                                }
+                              >
+                                {getNetworkDetails?.network?.email}
+                              </span>
+                              <span
+                                className=""
+                                style={{ cursor: "pointer", flexShrink: 0 }}
+                                onClick={handleCopyEmail}
+                              >
+                                {isEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                              </span>
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -610,7 +670,26 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.user?.email ?? "Email not provided"}
+                      {getNetworkDetails?.user?.email ? (
+                        <>
+                          <span className="me-2 text-truncate">
+                            {getNetworkDetails?.user?.email ??
+                              "Email not provided"}
+                          </span>
+                          <span
+                            onClick={handleCopyDirectorEmail}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {isDirectorEmailCopied ? (
+                              <FaCheckCircle className="text-success"/>
+                            ) : (
+                              <TbCopy />
+                            )}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-muted">Email not provided</span>
+                      )}
                     </Card>
                   </Col>
                 </Row>

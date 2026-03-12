@@ -15,7 +15,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
       <Row className="page-title">
         <Col sm="6">
           <h2>{title}</h2>
-          <p className="mb-0 text-title-gray">{subTitle}</p>
+          <small className="mb-0 text-muted">{subTitle}</small>
         </Col>
         <Col sm="6">
           <Breadcrumb className="justify-content-sm-end align-items-center">

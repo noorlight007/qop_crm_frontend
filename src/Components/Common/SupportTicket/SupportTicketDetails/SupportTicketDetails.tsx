@@ -16,9 +16,10 @@ import {
   FaDownload,
   FaExclamationCircle,
   FaFileAlt,
+  FaRegQuestionCircle,
   FaSpinner,
 } from "react-icons/fa";
-import { TbCheck, TbCopy } from "react-icons/tb";
+import { TbChecks, TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Alert,
@@ -34,8 +35,10 @@ import {
   DropdownMenu,
   DropdownToggle,
   Input,
+  PopoverBody,
   Row,
   Spinner,
+  UncontrolledPopover,
 } from "reactstrap";
 import Swal from "sweetalert2";
 import UpdateSupportTicketModal from "../Modals/UpdateSuppotTicketModal";
@@ -86,10 +89,26 @@ const SupportTicketDetails: React.FC = () => {
   }, [ticketDetails?.created_by?.profile_image]);
 
   const statusOptions = [
-    { value: "OPEN", label: "Open" },
-    { value: "IN_PROGRESS", label: "In Progress" },
-    { value: "COMPLETED", label: "Completed" },
-    { value: "RESOLVED", label: "Resolved" },
+    {
+      value: "OPEN" as TicketStatus,
+      label: "Open",
+      description: "Ticket has been submitted and is awaiting action.",
+    },
+    {
+      value: "IN_PROGRESS" as TicketStatus,
+      label: "In Progress",
+      description: "Ticket is currently being worked on by our team.",
+    },
+    {
+      value: "COMPLETED" as TicketStatus,
+      label: "Completed",
+      description: "The issue has been fixed and is under review.",
+    },
+    {
+      value: "RESOLVED" as TicketStatus,
+      label: "Resolved",
+      description: "The issue has been fixed and everything is working.",
+    },
   ];
 
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
@@ -316,7 +335,7 @@ const SupportTicketDetails: React.FC = () => {
     OPEN: <FaExclamationCircle />,
     IN_PROGRESS: <FaSpinner />,
     COMPLETED: <FaCheck />,
-    RESOLVED: <TbCheck />,
+    RESOLVED: <TbChecks size={14} />,
   };
   return (
     <>
@@ -339,12 +358,10 @@ const SupportTicketDetails: React.FC = () => {
               <Row className="align-items-start">
                 <Col>
                   <div className="d-flex align-items-center gap-2 flex-wrap mb-2 ">
-                    <h3 className="mb-0">
-                      Subject:{" "}
-                      <span className="text-capitalize">
-                        {ticketDetails.subject}
-                      </span>
-                    </h3>
+                    <h4 className="mb-0">
+                      <strong className="fs-5">Subject:</strong>{" "}
+                      {ticketDetails.subject}
+                    </h4>
                   </div>
                   <div className="d-flex flex-column ">
                     <span className="py-1">
@@ -427,92 +444,204 @@ const SupportTicketDetails: React.FC = () => {
                   <div className="d-flex justify-content-end">
                     {ticketDetails.status ? (
                       userType === "ADMIN" ? (
-                        <Dropdown
-                          isOpen={dropdownOpen[ticketDetails.id] || false}
-                          toggle={() => toggleDropdown(ticketDetails.id)}
-                        >
-                          <DropdownToggle
-                            tag="span"
-                            style={{ cursor: "pointer" }}
-                            caret={false}
+                        <div className="d-flex align-items-center gap-1">
+                          <Dropdown
+                            isOpen={dropdownOpen[ticketDetails.id] || false}
+                            toggle={() => toggleDropdown(ticketDetails.id)}
                           >
-                            <Badge
-                              color={
-                                statusColorMap[
-                                  ticketDetails?.status as TicketStatus
-                                ] ?? "dark"
-                              }
-                              className="d-flex justify-content-center align-items-center gap-1"
+                            <DropdownToggle
+                              tag="span"
                               style={{ cursor: "pointer" }}
+                              caret={false}
                             >
-                              {
-                                statusIconMap[
-                                  ticketDetails?.status as TicketStatus
-                                ]
-                              }
-                              <span style={{ marginTop: "2.5px" }}>
-                                {formatChoiceFieldValue(ticketDetails?.status)}
-                              </span>
-                              <FaChevronDown size={10} />
-                            </Badge>
-                          </DropdownToggle>
-                          <DropdownMenu
-                            className="shadow-sm py-2"
-                            style={{ minWidth: "160px" }}
-                          >
-                            {statusOptions.map((option) => {
-                              const isActive =
-                                ticketDetails.status === option.value;
-                              const colorClass =
-                                statusColorMap[option.value as TicketStatus] ||
-                                "secondary";
-
-                              return (
-                                <DropdownItem
-                                  key={option.value}
-                                  onClick={() =>
-                                    handleStatusChange(
-                                      ticketDetails.alias,
-                                      option.value,
-                                    )
-                                  }
-                                  className="d-flex align-items-center gap-3 px-3 py-2"
-                                  active={isActive}
-                                >
-                                  <span
-                                    className={`rounded-circle bg-${colorClass}`}
-                                    style={{
-                                      width: "8px",
-                                      height: "8px",
-                                    }}
-                                  />
-                                  <span className={isActive ? "fw-bold" : ""}>
-                                    {option.label}
-                                  </span>
-                                  {isActive && (
-                                    <span className="ms-auto">
-                                      <FaCheck />
-                                    </span>
+                              <Badge
+                                color={
+                                  statusColorMap[
+                                    ticketDetails?.status as TicketStatus
+                                  ] ?? "dark"
+                                }
+                                className="d-flex justify-content-center align-items-center gap-1"
+                                style={{ cursor: "pointer" }}
+                              >
+                                {
+                                  statusIconMap[
+                                    ticketDetails?.status as TicketStatus
+                                  ]
+                                }
+                                <span style={{ marginTop: "2.5px" }}>
+                                  {formatChoiceFieldValue(
+                                    ticketDetails?.status,
                                   )}
-                                </DropdownItem>
-                              );
-                            })}
-                          </DropdownMenu>
-                        </Dropdown>
-                      ) : (
-                        <Badge
-                          color={
-                            statusColorMap[
-                              ticketDetails?.status as TicketStatus
-                            ] ?? "dark"
-                          }
-                          className="d-flex justify-content-center align-items-center gap-1"
-                        >
-                          {statusIconMap[ticketDetails?.status as TicketStatus]}{" "}
-                          <span style={{ marginTop: "2.5px" }}>
-                            {formatChoiceFieldValue(ticketDetails?.status)}
+                                </span>
+                                <FaChevronDown size={10} />
+                              </Badge>
+                            </DropdownToggle>
+                            <DropdownMenu
+                              className="shadow-sm py-2"
+                              style={{ minWidth: "160px" }}
+                            >
+                              {statusOptions.map((option) => {
+                                const isActive =
+                                  ticketDetails.status === option.value;
+                                const colorClass =
+                                  statusColorMap[
+                                    option.value as TicketStatus
+                                  ] || "secondary";
+
+                                return (
+                                  <DropdownItem
+                                    key={option.value}
+                                    onClick={() =>
+                                      handleStatusChange(
+                                        ticketDetails.alias,
+                                        option.value,
+                                      )
+                                    }
+                                    className="d-flex align-items-center gap-3 px-3 py-2"
+                                    active={isActive}
+                                  >
+                                    <span
+                                      className={`rounded-circle bg-${colorClass}`}
+                                      style={{
+                                        width: "8px",
+                                        height: "8px",
+                                      }}
+                                    />
+                                    <span className={isActive ? "fw-bold" : ""}>
+                                      {option.label}
+                                    </span>
+                                    {isActive && (
+                                      <span className="ms-auto">
+                                        <FaCheck />
+                                      </span>
+                                    )}
+                                  </DropdownItem>
+                                );
+                              })}
+                            </DropdownMenu>
+                          </Dropdown>
+                          <span
+                            id="orgAdminSearch"
+                            className="bg-secondary rounded d-inline-flex align-items-center justify-content-center"
+                            style={{
+                              cursor: "pointer",
+                              width: "23px",
+                              height: "23px",
+                            }}
+                          >
+                            <FaRegQuestionCircle />
                           </span>
-                        </Badge>
+
+                          <>
+                            <style>{`
+                              .status-popover {
+                                max-width: 380px !important;
+                                width: 380px !important;
+                              }
+                            `}</style>
+
+                            <UncontrolledPopover
+                              placement="left"
+                              target="orgAdminSearch"
+                              trigger="hover"
+                              popperClassName="status-popover"
+                            >
+                              <PopoverBody className="bg-white rounded text-dark p-3 small">
+                                {statusOptions.map((status) => (
+                                  <div
+                                    key={status.value}
+                                    className="d-flex align-items-start mb-2"
+                                  >
+                                    <span
+                                      className={`me-2 text-${statusColorMap[status.value]}`}
+                                    >
+                                      {statusIconMap[status.value]}
+                                    </span>
+                                    <div>
+                                      <strong
+                                        className={`text-${statusColorMap[status.value]}`}
+                                      >
+                                        {status.label}:
+                                      </strong>{" "}
+                                      {status.description}
+                                    </div>
+                                  </div>
+                                ))}
+                              </PopoverBody>
+                            </UncontrolledPopover>
+                          </>
+                        </div>
+                      ) : (
+                        <div className="d-flex align-items-center gap-1 position-relative">
+                          <Badge
+                            color={
+                              statusColorMap[
+                                ticketDetails?.status as TicketStatus
+                              ] ?? "dark"
+                            }
+                            className="d-flex justify-content-center align-items-center gap-1"
+                          >
+                            {
+                              statusIconMap[
+                                ticketDetails?.status as TicketStatus
+                              ]
+                            }{" "}
+                            <span style={{ marginTop: "2.5px" }}>
+                              {formatChoiceFieldValue(ticketDetails?.status)}
+                            </span>
+                          </Badge>
+
+                          <span
+                            id="orgAdminSearch"
+                            className="bg-secondary rounded d-inline-flex align-items-center justify-content-center"
+                            style={{
+                              cursor: "pointer",
+                              width: "23px",
+                              height: "23px",
+                            }}
+                          >
+                            <FaRegQuestionCircle style={{ fontSize: "12px" }} />
+                          </span>
+
+                          <>
+                            <style>{`
+                              .status-popover {
+                                max-width: 380px !important;
+                                width: 380px !important;
+                              }
+                            `}</style>
+
+                            <UncontrolledPopover
+                              placement="left"
+                              target="orgAdminSearch"
+                              trigger="hover"
+                              popperClassName="status-popover"
+                            >
+                              <PopoverBody className="bg-white rounded text-dark p-3 small">
+                                {statusOptions.map((status) => (
+                                  <div
+                                    key={status.value}
+                                    className="d-flex align-items-start mb-2"
+                                  >
+                                    <span
+                                      className={`me-2 text-${statusColorMap[status.value]}`}
+                                    >
+                                      {statusIconMap[status.value]}
+                                    </span>
+                                    <div>
+                                      <strong
+                                        className={`text-${statusColorMap[status.value]}`}
+                                      >
+                                        {status.label}:
+                                      </strong>{" "}
+                                      {status.description}
+                                    </div>
+                                  </div>
+                                ))}
+                              </PopoverBody>
+                            </UncontrolledPopover>
+                          </>
+                        </div>
                       )
                     ) : (
                       <small className="text-muted">Not Found</small>

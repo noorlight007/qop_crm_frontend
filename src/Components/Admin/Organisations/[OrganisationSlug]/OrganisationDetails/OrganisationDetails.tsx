@@ -214,6 +214,54 @@ const OrganisationDetails: React.FC = () => {
       });
   };
 
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    const email = getOrganisationDetails?.organization?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsEmailCopied(true);
+        setTimeout(() => setIsEmailCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsEmailCopied(true);
+        setTimeout(() => setIsEmailCopied(false), 2000);
+      });
+  };
+
+  const [isDirectorEmailCopied, setIsDirectorEmailCopied] = useState(false);
+
+  const handleCopyDirectorEmail = () => {
+    const email = getOrganisationDetails?.user?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsDirectorEmailCopied(true);
+        setTimeout(() => setIsDirectorEmailCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsDirectorEmailCopied(true);
+        setTimeout(() => setIsDirectorEmailCopied(false), 2000);
+      });
+  };
+
   return (
     <>
       <Row>
@@ -328,7 +376,7 @@ const OrganisationDetails: React.FC = () => {
                               style={{ cursor: "pointer" }}
                               onClick={handleCopyDomain}
                             >
-                              {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                              {isCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
                             </span>
                           </Badge>
                         )}
@@ -506,21 +554,33 @@ const OrganisationDetails: React.FC = () => {
                           <p className="small text-muted mb-1">Email</p>
                           {getOrganisationDetails?.organization?.email ? (
                             <span
-                              className="fw-500 text-dark text-decoration-none text-truncate d-block"
-                              style={{
-                                transition: "color 0.2s",
-                                minWidth: 0,
-                                maxWidth: "100%",
-                              }}
-                              onMouseEnter={(e) =>
-                                (e.currentTarget.style.color =
-                                  "var(--primary-color)")
-                              }
-                              onMouseLeave={(e) =>
-                                (e.currentTarget.style.color = "inherit")
-                              }
+                              className="d-flex align-items-center gap-2"
+                              style={{ minWidth: 0 }}
                             >
-                              {getOrganisationDetails?.organization?.email}
+                              <span
+                                className="fw-500 text-dark text-decoration-none text-truncate d-block"
+                                style={{
+                                  transition: "color 0.2s",
+                                  minWidth: 0,
+                                  maxWidth: "100%",
+                                }}
+                                onMouseEnter={(e) =>
+                                  (e.currentTarget.style.color =
+                                    "var(--primary-color)")
+                                }
+                                onMouseLeave={(e) =>
+                                  (e.currentTarget.style.color = "inherit")
+                                }
+                              >
+                                {getOrganisationDetails?.organization?.email}
+                              </span>
+                              <span
+                                className=""
+                                style={{ cursor: "pointer", flexShrink: 0 }}
+                                onClick={handleCopyEmail}
+                              >
+                                {isEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                              </span>
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -752,8 +812,27 @@ const OrganisationDetails: React.FC = () => {
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {getOrganisationDetails?.user?.email ??
-                        "Email not provided"}
+                      {getOrganisationDetails?.user?.email ? (
+                        <>
+                          <span className="me-2 text-truncate">
+                            {getOrganisationDetails?.user?.email}
+                          </span>
+                          <span
+                            onClick={handleCopyDirectorEmail}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {isDirectorEmailCopied ? (
+                              <FaCheckCircle className="text-success"/>
+                            ) : (
+                              <TbCopy />
+                            )}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-muted">Not Available</span>
+                        </>
+                      )}
                     </Card>
                   </Col>
                 </Row>

@@ -281,12 +281,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                     </td>
                     <td>
                       {user?.phone ? (
-                        <a
-                          href={`tel:${user?.phone}`}
-                          className="text-black text_decoration_hover"
+                        <span
+                          className="text-black"
                         >
                           {user?.phone}
-                        </a>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

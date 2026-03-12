@@ -18,10 +18,11 @@ import {
   FaChevronDown,
   FaExclamationCircle,
   FaInfoCircle,
+  FaRegQuestionCircle,
   FaSearch,
   FaSpinner,
 } from "react-icons/fa";
-import { TbCheck, TbCirclePlus } from "react-icons/tb";
+import { TbChecks, TbCirclePlus } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -212,14 +213,30 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
     OPEN: <FaExclamationCircle />,
     IN_PROGRESS: <FaSpinner />,
     COMPLETED: <FaCheck />,
-    RESOLVED: <TbCheck />,
+    RESOLVED: <TbChecks size={12} />,
   };
 
   const statusOptions = [
-    { value: "OPEN", label: "Open" },
-    { value: "IN_PROGRESS", label: "In Progress" },
-    { value: "COMPLETED", label: "Completed" },
-    { value: "RESOLVED", label: "Resolved" },
+    {
+      value: "OPEN" as TicketStatus,
+      label: "Open",
+      description: "Ticket has been submitted and is awaiting action.",
+    },
+    {
+      value: "IN_PROGRESS" as TicketStatus,
+      label: "In Progress",
+      description: "Ticket is currently being worked on by our team.",
+    },
+    {
+      value: "COMPLETED" as TicketStatus,
+      label: "Completed",
+      description: "The issue has been fixed and is under review.",
+    },
+    {
+      value: "RESOLVED" as TicketStatus,
+      label: "Resolved",
+      description: "The issue has been fixed and everything is working.",
+    },
   ];
 
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
@@ -565,7 +582,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         <Input
                           type="select"
                           id="networkFilter"
-                          className="py-1"
+                          className="py-1 pe-4 text-truncate"
                           value={filters.network}
                           onChange={(e) => {
                             const networkValue = e.target.value;
@@ -594,7 +611,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         <Input
                           type="select"
                           id="organisationFilter"
-                          className="py-1"
+                          className="py-1 pe-4 text-truncate"
                           value={filters.organisation}
                           onChange={(e) => {
                             const orgValue = e.target.value;
@@ -652,7 +669,52 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                   <tr className="text-center">
                     <th>Ticket ID</th>
                     <th>Ticket Type</th>
-                    <th>Status</th>
+                    <th>
+                      Status{" "}
+                      <FaRegQuestionCircle
+                        id="statusInfoIcon"
+                        className="text-primary"
+                        style={{ cursor: "pointer" }}
+                      />
+                      <>
+                        <style>{`
+                          .status-popover {
+                            max-width: 380px !important;
+                            width: 380px !important;
+                            z-index: 1050;
+                          }
+                        `}</style>
+                        <UncontrolledPopover
+                          placement="right"
+                          target="statusInfoIcon"
+                          trigger="hover"
+                          popperClassName="status-popover"
+                        >
+                          <PopoverBody className="bg-white rounded p-3 small">
+                            {statusOptions.map((status) => (
+                              <div
+                                key={status.value}
+                                className="d-flex align-items-start mb-2"
+                              >
+                                <span
+                                  className={`me-2 text-${statusColorMap[status.value]}`}
+                                >
+                                  {statusIconMap[status.value]}
+                                </span>
+                                <div>
+                                  <strong
+                                    className={`text-${statusColorMap[status.value]}`}
+                                  >
+                                    {status.label}:
+                                  </strong>{" "}
+                                  {status.description}
+                                </div>
+                              </div>
+                            ))}
+                          </PopoverBody>
+                        </UncontrolledPopover>
+                      </>
+                    </th>
                     <th>Priority</th>
                     <th>Subject</th>
                     <th>Message</th>

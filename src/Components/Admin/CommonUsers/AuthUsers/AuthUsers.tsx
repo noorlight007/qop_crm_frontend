@@ -14,7 +14,13 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
-import { FaChevronDown, FaInfoCircle, FaSearch } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaChevronDown,
+  FaInfoCircle,
+  FaSearch,
+} from "react-icons/fa";
+import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
   Badge,
@@ -189,6 +195,28 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
 
   const currentAuthUsers = authUsers;
   const totalPages = Math.ceil(totalCount / authUsersPerPage) || 1;
+
+  const [copiedEmailAlias, setCopiedEmailAlias] = useState<string | null>(null);
+
+  const handleCopyEmail = (email: string, alias: string) => {
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setCopiedEmailAlias(alias);
+        setTimeout(() => setCopiedEmailAlias(null), 2000);
+      })
+      .catch(() => {
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setCopiedEmailAlias(alias);
+        setTimeout(() => setCopiedEmailAlias(null), 2000);
+      });
+  };
 
   return (
     <Card>
@@ -371,19 +399,33 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     </td>
                     <td>
                       {user?.email ? (
-                        user.email
+                        <span
+                          className="d-flex justify-content-center align-items-center gap-2"
+                          style={{ minWidth: 0 }}
+                        >
+                          <span className="text-truncate" title={user.email}>
+                            {user.email}
+                          </span>
+                          <span
+                            style={{ cursor: "pointer", flexShrink: 0 }}
+                            onClick={() =>
+                              handleCopyEmail(user.email, user.alias)
+                            }
+                          >
+                            {copiedEmailAlias === user.alias ? (
+                              <FaCheckCircle size={12} className="text-success"/>
+                            ) : (
+                              <TbCopy size={12}/>
+                            )}
+                          </span>
+                        </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
                       {user?.phone ? (
-                        <a
-                          href={`tel:${user?.phone}`}
-                          className="text-black text_decoration_hover"
-                        >
-                          {user?.phone}
-                        </a>
+                        <span className="text-black">{user?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}

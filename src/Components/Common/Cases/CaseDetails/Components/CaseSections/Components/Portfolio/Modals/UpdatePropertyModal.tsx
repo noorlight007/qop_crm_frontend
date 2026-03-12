@@ -198,6 +198,13 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
     }
   }, [isOpen, property]);
 
+  // clear applicants list when toggling on limited company
+  useEffect(() => {
+    if (isLimitedCompany) {
+      setSelectedApplicants([]);
+    }
+  }, [isLimitedCompany]);
+
   // ─── Dropdown close on outside click / escape ──────────────────────────────
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -383,10 +390,11 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   // ─── Submit ────────────────────────────────────────────────────────────────
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedApplicants.length === 0) {
-      toast.error("Please select at least one applicant!");
-      return;
-    }
+    // applicants only required when not a limited company
+    // if (!isLimitedCompany && selectedApplicants.length === 0) {
+    //   toast.error("Please select at least one applicant!");
+    //   return;
+    // }
     try {
       const payload = {
         applicant_ids: selectedApplicants.map(Number),
@@ -486,90 +494,139 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
               </div>
             </Col>
 
-            {/* Applicants */}
             <Col md={6}>
-              <FormGroup>
-                <Label>Applicant/s*</Label>
-                <div className="position-relative" ref={dropdownRef}>
-                  <div
-                    className="form-control d-flex flex-wrap align-items-center position-relative custom_input_field"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  >
-                    {selectedApplicants.length === 0 && (
-                      <span className="text-muted">Select applicants...</span>
-                    )}
-                    {selectedApplicants.map((id) => {
-                      const applicant = applicantsData?.find(
-                        (a: any) => a.id === Number(id),
-                      );
-                      return (
-                        <span
-                          key={id}
-                          className="badge bg-primary me-1 mb-1 d-flex align-items-center"
-                          style={{ cursor: "pointer" }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeApplicant(id);
-                          }}
-                        >
-                          {applicant?.title
-                            ? formatChoiceFieldValue(applicant.title)
-                            : ""}{" "}
-                          {applicant?.first_name} {applicant?.middle_name}{" "}
-                          {applicant?.last_name}
-                          <span className="ms-1">x</span>
-                        </span>
-                      );
-                    })}
-                    <i
-                      className="fa-solid fa-angle-down position-absolute"
-                      style={{
-                        right: "10px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                      }}
-                    />
-                  </div>
-                  {isDropdownOpen && (
-                    <div className="position-absolute w-100 bg-white border mt-1 rounded-2 dropdown_style">
-                      <div
-                        className="text-end p-1 bg-light sticky-top border-bottom dropdown_close"
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        <span className="fw-bold fs-5">
-                          <X size={20} />
-                        </span>
-                      </div>
-                      {filteredApplicants?.map((applicant: any) => (
-                        <div
-                          key={applicant.id}
-                          className="px-2 py-1 dropdown_item"
-                          onClick={() =>
-                            handleSelectApplicant(applicant.id.toString())
-                          }
-                        >
-                          {applicant?.title
-                            ? formatChoiceFieldValue(applicant.title)
-                            : ""}{" "}
-                          {applicant?.first_name} {applicant?.middle_name}{" "}
-                          {applicant?.last_name}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {(getFieldError("applicant_ids") ||
-                  getFieldError("applicants")) && (
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="checkbox"
+                    name="is_limited_company"
+                    checked={isLimitedCompany}
+                    onChange={(e) => setIsLimitedCompany(e.target.checked)}
+                    className="border-primary"
+                  />
+                  Is Limited Company
+                </Label>
+                {getFieldError("is_limited_company") && (
                   <small className="text-danger d-block mt-1">
-                    {getFieldError("applicant_ids") ||
-                      getFieldError("applicants")}
+                    {getFieldError("is_limited_company")}
                   </small>
                 )}
               </FormGroup>
             </Col>
 
+            {isLimitedCompany && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label for="company_name">
+                    Company Name
+                  </Label>
+                  <Input
+                    id="company_name"
+                    name="company_name"
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                  />
+                  {getFieldError("company_name") && (
+                    <small
+                      className="text-danger"
+                      style={{ marginTop: "5px", display: "block" }}
+                    >
+                      {getFieldError("company_name")}
+                    </small>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
+            {/* Applicants */}
+            {isLimitedCompany === false && (
+              <Col md={6}>
+                <FormGroup>
+                  <Label>
+                    Applicant&apos;s
+                  </Label>
+                  <div className="position-relative" ref={dropdownRef}>
+                    <div
+                      className="form-control d-flex flex-wrap align-items-center position-relative custom_input_field"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      {selectedApplicants.length === 0 && (
+                        <span className="text-muted">Select applicants...</span>
+                      )}
+                      {selectedApplicants.map((id) => {
+                        const applicant = applicantsData?.find(
+                          (a: any) => a.id === Number(id),
+                        );
+                        return (
+                          <span
+                            key={id}
+                            className="badge bg-primary me-1 mb-1 d-flex align-items-center"
+                            style={{ cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeApplicant(id);
+                            }}
+                          >
+                            {applicant?.title
+                              ? formatChoiceFieldValue(applicant.title)
+                              : ""}{" "}
+                            {applicant?.first_name} {applicant?.middle_name}{" "}
+                            {applicant?.last_name}
+                            <span className="ms-1">x</span>
+                          </span>
+                        );
+                      })}
+                      <i
+                        className="fa-solid fa-angle-down position-absolute"
+                        style={{
+                          right: "10px",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                        }}
+                      />
+                    </div>
+                    {isDropdownOpen && (
+                      <div className="position-absolute w-100 bg-white border mt-1 rounded-2 dropdown_style">
+                        <div
+                          className="text-end p-1 bg-light sticky-top border-bottom dropdown_close"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <span className="fw-bold fs-5">
+                            <X size={20} />
+                          </span>
+                        </div>
+                        {filteredApplicants?.map((applicant: any) => (
+                          <div
+                            key={applicant.id}
+                            className="px-2 py-1 dropdown_item"
+                            onClick={() =>
+                              handleSelectApplicant(applicant.id.toString())
+                            }
+                          >
+                            {applicant?.title
+                              ? formatChoiceFieldValue(applicant.title)
+                              : ""}{" "}
+                            {applicant?.first_name} {applicant?.middle_name}{" "}
+                            {applicant?.last_name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {(getFieldError("applicant_ids") ||
+                    getFieldError("applicants")) && (
+                    <small className="text-danger d-block mt-1">
+                      {getFieldError("applicant_ids") ||
+                        getFieldError("applicants")}
+                    </small>
+                  )}
+                </FormGroup>
+              </Col>
+            )}
+
             {/* Postcode */}
-            <Col md={6}>
+            <Col md={12}>
               <FormGroup>
                 <Label for="postcode">Postcode*</Label>
                 <InputGroup className="d-flex align-items-center gap-2">
@@ -582,7 +639,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                     onChange={(e) =>
                       handleManualAddressChange(setPostcode, e.target.value)
                     }
-                    required
                   />
                   <Button
                     color="primary"
@@ -601,24 +657,22 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
 
-          {/* Address Fields */}
-          <Row>
+            {/* Address Fields */}
             {[
               {
                 id: "house_name_or_number",
-                label: "House Name Or Number*",
+                label: "House Name Or Number",
                 value: houseNumber,
                 setter: setHouseNumber,
-                required: true,
+                required: false,
               },
               {
                 id: "address_1",
-                label: "Address 1*",
+                label: "Address 1",
                 value: address1,
                 setter: setAddress1,
-                required: true,
+                required: false,
               },
               {
                 id: "address_2",
@@ -649,15 +703,14 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 </FormGroup>
               </Col>
             ))}
-          </Row>
-          <Row>
+
             {[
               {
                 id: "city",
-                label: "City*",
+                label: "City",
                 value: city,
                 setter: setCity,
-                required: true,
+                required: false,
               },
               {
                 id: "county",
@@ -668,10 +721,10 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
               },
               {
                 id: "country",
-                label: "Country*",
+                label: "Country",
                 value: country,
                 setter: setCountry,
-                required: true,
+                required: false,
               },
             ].map(({ id, label, value, setter, required }) => (
               <Col md={4} key={id}>
@@ -695,15 +748,16 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 </FormGroup>
               </Col>
             ))}
-          </Row>
 
-          <hr className="border-secondary" />
+            <hr className="border-secondary" />
 
-          {/* Financial Fields */}
-          <Row>
+            {/* Financial Fields */}
+
             <Col md={4}>
               <FormGroup>
-                <Label for="property_value">Property Value*</Label>
+                <Label for="property_value">
+                  Property Value
+                </Label>
                 <Input
                   id="property_value"
                   name="property_value"
@@ -713,7 +767,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={propertyValue}
                   onChange={(e) => setPropertyValue(e.target.value)}
-                  required
                 />
                 {getFieldError("property_value") && (
                   <small className="text-danger d-block mt-1">
@@ -725,7 +778,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="current_mortgage_balance">
-                  Current Mortgage Balance*
+                  Current Mortgage Balance
                 </Label>
                 <Input
                   id="current_mortgage_balance"
@@ -736,7 +789,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={currentMortgageBalance}
                   onChange={(e) => setCurrentMortgageBalance(e.target.value)}
-                  required
                 />
                 {getFieldError("current_mortgage_balance") && (
                   <small className="text-danger d-block mt-1">
@@ -748,7 +800,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             <Col md={4}>
               <FormGroup>
                 <Label for="monthly_rental_income">
-                  Monthly Rental Income*
+                  Monthly Rental Income
                 </Label>
                 <Input
                   id="monthly_rental_income"
@@ -759,7 +811,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   onInput={limitDecimalPlaces}
                   value={monthlyRental}
                   onChange={(e) => setMonthlyRental(e.target.value)}
-                  required
                 />
                 {getFieldError("monthly_rental_income") && (
                   <small className="text-danger d-block mt-1">
@@ -768,8 +819,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="monthly_mortgage_payment">
@@ -829,10 +879,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
 
-          {/* Checkboxes + Lender + Repayment */}
-          <Row>
+            {/* Checkboxes + Lender + Repayment */}
+
             <Col md={4}>
               <FormGroup check>
                 <Label check>
@@ -893,10 +942,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
 
-          {/* Rate Fields */}
-          <Row>
+            {/* Rate Fields */}
+
             <Col md={4}>
               <FormGroup>
                 <Label for="current_rate">Current Rate (%)</Label>
@@ -969,8 +1017,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="current_rate_end_date">Current Rate End Date</Label>
@@ -1022,20 +1069,20 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
 
-          {/* Property Details */}
-          <Row>
+            {/* Property Details */}
+
             <Col md={4}>
               <FormGroup>
-                <Label for="property_type">Property Type*</Label>
+                <Label for="property_type">
+                  Property Type
+                </Label>
                 <Input
                   id="property_type"
                   name="property_type"
                   type="text"
                   value={propertyType}
                   onChange={(e) => setPropertyType(e.target.value)}
-                  required
                 />
                 {getFieldError("property_type") && (
                   <small className="text-danger d-block mt-1">
@@ -1046,14 +1093,15 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ownership">Ownership*</Label>
+                <Label for="ownership">
+                  Ownership
+                </Label>
                 <Input
                   id="ownership"
                   name="ownership"
                   type="text"
                   value={ownership}
                   onChange={(e) => setOwnership(e.target.value)}
-                  required
                 />
                 {getFieldError("ownership") && (
                   <small className="text-danger d-block mt-1">
@@ -1083,8 +1131,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
+
             <Col md={4}>
               <FormGroup>
                 <Label for="year_built">Year Built</Label>
@@ -1105,7 +1152,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="number_of_bedrooms">Number of Bedrooms*</Label>
+                <Label for="number_of_bedrooms">
+                  Number of Bedrooms
+                </Label>
                 <Input
                   id="number_of_bedrooms"
                   name="number_of_bedrooms"
@@ -1113,7 +1162,6 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                   step="1"
                   value={numberOfBedrooms}
                   onChange={(e) => setNumberOfBedrooms(e.target.value)}
-                  required
                 />
                 {getFieldError("number_of_bedrooms") && (
                   <small className="text-danger d-block mt-1">
@@ -1143,52 +1191,8 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
 
-          {/* Limited Company + EPC */}
-          <Row>
-            <Col md={4}>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    name="is_limited_company"
-                    checked={isLimitedCompany}
-                    onChange={(e) => setIsLimitedCompany(e.target.checked)}
-                    className="border-primary"
-                  />
-                  Is Limited Company
-                </Label>
-                {getFieldError("is_limited_company") && (
-                  <small className="text-danger d-block mt-1">
-                    {getFieldError("is_limited_company")}
-                  </small>
-                )}
-              </FormGroup>
-            </Col>
-
-            {isLimitedCompany && (
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="company_name">Company Name</Label>
-                  <Input
-                    id="company_name"
-                    name="company_name"
-                    type="text"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                  />
-                  {getFieldError("company_name") && (
-                    <small
-                      className="text-danger"
-                      style={{ marginTop: "5px", display: "block" }}
-                    >
-                      {getFieldError("company_name")}
-                    </small>
-                  )}
-                </FormGroup>
-              </Col>
-            )}
+            {/* Limited Company + EPC */}
 
             <Col md={4}>
               <FormGroup>
@@ -1208,10 +1212,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-          </Row>
 
-          {/* Note */}
-          <Row>
+            {/* Note */}
+
             <Col sm={12}>
               <FormGroup>
                 <Label for="note">Note</Label>

@@ -3,7 +3,8 @@ import { getMenuByRole } from "@/Data/Layout/SidebarData";
 import { useAppSelector } from "@/Redux/Hooks";
 import { MenuListType } from "@/Types/LayoutTypes";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +16,7 @@ const Menulist: React.FC<MenuListType> = ({
 }) => {
   const { pinedMenu } = useAppSelector((state) => state.layout);
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useTranslation("common");
   const [initialLoad, setInitialLoad] = useState(true);
   const { data: session } = useSession();
@@ -37,18 +39,21 @@ const Menulist: React.FC<MenuListType> = ({
     return false;
   };
 
-  const handleClick = (e: React.MouseEvent, item: any) => {
-    e.preventDefault();
+  const handleClick = (
+    e: React.MouseEvent,
+    item: any,
+    itemKey: string,
+    hasChildren: boolean,
+  ) => {
+    // Only prevent default for items with children (toggles submenu)
+    if (hasChildren) {
+      e.preventDefault();
+      setCollapsed((prev) => ({ ...prev, [itemKey]: !prev[itemKey] }));
+    }
 
-    // Update active menu state
     const newActive = [...activeMenu];
     newActive[level] = newActive[level] === item.title ? "" : item.title;
     setActiveMenu(newActive);
-
-    // Navigate if it's a link
-    if (item.path) {
-      window.location.href = item.path;
-    }
   };
 
   // Set active menu items recursively on mount and route change
@@ -95,14 +100,13 @@ const Menulist: React.FC<MenuListType> = ({
   return (
     <>
       {items.map((item, index) => {
-        const hasChildren = item.children && item.children.length > 0;
-        const isCurrentActive =
-          initialLoad || isActive(item) || activeMenu[level] === item.title;
-
+        const hasChildren = !!(item.children && item.children.length > 0);
         // unique key for collapsed state per item & level
         const itemKey = `${level}-${index}-${item.title}`;
         const isHidden = !!collapsed[itemKey];
         const isExpanded = !isHidden; // default: expanded (visible)
+        const isCurrentActive =
+          initialLoad || isActive(item) || activeMenu[level] === item.title;
 
         return (
           <li
@@ -111,14 +115,14 @@ const Menulist: React.FC<MenuListType> = ({
               pinedMenu.includes(item.title) ? "pined" : ""
             } ${isCurrentActive ? "active" : ""}`}
           >
-            <a
+            <Link
               href={item.path || "#"}
               className={`nav-link d-flex align-items-center gap-1 my-1 w-full ${
                 level === 0
                   ? `sidebar-link ${isCurrentActive ? "bg-light-primary" : ""}`
                   : ""
               } ${isCurrentActive ? "active" : ""}`}
-              onClick={(e) => handleClick(e, item)}
+              onClick={(e) => handleClick(e, item, itemKey, hasChildren)}
               style={{ cursor: "pointer", width: "220px" }}
             >
               {item.icon &&
@@ -134,54 +138,23 @@ const Menulist: React.FC<MenuListType> = ({
               ) : (
                 <h6 className={`mb-0 position-relative ${item.lanClass || ""}`}>
                   {t(item.title)}
-                  {/* Badge number  */}
-                  {/* {item.badge && (
-                    <span className="badge rounded-pill bg-primary position-absolute" 
-                      style={{
-                        top: '-8px',
-                        right: '-15px',
-                        fontSize: '10px',
-                        padding: '4px 5px'
-                      }}>
-                      {item.badge}
-                    </span>
-                  )} */}
                 </h6>
               )}
 
               {hasChildren && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setCollapsed((prev) => ({
-                      ...prev,
-                      [itemKey]: !prev[itemKey],
-                    }));
-                  }}
-                  aria-expanded={isExpanded}
-                  title={isExpanded ? t("Collapse") : t("Expand")}
+                <i
+                  className="fa fa-chevron-right"
                   style={{
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
+                    fontSize: "12px",
+                    color: "var(--body-font-color)",
+                    marginLeft: "auto",
+                    // transform: isExpanded ? "rotate(0)" : "rotate(90deg)",
                     transform: isExpanded ? "rotate(90deg)" : "rotate(0)",
                     transition: "transform 0.3s ease",
-                    marginLeft: "auto",
-                    padding: "4px 12px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
-                  className="ms-auto"
-                >
-                  <i
-                    className="fa fa-chevron-right"
-                    style={{ fontSize: "12px", color: "var(--body-font-color)" }}
-                  ></i>
-                </button>
+                ></i>
               )}
-            </a>
+            </Link>
 
             {hasChildren && (
               <ul
@@ -189,6 +162,7 @@ const Menulist: React.FC<MenuListType> = ({
                   level === 0 ? "sidebar-submenu" : "according-submenu"
                 }`}
                 style={{
+                  // display: isExpanded ? "none" : "block",
                   display: isExpanded ? "block" : "none",
                   width: "100%",
                 }}

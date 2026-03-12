@@ -147,6 +147,30 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
       });
   };
 
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
+
+  const handleCopyEmail = () => {
+    const email = singleOrgInfo?.organization?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsEmailCopied(true);
+        setTimeout(() => setIsEmailCopied(false), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsEmailCopied(true);
+        setTimeout(() => setIsEmailCopied(false), 2000);
+      });
+  };
+
   return (
     <>
       {isLoading ? (
@@ -271,7 +295,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                           style={{ cursor: "pointer" }}
                           onClick={handleCopyDomain}
                         >
-                          {isCopied ? <FaCheckCircle /> : <TbCopy />}
+                          {isCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
                         </span>
                       </Badge>
                     )}
@@ -434,24 +458,35 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                     >
                       <Mail size={18} />
                     </div>
-                    <div className="flex-grow-1">
+                    <div className="flex-grow-1" style={{ minWidth: 0 }}>
                       <p className="small text-muted mb-1">Email</p>
                       {singleOrgInfo?.organization?.email ? (
                         <span
-                          className="fw-500 text-dark text-decoration-none text-truncate"
-                          style={{
-                            transition: "color 0.2s",
-                            wordBreak: "break-word",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.color =
-                              "var(--primary-color)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "inherit")
-                          }
+                          className="d-flex align-items-center gap-2"
+                          style={{ minWidth: 0 }}
                         >
-                          {singleOrgInfo?.organization?.email}
+                          <span
+                            className="fw-500 text-dark text-truncate d-block"
+                            style={{
+                              transition: "color 0.2s",
+                            }}
+                            onMouseEnter={(e) =>
+                              (e.currentTarget.style.color =
+                                "var(--primary-color)")
+                            }
+                            onMouseLeave={(e) =>
+                              (e.currentTarget.style.color = "inherit")
+                            }
+                          >
+                            {singleOrgInfo?.organization?.email}
+                          </span>
+                          <span
+                            className=""
+                            style={{ cursor: "pointer", flexShrink: 0 }}
+                            onClick={handleCopyEmail}
+                          >
+                            {isEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                          </span>
                         </span>
                       ) : (
                         <span className="text-muted">Not Available</span>
