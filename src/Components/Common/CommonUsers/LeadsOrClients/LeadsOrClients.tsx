@@ -162,7 +162,8 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
 
   return (
     <>
-      <PublicLeadLink />
+      {/* Public Lead Link - only for Leads, not Clients */}
+      {userRole === "LEAD" && <PublicLeadLink />}
       <Card>
         <CardBody>
           <Row className="d-flex justify-content-between py-4">
