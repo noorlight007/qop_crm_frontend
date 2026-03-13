@@ -9,15 +9,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   FaCalendarAlt,
-  FaCamera,
+  FaCheckCircle,
   FaEnvelope,
   FaGlobe,
   FaInfoCircle,
   FaPhone,
   FaSearch,
 } from "react-icons/fa";
-import { TbCirclePlus } from "react-icons/tb";
-import { toast } from "react-toastify";
+import { TbCirclePlus, TbCopy } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -64,45 +63,6 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
 
   const openAddNetworkModal = () => toggleAddNetworkModal();
 
-  // LOGIC FIX: Handle the camera click for a specific slug
-  const handleProfileImageUpload = (slug: string) => {
-    console.log("Uploading image for network slug:", slug);
-    setUploadingSlug(slug);
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || !uploadingSlug) return;
-    const file = files[0];
-
-    const maxSizeInMB = 5;
-    if (file.size / 1024 / 1024 > maxSizeInMB) {
-      toast.error(`Image must be smaller than ${maxSizeInMB} MB`);
-      return;
-    }
-
-    try {
-      const formDataToSend = new FormData();
-      // Using the key your backend expects
-      formDataToSend.append("network.logo", file);
-
-      // Use the uploadingSlug state we set during the click
-      await updateNetwork({
-        network_slug: uploadingSlug,
-        payload: formDataToSend,
-      }).unwrap();
-
-      toast.success("Network logo updated successfully");
-    } catch (err: any) {
-      const msg = err?.data?.detail || err?.message || "Upload failed";
-      toast.error(msg);
-    } finally {
-      setUploadingSlug(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
   const itemsPerPage = 12;
   // Ensure we only render up to `itemsPerPage` items even if the API returned more
   const currentNetworks = getNetworkList?.results?.slice(0, itemsPerPage) ?? [];
@@ -118,18 +78,58 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
     }
   }, [totalPages, currentPage]);
 
+  const [copiedNetworkDomain, setCopiedNetworkDomain] = useState<string | null>(
+    null,
+  );
+
+  const handleCopyDomain = (network: Network) => {
+    const url = `https://${network.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopiedNetworkDomain(network.slug);
+        setTimeout(() => setCopiedNetworkDomain(null), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = url;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setCopiedNetworkDomain(network.slug);
+        setTimeout(() => setCopiedNetworkDomain(null), 2000);
+      });
+  };
+
+  const [isEmailCopied, setIsEmailCopied] = useState<string | null>(null);
+
+  const handleCopyEmail = (network: Network) => {
+    const email = network?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsEmailCopied(network.slug);
+        setTimeout(() => setIsEmailCopied(null), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsEmailCopied(network.slug);
+        setTimeout(() => setIsEmailCopied(null), 2000);
+      });
+  };
+
   return (
     <div>
       <Container fluid>
-        {/* LOGIC FIX: Single hidden input outside the map loop */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleFileSelected}
-        />
-
         <Row>
           <Col xs="12">
             <Card className="px-4 border-0 shadow-sm mb-0">
@@ -250,32 +250,6 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                             </h3>
                           </div>
                         )}
-
-                        <button
-                          title="Change network logo"
-                          className="position-absolute d-flex align-items-center justify-content-center rounded-circle shadow-sm border-0"
-                          style={{
-                            width: 32,
-                            height: 32,
-                            right: 0,
-                            bottom: 0,
-                            cursor: "pointer",
-                            background: "rgba(0, 0, 0, 0.65)",
-                          }}
-                          // LOGIC FIX: Pass the specific network slug
-                          onClick={() => handleProfileImageUpload(network.slug)}
-                          disabled={
-                            updateNetworkLoading &&
-                            uploadingSlug === network.slug
-                          }
-                        >
-                          {updateNetworkLoading &&
-                          uploadingSlug === network.slug ? (
-                            <Spinner size="sm" color="primary" />
-                          ) : (
-                            <FaCamera size={14} className="text-white" />
-                          )}
-                        </button>
                       </div>
 
                       <div
@@ -305,6 +279,16 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                         >
                           <FaGlobe className="me-2" />
                           {`${"https://"}${network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                          <span
+                            style={{ cursor: "pointer", marginLeft: "4px" }}
+                            onClick={() => handleCopyDomain(network)}
+                          >
+                            {copiedNetworkDomain === network.slug ? (
+                              <FaCheckCircle className="text-success" />
+                            ) : (
+                              <TbCopy />
+                            )}
+                          </span>
                         </p>
                         <div className="mb-1">
                           <small
@@ -321,6 +305,21 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                               }}
                             >
                               {network.email}
+                              <span
+                                className=""
+                                style={{
+                                  cursor: "pointer",
+                                  flexShrink: 0,
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleCopyEmail(network)}
+                              >
+                                {isEmailCopied === network.slug ? (
+                                  <FaCheckCircle className="text-success" />
+                                ) : (
+                                  <TbCopy />
+                                )}
+                              </span>
                             </span>
                           </small>
                         </div>
