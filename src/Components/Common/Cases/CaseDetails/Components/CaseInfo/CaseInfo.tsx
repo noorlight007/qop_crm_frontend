@@ -574,19 +574,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             )}
                         </strong>
                       </h6>
-                      <h6 className="pt-1">
-                        <span className="small">Case Status:</span>{" "}
-                        <strong
-                          className={`rounded-1 px-1 small ${
-                            caseInfo?.case_stage === "NOT_PROCEED" ? "bg-danger" : "bg-success"
-                          }`}
-                        >
-                          {caseInfo?.case_stage === "NOT_PROCEED" ? "Inactive" : "Active"}
-                        </strong>
-                      </h6>
+
                       <h6 className="pt-1">
                         <span className="small">Case Stage:</span>{" "}
-                        <strong className="small">
+                        <strong className="small rounded-1 px-1 bg-secondary text-white">
                           {caseInfo?.case_stage
                             ? formatChoiceFieldValue(caseInfo.case_stage)
                             : "N/A"}

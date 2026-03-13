@@ -37,6 +37,7 @@ export interface NoteProps {
   note_visible_to_client: boolean;
   category: string | null;
   note: string | null;
+  status: string;
   created_at: string;
   updated_at: string;
 }

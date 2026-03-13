@@ -21,6 +21,14 @@ export const BudgetPlannerApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["BudgetPlanner"],
     }),
+    updateBudgectPlannerNote: builder.mutation({
+      query: ({ case_alias, budgetplanner_alias, note }) => ({
+        url: `/cases/${case_alias}/budget/${budgetplanner_alias}/`,
+        method: "PATCH",
+        body: { note },
+      }),
+      invalidatesTags: ["BudgetPlanner"],
+    }),
     validateBudgetPlanner: builder.mutation({
       query: ({
         case_alias,
@@ -38,5 +46,6 @@ export const BudgetPlannerApi = baseApi.injectEndpoints({
 export const {
   useGetCaseBudgetPlannerQuery,
   useUpdateBudgetPlannerMutation,
+  useUpdateBudgectPlannerNoteMutation,
   useValidateBudgetPlannerMutation,
 } = BudgetPlannerApi;
