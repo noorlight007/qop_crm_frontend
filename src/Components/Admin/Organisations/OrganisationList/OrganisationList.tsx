@@ -109,10 +109,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
         <Row className="mt-4">
           {isLoading ? (
             <Col xs="12" className="text-center py-5">
-              <Spinner color="primary" className="mb-3">
-                Loading...
-              </Spinner>
-              <p className="mt-3 text-muted">Loading organisations...</p>
+              <Spinner color="primary" className="mb-3" />
             </Col>
           ) : organisationList?.results?.length === 0 ? (
             <Col xs="12" className="text-center py-5">
