@@ -247,6 +247,7 @@ const PortfolioContent: React.FC = () => {
                               <th>Year Built</th>
                               <th>Leasehold</th>
                               <th>Property Type</th>
+                              <th style={{ minWidth: "300px" }}>Notes</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -390,36 +391,11 @@ const PortfolioContent: React.FC = () => {
                                 <td>{item?.year_built || "-"}</td>
                                 <td>{item?.leasehold || "-"}</td>
                                 <td>{item?.property_type || "-"}</td>
+                                <td style={{ minWidth: "300px" }}>{item?.note || "No Notes Available"}</td>
                               </tr>
                             ))}
                           </tbody>
                         </Table>
-                      </div>
-                      <div className="mt-4 border-1 border-dark p-3 rounded">
-                        <span className="fw-semibold fs-5">Notes:</span>
-                        <ul>
-                          {data.map((item: any, index: number) =>
-                            item?.note ? (
-                              <li
-                                key={item.id}
-                                className="fw-medium mb-4 border-b-primary"
-                              >
-                                <span className="text-decoration-underline fs-6">{`Property ${
-                                  index + 1
-                                } note:`}</span>
-                                <br />
-                                <span>{item.note}</span>
-                              </li>
-                            ) : (
-                              <li
-                                key={item.id}
-                                className="text-muted fw-medium fs-6 mb-4 border-b-primary"
-                              >
-                                {`Property ${index + 1} has no note.`}
-                              </li>
-                            ),
-                          )}
-                        </ul>
                       </div>
                     </>
                   )}
@@ -436,10 +412,7 @@ const PortfolioContent: React.FC = () => {
               handleNextTab();
             }}
           >
-            {session?.user?.user_type === "CLIENT" &&
-            data.map((item: any) => item?.alias).length > 0
-              ? "Go to Next"
-              : "Save & Next"}
+            Go to Next
           </Button>
         </div>
       </Container>

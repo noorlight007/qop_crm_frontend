@@ -674,7 +674,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={12}>
               <FormGroup>
-                <Label for="postcode">Postcode</Label>
+                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -685,6 +685,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     onChange={(e) =>
                       handleManualAddressChange(setPostcode, e.target.value)
                     }
+                    required
                   />
                   <Button
                     color="primary"
@@ -709,7 +710,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="house_name_or_number">House Name Or Number</Label>
+                <Label for="house_name_or_number">House Name Or Number<span className="text-danger">*</span></Label>
                 <Input
                   id="house_name_or_number"
                   name="house_name_or_number"
@@ -718,6 +719,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   onChange={(e) =>
                     handleManualAddressChange(setHouseNumber, e.target.value)
                   }
+                  required
                 />
                 {getFieldError("house_name_or_number") && (
                   <small
@@ -731,7 +733,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="address_1">Address 1</Label>
+                <Label for="address_1">Address 1<span className="text-danger">*</span></Label>
                 <Input
                   id="address_1"
                   name="address_1"
@@ -740,6 +742,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   onChange={(e) =>
                     handleManualAddressChange(setAddress1, e.target.value)
                   }
+                  required
                 />
                 {getFieldError("address_1") && (
                   <small
