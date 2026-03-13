@@ -1,16 +1,9 @@
 import { useDeletePropertyDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { DeletePropertyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/PortfolioTypes";
 import { useParams } from "next/navigation";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
-interface DeletePropertyModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  propertyAlias: string | null | undefined;
-  propertyLabel?: string;
-  onDeleteComplete?: () => void;
-}
 
 const DeletePropertyModal: React.FC<DeletePropertyModalProps> = ({
   isOpen,
