@@ -3,6 +3,7 @@ import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/Cas
 import {
   useExportPropertiesCSVMutation,
   useGetPortfolioDetailsQuery,
+  useImportPropertiesCSVMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
@@ -12,8 +13,8 @@ import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
-import { FaFileExport } from "react-icons/fa";
+import { useRef, useState } from "react";
+import { FaFileExport, FaFileImport } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -29,6 +30,7 @@ import AddPropertyModal from "./Modals/AddPropertyModal";
 import DeletePropertyModal from "./Modals/DeletePropertyModal";
 import UpdatePropertyModal from "./Modals/UpdatePropertyModal";
 import PortfolioSummary from "./PortfolioSummary";
+import ImportCSVModal from "./Modals/ImportCSVModal";
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,6 +42,7 @@ const PortfolioContent: React.FC = () => {
   const { casealias } = prams;
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   // RTK Hooks for API calls
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -48,6 +51,12 @@ const PortfolioContent: React.FC = () => {
   const { data, isLoading } = useGetPortfolioDetailsQuery({
     case_alias: casealias,
   });
+
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+
+  const [importPropertiesCSV, { isLoading: isImporting }] =
+    useImportPropertiesCSVMutation();
+
   const [exportPropertiesCSV, { isLoading: isExporting }] =
     useExportPropertiesCSVMutation();
 
@@ -86,6 +95,22 @@ const PortfolioContent: React.FC = () => {
   const handleDeleteClick = (property: any) => {
     setSelectedProperty(property);
     setDeleteModalOpen(true);
+  };
+
+  const handleImportCSV = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      await importPropertiesCSV({
+        case_alias: casealias,
+        file: formData,
+      }).unwrap();
+      toast.success("Properties imported successfully.");
+    } catch (error) {
+      toast.error("Failed to import properties from CSV.");
+      console.error("Import error:", error);
+    }
   };
 
   const handleExportToCSV = async () => {
@@ -140,6 +165,22 @@ const PortfolioContent: React.FC = () => {
                       <FaFileExport />
                       {isExporting ? "Exporting..." : " Export to CSV"}
                     </Button>
+                    <Button
+                      color="secondary"
+                      className="d-flex gap-1 cursor-pointer"
+                      onClick={() => setIsImportModalOpen(true)} // ← opens modal instead
+                      disabled={isImporting}
+                    >
+                      <FaFileImport />
+                      {isImporting ? "Importing..." : "Import CSV"}
+                    </Button>
+                    
+                    <ImportCSVModal
+                      isOpen={isImportModalOpen}
+                      onClose={() => setIsImportModalOpen(false)}
+                      onFileSelected={(file) => handleImportCSV(file)}
+                      isImporting={isImporting}
+                    />
                     <Button
                       color="success"
                       className="border-success"

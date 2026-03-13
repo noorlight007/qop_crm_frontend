@@ -62,16 +62,16 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
   };
 
   const warrantyProviders = [
-    "NHBC",
-    "LABC",
-    "Premier Guarantee",
-    "Checkmate",
-    "Buildsafe",
-    "Build-Zone",
-    "ICW",
-    "Protek",
-    "Global",
-    "Other",
+    { value: "NHBC", label: "NHBC" },
+    { value: "LABC", label: "LABC" },
+    { value: "PREMIER_GUARANTEE", label: "Premier Guarantee" },
+    { value: "CHECKMATE", label: "Checkmate" },
+    { value: "BUILDSAFE", label: "Buildsafe" },
+    { value: "BUILD_ZONE", label: "Build Zone" },
+    { value: "ICW", label: "ICW" },
+    { value: "PRO_TEK", label: "Pro Tek" },
+    { value: "GLOBAL", label: "Global" },
+    { value: "OTHER", label: "Other" },
   ];
 
   return (
@@ -403,8 +403,8 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                             Select...
                           </option>
                           {warrantyProviders.map((provider) => (
-                            <option key={provider} value={provider}>
-                              {provider}
+                            <option key={provider.value} value={provider.value}>
+                              {provider.label}
                             </option>
                           ))}
                         </Input>
@@ -521,7 +521,9 @@ const AdditionalInfo: React.FC<AdditionalInfoProps> = ({ propertyData }) => {
                       <FormGroup>
                         <Label for="discounted_price">Discounted Price</Label>
                         <InputGroup>
-                          <span className="input-group-text">{getCurrencySign()}</span>
+                          <span className="input-group-text">
+                            {getCurrencySign()}
+                          </span>
                           <Input
                             type="number"
                             name="discounted_price"

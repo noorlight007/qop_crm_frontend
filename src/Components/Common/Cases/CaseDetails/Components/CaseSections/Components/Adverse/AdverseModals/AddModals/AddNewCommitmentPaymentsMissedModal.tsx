@@ -101,7 +101,9 @@ const AddNewCommitmentPaymentsMissedModal: React.FC<
           <Row>
             <Col sm={6}>
               <FormGroup>
-                <Label for="commitment_type">Commitment Type<span className="text-danger">*</span></Label>
+                <Label for="commitment_type">
+                  Commitment Type<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="commitment_type"
                   name="commitment_type"
@@ -121,7 +123,7 @@ const AddNewCommitmentPaymentsMissedModal: React.FC<
                   <option value="MAINTENANCE">Maintenance</option>
                   <option value="LEASE">Lease</option>
                   <option value="UNSECURED">Unsecured</option>
-                  <option value="MORTGAGE_OR_RENT">Mortgage / Rent</option>
+                  <option value="MORTGAGE_RENT">Mortgage / Rent</option>
                   <option value="PUBLIC_UTILITY">Public Utility</option>
                   <option value="COMMUNICATIONS">Communications</option>
                   <option value="INSURANCE">Insurance</option>
