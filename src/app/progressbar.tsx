@@ -57,6 +57,40 @@ const ProgressBar = () => {
     return null;
   }, []);
 
+  const beginProgress = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    if (navigatingRef.current) return;
+    navigatingRef.current = true;
+
+    clearTimers();
+
+    // Avoid flashing for ultra-fast transitions.
+    showDelayTimeoutRef.current = window.setTimeout(() => {
+      setVisible(true);
+      setProgress(10);
+
+      trickleIntervalRef.current = window.setInterval(() => {
+        setProgress((prev) => {
+          const capped = Math.min(prev, 90);
+          if (capped >= 90) return 90;
+          const step = 2 + Math.floor(Math.random() * 6); // 2..7
+          return Math.min(90, capped + step);
+        });
+      }, 200);
+    }, 120);
+
+    // Failsafe so it never gets stuck.
+    failSafeTimeoutRef.current = window.setTimeout(() => {
+      navigatingRef.current = false;
+      setProgress(100);
+      hideTimeoutRef.current = window.setTimeout(() => {
+        setVisible(false);
+        setProgress(0);
+      }, 250);
+    }, 10000);
+  }, [clearTimers]);
+
   const startNavigation = useCallback(
     (nextHref?: string | null) => {
       if (typeof window === "undefined") return;
@@ -68,37 +102,9 @@ const ProgressBar = () => {
       const nextNoHash = nextHref ? stripHash(nextHref) : currentNoHash;
       if (nextNoHash && currentNoHash && nextNoHash === currentNoHash) return;
 
-      if (navigatingRef.current) return;
-      navigatingRef.current = true;
-
-      clearTimers();
-
-      // Avoid flashing for ultra-fast transitions.
-      showDelayTimeoutRef.current = window.setTimeout(() => {
-        setVisible(true);
-        setProgress(10);
-
-        trickleIntervalRef.current = window.setInterval(() => {
-          setProgress((prev) => {
-            const capped = Math.min(prev, 90);
-            if (capped >= 90) return 90;
-            const step = 2 + Math.floor(Math.random() * 6); // 2..7
-            return Math.min(90, capped + step);
-          });
-        }, 200);
-      }, 120);
-
-      // Failsafe so it never gets stuck.
-      failSafeTimeoutRef.current = window.setTimeout(() => {
-        navigatingRef.current = false;
-        setProgress(100);
-        hideTimeoutRef.current = window.setTimeout(() => {
-          setVisible(false);
-          setProgress(0);
-        }, 250);
-      }, 10000);
+      beginProgress();
     },
-    [clearTimers, stripHash],
+    [beginProgress, stripHash],
   );
 
   const finishNavigation = useCallback(() => {
@@ -204,6 +210,20 @@ const ProgressBar = () => {
       history.replaceState = originalReplaceState;
     };
   }, [clearTimers, startNavigation, stripHash, toAbsoluteHref]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // On hard reload, we can't show anything until JS runs, but we can still
+    // indicate "page still loading" during slow hydration/assets.
+    if (document.readyState === "complete") return;
+
+    beginProgress();
+
+    const onLoad = () => finishNavigation();
+    window.addEventListener("load", onLoad);
+    return () => window.removeEventListener("load", onLoad);
+  }, [beginProgress, finishNavigation]);
 
   useEffect(() => {
     // When the URL observed by Next updates, mark navigation complete.
