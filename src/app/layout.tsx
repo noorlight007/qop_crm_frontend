@@ -225,7 +225,7 @@ export default async function RootLayout({
           <NoSsr>
             <SessionWrapper session={session}>
               <MainProvider>
-                <ProgressBar /> 
+                <ProgressBar />
                 <DynamicFavicon />
                 <DynamicTitle />
                 {children}
