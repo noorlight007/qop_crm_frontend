@@ -619,7 +619,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             {/* Postcode */}
             <Col md={12}>
               <FormGroup>
-                <Label for="postcode">Postcode*</Label>
+                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -630,6 +630,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                     onChange={(e) =>
                       handleManualAddressChange(setPostcode, e.target.value)
                     }
+                    required
                   />
                   <Button
                     color="primary"
@@ -656,14 +657,14 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                 label: "House Name Or Number",
                 value: houseNumber,
                 setter: setHouseNumber,
-                required: false,
+                required: true,
               },
               {
                 id: "address_1",
                 label: "Address 1",
                 value: address1,
                 setter: setAddress1,
-                required: false,
+                required: true,
               },
               {
                 id: "address_2",
@@ -675,7 +676,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             ].map(({ id, label, value, setter, required }) => (
               <Col md={4} key={id}>
                 <FormGroup>
-                  <Label for={id}>{label}</Label>
+                  <Label for={id}>{label}{required && <span className="text-danger">*</span>}</Label>
                   <Input
                     id={id}
                     name={id}
