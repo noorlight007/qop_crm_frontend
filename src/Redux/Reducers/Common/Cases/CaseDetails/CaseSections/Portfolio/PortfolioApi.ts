@@ -30,12 +30,20 @@ export const PortfolioApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: propertyDetails,
       }),
-      invalidatesTags: ["Portfolio"], 
+      invalidatesTags: ["Portfolio"],
     }),
     deletePropertyDetails: builder.mutation({
       query: ({ case_alias, property_alias }) => ({
         url: `/cases/${case_alias}/properties/${property_alias}/`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Portfolio"],
+    }),
+    importPropertiesCSV: builder.mutation({
+      query: ({ case_alias, file }) => ({
+        url: `/cases/${case_alias}/import-properties/`,
+        method: "POST",
+        body: file,
       }),
       invalidatesTags: ["Portfolio"],
     }),
@@ -56,5 +64,6 @@ export const {
   useAddPropertyDetailsMutation,
   useUpdatePropertyDetailsMutation,
   useDeletePropertyDetailsMutation,
+  useImportPropertiesCSVMutation,
   useExportPropertiesCSVMutation,
 } = PortfolioApi;

@@ -4,6 +4,7 @@ import {
   useUpdatePropertyDetailsMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
 import { apiAddress } from "@/services/third-party-api";
+import { UpdatePropertyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/PortfolioTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
@@ -25,12 +26,6 @@ import {
 } from "reactstrap";
 import GetAddressModal from "../../../CommonModals/GetAddressModal";
 import "../PortfolioContent.css";
-
-interface UpdatePropertyModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  property?: any | null;
-}
 
 const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   isOpen,
@@ -517,9 +512,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             {isLimitedCompany && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="company_name">
-                    Company Name
-                  </Label>
+                  <Label for="company_name">Company Name</Label>
                   <Input
                     id="company_name"
                     name="company_name"
@@ -543,9 +536,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             {isLimitedCompany === false && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>
-                    Applicant&apos;s
-                  </Label>
+                  <Label>Applicant&apos;s</Label>
                   <div className="position-relative" ref={dropdownRef}>
                     <div
                       className="form-control d-flex flex-wrap align-items-center position-relative custom_input_field"
@@ -755,9 +746,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="property_value">
-                  Property Value
-                </Label>
+                <Label for="property_value">Property Value</Label>
                 <Input
                   id="property_value"
                   name="property_value"
@@ -799,9 +788,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthly_rental_income">
-                  Monthly Rental Income
-                </Label>
+                <Label for="monthly_rental_income">Monthly Rental Income</Label>
                 <Input
                   id="monthly_rental_income"
                   name="monthly_rental_income"
@@ -1074,9 +1061,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="property_type">
-                  Property Type
-                </Label>
+                <Label for="property_type">Property Type</Label>
                 <Input
                   id="property_type"
                   name="property_type"
@@ -1093,9 +1078,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ownership">
-                  Ownership
-                </Label>
+                <Label for="ownership">Ownership</Label>
                 <Input
                   id="ownership"
                   name="ownership"
@@ -1152,9 +1135,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="number_of_bedrooms">
-                  Number of Bedrooms
-                </Label>
+                <Label for="number_of_bedrooms">Number of Bedrooms</Label>
                 <Input
                   id="number_of_bedrooms"
                   name="number_of_bedrooms"

@@ -5,6 +5,7 @@ import {
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { apiAddress } from "@/services/third-party-api";
+import { AddPortfolioContentModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/PortfolioTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
@@ -26,11 +27,6 @@ import {
 } from "reactstrap";
 import GetAddressModal from "../../../CommonModals/GetAddressModal";
 import "../PortfolioContent.css";
-
-interface AddPortfolioContentModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-}
 
 const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   isOpen,
@@ -574,14 +570,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             {isLimitedCompany && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="company_name">
-                    Company Name
-                  </Label>
-                  <Input
-                    id="company_name"
-                    name="company_name"
-                    type="text"                    
-                  />
+                  <Label for="company_name">Company Name</Label>
+                  <Input id="company_name" name="company_name" type="text" />
                   {getFieldError("company_name") && (
                     <small
                       className="text-danger"
@@ -596,9 +586,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             {isLimitedCompany === false && (
               <Col md={6}>
                 <FormGroup>
-                  <Label for="applicants">
-                    Applicant&apos;s
-                  </Label>
+                  <Label for="applicants">Applicant&apos;s</Label>
                   <div className="position-relative" ref={dropdownRef}>
                     {/* Custom Input Field */}
                     <div
@@ -686,9 +674,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={12}>
               <FormGroup>
-                <Label for="postcode">
-                  Postcode
-                </Label>
+                <Label for="postcode">Postcode</Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -698,7 +684,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     value={postcode}
                     onChange={(e) =>
                       handleManualAddressChange(setPostcode, e.target.value)
-                    }                    
+                    }
                   />
                   <Button
                     color="primary"
@@ -723,9 +709,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="house_name_or_number">
-                  House Name Or Number
-                </Label>
+                <Label for="house_name_or_number">House Name Or Number</Label>
                 <Input
                   id="house_name_or_number"
                   name="house_name_or_number"
@@ -733,7 +717,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   value={houseNumber}
                   onChange={(e) =>
                     handleManualAddressChange(setHouseNumber, e.target.value)
-                  }                  
+                  }
                 />
                 {getFieldError("house_name_or_number") && (
                   <small
@@ -747,9 +731,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="address_1">
-                  Address 1
-                </Label>
+                <Label for="address_1">Address 1</Label>
                 <Input
                   id="address_1"
                   name="address_1"
@@ -757,7 +739,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   value={address1}
                   onChange={(e) =>
                     handleManualAddressChange(setAddress1, e.target.value)
-                  }                  
+                  }
                 />
                 {getFieldError("address_1") && (
                   <small
@@ -794,9 +776,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="city">
-                  City
-                </Label>
+                <Label for="city">City</Label>
                 <Input
                   id="city"
                   name="city"
@@ -804,7 +784,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   value={city}
                   onChange={(e) =>
                     handleManualAddressChange(setCity, e.target.value)
-                  }                  
+                  }
                 />
                 {getFieldError("city") && (
                   <small
@@ -840,9 +820,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="country">
-                  Country
-                </Label>
+                <Label for="country">Country</Label>
                 <Input
                   id="country"
                   name="country"
@@ -850,7 +828,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   value={country}
                   onChange={(e) =>
                     handleManualAddressChange(setCountry, e.target.value)
-                  }                  
+                  }
                 />
                 {getFieldError("country") && (
                   <small
@@ -867,16 +845,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="property_value">
-                  Property Value
-                </Label>
+                <Label for="property_value">Property Value</Label>
                 <Input
                   id="property_value"
                   name="property_value"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
-                  onInput={limitDecimalPlaces}                  
+                  onInput={limitDecimalPlaces}
                 />
                 {getFieldError("property_value") && (
                   <small
@@ -899,7 +875,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                   type="number"
                   step="0.01"
                   inputMode="decimal"
-                  onInput={limitDecimalPlaces}                  
+                  onInput={limitDecimalPlaces}
                 />
                 {getFieldError("current_mortgage_balance") && (
                   <small
@@ -913,16 +889,14 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="monthly_rental_income">
-                  Monthly Rental Income
-                </Label>
+                <Label for="monthly_rental_income">Monthly Rental Income</Label>
                 <Input
                   id="monthly_rental_income"
                   name="monthly_rental_income"
                   type="number"
                   step="0.01"
                   inputMode="decimal"
-                  onInput={limitDecimalPlaces}                  
+                  onInput={limitDecimalPlaces}
                 />
                 {getFieldError("monthly_rental_income") && (
                   <small
@@ -1186,14 +1160,8 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="property_type">
-                  Property Type
-                </Label>
-                <Input
-                  id="property_type"
-                  name="property_type"
-                  type="text"                  
-                />
+                <Label for="property_type">Property Type</Label>
+                <Input id="property_type" name="property_type" type="text" />
                 {getFieldError("property_type") && (
                   <small
                     className="text-danger"
@@ -1206,9 +1174,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="ownership">
-                  Ownership
-                </Label>
+                <Label for="ownership">Ownership</Label>
                 <Input id="ownership" name="ownership" type="text" />
                 {getFieldError("ownership") && (
                   <small
@@ -1264,14 +1230,12 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="number_of_bedrooms">
-                  Number of Bedrooms
-                </Label>
+                <Label for="number_of_bedrooms">Number of Bedrooms</Label>
                 <Input
                   id="number_of_bedrooms"
                   name="number_of_bedrooms"
                   type="number"
-                  step="1"                  
+                  step="1"
                 />
                 {getFieldError("number_of_bedrooms") && (
                   <small
