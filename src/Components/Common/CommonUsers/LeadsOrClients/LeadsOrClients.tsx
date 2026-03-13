@@ -29,6 +29,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
+import PublicLeadLink from "./Components/PublicLeadLink";
 import AddLeadModal from "./Modals/AddLeadModal";
 import DeleteLeadOrClientModal from "./Modals/DeleteLeadOrClientModal";
 import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
@@ -160,281 +161,248 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   }
 
   return (
-    <Card>
-      <CardBody>
-        <Row className="d-flex justify-content-between py-4">
-          <Col md="3" xs="12">
-            <h2>{title}</h2>
-          </Col>
-          <Col md={3} xs="12">
-            <InputGroup className="position-relative">
-              <FaSearch
-                className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
-                style={{ zIndex: 10, pointerEvents: "none" }}
-              />
-              <Input
-                type="text"
-                placeholder="Search... "
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                style={{ padding: "10px 10px 10px 25px" }}
-                className="rounded-end-1"
-              />
-              <FaInfoCircle
-                id="complianceAssistantSearch"
-                className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
-                style={{ cursor: "pointer", zIndex: 10 }}
-              />
+    <>
+      <PublicLeadLink />
+      <Card>
+        <CardBody>
+          <Row className="d-flex justify-content-between py-4">
+            <Col md="3" xs="12">
+              <h2>{title}</h2>
+            </Col>
+            <Col md={3} xs="12">
+              <InputGroup className="position-relative">
+                <FaSearch
+                  className="position-absolute top-50 start-0 translate-middle-y ms-2 text-primary"
+                  style={{ zIndex: 10, pointerEvents: "none" }}
+                />
+                <Input
+                  type="text"
+                  placeholder="Search... "
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  style={{ padding: "10px 10px 10px 25px" }}
+                  className="rounded-end-1"
+                />
+                <FaInfoCircle
+                  id="complianceAssistantSearch"
+                  className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
+                  style={{ cursor: "pointer", zIndex: 10 }}
+                />
 
-              <UncontrolledPopover
-                placement="right"
-                target="complianceAssistantSearch"
-                trigger="hover"
-              >
-                <PopoverBody className="bg-white rounded text-dark p-3 small">
-                  🔍 You can search using Name, Email Address or Phone Number.
-                </PopoverBody>
-              </UncontrolledPopover>
-            </InputGroup>
-          </Col>
-          <Col
-            md="3"
-            xs="12"
-            className="d-flex justify-content-end mt-sm-0 mt-2"
-          >
-            {userRole === "LEAD" && (
-              <Button color="primary" onClick={openAddUserModal}>
-                <TbCirclePlus size={18} className="me-1" />
-                Add {title.slice(0, -1)}
-              </Button>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Table hover responsive>
-            <thead className="thead-light">
-              <tr className="text-center">
-                <th className="text-start">Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Source</th>
-                <th className="text-truncate">Enquiry Type</th>
-                <th className="text-truncate">Created At</th>
-                <th className="text-truncate">Created By</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={8} className="text-center">
-                    <div className="d-flex justify-content-center align-items-center">
-                      <Spinner color="primary" />
-                    </div>
-                  </td>
+                <UncontrolledPopover
+                  placement="right"
+                  target="complianceAssistantSearch"
+                  trigger="hover"
+                >
+                  <PopoverBody className="bg-white rounded text-dark p-3 small">
+                    🔍 You can search using Name, Email Address or Phone Number.
+                  </PopoverBody>
+                </UncontrolledPopover>
+              </InputGroup>
+            </Col>
+            <Col
+              md="3"
+              xs="12"
+              className="d-flex justify-content-end mt-sm-0 mt-2"
+            >
+              {userRole === "LEAD" && (
+                <Button color="primary" onClick={openAddUserModal}>
+                  <TbCirclePlus size={18} className="me-1" />
+                  Add {title.slice(0, -1)}
+                </Button>
+              )}
+            </Col>
+          </Row>
+          <Row>
+            <Table hover responsive>
+              <thead className="thead-light">
+                <tr className="text-center">
+                  <th className="text-start">Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Source</th>
+                  <th className="text-truncate">Enquiry Type</th>
+                  <th className="text-truncate">Created At</th>
+                  <th className="text-truncate">Created By</th>
+                  <th>Action</th>
                 </tr>
-              ) : currentAuthUsers.length > 0 ? (
-                currentAuthUsers.map((user) => (
-                  <tr key={user.alias} className="text-center">
-                    <td>
-                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                        <span
-                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                          style={{ width: 40, height: 40 }}
-                        >
-                          {user?.profile_image ? (
-                            <Image
-                              src={user.profile_image}
-                              alt="Profile"
-                              width={35}
-                              height={35}
-                              className="rounded-circle"
-                            />
-                          ) : (
-                            <User size={30} className="text-primary" />
-                          )}
-                        </span>
-                        <span
-                          className="text_decoration_hover"
-                          onClick={() => {
-                            openViewModal(user);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {user?.title
-                            ? formatChoiceFieldValue(user?.title)
-                            : ""}{" "}
-                          {user?.first_name} {user?.middle_name}{" "}
-                          {user?.last_name}
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      {user?.email ? (
-                        user.email
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )}
-                    </td>
-                    <td>
-                      {user?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {user?.phone}
-                        </span>
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )}
-                    </td>
-
-                    <td>
-                      {user?.source === "OTHER" ? (
-                        user?.other_source || (
-                          <small className="text-muted">Not Available</small>
-                        )
-                      ) : user?.source ? (
-                        formatChoiceFieldValue(user.source)
-                      ) : (
-                        <small className="text-muted">Not specified</small>
-                      )}
-                    </td>
-                    <td>
-                      {user?.enquiry_type === "OTHER" ? (
-                        user?.other_enquiry_type || (
-                          <small className="text-muted">Not Available</small>
-                        )
-                      ) : user?.enquiry_type ? (
-                        formatChoiceFieldValue(user.enquiry_type)
-                      ) : (
-                        <small className="text-muted">Not specified</small>
-                      )}
-                    </td>
-
-                    <td>
-                      {formatDateAndTime(user?.created_at) || (
-                        <small className="text-muted">Not Available</small>
-                      )}
-                    </td>
-                    <td>
-                      {user?.created_by ? (
-                        <>
-                          <span>{user?.created_by?.name}</span>
-                          <small className="text-muted d-block">
-                            (
-                            {formatChoiceFieldValue(
-                              user?.created_by?.user_type,
-                            )}
-                            )
-                          </small>
-                        </>
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )}
-                    </td>
-                    <td>
-                      <div className="d-flex justify-content-center gap-2 align-items-center">
-                        <Button
-                          color="primary"
-                          size="sm"
-                          title="Update User"
-                          onClick={() => openUpdateModal(user)}
-                        >
-                          <i className="icon-pencil-alt"></i>
-                        </Button>
-                        {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                          session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-                          session?.user?.user_type ===
-                            "ORGANISATION_DIRECTOR") && (
-                          <Button
-                            color="danger"
-                            size="sm"
-                            title="Delete User"
-                            onClick={() => {
-                              openDeleteModal(user);
-                            }}
-                          >
-                            <i className="icon-trash"></i>
-                          </Button>
-                        )}
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={8} className="text-center">
+                      <div className="d-flex justify-content-center align-items-center">
+                        <Spinner color="primary" />
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} className="text-center">
-                    No users available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </Table>
-        </Row>
-        <Row>
-          <div className="d-flex justify-content-between align-items-center p-3">
-            <div className="px-2">
-              <p className="text-primary">
-                Showing{" "}
-                {totalCount === 0
-                  ? "0"
-                  : (currentPage - 1) * leadsOrClientsPerPage + 1}{" "}
-                to{" "}
-                {currentAuthUsers.length === 0
-                  ? 0
-                  : (currentPage - 1) * leadsOrClientsPerPage +
-                    currentAuthUsers.length}{" "}
-                of {totalCount} Users
-              </p>
-            </div>
-            <Pagination className="d-flex justify-content-end p-2">
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink first onClick={() => setCurrentPage(1)} />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink
-                  previous
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                />
-              </PaginationItem>
+                ) : currentAuthUsers.length > 0 ? (
+                  currentAuthUsers.map((user) => (
+                    <tr key={user.alias} className="text-center">
+                      <td>
+                        <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
+                          <span
+                            className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
+                            style={{ width: 40, height: 40 }}
+                          >
+                            {user?.profile_image ? (
+                              <Image
+                                src={user.profile_image}
+                                alt="Profile"
+                                width={35}
+                                height={35}
+                                className="rounded-circle"
+                              />
+                            ) : (
+                              <User size={30} className="text-primary" />
+                            )}
+                          </span>
+                          <span
+                            className="text_decoration_hover"
+                            onClick={() => {
+                              openViewModal(user);
+                            }}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {user?.title
+                              ? formatChoiceFieldValue(user?.title)
+                              : ""}{" "}
+                            {user?.first_name} {user?.middle_name}{" "}
+                            {user?.last_name}
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        {user?.email ? (
+                          user.email
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                      <td>
+                        {user?.phone ? (
+                          <span className="text-black">{user?.phone}</span>
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
 
-              {totalPages <= 7 ? (
-                Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNumber) => (
-                    <PaginationItem
-                      key={pageNumber}
-                      active={pageNumber === currentPage}
-                    >
-                      <PaginationLink
-                        onClick={() => setCurrentPage(pageNumber)}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ),
-                )
-              ) : (
-                <>
-                  <PaginationItem active={currentPage === 1}>
-                    <PaginationLink onClick={() => setCurrentPage(1)}>
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
+                      <td>
+                        {user?.source === "OTHER" ? (
+                          user?.other_source || (
+                            <small className="text-muted">Not Available</small>
+                          )
+                        ) : user?.source ? (
+                          formatChoiceFieldValue(user.source)
+                        ) : (
+                          <small className="text-muted">Not specified</small>
+                        )}
+                      </td>
+                      <td>
+                        {user?.enquiry_type === "OTHER" ? (
+                          user?.other_enquiry_type || (
+                            <small className="text-muted">Not Available</small>
+                          )
+                        ) : user?.enquiry_type ? (
+                          formatChoiceFieldValue(user.enquiry_type)
+                        ) : (
+                          <small className="text-muted">Not specified</small>
+                        )}
+                      </td>
 
-                  {currentPage > 3 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
-                    </PaginationItem>
-                  )}
+                      <td>
+                        {formatDateAndTime(user?.created_at) || (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                      <td>
+                        {user?.created_by ? (
+                          <>
+                            <span>{user?.created_by?.name}</span>
+                            <small className="text-muted d-block">
+                              (
+                              {formatChoiceFieldValue(
+                                user?.created_by?.user_type,
+                              )}
+                              )
+                            </small>
+                          </>
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+                      <td>
+                        <div className="d-flex justify-content-center gap-2 align-items-center">
+                          <Button
+                            color="primary"
+                            size="sm"
+                            title="Update User"
+                            onClick={() => openUpdateModal(user)}
+                          >
+                            <i className="icon-pencil-alt"></i>
+                          </Button>
+                          {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
+                            session?.user?.user_type === "NETWORK_COMPLIANCE" ||
+                            session?.user?.user_type ===
+                              "ORGANISATION_DIRECTOR") && (
+                            <Button
+                              color="danger"
+                              size="sm"
+                              title="Delete User"
+                              onClick={() => {
+                                openDeleteModal(user);
+                              }}
+                            >
+                              <i className="icon-trash"></i>
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="text-center">
+                      No users available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </Row>
+          <Row>
+            <div className="d-flex justify-content-between align-items-center p-3">
+              <div className="px-2">
+                <p className="text-primary">
+                  Showing{" "}
+                  {totalCount === 0
+                    ? "0"
+                    : (currentPage - 1) * leadsOrClientsPerPage + 1}{" "}
+                  to{" "}
+                  {currentAuthUsers.length === 0
+                    ? 0
+                    : (currentPage - 1) * leadsOrClientsPerPage +
+                      currentAuthUsers.length}{" "}
+                  of {totalCount} Users
+                </p>
+              </div>
+              <Pagination className="d-flex justify-content-end p-2">
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink first onClick={() => setCurrentPage(1)} />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === 1}>
+                  <PaginationLink
+                    previous
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                  />
+                </PaginationItem>
 
-                  {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
-                    .filter(
-                      (pageNumber) => pageNumber > 1 && pageNumber < totalPages,
-                    )
-                    .map((pageNumber) => (
+                {totalPages <= 7 ? (
+                  Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (pageNumber) => (
                       <PaginationItem
                         key={pageNumber}
                         active={pageNumber === currentPage}
@@ -445,70 +413,105 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                           {pageNumber}
                         </PaginationLink>
                       </PaginationItem>
-                    ))}
-
-                  {currentPage < totalPages - 2 && (
-                    <PaginationItem disabled>
-                      <PaginationLink>...</PaginationLink>
+                    ),
+                  )
+                ) : (
+                  <>
+                    <PaginationItem active={currentPage === 1}>
+                      <PaginationLink onClick={() => setCurrentPage(1)}>
+                        1
+                      </PaginationLink>
                     </PaginationItem>
-                  )}
 
-                  <PaginationItem active={currentPage === totalPages}>
-                    <PaginationLink onClick={() => setCurrentPage(totalPages)}>
-                      {totalPages}
-                    </PaginationLink>
-                  </PaginationItem>
-                </>
-              )}
+                    {currentPage > 3 && (
+                      <PaginationItem disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    )}
 
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  next
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                />
-              </PaginationItem>
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  last
-                  onClick={() => setCurrentPage(totalPages)}
-                />
-              </PaginationItem>
-            </Pagination>
-          </div>
-        </Row>
+                    {Array.from({ length: 3 }, (_, i) => currentPage - 1 + i)
+                      .filter(
+                        (pageNumber) =>
+                          pageNumber > 1 && pageNumber < totalPages,
+                      )
+                      .map((pageNumber) => (
+                        <PaginationItem
+                          key={pageNumber}
+                          active={pageNumber === currentPage}
+                        >
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNumber)}
+                          >
+                            {pageNumber}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
 
-        {/* Modals */}
-        <ViewLeadOrClientModal
-          isOpen={isViewModalOpen}
-          toggle={toggleViewModal}
-          selectedLeadOrClient={selectedLeadOrClient}
-        />
-        <AddLeadModal
-          isOpen={isAddUserModalOpen}
-          toggle={toggleAddUserModal}
-          onOpenCase={openCaseModalFromLead}
-        />
+                    {currentPage < totalPages - 2 && (
+                      <PaginationItem disabled>
+                        <PaginationLink>...</PaginationLink>
+                      </PaginationItem>
+                    )}
 
-        <AddNewCaseModal
-          isOpen={isCaseModalOpen}
-          toggle={closeCaseModal}
-          leadId={caseModalLeadId}
-          leadName={caseModalLeadName}
-          leadData={caseModalLeadData}
-        />
-        <UpdateLeadOrClientModal
-          isOpen={isUpdateModalOpen}
-          toggle={toggleUpdateModal}
-          selectedLeadOrClient={selectedLeadOrClient}
-        />
-        <DeleteLeadOrClientModal
-          isOpen={isDeleteModalOpen}
-          toggle={toggleDeleteModal}
-          selectedLeadOrClient={selectedLeadOrClient}
-        />
-        {/* modals end */}
-      </CardBody>
-    </Card>
+                    <PaginationItem active={currentPage === totalPages}>
+                      <PaginationLink
+                        onClick={() => setCurrentPage(totalPages)}
+                      >
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
+                )}
+
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    next
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                  />
+                </PaginationItem>
+                <PaginationItem disabled={currentPage === totalPages}>
+                  <PaginationLink
+                    last
+                    onClick={() => setCurrentPage(totalPages)}
+                  />
+                </PaginationItem>
+              </Pagination>
+            </div>
+          </Row>
+
+          {/* Modals */}
+          <ViewLeadOrClientModal
+            isOpen={isViewModalOpen}
+            toggle={toggleViewModal}
+            selectedLeadOrClient={selectedLeadOrClient}
+          />
+          <AddLeadModal
+            isOpen={isAddUserModalOpen}
+            toggle={toggleAddUserModal}
+            onOpenCase={openCaseModalFromLead}
+          />
+
+          <AddNewCaseModal
+            isOpen={isCaseModalOpen}
+            toggle={closeCaseModal}
+            leadId={caseModalLeadId}
+            leadName={caseModalLeadName}
+            leadData={caseModalLeadData}
+          />
+          <UpdateLeadOrClientModal
+            isOpen={isUpdateModalOpen}
+            toggle={toggleUpdateModal}
+            selectedLeadOrClient={selectedLeadOrClient}
+          />
+          <DeleteLeadOrClientModal
+            isOpen={isDeleteModalOpen}
+            toggle={toggleDeleteModal}
+            selectedLeadOrClient={selectedLeadOrClient}
+          />
+          {/* modals end */}
+        </CardBody>
+      </Card>
+    </>
   );
 };
 
