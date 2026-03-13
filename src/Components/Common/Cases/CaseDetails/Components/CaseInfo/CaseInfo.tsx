@@ -574,7 +574,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             )}
                         </strong>
                       </h6>
-                      <h6 className="pt-1">
+                      {/* <h6 className="pt-1">
                         <span className="small">Case Status:</span>{" "}
                         <strong
                           className={`rounded-1 px-1 small ${
@@ -583,7 +583,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         >
                           {caseInfo?.case_stage === "NOT_PROCEED" ? "Inactive" : "Active"}
                         </strong>
-                      </h6>
+                      </h6> */}
                       <h6 className="pt-1">
                         <span className="small">Case Stage:</span>{" "}
                         <strong className="small">
