@@ -15,159 +15,194 @@ import {
 
 const COLUMNS = [
   {
-    header: "Id",
-    description: "Unique identifier (leave blank for new records)",
-    accepted: "Number or blank",
-  },
-  {
     header: "Postcode",
+    mandatory: true,
     description: "Property postcode",
     accepted: "Text (e.g. AB12CD)",
   },
   {
     header: "House Name Or Number",
+    mandatory: true,
     description: "House name or door number",
     accepted: "Text or Number (e.g. 10, Rose Cottage)",
   },
   {
     header: "Address 1",
+    mandatory: true,
     description: "First line of address",
     accepted: "Text",
   },
   {
     header: "Address 2",
+    mandatory: false,
     description: "Second line of address",
     accepted: "Text or blank",
   },
-  { header: "City", description: "City name", accepted: "Text" },
-  { header: "County", description: "County name", accepted: "Text" },
+  {
+    header: "City",
+    mandatory: false,
+    description: "City name",
+    accepted: "Text",
+  },
+  {
+    header: "County",
+    mandatory: false,
+    description: "County name",
+    accepted: "Text",
+  },
   {
     header: "Country",
+    mandatory: false,
     description: "Country name",
     accepted: "Text (e.g. UK)",
   },
   {
     header: "Property Value",
+    mandatory: false,
     description: "Current market value of property",
     accepted: "Number (e.g. 450000)",
   },
   {
     header: "Current Mortgage Balance",
+    mandatory: false,
     description: "Outstanding mortgage amount",
     accepted: "Number",
   },
   {
     header: "Monthly Rental Income",
+    mandatory: false,
     description: "Monthly rental income received",
     accepted: "Number",
   },
   {
     header: "Monthly Mortgage Payment",
+    mandatory: false,
     description: "Monthly mortgage repayment amount",
     accepted: "Number",
   },
   {
     header: "Value At Purchase",
+    mandatory: false,
     description: "Property value at time of purchase",
     accepted: "Number",
   },
   {
     header: "Date Purchased",
+    mandatory: false,
     description: "Date the property was purchased",
     accepted: "Date (M/D/YYYY e.g. 5/10/2018)",
   },
   {
     header: "Is the property an HMO",
+    mandatory: false,
     description: "Whether property is a House in Multiple Occupation",
     accepted: "TRUE or FALSE",
   },
   {
     header: "Is the property a MUFB",
+    mandatory: false,
     description: "Whether property is a Multi-Unit Freehold Block",
     accepted: "TRUE or FALSE",
   },
   {
     header: "Mortgage Lender",
+    mandatory: false,
     description: "Name of the mortgage lender",
     accepted: "Text (e.g. Lloyds Bank)",
   },
   {
     header: "Repayment Type",
+    mandatory: false,
     description: "Type of mortgage repayment",
     accepted: "Repayment or Interest Only",
   },
   {
     header: "Current Rate",
+    mandatory: false,
     description: "Current mortgage interest rate (%)",
     accepted: "Number (e.g. 3.5)",
   },
   {
     header: "Rate Type",
+    mandatory: false,
     description: "Type of interest rate",
     accepted: "FIXED or VARIABLE or TRACKER",
   },
   {
     header: "To Be Repaid",
+    mandatory: false,
     description: "Total remaining amount to be repaid",
     accepted: "Number",
   },
   {
     header: "Current Rate End Date",
+    mandatory: false,
     description: "Date when current rate expires",
     accepted: "Date (M/D/YYYY)",
   },
   {
     header: "ERC End Date",
+    mandatory: false,
     description: "Early repayment charge end date",
     accepted: "Date (M/D/YYYY)",
   },
   {
     header: "Account Number",
+    mandatory: false,
     description: "Mortgage account number",
     accepted: "Text (e.g. ACC123)",
   },
   {
     header: "Property Type",
+    mandatory: false,
     description: "Type of property",
     accepted: "Detached, Semi-Detached, Terraced, Flat",
   },
   {
     header: "Ownership",
+    mandatory: false,
     description: "Ownership type",
     accepted: "Freehold or Leasehold",
   },
   {
     header: "Leasehold",
+    mandatory: false,
     description: "Leasehold years remaining (0 if freehold)",
     accepted: "Number",
   },
   {
     header: "Year Built",
+    mandatory: false,
     description: "Year the property was built",
     accepted: "Number (e.g. 2005)",
   },
   {
     header: "Number of Bedrooms",
+    mandatory: false,
     description: "Total number of bedrooms",
     accepted: "Number",
   },
   {
     header: "Remaining Mortgage Term",
+    mandatory: false,
     description: "Remaining term in years",
     accepted: "Number (e.g. 20)",
   },
   {
     header: "Is Limited Company",
+    mandatory: false,
     description: "Whether owned through a limited company",
     accepted: "TRUE or FALSE",
   },
   {
     header: "Company Name",
+    mandatory: false,
     description: "Limited company name (if applicable)",
     accepted: "Text or blank",
   },
   {
     header: "EPC Rating",
+    mandatory: false,
     description: "Energy Performance Certificate rating",
     accepted: "A, B, C, D, E, F or G",
   },
@@ -212,18 +247,12 @@ const SAMPLE_ROW = [
 ];
 
 function downloadSampleCSV() {
-  const headers = COLUMNS.map((c) => c.header).join(",");
-  const row = SAMPLE_ROW.join(",");
-  const csvContent = `${headers}\r\n${row}\r\n`;
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
-  link.href = url;
+  link.href = "/assets/csv/sample_property.csv";
   link.setAttribute("download", "sample_property.csv");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }
 
 export default function ImportCSVModal({
@@ -262,12 +291,13 @@ export default function ImportCSVModal({
 
       <ModalBody style={{ maxHeight: "65vh", overflowY: "auto" }}>
         {/* Intro */}
-        <div className="alert alert-info mb-3" role="alert">
+        <div className="alert alert-primary mb-3" role="alert">
           <strong>Before importing,</strong> make sure your file follows the
           column structure below. Column headers must be{" "}
-          <strong>exactly</strong> as shown. No field is mandatory, but filling
-          all fields ensures the data displays correctly on the properties list
-          page.
+          <strong>exactly</strong> as shown. Fields marked with{" "}
+          <span className="text-warning">(Required)</span> are <strong>mandatory</strong>{" "}
+          — all other fields are optional, but filling them ensures the data
+          displays correctly on the properties list page.
         </div>
 
         {/* Tips */}
@@ -287,10 +317,6 @@ export default function ImportCSVModal({
           </li>
           <li>
             Boolean fields accept <code>TRUE</code> or <code>FALSE</code> only.
-          </li>
-          <li>
-            Leave <strong>Id</strong> blank for new records; provide it only
-            when updating existing ones.
           </li>
         </ul>
 
@@ -321,6 +347,9 @@ export default function ImportCSVModal({
                   <td className="text-muted">{i + 1}</td>
                   <td>
                     <code style={{ whiteSpace: "nowrap" }}>{col.header}</code>
+                    {col.mandatory && (
+                      <span style={{ color: "red", marginLeft: 3 }}>(Required)</span>
+                    )}
                   </td>
                   <td>{col.description}</td>
                   <td className="text-muted" style={{ whiteSpace: "nowrap" }}>

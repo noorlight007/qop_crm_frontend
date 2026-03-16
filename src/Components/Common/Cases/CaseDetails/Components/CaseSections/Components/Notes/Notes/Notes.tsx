@@ -206,17 +206,41 @@ const Notes: React.FC = () => {
                 })
                 .map((note: NoteProps) => (
                   <tr key={note.alias} className="small">
-                    <td>{formatChoiceFieldValue(note.category || "-")}</td>
-                    <td>{formatDateAndTime(note.created_at || "-")}</td>
-                    <td>
+                    <td
+                      className={`${
+                        note.status === "DELETED" ? "opacity-50" : ""
+                      }`}
+                    >
+                      {formatChoiceFieldValue(note.category || "-")}
+                    </td>
+                    <td
+                      className={`${
+                        note.status === "DELETED" ? "opacity-50" : ""
+                      }`}
+                    >
+                      {formatDateAndTime(note.created_at || "-")}
+                    </td>
+                    <td
+                      className={`${
+                        note.status === "DELETED" ? "opacity-50" : ""
+                      }`}
+                    >
                       {formatChoiceFieldValue(note.case.case_stage || "-")}
                     </td>
-                    <td>
+                    <td
+                      className={`${
+                        note.status === "DELETED" ? "opacity-50" : ""
+                      }`}
+                    >
                       {formatChoiceFieldValue(note?.user?.title)}{" "}
                       {note?.user?.first_name} {note?.user?.middle_name}{" "}
                       {note?.user?.last_name}
                     </td>
-                    <td>
+                    <td
+                      className={`${
+                        note.status === "DELETED" ? "opacity-50" : ""
+                      }`}
+                    >
                       <div
                         className={`note-content ${
                           expandedNotes.has(note.alias) ? "" : "collapsed"
@@ -240,7 +264,11 @@ const Notes: React.FC = () => {
                     </td>
                     {session?.user?.user_type !== "CLIENT" && (
                       <>
-                        <td className="text-center">
+                        <td
+                          className={`text-center ${
+                            note.status === "DELETED" ? "opacity-50" : ""
+                          }`}
+                        >
                           {
                             // support both old and new API boolean fields
                             ((note as any).note_visible_to_introducer ??
@@ -257,7 +285,11 @@ const Notes: React.FC = () => {
                             )
                           }
                         </td>
-                        <td className="text-center">
+                        <td
+                          className={`text-center ${
+                            note.status === "DELETED" ? "opacity-50" : ""
+                          }`}
+                        >
                           {((note as any).note_visible_to_client ??
                           (note as any).is_visible_to_client) ? (
                             <FaRegCheckCircle
@@ -277,14 +309,22 @@ const Notes: React.FC = () => {
                     {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
                       session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                       session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
-                      <td className="text-center">
-                        <Button
-                          color="danger"
-                          className="p-1"
-                          onClick={() => handleDeleteClick(note)}
-                        >
-                          <Trash2 size={20} />
-                        </Button>
+                      <td
+                        className={`text-center ${
+                          note.status === "DELETED" ? "opacity-50" : ""
+                        }`}
+                      >
+                        {note.status === "ACTIVE" ? (
+                          <Button
+                            color="danger"
+                            className="p-1"
+                            onClick={() => handleDeleteClick(note)}
+                          >
+                            <Trash2 size={20} />
+                          </Button>
+                        ) : (
+                          <small className="text-danger">Deleted</small>
+                        )}
                       </td>
                     )}
                   </tr>

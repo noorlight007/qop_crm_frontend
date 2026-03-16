@@ -6,12 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  FaCheckCircle,
   FaEnvelope,
   FaGlobe,
   FaInfoCircle,
   FaPhone,
   FaSearch,
 } from "react-icons/fa";
+import { TbCopy } from "react-icons/tb";
 import {
   Card,
   CardBody,
@@ -57,6 +59,55 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
       setCurrentPage(1);
     }
   }, [totalPages, currentPage]);
+
+  const [copiedOrganisationDomain, setCopiedOrganisationDomain] = useState<
+    string | null
+  >(null);
+
+  const handleCopyDomain = (org: Organisation) => {
+    const url = `https://${org.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setCopiedOrganisationDomain(org.slug);
+        setTimeout(() => setCopiedOrganisationDomain(null), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = url;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setCopiedOrganisationDomain(org.slug);
+        setTimeout(() => setCopiedOrganisationDomain(null), 2000);
+      });
+  };
+
+  const [isEmailCopied, setIsEmailCopied] = useState<string | null>(null);
+
+  const handleCopyEmail = (org: Organisation) => {
+    const email = org?.email;
+    if (!email) return;
+    navigator.clipboard
+      .writeText(email)
+      .then(() => {
+        setIsEmailCopied(org.slug);
+        setTimeout(() => setIsEmailCopied(null), 2000);
+      })
+      .catch(() => {
+        // fallback for older browsers
+        const el = document.createElement("textarea");
+        el.value = email;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+        setIsEmailCopied(org.slug);
+        setTimeout(() => setIsEmailCopied(null), 2000);
+      });
+  };
 
   return (
     <div>
@@ -109,10 +160,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
         <Row className="mt-4">
           {isLoading ? (
             <Col xs="12" className="text-center py-5">
-              <Spinner color="primary" className="mb-3">
-                Loading...
-              </Spinner>
-              <p className="mt-3 text-muted">Loading organisations...</p>
+              <Spinner color="primary" className="mb-3" />
             </Col>
           ) : organisationList?.results?.length === 0 ? (
             <Col xs="12" className="text-center py-5">
@@ -205,6 +253,16 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                         >
                           <FaGlobe className="me-2" />
                           {`${"https://"}${organisation?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                          <span
+                            style={{ cursor: "pointer", marginLeft: "4px" }}
+                            onClick={() => handleCopyDomain(organisation)}
+                          >
+                            {copiedOrganisationDomain === organisation.slug ? (
+                              <FaCheckCircle className="text-success" />
+                            ) : (
+                              <TbCopy />
+                            )}
+                          </span>
                         </p>
                         <div className="mb-1">
                           <small
@@ -221,6 +279,21 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                               }}
                             >
                               {organisation.email}
+                              <span
+                                className=""
+                                style={{
+                                  cursor: "pointer",
+                                  flexShrink: 0,
+                                  marginLeft: "4px",
+                                }}
+                                onClick={() => handleCopyEmail(organisation)}
+                              >
+                                {isEmailCopied === organisation.slug ? (
+                                  <FaCheckCircle className="text-success" />
+                                ) : (
+                                  <TbCopy />
+                                )}
+                              </span>
                             </span>
                           </small>
                         </div>

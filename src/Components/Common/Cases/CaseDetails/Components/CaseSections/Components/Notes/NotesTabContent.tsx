@@ -61,9 +61,7 @@ export const NotesTabContent: React.FC<NotesTabContentProps> = ({
                 handleNextTab();
               }}
             >
-              {session?.user?.user_type === "CLIENT"
-                ? "Go To Next"
-                : "Save & Next"}
+              Go to Next
             </Button>
           </div>
         </TabPane>
