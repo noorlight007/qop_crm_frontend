@@ -5,6 +5,7 @@ import {
   useGetPortfolioDetailsQuery,
   useImportPropertiesCSVMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -28,9 +29,9 @@ import {
 } from "reactstrap";
 import AddPropertyModal from "./Modals/AddPropertyModal";
 import DeletePropertyModal from "./Modals/DeletePropertyModal";
+import ImportCSVModal from "./Modals/ImportCSVModal";
 import UpdatePropertyModal from "./Modals/UpdatePropertyModal";
 import PortfolioSummary from "./PortfolioSummary";
-import ImportCSVModal from "./Modals/ImportCSVModal";
 
 const PortfolioContent: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,6 +52,8 @@ const PortfolioContent: React.FC = () => {
   const { data, isLoading } = useGetPortfolioDetailsQuery({
     case_alias: casealias,
   });
+  const [updateSectionCompleteStatus] =
+      useUpdateSectionCompleteStatusMutation();
 
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
@@ -102,11 +105,24 @@ const PortfolioContent: React.FC = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      await importPropertiesCSV({
+      const response = await importPropertiesCSV({
         case_alias: casealias,
         file: formData,
       }).unwrap();
-      toast.success("Properties imported successfully.");
+
+      if (response.message) {
+        toast.success("Properties imported successfully.");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_portfolio: true },
+          });
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+      } else {
+        toast.error("Something went wrong");
+      }
     } catch (error) {
       toast.error("Failed to import properties from CSV.");
       console.error("Import error:", error);
@@ -174,7 +190,7 @@ const PortfolioContent: React.FC = () => {
                       <FaFileImport />
                       {isImporting ? "Importing..." : "Import CSV"}
                     </Button>
-                    
+
                     <ImportCSVModal
                       isOpen={isImportModalOpen}
                       onClose={() => setIsImportModalOpen(false)}
@@ -391,7 +407,9 @@ const PortfolioContent: React.FC = () => {
                                 <td>{item?.year_built || "-"}</td>
                                 <td>{item?.leasehold || "-"}</td>
                                 <td>{item?.property_type || "-"}</td>
-                                <td style={{ minWidth: "300px" }}>{item?.note || "No Notes Available"}</td>
+                                <td style={{ minWidth: "300px" }}>
+                                  {item?.note || "No Notes Available"}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
