@@ -169,6 +169,8 @@ const AddDependantFormModal: React.FC<AddDependantFormModalProps> = ({
                 <option value="">Select...</option>
                 <option value="SPOUSE">Spouse</option>
                 <option value="SIBLING">Sibling</option>
+                <option value="SON">Son</option>
+                <option value="DAUGHTER">Daughter</option>
                 <option value="OTHER">Other</option>
               </Input>
               {getFieldError("relationship") && (
