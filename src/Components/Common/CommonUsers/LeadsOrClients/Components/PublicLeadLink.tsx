@@ -37,7 +37,7 @@ const PublicLeadLink: React.FC = () => {
     "",
   );
   const host = subdomain ? `${subdomain}.${baseDomain}` : baseDomain;
-  const url = host ? `https://${host}/enquiry` : "";
+  const url = host ? `https://${host}/public-enquiry` : "";
 
   const handleCopy = () => {
     if (!url) return;
