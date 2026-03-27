@@ -6,7 +6,7 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Trash2, X } from "react-feather";
+import { Edit, Trash2, X } from "react-feather";
 import { FaFilter, FaRegCheckCircle, FaRegTimesCircle } from "react-icons/fa";
 import {
   Button,
@@ -22,6 +22,7 @@ import {
 import AddNoteModal from "./Modals/AddNoteModal";
 import DeleteNoteModal from "./Modals/DeleteNoteModal";
 import "./notes.css";
+import UpdateNoteModal from "./Modals/UpdateNoteModal";
 
 // Categories constant
 const CATEGORIES = [
@@ -39,6 +40,7 @@ const Notes: React.FC = () => {
   const { casealias } = useParams();
   const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [isOpenAddNoteModal, setIsOpenAddNoteModal] = useState(false);
+  const [isEditNoteModalOpen, setIsEditNoteModalOpen] = useState(false);
   const [isDeleteNoteModalOpen, setIsDeleteNoteModalOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState<NoteProps | null>(null);
   const [page, setPage] = useState<number>(1);
@@ -69,8 +71,14 @@ const Notes: React.FC = () => {
   }, [notesData, pageSize]);
 
   const toggleAddNoteModal = () => setIsOpenAddNoteModal(!isOpenAddNoteModal);
+  const toggleEditNoteModal = () => setIsEditNoteModalOpen(!isEditNoteModalOpen);
   const toggleDeleteNoteModal = () =>
     setIsDeleteNoteModalOpen(!isDeleteNoteModalOpen);
+
+  const handleEditClick = (note: NoteProps) => {
+    setSelectedNote(note);
+    setIsEditNoteModalOpen(true);
+  };
 
   const handleDeleteClick = (note: NoteProps) => {
     setSelectedNote(note);
@@ -310,18 +318,25 @@ const Notes: React.FC = () => {
                       session?.user?.user_type === "NETWORK_COMPLIANCE" ||
                       session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
                       <td
-                        className={`text-center ${
-                          note.status === "DELETED" ? "opacity-50" : ""
-                        }`}
+                        className={`text-center ${note.status === "DELETED" ? "opacity-50" : ""}`}
                       >
                         {note.status === "ACTIVE" ? (
-                          <Button
-                            color="danger"
-                            className="p-1"
-                            onClick={() => handleDeleteClick(note)}
-                          >
-                            <Trash2 size={20} />
-                          </Button>
+                          <div className="d-flex justify-content-center gap-1">
+                            <Button
+                              color="primary"
+                              className="p-1"
+                              onClick={() => handleEditClick(note)}
+                            >
+                              <Edit size={20} />
+                            </Button>
+                            <Button
+                              color="danger"
+                              className="p-1"
+                              onClick={() => handleDeleteClick(note)}
+                            >
+                              <Trash2 size={20} />
+                            </Button>
+                          </div>
                         ) : (
                           <small className="text-danger">Deleted</small>
                         )}
@@ -467,6 +482,12 @@ const Notes: React.FC = () => {
       </Row>
       {/* Add Note Modal */}
       <AddNoteModal isOpen={isOpenAddNoteModal} toggle={toggleAddNoteModal} />
+      {/* Edit Note Modal */}
+      <UpdateNoteModal
+        isOpen={isEditNoteModalOpen}
+        toggle={toggleEditNoteModal}
+        selectedNote={selectedNote}
+      />
       {/* Delete Note Modal */}
       <DeleteNoteModal
         isOpen={isDeleteNoteModalOpen}

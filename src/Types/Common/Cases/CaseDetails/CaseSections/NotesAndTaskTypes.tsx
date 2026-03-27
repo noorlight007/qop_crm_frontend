@@ -60,6 +60,12 @@ export interface AddNoteModalProps {
   toggle: () => void;
 }
 
+export interface UpdateNoteModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedNote: NoteProps | null;
+}
+
 export interface AddTaskModalProps {
   isOpen: boolean;
   toggle: () => void;
