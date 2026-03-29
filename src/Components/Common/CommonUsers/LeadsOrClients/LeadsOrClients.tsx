@@ -1,5 +1,4 @@
-import LoadingSpinner from "@/app/loading";
-import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { useGetLeadsOrClientsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
 import {
   LeadOrClient,
   LeadsOrClientsProps,
@@ -41,7 +40,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   userRole,
 }) => {
   const { data: session } = useSession();
-  const [authUsers, setAuthUsers] = useState<LeadOrClient[]>([]);
+  const [leadsOrClients, setLeadsOrClients] = useState<LeadOrClient[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -80,11 +79,20 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     created_by: { name: "", user_type: "" },
   });
 
-  const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    role: userRole,
-    page: currentPage,
-    search: debouncedSearch || undefined,
-  });
+  // const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
+  //   role: userRole,
+  //   page: currentPage,
+  //   search: debouncedSearch || undefined,
+  // });
+
+  const { data: leadsOrClientsData, isLoading: isLeadsOrClientsLoading } =
+    useGetLeadsOrClientsQuery({
+      page: currentPage,
+      search: debouncedSearch || undefined,
+      is_lead: userRole === "LEAD" ? true : false,
+    });
+
+  console.log("LeadsOrClientsData:", leadsOrClientsData);
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
@@ -128,20 +136,35 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     toggleDeleteModal();
   };
 
+  // useEffect(() => {
+  //   if (authUsersData) {
+  //     if (Array.isArray(authUsersData)) {
+  //       setAuthUsers(authUsersData || []);
+  //       setTotalCount(authUsersData.length || 0);
+  //     } else if (authUsersData.results) {
+  //       setAuthUsers(authUsersData.results || []);
+  //       setTotalCount(authUsersData.count || 0);
+  //     } else {
+  //       setAuthUsers([]);
+  //       setTotalCount(0);
+  //     }
+  //   }
+  // }, [authUsersData]);
+
   useEffect(() => {
-    if (authUsersData) {
-      if (Array.isArray(authUsersData)) {
-        setAuthUsers(authUsersData || []);
-        setTotalCount(authUsersData.length || 0);
-      } else if (authUsersData.results) {
-        setAuthUsers(authUsersData.results || []);
-        setTotalCount(authUsersData.count || 0);
+    if (leadsOrClientsData) {
+      if (Array.isArray(leadsOrClientsData)) {
+        setLeadsOrClients(leadsOrClientsData || []);
+        setTotalCount(leadsOrClientsData.length || 0);
+      } else if (leadsOrClientsData.results) {
+        setLeadsOrClients(leadsOrClientsData.results || []);
+        setTotalCount(leadsOrClientsData.count || 0);
       } else {
-        setAuthUsers([]);
+        setLeadsOrClients([]);
         setTotalCount(0);
       }
     }
-  }, [authUsersData]);
+  }, [leadsOrClientsData]);
 
   // Debounce search input
   useEffect(() => {
@@ -149,16 +172,21 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const currentAuthUsers = authUsers;
-  const totalPages = Math.ceil(totalCount / leadsOrClientsPerPage) || 1;
+  // const currentAuthUsers = authUsers;
+  const currentLeadsOrClientsData = leadsOrClients;
+  // const totalPages = Math.ceil(totalCount / leadsOrClientsPerPage) || 1;
 
-  if (isLoading) {
-    return (
-      <div className="p-4">
-        <LoadingSpinner />
-      </div>
-    );
-  }
+  const filteredData = currentLeadsOrClientsData;
+  const effectiveTotal = totalCount;
+  const totalPages = Math.ceil(effectiveTotal / leadsOrClientsPerPage) || 1;
+
+  // if (isLeadsOrClientsLoading) {
+  //   return (
+  //     <div className="p-4">
+  //       <LoadingSpinner />
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
@@ -232,7 +260,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {isLeadsOrClientsLoading ? (
                   <tr>
                     <td colSpan={8} className="text-center">
                       <div className="d-flex justify-content-center align-items-center">
@@ -240,8 +268,8 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                       </div>
                     </td>
                   </tr>
-                ) : currentAuthUsers.length > 0 ? (
-                  currentAuthUsers.map((user) => (
+                ) : filteredData?.length > 0 ? (
+                  filteredData?.map((user: any) => (
                     <tr key={user.alias} className="text-center">
                       <td>
                         <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
@@ -379,15 +407,15 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
               <div className="px-2">
                 <p className="text-primary">
                   Showing{" "}
-                  {totalCount === 0
+                  {effectiveTotal === 0
                     ? "0"
                     : (currentPage - 1) * leadsOrClientsPerPage + 1}{" "}
                   to{" "}
-                  {currentAuthUsers.length === 0
+                  {filteredData?.length === 0
                     ? 0
                     : (currentPage - 1) * leadsOrClientsPerPage +
-                      currentAuthUsers.length}{" "}
-                  of {totalCount} Users
+                      filteredData?.length}{" "}
+                  of {effectiveTotal} Users
                 </p>
               </div>
               <Pagination className="d-flex justify-content-end p-2">
