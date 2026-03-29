@@ -4,7 +4,7 @@ import {
   mortgageStages,
 } from "@/Data/Common/FilterChoiceFields";
 import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
