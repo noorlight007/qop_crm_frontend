@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaGlobe } from "react-icons/fa";
 import { Button, Card, CardBody } from "reactstrap";
 
-const PublicLeadLink: React.FC = () => {
+const ClientEnquiryLink: React.FC = () => {
   const [subdomain, setSubdomain] = useState(
     process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "",
   );
@@ -94,4 +94,4 @@ const PublicLeadLink: React.FC = () => {
   );
 };
 
-export default PublicLeadLink;
+export default ClientEnquiryLink;
