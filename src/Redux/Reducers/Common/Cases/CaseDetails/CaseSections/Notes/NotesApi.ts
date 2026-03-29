@@ -10,6 +10,14 @@ export const NotesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Notes"],
     }),
+    updateNotes: builder.mutation({
+      query: ({ case_alias, note_alias, note }) => ({
+        url: `/cases/${case_alias}/notes/${note_alias}/`,
+        method: "PATCH",
+        body: note,
+      }),
+      invalidatesTags: ["Notes"],
+    }),
     getNotes: builder.query({
       // Accept optional params for paginated & filtered endpoints
       query: ({
@@ -43,5 +51,5 @@ export const NotesApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useAddNotesMutation, useGetNotesQuery, useDeleteNoteMutation } =
+export const { useAddNotesMutation, useUpdateNotesMutation, useGetNotesQuery, useDeleteNoteMutation } =
   NotesApi;

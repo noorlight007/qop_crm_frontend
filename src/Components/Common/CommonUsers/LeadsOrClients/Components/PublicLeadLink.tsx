@@ -65,7 +65,7 @@ const PublicLeadLink: React.FC = () => {
       <CardBody className="d-flex align-items-center p-3">
         <FaGlobe className="me-2 text-primary" size={24} />
         <div className="flex-grow-1">
-          <h5 className="mb-1">Public Enquiry Link</h5>
+          <h5 className="mb-1">Client Enquiry Link</h5>
           {url ? (
             <a
               href={url}
