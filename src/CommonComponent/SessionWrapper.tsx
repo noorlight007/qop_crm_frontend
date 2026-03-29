@@ -55,7 +55,7 @@ const SessionMonitor = ({ children }: { children: ReactNode }) => {
       const pathname = window.location.pathname;
       const isPublicPath =
         pathname.startsWith("/auth/") ||
-        pathname.startsWith("/public-enquiry") ||
+        pathname.startsWith("/client-enquiry") ||
         pathname.startsWith("/client-survey");
 
       // Only redirect to login if NOT on a public page
