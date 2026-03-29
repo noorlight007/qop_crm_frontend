@@ -29,7 +29,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
-import PublicLeadLink from "./Components/PublicLeadLink";
+import ClientEnquiryLink from "./Components/ClientEnquiryLink";
 import AddLeadModal from "./Modals/AddLeadModal";
 import DeleteLeadOrClientModal from "./Modals/DeleteLeadOrClientModal";
 import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
@@ -163,7 +163,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   return (
     <>
       {/* Public Lead Link - only for Leads, not Clients */}
-      {userRole === "LEAD" && <PublicLeadLink />}
+      {userRole === "LEAD" && <ClientEnquiryLink />}
       <Card>
         <CardBody>
           <Row className="d-flex justify-content-between py-4">

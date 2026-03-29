@@ -6,7 +6,7 @@ const EnquiryPage = () => {
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const newClient = (await import("@/Components/PublicEnquiry")).default;
+        const newClient = (await import("@/Components/ClientEnquiry")).default;
         setClient(() => newClient);
       }
     })();
