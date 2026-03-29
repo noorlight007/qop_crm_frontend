@@ -1,5 +1,8 @@
 import { useAddCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import {
+  useGetUserListQuery,
+  useLeadOrClientFilterListQuery,
+} from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import {
   AddNewCaseModalProps,
   LeadOptionType,
@@ -38,11 +41,10 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   const [leadSearchInput, setLeadSearchInput] = useState("");
   const [leadSearch, setLeadSearch] = useState("");
   const {
-    data: userLEADListData,
+    data: leadOrClientListData,
     refetch: refetchLeads,
     isFetching: isFetchingLeads,
-  } = useGetUserListQuery({
-    role: ["LEAD", "CLIENT"],
+  } = useLeadOrClientFilterListQuery({
     search: leadSearch || undefined,
   });
   const { data: userNetAdviserListData } = useGetUserListQuery({
@@ -177,18 +179,18 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {
-    if (userLEADListData) {
-      if (Array.isArray(userLEADListData)) {
-        setLeads(userLEADListData || []);
-      } else if ((userLEADListData as any).results) {
-        setLeads((userLEADListData as any).results || []);
-      } else if ((userLEADListData as any).leads) {
-        setLeads((userLEADListData as any).leads || []);
+    if (leadOrClientListData) {
+      if (Array.isArray(leadOrClientListData)) {
+        setLeads(leadOrClientListData || []);
+      } else if ((leadOrClientListData as any).results) {
+        setLeads((leadOrClientListData as any).results || []);
+      } else if ((leadOrClientListData as any).leads) {
+        setLeads((leadOrClientListData as any).leads || []);
       } else {
         setLeads([]);
       }
     }
-  }, [userLEADListData]);
+  }, [leadOrClientListData]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -516,7 +518,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         <ModalBody>
           <FormGroup>
             <Label for="lead">
-              Lead/Client<span className="text-danger">*</span>
+              Applicant<span className="text-danger">*</span>
             </Label>
             <Select<LeadOptionType>
               inputId="lead"

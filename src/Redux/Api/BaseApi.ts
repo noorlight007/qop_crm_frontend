@@ -205,6 +205,9 @@ export const baseApi = createApi({
     "AddUser",
     "AuthUserList",
 
+    //filters
+    "LeadOrClientFilterList",
+
     //Common components start
     "LeadDetails",
     "ClientDetails",
