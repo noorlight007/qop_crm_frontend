@@ -27,8 +27,12 @@ const CATEGORIES = [
   "Compliance Correspondence",
 ];
 
-const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNote }) => {
-    console.log("Selected note for editing:", selectedNote);
+const UpdateNoteModal: FC<UpdateNoteModalProps> = ({
+  isOpen,
+  toggle,
+  selectedNote,
+}) => {
+  console.log("Selected note for editing:", selectedNote);
   const { casealias } = useParams();
   const caseAlias = Array.isArray(casealias) ? casealias[0] : (casealias ?? "");
   const [brokerVisible, setBrokerVisible] = useState(false);
@@ -41,25 +45,25 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
 
   useEffect(() => {
     if (isOpen && selectedNote) {
-        setBrokerVisible(
+      setBrokerVisible(
         (selectedNote as any).is_visible_to_introducer ??
-        (selectedNote as any).note_visible_to_introducer ??
-        false
-        );
-        setClientVisible(
+          (selectedNote as any).note_visible_to_introducer ??
+          false,
+      );
+      setClientVisible(
         (selectedNote as any).is_visible_to_client ??
-        (selectedNote as any).note_visible_to_client ??
-        false
-        );
+          (selectedNote as any).note_visible_to_client ??
+          false,
+      );
 
-        const rawCategory = selectedNote.category || "";
-        const matched = CATEGORIES.find(
-        (c) => c.toUpperCase().replace(/ /g, "_") === rawCategory.toUpperCase()
-        );
-        setCategory(matched ?? "");
-        setComments(selectedNote.note || "");
-        setErrors({});
-        // ← no innerHTML here anymore
+      const rawCategory = selectedNote.category || "";
+      const matched = CATEGORIES.find(
+        (c) => c.toUpperCase().replace(/ /g, "_") === rawCategory.toUpperCase(),
+      );
+      setCategory(matched ?? "");
+      setComments(selectedNote.note || "");
+      setErrors({});
+      // ← no innerHTML here anymore
     }
 
     if (!isOpen) resetForm();
@@ -83,14 +87,21 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
       s = s.replace(/^\s*\d+,\s*/g, "");
       return s;
     };
-    if (typeof err === "string") { out["non_field_errors"] = sanitize(err); return out; }
+    if (typeof err === "string") {
+      out["non_field_errors"] = sanitize(err);
+      return out;
+    }
     if (err && typeof err === "object") {
       if (err.detail) out["non_field_errors"] = sanitize(err.detail);
       for (const [k, v] of Object.entries(err)) {
         if (v == null) continue;
         if (typeof v === "string") out[k] = sanitize(v);
         else if (Array.isArray(v))
-          out[k] = sanitize(v.map((x) => (typeof x === "string" ? x : JSON.stringify(x))).join(", "));
+          out[k] = sanitize(
+            v
+              .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
+              .join(", "),
+          );
         else if (typeof v === "object") {
           const vals: string[] = [];
           for (const vv of Object.values(v)) {
@@ -111,15 +122,66 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
     try {
       const cleaned = DOMPurify.sanitize(html, {
         ALLOWED_TAGS: [
-          "a", "abbr", "acronym", "b", "blockquote", "code", "em", "i",
-          "strong", "u", "s", "sub", "sup", "p", "br", "div", "span", "pre",
-          "hr", "ul", "ol", "li", "table", "thead", "tbody", "tfoot", "tr",
-          "th", "td", "img", "h1", "h2", "h3", "h4", "h5", "h6",
+          "a",
+          "abbr",
+          "acronym",
+          "b",
+          "blockquote",
+          "code",
+          "em",
+          "i",
+          "strong",
+          "u",
+          "s",
+          "sub",
+          "sup",
+          "p",
+          "br",
+          "div",
+          "span",
+          "pre",
+          "hr",
+          "ul",
+          "ol",
+          "li",
+          "table",
+          "thead",
+          "tbody",
+          "tfoot",
+          "tr",
+          "th",
+          "td",
+          "img",
+          "h1",
+          "h2",
+          "h3",
+          "h4",
+          "h5",
+          "h6",
         ],
         ALLOWED_ATTR: [
-          "title", "id", "class", "dir", "lang", "style", "href", "target",
-          "rel", "name", "src", "alt", "width", "height", "align", "valign",
-          "colspan", "rowspan", "cellpadding", "cellspacing", "border", "type",
+          "title",
+          "id",
+          "class",
+          "dir",
+          "lang",
+          "style",
+          "href",
+          "target",
+          "rel",
+          "name",
+          "src",
+          "alt",
+          "width",
+          "height",
+          "align",
+          "valign",
+          "colspan",
+          "rowspan",
+          "cellpadding",
+          "cellspacing",
+          "border",
+          "type",
         ],
         ALLOW_DATA_ATTR: true,
         ALLOWED_URI_REGEXP:
@@ -161,7 +223,10 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
     const text = e.clipboardData.getData("text/plain");
     if (html) {
       const cleaned = sanitizeHtml(html);
-      if (document.queryCommandSupported && document.queryCommandSupported("insertHTML")) {
+      if (
+        document.queryCommandSupported &&
+        document.queryCommandSupported("insertHTML")
+      ) {
         document.execCommand("insertHTML", false, cleaned);
       } else {
         const sel = window.getSelection();
@@ -261,7 +326,8 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
         resetForm();
         toggle();
       } else if ((response as any)?.error) {
-        const errData = (response as any).error?.data || (response as any).error || {};
+        const errData =
+          (response as any).error?.data || (response as any).error || {};
         const parsed = parseApiErrors(errData);
         setErrors(parsed);
         const first = Object.values(parsed)[0] || "Failed to update note";
@@ -270,7 +336,9 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
         toast.error("Something went wrong");
       }
     } catch (error) {
-      const parsed = parseApiErrors((error as any)?.data || (error as any) || error);
+      const parsed = parseApiErrors(
+        (error as any)?.data || (error as any) || error,
+      );
       setErrors(parsed);
       const first = Object.values(parsed)[0] || "Failed to update note";
       toast.error(String(first));
@@ -279,18 +347,21 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
 
   return (
     <Modal
-        isOpen={isOpen}
-        toggle={toggle}
-        size="lg"
-        centered
-        fade={false}
-        onOpened={() => {  
-            if (editorRef.current && selectedNote) {
-            editorRef.current.innerHTML = selectedNote.note || "";
-            }
-        }}
+      isOpen={isOpen}
+      toggle={toggle}
+      size="lg"
+      centered
+      fade={false}
+      onOpened={() => {
+        if (editorRef.current && selectedNote) {
+          editorRef.current.innerHTML = selectedNote.note || "";
+        }
+      }}
     >
-      <ModalHeader toggle={toggle} className="d-flex justify-content-between align-items-center">
+      <ModalHeader
+        toggle={toggle}
+        className="d-flex justify-content-between align-items-center"
+      >
         Edit Note
       </ModalHeader>
       <Form onSubmit={handleSubmit}>
@@ -309,7 +380,9 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
                     />
                   </FormGroup>
                   {errors.is_visible_to_introducer && (
-                    <div className="text-danger">{errors.is_visible_to_introducer}</div>
+                    <div className="text-danger">
+                      {errors.is_visible_to_introducer}
+                    </div>
                   )}
                 </Col>
                 <Col md={12}>
@@ -323,7 +396,9 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
                     />
                   </FormGroup>
                   {errors.is_visible_to_client && (
-                    <div className="text-danger">{errors.is_visible_to_client}</div>
+                    <div className="text-danger">
+                      {errors.is_visible_to_client}
+                    </div>
                   )}
                 </Col>
               </Row>
@@ -342,7 +417,9 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
                 >
                   <option value="">Select...</option>
                   {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </Input>
                 {errors.category && (
@@ -357,20 +434,115 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
               Comments <span className="text-danger">*</span>
             </Label>
             <div className="mb-2 d-flex flex-wrap gap-1">
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("bold")}>B</Button>
-              <Button outline color="dark" size="sm" title="Increase font size" onClick={() => changeSelectionFontSize(2)}>A+</Button>
-              <Button outline color="dark" size="sm" title="Decrease font size" onClick={() => changeSelectionFontSize(-2)}>A-</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("italic")}><em>I</em></Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("underline")}><u>U</u></Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("strikeThrough")}><s>S</s></Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("insertUnorderedList")}>• List</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("insertOrderedList")}>1. List</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("formatBlock", "BLOCKQUOTE")}>❝ Quote</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("formatBlock", "PRE")}>{`</>`} Code</Button>
-              <Button outline color="dark" size="sm" onClick={insertLink}>🔗 Link</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("removeFormat")}>Clear</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("undo")}>Undo</Button>
-              <Button outline color="dark" size="sm" onClick={() => applyFormat("redo")}>Redo</Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("bold")}
+              >
+                B
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                title="Increase font size"
+                onClick={() => changeSelectionFontSize(2)}
+              >
+                A+
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                title="Decrease font size"
+                onClick={() => changeSelectionFontSize(-2)}
+              >
+                A-
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("italic")}
+              >
+                <em>I</em>
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("underline")}
+              >
+                <u>U</u>
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("strikeThrough")}
+              >
+                <s>S</s>
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("insertUnorderedList")}
+              >
+                • List
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("insertOrderedList")}
+              >
+                1. List
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("formatBlock", "BLOCKQUOTE")}
+              >
+                ❝ Quote
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("formatBlock", "PRE")}
+              >
+                {`</>`} Code
+              </Button>
+              <Button outline color="dark" size="sm" onClick={insertLink}>
+                🔗 Link
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("removeFormat")}
+              >
+                Clear
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("undo")}
+              >
+                Undo
+              </Button>
+              <Button
+                outline
+                color="dark"
+                size="sm"
+                onClick={() => applyFormat("redo")}
+              >
+                Redo
+              </Button>
             </div>
             <div
               ref={editorRef}
@@ -378,7 +550,11 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
               onInput={handleEditorInput}
               onPaste={handlePaste}
               className="form-control"
-              style={{ height: "350px", marginBottom: "12px", overflowY: "auto" }}
+              style={{
+                height: "350px",
+                marginBottom: "12px",
+                overflowY: "auto",
+              }}
               suppressContentEditableWarning
               aria-label="Rich text editor"
             />
@@ -386,7 +562,9 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({ isOpen, toggle, selectedNot
           </FormGroup>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={toggle}>Cancel</Button>
+          <Button color="secondary" onClick={toggle}>
+            Cancel
+          </Button>
           <Button color="primary" type="submit" disabled={isLoading}>
             {isLoading ? "Loading..." : "Update"}
           </Button>

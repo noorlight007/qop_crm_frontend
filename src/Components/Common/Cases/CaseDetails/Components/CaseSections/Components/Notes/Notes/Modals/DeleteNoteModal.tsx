@@ -34,12 +34,6 @@ const DeleteNoteModal: React.FC<DeleteNoteModalProps> = ({
           Are you sure you want to delete this note? This action cannot be
           undone.
         </p>
-        {selectedNote && (
-          <div className="border p-2 mb-3 rounded bg-light-dark">
-            <strong>Note:</strong>
-            <div className="text-truncate">{selectedNote.note}</div>
-          </div>
-        )}
         <div className="d-flex justify-content-end">
           <Button color="secondary" onClick={toggle} className="me-2">
             Cancel
