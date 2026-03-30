@@ -744,7 +744,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   type="text"
                   value={formValues?.customer?.first_name || ""}
                   onChange={(e) =>
-                    handleInputChange("applicant.first_name", e.target.value)
+                    handleInputChange("customer.first_name", e.target.value)
                   }
                   required
                 />
