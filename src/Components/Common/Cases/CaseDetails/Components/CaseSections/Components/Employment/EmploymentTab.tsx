@@ -56,7 +56,7 @@ export const EmploymentTab = () => {
     const userId = modalUserId as number;
 
     const remainingForUser = (employmentData || []).filter(
-      (emp: any) => emp.user.id === userId && emp.alias !== employmentAlias,
+      (emp: any) => emp.customer.id === userId && emp.alias !== employmentAlias,
     );
 
     if (remainingForUser.length > 0) {
@@ -66,7 +66,7 @@ export const EmploymentTab = () => {
         (emp: any) => emp.alias !== employmentAlias,
       );
       if (remainingAny.length > 0) {
-        setActiveUser(remainingAny[0].user.id);
+        setActiveUser(remainingAny[0].customer.id);
         setActiveTab(remainingAny[0].alias || null);
       } else {
         setActiveTab(null);
@@ -81,7 +81,7 @@ export const EmploymentTab = () => {
 
   useEffect(() => {
     if (employmentData && employmentData.length > 0) {
-      const firstUserId = employmentData[0]?.user.id;
+      const firstUserId = employmentData[0]?.customer.id;
       setActiveUser(firstUserId);
       setActiveTab(employmentData[0]?.alias || null);
     }
@@ -106,7 +106,7 @@ export const EmploymentTab = () => {
                     employment: EmploymentDetailsProps,
                   ) => {
                     const userExists = uniqueUsers.some(
-                      (item) => item.user.id === employment.user.id,
+                      (item) => item.customer.id === employment.customer.id,
                     );
                     if (!userExists) {
                       uniqueUsers.push(employment);
@@ -116,11 +116,11 @@ export const EmploymentTab = () => {
                   [],
                 )
                 .map((employment: EmploymentDetailsProps, idx: number) => {
-                  const user = employment.user;
+                  const customer = employment.customer;
                   return [
                     idx > 0 ? (
                       <span
-                        key={`sep-${user.id}`}
+                        key={`sep-${customer.id}`}
                         className="align-self-center mx-1 text-muted fw-bolder"
                         style={{ cursor: "default", userSelect: "none" }}
                         aria-hidden
@@ -128,23 +128,23 @@ export const EmploymentTab = () => {
                         &
                       </span>
                     ) : null,
-                    <NavItem key={user.id}>
+                    <NavItem key={customer.id}>
                       <NavLink
-                        className={`${activeUser === user.id ? "active" : ""}`}
+                        className={`${activeUser === customer.id ? "active" : ""}`}
                         onClick={() => {
-                          setActiveUser(user.id);
+                          setActiveUser(customer.id);
                           setActiveTab(employment.alias || null);
                         }}
                         style={{ cursor: "pointer" }}
                       >
                         {`${
-                          user?.title
-                            ? user?.title[0].toUpperCase() +
-                              user?.title.slice(1).toLowerCase() +
+                          customer?.title
+                            ? customer?.title[0].toUpperCase() +
+                              customer?.title.slice(1).toLowerCase() +
                               ""
                             : ""
-                        } ${user.first_name} ${user.middle_name} ${
-                          user.last_name
+                        } ${customer.first_name} ${customer.middle_name} ${
+                          customer.last_name
                         }`}
                       </NavLink>
                     </NavItem>,
@@ -164,7 +164,7 @@ export const EmploymentTab = () => {
                   const userEmps =
                     employmentData?.filter(
                       (emp: EmploymentDetailsProps) =>
-                        emp.user.id === activeUser,
+                        emp.customer.id === activeUser,
                     ) || [];
 
                   const selfEmps = userEmps.filter(
@@ -231,7 +231,7 @@ export const EmploymentTab = () => {
                                   openDeleteModal(
                                     e,
                                     employment.alias,
-                                    employment.user.id,
+                                    employment.customer.id,
                                   )
                                 }
                                 aria-label="Delete employment"
@@ -269,10 +269,10 @@ export const EmploymentTab = () => {
                     acc: Record<number, EmploymentDetailsProps[]>,
                     emp: EmploymentDetailsProps,
                   ) => {
-                    if (!acc[emp.user.id]) {
-                      acc[emp.user.id] = [];
+                    if (!acc[emp.customer.id]) {
+                      acc[emp.customer.id] = [];
                     }
-                    acc[emp.user.id].push(emp);
+                    acc[emp.customer.id].push(emp);
                     return acc;
                   },
                   {} as Record<number, EmploymentDetailsProps[]>,

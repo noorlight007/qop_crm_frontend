@@ -4,6 +4,7 @@ import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { AddCreditCommitmentModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsTypes";
 import getCurrencySign from "@/utils/currency";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -28,7 +29,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
 }) => {
   const { casealias } = useParams();
   const [formData, setFormData] = useState({
-    applicant: "",
+    customer_id: "",
     joint: "",
     type: "",
     company: "",
@@ -124,7 +125,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
           console.error("Failed to update section complete status:", err);
         }
         setFormData({
-          applicant: "",
+          customer_id: "",
           joint: "",
           type: "",
           company: "",
@@ -167,24 +168,27 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
           <Row>
             <Col md={4}>
               <FormGroup>
-                <Label>Applicant<span className="text-danger">*</span></Label>
+                <Label>
+                  Applicant<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="select"
-                  name="applicant"
-                  value={formData.applicant}
+                  name="customer_id"
+                  value={formData.customer_id}
                   onChange={handleInputChange}
                   required
                 >
                   <option value="">Select...</option>
                   {caseUsers?.map((user: any) => (
                     <option key={user.id} value={user.id}>
-                      {user.first_name} {user.last_name}
+                      {formatChoiceFieldValue(user.title)} {user.first_name}{" "}
+                      {user.middle_name} {user.last_name}
                     </option>
                   ))}
                 </Input>
-                {getFieldError("applicant") && (
+                {getFieldError("customer_id") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant")}
+                    {getFieldError("customer_id")}
                   </div>
                 )}
               </FormGroup>
@@ -211,7 +215,9 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label>Type<span className="text-danger">*</span></Label>
+                <Label>
+                  Type<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="select"
                   name="type"
@@ -247,7 +253,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                     {getFieldError("type")}
                   </div>
                 )}
-                <small className="text-danger" style={{ fontSize: "9px" }}>
+                <small className="text-warning" style={{ fontSize: "9px" }}>
                   Select the "Type" correctly, as it cannot be updated later.
                 </small>
               </FormGroup>
@@ -273,7 +279,9 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Company<span className="text-danger">*</span></Label>
+                  <Label>
+                    Company<span className="text-danger">*</span>
+                  </Label>
                   <Input
                     type="text"
                     name="company"
@@ -335,7 +343,10 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>OS Balance<span className="text-danger">*</span> ({getCurrencySign()})</Label>
+                  <Label>
+                    OS Balance<span className="text-danger">*</span> (
+                    {getCurrencySign()})
+                  </Label>
                   <Input
                     type="number"
                     name="os_balance"

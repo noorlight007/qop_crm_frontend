@@ -5,6 +5,7 @@ import { useExportCreditCommitmentsMutation } from "@/Redux/Reducers/Common/Case
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -17,7 +18,6 @@ import AddCreditCommitmentModal from "./CreditCommitmentsModals/AddCreditCommitm
 import DeleteCreditCommitmentModal from "./CreditCommitmentsModals/DeleteCreditCommitmentModal";
 import UpdateCreditCommitmentModal from "./CreditCommitmentsModals/UpdateCreditCommitmentModal";
 import CreditCommitmentsSummary from "./CreditCommitmentsSummary";
-import getCurrencySign from "@/utils/currency";
 
 const CreditCommitmentsContent: React.FC = () => {
   const { casealias } = useParams();
@@ -173,8 +173,8 @@ const CreditCommitmentsContent: React.FC = () => {
                           onClick={() => {
                             setSelectedItemAlias(item.alias);
                             setSelectedItemName(
-                              `${item.applicant_details?.first_name || ""} ${
-                                item.applicant_details?.last_name || ""
+                              `${formatChoiceFieldValue(item.customer?.title) || ""} ${item.customer?.first_name || ""} ${item.customer?.middle_name || ""} ${
+                                item.customer?.last_name || ""
                               }`,
                             );
                             setIsDeleteModalOpen(true);
@@ -184,9 +184,9 @@ const CreditCommitmentsContent: React.FC = () => {
                         </button>
                       </div>
                     </td>
-                    <td>
-                      {`${item.applicant_details?.first_name || ""} ${
-                        item.applicant_details?.last_name || ""
+                    <td className="text-truncate">
+                      {`${formatChoiceFieldValue(item.customer?.title) || ""} ${item.customer?.first_name || ""} ${item.customer?.middle_name || ""} ${
+                        item.customer?.last_name || ""
                       }` || "-"}
                     </td>
                     <td>
@@ -209,15 +209,29 @@ const CreditCommitmentsContent: React.FC = () => {
                       {item.os_balance ? (
                         `${getCurrencySign()}${item.os_balance.toFixed(2)}`
                       ) : (
-                        <span className="text-danger opacity-50">{getCurrencySign()}0.00</span>
+                        <span className="text-danger opacity-50">
+                          {getCurrencySign()}0.00
+                        </span>
                       )}
                     </td>
-                    <td>{getCurrencySign()}{item.settlement_balance?.toFixed(2) || "0.00"}</td>
-                    <td>{getCurrencySign()}{item.monthly_repayment?.toFixed(2) || "0.00"}</td>
+                    <td>
+                      {getCurrencySign()}
+                      {item.settlement_balance?.toFixed(2) || "0.00"}
+                    </td>
+                    <td>
+                      {getCurrencySign()}
+                      {item.monthly_repayment?.toFixed(2) || "0.00"}
+                    </td>
                     <td>{item.interest_rate?.toFixed(2) || "0.00"}%</td>
-                    <td>{getCurrencySign()}{item.card_limit?.toFixed(2) || "0.00"}</td>
+                    <td>
+                      {getCurrencySign()}
+                      {item.card_limit?.toFixed(2) || "0.00"}
+                    </td>
                     <td>{item.term_remaining || "0"}</td>
-                    <td>{getCurrencySign()}{item.balloon_payment?.toFixed(2) || "0.00"}</td>
+                    <td>
+                      {getCurrencySign()}
+                      {item.balloon_payment?.toFixed(2) || "0.00"}
+                    </td>
                     <td>
                       <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.court_ordered?.toLowerCase() === "yes" ? (
@@ -229,7 +243,10 @@ const CreditCommitmentsContent: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td>{getCurrencySign()}{item.cost_of_credit?.toFixed(2) || "0.00"}</td>
+                    <td>
+                      {getCurrencySign()}
+                      {item.cost_of_credit?.toFixed(2) || "0.00"}
+                    </td>
                     <td>
                       <div className="d-flex justify-content-center align-items-center fs-5">
                         {item.paid_on_completion?.toLowerCase() === "yes" ? (
