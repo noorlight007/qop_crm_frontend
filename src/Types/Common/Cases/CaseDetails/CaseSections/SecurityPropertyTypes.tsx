@@ -79,7 +79,7 @@ export interface SecurityPropertyFormStateProps {
 
     // Valuation and Contact Details
     valuation_type: string; // "standard_val"
-    applicant: string; // "SELECT"
+    customer: string; // "SELECT"
     contact_for_access: string; // ""
     contacts_name: string; // ""
     contacts_daytime_telephone: string; // ""
@@ -183,7 +183,7 @@ export interface PropertyData {
   is_the_property_used_purely_for_residential_purposes: boolean;
   other_new_build_warranty_provider: string;
   valuation_type: string;
-  applicant: string;
+  customer: string;
   contact_for_access: string;
   contacts_name: string;
   contacts_daytime_telephone: string;
