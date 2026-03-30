@@ -263,18 +263,18 @@ const OrgCases: React.FC = () => {
                               }}
                             >
                               <li>
-                                {caseItem.lead_user ? (
+                                {caseItem.customer ? (
                                   <>
-                                    {caseItem.lead_user.title
+                                    {caseItem.customer.title
                                       ? formatChoiceFieldValue(
-                                          caseItem.lead_user.title,
+                                          caseItem.customer.title,
                                         ) + " "
                                       : ""}
-                                    {caseItem.lead_user.first_name}{" "}
-                                    {caseItem.lead_user.middle_name
-                                      ? caseItem.lead_user.middle_name + " "
+                                    {caseItem.customer.first_name}{" "}
+                                    {caseItem.customer.middle_name
+                                      ? caseItem.customer.middle_name + " "
                                       : ""}
-                                    {caseItem.lead_user.last_name}
+                                    {caseItem.customer.last_name}
                                   </>
                                 ) : (
                                   <small className="text-muted">
@@ -306,9 +306,9 @@ const OrgCases: React.FC = () => {
                             </ul>
                           </td>
                           <td>
-                            {caseItem.lead_user.phone ? (
+                            {caseItem.customer.phone ? (
                               <span className="text-black">
-                                {caseItem.lead_user.phone}
+                                {caseItem.customer.phone}
                               </span>
                             ) : (
                               <small className="text-muted">
