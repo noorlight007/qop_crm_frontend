@@ -139,9 +139,7 @@ export const EmploymentTab = () => {
                       >
                         {`${
                           customer?.title
-                            ? customer?.title[0].toUpperCase() +
-                              customer?.title.slice(1).toLowerCase() +
-                              ""
+                            ? formatChoiceFieldValue(customer.title) + " "
                             : ""
                         } ${customer.first_name} ${customer.middle_name} ${
                           customer.last_name

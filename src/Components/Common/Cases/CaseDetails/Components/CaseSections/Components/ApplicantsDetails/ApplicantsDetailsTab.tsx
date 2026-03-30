@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetApplicantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
@@ -99,11 +100,9 @@ export const ApplicantsDetailsTab = () => {
                       >
                         {`${
                           applicantData?.customer?.title
-                            ? applicantData?.customer?.title[0].toUpperCase() +
-                              applicantData?.customer?.title
-                                .slice(1)
-                                .toLowerCase() +
-                              ""
+                            ? formatChoiceFieldValue(
+                                applicantData.customer.title,
+                              )
                             : ""
                         } ${applicantData?.customer?.first_name} ${
                           applicantData?.customer?.middle_name
