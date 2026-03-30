@@ -60,7 +60,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [isViewJointApplicantModalOpen, setIsViewJointApplicantModalOpen] =
     useState(false);
   const [selectedJointApplicant, setSelectedJointApplicant] =
-    useState<any>(null);
+    useState<{data: any, index: number} | null>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
 
@@ -110,8 +110,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const toggleAddJointApplicantModal = () =>
     setIsAddJointApplicantModalOpen(!isAddJointApplicantModalOpen);
 
-  const openViewJointApplicantModal = (jointApplicant: any) => {
-    setSelectedJointApplicant(jointApplicant);
+  const openViewJointApplicantModal = (jointApplicant: any,  index: number) => {
+    setSelectedJointApplicant({ data: jointApplicant, index });
     toggleViewJointApplicantModal();
   };
 
@@ -476,26 +476,20 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                               <strong
                                 className="small text_decoration_hover"
                                 onClick={() =>
-                                  openViewJointApplicantModal(jointApplicant)
+                                  openViewJointApplicantModal(jointApplicant, index)
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                {jointApplicant?.joint_user_details?.title
+                                {jointApplicant?.customer?.title
                                   ? formatChoiceFieldValue(
-                                      jointApplicant.joint_user_details.title,
+                                      jointApplicant.customer.title,
                                     ) + " "
                                   : " "}
-                                {jointApplicant?.joint_user_details?.first_name}{" "}
-                                {jointApplicant?.joint_user_details
-                                  ?.middle_name && (
-                                  <>
-                                    {
-                                      jointApplicant.joint_user_details
-                                        .middle_name
-                                    }{" "}
-                                  </>
+                                {jointApplicant?.customer?.first_name}{" "}
+                                {jointApplicant?.customer?.middle_name && (
+                                  <>{jointApplicant.customer.middle_name} </>
                                 )}
-                                {jointApplicant?.joint_user_details?.last_name}
+                                {jointApplicant?.customer?.last_name}
                               </strong>
                             </li>
                           ))}
@@ -1040,9 +1034,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       />
       {selectedJointApplicant && (
         <ViewJointApplicantModal
+          key={selectedJointApplicant.index}
           isOpen={isViewJointApplicantModalOpen}
           toggle={toggleViewJointApplicantModal}
-          selectedApplicant={selectedJointApplicant}
+          selectedApplicant={selectedJointApplicant.data}
         />
       )}
       <AddJointApplicantModal

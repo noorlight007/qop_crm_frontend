@@ -325,7 +325,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Add Lead</span>
+        <span className="fs-4 text-primary">Add User</span>
       </ModalHeader>
       <Form
         onSubmit={(e) => {
