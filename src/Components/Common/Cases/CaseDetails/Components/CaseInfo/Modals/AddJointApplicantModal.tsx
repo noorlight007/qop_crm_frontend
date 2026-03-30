@@ -1,7 +1,13 @@
+import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/AddLeadModal";
 import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
+import { useLeadOrClientFilterListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { AddJointApplicantModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { User } from "react-feather";
+import { TbCirclePlus } from "react-icons/tb";
+import Select, { components } from "react-select";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -17,34 +23,289 @@ import {
   Row,
 } from "reactstrap";
 
+// ─── Local option type (value = alias string) ────────────────────────────────
+type JointLeadOption = {
+  value: string; // alias
+  label: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  role?: string | null;
+  user_type?: string | null;
+  profile_image?: string | null;
+};
+
+// ─── Default (empty) form state ───────────────────────────────────────────────
+const DEFAULT_FORM = {
+  customer_alias: "",
+  relationship: "",
+  other_relationship: "",
+  notes: "",
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
 const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
   isOpen,
   toggle,
 }) => {
-  const [profileImage, setProfileImage] = useState<File | null>(null);
   const params = useParams();
   const { casealias } = params;
+
+  // ── Lead search state ──────────────────────────────────────────────────────
+  const [leads, setLeads] = useState<any[]>([]);
+  const [leadSearchInput, setLeadSearchInput] = useState("");
+  const [leadSearch, setLeadSearch] = useState("");
+  const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
+
+  const handleOpenAddLead = () => setIsAddLeadModalOpen(true);
+
+  const {
+    data: leadOrClientListData,
+    isFetching: isFetchingLeads,
+    refetch: refetchLeads,
+  } = useLeadOrClientFilterListQuery({
+    search: leadSearch || undefined,
+  });
+
+  // ── API mutation ───────────────────────────────────────────────────────────
   const [addJointApplicantInfo, { isLoading: isAddingJointApplicant }] =
     useAddJointApplicantInfoMutation(undefined);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    relationship: "",
-    other_relationship: "",
-    profileImage: "",
-    notes: "",
-  });
-
+  // ── Form state ─────────────────────────────────────────────────────────────
+  const [formData, setFormData] = useState(DEFAULT_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // ── Sync leads list from API response ─────────────────────────────────────
+  useEffect(() => {
+    if (!leadOrClientListData) return;
+
+    if (Array.isArray(leadOrClientListData)) {
+      setLeads(leadOrClientListData);
+    } else if ((leadOrClientListData as any).results) {
+      setLeads((leadOrClientListData as any).results);
+    } else if ((leadOrClientListData as any).leads) {
+      setLeads((leadOrClientListData as any).leads);
+    } else {
+      setLeads([]);
+    }
+  }, [leadOrClientListData]);
+
+  // ── Clear errors when modal closes ────────────────────────────────────────
+  useEffect(() => {
+    if (!isOpen) setErrors({});
+  }, [isOpen]);
+
+  // ── Debounce lead search input ─────────────────────────────────────────────
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setLeadSearch(leadSearchInput.trim());
+    }, 350);
+    return () => clearTimeout(id);
+  }, [leadSearchInput]);
+
+  // ── Build select options (value = alias) ──────────────────────────────────
+  const leadOptions: JointLeadOption[] = (leads || [])
+    .map((lead: any) => {
+      const user = lead?.user ?? lead;
+      const alias = user?.alias ?? lead?.alias;
+      if (!alias) return null;
+
+      return {
+        value: String(alias),
+        label: user?.name || lead?.name || "—",
+        name: user?.name || lead?.name || "—",
+        email: user?.email || lead?.email || null,
+        phone:
+          user?.phone ||
+          lead?.phone ||
+          user?.mobile ||
+          lead?.mobile ||
+          user?.mobile_number ||
+          lead?.mobile_number ||
+          null,
+        role:
+          user?.role ||
+          lead?.role ||
+          user?.user_type ||
+          lead?.user_type ||
+          null,
+        user_type: user?.user_type || lead?.user_type || null,
+        profile_image: user?.profile_image || lead?.profile_image || null,
+      };
+    })
+    .filter(Boolean) as JointLeadOption[];
+
+  const selectedLeadOption =
+    leadOptions.find((opt) => opt.value === formData.customer_alias) || null;
+
+  // ── Custom dropdown option (avatar + name + role + email) ─────────────────
+  const CustomOption = (props: any) => {
+    const { data } = props;
+    const displayRole = data?.role || data?.user_type;
+    return (
+      <components.Option {...props}>
+        <div className="d-flex align-items-center gap-2">
+          <div
+            className="flex-shrink-0"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              overflow: "hidden",
+              backgroundColor: "var(--light-color)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {data.profile_image ? (
+              <img
+                src={data.profile_image}
+                alt={data.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              <User size={20} color="var(--font-color)" />
+            )}
+          </div>
+          <div className="flex-grow-1">
+            <div className="d-flex justify-content-between">
+              <div
+                style={{
+                  fontWeight: 600,
+                  fontSize: 14,
+                  color: "var(--body-font-color)",
+                  marginBottom: 2,
+                }}
+              >
+                {data.name}
+              </div>
+              {displayRole && (
+                <span
+                  style={{
+                    backgroundColor:
+                      displayRole === "CLIENT"
+                        ? "var(--bg-light-primary)"
+                        : "var(--bg-light-secondary)",
+                    color:
+                      displayRole === "CLIENT"
+                        ? "var(--info-color)"
+                        : "var(--warning-color)",
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatChoiceFieldValue(displayRole) || ""}
+                </span>
+              )}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--font-color)",
+                display: "flex",
+                gap: 8,
+                flexWrap: "wrap",
+              }}
+            >
+              {data.email && <span>📧 {data.email}</span>}
+            </div>
+          </div>
+        </div>
+      </components.Option>
+    );
+  };
+
+  // ── Custom selected-value display ─────────────────────────────────────────
+  const CustomSingleValue = (props: any) => {
+    const { data } = props;
+    const displayRole = data?.role || data?.user_type;
+    return (
+      <components.SingleValue {...props}>
+        <div className="d-flex align-items-center gap-2">
+          <div
+            className="flex-shrink-0"
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              overflow: "hidden",
+              backgroundColor: "var(--light-color)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {data.profile_image ? (
+              <img
+                src={data.profile_image}
+                alt={data.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              <User size={16} color="var(--font-color)" />
+            )}
+          </div>
+          <div>
+            <div
+              style={{ fontWeight: 600, fontSize: 14 }}
+              className="d-flex gap-2"
+            >
+              <div>{data.name}</div>
+              {displayRole && (
+                <span
+                  style={{
+                    backgroundColor:
+                      displayRole === "CLIENT"
+                        ? "var(--bg-light-primary)"
+                        : "var(--bg-light-secondary)",
+                    color:
+                      displayRole === "CLIENT"
+                        ? "var(--info-color)"
+                        : "var(--warning-color)",
+                    padding: "2px 6px",
+                    borderRadius: 4,
+                    fontSize: 12,
+                    fontWeight: 600,
+                  }}
+                >
+                  {formatChoiceFieldValue(displayRole) || ""}
+                </span>
+              )}
+            </div>
+            {data.email && (
+              <div style={{ fontSize: 11, color: "var(--font-color)" }}>
+                {data.email}
+              </div>
+            )}
+          </div>
+        </div>
+      </components.SingleValue>
+    );
+  };
+
+  // ── Generic input change handler ───────────────────────────────────────────
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => {
+      const copy = { ...prev };
+      delete copy[name];
+      return copy;
+    });
+  };
+
+  // ── Error helpers (mirrors AddNewCaseModal pattern) ────────────────────────
   const sanitize = (s: string) => (s || "").replace(/^\s*\d+,\s*/g, "").trim();
+
   const toCamel = (key: string) =>
-    key.replace(/_([a-z])/g, (_, c) => (c ? c.toUpperCase() : ""));
+    key.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
   const flattenErrors = (value: any, path = ""): Record<string, string> => {
     const out: Record<string, string> = {};
@@ -67,11 +328,11 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
         const newPath = path ? `${path}.${k}` : k;
         if (typeof v === "string" || Array.isArray(v)) {
           out[newPath] = sanitize(
-            (Array.isArray(v)
+            Array.isArray(v)
               ? v
                   .map((x) => (typeof x === "string" ? x : JSON.stringify(x)))
                   .join(", ")
-              : v) as string,
+              : v,
           );
         } else {
           Object.assign(out, flattenErrors(v, newPath));
@@ -81,16 +342,7 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
     return out;
   };
 
-  const clearFieldError = (field: string) =>
-    setErrors((prev) => {
-      const copy = { ...prev };
-      delete copy[field];
-      const snake = field.replace(/([A-Z])/g, (m) => `_${m.toLowerCase()}`);
-      delete copy[snake];
-      return copy;
-    });
-
-  const getErrorMessage = (err: any) => {
+  const getErrorMessage = (err: any): string => {
     if (!err) return "Unknown error";
     if (typeof err === "string") return err;
     if (typeof err?.data === "string") return err.data;
@@ -105,283 +357,263 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    clearFieldError(name);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setProfileImage(e.target.files[0]);
-    }
-  };
-
+  // ── Submit ─────────────────────────────────────────────────────────────────
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation
+    const clientErrors: Record<string, string> = {};
+    if (!formData.customer_alias)
+      clientErrors.customer_alias = "Please select an applicant.";
+    if (!formData.relationship)
+      clientErrors.relationship = "Please select a relationship.";
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      return;
+    }
+
     const payload = {
-      joint_user: {
-        title: formData.title,
-        first_name: formData.firstName,
-        middle_name: formData.middleName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-      },
+      customer_alias: formData.customer_alias,
       relationship: formData.relationship,
       other_relationship: formData.other_relationship,
       notes: formData.notes,
     };
+
     const res = await addJointApplicantInfo({
       case_alias: casealias,
       jointuserInfo: payload,
     });
+
     if (res.data) {
-      // clear errors and notify
       setErrors({});
-      toast.success("Joint user added successfully!");
-      // Reset form data after successful submission
-      setFormData({
-        title: "",
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        relationship: "",
-        other_relationship: "",
-        profileImage: "",
-        notes: "",
-      });
+      toast.success("Joint applicant added successfully!");
+      setFormData(DEFAULT_FORM);
+      setLeadSearchInput("");
+      setLeadSearch("");
       toggle();
     } else if ("error" in res) {
-      const e: any = res.error;
-      const dataErrors = e?.data?.errors ?? e?.data ?? e;
+      const apiErr: any = (res as any).error;
+      const dataErrors = apiErr?.data?.errors ?? apiErr?.data ?? apiErr;
+
       try {
         const flat = flattenErrors(dataErrors);
         const normalized: Record<string, string> = {};
         Object.entries(flat).forEach(([k, v]) => {
           const parts = k.split(".").filter(Boolean);
           const last = parts[parts.length - 1];
-          const camel = toCamel(last);
-          normalized[camel] = v;
+          normalized[toCamel(last)] = v;
         });
         if (Object.keys(normalized).length) {
           setErrors(normalized);
-          const first = Object.values(normalized)[0];
-          toast.error(getErrorMessage(first));
-          return; // keep modal open
+          toast.error(Object.values(normalized)[0]);
+          return;
         }
-      } catch (e2) {
-        console.error("Error parsing validation errors", e2);
+      } catch (parseErr) {
+        console.error("Error parsing validation errors", parseErr);
       }
 
-      toast.error(getErrorMessage(res.error) || "Failed to add joint user.");
+      toast.error(
+        getErrorMessage(res.error) || "Failed to add joint applicant.",
+      );
     }
   };
 
+  const handleCloseAddLead = () => {
+    setIsAddLeadModalOpen(false);
+    // Refetch leads after closing the add-lead modal to refresh the list
+    try {
+      refetchLeads();
+    } catch (err) {
+      console.error("Error refetching leads:", err);
+    }
+  };
+  const handleLeadCreated = (createdLead: any) => {
+    if (!createdLead) {
+      handleCloseAddLead();
+      return;
+    }
+
+    // Created lead from /leads will have shape matching LeadsInfo
+    // i.e., { alias, user: { id, title, first_name, ... }, ... }
+    const user = createdLead.user || createdLead;
+    const newLeadId = user?.id;
+
+    if (!newLeadId) {
+      handleCloseAddLead();
+      return;
+    }
+
+    // Optimistically add this user into the local leads list so the
+    // dropdown can show it immediately, even before refetch completes.
+    setLeads((prev) => {
+      const exists = prev?.some((l: any) => {
+        const existingId = l?.id ?? l?.user?.id;
+        return existingId === newLeadId;
+      });
+
+      if (exists) return prev;
+
+      return [...(prev || []), user];
+    });
+
+    // Set the form's selected lead to the newly created one.
+    setFormData((prev) => ({
+      ...prev,
+      customer_id: newLeadId,
+    }));
+
+    handleCloseAddLead();
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────
   return (
-    <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
+    <Modal isOpen={isOpen} toggle={toggle} centered>
       <ModalHeader toggle={toggle}>
         <span className="fs-4 text-primary">Add Joint Applicant</span>
       </ModalHeader>
+
       <Form onSubmit={handleSubmit}>
         <ModalBody>
           <Row>
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="title" className="form-label">
-                  Title<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="select"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
-                </Input>
-                {errors["title"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["title"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="first_name" className="form-label">
-                  First Name<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="text"
-                  id="first_name"
-                  name="firstName"
-                  required
-                  placeholder="Enter first name"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                />
-                {errors["firstName"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["firstName"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="middle_name" className="form-label">
-                  Middle Name
-                </Label>
-                <Input
-                  type="text"
-                  id="middle_name"
-                  name="middleName"
-                  placeholder="Enter middle name"
-                  value={formData.middleName}
-                  onChange={handleInputChange}
-                />
-                {errors["middleName"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["middleName"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="last_name" className="form-label">
-                  Last Name<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="text"
-                  id="last_name"
-                  name="lastName"
-                  required
-                  placeholder="Enter last name"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                />
-                {errors["lastName"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["lastName"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>{" "}
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="email" className="form-label">
-                  Email<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="Enter email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-                {errors["email"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["email"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="phone" className="form-label">
-                  Phone<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="number"
-                  id="phone"
-                  name="phone"
-                  required
-                  placeholder="Enter phone number"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                />
-                {errors["phone"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["phone"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col xs={12} md={6}>
-              <FormGroup>
-                <Label for="relationship" className="small">
-                  Relationship
-                </Label>
-                <Input
-                  type="select"
-                  name="relationship"
-                  id="relationship"
-                  value={formData.relationship}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select...</option>
-                  <option value="SPOUSE">Spouse</option>
-                  <option value="SIBLING">Sibling</option>
-                  <option value="OTHER">Other</option>
-                </Input>
-                {errors["relationship"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["relationship"]}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
+            {/* ── Applicant search-select ── */}
+
+            <FormGroup>
+              <Label for="lead">
+                Applicant<span className="text-danger">*</span>
+              </Label>
+              <Select<JointLeadOption>
+                inputId="lead"
+                name="customer_alias"
+                placeholder="Search by name, email or phone..."
+                isClearable
+                isSearchable
+                isLoading={isFetchingLeads}
+                options={leadOptions}
+                value={selectedLeadOption}
+                filterOption={() => true} // filtering is done server-side
+                onChange={(opt) => {
+                  // Keep the selected lead in the local list so it stays
+                  // visible even when the search term changes.
+                  if (opt) {
+                    setLeads((prev) => {
+                      const exists = (prev || []).some((l: any) => {
+                        const a = l?.alias ?? l?.user?.alias;
+                        return String(a) === String(opt.value);
+                      });
+                      if (exists) return prev;
+                      return [
+                        ...(prev || []),
+                        {
+                          alias: opt.value,
+                          name: opt.name,
+                          email: opt.email,
+                          phone: opt.phone,
+                          user_type: opt.user_type,
+                          profile_image: opt.profile_image,
+                        },
+                      ];
+                    });
+                  }
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    customer_alias: opt?.value ?? "",
+                  }));
+
+                  // Reset search so the selected label renders cleanly.
+                  setLeadSearchInput("");
+                  setLeadSearch("");
+
+                  setErrors((prev) => {
+                    const copy = { ...prev };
+                    delete copy.customer_alias;
+                    return copy;
+                  });
+                }}
+                onInputChange={(inputValue, { action }) => {
+                  if (action === "input-change") {
+                    setLeadSearchInput(inputValue || "");
+                  }
+                  if (action === "set-value") {
+                    setLeadSearchInput("");
+                  }
+                }}
+                components={{
+                  Option: CustomOption,
+                  SingleValue: CustomSingleValue,
+                }}
+                classNamePrefix="lead-select"
+                className="lead-select"
+                noOptionsMessage={() =>
+                  isFetchingLeads
+                    ? "Loading..."
+                    : leadSearchInput
+                      ? "No matches found"
+                      : "No leads available"
+                }
+              />
+              {errors.customer_alias && (
+                <div className="text-danger small mt-1">
+                  {errors.customer_alias}
+                </div>
+              )}
+              <div className="mt-2">
+                <Button size="sm" color="primary" onClick={handleOpenAddLead}>
+                  <TbCirclePlus size={16} className="me-1" />
+                  Add Applicant
+                </Button>
+              </div>
+            </FormGroup>
+
+            {/* ── Relationship ── */}
+
+            <FormGroup>
+              <Label for="relationship">
+                Relationship<span className="text-danger">*</span>
+              </Label>
+              <Input
+                type="select"
+                name="relationship"
+                id="relationship"
+                value={formData.relationship}
+                onChange={handleInputChange}
+              >
+                <option value="">Select...</option>
+                <option value="SPOUSE">Spouse</option>
+                <option value="SIBLING">Sibling</option>
+                <option value="OTHER">Other</option>
+              </Input>
+              {errors.relationship && (
+                <div className="text-danger small mt-1">
+                  {errors.relationship}
+                </div>
+              )}
+            </FormGroup>
+
+            {/* ── Other relationship (conditional) ── */}
             {formData.relationship === "OTHER" && (
-              <Col xs={12} md={6}>
-                <FormGroup>
-                  <Label for="other_relationship" className="small">
-                    Other Relationship
-                  </Label>
-                  <Input
-                    type="text"
-                    name="other_relationship"
-                    id="other_relationship"
-                    value={formData.other_relationship}
-                    onChange={handleInputChange}
-                    placeholder="Specify other relationship"
-                  />
-                  {errors["otherRelationship"] && (
-                    <div className="text-danger small mt-1">
-                      {errors["otherRelationship"]}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            )}
-            <Col xs={12} md={6}>
               <FormGroup>
-                <Label for="notes" className="form-label">
-                  Notes
-                </Label>
+                <Label for="other_relationship">Other Relationship</Label>
+                <Input
+                  type="text"
+                  name="other_relationship"
+                  id="other_relationship"
+                  value={formData.other_relationship}
+                  onChange={handleInputChange}
+                  placeholder="Specify other relationship"
+                />
+                {errors.other_relationship && (
+                  <div className="text-danger small mt-1">
+                    {errors.other_relationship}
+                  </div>
+                )}
+              </FormGroup>
+            )}
+
+            {/* ── Notes ── */}
+            <Col>
+              <FormGroup>
+                <Label for="notes">Notes</Label>
                 <Input
                   type="textarea"
                   id="notes"
@@ -390,24 +622,38 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
                   value={formData.notes}
                   onChange={handleInputChange}
                 />
-                {errors["notes"] && (
-                  <div className="text-danger small mt-1">
-                    {errors["notes"]}
-                  </div>
+                {errors.notes && (
+                  <div className="text-danger small mt-1">{errors.notes}</div>
                 )}
               </FormGroup>
             </Col>
           </Row>
         </ModalBody>
+
         <ModalFooter>
-          <Button color="secondary" onClick={toggle} block>
+          <Button
+            type="button"
+            color="warning"
+            onClick={toggle}
+            disabled={isAddingJointApplicant}
+          >
             Cancel
           </Button>
-          <Button color="primary" block={isAddingJointApplicant}>
+          <Button
+            type="submit"
+            color="primary"
+            disabled={isAddingJointApplicant}
+          >
             {isAddingJointApplicant ? "Saving..." : "Save Joint Applicant"}
           </Button>
         </ModalFooter>
       </Form>
+
+      <AddLeadModal
+        isOpen={isAddLeadModalOpen}
+        toggle={handleCloseAddLead}
+        onLeadCreated={handleLeadCreated}
+      />
     </Modal>
   );
 };

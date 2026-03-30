@@ -3,7 +3,7 @@ export interface JointApplicantProps {
   fetchJointApplicantInfo?: any | undefined;
   isLoading?: boolean;
   alias?: string;
-  joint_user_details?: {
+  customer?: {
     id?: number;
     title?: string;
     email?: string;
