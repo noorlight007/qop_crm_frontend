@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetAdverseDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { AdverseProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -59,14 +60,12 @@ export const AdverseTab = () => {
                     style={{ cursor: "pointer" }}
                   >
                     {`${
-                      adverse?.user?.title
-                        ? adverse?.user?.title[0].toUpperCase() +
-                          adverse?.user?.title.slice(1).toLowerCase() +
-                          ""
+                      adverse?.customer?.title
+                        ? formatChoiceFieldValue(adverse.customer.title)
                         : ""
-                    } ${adverse?.user?.first_name} ${
-                      adverse?.user?.middle_name
-                    } ${adverse?.user?.last_name}`}
+                    } ${adverse?.customer?.first_name} ${
+                      adverse?.customer?.middle_name
+                    } ${adverse?.customer?.last_name}`}
                   </NavLink>
                 </NavItem>
               ))}

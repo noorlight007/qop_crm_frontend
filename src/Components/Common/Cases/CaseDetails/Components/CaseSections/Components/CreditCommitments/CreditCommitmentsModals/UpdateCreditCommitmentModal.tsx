@@ -2,6 +2,7 @@ import { useUpdateCreditCommitmentsDetailsMutation } from "@/Redux/Reducers/Comm
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { UpdateCreditCommitmentModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsTypes";
 import getCurrencySign from "@/utils/currency";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -27,26 +28,28 @@ const UpdateCreditCommitmentModal: React.FC<
     case_alias: casealias,
   });
 
-  const [formData, setFormData] = useState({
-    applicant: creditData?.applicant || "",
-    joint: creditData?.joint || "",
-    type: creditData?.type || "",
-    company: creditData?.company || "",
-    account_no: creditData?.account_no || "",
-    os_balance: creditData?.os_balance || "",
-    settlement_balance: creditData?.settlement_balance || "",
-    monthly_repayment: creditData?.monthly_repayment || "",
-    interest_rate: creditData?.interest_rate || "",
-    card_limit: creditData?.card_limit || "",
-    term_remaining: creditData?.term_remaining || "",
-    balloon_payment: creditData?.balloon_payment || "",
-    court_ordered: creditData?.court_ordered || "",
-    cost_of_credit: creditData?.cost_of_credit || "",
-    paid_on_completion: creditData?.paid_on_completion || "",
-    source: creditData?.source || "",
+  const getInitialFormData = (data: any) => ({
+    customer_id: String(data?.customer_id ?? data?.customer?.id ?? ""),
+    joint: data?.joint || "",
+    type: data?.type || "",
+    company: data?.company || "",
+    account_no: data?.account_no || "",
+    os_balance: data?.os_balance || "",
+    settlement_balance: data?.settlement_balance || "",
+    monthly_repayment: data?.monthly_repayment || "",
+    interest_rate: data?.interest_rate || "",
+    card_limit: data?.card_limit || "",
+    term_remaining: data?.term_remaining || "",
+    balloon_payment: data?.balloon_payment || "",
+    court_ordered: data?.court_ordered || "",
+    cost_of_credit: data?.cost_of_credit || "",
+    paid_on_completion: data?.paid_on_completion || "",
+    source: data?.source || "",
     has_the_unsecured_credit_mounted_up:
-      creditData?.has_the_unsecured_credit_mounted_up || "",
+      data?.has_the_unsecured_credit_mounted_up || "",
   });
+
+  const [formData, setFormData] = useState(getInitialFormData(creditData));
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -94,7 +97,7 @@ const UpdateCreditCommitmentModal: React.FC<
 
   useEffect(() => {
     if (creditData) {
-      setFormData(creditData);
+      setFormData(getInitialFormData(creditData));
     }
   }, [creditData]);
 
@@ -144,11 +147,13 @@ const UpdateCreditCommitmentModal: React.FC<
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label>Applicant<span className="text-danger">*</span></Label>
+                <Label>
+                  Applicant<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="select"
-                  name="applicant"
-                  value={formData.applicant}
+                  name="customer_id"
+                  value={formData.customer_id}
                   onChange={handleInputChange}
                   required
                 >
@@ -156,16 +161,18 @@ const UpdateCreditCommitmentModal: React.FC<
                   {isLoading ? (
                     <option>Loading...</option>
                   ) : (
-                    caseUsers?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.first_name} {user.last_name}
+                    caseUsers?.map((customer: any) => (
+                      <option key={customer.id} value={String(customer.id)}>
+                        {formatChoiceFieldValue(customer.title)}{" "}
+                        {customer.first_name} {customer.middle_name}{" "}
+                        {customer.last_name}
                       </option>
                     ))
                   )}
                 </Input>
-                {getFieldError("applicant") && (
+                {getFieldError("customer_id") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant")}
+                    {getFieldError("customer_id")}
                   </div>
                 )}
               </FormGroup>
@@ -252,7 +259,9 @@ const UpdateCreditCommitmentModal: React.FC<
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>Company<span className="text-danger">*</span></Label>
+                  <Label>
+                    Company<span className="text-danger">*</span>
+                  </Label>
                   <Input
                     type="text"
                     name="company"
@@ -314,7 +323,10 @@ const UpdateCreditCommitmentModal: React.FC<
               formData.type === "DMP") && (
               <Col md={6}>
                 <FormGroup>
-                  <Label>OS Balance<span className="text-danger">*</span> ({getCurrencySign()})</Label>
+                  <Label>
+                    OS Balance<span className="text-danger">*</span> (
+                    {getCurrencySign()})
+                  </Label>
                   <Input
                     type="number"
                     name="os_balance"

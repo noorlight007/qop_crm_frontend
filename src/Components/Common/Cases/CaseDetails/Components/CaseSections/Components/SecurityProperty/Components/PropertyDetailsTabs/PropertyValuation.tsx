@@ -25,7 +25,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
   useEffect(() => {
     const initialData = {
       valuation_type: null,
-      applicant: "",
+      customer: "",
       contact_for_access: "",
       contacts_name: "",
       contacts_daytime_telephone: "",
@@ -41,15 +41,15 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
   ) => {
     const { name, value, type } = e.target;
 
-    // Special handling for applicant selection: autofill contact fields
-    if (name === "applicant") {
+    // Special handling for customer selection: autofill contact fields
+    if (name === "customer") {
       const selectedId = value;
 
       // Clear selection -> clear contact fields and unlock
       if (!selectedId || selectedId === "") {
         dispatch(
           updateProperty({
-            applicant: "",
+            customer: "",
             contacts_name: "",
             contacts_mobile_telephone: "",
             contacts_email_address: "",
@@ -74,7 +74,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
 
         dispatch(
           updateProperty({
-            applicant: selectedId,
+            customer: selectedId,
             contacts_name,
             contacts_mobile_telephone,
             contacts_email_address,
@@ -85,7 +85,7 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
       }
 
       // If no user found, just set the selection
-      dispatch(updateProperty({ applicant: selectedId }));
+      dispatch(updateProperty({ customer: selectedId }));
       setAutoFilled(false);
       return;
     }
@@ -175,17 +175,18 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
                   <FormGroup className="mb-4 border-bottom pb-3">
                     <Row className="align-items-center">
                       <Col sm={7}>
-                        <Label className="mb-0 fw-medium" for="applicant">
+                        <Label className="mb-0 fw-medium" for="customer">
                           Select an applicant if they are the contact
                         </Label>
                       </Col>
                       <Col sm={5}>
                         <Input
                           type="select"
-                          name="applicant"
-                          id="applicant"
-                          value={propertyState.applicant || ""}
+                          name="customer"
+                          id="customer"
+                          value={propertyState.customer || ""}
                           onChange={handleChange}
+                          className="pe-4"
                         >
                           <option value="">Select...</option>
                           {caseUsers &&

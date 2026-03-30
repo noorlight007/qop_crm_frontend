@@ -8,7 +8,6 @@ export interface AdverseUser {
   last_name: string;
   phone: string;
   profile_image: null | string;
-  user_type: string;
 }
 export interface AdverseProps {
   alias: string;
@@ -21,7 +20,7 @@ export interface AdverseProps {
   is_ever_taken_out_a_pay_day_loan: boolean;
   is_exceeded_your_overdraft_in_the_last_three_months: boolean;
   missed_any_payments_on_commitments_in_the_last_five_years: boolean;
-  user: AdverseUser;
+  customer: AdverseUser;
   why_did_the_adverse_occur: null | string; // Assuming this can be a string if not null
 }
 
