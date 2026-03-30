@@ -18,13 +18,6 @@ export const LeadsOrClientsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["LeadsOrClients"],
     }),
-    getSingleLeadsOrClientsDetails: builder.query({
-      query: ({ customerAlias }) => ({
-        url: `/api/customers/${customerAlias}/`,
-        method: "GET",
-      }),
-      providesTags: ["LeadsOrClients"],
-    }),
     updateLeadsOrClientsDetails: builder.mutation({
       query: ({ payload, customerAlias }) => ({
         url: `/api/customers/${customerAlias}/`,
@@ -45,7 +38,6 @@ export const LeadsOrClientsApi = baseApi.injectEndpoints({
 export const {
   useGetLeadsOrClientsQuery,
   useAddLeadsOrClientsMutation,
-  useGetSingleLeadsOrClientsDetailsQuery,
   useUpdateLeadsOrClientsDetailsMutation,
   useDeleteLeadsOrClientsMutation,
 } = LeadsOrClientsApi;

@@ -1,4 +1,4 @@
-import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { useUpdateLeadsOrClientsDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
 import { AuthUser } from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import {
   LeadOrClient,
@@ -32,8 +32,8 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
   const [isModified, setIsModified] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [updateAuthUserDetails, { isLoading }] =
-    useUpdateAuthUserDetailsMutation();
+  const [updateLeadsOrClientsDetails, { isLoading }] =
+    useUpdateLeadsOrClientsDetailsMutation();
 
   useEffect(() => {
     setLeadOrClientData(selectedLeadOrClient);
@@ -157,9 +157,9 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
           return;
         }
 
-        const result = await updateAuthUserDetails({
+        const result = await updateLeadsOrClientsDetails({
           payload: payload as Partial<AuthUser>,
-          userAlias: leadData.alias,
+          customerAlias: leadData.alias,
         });
 
         if (result.data) {
