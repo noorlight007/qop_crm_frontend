@@ -98,16 +98,16 @@ export const ApplicantsDetailsTab = () => {
                         }
                       >
                         {`${
-                          applicantData?.applicant?.title
-                            ? applicantData?.applicant?.title[0].toUpperCase() +
-                              applicantData?.applicant?.title
+                          applicantData?.customer?.title
+                            ? applicantData?.customer?.title[0].toUpperCase() +
+                              applicantData?.customer?.title
                                 .slice(1)
                                 .toLowerCase() +
                               ""
                             : ""
-                        } ${applicantData?.applicant?.first_name} ${
-                          applicantData?.applicant?.middle_name
-                        } ${applicantData?.applicant?.last_name}`}
+                        } ${applicantData?.customer?.first_name} ${
+                          applicantData?.customer?.middle_name
+                        } ${applicantData?.customer?.last_name}`}
                         {!isCurrentValid && isPreviousValid && (
                           <span className="text-danger ms-1">*</span>
                         )}
