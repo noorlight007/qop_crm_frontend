@@ -1,5 +1,4 @@
 import { useUpdateLeadsOrClientsDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
-import { AuthUser } from "@/Types/Common/CommonUsers/AuthUsersTypes";
 import {
   LeadOrClient,
   UpdateLeadOrClientModalProps,
@@ -158,7 +157,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
         }
 
         const result = await updateLeadsOrClientsDetails({
-          payload: payload as Partial<AuthUser>,
+          payload: payload as LeadOrClient,
           customerAlias: leadData.alias,
         });
 
