@@ -59,7 +59,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   const [addCaseDetails, { isLoading: addCaseLoading }] = useAddCaseMutation();
 
   const [formData, setFormData] = useState({
-    lead: leadId || 0,
+    customer_id: leadId || 0,
     case_category: "",
     assigned_to: "",
     assigned_to_admin: "",
@@ -117,16 +117,16 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     // Set the form's selected lead to the newly created one.
     setFormData((prev) => ({
       ...prev,
-      lead: newLeadId,
+      customer_id: newLeadId,
     }));
 
     handleCloseAddLead();
   };
 
-  // Update formData.lead if leadId changes
+  // Update formData.customer_id if leadId changes
   useEffect(() => {
     if (leadId) {
-      setFormData((prev) => ({ ...prev, lead: leadId }));
+      setFormData((prev) => ({ ...prev, customer_id: leadId }));
     }
   }, [leadId]);
 
@@ -174,7 +174,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     });
 
     // also ensure the form selects the created lead
-    setFormData((prev) => ({ ...prev, lead: leadId }));
+    setFormData((prev) => ({ ...prev, customer_id: leadId }));
   }, [leadId, leadName, leadData]);
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
@@ -213,7 +213,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "lead" ? Number(value) : value,
+      [name]: name === "customer_id" ? Number(value) : value,
     });
     if (formErrors[name]) {
       setFormErrors((prev) => {
@@ -418,13 +418,15 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     .filter(Boolean) as LeadOptionType[];
 
   const selectedLeadOption =
-    leadOptions.find((opt) => opt.value === Number(formData.lead)) || null;
+    leadOptions.find((opt) => opt.value === Number(formData.customer_id)) ||
+    null;
 
   const handleSubmit = async (submitType: "save" | "save_view") => {
     // Reset previous errors and perform client-side validation
     setFormErrors({});
     const errors: Record<string, string> = {};
-    if (!formData.lead) errors.lead = "Please select a Lead/Client.";
+    if (!formData.customer_id)
+      errors.customer_id = "Please select a Lead/Client.";
     if (!formData.case_category)
       errors.case_category = "Please select a Case Category.";
     if (Object.keys(errors).length > 0) {
@@ -446,7 +448,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           return;
         }
         setFormData({
-          lead: leadId || 0,
+          customer_id: leadId || 0,
           case_category: "",
           assigned_to: "",
           assigned_to_admin: "",
@@ -522,7 +524,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
             </Label>
             <Select<LeadOptionType>
               inputId="lead"
-              name="lead"
+              name="customer_id"
               placeholder="Search by name, email or phone..."
               isClearable
               isSearchable
@@ -560,7 +562,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
                 setFormData((prev) => ({
                   ...prev,
-                  lead: selectedValue,
+                  customer_id: selectedValue,
                 }));
 
                 // Clear the search input after selection so the control shows
@@ -570,7 +572,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
 
                 setFormErrors((prev) => {
                   const copy = { ...prev } as Record<string, string>;
-                  delete copy.lead;
+                  delete copy.customer_id;
                   return copy;
                 });
               }}
@@ -600,8 +602,10 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                     : "No leads available"
               }
             />
-            {formErrors.lead && (
-              <div className="text-danger small mt-1">{formErrors.lead}</div>
+            {formErrors.customer_id && (
+              <div className="text-danger small mt-1">
+                {formErrors.customer_id}
+              </div>
             )}
             <div className="mt-2">
               <Button size="sm" color="primary" onClick={handleOpenAddLead}>

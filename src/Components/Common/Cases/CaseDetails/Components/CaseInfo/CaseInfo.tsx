@@ -53,7 +53,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInvitationProps> | null>(null);
-  const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
+  const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.customer);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
     useState(false);
@@ -77,8 +77,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useUpdateCaseMutation();
 
   useEffect(() => {
-    setDisplayLeadUser(caseInfo?.lead_user);
-  }, [caseInfo?.lead_user]);
+    setDisplayLeadUser(caseInfo?.customer);
+  }, [caseInfo?.customer]);
 
   useEffect(() => {
     setLocalNotes(caseInfo?.notes || null);
@@ -244,12 +244,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 </DropdownItem>
                 <DropdownItem
                   onClick={() => {
-                    if (!caseInfo?.lead_user) {
+                    if (!caseInfo?.customer) {
                       toast.error("No lead user found for this case.");
                       return;
                     }
 
-                    if (!caseInfo.lead_user.alias) {
+                    if (!caseInfo.customer.alias) {
                       toast.error(
                         "Client alias not found. This may be an Organization Client.",
                       );
@@ -257,11 +257,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     }
 
                     setSelectedClient({
-                      alias: caseInfo.lead_user.alias,
+                      alias: caseInfo.customer.alias,
                       user: {
-                        email: caseInfo.lead_user.email,
-                        first_name: caseInfo.lead_user.first_name,
-                        last_name: caseInfo.lead_user.last_name,
+                        email: caseInfo.customer.email,
+                        first_name: caseInfo.customer.first_name,
+                        last_name: caseInfo.customer.last_name,
                       },
                     } as Partial<ClientInvitationProps>);
                     toggleClientInvitationModal();

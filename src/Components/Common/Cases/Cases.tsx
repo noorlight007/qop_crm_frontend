@@ -389,18 +389,18 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           }}
                         >
                           <li>
-                            {caseItem.lead_user ? (
+                            {caseItem.customer ? (
                               <>
-                                {caseItem.lead_user.title
+                                {caseItem.customer.title
                                   ? formatChoiceFieldValue(
-                                      caseItem.lead_user.title,
+                                      caseItem.customer.title,
                                     ) + " "
                                   : ""}
-                                {caseItem.lead_user.first_name}{" "}
-                                {caseItem.lead_user.middle_name
-                                  ? caseItem.lead_user.middle_name + " "
+                                {caseItem.customer.first_name}{" "}
+                                {caseItem.customer.middle_name
+                                  ? caseItem.customer.middle_name + " "
                                   : ""}
-                                {caseItem.lead_user.last_name}
+                                {caseItem.customer.last_name}
                               </>
                             ) : (
                               <small className="text-muted">
