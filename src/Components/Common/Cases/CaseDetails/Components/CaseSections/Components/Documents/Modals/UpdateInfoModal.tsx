@@ -99,14 +99,14 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
       if (Array.isArray(fileOwners)) {
         // Normalize possible owner shapes from API into an array of owner-info objects
         const ownersArray: Array<
-          | NonNullable<CaseDocumentProps["file_owner_info"]>
+          | NonNullable<CaseDocumentProps["customer_info"]>
           | NonNullable<CaseDocumentProps["file_owners_info"]>[number]
-        > = Array.isArray(documentData.file_owner_info)
-          ? (documentData.file_owner_info as any)
+        > = Array.isArray(documentData.customer_info)
+          ? (documentData.customer_info as any)
           : Array.isArray(documentData.file_owners_info)
             ? (documentData.file_owners_info as any)
-            : documentData.file_owner_info
-              ? [documentData.file_owner_info]
+            : documentData.customer_info
+              ? [documentData.customer_info]
               : [];
 
         if (ownersArray.length > 0) {

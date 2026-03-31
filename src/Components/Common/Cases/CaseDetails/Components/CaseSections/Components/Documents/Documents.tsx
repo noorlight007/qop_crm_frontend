@@ -132,10 +132,10 @@ const Documents: React.FC = () => {
     const documentName = doc.name?.toLowerCase() || "";
 
     // Search by owner name (support array of owners or single owner)
-    const owners = Array.isArray(doc.file_owner_info)
-      ? doc.file_owner_info
-      : doc.file_owner_info
-        ? [doc.file_owner_info]
+    const owners = Array.isArray(doc.customer_info)
+      ? doc.customer_info
+      : doc.customer_info
+        ? [doc.customer_info]
         : [];
 
     const ownerMatch = owners.some((owner: any) => {
@@ -510,7 +510,7 @@ const Documents: React.FC = () => {
                           </td>
                           <td className="text-start">
                             {/* Render multiple owners as a list when file_owner_info is an array */}
-                            {Array.isArray(fileData?.file_owner_info) ? (
+                            {Array.isArray(fileData?.customer_info) ? (
                               <ul
                                 className="mb-0"
                                 style={{
@@ -518,7 +518,7 @@ const Documents: React.FC = () => {
                                   paddingLeft: "40px",
                                 }}
                               >
-                                {fileData.file_owner_info.map((owner: any) => (
+                                {fileData.customer_info.map((owner: any) => (
                                   <li key={owner.alias || owner.email}>
                                     {owner?.title
                                       ? formatChoiceFieldValue(owner.title) +
@@ -534,16 +534,16 @@ const Documents: React.FC = () => {
                               </ul>
                             ) : (
                               <>
-                                {fileData?.file_owner_info?.title
+                                {fileData?.customer_info?.title
                                   ? formatChoiceFieldValue(
-                                      fileData.file_owner_info.title,
+                                      fileData.customer_info.title,
                                     ) + " "
                                   : ""}
-                                {fileData?.file_owner_info?.first_name}{" "}
-                                {fileData?.file_owner_info?.middle_name
-                                  ? fileData.file_owner_info.middle_name + " "
+                                {fileData?.customer_info?.first_name}{" "}
+                                {fileData?.customer_info?.middle_name
+                                  ? fileData.customer_info.middle_name + " "
                                   : ""}
-                                {fileData?.file_owner_info?.last_name}
+                                {fileData?.customer_info?.last_name}
                               </>
                             )}
                           </td>
