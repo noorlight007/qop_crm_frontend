@@ -285,12 +285,11 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
             formData.fileOwner.length > 0
           ) {
             formData.fileOwner.forEach((ownerId) => {
-              uploadData.append("file_owner", ownerId.toString());
+              uploadData.append("customer", ownerId.toString());
             });
           } else {
-            // fallback to single owner or empty
             uploadData.append(
-              "file_owner",
+              "customer",
               (formData.fileOwner as any).toString(),
             );
           }

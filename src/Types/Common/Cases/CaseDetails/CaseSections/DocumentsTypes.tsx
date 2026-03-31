@@ -36,7 +36,7 @@ export interface CaseDocumentProps {
   alias: string;
   file?: string;
   file_type?: string;
-  file_owner_info?: {
+  customer_info?: {
     email?: string;
     phone?: string;
     title?: string;
