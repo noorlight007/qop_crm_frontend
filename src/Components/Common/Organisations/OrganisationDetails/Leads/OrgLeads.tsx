@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useGetOrgLeadAndClientListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgLeadInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -46,13 +46,13 @@ const OrgLeads: React.FC = () => {
   }, [searchInput]);
 
   // rtk hooks
-  const { data: leadData, isLoading } = useGetOrgUserListQuery(
+  const { data: leadData, isLoading } = useGetOrgLeadAndClientListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
-        role: "LEAD",
+        is_lead: true,
       },
     },
     { skip: !organisationslug },
@@ -203,11 +203,7 @@ const OrgLeads: React.FC = () => {
                     </td>
                     <td>
                       {lead?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {lead?.phone}
-                        </span>
+                        <span className="text-black">{lead?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -242,7 +238,9 @@ const OrgLeads: React.FC = () => {
                         </>
                       )}
                     </td>
-                    <td>{formatDateAndTime(lead?.created_at)}</td>
+                    <td>
+                      {formatDateAndTime(lead?.created_at || "Not Available")}
+                    </td>
                   </tr>
                 ))
               ) : (
