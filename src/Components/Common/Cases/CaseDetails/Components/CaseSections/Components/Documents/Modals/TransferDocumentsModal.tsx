@@ -45,33 +45,18 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
     useGetCasesQuery(undefined);
   const [uploadCaseDocument] = useUploadCaseDocumentMutation();
 
-  // Get all unique owner emails from selected documents
-  const getOwnerEmails = (): Set<string> => {
-    const emails = new Set<string>();
-    selectedDocuments.forEach((docAlias) => {
-      const document = allDocuments.find((doc) => doc.alias === docAlias);
-      if (document && Array.isArray(document.customer_info)) {
-        document.customer_info.forEach((owner: any) => {
-          if (owner.email) {
-            emails.add(owner.email.toLowerCase());
-          }
-        });
-      }
-    });
-    return emails;
-  };
+  // Only allow target cases where customer email matches current case customer email
+  const currentCase = caseData?.results?.find(
+    (c: any) => c.alias === currentCaseAlias,
+  );
+  const currentCaseCustomerEmail =
+    currentCase?.customer?.email?.toLowerCase() || "";
 
-  // Filter cases where lead_user email matches any owner email from selected documents
   const availableCases = caseData?.results.filter((caseItem: any) => {
-    // Exclude current case
     if (caseItem.alias === currentCaseAlias) return false;
-
-    // Get owner emails from selected documents
-    const ownerEmails = getOwnerEmails();
-
-    // Check if case lead_user email matches any owner email
-    const leadUserEmail = caseItem.lead_user?.email?.toLowerCase();
-    return leadUserEmail && ownerEmails.has(leadUserEmail);
+    if (!currentCaseCustomerEmail) return false;
+    const targetEmail = caseItem.customer?.email?.toLowerCase();
+    return !!targetEmail && targetEmail === currentCaseCustomerEmail;
   });
 
   const handleTransfer = async () => {
@@ -90,12 +75,27 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
       (c: any) => c.alias === targetCaseAlias,
     );
 
-    if (!targetCase || !targetCase.lead_user?.email) {
-      toast.error("Target case not found or has no lead user");
+    if (!targetCase) {
+      toast.error("Target case not found");
       return;
     }
 
-    const targetLeadEmail = targetCase.lead_user.email.toLowerCase();
+    if (!currentCaseCustomerEmail) {
+      toast.error("Current case has no customer email");
+      return;
+    }
+
+    const targetCaseCustomerEmail =
+      targetCase.customer?.email?.toLowerCase() || "";
+    if (!targetCaseCustomerEmail) {
+      toast.error("Target case has no customer email");
+      return;
+    }
+
+    if (targetCaseCustomerEmail !== currentCaseCustomerEmail) {
+      toast.error("Customer email does not match between cases");
+      return;
+    }
 
     setIsTransferring(true);
     setTransferredCount(0);
@@ -104,7 +104,6 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
     const documentArray = Array.from(selectedDocuments);
     let successCount = 0;
     let failCount = 0;
-    let skippedCount = 0;
 
     try {
       for (let i = 0; i < documentArray.length; i++) {
@@ -121,22 +120,6 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
             continue;
           }
 
-          // Check if any owner's email matches the target case lead_user email
-          const hasMatchingOwner =
-            Array.isArray(document.customer_info) &&
-            document.customer_info.some(
-              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
-            );
-
-          if (!hasMatchingOwner) {
-            console.log(
-              `Document ${documentAlias} skipped - no matching owner for target case`,
-            );
-            skippedCount++;
-            setTransferProgress(((i + 1) / documentArray.length) * 100);
-            continue;
-          }
-
           // Fetch the file via Next.js API route to avoid CORS
           const proxyResponse = await fetch("/api/documents/proxy-file", {
             method: "POST",
@@ -145,8 +128,28 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
           });
 
           if (!proxyResponse.ok) {
+            let details = "";
+            try {
+              const data = (await proxyResponse.json()) as {
+                error?: string;
+                url?: string;
+                status?: number;
+              };
+              const parts = [data?.error || ""];
+              if (data?.status) parts.push(String(data.status));
+              if (data?.url) parts.push(data.url);
+              details = parts.filter(Boolean).join(" | ");
+            } catch {
+              try {
+                details = await proxyResponse.text();
+              } catch {
+                // ignore
+              }
+            }
+
             throw new Error(
-              `Failed to fetch file: ${proxyResponse.statusText}`,
+              details ||
+                `Failed to fetch file: ${proxyResponse.status} ${proxyResponse.statusText}`,
             );
           }
 
@@ -162,16 +165,12 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
           formData.append("file", file);
           formData.append("file_type", document.file_type || "OTHERS");
 
-          // Only add file owners whose email matches the target case lead_user
+          // Copy all file owners/customers if present
           if (
             Array.isArray(document.customer_info) &&
             document.customer_info.length > 0
           ) {
-            const matchingOwners = document.customer_info.filter(
-              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
-            );
-
-            matchingOwners.forEach((owner: any) => {
+            document.customer_info.forEach((owner: any) => {
               if (owner.id) {
                 formData.append("customer", owner.id.toString());
               }
@@ -179,24 +178,21 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
           }
 
           // Add document name if available
-          // Build full name with title, first, middle, and last name from matching owner
+          // Build full name with title, first, middle, and last name from first owner
           if (document.name) {
             formData.append("name", document.name);
           } else if (
             Array.isArray(document.customer_info) &&
             document.customer_info.length > 0
           ) {
-            // Generate name from matching owner
-            const matchingOwner = document.customer_info.find(
-              (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
-            );
+            const firstOwner = document.customer_info[0];
 
-            if (matchingOwner) {
+            if (firstOwner) {
               const ownerName = [
-                matchingOwner.title || "",
-                matchingOwner.first_name || "",
-                matchingOwner.middle_name || "",
-                matchingOwner.last_name || "",
+                firstOwner.title || "",
+                firstOwner.first_name || "",
+                firstOwner.middle_name || "",
+                firstOwner.last_name || "",
               ]
                 .filter(Boolean)
                 .join(" ")
@@ -236,14 +232,8 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
       if (successCount > 0) {
         toast.success(
           `Successfully transferred ${successCount} document(s)${
-            skippedCount > 0
-              ? `, ${skippedCount} skipped (no matching owner)`
-              : ""
-          }${failCount > 0 ? `, ${failCount} failed` : ""}`,
-        );
-      } else if (skippedCount > 0) {
-        toast.warning(
-          `All ${skippedCount} document(s) were skipped - no matching owners for target case`,
+            failCount > 0 ? `, ${failCount} failed` : ""
+          }`,
         );
       } else {
         toast.error("Failed to transfer documents");
