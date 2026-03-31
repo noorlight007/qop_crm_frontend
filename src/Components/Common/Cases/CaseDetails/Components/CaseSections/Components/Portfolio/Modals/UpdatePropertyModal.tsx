@@ -1,8 +1,6 @@
 import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Common/PropertyEPCRating";
-import {
-  useGetPortfolioApplicantsQuery,
-  useUpdatePropertyDetailsMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useUpdatePropertyDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { apiAddress } from "@/services/third-party-api";
 import { UpdatePropertyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/PortfolioTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -39,7 +37,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   const [updatePropertyDetails, { isLoading: isUpdating }] =
     useUpdatePropertyDetailsMutation();
 
-  const { data: applicantsData } = useGetPortfolioApplicantsQuery({
+  const { data: caseUsersData } = useGetCaseUsersQuery({
     case_alias: casealias,
   });
 
@@ -324,7 +322,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   const removeApplicant = (id: string) =>
     setSelectedApplicants((prev) => prev.filter((a) => a !== id));
 
-  const filteredApplicants = applicantsData?.filter(
+  const filteredApplicants = caseUsersData?.filter(
     (a: any) => !selectedApplicants.includes(a.id.toString()),
   );
 
@@ -546,7 +544,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                         <span className="text-muted">Select applicants...</span>
                       )}
                       {selectedApplicants.map((id) => {
-                        const applicant = applicantsData?.find(
+                        const applicant = caseUsersData?.find(
                           (a: any) => a.id === Number(id),
                         );
                         return (
@@ -619,7 +617,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             {/* Postcode */}
             <Col md={12}>
               <FormGroup>
-                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
+                <Label for="postcode">
+                  Postcode<span className="text-danger">*</span>
+                </Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -676,7 +676,10 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             ].map(({ id, label, value, setter, required }) => (
               <Col md={4} key={id}>
                 <FormGroup>
-                  <Label for={id}>{label}{required && <span className="text-danger">*</span>}</Label>
+                  <Label for={id}>
+                    {label}
+                    {required && <span className="text-danger">*</span>}
+                  </Label>
                   <Input
                     id={id}
                     name={id}

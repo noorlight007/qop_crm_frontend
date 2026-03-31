@@ -1,9 +1,7 @@
 import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Common/PropertyEPCRating";
-import {
-  useAddPropertyDetailsMutation,
-  useGetPortfolioApplicantsQuery,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useAddPropertyDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { apiAddress } from "@/services/third-party-api";
 import { AddPortfolioContentModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/PortfolioTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -41,10 +39,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     useAddPropertyDetailsMutation();
   const [updateSectionCompleteStatus] =
     useUpdateSectionCompleteStatusMutation();
-  const { data, isLoading: isGetApplicantsLoading } =
-    useGetPortfolioApplicantsQuery({
-      case_alias: casealias,
-    });
+  const { data: caseUsersData } = useGetCaseUsersQuery({
+    case_alias: casealias,
+  });
   const [postcode, setPostcode] = useState("");
   const [fetchedEpcRating, setFetchedEpcRating] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -174,7 +171,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     // common alias mappings
     const aliases: Record<string, string[]> = {
       houseNumber: ["house_name_or_number"],
-      applicants: ["applicant_ids"],
+      customers: ["customer_ids"],
       propertyValue: ["property_value"],
       currentMortgageBalance: ["current_mortgage_balance"],
       monthlyRental: ["monthly_rental_income"],
@@ -214,7 +211,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
     const formData = new FormData(e.currentTarget);
     try {
       const payload = {
-        applicant_ids: selectedApplicants.map((id) => Number(id)),
+        customer_ids: selectedApplicants.map((id) => Number(id)),
         postcode: formData.get("postcode"),
         house_name_or_number: formData.get("house_name_or_number"),
         address_1: formData.get("address_1"),
@@ -366,7 +363,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
   }, [isDropdownOpen]);
 
   // Filter out selected applicants from the dropdown options
-  const filteredData = data?.filter(
+  const filteredData = caseUsersData?.filter(
     (applicant: any) => !selectedApplicants.includes(applicant.id.toString()),
   );
 
@@ -597,7 +594,7 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                         <span className="text-muted">Select applicants...</span>
                       )}
                       {selectedApplicants.map((id) => {
-                        const applicant = data.find(
+                        const applicant = caseUsersData?.find(
                           (a: any) => a.id === Number(id),
                         );
                         return (
@@ -658,13 +655,13 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                       </div>
                     )}
                   </div>
-                  {(getFieldError("applicant_ids") ||
+                  {(getFieldError("customer_ids") ||
                     getFieldError("applicants")) && (
                     <small
                       className="text-danger"
                       style={{ marginTop: "5px", display: "block" }}
                     >
-                      {getFieldError("applicant_ids") ||
+                      {getFieldError("customer_ids") ||
                         getFieldError("applicants")}
                     </small>
                   )}
@@ -674,7 +671,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={12}>
               <FormGroup>
-                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
+                <Label for="postcode">
+                  Postcode<span className="text-danger">*</span>
+                </Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -710,7 +709,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
 
             <Col md={4}>
               <FormGroup>
-                <Label for="house_name_or_number">House Name Or Number<span className="text-danger">*</span></Label>
+                <Label for="house_name_or_number">
+                  House Name Or Number<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="house_name_or_number"
                   name="house_name_or_number"
@@ -733,7 +734,9 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
             </Col>
             <Col md={4}>
               <FormGroup>
-                <Label for="address_1">Address 1<span className="text-danger">*</span></Label>
+                <Label for="address_1">
+                  Address 1<span className="text-danger">*</span>
+                </Label>
                 <Input
                   id="address_1"
                   name="address_1"
