@@ -53,7 +53,7 @@ const PortfolioContent: React.FC = () => {
     case_alias: casealias,
   });
   const [updateSectionCompleteStatus] =
-      useUpdateSectionCompleteStatusMutation();
+    useUpdateSectionCompleteStatusMutation();
 
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
@@ -294,8 +294,7 @@ const PortfolioContent: React.FC = () => {
                                   </div>
                                 </td>
                                 <td>
-                                  {item?.applicant &&
-                                  item.applicant.length > 0 ? (
+                                  {item?.customers?.length > 0 ? (
                                     <ul
                                       className="mb-0 text-truncate"
                                       style={{
@@ -303,7 +302,7 @@ const PortfolioContent: React.FC = () => {
                                         paddingLeft: "40px",
                                       }}
                                     >
-                                      {item.applicant.map(
+                                      {(item?.customers || []).map(
                                         (app: any, idx: number) => (
                                           <li key={app?.id ?? idx}>
                                             {`${formatChoiceFieldValue(app?.title) || ""} ${app?.first_name || ""} ${app?.middle_name || ""} ${

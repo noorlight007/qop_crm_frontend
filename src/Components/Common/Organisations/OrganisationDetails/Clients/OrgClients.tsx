@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useGetOrgLeadAndClientListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgClientInfo } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -47,13 +47,13 @@ const OrgClients: React.FC = () => {
   }, [searchInput]);
 
   // rtk query - pass params object to match OrgClientsApi
-  const { data: clientData, isLoading } = useGetOrgUserListQuery(
+  const { data: clientData, isLoading } = useGetOrgLeadAndClientListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
-        role: "CLIENT",
+        is_lead: false,
       },
     },
     { skip: !organisationslug },
@@ -241,11 +241,7 @@ const OrgClients: React.FC = () => {
                     </td>
                     <td>
                       {client?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {client?.phone}
-                        </span>
+                        <span className="text-black">{client?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
