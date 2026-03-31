@@ -656,13 +656,13 @@ const AddPropertyModal: React.FC<AddPortfolioContentModalProps> = ({
                     )}
                   </div>
                   {(getFieldError("customer_ids") ||
-                    getFieldError("applicants")) && (
+                    getFieldError("customers")) && (
                     <small
                       className="text-danger"
                       style={{ marginTop: "5px", display: "block" }}
                     >
                       {getFieldError("customer_ids") ||
-                        getFieldError("applicants")}
+                        getFieldError("customers")}
                     </small>
                   )}
                 </FormGroup>
