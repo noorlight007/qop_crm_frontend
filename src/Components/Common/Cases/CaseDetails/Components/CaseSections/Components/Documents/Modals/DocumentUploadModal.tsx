@@ -187,7 +187,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
       const mappings: Record<string, string> = {
         file_type: "fileType",
         fileType: "fileType",
-        file_owner: "fileOwner",
+        customer: "fileOwner",
         fileOwner: "fileOwner",
         name: "DocumentName",
         DocumentName: "DocumentName",
@@ -279,7 +279,7 @@ const DocumentUploadModal: React.FC<DocumentUploadModalProps> = ({
           uploadData.append("file", file);
           uploadData.append("file_type", formData.fileType);
 
-          // append multiple owners as repeated 'file_owner' entries
+          // append multiple owners as repeated 'customer' entries
           if (
             Array.isArray(formData.fileOwner) &&
             formData.fileOwner.length > 0

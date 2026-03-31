@@ -509,7 +509,7 @@ const Documents: React.FC = () => {
                               : fileData.file?.split("/").pop() || "-"}
                           </td>
                           <td className="text-start">
-                            {/* Render multiple owners as a list when file_owner_info is an array */}
+                            {/* Render multiple owners as a list when customer_info is an array */}
                             {Array.isArray(fileData?.customer_info) ? (
                               <ul
                                 className="mb-0"

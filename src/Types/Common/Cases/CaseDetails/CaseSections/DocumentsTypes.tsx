@@ -46,16 +46,6 @@ export interface CaseDocumentProps {
     profile_image?: string;
     user_type?: string;
   };
-  file_owners_info?: {
-    email?: string;
-    phone?: string;
-    title?: string;
-    first_name?: string;
-    middle_name?: string;
-    last_name?: string;
-    profile_image?: string;
-    user_type?: string;
-  }[];
   name?: string;
   description?: string;
   special_notes?: string;

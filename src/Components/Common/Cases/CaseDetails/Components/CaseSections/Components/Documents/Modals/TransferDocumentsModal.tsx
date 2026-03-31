@@ -50,8 +50,8 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
     const emails = new Set<string>();
     selectedDocuments.forEach((docAlias) => {
       const document = allDocuments.find((doc) => doc.alias === docAlias);
-      if (document && Array.isArray(document.file_owner_info)) {
-        document.file_owner_info.forEach((owner: any) => {
+      if (document && Array.isArray(document.customer_info)) {
+        document.customer_info.forEach((owner: any) => {
           if (owner.email) {
             emails.add(owner.email.toLowerCase());
           }
@@ -123,8 +123,8 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
 
           // Check if any owner's email matches the target case lead_user email
           const hasMatchingOwner =
-            Array.isArray(document.file_owner_info) &&
-            document.file_owner_info.some(
+            Array.isArray(document.customer_info) &&
+            document.customer_info.some(
               (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
             );
 
@@ -164,16 +164,16 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
 
           // Only add file owners whose email matches the target case lead_user
           if (
-            Array.isArray(document.file_owner_info) &&
-            document.file_owner_info.length > 0
+            Array.isArray(document.customer_info) &&
+            document.customer_info.length > 0
           ) {
-            const matchingOwners = document.file_owner_info.filter(
+            const matchingOwners = document.customer_info.filter(
               (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
             );
 
             matchingOwners.forEach((owner: any) => {
               if (owner.id) {
-                formData.append("file_owner", owner.id.toString());
+                formData.append("customer", owner.id.toString());
               }
             });
           }
@@ -183,11 +183,11 @@ const TransferDocumentsModal: React.FC<TransferDocumentsModalProps> = ({
           if (document.name) {
             formData.append("name", document.name);
           } else if (
-            Array.isArray(document.file_owner_info) &&
-            document.file_owner_info.length > 0
+            Array.isArray(document.customer_info) &&
+            document.customer_info.length > 0
           ) {
             // Generate name from matching owner
-            const matchingOwner = document.file_owner_info.find(
+            const matchingOwner = document.customer_info.find(
               (owner: any) => owner.email?.toLowerCase() === targetLeadEmail,
             );
 
