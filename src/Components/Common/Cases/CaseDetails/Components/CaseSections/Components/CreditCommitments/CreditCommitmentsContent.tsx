@@ -59,13 +59,6 @@ const CreditCommitmentsContent: React.FC = () => {
     }
   };
 
-  if (isLoading)
-    return (
-      <div>
-        <LoadingSpinner />
-      </div>
-    );
-
   if (creditCommitments?.data?.length === 0) return <div>No data found</div>;
 
   const handleExportToCSV = async () => {
@@ -146,7 +139,13 @@ const CreditCommitmentsContent: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {!creditCommitments || creditCommitments.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={18} className="text-center py-4">
+                    <LoadingSpinner />
+                  </td>
+                </tr>
+              ) : !creditCommitments || creditCommitments.length === 0 ? (
                 <tr>
                   <td colSpan={18} className="text-center">
                     <span className="text-danger opacity-75 fs-6">

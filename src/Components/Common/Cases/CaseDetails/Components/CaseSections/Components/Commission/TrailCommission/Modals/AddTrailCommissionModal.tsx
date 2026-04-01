@@ -194,6 +194,7 @@ const AddTrailCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
               <Input
                 type="number"
                 min={0}
+                step={0.01}
                 value={monthlyPayment}
                 onChange={(e) => {
                   setMonthlyPayment(e.target.value);
