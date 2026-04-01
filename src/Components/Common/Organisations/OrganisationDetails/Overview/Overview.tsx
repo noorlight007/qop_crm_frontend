@@ -26,7 +26,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
           </CardTitle>
           <CardBody>
             <Row>
-              <Col md="7">
+              <Col md="12">
                 <Card className="shadow pb-1">
                   <CardHeader>
                     <h3>Case Stages</h3>
@@ -70,7 +70,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
-                      </Col>
+                      </Col>                      
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">
                           Full Mortgage Application:
@@ -78,6 +78,17 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                         <span className="fw-bold">
                           {singleOrgDashboardData?.stage_counts
                             ?.FULL_MORTGAGE_APPLICATION || (
+                            <span className="text-muted">{0}</span>
+                          )}
+                        </span>
+                      </Col>
+                      <Col md="4" sm="12" className="d-flex flex-column mt-3">
+                        <span className="text-muted">
+                          Submission:
+                        </span>
+                        <span className="fw-bold">
+                          {singleOrgDashboardData?.stage_counts
+                            ?.SUBMISSION || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -117,6 +128,33 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                         </span>
                       </Col>
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
+                        <span className="text-muted">Accept Waiting Start Date:</span>
+                        <span className="fw-bold">
+                          {singleOrgDashboardData?.stage_counts
+                            ?.ACCEPT_WAITING_START_DATE || (
+                            <span className="text-muted">{0}</span>
+                          )}
+                        </span>
+                      </Col>
+                      <Col md="4" sm="12" className="d-flex flex-column mt-3">
+                        <span className="text-muted">Accepted on Risk:</span>
+                        <span className="fw-bold">
+                          {singleOrgDashboardData?.stage_counts
+                            ?.ACCEPTED_ON_RISK || (
+                            <span className="text-muted">{0}</span>
+                          )}
+                        </span>
+                      </Col>
+                      <Col md="4" sm="12" className="d-flex flex-column mt-3">
+                        <span className="text-muted">Further Medical Required:</span>
+                        <span className="fw-bold">
+                          {singleOrgDashboardData?.stage_counts
+                            ?.FURTHER_MEDICAL_REQUIRED || (
+                            <span className="text-muted">{0}</span>
+                          )}
+                        </span>
+                      </Col>
+                      <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">Not Proceed:</span>
                         <span className="fw-bold">
                           {singleOrgDashboardData?.stage_counts
@@ -129,8 +167,8 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                   </CardBody>
                 </Card>
               </Col>
-              <Col md="5">
-                <Card className="shadow">
+              <Col md="12">
+                <Card className="shadow h-100">
                   <CardHeader>
                     <h3>Case Category</h3>
                   </CardHeader>
@@ -159,39 +197,6 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                         <span className="fw-bold">
                           {singleOrgDashboardData?.category_counts
                             ?.GENERAL_INSURANCE || (
-                            <span className="text-muted">{0}</span>
-                          )}
-                        </span>
-                      </Col>
-                    </Row>
-                  </CardBody>
-                </Card>
-                <Card className="shadow">
-                  <CardHeader>
-                    <h3>Case Status</h3>
-                  </CardHeader>
-                  <CardBody>
-                    <Row>
-                      <Col md="4" sm="12" className="d-flex flex-column">
-                        <span className="text-muted">New Lead:</span>
-                        <span className="fw-bold">
-                          {singleOrgDashboardData?.status_counts?.NEW_LEAD || (
-                            <span className="text-muted">{0}</span>
-                          )}
-                        </span>
-                      </Col>
-                      <Col md="4" sm="12" className="d-flex flex-column">
-                        <span className="text-muted">Call Back:</span>
-                        <span className="fw-bold">
-                          {singleOrgDashboardData?.status_counts?.CALL_BACK || (
-                            <span className="text-muted">{0}</span>
-                          )}
-                        </span>
-                      </Col>
-                      <Col md="4" sm="12" className="d-flex flex-column">
-                        <span className="text-muted">Meeting:</span>
-                        <span className="fw-bold">
-                          {singleOrgDashboardData?.status_counts?.MEETING || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>

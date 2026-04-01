@@ -231,10 +231,14 @@ export interface SingleOrganisationDashboardProps {
     RESEARCH_COMPLIANCE_CHECK?: number;
     DECISION_IN_PRINCIPLE?: number;
     FULL_MORTGAGE_APPLICATION?: number;
+    SUBMISSION?: number;
     OFFER_FROM_BANK?: number;
     LEGAL?: number;
     COMPLETION?: number;
     FUTURE_OPPORTUNITY?: number;
+    ACCEPT_WAITING_START_DATE?: number;
+    ACCEPTED_ON_RISK?: number;
+    FURTHER_MEDICAL_REQUIRED?: number;
     NOT_PROCEED?: number;
   };
   category_counts: {
