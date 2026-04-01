@@ -27,6 +27,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
+        "LeadOrClientFilterList",
       ],
     }),
     updateJointApplicantInfo: builder.mutation({
@@ -41,6 +42,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
+        "LeadOrClientFilterList",
       ],
     }),
     deleteJointApplicantInfo: builder.mutation({
@@ -54,6 +56,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
+        "LeadOrClientFilterList",
       ],
     }),
   }),

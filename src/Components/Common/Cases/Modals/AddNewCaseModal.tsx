@@ -536,8 +536,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               onChange={(opt) => {
                 const selectedValue = opt?.value ? Number(opt.value) : 0;
 
-                // Ensure the selected lead remains available in options even if
-                // the API results change due to searching.
                 if (opt?.value) {
                   setLeads((prev) => {
                     const exists = (prev || []).some((l: any) => {
@@ -565,8 +563,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   customer_id: selectedValue,
                 }));
 
-                // Clear the search input after selection so the control shows
-                // the selected value label normally.
                 setLeadSearchInput("");
                 setLeadSearch("");
 
@@ -581,12 +577,20 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   setLeadSearchInput(inputValue || "");
                 }
 
-                // After selecting an option, react-select clears the input.
-                // Keep our state in sync so we don't accidentally keep an old
-                // search term (which can trigger a new API fetch).
-                if (action === "set-value") {
+                // Clear stale search on any non-typing action
+                if (
+                  action === "set-value" ||
+                  action === "menu-close" ||
+                  action === "input-blur"
+                ) {
                   setLeadSearchInput("");
+                  setLeadSearch("");
                 }
+              }}
+              // ✅ This is the key fix: clear search when menu closes without a selection
+              onMenuClose={() => {
+                setLeadSearchInput("");
+                setLeadSearch("");
               }}
               components={{
                 Option: CustomOption,

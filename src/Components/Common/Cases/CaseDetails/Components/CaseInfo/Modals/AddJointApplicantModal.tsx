@@ -65,6 +65,7 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
     refetch: refetchLeads,
   } = useLeadOrClientFilterListQuery({
     search: leadSearch || undefined,
+    case_alias: casealias,
   });
 
   // ── API mutation ───────────────────────────────────────────────────────────
@@ -534,9 +535,18 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
                   if (action === "input-change") {
                     setLeadSearchInput(inputValue || "");
                   }
-                  if (action === "set-value") {
+                  if (
+                    action === "set-value" ||
+                    action === "menu-close" ||
+                    action === "input-blur"
+                  ) {
                     setLeadSearchInput("");
+                    setLeadSearch("");
                   }
+                }}
+                onMenuClose={() => {
+                  setLeadSearchInput("");
+                  setLeadSearch("");
                 }}
                 components={{
                   Option: CustomOption,

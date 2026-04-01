@@ -242,7 +242,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   <TbCircleArrowUp size="16" className="me-1" />
                   <span>Update Case</span>
                 </DropdownItem>
-                <DropdownItem
+                {/* <DropdownItem
                   onClick={() => {
                     if (!caseInfo?.customer) {
                       toast.error("No lead user found for this case.");
@@ -271,7 +271,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 >
                   <TbMailShare size="16" className="me-1" />
                   Client Invitation
-                </DropdownItem>
+                </DropdownItem> */}
                 <DropdownItem
                   className="opacity-100 py-3"
                   onClick={toggleCopyCaseModal}
