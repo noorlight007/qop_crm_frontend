@@ -140,7 +140,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
         <CardHeader>
           <Row className="flex justify-content-between">
             <Col md="3">
-              <h3>Cases Overview</h3>
+              <h3>Cases</h3>
             </Col>
             <Col md="3" xs="12">
               <InputGroup className="position-relative">

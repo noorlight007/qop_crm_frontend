@@ -2,7 +2,7 @@ export interface MyTaskProps {
   alias: string;
   name: string;
   created_at: string;
-  client_name: string;
+  customer_name: string;
   current_case_name: string;
   current_case_lender: string;
   current_case_stage: string;
