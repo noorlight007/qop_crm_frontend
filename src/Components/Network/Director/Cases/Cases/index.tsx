@@ -6,7 +6,7 @@ const NetworkDirectorCasesContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Cases Status"
+        title="Cases Overview"
         subTitle="Here you can see all the cases of the network"
         items={[{ label: "Cases" }, { label: "All Cases", active: true }]}
       />
