@@ -30,7 +30,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
   };
 
   return (
-    <Card className="border-0 rounded-lg shadow-sm mb-0">
+    <Card className="border-0 rounded-lg shadow-sm mb-4">
       <CardBody className="p-3">
         <h4>Top Performing Advisers</h4>
         {isLoading ? (
@@ -119,7 +119,7 @@ const TopPerformingAdvisers: React.FC<OrganisationDirectorDashboardProps> = ({
         ) : (
           <div
             className="d-flex justify-content-center align-items-center"
-            style={{ height: "340px" }}
+            style={{ height: "355px" }}
           >
             <p className="text-muted">No data available</p>
           </div>
