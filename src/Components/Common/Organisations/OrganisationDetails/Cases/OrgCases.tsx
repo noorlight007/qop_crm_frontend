@@ -219,10 +219,10 @@ const OrgCases: React.FC = () => {
                       <th>Phone</th>
                       <th>Case Category</th>
                       <th>Lender</th>
-                      <th>Security property</th>
+                      <th className="text-truncate">Security property</th>
                       <th>Case Stage</th>
-                      <th>Review Date</th>
-                      <th>Created At</th>
+                      <th className="text-truncate">Review Date</th>
+                      <th className="text-truncate">Created At</th>
                       <th>Created By</th>
                       <th>Assigned Adviser</th>
                       <th>Assigned Admin</th>
@@ -371,7 +371,7 @@ const OrgCases: React.FC = () => {
                               </small>
                             )}
                           </td>
-                          <td className="text-truncate">
+                          <td>
                             {(() => {
                               const pd = caseItem?.property_details;
                               if (!pd) return "N/A";

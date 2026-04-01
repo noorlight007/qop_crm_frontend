@@ -121,8 +121,8 @@ const OrganisationDetails: React.FC = () => {
               isLoading={isLoading}
               isDashboardLoading={isDashboardLoading}
             />
-            <OrgLeads />
             <OrgCases />
+            <OrgLeads />
             <OrgClients />
             <OrgAdvisers />
             <OrgAdmins />
