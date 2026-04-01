@@ -120,6 +120,9 @@ const Documents: React.FC = () => {
   // Ordered list of types for consistent display
   const allCount = fileCountMap.get("ALL") ?? caseDocuments.length;
 
+  const renderCount = (count: number) =>
+    count === 0 ? <span className="text-muted">{count}</span> : count;
+
   // Server provides file_type filtering via API; keep local list as-is
   const tabFilteredDocuments = caseDocuments;
 
@@ -407,7 +410,7 @@ const Documents: React.FC = () => {
                   className="p-2"
                 >
                   <FaFolder className="me-1" />
-                  All ({allCount})
+                  All ({renderCount(allCount)})
                 </Button>
 
                 {FILE_TYPES.map((ft) => {
@@ -427,7 +430,7 @@ const Documents: React.FC = () => {
                       className="p-2"
                     >
                       <FaFolder className="me-1" />
-                      {ft.label} ({count})
+                      {ft.label} ({renderCount(count)})
                     </Button>
                   );
                 })}
