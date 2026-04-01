@@ -2254,11 +2254,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         </Label>
                         {["yes", "no"].map((value) => (
                           <div key={value}>
-                            <Label className="me-2 text-success">
+                            <Label className="me-2">
                               <Input
                                 type="radio"
                                 name="is_mortgage_being_ported"
-                                className="border-success me-1"
+                                className="me-1"
                                 value={value}
                                 checked={
                                   formValues.is_mortgage_being_ported ===
