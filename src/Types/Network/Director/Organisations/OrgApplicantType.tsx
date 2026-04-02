@@ -1,4 +1,4 @@
-export interface OrgClientInfo {
+export interface OrgApplicantInfo {
   alias: string;
   profile_image: string;
   name: string;
@@ -22,8 +22,8 @@ export interface OrgClientInfo {
   created_at: string;
 }
 
-export interface ViewOrgClientModalProps {
+export interface ViewOrgApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedClient?: Partial<OrgClientInfo>;
+  selectedApplicant?: Partial<OrgApplicantInfo>;
 }

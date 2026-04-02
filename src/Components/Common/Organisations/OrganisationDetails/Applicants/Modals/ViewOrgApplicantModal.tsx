@@ -1,26 +1,26 @@
-import { ViewOrgClientModalProps } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
+import { ViewOrgApplicantModalProps } from "@/Types/Network/Director/Organisations/OrgApplicantType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, User } from "react-feather";
-import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
+const ViewOrgApplicantModal: React.FC<ViewOrgApplicantModalProps> = ({
   isOpen,
   toggle,
-  selectedClient,
+  selectedApplicant,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Client Information</span>
+        <span className="fs-5 fw-bold text-primary">Applicant Information</span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedClient?.profile_image ? (
+            {selectedApplicant?.profile_image ? (
               <Image
-                src={selectedClient.profile_image}
+                src={selectedApplicant.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -36,12 +36,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">{selectedClient?.name}</h4>
-          <p>
-            <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 Client
-            </Badge>
-          </p>
+          <h4 className="mb-1 text-dark fw-bold">{selectedApplicant?.name}</h4>
         </div>
 
         <div className="p-4">
@@ -60,7 +55,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedClient?.email || "-"}
+                      {selectedApplicant?.email || "-"}
                     </p>
                   </div>
                 </div>
@@ -71,9 +66,9 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedClient?.phone ? (
+                      {selectedApplicant?.phone ? (
                         <span className="text-decoration-none">
-                          {selectedClient?.phone}
+                          {selectedApplicant?.phone}
                         </span>
                       ) : (
                         "-"
@@ -87,21 +82,21 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
 
           <hr className="my-3" />
 
-          {/* Client Details */}
+          {/* Applicant Details */}
           <div className="mb-4">
             <h6
               className="text-uppercase fw-bold text-primary mb-3"
               style={{ fontSize: "11px", letterSpacing: "0.5px" }}
             >
-              Client Details
+              Applicant Details
             </h6>
             <Row>
               <Col md="6" className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedClient?.source ? (
-                      formatChoiceFieldValue(selectedClient.source)
+                    {selectedApplicant?.source ? (
+                      formatChoiceFieldValue(selectedApplicant.source)
                     ) : (
                       <small className="text-muted">Not Found</small>
                     )}
@@ -114,8 +109,8 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                     Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedClient?.enquiry_type ? (
-                      formatChoiceFieldValue(selectedClient.enquiry_type)
+                    {selectedApplicant?.enquiry_type ? (
+                      formatChoiceFieldValue(selectedApplicant.enquiry_type)
                     ) : (
                       <small className="text-muted">Not Available</small>
                     )}
@@ -123,7 +118,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                 </div>
               </Col>
             </Row>
-            {selectedClient?.other_source && (
+            {selectedApplicant?.other_source && (
               <Row>
                 <Col md="6" className="mb-3">
                   <div>
@@ -131,18 +126,18 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                       Other Source
                     </small>
                     <p className="m-0 text-dark fw-500">
-                      {selectedClient.other_source}
+                      {selectedApplicant.other_source}
                     </p>
                   </div>
                 </Col>
-                {selectedClient?.other_enquiry_type && (
+                {selectedApplicant?.other_enquiry_type && (
                   <Col md="6" className="mb-3">
                     <div>
                       <small className="text-muted d-block fw-500">
                         Other Enquiry Type
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {selectedClient.other_enquiry_type}
+                        {selectedApplicant.other_enquiry_type}
                       </p>
                     </div>
                   </Col>
@@ -154,7 +149,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
           <hr className="my-3" />
 
           {/* Notes */}
-          {selectedClient?.note && (
+          {selectedApplicant?.note && (
             <>
               <div className="mb-4">
                 <h6
@@ -176,7 +171,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                     className="m-0 text-dark"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
-                    {selectedClient.note}
+                    {selectedApplicant.note}
                   </p>
                 </div>
               </div>
@@ -193,27 +188,27 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedClient?.created_by ? (
+            {selectedApplicant?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
                   <strong>
-                    {selectedClient.created_by.title
+                    {selectedApplicant.created_by.title
                       ? formatChoiceFieldValue(
-                          selectedClient.created_by.title,
+                          selectedApplicant.created_by.title,
                         ).trim() + " "
                       : ""}
-                    {selectedClient.created_by.first_name}{" "}
-                    {selectedClient.created_by.middle_name}{" "}
-                    {selectedClient.created_by.last_name}
+                    {selectedApplicant.created_by.first_name}{" "}
+                    {selectedApplicant.created_by.middle_name}{" "}
+                    {selectedApplicant.created_by.last_name}
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedClient.created_by.user_type
+                  {selectedApplicant.created_by.user_type
                     ? formatChoiceFieldValue(
-                        selectedClient.created_by.user_type,
+                        selectedApplicant.created_by.user_type,
                       )
                     : ""}
                 </small>
@@ -238,4 +233,4 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
   );
 };
 
-export default ViewOrgClientModal;
+export default ViewOrgApplicantModal;

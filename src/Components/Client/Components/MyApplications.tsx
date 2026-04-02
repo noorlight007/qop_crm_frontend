@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleCLientApplication/SingleCLientApplicationApi";
+import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleClientApplication/SingleCLientApplicationApi";
 import { SingleClientApplicationProps } from "@/Types/Client/SingleClientApplicationTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -74,10 +74,7 @@ const MyApplications: React.FC = () => {
                     : ""}
                 </td>
                 <td>
-                  <span
-                    className="text-dark"
-                    style={{ cursor: "pointer" }}
-                  >
+                  <span className="text-dark" style={{ cursor: "pointer" }}>
                     {app.lead_user.phone || "-"}
                   </span>
                 </td>

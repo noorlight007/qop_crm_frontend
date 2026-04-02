@@ -1,8 +1,8 @@
-import { ViewOrgLeadModalProps } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
+import { ViewOrgLeadModalProps } from "@/Types/Network/Director/Organisations/OrgLeadTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
-import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
   isOpen,
@@ -37,11 +37,6 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">{selectedLead?.name}</h4>
-          <p>
-            <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 Lead
-            </Badge>
-          </p>
         </div>
 
         <div className="p-4">
