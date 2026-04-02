@@ -9,13 +9,6 @@ export const PortfolioApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Portfolio"],
     }),
-    getPortfolioApplicants: builder.query({
-      query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/user/list/`,
-        method: "GET",
-      }),
-      providesTags: ["Portfolio"],
-    }),
     addPropertyDetails: builder.mutation({
       query: ({ case_alias, propertyDetails }) => ({
         url: `/cases/${case_alias}/properties/`,
@@ -60,7 +53,6 @@ export const PortfolioApi = baseApi.injectEndpoints({
 
 export const {
   useGetPortfolioDetailsQuery,
-  useGetPortfolioApplicantsQuery,
   useAddPropertyDetailsMutation,
   useUpdatePropertyDetailsMutation,
   useDeletePropertyDetailsMutation,

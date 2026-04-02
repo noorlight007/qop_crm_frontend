@@ -7,7 +7,7 @@ export const InsuranceOverviewApi = baseApi.injectEndpoints({
         url: `/cases/${case_alias}/insurance-loan-details/`,
         method: "GET",
       }),
-      providesTags: ["InsuranceOverview"],
+      providesTags: ["InsuranceOverview", "JointApplicantDetails"],
     }),
     updateInsuranceOverview: builder.mutation({
       query: ({ case_alias, insurance_overview_alias, payload }) => ({
@@ -15,7 +15,7 @@ export const InsuranceOverviewApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload,
       }),
-      invalidatesTags: ["InsuranceOverview"],
+      invalidatesTags: ["InsuranceOverview", "JointApplicantDetails"],
     }),
     getInsurancePolicies: builder.query({
       query: ({ case_alias, insurance_overview_alias }) => ({

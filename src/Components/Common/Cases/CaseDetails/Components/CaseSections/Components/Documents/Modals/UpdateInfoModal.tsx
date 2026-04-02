@@ -94,20 +94,23 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
   // Initialize form data when document changes
   useEffect(() => {
     if (documentData && fileOwners) {
-      // Find the current owner IDs by matching with file_owner_info or file_owners_info
+      // Find the current owner IDs by matching with customer_info or customer_info
       let currentOwnerIds: number[] = [];
       if (Array.isArray(fileOwners)) {
         // Normalize possible owner shapes from API into an array of owner-info objects
-        const ownersArray: Array<
-          | NonNullable<CaseDocumentProps["file_owner_info"]>
-          | NonNullable<CaseDocumentProps["file_owners_info"]>[number]
-        > = Array.isArray(documentData.file_owner_info)
-          ? (documentData.file_owner_info as any)
-          : Array.isArray(documentData.file_owners_info)
-            ? (documentData.file_owners_info as any)
-            : documentData.file_owner_info
-              ? [documentData.file_owner_info]
-              : [];
+        type CustomerInfo = NonNullable<CaseDocumentProps["customer_info"]>;
+
+        const customerInfoRaw = (
+          documentData as unknown as {
+            customer_info?: CustomerInfo | CustomerInfo[];
+          }
+        ).customer_info;
+
+        const ownersArray: CustomerInfo[] = Array.isArray(customerInfoRaw)
+          ? customerInfoRaw
+          : customerInfoRaw
+            ? [customerInfoRaw]
+            : [];
 
         if (ownersArray.length > 0) {
           // Map owner infos to user ids by matching email or name
@@ -214,8 +217,8 @@ const UpdateInfoModal: React.FC<UpdateInfoModalProps> = ({
 
     try {
       const payload = {
-        // API expects 'file_owner' which can be a list of IDs for multiple owners
-        file_owner: formData.fileOwners,
+        // API expects 'customer' which can be a list of IDs for multiple owners
+        customer: formData.fileOwners,
         file_type: formData.document_type,
         name: formData.document_name.trim(),
       } as any;

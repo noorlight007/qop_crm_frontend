@@ -1,4 +1,4 @@
-import { useDeleteAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { useDeleteLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
 import { DeleteLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import React from "react";
 import { toast } from "react-toastify";
@@ -9,13 +9,13 @@ const DeleteLeadOrClientModal: React.FC<DeleteLeadOrClientModalProps> = ({
   toggle,
   selectedLeadOrClient,
 }) => {
-  const [deleteLeadOrClient, { isLoading }] = useDeleteAuthUserMutation();
+  const [deleteLeadOrClient, { isLoading }] = useDeleteLeadsOrClientsMutation();
 
   const handleDelete = async () => {
     if (!selectedLeadOrClient?.alias) return;
     try {
       const response = await deleteLeadOrClient({
-        userAlias: selectedLeadOrClient.alias,
+        customerAlias: selectedLeadOrClient.alias,
       });
 
       if ("data" in response) {

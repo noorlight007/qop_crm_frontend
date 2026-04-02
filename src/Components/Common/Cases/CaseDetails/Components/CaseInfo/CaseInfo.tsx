@@ -53,14 +53,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] =
     useState<Partial<ClientInvitationProps> | null>(null);
-  const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.lead_user);
+  const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.customer);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
     useState(false);
   const [isViewJointApplicantModalOpen, setIsViewJointApplicantModalOpen] =
     useState(false);
   const [selectedJointApplicant, setSelectedJointApplicant] =
-    useState<any>(null);
+    useState<{data: any, index: number} | null>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
 
@@ -77,8 +77,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useUpdateCaseMutation();
 
   useEffect(() => {
-    setDisplayLeadUser(caseInfo?.lead_user);
-  }, [caseInfo?.lead_user]);
+    setDisplayLeadUser(caseInfo?.customer);
+  }, [caseInfo?.customer]);
 
   useEffect(() => {
     setLocalNotes(caseInfo?.notes || null);
@@ -110,8 +110,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const toggleAddJointApplicantModal = () =>
     setIsAddJointApplicantModalOpen(!isAddJointApplicantModalOpen);
 
-  const openViewJointApplicantModal = (jointApplicant: any) => {
-    setSelectedJointApplicant(jointApplicant);
+  const openViewJointApplicantModal = (jointApplicant: any,  index: number) => {
+    setSelectedJointApplicant({ data: jointApplicant, index });
     toggleViewJointApplicantModal();
   };
 
@@ -242,14 +242,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   <TbCircleArrowUp size="16" className="me-1" />
                   <span>Update Case</span>
                 </DropdownItem>
-                <DropdownItem
+                {/* <DropdownItem
                   onClick={() => {
-                    if (!caseInfo?.lead_user) {
+                    if (!caseInfo?.customer) {
                       toast.error("No lead user found for this case.");
                       return;
                     }
 
-                    if (!caseInfo.lead_user.alias) {
+                    if (!caseInfo.customer.alias) {
                       toast.error(
                         "Client alias not found. This may be an Organization Client.",
                       );
@@ -257,11 +257,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     }
 
                     setSelectedClient({
-                      alias: caseInfo.lead_user.alias,
+                      alias: caseInfo.customer.alias,
                       user: {
-                        email: caseInfo.lead_user.email,
-                        first_name: caseInfo.lead_user.first_name,
-                        last_name: caseInfo.lead_user.last_name,
+                        email: caseInfo.customer.email,
+                        first_name: caseInfo.customer.first_name,
+                        last_name: caseInfo.customer.last_name,
                       },
                     } as Partial<ClientInvitationProps>);
                     toggleClientInvitationModal();
@@ -271,7 +271,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 >
                   <TbMailShare size="16" className="me-1" />
                   Client Invitation
-                </DropdownItem>
+                </DropdownItem> */}
                 <DropdownItem
                   className="opacity-100 py-3"
                   onClick={toggleCopyCaseModal}
@@ -476,26 +476,20 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                               <strong
                                 className="small text_decoration_hover"
                                 onClick={() =>
-                                  openViewJointApplicantModal(jointApplicant)
+                                  openViewJointApplicantModal(jointApplicant, index)
                                 }
                                 style={{ cursor: "pointer" }}
                               >
-                                {jointApplicant?.joint_user_details?.title
+                                {jointApplicant?.customer?.title
                                   ? formatChoiceFieldValue(
-                                      jointApplicant.joint_user_details.title,
+                                      jointApplicant.customer.title,
                                     ) + " "
                                   : " "}
-                                {jointApplicant?.joint_user_details?.first_name}{" "}
-                                {jointApplicant?.joint_user_details
-                                  ?.middle_name && (
-                                  <>
-                                    {
-                                      jointApplicant.joint_user_details
-                                        .middle_name
-                                    }{" "}
-                                  </>
+                                {jointApplicant?.customer?.first_name}{" "}
+                                {jointApplicant?.customer?.middle_name && (
+                                  <>{jointApplicant.customer.middle_name} </>
                                 )}
-                                {jointApplicant?.joint_user_details?.last_name}
+                                {jointApplicant?.customer?.last_name}
                               </strong>
                             </li>
                           ))}
@@ -1040,9 +1034,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       />
       {selectedJointApplicant && (
         <ViewJointApplicantModal
+          key={selectedJointApplicant.index}
           isOpen={isViewJointApplicantModalOpen}
           toggle={toggleViewJointApplicantModal}
-          selectedApplicant={selectedJointApplicant}
+          selectedApplicant={selectedJointApplicant.data}
         />
       )}
       <AddJointApplicantModal

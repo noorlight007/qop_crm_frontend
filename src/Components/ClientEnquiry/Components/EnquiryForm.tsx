@@ -25,6 +25,12 @@ import {
 } from "reactstrap";
 
 const EnquiryForm: React.FC = () => {
+  const OPTIONAL_FIELDS = new Set([
+    "estimated_property_value",
+    "approximate_mortgage_required",
+    "approximate_deposit_available",
+  ]);
+
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -74,19 +80,74 @@ const EnquiryForm: React.FC = () => {
     },
   ];
 
+  const validateMortgageRequired = (
+    estimatedPropertyValue: string,
+    mortgageRequired: string,
+  ): string | null => {
+    if (!estimatedPropertyValue || !mortgageRequired) return null;
+
+    const propertyValue = Number(estimatedPropertyValue);
+    const mortgageValue = Number(mortgageRequired);
+
+    if (Number.isNaN(propertyValue) || Number.isNaN(mortgageValue)) {
+      return null;
+    }
+
+    if (mortgageValue > propertyValue) {
+      return "Approximate Mortgage Required cannot be more than the Estimated Property Value";
+    }
+
+    return null;
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value, type } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
+    const updatedValue =
+      type === "checkbox" ? (e.target as HTMLInputElement).checked : value;
+
+    setFormData((prev) => {
+      const nextData = {
+        ...prev,
+        [name]: updatedValue,
+      };
+
+      if (
+        name === "estimated_property_value" ||
+        name === "approximate_mortgage_required"
+      ) {
+        const mortgageError = validateMortgageRequired(
+          nextData.estimated_property_value,
+          nextData.approximate_mortgage_required,
+        );
+
+        setErrors((prevErrors) => {
+          const nextErrors = { ...prevErrors };
+          if (mortgageError) {
+            nextErrors.approximate_mortgage_required = mortgageError;
+          } else {
+            delete nextErrors.approximate_mortgage_required;
+          }
+          return nextErrors;
+        });
+      }
+
+      return nextData;
+    });
   };
 
   const handleBlur = (fieldName: string, value: any) => {
+    if (OPTIONAL_FIELDS.has(fieldName) && !value) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+      return;
+    }
+
     if (!value) {
       setErrors((prev) => ({ ...prev, [fieldName]: "This field is required" }));
     } else {
@@ -206,6 +267,15 @@ const EnquiryForm: React.FC = () => {
       case 2:
         if (!formData.enquiry_type)
           newErrors.enquiry_type = "This field is required";
+        {
+          const mortgageError = validateMortgageRequired(
+            formData.estimated_property_value,
+            formData.approximate_mortgage_required,
+          );
+          if (mortgageError) {
+            newErrors.approximate_mortgage_required = mortgageError;
+          }
+        }
         break;
 
       case 3:
@@ -253,6 +323,19 @@ const EnquiryForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const mortgageError = validateMortgageRequired(
+      formData.estimated_property_value,
+      formData.approximate_mortgage_required,
+    );
+    if (mortgageError) {
+      setCurrentStep(2);
+      setErrors((prev) => ({
+        ...prev,
+        approximate_mortgage_required: mortgageError,
+      }));
+      return;
+    }
 
     const invalidStep = getFirstInvalidStep();
 

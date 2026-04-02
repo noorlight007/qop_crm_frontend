@@ -1,6 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import SupportTicket from "@/Components/Common/SupportTicket/SupportTicket";
-import { Container, Row } from "reactstrap";
 
 const SupportTicketContainer: React.FC = () => {
   return (
@@ -10,11 +9,7 @@ const SupportTicketContainer: React.FC = () => {
         subTitle="Welcome back! Check all the Support Tickets"
         items={[{ label: "Support Tickets", active: true }]}
       />
-      <Container fluid>
-        <Row>
-          <SupportTicket />
-        </Row>
-      </Container>
+      <SupportTicket />
     </>
   );
 };

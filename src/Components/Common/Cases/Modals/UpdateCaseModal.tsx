@@ -1,5 +1,5 @@
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,

@@ -2,9 +2,10 @@ import { JointApplicantProps } from "./CaseDetails/JointApplicant/JointApplicant
 
 export interface CaseInfoPrpos {
   alias: string;
+  customer_id?: number;
   lead: number;
   name: string;
-  lead_user: {
+  customer: {
     alias: string;
     title: string;
     email: string;

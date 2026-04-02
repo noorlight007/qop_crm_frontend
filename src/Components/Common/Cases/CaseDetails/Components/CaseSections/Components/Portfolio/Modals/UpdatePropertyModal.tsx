@@ -1,8 +1,6 @@
 import { useGetPropertyEPCRatingMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Common/PropertyEPCRating";
-import {
-  useGetPortfolioApplicantsQuery,
-  useUpdatePropertyDetailsMutation,
-} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useUpdatePropertyDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
+import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
 import { apiAddress } from "@/services/third-party-api";
 import { UpdatePropertyModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/PortfolioTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -39,7 +37,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   const [updatePropertyDetails, { isLoading: isUpdating }] =
     useUpdatePropertyDetailsMutation();
 
-  const { data: applicantsData } = useGetPortfolioApplicantsQuery({
+  const { data: caseUsersData } = useGetCaseUsersQuery({
     case_alias: casealias,
   });
 
@@ -144,8 +142,11 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
       setCompanyName(property.company_name || "");
       setFetchedEpcRating(property.epc_rating || "");
       setNote(property.note || "");
+      const linkedCustomers = property.customers ?? [];
       setSelectedApplicants(
-        property.applicant?.map((a: any) => String(a.id)) || [],
+        Array.isArray(linkedCustomers)
+          ? linkedCustomers.map((c: any) => String(c.id))
+          : [],
       );
       if (property.latitude && property.longitude) {
         setMapCoords({ lat: property.latitude, lng: property.longitude });
@@ -289,7 +290,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
     if (errors[snake]) return errors[snake];
     const aliases: Record<string, string[]> = {
       houseNumber: ["house_name_or_number"],
-      applicants: ["applicant_ids"],
+      customers: ["customer_ids"],
       propertyValue: ["property_value"],
       currentMortgageBalance: ["current_mortgage_balance"],
       monthlyRental: ["monthly_rental_income"],
@@ -324,7 +325,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
   const removeApplicant = (id: string) =>
     setSelectedApplicants((prev) => prev.filter((a) => a !== id));
 
-  const filteredApplicants = applicantsData?.filter(
+  const filteredApplicants = caseUsersData?.filter(
     (a: any) => !selectedApplicants.includes(a.id.toString()),
   );
 
@@ -392,7 +393,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
     // }
     try {
       const payload = {
-        applicant_ids: selectedApplicants.map(Number),
+        customer_ids: selectedApplicants.map(Number),
         postcode,
         house_name_or_number: houseNumber,
         address_1: address1,
@@ -546,7 +547,7 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                         <span className="text-muted">Select applicants...</span>
                       )}
                       {selectedApplicants.map((id) => {
-                        const applicant = applicantsData?.find(
+                        const applicant = caseUsersData?.find(
                           (a: any) => a.id === Number(id),
                         );
                         return (
@@ -605,11 +606,11 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
                       </div>
                     )}
                   </div>
-                  {(getFieldError("applicant_ids") ||
-                    getFieldError("applicants")) && (
+                  {(getFieldError("customer_ids") ||
+                    getFieldError("customers")) && (
                     <small className="text-danger d-block mt-1">
-                      {getFieldError("applicant_ids") ||
-                        getFieldError("applicants")}
+                      {getFieldError("customer_ids") ||
+                        getFieldError("customers")}
                     </small>
                   )}
                 </FormGroup>
@@ -619,7 +620,9 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             {/* Postcode */}
             <Col md={12}>
               <FormGroup>
-                <Label for="postcode">Postcode<span className="text-danger">*</span></Label>
+                <Label for="postcode">
+                  Postcode<span className="text-danger">*</span>
+                </Label>
                 <InputGroup className="d-flex align-items-center gap-2">
                   <Input
                     id="postcode"
@@ -676,7 +679,10 @@ const UpdatePropertyModal: React.FC<UpdatePropertyModalProps> = ({
             ].map(({ id, label, value, setter, required }) => (
               <Col md={4} key={id}>
                 <FormGroup>
-                  <Label for={id}>{label}{required && <span className="text-danger">*</span>}</Label>
+                  <Label for={id}>
+                    {label}
+                    {required && <span className="text-danger">*</span>}
+                  </Label>
                   <Input
                     id={id}
                     name={id}

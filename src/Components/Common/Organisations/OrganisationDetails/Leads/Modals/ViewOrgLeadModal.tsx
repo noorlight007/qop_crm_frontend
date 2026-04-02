@@ -39,7 +39,7 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
           <h4 className="mb-1 text-dark fw-bold">{selectedLead?.name}</h4>
           <p>
             <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 {formatChoiceFieldValue(selectedLead?.role)}
+              👤 Lead
             </Badge>
           </p>
         </div>
@@ -72,9 +72,7 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedLead?.phone ? (
-                        <span
-                          className="text-decoration-none"
-                        >
+                        <span className="text-decoration-none">
                           {selectedLead.phone}
                         </span>
                       ) : (

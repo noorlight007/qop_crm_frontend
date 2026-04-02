@@ -1,6 +1,6 @@
 export interface ExistingProtectionDetailsProps {
   alias: string;
-  user: {
+  customer: {
     id: number;
     title: string;
     first_name: string;

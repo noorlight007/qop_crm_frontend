@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useGetOrgLeadAndClientListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgClientInfo } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -47,13 +47,13 @@ const OrgClients: React.FC = () => {
   }, [searchInput]);
 
   // rtk query - pass params object to match OrgClientsApi
-  const { data: clientData, isLoading } = useGetOrgUserListQuery(
+  const { data: clientData, isLoading } = useGetOrgLeadAndClientListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
-        role: "CLIENT",
+        is_lead: false,
       },
     },
     { skip: !organisationslug },
@@ -241,11 +241,7 @@ const OrgClients: React.FC = () => {
                     </td>
                     <td>
                       {client?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {client?.phone}
-                        </span>
+                        <span className="text-black">{client?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -309,47 +305,43 @@ const OrgClients: React.FC = () => {
                 of {totalCount} Clients
               </p>
             </div>
-            {totalPages > 1 && (
-              <Pagination className="d-flex justify-content-end p-2">
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink first onClick={() => setCurrentPage(1)} />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink
-                    previous
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  />
-                </PaginationItem>
+            <Pagination className="d-flex justify-content-end p-2">
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink first onClick={() => setCurrentPage(1)} />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink
+                  previous
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                />
+              </PaginationItem>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNumber) => (
-                    <PaginationItem
-                      key={pageNumber}
-                      active={pageNumber === currentPage}
-                    >
-                      <PaginationLink
-                        onClick={() => setCurrentPage(pageNumber)}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ),
-                )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <PaginationItem
+                    key={pageNumber}
+                    active={pageNumber === currentPage}
+                  >
+                    <PaginationLink onClick={() => setCurrentPage(pageNumber)}>
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
 
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    next
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    last
-                    onClick={() => setCurrentPage(totalPages)}
-                  />
-                </PaginationItem>
-              </Pagination>
-            )}
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  next
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  last
+                  onClick={() => setCurrentPage(totalPages)}
+                />
+              </PaginationItem>
+            </Pagination>
           </div>
         </Row>
 

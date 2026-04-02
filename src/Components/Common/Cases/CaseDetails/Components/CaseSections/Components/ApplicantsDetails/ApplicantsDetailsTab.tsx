@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetApplicantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
@@ -98,16 +99,14 @@ export const ApplicantsDetailsTab = () => {
                         }
                       >
                         {`${
-                          applicantData?.applicant?.title
-                            ? applicantData?.applicant?.title[0].toUpperCase() +
-                              applicantData?.applicant?.title
-                                .slice(1)
-                                .toLowerCase() +
-                              ""
+                          applicantData?.customer?.title
+                            ? formatChoiceFieldValue(
+                                applicantData.customer.title,
+                              )
                             : ""
-                        } ${applicantData?.applicant?.first_name} ${
-                          applicantData?.applicant?.middle_name
-                        } ${applicantData?.applicant?.last_name}`}
+                        } ${applicantData?.customer?.first_name} ${
+                          applicantData?.customer?.middle_name
+                        } ${applicantData?.customer?.last_name}`}
                         {!isCurrentValid && isPreviousValid && (
                           <span className="text-danger ms-1">*</span>
                         )}

@@ -94,7 +94,7 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
     try {
       const res = await addExistingProtectionDetails({
         case_alias: casealias,
-        existingProtection_id: existingProtectionData?.user?.id,
+        existingProtection_id: existingProtectionData?.customer?.id,
         existingProtectionDetailsPayload: formData,
       });
 

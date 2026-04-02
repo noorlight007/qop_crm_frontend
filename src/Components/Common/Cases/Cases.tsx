@@ -4,7 +4,7 @@ import {
   mortgageStages,
 } from "@/Data/Common/FilterChoiceFields";
 import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserListApi";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
@@ -140,7 +140,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
         <CardHeader>
           <Row className="flex justify-content-between">
             <Col md="3">
-              <h3>Cases Overview</h3>
+              <h3>Cases</h3>
             </Col>
             <Col md="3" xs="12">
               <InputGroup className="position-relative">
@@ -389,18 +389,18 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           }}
                         >
                           <li>
-                            {caseItem.lead_user ? (
+                            {caseItem.customer ? (
                               <>
-                                {caseItem.lead_user.title
+                                {caseItem.customer.title
                                   ? formatChoiceFieldValue(
-                                      caseItem.lead_user.title,
+                                      caseItem.customer.title,
                                     ) + " "
                                   : ""}
-                                {caseItem.lead_user.first_name}{" "}
-                                {caseItem.lead_user.middle_name
-                                  ? caseItem.lead_user.middle_name + " "
+                                {caseItem.customer.first_name}{" "}
+                                {caseItem.customer.middle_name
+                                  ? caseItem.customer.middle_name + " "
                                   : ""}
-                                {caseItem.lead_user.last_name}
+                                {caseItem.customer.last_name}
                               </>
                             ) : (
                               <small className="text-muted">

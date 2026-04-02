@@ -4,7 +4,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getJointApplicantInfo: builder.query({
       query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/joint/users/`,
+        url: `/cases/${case_alias}/joint-users/`,
         method: "GET",
       }),
       providesTags: [
@@ -17,7 +17,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
     }),
     addJointApplicantInfo: builder.mutation({
       query: ({ case_alias, jointuserInfo }) => ({
-        url: `/cases/${case_alias}/joint/users/`,
+        url: `/cases/${case_alias}/joint-users/`,
         method: "POST",
         body: jointuserInfo,
       }),
@@ -27,12 +27,13 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
+        "LeadOrClientFilterList",
       ],
     }),
     updateJointApplicantInfo: builder.mutation({
       query: ({ case_alias, userAlias, updatedJointuserInfo }) => ({
-        url: `/cases/${case_alias}/joint/users/${userAlias}/`,
-        method: "PUT",
+        url: `/cases/${case_alias}/joint-users/${userAlias}/`,
+        method: "PATCH",
         body: updatedJointuserInfo,
       }),
       invalidatesTags: [
@@ -41,11 +42,12 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
+        "LeadOrClientFilterList",
       ],
     }),
     deleteJointApplicantInfo: builder.mutation({
       query: ({ case_alias, userAlias }) => ({
-        url: `/cases/${case_alias}/joint/users/${userAlias}/`,
+        url: `/cases/${case_alias}/joint-users/${userAlias}/`,
         method: "DELETE",
       }),
       invalidatesTags: [
@@ -54,6 +56,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "JointApplicantDetails",
         "ExistingProtectionDetails",
         "Portfolio",
+        "LeadOrClientFilterList",
       ],
     }),
   }),

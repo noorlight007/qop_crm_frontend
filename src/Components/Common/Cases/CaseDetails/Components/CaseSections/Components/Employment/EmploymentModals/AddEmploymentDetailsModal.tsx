@@ -169,7 +169,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
     e.preventDefault();
     const res = await addEmploymentDetails({
       case_alias: casealias,
-      employer_id: employmentData?.user?.id,
+      employer_id: employmentData?.customer?.id,
       employmentDetails: formValues,
     });
 

@@ -190,7 +190,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   const [formValues, setFormValues] = useState<ApplicantProps>({
     alias: basicTab || "",
     is_company_application: false,
-    applicant: {
+    customer: {
       title: "",
       first_name: "",
       middle_name: "",
@@ -316,7 +316,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
         marketing_preferences: marketing_preferences || [],
       });
       // Store the original email for comparison
-      setOriginalEmail(selectedApplicant.applicant?.email);
+      setOriginalEmail(selectedApplicant.customer?.email);
     }
   }, [selectedApplicant]);
 
@@ -382,15 +382,15 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
       let updatedValues = { ...prevValues };
 
-      if (name.startsWith("applicant.")) {
+      if (name.startsWith("customer.")) {
         const field = name.split(".")[1];
 
         updatedValues = {
           ...prevValues,
-          applicant: {
-            ...prevValues.applicant,
+          customer: {
+            ...prevValues.customer,
             [field]: value,
-          } as typeof prevValues.applicant,
+          } as typeof prevValues.customer,
         };
       } else {
         updatedValues = {
@@ -419,12 +419,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
       const dataToSend = { ...formValues };
 
       // If email hasn't changed from original, remove it from the payload
-      if (
-        dataToSend.applicant &&
-        dataToSend.applicant.email === originalEmail
-      ) {
-        const { email, ...restApplicant } = dataToSend.applicant;
-        dataToSend.applicant = restApplicant as any;
+      if (dataToSend.customer && dataToSend.customer.email === originalEmail) {
+        const { email, ...restCustomer } = dataToSend.customer;
+        dataToSend.customer = restCustomer as any;
       }
 
       const response = await updateApplicantDetails({
@@ -706,16 +703,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.title">
+                <Label for="customer.title">
                   Title<span className="text-danger">*</span>
                 </Label>
                 <Input
-                  id="applicant.title"
+                  id="customer.title"
                   type="select"
                   style={{ padding: "11px 11px" }}
-                  value={formValues?.applicant?.title}
+                  value={formValues?.customer?.title}
                   onChange={(e) =>
-                    handleInputChange("applicant.title", e.target.value)
+                    handleInputChange("customer.title", e.target.value)
                   }
                   required
                 >
@@ -730,69 +727,69 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                   <option value="PROFESSOR">Professor</option>
                   <option value="DOCTOR">Doctor</option>
                 </Input>
-                {getFieldError("applicant.title") && (
+                {getFieldError("customer.title") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant.title")}
+                    {getFieldError("customer.title")}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.first_name">
+                <Label for="customer.first_name">
                   First Name<span className="text-danger">*</span>
                 </Label>
                 <Input
-                  id="applicant.first_name"
+                  id="customer.first_name"
                   type="text"
-                  value={formValues?.applicant?.first_name || ""}
+                  value={formValues?.customer?.first_name || ""}
                   onChange={(e) =>
-                    handleInputChange("applicant.first_name", e.target.value)
+                    handleInputChange("customer.first_name", e.target.value)
                   }
                   required
                 />
-                {getFieldError("applicant.first_name") && (
+                {getFieldError("customer.first_name") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant.first_name")}
+                    {getFieldError("customer.first_name")}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.middle_name">Middle Name(s)</Label>
+                <Label for="customer.middle_name">Middle Name(s)</Label>
                 <Input
-                  id="applicant.middle_name"
+                  id="customer.middle_name"
                   type="text"
-                  value={formValues.applicant?.middle_name || ""}
+                  value={formValues.customer?.middle_name || ""}
                   onChange={(e) =>
-                    handleInputChange("applicant.middle_name", e.target.value)
+                    handleInputChange("customer.middle_name", e.target.value)
                   }
                 />
-                {getFieldError("applicant.middle_name") && (
+                {getFieldError("customer.middle_name") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant.middle_name")}
+                    {getFieldError("customer.middle_name")}
                   </div>
                 )}
               </FormGroup>
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.last_name">
+                <Label for="customer.last_name">
                   Last Name<span className="text-danger">*</span>
                 </Label>
                 <Input
-                  id="applicant.last_name"
+                  id="customer.last_name"
                   type="text"
-                  value={formValues.applicant?.last_name || ""}
+                  value={formValues.customer?.last_name || ""}
                   onChange={(e) =>
-                    handleInputChange("applicant.last_name", e.target.value)
+                    handleInputChange("customer.last_name", e.target.value)
                   }
                   required
                 />
-                {getFieldError("applicant.last_name") && (
+                {getFieldError("customer.last_name") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant.last_name")}
+                    {getFieldError("customer.last_name")}
                   </div>
                 )}
               </FormGroup>
@@ -1296,21 +1293,21 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.phone">
+                <Label for="customer.phone">
                   Mobile Number<span className="text-danger">*</span>
                 </Label>
                 <Input
-                  id="applicant.phone"
+                  id="customer.phone"
                   type="text"
-                  value={formValues?.applicant?.phone || ""}
+                  value={formValues?.customer?.phone || ""}
                   onChange={(e) =>
-                    handleInputChange("applicant.phone", e.target.value)
+                    handleInputChange("customer.phone", e.target.value)
                   }
                   required
                 />
-                {getFieldError("applicant.phone") && (
+                {getFieldError("customer.phone") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant.phone")}
+                    {getFieldError("customer.phone")}
                   </div>
                 )}
               </FormGroup>
@@ -1333,21 +1330,21 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label for="applicant.email">Email Address</Label>
+                <Label for="customer.email">Email Address</Label>
                 <Input
-                  id="applicant.email"
+                  id="customer.email"
                   type="email"
-                  value={formValues?.applicant?.email || ""}
+                  value={formValues?.customer?.email || ""}
                   onChange={(e) => {
                     const newValue = e.target.value;
-                    if (newValue !== (formValues?.applicant?.email || "")) {
-                      handleInputChange("applicant.email", newValue);
+                    if (newValue !== (formValues?.customer?.email || "")) {
+                      handleInputChange("customer.email", newValue);
                     }
                   }}
                 />
-                {getFieldError("applicant.email") && (
+                {getFieldError("customer.email") && (
                   <div className="text-danger small">
-                    {getFieldError("applicant.email")}
+                    {getFieldError("customer.email")}
                   </div>
                 )}
               </FormGroup>
@@ -2257,11 +2254,11 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         </Label>
                         {["yes", "no"].map((value) => (
                           <div key={value}>
-                            <Label className="me-2 text-success">
+                            <Label className="me-2">
                               <Input
                                 type="radio"
                                 name="is_mortgage_being_ported"
-                                className="border-success me-1"
+                                className="me-1"
                                 value={value}
                                 checked={
                                   formValues.is_mortgage_being_ported ===

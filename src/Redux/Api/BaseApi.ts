@@ -205,6 +205,9 @@ export const baseApi = createApi({
     "AddUser",
     "AuthUserList",
 
+    //filters
+    "LeadOrClientFilterList",
+
     //Common components start
     "LeadDetails",
     "ClientDetails",
@@ -215,6 +218,7 @@ export const baseApi = createApi({
     "UserProfileDetails",
     "ResetPassword",
     "SupportTicket",
+    "LeadsOrClients",
     // Common components end
 
     // Single case info start
@@ -270,6 +274,7 @@ export const baseApi = createApi({
     "SingleOrganisation",
     "NetworkReports",
     "OrgUserList",
+    "OrgLeadAndClientList",
     "OrgCases",
     "NetworkDirectorDashboard",
     //Network Director end

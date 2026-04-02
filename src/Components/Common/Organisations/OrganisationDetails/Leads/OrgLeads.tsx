@@ -1,5 +1,5 @@
 "use client";
-import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useGetOrgLeadAndClientListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgLeadInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -46,13 +46,13 @@ const OrgLeads: React.FC = () => {
   }, [searchInput]);
 
   // rtk hooks
-  const { data: leadData, isLoading } = useGetOrgUserListQuery(
+  const { data: leadData, isLoading } = useGetOrgLeadAndClientListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
-        role: "LEAD",
+        is_lead: true,
       },
     },
     { skip: !organisationslug },
@@ -203,11 +203,7 @@ const OrgLeads: React.FC = () => {
                     </td>
                     <td>
                       {lead?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {lead?.phone}
-                        </span>
+                        <span className="text-black">{lead?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -242,7 +238,9 @@ const OrgLeads: React.FC = () => {
                         </>
                       )}
                     </td>
-                    <td>{formatDateAndTime(lead?.created_at)}</td>
+                    <td>
+                      {formatDateAndTime(lead?.created_at || "Not Available")}
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -271,47 +269,43 @@ const OrgLeads: React.FC = () => {
                 of {totalCount} Leads
               </p>
             </div>{" "}
-            {totalPages > 1 && (
-              <Pagination className="d-flex justify-content-end p-2">
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink first onClick={() => setCurrentPage(1)} />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink
-                    previous
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                  />
-                </PaginationItem>
+            <Pagination className="d-flex justify-content-end p-2">
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink first onClick={() => setCurrentPage(1)} />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink
+                  previous
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                />
+              </PaginationItem>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNumber) => (
-                    <PaginationItem
-                      key={pageNumber}
-                      active={pageNumber === currentPage}
-                    >
-                      <PaginationLink
-                        onClick={() => setCurrentPage(pageNumber)}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ),
-                )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <PaginationItem
+                    key={pageNumber}
+                    active={pageNumber === currentPage}
+                  >
+                    <PaginationLink onClick={() => setCurrentPage(pageNumber)}>
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
 
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    next
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                  />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    last
-                    onClick={() => setCurrentPage(totalPages)}
-                  />
-                </PaginationItem>
-              </Pagination>
-            )}
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  next
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  last
+                  onClick={() => setCurrentPage(totalPages)}
+                />
+              </PaginationItem>
+            </Pagination>
           </div>
         </Row>
 

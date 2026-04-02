@@ -18,6 +18,7 @@ export interface LeadOrClient {
   };
   profile_image: string | null;
   role?: string;
+  is_lead: boolean;
   note?: string | null;
 }
 

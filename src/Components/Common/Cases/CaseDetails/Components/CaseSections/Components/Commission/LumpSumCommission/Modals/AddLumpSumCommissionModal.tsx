@@ -172,7 +172,9 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
         <ModalBody>
           <Row className="g-3">
             <Col md={6}>
-              <Label>Policy<span className="text-danger">*</span></Label>
+              <Label>
+                Policy<span className="text-danger">*</span>
+              </Label>
               <Input
                 type="select"
                 value={policy ?? ""}
@@ -195,6 +197,7 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
               <Input
                 type="number"
                 min={0}
+                step={0.01}
                 value={commissionAmount}
                 onChange={(e) => {
                   setCommissionAmount(e.target.value);

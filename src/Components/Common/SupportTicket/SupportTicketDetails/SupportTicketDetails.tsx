@@ -307,11 +307,13 @@ const SupportTicketDetails: React.FC = () => {
   const creatorEmail = _creator?.email || "";
   const creatorUserType = _creator?.user_type || "USER";
 
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    const parts = name.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  const getInitials = () => {
+    const first_name = _creator?.first_name || "";
+    const last_name = _creator?.last_name || "";
+    return (
+      first_name.charAt(0).toUpperCase() + last_name.charAt(0).toUpperCase() ||
+      "U"
+    );
   };
 
   type TicketStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "RESOLVED";
@@ -416,7 +418,7 @@ const SupportTicketDetails: React.FC = () => {
                         style={{ width: 48, height: 48, fontSize: 14 }}
                         title={creatorName}
                       >
-                        {getInitials(creatorName)}
+                        {getInitials()}
                       </div>
                     )}
 

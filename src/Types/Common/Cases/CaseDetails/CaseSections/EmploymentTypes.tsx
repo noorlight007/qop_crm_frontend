@@ -1,6 +1,6 @@
 export interface EmploymentDetailsProps {
   alias: string;
-  user: {
+  customer: {
     id: number;
     alias: string;
     email: string;

@@ -58,9 +58,9 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {displayApplicant?.joint_user_details?.profile_image ? (
+            {displayApplicant?.customer?.profile_image ? (
               <Image
-                src={displayApplicant.joint_user_details.profile_image}
+                src={displayApplicant.customer.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -77,22 +77,20 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">
-            {displayApplicant?.joint_user_details?.title
-              ? formatChoiceFieldValue(
-                  displayApplicant.joint_user_details.title,
-                ) + " "
+            {displayApplicant?.customer?.title
+              ? formatChoiceFieldValue(displayApplicant.customer.title) + " "
               : ""}
-            {displayApplicant?.joint_user_details?.first_name}{" "}
-            {displayApplicant?.joint_user_details?.middle_name &&
-              displayApplicant?.joint_user_details?.middle_name + " "}
-            {displayApplicant?.joint_user_details?.last_name}
+            {displayApplicant?.customer?.first_name}{" "}
+            {displayApplicant?.customer?.middle_name &&
+              displayApplicant?.customer?.middle_name + " "}
+            {displayApplicant?.customer?.last_name}
           </h4>
           <div>
             <Badge pill className="px-3 py-2 bg-light-primary">
               👥{" "}
-              {displayApplicant?.relationship === "OTHER"
-                ? displayApplicant?.other_relationship || "Other"
-                : formatChoiceFieldValue(displayApplicant?.relationship) ||
+              {selectedApplicant?.relationship === "OTHER"
+                ? selectedApplicant?.other_relationship || "Other"
+                : formatChoiceFieldValue(selectedApplicant?.relationship) ||
                   "Joint Applicant"}
             </Badge>
           </div>
@@ -114,12 +112,12 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {displayApplicant?.joint_user_details?.email ? (
+                      {displayApplicant?.customer?.email ? (
                         <a
-                          href={`mailto:${displayApplicant.joint_user_details.email}`}
+                          href={`mailto:${displayApplicant.customer.email}`}
                           className="text-decoration-none"
                         >
-                          {displayApplicant.joint_user_details.email}
+                          {displayApplicant.customer.email}
                         </a>
                       ) : (
                         "-"
@@ -134,11 +132,9 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {displayApplicant?.joint_user_details?.phone ? (
-                        <span
-                          className="text-decoration-none text-primary"
-                        >
-                          {displayApplicant.joint_user_details.phone}
+                      {displayApplicant?.customer?.phone ? (
+                        <span className="text-decoration-none text-primary">
+                          {displayApplicant.customer.phone}
                         </span>
                       ) : (
                         "-"

@@ -1,4 +1,5 @@
-import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+// import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { useAddLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
 import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -22,7 +23,9 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   onLeadCreated,
   onOpenCase,
 }) => {
-  const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
+  // const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
+
+  const [addLeadsOrClients, { isLoading: isAddingLeadsOrClients }] = useAddLeadsOrClientsMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -210,7 +213,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addAuthUser({ payload });
+      const result = await addLeadsOrClients({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         if (onLeadCreated && result.data) onLeadCreated(result.data as any);
@@ -270,7 +273,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addAuthUser({ payload });
+      const result = await addLeadsOrClients({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         const leadId =
@@ -322,7 +325,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Add Lead</span>
+        <span className="fs-4 text-primary">Add User</span>
       </ModalHeader>
       <Form
         onSubmit={(e) => {
@@ -578,18 +581,18 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
           <Button
             type="submit"
             color="primary"
-            disabled={isLoading}
+            disabled={isAddingLeadsOrClients}
             onClick={() => setSubmitType("lead")}
           >
-            {isLoading && submitType === "lead" ? "Saving..." : "Save Lead"}
+            {isAddingLeadsOrClients && submitType === "lead" ? "Saving..." : "Save Lead"}
           </Button>
           <Button
             type="submit"
             color="secondary"
-            disabled={isLoading}
+            disabled={isAddingLeadsOrClients}
             onClick={() => setSubmitType("case")}
           >
-            {isLoading && submitType === "case"
+            {isAddingLeadsOrClients && submitType === "case"
               ? "Saving..."
               : "Save & Create Case"}
           </Button>

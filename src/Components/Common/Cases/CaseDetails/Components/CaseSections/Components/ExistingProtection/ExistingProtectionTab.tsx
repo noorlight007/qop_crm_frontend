@@ -1,6 +1,7 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetExistingProtectionDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
 import { ExistingProtectionDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
+import getCurrencySign from "@/utils/currency";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -13,15 +14,16 @@ import {
   NavLink,
 } from "reactstrap";
 import ExistingProtectionContent from "./ExistingProtectionContent";
-import getCurrencySign from "@/utils/currency";
 
 const ExistingProtectionTab: React.FC = () => {
-  const [activeUser, setActiveUser] = useState<number | null>(null); // State for active user
+  const [activeUser, setActiveUser] = useState<number | null>(null); // State for active customer
   const [activeTab, setActiveTab] = useState<string | null>(null); // State for active existingProtection tab
   // Cache for unsaved edits keyed by existingProtection alias
   const [editsCache, setEditsCache] = useState<
     Record<string, Partial<ExistingProtectionDetailsProps>>
   >({});
+
+  type Customer = ExistingProtectionDetailsProps["customer"];
 
   // Get case alias from URL params
   const params = useParams();
@@ -34,23 +36,23 @@ const ExistingProtectionTab: React.FC = () => {
     });
 
   // Add this function after groupByUserId
-  // Calculate sum assured for each user
+  // Calculate sum assured for each customer
   const calculateUserSumAssured = (
     existingProtections: ExistingProtectionDetailsProps[],
   ) => {
     const userSums = existingProtections.reduce(
       (acc, existingProtection) => {
-        const userId = existingProtection.user.id;
+        const userId = existingProtection.customer.id;
         // Convert to number and handle null/undefined
         const sumAssured = Number(existingProtection.sum_assured) || 0;
 
         if (!acc[userId]) {
           acc[userId] = {
             total: 0,
-            name: `${existingProtection.user.first_name} ${existingProtection.user.last_name}`,
+            name: `${existingProtection.customer.first_name} ${existingProtection.customer.last_name}`,
           };
         }
-        // Add the current existingProtection's sum_assured to the user's total
+        // Add the current existingProtection's sum_assured to the customer's total
         acc[userId].total = acc[userId].total + sumAssured;
         return acc;
       },
@@ -60,15 +62,24 @@ const ExistingProtectionTab: React.FC = () => {
     return userSums;
   };
 
-  // Get all user sums
+  // Get all customer sums
   const userSumAssured = calculateUserSumAssured(
     existingProtectionDetails || [],
   );
 
-  // Set the first user and their first existingProtection as default when data is fetched
+  // Get unique customers from existing protections
+  const uniqueCustomers: Customer[] = Array.from(
+    new Map<number, Customer>(
+      (existingProtectionDetails || []).map(
+        (ep: ExistingProtectionDetailsProps) => [ep.customer.id, ep.customer],
+      ),
+    ).values(),
+  );
+
+  // Set the first customer and their first existingProtection as default when data is fetched
   useEffect(() => {
     if (existingProtectionDetails && existingProtectionDetails.length > 0) {
-      const firstUserId = existingProtectionDetails[0]?.user.id;
+      const firstUserId = existingProtectionDetails[0]?.customer.id;
       setActiveUser(firstUserId);
       setActiveTab(existingProtectionDetails[0]?.alias || null);
     }
@@ -114,47 +125,51 @@ const ExistingProtectionTab: React.FC = () => {
               className="nav-warning d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
-              {existingProtectionDetails?.map(
-                (existingProtection: ExistingProtectionDetailsProps) => {
-                  const user = existingProtection.user;
-                  return (
-                    <NavItem key={user.id}>
-                      <NavLink
-                        className={`${activeUser === user.id ? "active" : ""}`}
-                        onClick={() => {
-                          setActiveUser(user.id);
-                          setActiveTab(existingProtection.alias || null);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {`${
-                          user.title
-                            ? user?.title[0].toUpperCase() +
-                              user?.title.slice(1).toLowerCase() +
-                              ""
-                            : ""
-                        } ${user.first_name} ${user.middle_name} ${
-                          user.last_name
-                        } (${getCurrencySign()}${
-                          userSumAssured[user.id]?.total
-                            ? parseFloat(
-                                userSumAssured[user.id].total.toString(),
-                              ).toLocaleString("en-GB", {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                                useGrouping: true,
-                              })
-                            : "0.00"
-                        })`}
-                      </NavLink>
-                    </NavItem>
+              {uniqueCustomers.map((customer) => {
+                // Get the first existingProtection for this customer
+                const firstProtectionForCustomer =
+                  existingProtectionDetails?.find(
+                    (ep: ExistingProtectionDetailsProps) =>
+                      ep.customer.id === customer.id,
                   );
-                },
-              )}
+
+                return (
+                  <NavItem key={customer.id}>
+                    <NavLink
+                      className={`${activeUser === customer.id ? "active" : ""}`}
+                      onClick={() => {
+                        setActiveUser(customer.id);
+                        setActiveTab(firstProtectionForCustomer?.alias || null);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {`${
+                        customer.title
+                          ? customer?.title[0].toUpperCase() +
+                            customer?.title.slice(1).toLowerCase() +
+                            ""
+                          : ""
+                      } ${customer.first_name} ${customer.middle_name} ${
+                        customer.last_name
+                      } (${getCurrencySign()}${
+                        userSumAssured[customer.id]?.total
+                          ? parseFloat(
+                              userSumAssured[customer.id].total.toString(),
+                            ).toLocaleString("en-GB", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                              useGrouping: true,
+                            })
+                          : "0.00"
+                      })`}
+                    </NavLink>
+                  </NavItem>
+                );
+              })}
             </Nav>
           </CardHeader>
 
-          {/* Inner Navigation Tabs (Properties for the selected user) */}
+          {/* Inner Navigation Tabs (Properties for the selected customer) */}
           {activeUser && (
             <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-3 pt-3 pb-0">
               <Nav
@@ -164,7 +179,7 @@ const ExistingProtectionTab: React.FC = () => {
                 {existingProtectionDetails
                   ?.filter(
                     (ep: ExistingProtectionDetailsProps) =>
-                      ep.user.id === activeUser,
+                      ep.customer.id === activeUser,
                   )
                   .map(
                     (
@@ -203,10 +218,10 @@ const ExistingProtectionTab: React.FC = () => {
                     acc: Record<number, ExistingProtectionDetailsProps[]>,
                     ep: ExistingProtectionDetailsProps,
                   ) => {
-                    if (!acc[ep.user.id]) {
-                      acc[ep.user.id] = [];
+                    if (!acc[ep.customer.id]) {
+                      acc[ep.customer.id] = [];
                     }
-                    acc[ep.user.id].push(ep);
+                    acc[ep.customer.id].push(ep);
                     return acc;
                   },
                   {} as Record<number, ExistingProtectionDetailsProps[]>,

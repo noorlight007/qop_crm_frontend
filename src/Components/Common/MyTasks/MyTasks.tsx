@@ -107,7 +107,7 @@ const MyTasks: React.FC = () => {
             alias: item.alias,
             created_at: item.created_at,
             current_case_name: item.current_case_name || "",
-            client_name: item.client_name || "",
+            customer_name: item.customer_name || "",
             current_case_lender: item.current_case_lender || "",
             current_case_workflow: item.current_case_workflow || "",
             name: item.name || "",
@@ -507,7 +507,7 @@ const MyTasks: React.FC = () => {
                       </td>
                       <td>
                         <span className="text-truncate">
-                          {task.client_name || "-"}
+                          {task.customer_name || "-"}
                         </span>
                       </td>
                       <td>

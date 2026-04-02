@@ -39,7 +39,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
           <h4 className="mb-1 text-dark fw-bold">{selectedClient?.name}</h4>
           <p>
             <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 {formatChoiceFieldValue(selectedClient?.role)}
+              👤 Client
             </Badge>
           </p>
         </div>
@@ -72,9 +72,7 @@ const ViewOrgClientModal: React.FC<ViewOrgClientModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedClient?.phone ? (
-                        <span
-                          className="text-decoration-none"
-                        >
+                        <span className="text-decoration-none">
                           {selectedClient?.phone}
                         </span>
                       ) : (

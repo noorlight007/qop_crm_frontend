@@ -4,7 +4,7 @@ export const CaseUsersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCaseUsers: builder.query({
       query: ({case_alias}) => ({
-        url: `/cases/${case_alias}/user/list/`,
+        url: `/cases/${case_alias}/applicants/`,
         method: "GET",
       }),
       providesTags: ["ApplicantsDetails"],

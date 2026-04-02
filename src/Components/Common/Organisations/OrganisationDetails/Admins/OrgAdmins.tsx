@@ -210,11 +210,7 @@ const OrgAdmins: React.FC = () => {
                     </td>
                     <td>
                       {admin?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {admin?.phone}
-                        </span>
+                        <span className="text-black">{admin?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -286,49 +282,45 @@ const OrgAdmins: React.FC = () => {
                 of {totalCount} Admins
               </p>
             </div>
-            {totalPages > 1 && (
-              <Pagination className="d-flex">
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink first onClick={() => setCurrentPage(1)} />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === 1}>
-                  <PaginationLink
-                    previous
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  />
-                </PaginationItem>
+            <Pagination className="d-flex">
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink first onClick={() => setCurrentPage(1)} />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === 1}>
+                <PaginationLink
+                  previous
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                />
+              </PaginationItem>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                  (pageNumber) => (
-                    <PaginationItem
-                      key={pageNumber}
-                      active={pageNumber === currentPage}
-                    >
-                      <PaginationLink
-                        onClick={() => setCurrentPage(pageNumber)}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ),
-                )}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <PaginationItem
+                    key={pageNumber}
+                    active={pageNumber === currentPage}
+                  >
+                    <PaginationLink onClick={() => setCurrentPage(pageNumber)}>
+                      {pageNumber}
+                    </PaginationLink>
+                  </PaginationItem>
+                ),
+              )}
 
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    next
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                  />
-                </PaginationItem>
-                <PaginationItem disabled={currentPage === totalPages}>
-                  <PaginationLink
-                    last
-                    onClick={() => setCurrentPage(totalPages)}
-                  />
-                </PaginationItem>
-              </Pagination>
-            )}
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  next
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(totalPages, p + 1))
+                  }
+                />
+              </PaginationItem>
+              <PaginationItem disabled={currentPage === totalPages}>
+                <PaginationLink
+                  last
+                  onClick={() => setCurrentPage(totalPages)}
+                />
+              </PaginationItem>
+            </Pagination>
           </div>
         </Row>
       </CardBody>

@@ -105,12 +105,12 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
   useEffect(() => {
     if (user) {
       setFormData({
-        title: user?.joint_user_details?.title || "",
-        first_name: user?.joint_user_details?.first_name || "",
-        middle_name: user?.joint_user_details?.middle_name || "",
-        last_name: user?.joint_user_details?.last_name || "",
-        email: user?.joint_user_details?.email || "",
-        phone: user?.joint_user_details?.phone || "",
+        title: user?.customer?.title || "",
+        first_name: user?.customer?.first_name || "",
+        middle_name: user?.customer?.middle_name || "",
+        last_name: user?.customer?.last_name || "",
+        email: user?.customer?.email || "",
+        phone: user?.customer?.phone || "",
         relationship: user?.relationship || "",
         other_relationship: user?.other_relationship || "",
         notes: user?.notes || "",
@@ -126,7 +126,7 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
 
   const handleSave = async () => {
     // Determine if the email has changed
-    const originalEmail = user?.joint_user_details?.email || "";
+    const originalEmail = user?.customer?.email || "";
     const hasEmailChanged = formData.email !== originalEmail;
 
     // Prepare the payload, conditionally including the email field
@@ -134,7 +134,7 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
       case_alias: casealias,
       userAlias: user.alias,
       updatedJointuserInfo: {
-        joint_user: {
+        customer: {
           title: formData.title,
           first_name: formData.first_name,
           middle_name: formData.middle_name,
@@ -190,12 +190,12 @@ const UpdateJointApplicantModal: React.FC<UpdateJointApplicantModalProps> = ({
 
   // Compare current data with the original data
   const hasChanges = !isEqual(formData, {
-    title: user?.joint_user_details?.title || "",
-    first_name: user?.joint_user_details?.first_name || "",
-    middle_name: user?.joint_user_details?.middle_name || "",
-    last_name: user?.joint_user_details?.last_name || "",
-    email: user?.joint_user_details?.email || "",
-    phone: user?.joint_user_details?.phone || "",
+    title: user?.customer?.title || "",
+    first_name: user?.customer?.first_name || "",
+    middle_name: user?.customer?.middle_name || "",
+    last_name: user?.customer?.last_name || "",
+    email: user?.customer?.email || "",
+    phone: user?.customer?.phone || "",
     relationship: user?.relationship || "",
     notes: user?.notes || "",
   });
