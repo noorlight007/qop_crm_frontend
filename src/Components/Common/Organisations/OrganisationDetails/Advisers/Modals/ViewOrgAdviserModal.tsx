@@ -1,4 +1,4 @@
-import { ViewOrgAdviserModalProps } from "@/Types/Network/Director/Organisations/OrgAdviserType";
+import { ViewOrgAdviserModalProps } from "@/Types/Common/Organisations/OrgAdviserType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { Mail, Phone, User } from "react-feather";

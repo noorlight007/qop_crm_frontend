@@ -1,4 +1,4 @@
-import { ViewOrgIntroducerModalProps } from "@/Types/Network/Director/Organisations/OrgIntroducerTypes";
+import { ViewOrgIntroducerModalProps } from "@/Types/Common/Organisations/OrgIntroducerTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { Mail, Phone, User } from "react-feather";

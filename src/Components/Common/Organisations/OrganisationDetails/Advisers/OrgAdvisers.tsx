@@ -1,6 +1,6 @@
 "use client";
 import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgAdviserInfo } from "@/Types/Network/Director/Organisations/OrgAdviserType";
+import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";

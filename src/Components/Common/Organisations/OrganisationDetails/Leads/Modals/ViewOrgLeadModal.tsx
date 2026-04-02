@@ -1,4 +1,4 @@
-import { ViewOrgLeadModalProps } from "@/Types/Network/Director/Organisations/OrgLeadTypes";
+import { ViewOrgLeadModalProps } from "@/Types/Common/Organisations/OrgLeadTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
