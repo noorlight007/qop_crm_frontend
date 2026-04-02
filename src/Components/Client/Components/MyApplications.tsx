@@ -1,5 +1,5 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleClientApplication/SingleCLientApplicationApi";
+import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleClientApplication/SingleClientApplicationApi";
 import { SingleClientApplicationProps } from "@/Types/Client/SingleClientApplicationTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
