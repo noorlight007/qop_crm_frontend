@@ -46,6 +46,7 @@ export interface SecurityPropertyFormStateProps {
     property_lease_term: number; // 0.0
     service_charge_per_month: number | null; // null
     ground_rent_per_annum: number | null; // null
+    monthly_gross_rental: number | null;
 
     // Property Usage
     residential: boolean | null; // null
@@ -154,6 +155,7 @@ export interface PropertyData {
   property_lease_term: number;
   service_charge_per_month: number | null;
   ground_rent_per_annum: number | null;
+  monthly_gross_rental: number | null;
   residential: boolean | null;
   commercial: boolean | null;
   is_the_property_a_listed_building: boolean;

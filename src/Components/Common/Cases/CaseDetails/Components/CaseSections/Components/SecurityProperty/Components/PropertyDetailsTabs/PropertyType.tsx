@@ -18,6 +18,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
       dispatch(
         updateProperty({
           property_type: propertyData.property_type || null,
+          monthly_gross_rental: propertyData.monthly_gross_rental || null,
           house_type: propertyData.house_type || null,
           flat_type: propertyData.flat_type || null,
           construction_of_walls: propertyData.construction_of_walls || null,
@@ -234,9 +235,25 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               </FormGroup>
             </Col>
           )}
-        </Row>
 
-        <Row>
+          <Col sm={6}>
+            <FormGroup>
+              <Label for="monthly_gross_rental">Monthly Gross Rental</Label>
+              <Input
+                type="number"
+                id="monthly_gross_rental"
+                name="monthly_gross_rental"
+                value={propertyState.monthly_gross_rental || ""}
+                onChange={handleChange}
+              />
+              {propertyState?.api_errors?.monthly_gross_rental && (
+                <div className="text-danger">
+                  {propertyState.api_errors.monthly_gross_rental}
+                </div>
+              )}
+            </FormGroup>
+          </Col>
+
           <Col sm={6}>
             <FormGroup>
               <Label for="construction_of_walls">Construction of Walls</Label>
@@ -286,9 +303,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               )}
             </FormGroup>
           </Col>
-        </Row>
 
-        <Row>
           <Col sm={6}>
             <FormGroup>
               <Label for="number_of_storeys_in_the_building">
@@ -330,9 +345,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               )}
             </FormGroup>
           </Col>
-        </Row>
 
-        <Row>
           <Col sm={6}>
             <FormGroup>
               <Label for="tenure">Tenure</Label>
@@ -356,89 +369,91 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               )}
             </FormGroup>
           </Col>
-        </Row>
 
-        {propertyState.tenure === "LEASEHOLD" && (
-          <Row>
-            <Col sm={6}>
-              <FormGroup>
-                <Label for="property_lease_term">
-                  Property Lease Term <span className="text-danger">*</span>
-                </Label>
-                <InputGroup>
-                  <Input
-                    type="number"
-                    id="property_lease_term"
-                    name="property_lease_term"
-                    placeholder="0"
-                    value={propertyState.property_lease_term || ""}
-                    onChange={handleChange}
-                  />
-                  {propertyState?.api_errors?.property_lease_term && (
-                    <div className="text-danger">
-                      {propertyState.api_errors.property_lease_term}
-                    </div>
-                  )}
-                  <span className="input-group-text">Years</span>
-                </InputGroup>
-              </FormGroup>
-            </Col>
+          {propertyState.tenure === "LEASEHOLD" && (
+            <>
+              <Col sm={6}>
+                <FormGroup>
+                  <Label for="property_lease_term">
+                    Property Lease Term <span className="text-danger">*</span>
+                  </Label>
+                  <InputGroup>
+                    <Input
+                      type="number"
+                      id="property_lease_term"
+                      name="property_lease_term"
+                      placeholder="0"
+                      value={propertyState.property_lease_term || ""}
+                      onChange={handleChange}
+                    />
+                    {propertyState?.api_errors?.property_lease_term && (
+                      <div className="text-danger">
+                        {propertyState.api_errors.property_lease_term}
+                      </div>
+                    )}
+                    <span className="input-group-text">Years</span>
+                  </InputGroup>
+                </FormGroup>
+              </Col>
+              <Col sm={6}>
+                <FormGroup>
+                  <Label for="service_charge_per_month">
+                    Service Charge per Month
+                  </Label>
+                  <InputGroup>
+                    <span className="input-group-text">
+                      {getCurrencySign()}
+                    </span>
+                    <Input
+                      type="number"
+                      id="service_charge_per_month"
+                      name="service_charge_per_month"
+                      placeholder="0"
+                      value={propertyState.service_charge_per_month || ""}
+                      onChange={handleChange}
+                      step="0.01"
+                      inputMode="decimal"
+                      onInput={limitDecimalPlaces}
+                    />
+                    {propertyState?.api_errors?.service_charge_per_month && (
+                      <div className="text-danger">
+                        {propertyState.api_errors.service_charge_per_month}
+                      </div>
+                    )}
+                  </InputGroup>
+                </FormGroup>
+              </Col>
+              <Col sm={6}>
+                <FormGroup>
+                  <Label for="ground_rent_per_annum">
+                    Ground Rent per Annum
+                  </Label>
+                  <InputGroup>
+                    <span className="input-group-text">
+                      {getCurrencySign()}
+                    </span>
+                    <Input
+                      type="number"
+                      id="ground_rent_per_annum"
+                      name="ground_rent_per_annum"
+                      placeholder="0"
+                      value={propertyState.ground_rent_per_annum || ""}
+                      onChange={handleChange}
+                      step="0.01"
+                      inputMode="decimal"
+                      onInput={limitDecimalPlaces}
+                    />
+                    {propertyState?.api_errors?.ground_rent_per_annum && (
+                      <div className="text-danger">
+                        {propertyState.api_errors.ground_rent_per_annum}
+                      </div>
+                    )}
+                  </InputGroup>
+                </FormGroup>
+              </Col>
+            </>
+          )}
 
-            <Col sm={6}>
-              <FormGroup>
-                <Label for="service_charge_per_month">
-                  Service Charge per Month
-                </Label>
-                <InputGroup>
-                  <span className="input-group-text">{getCurrencySign()}</span>
-                  <Input
-                    type="number"
-                    id="service_charge_per_month"
-                    name="service_charge_per_month"
-                    placeholder="0"
-                    value={propertyState.service_charge_per_month || ""}
-                    onChange={handleChange}
-                    step="0.01"
-                    inputMode="decimal"
-                    onInput={limitDecimalPlaces}
-                  />
-                  {propertyState?.api_errors?.service_charge_per_month && (
-                    <div className="text-danger">
-                      {propertyState.api_errors.service_charge_per_month}
-                    </div>
-                  )}
-                </InputGroup>
-              </FormGroup>
-            </Col>
-
-            <Col sm={6}>
-              <FormGroup>
-                <Label for="ground_rent_per_annum">Ground Rent per Annum</Label>
-                <InputGroup>
-                  <span className="input-group-text">{getCurrencySign()}</span>
-                  <Input
-                    type="number"
-                    id="ground_rent_per_annum"
-                    name="ground_rent_per_annum"
-                    placeholder="0"
-                    value={propertyState.ground_rent_per_annum || ""}
-                    onChange={handleChange}
-                    step="0.01"
-                    inputMode="decimal"
-                    onInput={limitDecimalPlaces}
-                  />
-                  {propertyState?.api_errors?.ground_rent_per_annum && (
-                    <div className="text-danger">
-                      {propertyState.api_errors.ground_rent_per_annum}
-                    </div>
-                  )}
-                </InputGroup>
-              </FormGroup>
-            </Col>
-          </Row>
-        )}
-
-        <Row>
           <Col sm={6}>
             <FormGroup>
               <Label for="estimated_value">Estimated Value</Label>
@@ -463,9 +478,7 @@ const PropertyDetails: React.FC<PropertyDetailsProps> = ({ propertyData }) => {
               </InputGroup>
             </FormGroup>
           </Col>
-        </Row>
 
-        <Row>
           <Col sm={6}>
             <FormGroup>
               <Label for="bedrooms">Bedrooms</Label>
