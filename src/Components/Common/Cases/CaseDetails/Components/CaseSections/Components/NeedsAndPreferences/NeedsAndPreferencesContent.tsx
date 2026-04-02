@@ -236,7 +236,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias,
-            section_data: { is_mortgage_your_needs: true },
+            section_data: { is_needs_and_preferences: true },
           });
         } catch (err) {
           console.error("Failed to update section complete status:", err);

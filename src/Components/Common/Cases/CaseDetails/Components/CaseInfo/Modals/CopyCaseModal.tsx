@@ -179,7 +179,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
     is_solicitors_accountants: false,
     is_budget_planner: false,
     is_existing_protection: false,
-    is_mortgage_your_needs: false,
+    is_needs_and_preferences: false,
     is_notes: false,
     is_product: false,
     is_dip_history: false,
@@ -208,7 +208,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
         is_solicitors_accountants: false,
         is_budget_planner: false,
         is_existing_protection: false,
-        is_mortgage_your_needs: false,
+        is_needs_and_preferences: false,
         is_notes: false,
         is_product: false,
         is_dip_history: false,
@@ -257,7 +257,7 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
         is_solicitors_accountants: formData.is_solicitors_accountants,
         is_budget_planner: formData.is_budget_planner,
         is_existing_protection: formData.is_existing_protection,
-        is_mortgage_your_needs: formData.is_mortgage_your_needs,
+        is_needs_and_preferences: formData.is_needs_and_preferences,
         is_notes: formData.is_notes,
         is_product: formData.is_product,
         is_dip_history: formData.is_dip_history,
@@ -559,13 +559,13 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                 <FormGroup check>
                   <Input
                     type="checkbox"
-                    name="is_mortgage_your_needs"
-                    id="is_mortgage_your_needs"
-                    checked={formData.is_mortgage_your_needs}
+                    name="is_needs_and_preferences"
+                    id="is_needs_and_preferences"
+                    checked={formData.is_needs_and_preferences}
                     onChange={handleInputChange}
                     className="border-primary"
                   />
-                  <Label for="is_mortgage_your_needs" check>
+                  <Label for="is_needs_and_preferences" check>
                     Mortgage Your Needs
                   </Label>
                 </FormGroup>
