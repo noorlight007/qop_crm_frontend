@@ -9,11 +9,12 @@ import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Button, Form, FormGroup, Input, Label, Spinner } from "reactstrap";
 
 const InsuranceHealthContent: React.FC = () => {
+  const formRef = useRef<HTMLFormElement>(null);
   const { casealias } = useParams();
   const { data: session } = useSession();
   const { data: InsuranceHealthData, isLoading } =
@@ -57,10 +58,10 @@ const InsuranceHealthContent: React.FC = () => {
   }, [InsuranceHealthData]);
 
   const handleSubmit = async (
-    e: React.FormEvent,
     action: "save" | "save_next" = "save",
+    e?: React.FormEvent | React.MouseEvent,
   ): Promise<boolean> => {
-    e.preventDefault();
+    e?.preventDefault();
 
     setSubmitting(action);
 
@@ -122,8 +123,9 @@ const InsuranceHealthContent: React.FC = () => {
   return (
     <div>
       <Form
+        innerRef={formRef}
         onSubmit={(e) => {
-          void handleSubmit(e, "save");
+          void handleSubmit("save", e);
         }}
       >
         <FormGroup check className="mt-2">
@@ -140,7 +142,10 @@ const InsuranceHealthContent: React.FC = () => {
 
         {healthConditions && (
           <FormGroup className="mt-1">
-            <Label for="insuranceNote">Note</Label>
+            <Label for="insuranceNote">
+              Note
+              <span className="text-danger">*</span>
+            </Label>
             <Input
               id="insuranceNote"
               type="textarea"
@@ -148,6 +153,7 @@ const InsuranceHealthContent: React.FC = () => {
               onChange={(e) => setNote(e.target.value)}
               placeholder="Add note..."
               rows={4}
+              required
             />
           </FormGroup>
         )}
@@ -155,15 +161,12 @@ const InsuranceHealthContent: React.FC = () => {
         <div className="d-flex justify-content-end gap-2">
           <Button
             color="primary"
-            type="button"
+            type="submit"
             disabled={
               submitting !== null ||
               isUpdating ||
               session?.user?.user_type === "CLIENT"
             }
-            onClick={(e) => {
-              void handleSubmit(e as any, "save");
-            }}
           >
             {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
           </Button>
@@ -171,14 +174,20 @@ const InsuranceHealthContent: React.FC = () => {
             color="secondary"
             type="button"
             disabled={submitting !== null || isUpdating}
-            onClick={async (e) => {
+            onClick={async () => {
               if (session?.user?.user_type === "CLIENT") {
                 handleNextTab();
-              } else {
-                const success = await handleSubmit(e as any, "save_next");
-                if (success) {
-                  handleNextTab();
-                }
+                return;
+              }
+
+              if (formRef.current && !formRef.current.checkValidity()) {
+                formRef.current.reportValidity();
+                return;
+              }
+
+              const success = await handleSubmit("save_next");
+              if (success) {
+                handleNextTab();
               }
             }}
           >
