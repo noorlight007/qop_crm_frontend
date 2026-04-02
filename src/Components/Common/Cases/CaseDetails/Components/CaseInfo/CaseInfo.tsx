@@ -367,12 +367,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         </CardHeader>
 
         <Row className="px-3 mt-3">
-          {/* Client User Card */}
+          {/* Applicant Card */}
           <Col sm={12} md={4}>
             <Card className="shadow">
               <CardBody className="pt-2 border-3 rounded-3 border-b-primary">
                 <CardHeader className="pt-0 pb-1 m-0 text-center">
-                  <h6 className="fw-bold">Client User</h6>
+                  <h6 className="fw-bold">Applicant</h6>
                 </CardHeader>
                 {isLoading ? (
                   <Row className="pt-2">

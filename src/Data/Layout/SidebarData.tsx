@@ -108,14 +108,14 @@ const NetworkDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/network/director/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/network/director/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/network/director/leads",
           },
           {
             title: "Clients",
@@ -226,14 +226,14 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/network/director/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/network/director/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/network/director/leads",
           },
           {
             title: "Clients",
@@ -340,14 +340,14 @@ const NetworkAdviserMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/network/adviser/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/network/adviser/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/network/adviser/leads",
           },
           {
             title: "Clients",
@@ -442,14 +442,14 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/organisation/director/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/organisation/director/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/organisation/director/leads",
           },
           {
             title: "Clients",
@@ -557,14 +557,14 @@ const OrganisationAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/organisation/adviser/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/organisation/adviser/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/organisation/adviser/leads",
           },
           {
             title: "Clients",
@@ -657,14 +657,14 @@ const OrganisationAdminMenu: MenuItem[] = [
 
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/organisation/admin/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/organisation/admin/cases",
+          },
+          {
+            title: "Leads",
+            type: "link",
+            path: "/organisation/admin/leads",
           },
           {
             title: "Clients",
