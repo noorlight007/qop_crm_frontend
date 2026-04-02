@@ -135,15 +135,17 @@ const NetworkDirectorMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/organisations",
+      },
+      {
         title: "Users",
         icon: <FaUsers />,
         type: "sub",
         children: [
-          {
-            title: "Organisations",
-            type: "link",
-            path: "/network/director/organisations",
-          },
           {
             title: "Compliances",
             type: "link",
@@ -248,15 +250,17 @@ const NetworkComplianceMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/organisations",
+      },
+      {
         title: "Users",
         icon: <FaUsers />,
         type: "sub",
         children: [
-          {
-            title: "Organisations",
-            type: "link",
-            path: "/network/director/organisations",
-          },
           {
             title: "Registered Advisers",
             type: "link",
@@ -357,22 +361,19 @@ const NetworkAdviserMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Users",
-        icon: <FaUsers />,
-        type: "sub",
-        children: [
-          {
-            title: "Organisations",
-            type: "link",
-            path: "/network/adviser/organisations",
-          },
-          // {
-          //   title: "Marketing Hub",
-          //   type: "link",
-          //   path: "/network/adviser/marketinghub",
-          // },
-        ],
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/adviser/organisations",
       },
+      // {
+      //   title: "Marketing Hub",
+      //   icon: <BiBuilding />,
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/network/adviser/marketinghub",
+      // },
       {
         title: "Calculators",
         icon: <FaCalculator />,
