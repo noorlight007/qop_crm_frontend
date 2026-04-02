@@ -37,7 +37,7 @@ const ClientEnquiryLink: React.FC = () => {
     "",
   );
   const host = subdomain ? `${subdomain}.${baseDomain}` : baseDomain;
-  const url = host ? `https://${host}/client-enquiry` : "";
+  const url = host ? `https://${host}/applicant-enquiry` : "";
 
   const handleCopy = () => {
     if (!url) return;
@@ -65,7 +65,7 @@ const ClientEnquiryLink: React.FC = () => {
       <CardBody className="d-flex align-items-center p-3">
         <FaGlobe className="me-2 text-primary" size={24} />
         <div className="flex-grow-1">
-          <h5 className="mb-1">Client Enquiry Link</h5>
+          <h5 className="mb-1">Applicant Enquiry Link</h5>
           {url ? (
             <a
               href={url}

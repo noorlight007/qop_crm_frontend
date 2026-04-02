@@ -518,6 +518,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
             isOpen={isAddUserModalOpen}
             toggle={toggleAddUserModal}
             onOpenCase={openCaseModalFromLead}
+            header="Lead"
           />
 
           <AddNewCaseModal
