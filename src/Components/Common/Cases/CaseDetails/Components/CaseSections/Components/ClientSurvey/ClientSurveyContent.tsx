@@ -8,7 +8,6 @@ import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/Cas
 import {
   useDownloadClientSurveyMutation,
   useGetClientSurveyQuery,
-  useSendClientSurveyMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ClientSurvey/ClientSurveyApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -29,18 +28,22 @@ import {
   FormGroup,
   Input,
   Label,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   Row,
   Spinner,
 } from "reactstrap";
+import SendSurveyToClientModal from "./Modals/SendSurveyToClientModal";
 
 const ClientSurveyContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
+
+  const resolvedCaseAlias =
+    typeof casealias === "string"
+      ? casealias
+      : Array.isArray(casealias)
+        ? casealias[0]
+        : undefined;
 
   // Confirmation modal state
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -48,28 +51,18 @@ const ClientSurveyContent: React.FC = () => {
 
   // RTK Queries
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
-    { case_alias: casealias },
-    { skip: !casealias },
+    { case_alias: resolvedCaseAlias },
+    { skip: !resolvedCaseAlias },
   );
-  const [sendSurvey, { isLoading: isSendingSurvey }] =
-    useSendClientSurveyMutation();
 
   const [clientSurveyBlob, { isLoading: isDownloadingSurvey }] =
     useDownloadClientSurveyMutation();
 
-  const handlesendSurvey = async () => {
-    try {
-      await sendSurvey({ case_alias: casealias }).unwrap();
-      toast.success("Survey sent successfully.");
-      toggleConfirmModal(); // close modal on success
-    } catch (error) {
-      toast.error("Failed to send survey.");
-    }
-  };
-
   const downloadSurvey = async () => {
     try {
-      const blob = await clientSurveyBlob({ case_alias: casealias }).unwrap();
+      const blob = await clientSurveyBlob({
+        case_alias: resolvedCaseAlias,
+      }).unwrap();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -87,7 +80,10 @@ const ClientSurveyContent: React.FC = () => {
     data: clientSurveyList,
     isLoading: isSurveyLoading,
     isError,
-  } = useGetClientSurveyQuery({ case_alias: casealias }, { skip: !casealias });
+  } = useGetClientSurveyQuery(
+    { case_alias: resolvedCaseAlias },
+    { skip: !resolvedCaseAlias },
+  );
 
   const initialFormState = {
     adviserName: "",
@@ -250,43 +246,12 @@ const ClientSurveyContent: React.FC = () => {
   return (
     <Card>
       <CardBody>
-        {/* Confirmation Modal */}
-        <Modal isOpen={isConfirmModalOpen} toggle={toggleConfirmModal}>
-          <ModalHeader toggle={toggleConfirmModal} className="bg-primary">
-            Send Survey to Client
-          </ModalHeader>
-          <ModalBody className="text-center">
-            Are you sure you want to send the survey form to the client? They
-            will receive an email with a link to submit the survey.
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              color="primary"
-              onClick={handlesendSurvey}
-              disabled={isSendingSurvey}
-            >
-              {isSendingSurvey ? (
-                <>
-                  <Spinner size="sm" className="me-2" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  <Send size={14} className="me-2" />
-                  Yes, Send
-                </>
-              )}
-            </Button>
-            <Button
-              color="secondary"
-              outline
-              onClick={toggleConfirmModal}
-              disabled={isSendingSurvey}
-            >
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
+        <SendSurveyToClientModal
+          isOpen={isConfirmModalOpen}
+          toggle={toggleConfirmModal}
+          caseAlias={resolvedCaseAlias}
+          onSuccess={() => setIsConfirmModalOpen(false)}
+        />
 
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
@@ -296,7 +261,7 @@ const ClientSurveyContent: React.FC = () => {
                 color="primary"
                 outline
                 onClick={toggleConfirmModal}
-                disabled={isSendingSurvey}
+                disabled={!resolvedCaseAlias}
               >
                 <Send size={15} className="me-1" /> Send Survey Form To the
                 Client
