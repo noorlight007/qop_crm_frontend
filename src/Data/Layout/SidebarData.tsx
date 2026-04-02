@@ -154,11 +154,6 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/advisers",
           },
-          {
-            title: "Advisers Status",
-            type: "link",
-            path: "/network/director/advisers-status",
-          },
         ],
       },
       {
@@ -266,11 +261,6 @@ const NetworkComplianceMenu: MenuItem[] = [
             title: "Registered Advisers",
             type: "link",
             path: "/network/director/advisers",
-          },
-          {
-            title: "Advisers Status",
-            type: "link",
-            path: "/network/director/advisers-status",
           },
         ],
       },

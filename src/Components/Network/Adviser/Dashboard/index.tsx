@@ -1,5 +1,4 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetAdviserDashboardSummaryDataQuery } from "@/Redux/Reducers/Common/CommonAdviserDashboard/CommonAdviserDashboardApi";
 import { Col, Container, Row } from "reactstrap";
@@ -41,11 +40,11 @@ const NetworkAdviserContainer: React.FC = () => {
           </Col>
         </Row>
         {/* 3rd row  */}
-        <Row>
+        {/* <Row>
           <Col>
             <OrganisationList maxItems={8} />
           </Col>
-        </Row>
+        </Row> */}
       </Container>
     </>
   );

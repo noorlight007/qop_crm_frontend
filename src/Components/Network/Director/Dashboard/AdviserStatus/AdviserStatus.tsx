@@ -1,8 +1,6 @@
 import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import Image from "next/image";
-import Link from "next/link";
 import { User } from "react-feather";
-import { TbEye } from "react-icons/tb";
 import { Badge, Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
 
 const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
@@ -10,11 +8,11 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
   networkDirectorDashboardData,
 }) => {
   return (
-    <Row>
+    <Row className="mb-4">
       <Col xs={12}>
         <Card className="shadow-sm p-1 mb-2">
           <div className="d-flex justify-content-between align-items-center p-3 bg-white border-bottom rounded-top-5">
-            <h4 className="mb-0 fw-bold">Adviser Status</h4>
+            <h4 className="mb-0 fw-bold">Top Performing Advisers</h4>
             <div>
               <Badge color="light-success" pill className="me-2">
                 Residential
@@ -38,13 +36,6 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                 General Insurance
               </Badge>
             </div>
-            <Link
-              href="/network/director/advisers-status"
-              className="ms-3 text_decoration_hover"
-            >
-              <TbEye size={18} className="me-1" />
-              View full report
-            </Link>
           </div>
           <CardBody className="p-1">
             <Table responsive hover className="rounded-3 overflow-hidden">
@@ -82,9 +73,8 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                     ) &&
                     networkDirectorDashboardData.top_performing_advisers
                       .length > 0 ? (
-                      networkDirectorDashboardData.top_performing_advisers
-                        .slice(0, 5)
-                        .map((data, idx: number) => (
+                      networkDirectorDashboardData.top_performing_advisers.map(
+                        (data, idx: number) => (
                           <tr key={idx}>
                             <td>{data?.rank ?? "0"}</td>
                             <td>
@@ -117,7 +107,8 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                             <td>{data?.protection ?? "0"}</td>
                             <td>{data?.general_insurance ?? "0"}</td>
                           </tr>
-                        ))
+                        ),
+                      )
                     ) : (
                       <tr>
                         <td colSpan={10} className="text-center text-muted">

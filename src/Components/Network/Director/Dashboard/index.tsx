@@ -1,5 +1,4 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import OrganisationList from "@/Components/Common/Organisations/OrganisationList/OrganisationList";
 import WelcomeBanner from "@/Components/Common/WelcomeBanner/WelcomeBanner";
 import { useGetNetworkDirectorDashboardQuery } from "@/Redux/Reducers/Organisation/Director/Dashboard/DashdoardApi";
 import { Container } from "reactstrap";
@@ -29,7 +28,7 @@ const ContainerNetworkDirector = () => {
           isLoading={isLoading}
           networkDirectorDashboardData={networkDirectorDashboardData}
         />
-        <OrganisationList maxItems={8} />
+        {/* <OrganisationList maxItems={8} /> */}
         <AdviserStatus
           isLoading={isLoading}
           networkDirectorDashboardData={networkDirectorDashboardData}
