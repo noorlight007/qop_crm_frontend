@@ -43,6 +43,7 @@ export interface AddLeadsModalProps {
     leadName?: string | undefined;
     leadData?: any;
   }) => void;
+  header: string;
 }
 
 export interface UpdateLeadOrClientModalProps {

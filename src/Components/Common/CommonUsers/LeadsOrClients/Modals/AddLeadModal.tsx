@@ -22,10 +22,12 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   toggle,
   onLeadCreated,
   onOpenCase,
+  header,
 }) => {
   // const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
 
-  const [addLeadsOrClients, { isLoading: isAddingLeadsOrClients }] = useAddLeadsOrClientsMutation();
+  const [addLeadsOrClients, { isLoading: isAddingLeadsOrClients }] =
+    useAddLeadsOrClientsMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -325,7 +327,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Add User</span>
+        <span className="fs-4 text-primary">Add {header}</span>
       </ModalHeader>
       <Form
         onSubmit={(e) => {
@@ -584,18 +586,22 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
             disabled={isAddingLeadsOrClients}
             onClick={() => setSubmitType("lead")}
           >
-            {isAddingLeadsOrClients && submitType === "lead" ? "Saving..." : "Save Lead"}
-          </Button>
-          <Button
-            type="submit"
-            color="secondary"
-            disabled={isAddingLeadsOrClients}
-            onClick={() => setSubmitType("case")}
-          >
-            {isAddingLeadsOrClients && submitType === "case"
+            {isAddingLeadsOrClients && submitType === "lead"
               ? "Saving..."
-              : "Save & Create Case"}
+              : `Save ${header}`}
           </Button>
+          {header === "Lead" && (
+            <Button
+              type="submit"
+              color="secondary"
+              disabled={isAddingLeadsOrClients}
+              onClick={() => setSubmitType("case")}
+            >
+              {isAddingLeadsOrClients && submitType === "case"
+                ? "Saving..."
+                : "Save & Create Case"}
+            </Button>
+          )}
           <Button color="danger" onClick={toggle}>
             Cancel
           </Button>

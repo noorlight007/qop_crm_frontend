@@ -789,6 +789,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         isOpen={isAddLeadModalOpen}
         toggle={handleCloseAddLead}
         onLeadCreated={handleLeadCreated}
+        header="Lead"
       />
     </Modal>
   );
