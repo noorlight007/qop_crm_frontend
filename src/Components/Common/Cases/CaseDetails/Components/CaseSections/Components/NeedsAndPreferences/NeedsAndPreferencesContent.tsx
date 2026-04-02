@@ -29,7 +29,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
-  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+  const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias },
   );
