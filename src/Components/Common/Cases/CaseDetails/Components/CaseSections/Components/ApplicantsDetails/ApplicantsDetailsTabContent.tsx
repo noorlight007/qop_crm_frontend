@@ -1744,7 +1744,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </Button>
                     </div>
                     <small className="text-danger">
-                      Note: If you add a new address, the previous address
+                      Note: If you add a new address, the "Add Previous Address"
                       button will be disabled.
                     </small>
                   </div>
