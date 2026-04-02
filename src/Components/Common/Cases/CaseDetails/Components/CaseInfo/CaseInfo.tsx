@@ -16,7 +16,6 @@ import {
   TbCopy,
   TbDownload,
   TbEdit,
-  TbMailShare,
   TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
@@ -59,8 +58,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     useState(false);
   const [isViewJointApplicantModalOpen, setIsViewJointApplicantModalOpen] =
     useState(false);
-  const [selectedJointApplicant, setSelectedJointApplicant] =
-    useState<{data: any, index: number} | null>(null);
+  const [selectedJointApplicant, setSelectedJointApplicant] = useState<{
+    data: any;
+    index: number;
+  } | null>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
 
@@ -110,7 +111,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const toggleAddJointApplicantModal = () =>
     setIsAddJointApplicantModalOpen(!isAddJointApplicantModalOpen);
 
-  const openViewJointApplicantModal = (jointApplicant: any,  index: number) => {
+  const openViewJointApplicantModal = (jointApplicant: any, index: number) => {
     setSelectedJointApplicant({ data: jointApplicant, index });
     toggleViewJointApplicantModal();
   };
@@ -476,7 +477,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                               <strong
                                 className="small text_decoration_hover"
                                 onClick={() =>
-                                  openViewJointApplicantModal(jointApplicant, index)
+                                  openViewJointApplicantModal(
+                                    jointApplicant,
+                                    index,
+                                  )
                                 }
                                 style={{ cursor: "pointer" }}
                               >
@@ -549,20 +553,24 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                                   "")) && (
                               <small>
                                 (
-                                {caseInfo?.application_type
-                                  ? formatChoiceFieldValue(
-                                      caseInfo.application_type,
-                                    )
-                                  : null}
-                                {caseInfo?.mortgage_type ? (
+                                {caseInfo?.application_type &&
+                                caseInfo?.mortgage_type ? (
                                   <>
-                                    {" "}
+                                    {formatChoiceFieldValue(
+                                      caseInfo.application_type,
+                                    )}{" "}
                                     <FaArrowRight />{" "}
                                     {formatChoiceFieldValue(
                                       caseInfo.mortgage_type,
                                     )}
                                   </>
-                                ) : null}
+                                ) : caseInfo?.application_type ? (
+                                  formatChoiceFieldValue(
+                                    caseInfo.application_type,
+                                  )
+                                ) : (
+                                  formatChoiceFieldValue(caseInfo.mortgage_type)
+                                )}
                                 )
                               </small>
                             )}
