@@ -398,7 +398,9 @@ const ProductContent: React.FC = () => {
       <Row>
         <Col md={4}>
           <FormGroup>
-            <Label for="productDescription">Product Description<span className="text-danger">*</span></Label>
+            <Label for="productDescription">
+              Product Description<span className="text-danger">*</span>
+            </Label>
             <Input
               id="productDescription"
               name="product_description"
@@ -416,7 +418,9 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="initialRate">Initial Rate<span className="text-danger">*</span></Label>
+            <Label for="initialRate">
+              Initial Rate<span className="text-danger">*</span>
+            </Label>
             <Input
               id="initialRate"
               name="initial_rate"
@@ -438,7 +442,9 @@ const ProductContent: React.FC = () => {
 
         <Col md={4}>
           <FormGroup>
-            <Label for="initialRateType">Initial Rate Type<span className="text-danger">*</span></Label>
+            <Label for="initialRateType">
+              Initial Rate Type<span className="text-danger">*</span>
+            </Label>
             <Input
               id="initialRateType"
               name="initial_rate_type"
@@ -463,7 +469,9 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="initialRatePeriodType">Initial Rate Period Type<span className="text-danger">*</span></Label>
+            <Label for="initialRatePeriodType">
+              Initial Rate Period Type<span className="text-danger">*</span>
+            </Label>
             <Input
               id="initialRatePeriodType"
               name="initial_rate_period_type"
@@ -807,7 +815,9 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="lender_product_fee">Lender Product Fee ({getCurrencySign()})</Label>
+            <Label for="lender_product_fee">
+              Lender Product Fee ({getCurrencySign()})
+            </Label>
             <Input
               id="lender_product_fee"
               name="lender_product_fee"
@@ -851,7 +861,9 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="lender_solicitor_fee">Lender Solicitors Fee ({getCurrencySign()})</Label>
+            <Label for="lender_solicitor_fee">
+              Lender Solicitors Fee ({getCurrencySign()})
+            </Label>
             <Input
               id="lender_solicitor_fee"
               name="lender_solicitor_fee"
@@ -871,7 +883,9 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="valuationFee">Valuation Fee ({getCurrencySign()})</Label>
+            <Label for="valuationFee">
+              Valuation Fee ({getCurrencySign()})
+            </Label>
             <Input
               id="valuationFee"
               name="valuation_fee"
@@ -934,7 +948,9 @@ const ProductContent: React.FC = () => {
         </Col>
         <Col md={4}>
           <FormGroup>
-            <Label for="procurationFee">Procuration Fee ({getCurrencySign()})</Label>
+            <Label for="procurationFee">
+              Procuration Fee ({getCurrencySign()})
+            </Label>
             <Input
               id="procurationFee"
               name="procuration_fee"

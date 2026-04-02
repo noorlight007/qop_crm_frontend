@@ -125,7 +125,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
       "Solicitors & Accountants": "is_solicitors_accountants",
       "Budget Planner": "is_budget_planner",
       "Existing Protection": "is_existing_protection",
-      "Mortgage Your Needs": "is_mortgage_your_needs",
+      "Needs & Preferences": "is_needs_and_preferences",
       Notes: "is_notes",
       Product: "is_product",
       "DIP History": "is_dip_history",

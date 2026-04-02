@@ -29,7 +29,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
   const { data: session } = useSession();
   const { casealias } = useParams();
   const dispatch = useAppDispatch();
-  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+  const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
     { skip: !casealias },
   );
@@ -236,7 +236,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
         try {
           await updateSectionCompleteStatus({
             case_alias: casealias,
-            section_data: { is_mortgage_your_needs: true },
+            section_data: { is_needs_and_preferences: true },
           });
         } catch (err) {
           console.error("Failed to update section complete status:", err);
