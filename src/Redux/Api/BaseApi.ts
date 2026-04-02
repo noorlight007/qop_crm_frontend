@@ -274,7 +274,7 @@ export const baseApi = createApi({
     "SingleOrganisation",
     "NetworkReports",
     "OrgUserList",
-    "OrgLeadAndClientList",
+    "OrgLeadAndApplicantList",
     "OrgCases",
     "NetworkDirectorDashboard",
     //Network Director end
@@ -297,7 +297,7 @@ export const baseApi = createApi({
     //Organisation Admin and support staff end
 
     // Client start
-    "CLientApplicationDetails",
+    "ClientApplicationDetails",
 
     // Admin Start
     "NetworkList",

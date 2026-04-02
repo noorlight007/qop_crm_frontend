@@ -8,7 +8,7 @@ export const CaseDetailsApi = baseApi.injectEndpoints({
         url: `/cases/`,
         method: "GET",
       }),
-      providesTags: ["CLientApplicationDetails"],
+      providesTags: ["ClientApplicationDetails"],
     }),
    
   }),

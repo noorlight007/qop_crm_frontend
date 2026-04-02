@@ -1,6 +1,6 @@
 "use client";
-import { useGetOrgLeadAndClientListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgClientInfo } from "@/Types/Network/Director/Users/Organisations/OrgClientType";
+import { useGetOrgLeadAndApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { OrgApplicantInfo } from "@/Types/Common/Organisations/OrgApplicantType";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -24,13 +24,13 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
-import ViewOrgClientModal from "./Modals/ViewOrgClientModal";
+import ViewOrgApplicantModal from "./Modals/ViewOrgApplicantModal";
 
-const OrgClients: React.FC = () => {
+const OrgApplicants: React.FC = () => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
-  const [clients, setClients] = useState<OrgClientInfo[]>([]);
+  const [applicants, setApplicants] = useState<OrgApplicantInfo[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,7 +47,7 @@ const OrgClients: React.FC = () => {
   }, [searchInput]);
 
   // rtk query - pass params object to match OrgClientsApi
-  const { data: clientData, isLoading } = useGetOrgLeadAndClientListQuery(
+  const { data: applicantData, isLoading } = useGetOrgLeadAndApplicantListQuery(
     {
       organisationslug,
       params: {
@@ -59,7 +59,9 @@ const OrgClients: React.FC = () => {
     { skip: !organisationslug },
   );
 
-  const [selectedClient, setSelectedClient] = useState<Partial<OrgClientInfo>>({
+  const [selectedApplicant, setSelectedApplicant] = useState<
+    Partial<OrgApplicantInfo>
+  >({
     alias: "",
     profile_image: "",
     name: "",
@@ -83,45 +85,47 @@ const OrgClients: React.FC = () => {
     created_at: "",
   });
 
-  const toggleViewModal = (client?: OrgClientInfo) => {
+  const toggleViewModal = (client?: OrgApplicantInfo) => {
     if (client) {
-      setSelectedClient(client);
+      setSelectedApplicant(client);
     }
     setIsViewModalOpen(!isViewModalOpen);
   };
 
   useEffect(() => {
-    if (clientData) {
-      const clientsData = Array.isArray(clientData)
-        ? clientData
-        : clientData.results || clientData.clients;
-      setClients(clientsData || []);
+    if (applicantData) {
+      const applicantsData = Array.isArray(applicantData)
+        ? applicantData
+        : applicantData.results || applicantData.clients;
+      setApplicants(applicantsData || []);
     }
-  }, [clientData]);
+  }, [applicantData]);
 
   // Server-side pagination: derive totalCount and a stable page size to avoid inflated pages
   const totalCount =
-    clientData && !Array.isArray(clientData)
-      ? clientData.count
-      : clients.length;
+    applicantData && !Array.isArray(applicantData)
+      ? applicantData.count
+      : applicants.length;
 
   // capture a stable page size from pages that are not the last page
   useEffect(() => {
-    const currentLength = Array.isArray(clientData)
-      ? clientData.length
-      : clientData?.results?.length || 0;
+    const currentLength = Array.isArray(applicantData)
+      ? applicantData.length
+      : applicantData?.results?.length || 0;
     const isLastPage =
-      !Array.isArray(clientData) && clientData && clientData.next === null;
+      !Array.isArray(applicantData) &&
+      applicantData &&
+      applicantData.next === null;
     if (currentLength > 0) {
       if (stablePageSize === 0) setStablePageSize(currentLength);
       else if (!isLastPage && currentLength !== stablePageSize)
         setStablePageSize(currentLength);
     }
-  }, [clientData, stablePageSize]);
+  }, [applicantData, stablePageSize]);
 
-  const effectivePageSize = stablePageSize || clients.length || 1;
+  const effectivePageSize = stablePageSize || applicants.length || 1;
   const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
-  const currentClients = clients;
+  const currentApplicants = applicants;
 
   // Keep currentPage within bounds
   useEffect(() => {
@@ -141,7 +145,7 @@ const OrgClients: React.FC = () => {
       <CardBody>
         <Row className="flex justify-content-between py-4">
           <Col md="3">
-            <h2>Clients</h2>
+            <h2>Applicants</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -198,18 +202,18 @@ const OrgClients: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ) : currentClients.length > 0 ? (
-                currentClients.map((client: any) => (
-                  <tr key={client.alias} className="text-center">
+              ) : currentApplicants.length > 0 ? (
+                currentApplicants.map((applicant: any) => (
+                  <tr key={applicant.alias} className="text-center">
                     <td>
                       <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                         <span
                           className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                           style={{ width: 40, height: 40 }}
                         >
-                          {client?.profile_image ? (
+                          {applicant?.profile_image ? (
                             <Image
-                              src={client.profile_image}
+                              src={applicant.profile_image}
                               alt="Profile"
                               width={35}
                               height={35}
@@ -221,54 +225,54 @@ const OrgClients: React.FC = () => {
                         </span>
                         <span
                           className="text_decoration_hover"
-                          onClick={() => toggleViewModal(client)}
+                          onClick={() => toggleViewModal(applicant)}
                           style={{ cursor: "pointer" }}
                         >
-                          {client.title
-                            ? formatChoiceFieldValue(client.title)
+                          {applicant.title
+                            ? formatChoiceFieldValue(applicant.title)
                             : ""}
-                          {"."} {client?.first_name} {client?.middle_name}{" "}
-                          {client?.last_name}
+                          {"."} {applicant?.first_name} {applicant?.middle_name}{" "}
+                          {applicant?.last_name}
                         </span>
                       </div>
                     </td>
                     <td>
-                      {client?.email ? (
-                        client.email
+                      {applicant?.email ? (
+                        applicant.email
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {client?.phone ? (
-                        <span className="text-black">{client?.phone}</span>
+                      {applicant?.phone ? (
+                        <span className="text-black">{applicant?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {client?.source ? (
-                        formatChoiceFieldValue(client?.source)
+                      {applicant?.source ? (
+                        formatChoiceFieldValue(applicant?.source)
                       ) : (
                         <small className="text-muted">Not Found</small>
                       )}
                     </td>
                     <td>
-                      {client.created_by == null ? (
+                      {applicant.created_by == null ? (
                         <small className="text-muted">Not Available</small>
                       ) : (
                         <>
                           <p className="m-0">
-                            {client.created_by?.name || "Unknown User"}
+                            {applicant.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {client.created_by?.user_type
+                            {applicant.created_by?.user_type
                               ? formatChoiceFieldValue(
-                                  client.created_by?.user_type,
+                                  applicant.created_by?.user_type,
                                 )
                               : "Not Found"}
                             )
@@ -276,13 +280,13 @@ const OrgClients: React.FC = () => {
                         </>
                       )}
                     </td>
-                    <td>{formatDateAndTime(client?.created_at)}</td>
+                    <td>{formatDateAndTime(applicant?.created_at)}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan={7} className="text-center">
-                    No clients available.
+                    No applicants available.
                   </td>
                 </tr>
               )}
@@ -302,7 +306,7 @@ const OrgClients: React.FC = () => {
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
                   totalCount,
                 )}{" "}
-                of {totalCount} Clients
+                of {totalCount} Applicants
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -346,10 +350,10 @@ const OrgClients: React.FC = () => {
         </Row>
 
         {/* modals */}
-        <ViewOrgClientModal
+        <ViewOrgApplicantModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedClient={selectedClient}
+          selectedApplicant={selectedApplicant}
         />
         {/* modals end */}
       </CardBody>
@@ -357,4 +361,4 @@ const OrgClients: React.FC = () => {
   );
 };
 
-export default OrgClients;
+export default OrgApplicants;

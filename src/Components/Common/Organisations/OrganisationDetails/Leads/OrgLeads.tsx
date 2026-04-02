@@ -1,6 +1,6 @@
 "use client";
-import { useGetOrgLeadAndClientListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgLeadInfo } from "@/Types/Network/Director/Users/Organisations/OrgLeadTypes";
+import { useGetOrgLeadAndApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
 import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -46,7 +46,7 @@ const OrgLeads: React.FC = () => {
   }, [searchInput]);
 
   // rtk hooks
-  const { data: leadData, isLoading } = useGetOrgLeadAndClientListQuery(
+  const { data: leadData, isLoading } = useGetOrgLeadAndApplicantListQuery(
     {
       organisationslug,
       params: {

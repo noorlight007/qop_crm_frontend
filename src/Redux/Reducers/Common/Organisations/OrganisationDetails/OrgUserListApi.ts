@@ -2,13 +2,13 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 
 export const OrgUserListApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getOrgLeadAndClientList: builder.query({
+    getOrgLeadAndApplicantList: builder.query({
       query: ({ organisationslug, params }) => ({
         url: `/organization/${organisationslug}/applicants/`,
         method: "GET",
         params: params,
       }),
-      providesTags: ["OrgLeadAndClientList"],
+      providesTags: ["OrgLeadAndApplicantList"],
     }),
     getOrgUserList: builder.query({
       query: ({ organisationslug, params }) => ({
@@ -21,5 +21,5 @@ export const OrgUserListApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetOrgLeadAndClientListQuery, useGetOrgUserListQuery } =
+export const { useGetOrgLeadAndApplicantListQuery, useGetOrgUserListQuery } =
   OrgUserListApi;

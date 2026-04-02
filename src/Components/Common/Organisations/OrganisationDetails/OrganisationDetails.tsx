@@ -10,10 +10,10 @@ import { toast } from "react-toastify";
 import { Col, Container, Row } from "reactstrap";
 import OrgAdmins from "./Admins/OrgAdmins";
 import OrgAdvisers from "./Advisers/OrgAdvisers";
+import OrgApplicants from "./Applicants/OrgApplicant";
 import OrgCases from "./Cases/OrgCases";
 import OrgLendersChart from "./Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Charts/MortgagesChart/MortgagesChart";
-import OrgClients from "./Clients/OrgClients";
 import DangerZone from "./DangerZone/DangerZone";
 import OrgIntroducers from "./Introducers/OrgIntroducers";
 import OrgLeads from "./Leads/OrgLeads";
@@ -123,7 +123,7 @@ const OrganisationDetails: React.FC = () => {
             />
             <OrgCases />
             <OrgLeads />
-            <OrgClients />
+            <OrgApplicants />
             <OrgAdvisers />
             <OrgAdmins />
             <OrgIntroducers />
