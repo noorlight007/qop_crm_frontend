@@ -1,6 +1,6 @@
+import AuthUsers from "@/Components/Admin/CommonUsers/AuthUsers/AuthUsers";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import { Container, Row } from "reactstrap";
-import AdminList from "./AdminList/AdminList";
+import { Container } from "reactstrap";
 
 const AdminsContainer: React.FC = () => {
   return (
@@ -11,9 +11,7 @@ const AdminsContainer: React.FC = () => {
         items={[{ label: "Users" }, { label: "Admins", active: true }]}
       />
       <Container fluid>
-        <Row>
-          <AdminList />
-        </Row>
+        <AuthUsers title="Admin" roles="ADMIN" />
       </Container>
     </>
   );

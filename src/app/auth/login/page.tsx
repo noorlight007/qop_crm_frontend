@@ -28,7 +28,7 @@ const UserLogin = () => {
     } else if (session.user?.user_type === "ORGANISATION_ADMIN") {
       router.push("/organisation/admin/dashboard");
     } else if (session.user?.user_type === "CLIENT") {
-      router.push("/client/dashboard");
+      router.push("/applicant/dashboard");
     } else {
       logOut();
     }

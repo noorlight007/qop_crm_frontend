@@ -71,9 +71,9 @@ const AdminMenu: MenuItem[] = [
             path: "/admin/users/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/admin/users/clients",
+            path: "/admin/users/applicants",
           },
         ],
       },
@@ -118,9 +118,9 @@ const NetworkDirectorMenu: MenuItem[] = [
             path: "/network/director/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/network/director/clients",
+            path: "/network/director/applicants",
           },
           {
             title: "Reports",
@@ -233,9 +233,9 @@ const NetworkComplianceMenu: MenuItem[] = [
             path: "/network/director/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/network/director/clients",
+            path: "/network/director/applicants",
           },
           {
             title: "Reports",
@@ -344,9 +344,9 @@ const NetworkAdviserMenu: MenuItem[] = [
             path: "/network/adviser/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/network/adviser/clients",
+            path: "/network/adviser/applicants",
           },
           {
             title: "Reports",
@@ -443,9 +443,9 @@ const OrganisationDirectorMenu: MenuItem[] = [
             path: "/organisation/director/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/organisation/director/clients",
+            path: "/organisation/director/applicants",
           },
           {
             title: "Reports",
@@ -558,9 +558,9 @@ const OrganisationAdviserMenu: MenuItem[] = [
             path: "/organisation/adviser/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/organisation/adviser/clients",
+            path: "/organisation/adviser/applicants",
           },
           {
             title: "Reports",
@@ -658,9 +658,9 @@ const OrganisationAdminMenu: MenuItem[] = [
             path: "/organisation/admin/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/organisation/admin/clients",
+            path: "/organisation/admin/applicants",
           },
           {
             title: "Reports",
@@ -713,10 +713,10 @@ const OrganisationAdminMenu: MenuItem[] = [
   },
 ];
 
-// CLIENT Menu
-const ClientMenu: MenuItem[] = [
+// APPLICANT Menu
+const ApplicantMenu: MenuItem[] = [
   {
-    title: "Client",
+    title: "Applicant",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -725,7 +725,7 @@ const ClientMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/client/dashboard",
+        path: "/applicant/dashboard",
       },
     ],
   },
@@ -734,7 +734,7 @@ const ClientMenu: MenuItem[] = [
 // Export all menus
 export {
   AdminMenu,
-  ClientMenu,
+  ApplicantMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
   OrganisationAdminMenu,
@@ -759,7 +759,7 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
     case "ORGANISATION_ADMIN":
       return OrganisationAdminMenu;
     case "CLIENT":
-      return ClientMenu;
+      return ApplicantMenu;
     default:
       return [];
   }

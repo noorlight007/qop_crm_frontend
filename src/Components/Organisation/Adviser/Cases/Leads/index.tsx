@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import LeadsOrClients from "@/Components/Common/CommonUsers/LeadsOrClients/LeadsOrClients";
+import LeadsOrApplicants from "@/Components/Common/CommonUsers/LeadsOrApplicants/LeadsOrApplicants";
 import { Container } from "reactstrap";
 
 const OrganisationAdviserLeadsContainer: React.FC = () => {
@@ -11,7 +11,7 @@ const OrganisationAdviserLeadsContainer: React.FC = () => {
         items={[{ label: "Cases" }, { label: "Leads", active: true }]}
       />
       <Container fluid>
-        <LeadsOrClients userRole="LEAD" title="Leads" />
+        <LeadsOrApplicants userRole="LEAD" title="Leads" />
       </Container>
     </>
   );

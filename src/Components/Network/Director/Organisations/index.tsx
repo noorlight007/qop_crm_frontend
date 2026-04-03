@@ -7,7 +7,7 @@ const NetworkDirectorOrganisationsContainer = () => {
       <Breadcrumbs
         title="Organisation Status"
         subTitle="Welcome to the Organisations Status"
-        items={[{ label: "Users" }, { label: "Organisations", active: true }]}
+        items={[{ label: "Organisations", active: true }]}
       />
       <OrganisationList />
     </>

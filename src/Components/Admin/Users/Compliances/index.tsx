@@ -1,6 +1,6 @@
+import AuthUsers from "@/Components/Admin/CommonUsers/AuthUsers/AuthUsers";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import { Container, Row } from "reactstrap";
-import ComplianceList from "./ComplianceList/ComplianceList";
+import { Container } from "reactstrap";
 
 const ComplianceContainer: React.FC = () => {
   return (
@@ -11,9 +11,7 @@ const ComplianceContainer: React.FC = () => {
         items={[{ label: "Users" }, { label: "Compliances", active: true }]}
       />
       <Container fluid>
-        <Row>
-          <ComplianceList />
-        </Row>
+        <AuthUsers title="Compliance" roles="COMPLIANCE" />
       </Container>
     </>
   );

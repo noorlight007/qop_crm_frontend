@@ -215,10 +215,11 @@ export const baseApi = createApi({
     "IntroducerDetails",
     "Users",
     "AuthUsers",
+    "LeadsOrApplicants",
     "UserProfileDetails",
     "ResetPassword",
     "SupportTicket",
-    "LeadsOrClients",
+    "LeadsOrApplicants",
     // Common components end
 
     // Single case info start
@@ -297,7 +298,7 @@ export const baseApi = createApi({
     //Organisation Admin and support staff end
 
     // Client start
-    "ClientApplicationDetails",
+    "ApplicantCase",
 
     // Admin Start
     "NetworkList",

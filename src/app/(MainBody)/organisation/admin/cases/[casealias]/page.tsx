@@ -7,7 +7,7 @@ const OrganisationAdminSingleCaseAlias = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Organisation/Admin/Cases/Cases/[CaseAlias]")
+          await import("@/Components/Organisation/Admin/Cases/AllCases/[CaseAlias]")
         ).default;
         setClient(() => newClient);
       }
