@@ -190,48 +190,60 @@ const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedLeadOrApplicant?.created_by ? (
-              <div className="mb-3 p-3 bg-light rounded">
-                <small className="text-muted d-block fw-500 mb-2">
-                  Created By
-                </small>
-                <p className="m-0 text-dark">
-                  <strong>{selectedLeadOrApplicant.created_by.name}</strong>
-                </p>
-                <small className="text-muted">
-                  (
-                  {selectedLeadOrApplicant.created_by.user_type
-                    ? formatChoiceFieldValue(
-                        selectedLeadOrApplicant.created_by.user_type,
-                      )
-                    : ""}
-                  )
-                </small>
-              </div>
-            ) : (
-              <div
-                className="mb-3 p-3 bg-light rounded"
-                style={{ borderLeft: "3px solid #ffc107" }}
-              >
-                <small className="text-muted d-block fw-500 mb-2">
-                  Created By
-                </small>
-                <p className="m-0 text-muted fst-italic">
-                  No creator information available
-                </p>
-              </div>
-            )}
-            <div className="mb-3 p-3 bg-light rounded">
-              <small className="text-muted d-block fw-500 mb-2">
-                Created At
-              </small>
-              <p className="m-0 text-dark fw-500">
-                {selectedLeadOrApplicant?.created_at &&
-                formatDateAndTime(selectedLeadOrApplicant?.created_at)
-                  ? formatDateAndTime(selectedLeadOrApplicant?.created_at)
-                  : "-"}
-              </p>
-            </div>
+            <Row>
+              <Col md="6" className="mb-3">
+                {" "}
+                {selectedLeadOrApplicant?.created_by ? (
+                  <div className="mb-3 p-3 bg-light rounded">
+                    <small className="text-muted d-block fw-500 mb-2">
+                      Created By
+                    </small>
+                    <p className="m-0 text-dark">
+                      <strong>{selectedLeadOrApplicant.created_by.name}</strong>
+                    </p>
+                    <small className="text-muted d-block">
+                      {selectedLeadOrApplicant.created_by.email
+                        ? formatChoiceFieldValue(
+                            selectedLeadOrApplicant.created_by.email,
+                          )
+                        : ""}
+                    </small>
+                    <small className="text-muted d-block">
+                      {selectedLeadOrApplicant.created_by.user_type
+                        ? formatChoiceFieldValue(
+                            selectedLeadOrApplicant.created_by.user_type,
+                          )
+                        : ""}
+                    </small>
+                  </div>
+                ) : (
+                  <div
+                    className="mb-3 p-3 bg-light rounded"
+                    style={{ borderLeft: "3px solid #ffc107" }}
+                  >
+                    <small className="text-muted d-block fw-500 mb-2">
+                      Created By
+                    </small>
+                    <p className="m-0 text-muted fst-italic">
+                      No creator information available
+                    </p>
+                  </div>
+                )}
+              </Col>
+              <Col md="6" className="mb-3">
+                <div className="mb-3 p-3 bg-light rounded">
+                  <small className="text-muted d-block fw-500 mb-2">
+                    Created At
+                  </small>
+                  <p className="m-0 text-dark fw-500">
+                    {selectedLeadOrApplicant?.created_at &&
+                    formatDateAndTime(selectedLeadOrApplicant?.created_at)
+                      ? formatDateAndTime(selectedLeadOrApplicant?.created_at)
+                      : "-"}
+                  </p>
+                </div>
+              </Col>
+            </Row>
           </div>
         </div>
       </ModalBody>
