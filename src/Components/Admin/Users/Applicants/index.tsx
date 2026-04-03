@@ -1,6 +1,6 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import { Container, Row } from "reactstrap";
-import AuthUsers from "../../CommonUsers/AuthUsers/AuthUsers";
+import { Container } from "reactstrap";
+import LeadsOrApplicants from "../../CommonUsers/LeadsOrApplicants/LeadsOrApplicants";
 
 const ClientsContainer: React.FC = () => {
   return (
@@ -11,9 +11,7 @@ const ClientsContainer: React.FC = () => {
         items={[{ label: "Users" }, { label: "Applicants", active: true }]}
       />
       <Container fluid>
-        <Row>
-          <AuthUsers title="Client" roles="CLIENT" />
-        </Row>
+        <LeadsOrApplicants title="Client" roles="CLIENT" />
       </Container>
     </>
   );

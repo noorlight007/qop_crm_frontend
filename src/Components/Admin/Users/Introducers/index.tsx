@@ -1,6 +1,6 @@
+import AuthUsers from "@/Components/Admin/CommonUsers/AuthUsers/AuthUsers";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import { Container, Row } from "reactstrap";
-import IntroducerList from "./IntroducerList/IntroducerList";
+import { Container } from "reactstrap";
 
 const IntroducerContainer: React.FC = () => {
   return (
@@ -11,9 +11,7 @@ const IntroducerContainer: React.FC = () => {
         items={[{ label: "Users" }, { label: "Introducerss", active: true }]}
       />
       <Container fluid>
-        <Row>
-          <IntroducerList />
-        </Row>
+        <AuthUsers title="Introducer" roles="INTRODUCER" />
       </Container>
     </>
   );
