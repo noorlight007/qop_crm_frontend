@@ -3,7 +3,7 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
-import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
+import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
 const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
   isOpen,
@@ -51,12 +51,6 @@ const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
               selectedLeadOrApplicant?.middle_name + " "}
             {selectedLeadOrApplicant?.last_name}
           </h4>
-
-          <div>
-            <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 {selectedLeadOrApplicant.is_lead === true ? "Lead" : "Client"}
-            </Badge>
-          </div>
         </div>
 
         <div className="p-4">

@@ -7,7 +7,7 @@ const NetworkDirectorClients = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Network/Director/Cases/Clients")
+          await import("@/Components/Network/Director/Cases/Applicants")
         ).default;
         setClient(() => newClient);
       }

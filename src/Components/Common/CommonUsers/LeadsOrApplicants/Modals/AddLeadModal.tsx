@@ -1,5 +1,4 @@
-// import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
-import { useAddLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { useAddLeadsOrApplicantsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -26,8 +25,8 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
 }) => {
   // const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
 
-  const [addLeadsOrClients, { isLoading: isAddingLeadsOrClients }] =
-    useAddLeadsOrClientsMutation();
+  const [addLeadsOrApplicants, { isLoading: isAddingLeadsOrApplicants }] =
+    useAddLeadsOrApplicantsMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -215,7 +214,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrClients({ payload });
+      const result = await addLeadsOrApplicants({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         if (onLeadCreated && result.data) onLeadCreated(result.data as any);
@@ -275,7 +274,7 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrClients({ payload });
+      const result = await addLeadsOrApplicants({ payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         const leadId =
@@ -583,10 +582,10 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
           <Button
             type="submit"
             color="primary"
-            disabled={isAddingLeadsOrClients}
+            disabled={isAddingLeadsOrApplicants}
             onClick={() => setSubmitType("lead")}
           >
-            {isAddingLeadsOrClients && submitType === "lead"
+            {isAddingLeadsOrApplicants && submitType === "lead"
               ? "Saving..."
               : `Save ${header}`}
           </Button>
@@ -594,10 +593,10 @@ const AddLeadModal: React.FC<AddLeadsModalProps> = ({
             <Button
               type="submit"
               color="secondary"
-              disabled={isAddingLeadsOrClients}
+              disabled={isAddingLeadsOrApplicants}
               onClick={() => setSubmitType("case")}
             >
-              {isAddingLeadsOrClients && submitType === "case"
+              {isAddingLeadsOrApplicants && submitType === "case"
                 ? "Saving..."
                 : "Save & Create Case"}
             </Button>

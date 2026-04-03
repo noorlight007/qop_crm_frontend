@@ -1,22 +1,22 @@
 import { useDeleteLeadsOrApplicantsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
-import { DeleteLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
+import { DeleteLeadOrApplicantModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrClientModalProps> = ({
+const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
   isOpen,
   toggle,
-  selectedLeadOrClient,
+  selectedLeadOrApplicant,
 }) => {
   const [deleteLeadOrApplicant, { isLoading }] =
     useDeleteLeadsOrApplicantsMutation();
 
   const handleDelete = async () => {
-    if (!selectedLeadOrClient?.alias) return;
+    if (!selectedLeadOrApplicant?.alias) return;
     try {
       const response = await deleteLeadOrApplicant({
-        customerAlias: selectedLeadOrClient.alias,
+        customerAlias: selectedLeadOrApplicant.alias,
       });
 
       if ("data" in response) {
@@ -40,8 +40,8 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrClientModalProps> = ({
       </ModalHeader>
       <ModalBody>
         Are you sure you want to delete the lead{" "}
-        <strong className="text-danger">{selectedLeadOrClient?.name}</strong>?
-        This action cannot be undone.
+        <strong className="text-danger">{selectedLeadOrApplicant?.name}</strong>
+        ? This action cannot be undone.
       </ModalBody>
       <ModalFooter>
         <Button color="danger" onClick={handleDelete}>
