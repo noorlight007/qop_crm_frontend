@@ -1,8 +1,8 @@
 import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
 import {
-  AuthUser,
-  UpdateAuthUserModalProps,
-} from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+  LeadsOrApplicants,
+  UpdateLeadsOrApplicantsModalProps,
+} from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -19,27 +19,26 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
-  title,
-  isOpen,
-  toggle,
-  selectedAuthUser,
-}) => {
-  const [authUserData, setAuthUserData] =
-    useState<Partial<AuthUser>>(selectedAuthUser);
-  const [originalData, setOriginalData] =
-    useState<Partial<AuthUser>>(selectedAuthUser);
+const UpdateLeadsOrApplicantsModal: React.FC<
+  UpdateLeadsOrApplicantsModalProps
+> = ({ title, isOpen, toggle, selectedLeadsOrApplicants }) => {
+  const [authUserData, setAuthUserData] = useState<Partial<LeadsOrApplicants>>(
+    selectedLeadsOrApplicants,
+  );
+  const [originalData, setOriginalData] = useState<Partial<LeadsOrApplicants>>(
+    selectedLeadsOrApplicants,
+  );
   const [isModified, setIsModified] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [updateAuthUserDetails, { isLoading }] =
+  const [updateLeadsOrApplicantsDetails, { isLoading }] =
     useUpdateAuthUserDetailsMutation();
 
   useEffect(() => {
-    setAuthUserData(selectedAuthUser);
-    setOriginalData(selectedAuthUser);
+    setAuthUserData(selectedLeadsOrApplicants);
+    setOriginalData(selectedLeadsOrApplicants);
     setIsModified(false);
     setErrors({});
-  }, [selectedAuthUser]);
+  }, [selectedLeadsOrApplicants]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -117,9 +116,9 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     }
   };
 
-  const handleUpdateAuthUser = async (
+  const handleUpdateLeadsOrApplicants = async (
     e: React.FormEvent<HTMLFormElement>,
-    authUserData: Partial<AuthUser>,
+    authUserData: Partial<LeadsOrApplicants>,
   ) => {
     e.preventDefault();
     try {
@@ -153,8 +152,8 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
           return;
         }
 
-        const result = await updateAuthUserDetails({
-          payload: payload as Partial<AuthUser>,
+        const result = await updateLeadsOrApplicantsDetails({
+          payload: payload as Partial<LeadsOrApplicants>,
           user_alias: authUserData.alias,
         });
 
@@ -215,7 +214,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
         <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
       <Form
-        onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}
+        onSubmit={(e) => handleUpdateLeadsOrApplicants(e, authUserData)}
         encType="multipart/form-data"
       >
         <ModalBody>
@@ -396,4 +395,4 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
     </Modal>
   );
 };
-export default UpdateAuthUserModal;
+export default UpdateLeadsOrApplicantsModal;

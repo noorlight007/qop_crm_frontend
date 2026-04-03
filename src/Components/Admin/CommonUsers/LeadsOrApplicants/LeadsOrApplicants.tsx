@@ -4,10 +4,10 @@ import {
   useGetOrganisationListQuery,
   useUpdateAuthUserDetailsMutation,
 } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import {
-  AuthUser,
-  AuthUsersProps,
-} from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+import type {
+  LeadsOrApplicants,
+  LeadsOrApplicantsProps,
+} from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -44,13 +44,13 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import Swal from "sweetalert2";
-import DeleteAuthUserModal from "./Modals/DeleteAuthUserModal";
-import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
-import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
+import DeleteLeadsOrApplicantsModal from "./Modals/DeleteLeadsOrApplicantsModal";
+import UpdateLeadsOrApplicantsModal from "./Modals/UpdateLeadsOrApplicantsModal";
+import ViewLeadsOrApplicantsModal from "./Modals/ViewLeadsOrApplicantsModal";
 
-const AuthUsers: React.FC<AuthUsersProps> = ({
+const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   title,
-  authUsersPerPage = 12,
+  leadsOrApplicantsPerPage = 12,
   roles,
 }) => {
   const { data: session } = useSession();
@@ -70,7 +70,9 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
 
   const role = roles;
 
-  const [selectedAuthUser, setSelectedAuthUser] = useState<Partial<AuthUser>>({
+  const [selectedLeadsOrApplicants, setSelectedLeadsOrApplicants] = useState<
+    Partial<LeadsOrApplicants>
+  >({
     title: "",
     first_name: "",
     middle_name: "",
@@ -103,7 +105,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     });
 
   const {
-    data: authUsersData,
+    data: leadsOrApplicantsData,
     isLoading,
     isFetching,
     isError,
@@ -113,7 +115,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
       network: selectedNetwork || undefined,
       organisation: selectedOrganisation || undefined,
       page: currentPage,
-      page_size: authUsersPerPage,
+      page_size: leadsOrApplicantsPerPage,
       search: debouncedSearch || undefined,
     },
     {
@@ -129,19 +131,19 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     return () => clearTimeout(t);
   }, [searchQuery]);
 
-  const authUsers =
+  const leadsOrApplicants =
     isFetching || isError
       ? []
-      : Array.isArray(authUsersData)
-        ? authUsersData
-        : (authUsersData?.results ?? []);
+      : Array.isArray(leadsOrApplicantsData)
+        ? leadsOrApplicantsData
+        : (leadsOrApplicantsData?.results ?? []);
 
   const totalCount =
     isFetching || isError
       ? 0
-      : Array.isArray(authUsersData)
-        ? authUsersData.length
-        : (authUsersData?.count ?? 0);
+      : Array.isArray(leadsOrApplicantsData)
+        ? leadsOrApplicantsData.length
+        : (leadsOrApplicantsData?.count ?? 0);
 
   const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedNetwork(e.target.value);
@@ -178,23 +180,23 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     }
   };
 
-  const openViewModal = (authUser: AuthUser) => {
-    setSelectedAuthUser(authUser);
+  const openViewModal = (leadsOrApplicants: LeadsOrApplicants) => {
+    setSelectedLeadsOrApplicants(leadsOrApplicants);
     toggleViewModal();
   };
 
-  const openUpdateModal = (authUser: AuthUser) => {
-    setSelectedAuthUser(authUser);
+  const openUpdateModal = (leadsOrApplicants: LeadsOrApplicants) => {
+    setSelectedLeadsOrApplicants(leadsOrApplicants);
     toggleUpdateModal();
   };
 
-  const openDeleteModal = (authUser: AuthUser) => {
-    setSelectedAuthUser(authUser);
+  const openDeleteModal = (leadsOrApplicants: LeadsOrApplicants) => {
+    setSelectedLeadsOrApplicants(leadsOrApplicants);
     toggleDeleteModal();
   };
 
-  const currentAuthUsers = authUsers;
-  const totalPages = Math.ceil(totalCount / authUsersPerPage) || 1;
+  const currentLeadsOrApplicants = leadsOrApplicants;
+  const totalPages = Math.ceil(totalCount / leadsOrApplicantsPerPage) || 1;
 
   const [copiedEmailAlias, setCopiedEmailAlias] = useState<string | null>(null);
 
@@ -361,8 +363,8 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     </div>
                   </td>
                 </tr>
-              ) : currentAuthUsers.length > 0 ? (
-                currentAuthUsers.map((user: any) => (
+              ) : currentLeadsOrApplicants.length > 0 ? (
+                currentLeadsOrApplicants.map((user: any) => (
                   <tr key={user.alias} className="text-center">
                     <td>
                       <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
@@ -413,9 +415,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                             }
                           >
                             {copiedEmailAlias === user.alias ? (
-                              <FaCheckCircle size={12} className="text-success"/>
+                              <FaCheckCircle
+                                size={12}
+                                className="text-success"
+                              />
                             ) : (
-                              <TbCopy size={12}/>
+                              <TbCopy size={12} />
                             )}
                           </span>
                         </span>
@@ -612,12 +617,12 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 Showing{" "}
                 {totalCount === 0
                   ? "0"
-                  : (currentPage - 1) * authUsersPerPage + 1}{" "}
+                  : (currentPage - 1) * leadsOrApplicantsPerPage + 1}{" "}
                 to{" "}
-                {currentAuthUsers.length === 0
+                {currentLeadsOrApplicants.length === 0
                   ? 0
-                  : (currentPage - 1) * authUsersPerPage +
-                    currentAuthUsers.length}{" "}
+                  : (currentPage - 1) * leadsOrApplicantsPerPage +
+                    currentLeadsOrApplicants.length}{" "}
                 of {totalCount} Users
               </p>
             </div>
@@ -708,26 +713,26 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           </div>
         </Row>
       </CardBody>
-      <ViewAuthUserModal
+      <ViewLeadsOrApplicantsModal
         isOpen={isViewModalOpen}
         toggle={toggleViewModal}
-        selectedAuthUser={selectedAuthUser}
+        selectedLeadsOrApplicants={selectedLeadsOrApplicants}
       />
 
-      <UpdateAuthUserModal
+      <UpdateLeadsOrApplicantsModal
         title={title}
         isOpen={isUpdateModalOpen}
         toggle={toggleUpdateModal}
-        selectedAuthUser={selectedAuthUser}
+        selectedLeadsOrApplicants={selectedLeadsOrApplicants}
       />
 
-      <DeleteAuthUserModal
+      <DeleteLeadsOrApplicantsModal
         isOpen={isDeleteModalOpen}
         toggle={toggleDeleteModal}
-        selectedAuthUser={selectedAuthUser}
+        selectedLeadsOrApplicants={selectedLeadsOrApplicants}
       />
     </Card>
   );
 };
 
-export default AuthUsers;
+export default LeadsOrApplicants;

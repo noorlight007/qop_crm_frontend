@@ -1,14 +1,14 @@
-import { ViewAuthUserModalProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+import { ViewLeadsOrApplicantsModalProps } from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { Calendar, Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
+const ViewLeadsOrApplicantsModal: React.FC<ViewLeadsOrApplicantsModalProps> = ({
   isOpen,
   toggle,
-  selectedAuthUser,
+  selectedLeadsOrApplicants,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -19,9 +19,9 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedAuthUser?.profile_image ? (
+            {selectedLeadsOrApplicants?.profile_image ? (
               <Image
-                src={selectedAuthUser.profile_image}
+                src={selectedLeadsOrApplicants.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -38,27 +38,27 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">
-            {selectedAuthUser?.title
-              ? formatChoiceFieldValue(selectedAuthUser.title) + " "
+            {selectedLeadsOrApplicants?.title
+              ? formatChoiceFieldValue(selectedLeadsOrApplicants.title) + " "
               : ""}
-            {selectedAuthUser?.first_name}{" "}
-            {selectedAuthUser?.middle_name &&
-              selectedAuthUser?.middle_name + " "}
-            {selectedAuthUser?.last_name}
+            {selectedLeadsOrApplicants?.first_name}{" "}
+            {selectedLeadsOrApplicants?.middle_name &&
+              selectedLeadsOrApplicants?.middle_name + " "}
+            {selectedLeadsOrApplicants?.last_name}
           </h4>
           <p className="mb-2 text-muted small">
-            {selectedAuthUser?.name
-              ? formatChoiceFieldValue(selectedAuthUser.name)
+            {selectedLeadsOrApplicants?.name
+              ? formatChoiceFieldValue(selectedLeadsOrApplicants.name)
               : "User"}
           </p>
           <div>
             <Badge pill className="px-3 py-2 me-2 bg-light-primary">
               👤{" "}
-              {selectedAuthUser?.role
-                ? formatChoiceFieldValue(selectedAuthUser.role)
+              {selectedLeadsOrApplicants?.role
+                ? formatChoiceFieldValue(selectedLeadsOrApplicants.role)
                 : "User"}
             </Badge>
-            {selectedAuthUser?.is_active ? (
+            {selectedLeadsOrApplicants?.is_active ? (
               <Badge pill className="px-3 py-2 bg-light-success">
                 ✓ Approved
               </Badge>
@@ -86,12 +86,12 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedAuthUser?.email ? (
+                      {selectedLeadsOrApplicants?.email ? (
                         <a
-                          href={`mailto:${selectedAuthUser.email}`}
+                          href={`mailto:${selectedLeadsOrApplicants.email}`}
                           className="text-decoration-none"
                         >
-                          {selectedAuthUser.email}
+                          {selectedLeadsOrApplicants.email}
                         </a>
                       ) : (
                         <small className="text-muted">Not Available</small>
@@ -106,11 +106,9 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedAuthUser?.phone ? (
-                        <span
-                          className="text-primary text-decoration-none"
-                        >
-                          {selectedAuthUser.phone}
+                      {selectedLeadsOrApplicants?.phone ? (
+                        <span className="text-primary text-decoration-none">
+                          {selectedLeadsOrApplicants.phone}
                         </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
@@ -142,9 +140,9 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                 Created At
               </small>
               <p className="m-0 text-dark fw-500">
-                {selectedAuthUser?.created_at &&
-                formatDateAndTime(selectedAuthUser?.created_at) ? (
-                  formatDateAndTime(selectedAuthUser?.created_at)
+                {selectedLeadsOrApplicants?.created_at &&
+                formatDateAndTime(selectedLeadsOrApplicants?.created_at) ? (
+                  formatDateAndTime(selectedLeadsOrApplicants?.created_at)
                 ) : (
                   <small className="text-muted">Not Available</small>
                 )}
@@ -157,4 +155,4 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
   );
 };
 
-export default ViewAuthUserModal;
+export default ViewLeadsOrApplicantsModal;

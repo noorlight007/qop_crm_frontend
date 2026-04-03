@@ -1,20 +1,17 @@
 import { useDeleteAuthUserMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import { DeleteAuthUserModalProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
-
+import { DeleteLeadsOrApplicantsModalProps } from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
-  isOpen,
-  toggle,
-  selectedAuthUser,
-}) => {
+const DeleteLeadsOrApplicantsModal: React.FC<
+  DeleteLeadsOrApplicantsModalProps
+> = ({ isOpen, toggle, selectedLeadsOrApplicants }) => {
   const [deleteUser, { isLoading: isDeletingUser }] =
     useDeleteAuthUserMutation();
 
   const handleDelete = async () => {
     try {
-      const user_alias = selectedAuthUser.alias;
+      const user_alias = selectedLeadsOrApplicants.alias;
       const response = await deleteUser({ user_alias });
       toggle();
       if (response.data === null) {
@@ -23,8 +20,8 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
         toast.error("Failed to delete user.");
       }
     } catch (error) {
-      console.error("Failed to delete network", error);
-      toast.error("Failed to delete network. Please try again.");
+      console.error("Failed to delete user", error);
+      toast.error("Failed to delete user. Please try again.");
     }
   };
 
@@ -36,7 +33,10 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
       <ModalBody>
         <p>
           Are you sure you want to delete user:{" "}
-          <strong className="text-danger">{selectedAuthUser?.name}</strong>?
+          <strong className="text-danger">
+            {selectedLeadsOrApplicants?.name}
+          </strong>
+          ?
         </p>
 
         <div className="border border-danger rounded p-3 bg-light text-center">
@@ -44,13 +44,13 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
             This action is irreversible.
           </p>
           <small className="text-muted">
-            Deleting this network will permanently remove all associated data
+            Deleting this user will permanently remove all associated data
             and all historical records. This data cannot be restored.
           </small>
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle} disabled={isDeletingUser}>
+        <Button color="info" onClick={toggle} disabled={isDeletingUser}>
           Cancel
         </Button>
         <Button color="danger" onClick={handleDelete} disabled={isDeletingUser}>
@@ -61,4 +61,4 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
   );
 };
 
-export default DeleteAuthUserModal;
+export default DeleteLeadsOrApplicantsModal;
