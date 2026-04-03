@@ -49,7 +49,7 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
   if (!selectedApplicant) return null;
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} centered>
+    <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
         <h5 className="text-danger">Delete Joint Applicant</h5>
       </ModalHeader>
@@ -64,15 +64,15 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
-          Cancel
-        </Button>
         <Button
           color="danger"
           onClick={handleDelete}
           disabled={isDeletingJointApplicant}
         >
           {isDeletingJointApplicant ? "Deleting..." : "Delete"}
+        </Button>
+        <Button color="info" onClick={toggle}>
+          Cancel
         </Button>
       </ModalFooter>
     </Modal>
