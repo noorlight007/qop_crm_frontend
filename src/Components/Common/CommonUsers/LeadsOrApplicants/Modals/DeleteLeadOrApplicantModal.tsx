@@ -36,10 +36,10 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-danger">Delete Lead</h3>
+        <h3 className="text-danger">Delete User</h3>
       </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the lead{" "}
+        Are you sure you want to delete the user{" "}
         <strong className="text-danger">{selectedLeadOrApplicant?.name}</strong>
         ? This action cannot be undone.
       </ModalBody>
@@ -47,7 +47,7 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
         <Button color="danger" onClick={handleDelete}>
           {isLoading ? "Deleting..." : "Delete"}
         </Button>
-        <Button color="secondary" onClick={toggle}>
+        <Button color="info" onClick={toggle}>
           Cancel
         </Button>
       </ModalFooter>
