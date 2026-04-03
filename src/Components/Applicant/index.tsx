@@ -3,13 +3,13 @@ import Breadcrumbs from "../Common/Breadcrumbs/Breadcrumbs";
 import MyApplications from "./Components/MyApplications";
 import WelcomeMessage from "./Components/WelcomeMessage";
 
-const ClientContainer: React.FC = () => {
+const ApplicantDashboardContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Client Dashboard"
+        title="Applicant Dashboard"
         subTitle="Welcome back! Let’s start from where you left."
-        items={[{ label: "Client" }, { label: "Dashboard", active: true }]}
+        items={[{ label: "Applicant" }, { label: "Dashboard", active: true }]}
       />
       <Container fluid>
         <Row>
@@ -23,4 +23,4 @@ const ClientContainer: React.FC = () => {
   );
 };
 
-export default ClientContainer;
+export default ApplicantDashboardContainer;

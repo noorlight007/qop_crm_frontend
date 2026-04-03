@@ -713,10 +713,10 @@ const OrganisationAdminMenu: MenuItem[] = [
   },
 ];
 
-// CLIENT Menu
-const ClientMenu: MenuItem[] = [
+// APPLICANT Menu
+const ApplicantMenu: MenuItem[] = [
   {
-    title: "Client",
+    title: "Applicant",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -725,7 +725,7 @@ const ClientMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/client/dashboard",
+        path: "/applicant/dashboard",
       },
     ],
   },
@@ -734,7 +734,7 @@ const ClientMenu: MenuItem[] = [
 // Export all menus
 export {
   AdminMenu,
-  ClientMenu,
+  ApplicantMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
   OrganisationAdminMenu,
@@ -759,7 +759,7 @@ export const getMenuByRole = (role?: string): MenuItem[] => {
     case "ORGANISATION_ADMIN":
       return OrganisationAdminMenu;
     case "CLIENT":
-      return ClientMenu;
+      return ApplicantMenu;
     default:
       return [];
   }

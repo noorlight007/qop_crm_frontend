@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Container } from "reactstrap";
 
-const ClientSingleCaseContainer: React.FC = () => {
+const ApplicantCaseDetailsContainer: React.FC = () => {
   const router = useRouter();
   const { casealias } = useParams();
   const {
@@ -19,13 +19,13 @@ const ClientSingleCaseContainer: React.FC = () => {
   useEffect(() => {
     if (!isLoading) {
       if (isError || !caseData) {
-        router.push("/client/dashboard");
+        router.push("/applicant/dashboard");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
 
       if (caseData.alias !== casealias) {
-        router.push("/client/dashboard");
+        router.push("/applicant/dashboard");
         toast.error("Find Wrong URL! Redirecting...");
         return;
       }
@@ -47,9 +47,12 @@ const ClientSingleCaseContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="Client Dashboard"
+        title="Applicant Case Details"
         subTitle="Welcome back! Let’s start from where you left."
-        items={[{ label: "Client" }, { label: "Dashboard", active: true }]}
+        items={[
+          { label: "Applicant" },
+          { label: "Case Details", active: true },
+        ]}
       />
       <Container fluid>
         <CaseSections
@@ -61,4 +64,4 @@ const ClientSingleCaseContainer: React.FC = () => {
   );
 };
 
-export default ClientSingleCaseContainer;
+export default ApplicantCaseDetailsContainer;

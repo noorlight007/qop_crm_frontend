@@ -22,7 +22,7 @@ export const getDashboardHomeUrl = (session: Session | null) => {
     case "ORGANISATION_ADMIN":
       return "/organisation/admin/dashboard";
     case "CLIENT":
-      return "/client/dashboard";
+      return "/applicant/dashboard";
     default:
       return "/auth/login";
   }
@@ -51,7 +51,7 @@ export const getAllCasesUrl = (session: Session | null) => {
     case "ORGANISATION_ADMIN":
       return `/organisation/admin/cases`;
     case "CLIENT":
-      return `/client/dashboard`;
+      return `/applicant/dashboard`;
     default:
       return `url not found`;
   }

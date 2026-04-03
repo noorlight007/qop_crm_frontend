@@ -1,14 +1,12 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const ClientSingleCase = () => {
+const ApplicantDashboardPage = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const newClient = (
-          await import("@/Components/Client/Cases/[caseAlias]")
-        ).default;
+        const newClient = (await import("@/Components/Applicant")).default;
         setClient(() => newClient);
       }
     })();
@@ -16,4 +14,4 @@ const ClientSingleCase = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default ClientSingleCase;
+export default ApplicantDashboardPage;
