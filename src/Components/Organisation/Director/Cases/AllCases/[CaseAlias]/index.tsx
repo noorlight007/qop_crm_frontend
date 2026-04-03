@@ -1,12 +1,12 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import CaseDetails from "@/Components/Common/Cases/CaseDetails/CaseDetails";
 
-const OrganisationAdviserCaseDetailsContainer: React.FC = () => {
+const OrganisationDirectorCaseDetailsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
         title="Case Overview"
-        subTitle="Manage case status"
+        subTitle="Here you can see the details of the case"
         items={[
           { label: "Cases" },
           { label: "All Cases" },
@@ -18,4 +18,4 @@ const OrganisationAdviserCaseDetailsContainer: React.FC = () => {
   );
 };
 
-export default OrganisationAdviserCaseDetailsContainer;
+export default OrganisationDirectorCaseDetailsContainer;

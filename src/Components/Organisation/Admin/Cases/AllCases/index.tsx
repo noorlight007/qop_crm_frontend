@@ -7,7 +7,7 @@ const OrganisationAdminCaseupdatesContainer: React.FC = () => {
     <>
       <Breadcrumbs
         title="Case Overview"
-        subTitle="View and manage all client cases"
+        subTitle="View and manage all cases"
         items={[{ label: "Cases" }, { label: "All Cases", active: true }]}
       />
       <Container fluid>

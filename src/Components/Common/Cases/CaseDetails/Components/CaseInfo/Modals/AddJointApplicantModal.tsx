@@ -1,4 +1,4 @@
-import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/AddLeadModal";
+import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/AddLeadModal";
 import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useLeadOrClientFilterListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { AddJointApplicantModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
