@@ -298,7 +298,7 @@ export const baseApi = createApi({
     //Organisation Admin and support staff end
 
     // Client start
-    "ClientApplicationDetails",
+    "ApplicantCase",
 
     // Admin Start
     "NetworkList",

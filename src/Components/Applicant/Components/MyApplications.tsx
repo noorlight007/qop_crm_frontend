@@ -1,6 +1,6 @@
 import LoadingSpinner from "@/app/loading";
-import { useGetSingleClientApplicationQuery } from "@/Redux/Reducers/Client/SingleClientApplication/SingleClientApplicationApi";
-import { SingleClientApplicationProps } from "@/Types/Client/SingleClientApplicationTypes";
+import { useGetApplicantCaseQuery } from "@/Redux/Reducers/Applicant/ApplicantCaseApi";
+import { ApplicantCaseTypes } from "@/Types/Applicant/ApplicantCaseTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Link from "next/link";
@@ -8,8 +8,8 @@ import React from "react";
 import { Card, CardBody, CardHeader, Table } from "reactstrap";
 
 const MyApplications: React.FC = () => {
-  const { data: applications, isLoading } =
-    useGetSingleClientApplicationQuery(undefined);
+  const { data: applicantCase, isLoading } =
+    useGetApplicantCaseQuery(undefined);
 
   if (isLoading)
     return (
@@ -38,7 +38,7 @@ const MyApplications: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {applications?.results?.map((app: SingleClientApplicationProps) => (
+            {applicantCase?.results?.map((app: ApplicantCaseTypes) => (
               <tr key={app.name}>
                 <td>
                   <Link
@@ -89,8 +89,8 @@ const MyApplications: React.FC = () => {
         </Table>
         <div className="px-2 pb-2">
           <p className="text-success">
-            Showing 1 to {applications?.results?.length || 0} of{" "}
-            {applications?.results?.length || 0} cases
+            Showing 1 to {applicantCase?.results?.length || 0} of{" "}
+            {applicantCase?.results?.length || 0} cases
           </p>
         </div>
       </CardBody>

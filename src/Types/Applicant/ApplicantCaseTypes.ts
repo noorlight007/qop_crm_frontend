@@ -20,7 +20,7 @@ interface Organization {
   hero_image: string | null;
 }
 
-export interface SingleClientApplicationProps {
+export interface ApplicantCaseTypes {
   alias: string;
   name: string;
   lead_user: User;
