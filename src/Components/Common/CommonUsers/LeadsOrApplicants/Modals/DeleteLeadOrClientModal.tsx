@@ -1,5 +1,5 @@
-import { useDeleteLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
-import { DeleteLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+import { useDeleteLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { DeleteLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";

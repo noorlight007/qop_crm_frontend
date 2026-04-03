@@ -1,43 +1,43 @@
 import { baseApi } from "@/Redux/Api/BaseApi";
 
-export const LeadsOrClientsApi = baseApi.injectEndpoints({
+export const LeadsOrApplicantsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getLeadsOrClients: builder.query({
+    getLeadsOrApplicants: builder.query({
       query: (params) => ({
         url: "/api/customers/",
         method: "GET",
         params,
       }),
-      providesTags: ["LeadsOrClients"],
+      providesTags: ["LeadsOrApplicants"],
     }),
-    addLeadsOrClients: builder.mutation({
+    addLeadsOrApplicants: builder.mutation({
       query: ({ payload }) => ({
         url: "/api/customers/",
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["LeadsOrClients"],
+      invalidatesTags: ["LeadsOrApplicants"],
     }),
-    updateLeadsOrClientsDetails: builder.mutation({
+    updateLeadsOrApplicantsDetails: builder.mutation({
       query: ({ payload, customerAlias }) => ({
         url: `/api/customers/${customerAlias}/`,
         method: "PATCH",
         body: payload,
       }),
-      invalidatesTags: ["LeadsOrClients"],
+      invalidatesTags: ["LeadsOrApplicants"],
     }),
-    deleteLeadsOrClients: builder.mutation({
+    deleteLeadsOrApplicants: builder.mutation({
       query: ({ customerAlias }) => ({
         url: `/api/customers/${customerAlias}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["LeadsOrClients"],
+      invalidatesTags: ["LeadsOrApplicants"],
     }),
   }),
 });
 export const {
-  useGetLeadsOrClientsQuery,
-  useAddLeadsOrClientsMutation,
-  useUpdateLeadsOrClientsDetailsMutation,
-  useDeleteLeadsOrClientsMutation,
-} = LeadsOrClientsApi;
+  useGetLeadsOrApplicantsQuery,
+  useAddLeadsOrApplicantsMutation,
+  useUpdateLeadsOrApplicantsDetailsMutation,
+  useDeleteLeadsOrApplicantsMutation,
+} = LeadsOrApplicantsApi;

@@ -1,6 +1,6 @@
 // import { useAddAuthUserMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
-import { useAddLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
-import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+import { useAddLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {

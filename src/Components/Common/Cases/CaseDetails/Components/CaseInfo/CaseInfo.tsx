@@ -4,7 +4,7 @@ import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
-import { ClientInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+import { ClientInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";

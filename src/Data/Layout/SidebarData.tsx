@@ -118,9 +118,9 @@ const NetworkDirectorMenu: MenuItem[] = [
             path: "/network/director/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/network/director/clients",
+            path: "/network/director/applicants",
           },
           {
             title: "Reports",

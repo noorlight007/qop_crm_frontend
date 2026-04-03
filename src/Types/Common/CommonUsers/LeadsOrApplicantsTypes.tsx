@@ -1,4 +1,4 @@
-export interface LeadOrClient {
+export interface LeadOrApplicant {
   alias: string;
   name: string;
   title: string;
@@ -22,22 +22,22 @@ export interface LeadOrClient {
   note?: string | null;
 }
 
-export interface LeadsOrClientsProps {
+export interface LeadsOrApplicantsProps {
   title: string;
-  leadsOrClientsPerPage?: number;
+  leadsOrApplicantsPerPage?: number;
   userRole?: string;
 }
 
 export interface ViewLeadOrClientModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadOrClient: Partial<LeadOrClient>;
+  selectedLeadOrClient: Partial<LeadOrApplicant>;
 }
 
 export interface AddLeadsModalProps {
   isOpen: boolean;
   toggle: () => void;
-  onLeadCreated?: (lead: Partial<LeadOrClient> | any) => void;
+  onLeadCreated?: (lead: Partial<LeadOrApplicant> | any) => void;
   onOpenCase?: (payload: {
     leadId?: number;
     leadName?: string | undefined;
@@ -49,12 +49,12 @@ export interface AddLeadsModalProps {
 export interface UpdateLeadOrClientModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadOrClient: Partial<LeadOrClient>;
+  selectedLeadOrClient: Partial<LeadOrApplicant>;
 }
 export interface DeleteLeadOrClientModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadOrClient: Partial<LeadOrClient>;
+  selectedLeadOrClient: Partial<LeadOrApplicant>;
 }
 
 export interface ClientInvitationProps {

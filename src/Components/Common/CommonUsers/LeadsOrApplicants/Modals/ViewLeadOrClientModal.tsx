@@ -1,4 +1,4 @@
-import { ViewLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+import { ViewLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";

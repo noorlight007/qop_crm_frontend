@@ -1,8 +1,8 @@
-import { useGetLeadsOrClientsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrClientsApi";
+import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import {
-  LeadOrClient,
-  LeadsOrClientsProps,
-} from "@/Types/Common/CommonUsers/LeadsOrClientsTypes";
+  LeadOrApplicant,
+  LeadsOrApplicantsProps,
+} from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -34,13 +34,15 @@ import DeleteLeadOrClientModal from "./Modals/DeleteLeadOrClientModal";
 import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
 import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
 
-const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
+const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   title,
-  leadsOrClientsPerPage = 12,
+  leadsOrApplicantsPerPage = 12,
   userRole,
 }) => {
   const { data: session } = useSession();
-  const [leadsOrClients, setLeadsOrClients] = useState<LeadOrClient[]>([]);
+  const [leadsOrApplicants, setLeadsOrApplicants] = useState<LeadOrApplicant[]>(
+    [],
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -62,7 +64,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     undefined,
   );
   const [selectedLeadOrClient, setSelectedLeadOrClient] = useState<
-    Partial<LeadOrClient>
+    Partial<LeadOrApplicant>
   >({
     title: "",
     first_name: "",
@@ -79,20 +81,12 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     created_by: { name: "", user_type: "" },
   });
 
-  // const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-  //   role: userRole,
-  //   page: currentPage,
-  //   search: debouncedSearch || undefined,
-  // });
-
-  const { data: leadsOrClientsData, isLoading: isLeadsOrClientsLoading } =
-    useGetLeadsOrClientsQuery({
+  const { data: leadsOrApplicantsData, isLoading: isLeadsOrApplicantsLoading } =
+    useGetLeadsOrApplicantsQuery({
       page: currentPage,
       search: debouncedSearch || undefined,
       is_lead: userRole === "LEAD" ? true : false,
     });
-
-  console.log("LeadsOrClientsData:", leadsOrClientsData);
 
   const toggleViewModal = () => setIsViewModalOpen(!isViewModalOpen);
   const toggleAddUserModal = () => setIsAddUserModalOpen(!isAddUserModalOpen);
@@ -117,8 +111,8 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     setCaseModalLeadData(undefined);
   };
 
-  const openViewModal = (LeadOrClient: LeadOrClient) => {
-    setSelectedLeadOrClient(LeadOrClient);
+  const openViewModal = (LeadOrApplicant: LeadOrApplicant) => {
+    setSelectedLeadOrClient(LeadOrApplicant);
     toggleViewModal();
   };
 
@@ -126,45 +120,30 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
     toggleAddUserModal();
   };
 
-  const openUpdateModal = (LeadOrClient: LeadOrClient) => {
-    setSelectedLeadOrClient(LeadOrClient);
+  const openUpdateModal = (LeadOrApplicant: LeadOrApplicant) => {
+    setSelectedLeadOrClient(LeadOrApplicant);
     toggleUpdateModal();
   };
 
-  const openDeleteModal = (LeadOrClient: LeadOrClient) => {
-    setSelectedLeadOrClient(LeadOrClient);
+  const openDeleteModal = (LeadOrApplicant: LeadOrApplicant) => {
+    setSelectedLeadOrClient(LeadOrApplicant);
     toggleDeleteModal();
   };
 
-  // useEffect(() => {
-  //   if (authUsersData) {
-  //     if (Array.isArray(authUsersData)) {
-  //       setAuthUsers(authUsersData || []);
-  //       setTotalCount(authUsersData.length || 0);
-  //     } else if (authUsersData.results) {
-  //       setAuthUsers(authUsersData.results || []);
-  //       setTotalCount(authUsersData.count || 0);
-  //     } else {
-  //       setAuthUsers([]);
-  //       setTotalCount(0);
-  //     }
-  //   }
-  // }, [authUsersData]);
-
   useEffect(() => {
-    if (leadsOrClientsData) {
-      if (Array.isArray(leadsOrClientsData)) {
-        setLeadsOrClients(leadsOrClientsData || []);
-        setTotalCount(leadsOrClientsData.length || 0);
-      } else if (leadsOrClientsData.results) {
-        setLeadsOrClients(leadsOrClientsData.results || []);
-        setTotalCount(leadsOrClientsData.count || 0);
+    if (leadsOrApplicantsData) {
+      if (Array.isArray(leadsOrApplicantsData)) {
+        setLeadsOrApplicants(leadsOrApplicantsData || []);
+        setTotalCount(leadsOrApplicantsData.length || 0);
+      } else if (leadsOrApplicantsData.results) {
+        setLeadsOrApplicants(leadsOrApplicantsData.results || []);
+        setTotalCount(leadsOrApplicantsData.count || 0);
       } else {
-        setLeadsOrClients([]);
+        setLeadsOrApplicants([]);
         setTotalCount(0);
       }
     }
-  }, [leadsOrClientsData]);
+  }, [leadsOrApplicantsData]);
 
   // Debounce search input
   useEffect(() => {
@@ -173,20 +152,12 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   }, [searchQuery]);
 
   // const currentAuthUsers = authUsers;
-  const currentLeadsOrClientsData = leadsOrClients;
-  // const totalPages = Math.ceil(totalCount / leadsOrClientsPerPage) || 1;
+  const currentLeadsOrApplicantsData = leadsOrApplicants;
+  // const totalPages = Math.ceil(totalCount / leadsOrApplicantsPerPage) || 1;
 
-  const filteredData = currentLeadsOrClientsData;
+  const filteredData = currentLeadsOrApplicantsData;
   const effectiveTotal = totalCount;
-  const totalPages = Math.ceil(effectiveTotal / leadsOrClientsPerPage) || 1;
-
-  // if (isLeadsOrClientsLoading) {
-  //   return (
-  //     <div className="p-4">
-  //       <LoadingSpinner />
-  //     </div>
-  //   );
-  // }
+  const totalPages = Math.ceil(effectiveTotal / leadsOrApplicantsPerPage) || 1;
 
   return (
     <>
@@ -260,7 +231,7 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {isLeadsOrClientsLoading ? (
+                {isLeadsOrApplicantsLoading ? (
                   <tr>
                     <td colSpan={8} className="text-center">
                       <div className="d-flex justify-content-center align-items-center">
@@ -409,11 +380,11 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
                   Showing{" "}
                   {effectiveTotal === 0
                     ? "0"
-                    : (currentPage - 1) * leadsOrClientsPerPage + 1}{" "}
+                    : (currentPage - 1) * leadsOrApplicantsPerPage + 1}{" "}
                   to{" "}
                   {filteredData?.length === 0
                     ? 0
-                    : (currentPage - 1) * leadsOrClientsPerPage +
+                    : (currentPage - 1) * leadsOrApplicantsPerPage +
                       filteredData?.length}{" "}
                   of {effectiveTotal} Users
                 </p>
@@ -545,4 +516,4 @@ const LeadsOrClients: React.FC<LeadsOrClientsProps> = ({
   );
 };
 
-export default LeadsOrClients;
+export default LeadsOrApplicants;
