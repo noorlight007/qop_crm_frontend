@@ -8,6 +8,7 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
   isOpen,
   toggle,
   selectedLeadOrApplicant,
+  title,
 }) => {
   const [deleteLeadOrApplicant, { isLoading }] =
     useDeleteLeadsOrApplicantsMutation();
@@ -20,7 +21,7 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
       });
 
       if ("data" in response) {
-        toast.success("Lead deleted successfully.");
+        toast.success(`${title} deleted successfully.`);
         toggle();
       } else if ("error" in response) {
         const errorMessage =
@@ -36,10 +37,10 @@ const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrApplicantModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-danger">Delete User</h3>
+        <h3 className="text-danger">Delete {title}</h3>
       </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the user{" "}
+        Are you sure you want to delete the {title.toLowerCase()}{" "}
         <strong className="text-danger">{selectedLeadOrApplicant?.name}</strong>
         ? This action cannot be undone.
       </ModalBody>

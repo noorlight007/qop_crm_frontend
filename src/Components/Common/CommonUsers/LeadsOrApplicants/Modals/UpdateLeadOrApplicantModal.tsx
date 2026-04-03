@@ -23,6 +23,7 @@ const UpdateLeadOrApplicantModal: React.FC<UpdateLeadOrApplicantModalProps> = ({
   isOpen,
   toggle,
   selectedLeadOrApplicant,
+  title,
 }) => {
   const [leadOrApplicantData, setLeadOrApplicantData] = useState<
     Partial<LeadOrApplicant>
@@ -164,7 +165,7 @@ const UpdateLeadOrApplicantModal: React.FC<UpdateLeadOrApplicantModalProps> = ({
         });
 
         if (result.data) {
-          toast.success("User updated successfully.");
+          toast.success(`${title} updated successfully.`);
           setErrors({});
           toggle();
         } else if ("error" in result) {
@@ -210,14 +211,14 @@ const UpdateLeadOrApplicantModal: React.FC<UpdateLeadOrApplicantModalProps> = ({
     } catch (error) {
       const errorMessage = getErrorMessage(error);
       toast.error(errorMessage);
-      console.error("Error saving admin:", error);
+      console.error("Error saving:", error);
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Info</span>
+        <span className="fs-4 text-primary">Update {title} Info</span>
       </ModalHeader>
       <Form
         onSubmit={(e) => handleUpdateAuthUser(e, leadOrApplicantData)}

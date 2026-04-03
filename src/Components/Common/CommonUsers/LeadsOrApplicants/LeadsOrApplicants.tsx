@@ -386,7 +386,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                     ? 0
                     : (currentPage - 1) * leadsOrApplicantsPerPage +
                       filteredData?.length}{" "}
-                  of {effectiveTotal} Users
+                  of {effectiveTotal} {title.toLowerCase()}.
                 </p>
               </div>
               <Pagination className="d-flex justify-content-end p-2">
@@ -484,6 +484,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
             isOpen={isViewModalOpen}
             toggle={toggleViewModal}
             selectedLeadOrApplicant={selectedLeadOrApplicant}
+            title={title.slice(0, -1)}
           />
           <AddLeadModal
             isOpen={isAddUserModalOpen}
@@ -503,11 +504,13 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
             isOpen={isUpdateModalOpen}
             toggle={toggleUpdateModal}
             selectedLeadOrApplicant={selectedLeadOrApplicant}
+            title={title.slice(0, -1)}
           />
           <DeleteLeadOrApplicantModal
             isOpen={isDeleteModalOpen}
             toggle={toggleDeleteModal}
             selectedLeadOrApplicant={selectedLeadOrApplicant}
+            title={title.slice(0, -1)}
           />
           {/* modals end */}
         </CardBody>

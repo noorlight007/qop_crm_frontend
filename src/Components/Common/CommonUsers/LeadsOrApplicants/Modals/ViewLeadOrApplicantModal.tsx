@@ -9,13 +9,14 @@ const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
   isOpen,
   toggle,
   selectedLeadOrApplicant,
+  title,
 }) => {
   if (!selectedLeadOrApplicant) return null;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">User Information</span>
+        <span className="fs-5 fw-bold text-primary">{title} Information</span>
       </ModalHeader>
       <ModalBody
         className="p-0"
@@ -102,7 +103,7 @@ const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
 
           <hr className="my-3" />
 
-          {/* Lead Details */}
+          {/* User Details */}
           <div className="mb-4">
             <h6
               className="text-uppercase fw-bold text-primary mb-3"
@@ -113,7 +114,7 @@ const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
                 className="me-2"
                 style={{ display: "inline" }}
               />
-              Lead Details
+              {title} Details
             </h6>
             <Row>
               <Col md="6" className="mb-3">

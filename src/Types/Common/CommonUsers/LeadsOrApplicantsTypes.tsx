@@ -32,6 +32,7 @@ export interface ViewLeadOrApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedLeadOrApplicant: Partial<LeadOrApplicant>;
+  title: string;
 }
 
 export interface AddLeadsModalProps {
@@ -50,11 +51,13 @@ export interface UpdateLeadOrApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedLeadOrApplicant: Partial<LeadOrApplicant>;
+  title: string;
 }
 export interface DeleteLeadOrApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedLeadOrApplicant: Partial<LeadOrApplicant>;
+  title: string;
 }
 
 export interface ApplicantInvitationProps {
