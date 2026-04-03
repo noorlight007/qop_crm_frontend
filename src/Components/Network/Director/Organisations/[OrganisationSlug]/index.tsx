@@ -8,7 +8,6 @@ const NetworkDirectorSingleOrganisationContainer: React.FC = () => {
         title="Organisation Status"
         subTitle="Welcome! Continue your journey."
         items={[
-          { label: "Users" },
           { label: "Organisations" },
           { label: "Organisation Details", active: true },
         ]}
