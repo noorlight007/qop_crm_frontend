@@ -1,24 +1,19 @@
-import { useClientInvitationMutation } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
+import { useApplicantInvitationMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { ApplicantInvitationModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 
-export interface ClientInvitationModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  selectedClient: any;
-}
-
-const ClientInvitationModal: React.FC<ClientInvitationModalProps> = ({
+const ApplicantInvitationModal: React.FC<ApplicantInvitationModalProps> = ({
   isOpen,
   toggle,
-  selectedClient,
+  selectedApplicant,
 }) => {
-  const [clientInvitation, { isLoading }] = useClientInvitationMutation();
+  const [ApplicantInvitation, { isLoading }] = useApplicantInvitationMutation();
 
   const handleInvitationClick = async () => {
     try {
-      await clientInvitation({
-        userAlias: selectedClient?.user?.alias || selectedClient?.alias,
+      await ApplicantInvitation({
+        userAlias: selectedApplicant?.user?.alias || selectedApplicant?.alias,
       }).unwrap();
       toggle();
       toast.success("Invitation sent successfully!");
@@ -30,12 +25,12 @@ const ClientInvitationModal: React.FC<ClientInvitationModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
-        <h3 className="text-primary">Client Invitation</h3>
+        <h3 className="text-primary">Applicant Invitation</h3>
       </ModalHeader>
       <ModalBody>
         <p>
           Send invitation to{" "}
-          <b className="text-primary">{selectedClient?.user.email}</b>{" "}
+          <b className="text-primary">{selectedApplicant?.user.email}</b>{" "}
         </p>
         <div className="d-flex justify-content-end gap-2">
           <Button color="secondary" onClick={toggle}>
@@ -54,4 +49,4 @@ const ClientInvitationModal: React.FC<ClientInvitationModalProps> = ({
   );
 };
 
-export default ClientInvitationModal;
+export default ApplicantInvitationModal;

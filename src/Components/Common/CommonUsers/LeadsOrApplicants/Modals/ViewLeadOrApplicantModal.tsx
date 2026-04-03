@@ -1,16 +1,16 @@
-import { ViewLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
+import { ViewLeadOrApplicantModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
+const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
   isOpen,
   toggle,
-  selectedLeadOrClient,
+  selectedLeadOrApplicant,
 }) => {
-  if (!selectedLeadOrClient) return null;
+  if (!selectedLeadOrApplicant) return null;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -24,9 +24,9 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedLeadOrClient?.profile_image ? (
+            {selectedLeadOrApplicant?.profile_image ? (
               <Image
-                src={selectedLeadOrClient.profile_image}
+                src={selectedLeadOrApplicant.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -43,18 +43,18 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">
-            {selectedLeadOrClient?.title
-              ? formatChoiceFieldValue(selectedLeadOrClient.title) + " "
+            {selectedLeadOrApplicant?.title
+              ? formatChoiceFieldValue(selectedLeadOrApplicant.title) + " "
               : ""}
-            {selectedLeadOrClient?.first_name}{" "}
-            {selectedLeadOrClient?.middle_name &&
-              selectedLeadOrClient?.middle_name + " "}
-            {selectedLeadOrClient?.last_name}
+            {selectedLeadOrApplicant?.first_name}{" "}
+            {selectedLeadOrApplicant?.middle_name &&
+              selectedLeadOrApplicant?.middle_name + " "}
+            {selectedLeadOrApplicant?.last_name}
           </h4>
 
           <div>
             <Badge pill className="px-3 py-2 bg-light-primary">
-              👤 {selectedLeadOrClient.is_lead === true ? "Lead" : "Client"}
+              👤 {selectedLeadOrApplicant.is_lead === true ? "Lead" : "Client"}
             </Badge>
           </div>
         </div>
@@ -75,9 +75,9 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedLeadOrClient?.email ? (
+                      {selectedLeadOrApplicant?.email ? (
                         <span className="text-primary">
-                          {selectedLeadOrClient.email}
+                          {selectedLeadOrApplicant.email}
                         </span>
                       ) : (
                         "-"
@@ -92,9 +92,9 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedLeadOrClient?.phone ? (
+                      {selectedLeadOrApplicant?.phone ? (
                         <span className="text-primary text-decoration-none">
-                          {selectedLeadOrClient.phone}
+                          {selectedLeadOrApplicant.phone}
                         </span>
                       ) : (
                         "-"
@@ -126,10 +126,10 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLeadOrClient?.source === "OTHER"
-                      ? selectedLeadOrClient?.other_source || "-"
-                      : selectedLeadOrClient?.source
-                        ? formatChoiceFieldValue(selectedLeadOrClient.source)
+                    {selectedLeadOrApplicant?.source === "OTHER"
+                      ? selectedLeadOrApplicant?.other_source || "-"
+                      : selectedLeadOrApplicant?.source
+                        ? formatChoiceFieldValue(selectedLeadOrApplicant.source)
                         : "-"}
                   </p>
                 </div>
@@ -140,11 +140,11 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                     Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLeadOrClient?.enquiry_type === "OTHER"
-                      ? selectedLeadOrClient?.other_enquiry_type || "-"
-                      : selectedLeadOrClient?.enquiry_type
+                    {selectedLeadOrApplicant?.enquiry_type === "OTHER"
+                      ? selectedLeadOrApplicant?.other_enquiry_type || "-"
+                      : selectedLeadOrApplicant?.enquiry_type
                         ? formatChoiceFieldValue(
-                            selectedLeadOrClient.enquiry_type,
+                            selectedLeadOrApplicant.enquiry_type,
                           )
                         : "-"}
                   </p>
@@ -156,7 +156,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
           <hr className="my-3" />
 
           {/* Notes */}
-          {selectedLeadOrClient?.note && (
+          {selectedLeadOrApplicant?.note && (
             <>
               <div className="mb-4">
                 <h6
@@ -178,7 +178,7 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                     className="m-0 text-dark text-capitalize"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
-                    {selectedLeadOrClient?.note}
+                    {selectedLeadOrApplicant?.note}
                   </p>
                 </div>
               </div>
@@ -195,19 +195,19 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedLeadOrClient?.created_by ? (
+            {selectedLeadOrApplicant?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
-                  <strong>{selectedLeadOrClient.created_by.name}</strong>
+                  <strong>{selectedLeadOrApplicant.created_by.name}</strong>
                 </p>
                 <small className="text-muted">
                   (
-                  {selectedLeadOrClient.created_by.user_type
+                  {selectedLeadOrApplicant.created_by.user_type
                     ? formatChoiceFieldValue(
-                        selectedLeadOrClient.created_by.user_type,
+                        selectedLeadOrApplicant.created_by.user_type,
                       )
                     : ""}
                   )
@@ -231,9 +231,9 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
                 Created At
               </small>
               <p className="m-0 text-dark fw-500">
-                {selectedLeadOrClient?.created_at &&
-                formatDateAndTime(selectedLeadOrClient?.created_at)
-                  ? formatDateAndTime(selectedLeadOrClient?.created_at)
+                {selectedLeadOrApplicant?.created_at &&
+                formatDateAndTime(selectedLeadOrApplicant?.created_at)
+                  ? formatDateAndTime(selectedLeadOrApplicant?.created_at)
                   : "-"}
               </p>
             </div>
@@ -244,4 +244,4 @@ const ViewLeadOrClientModal: React.FC<ViewLeadOrClientModalProps> = ({
   );
 };
 
-export default ViewLeadOrClientModal;
+export default ViewLeadOrApplicantModal;

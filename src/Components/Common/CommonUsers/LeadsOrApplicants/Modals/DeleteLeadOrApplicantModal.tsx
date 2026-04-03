@@ -1,20 +1,21 @@
-import { useDeleteLeadsOrClientsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { useDeleteLeadsOrApplicantsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import { DeleteLeadOrClientModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import React from "react";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteLeadOrClientModal: React.FC<DeleteLeadOrClientModalProps> = ({
+const DeleteLeadOrApplicantModal: React.FC<DeleteLeadOrClientModalProps> = ({
   isOpen,
   toggle,
   selectedLeadOrClient,
 }) => {
-  const [deleteLeadOrClient, { isLoading }] = useDeleteLeadsOrClientsMutation();
+  const [deleteLeadOrApplicant, { isLoading }] =
+    useDeleteLeadsOrApplicantsMutation();
 
   const handleDelete = async () => {
     if (!selectedLeadOrClient?.alias) return;
     try {
-      const response = await deleteLeadOrClient({
+      const response = await deleteLeadOrApplicant({
         customerAlias: selectedLeadOrClient.alias,
       });
 
@@ -54,4 +55,4 @@ const DeleteLeadOrClientModal: React.FC<DeleteLeadOrClientModalProps> = ({
   );
 };
 
-export default DeleteLeadOrClientModal;
+export default DeleteLeadOrApplicantModal;

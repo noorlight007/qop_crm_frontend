@@ -33,6 +33,13 @@ export const LeadsOrApplicantsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["LeadsOrApplicants"],
     }),
+    ApplicantInvitation: builder.mutation({
+      query: ({ userAlias }) => ({
+        url: `/director/users/${userAlias}/invitation/`,
+        method: "GET",
+      }),
+      invalidatesTags: ["LeadsOrApplicants"],
+    }),
   }),
 });
 export const {
@@ -40,4 +47,5 @@ export const {
   useAddLeadsOrApplicantsMutation,
   useUpdateLeadsOrApplicantsDetailsMutation,
   useDeleteLeadsOrApplicantsMutation,
+  useApplicantInvitationMutation,
 } = LeadsOrApplicantsApi;

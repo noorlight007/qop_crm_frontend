@@ -28,10 +28,10 @@ export interface LeadsOrApplicantsProps {
   userRole?: string;
 }
 
-export interface ViewLeadOrClientModalProps {
+export interface ViewLeadOrApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadOrClient: Partial<LeadOrApplicant>;
+  selectedLeadOrApplicant: Partial<LeadOrApplicant>;
 }
 
 export interface AddLeadsModalProps {
@@ -46,18 +46,18 @@ export interface AddLeadsModalProps {
   header: string;
 }
 
-export interface UpdateLeadOrClientModalProps {
+export interface UpdateLeadOrApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadOrClient: Partial<LeadOrApplicant>;
+  selectedLeadOrApplicant: Partial<LeadOrApplicant>;
 }
-export interface DeleteLeadOrClientModalProps {
+export interface DeleteLeadOrApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedLeadOrClient: Partial<LeadOrApplicant>;
+  selectedLeadOrApplicant: Partial<LeadOrApplicant>;
 }
 
-export interface ClientInvitationProps {
+export interface ApplicantInvitationProps {
   alias: string;
   user: {
     id?: number;
@@ -68,3 +68,10 @@ export interface ClientInvitationProps {
     email?: string;
   };
 }
+
+export interface ApplicantInvitationModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  selectedApplicant: any;
+}
+

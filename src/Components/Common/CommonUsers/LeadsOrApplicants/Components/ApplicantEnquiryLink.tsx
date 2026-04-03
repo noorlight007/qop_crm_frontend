@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaGlobe } from "react-icons/fa";
 import { Button, Card, CardBody } from "reactstrap";
 
-const ClientEnquiryLink: React.FC = () => {
+const ApplicantEnquiryLink: React.FC = () => {
   const [subdomain, setSubdomain] = useState(
     process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || "",
   );
@@ -77,7 +77,9 @@ const ClientEnquiryLink: React.FC = () => {
               {url}
             </a>
           ) : (
-            <span className="text-muted">Public link unavailable</span>
+            <span className="text-muted">
+              Applicant enquiry link unavailable
+            </span>
           )}
         </div>
         <Button
@@ -94,4 +96,4 @@ const ClientEnquiryLink: React.FC = () => {
   );
 };
 
-export default ClientEnquiryLink;
+export default ApplicantEnquiryLink;

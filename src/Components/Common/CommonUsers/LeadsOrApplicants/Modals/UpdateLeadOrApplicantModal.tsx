@@ -1,7 +1,7 @@
-import { useUpdateLeadsOrClientsDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { useUpdateLeadsOrApplicantsDetailsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import {
-  LeadOrClient,
-  UpdateLeadOrClientModalProps,
+  LeadOrApplicant,
+  UpdateLeadOrApplicantModalProps,
 } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -19,33 +19,35 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
+const UpdateLeadOrApplicantModal: React.FC<UpdateLeadOrApplicantModalProps> = ({
   isOpen,
   toggle,
-  selectedLeadOrClient,
+  selectedLeadOrApplicant,
 }) => {
-  const [leadOrClientData, setLeadOrClientData] =
-    useState<Partial<LeadOrClient>>(selectedLeadOrClient);
-  const [originalData, setOriginalData] =
-    useState<Partial<LeadOrClient>>(selectedLeadOrClient);
+  const [leadOrApplicantData, setLeadOrApplicantData] = useState<
+    Partial<LeadOrApplicant>
+  >(selectedLeadOrApplicant);
+  const [originalData, setOriginalData] = useState<Partial<LeadOrApplicant>>(
+    selectedLeadOrApplicant,
+  );
   const [isModified, setIsModified] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [updateLeadsOrClientsDetails, { isLoading }] =
-    useUpdateLeadsOrClientsDetailsMutation();
+  const [updateLeadsOrApplicantsDetails, { isLoading }] =
+    useUpdateLeadsOrApplicantsDetailsMutation();
 
   useEffect(() => {
-    setLeadOrClientData(selectedLeadOrClient);
-    setOriginalData(selectedLeadOrClient);
+    setLeadOrApplicantData(selectedLeadOrApplicant);
+    setOriginalData(selectedLeadOrApplicant);
     setIsModified(false);
     setErrors({});
-  }, [selectedLeadOrClient]);
+  }, [selectedLeadOrApplicant]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setLeadOrClientData((prev) => ({
+    setLeadOrApplicantData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -118,7 +120,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
 
   const handleUpdateAuthUser = async (
     e: React.FormEvent<HTMLFormElement>,
-    leadData: Partial<LeadOrClient>,
+    leadData: Partial<LeadOrApplicant>,
   ) => {
     e.preventDefault();
     try {
@@ -156,8 +158,8 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
           return;
         }
 
-        const result = await updateLeadsOrClientsDetails({
-          payload: payload as LeadOrClient,
+        const result = await updateLeadsOrApplicantsDetails({
+          payload: payload as LeadOrApplicant,
           customerAlias: leadData.alias,
         });
 
@@ -218,7 +220,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
         <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
       <Form
-        onSubmit={(e) => handleUpdateAuthUser(e, leadOrClientData)}
+        onSubmit={(e) => handleUpdateAuthUser(e, leadOrApplicantData)}
         encType="multipart/form-data"
       >
         <ModalBody>
@@ -232,7 +234,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="title"
                   name="title"
                   type="select"
-                  value={leadOrClientData?.title || ""}
+                  value={leadOrApplicantData?.title || ""}
                   onChange={handleChange}
                   required
                 >
@@ -264,7 +266,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="firstName"
                   name="first_name"
                   placeholder="First Name"
-                  value={leadOrClientData?.first_name || ""}
+                  value={leadOrApplicantData?.first_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -284,7 +286,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="middleName"
                   name="middle_name"
                   placeholder="Middle Name(s)"
-                  value={leadOrClientData?.middle_name || ""}
+                  value={leadOrApplicantData?.middle_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -305,7 +307,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="lastName"
                   name="last_name"
                   placeholder="Last Name"
-                  value={leadOrClientData?.last_name || ""}
+                  value={leadOrApplicantData?.last_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -327,7 +329,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="email"
                   name="email"
                   placeholder="Email"
-                  value={leadOrClientData?.email || ""}
+                  value={leadOrApplicantData?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -347,7 +349,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="phone"
                   name="phone"
                   placeholder="Phone"
-                  value={leadOrClientData?.phone || ""}
+                  value={leadOrApplicantData?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -367,7 +369,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="source"
                   name="source"
                   placeholder="Source"
-                  value={leadOrClientData?.source || ""}
+                  value={leadOrApplicantData?.source || ""}
                   onChange={handleChange}
                   className="mb-2"
                 >
@@ -385,7 +387,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-            {leadOrClientData?.source === "OTHER" && (
+            {leadOrApplicantData?.source === "OTHER" && (
               <Col md={6} xs={6}>
                 <FormGroup>
                   <Label for="otherSource">Other Source</Label>
@@ -394,7 +396,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                     id="otherSource"
                     name="other_source"
                     placeholder="Other Source"
-                    value={leadOrClientData?.other_source || ""}
+                    value={leadOrApplicantData?.other_source || ""}
                     onChange={handleChange}
                     className="mb-2"
                   />
@@ -414,7 +416,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="enquiryType"
                   name="enquiry_type"
                   placeholder="Enquiry Type"
-                  value={leadOrClientData?.enquiry_type || ""}
+                  value={leadOrApplicantData?.enquiry_type || ""}
                   onChange={handleChange}
                   className="mb-2"
                 >
@@ -437,7 +439,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                 )}
               </FormGroup>
             </Col>
-            {leadOrClientData?.enquiry_type === "OTHER" && (
+            {leadOrApplicantData?.enquiry_type === "OTHER" && (
               <Col md={6} xs={6}>
                 <FormGroup>
                   <Label for="otherEnquiryType">Other Enquiry Type</Label>
@@ -446,7 +448,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                     id="otherEnquiryType"
                     name="other_enquiry_type"
                     placeholder="Other Enquiry Type"
-                    value={leadOrClientData?.other_enquiry_type || ""}
+                    value={leadOrApplicantData?.other_enquiry_type || ""}
                     onChange={handleChange}
                     className="mb-2"
                   />
@@ -466,7 +468,7 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
                   id="note"
                   name="note"
                   placeholder="Note"
-                  value={leadOrClientData?.note || ""}
+                  value={leadOrApplicantData?.note || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -495,4 +497,4 @@ const UpdateLeadOrClientModal: React.FC<UpdateLeadOrClientModalProps> = ({
     </Modal>
   );
 };
-export default UpdateLeadOrClientModal;
+export default UpdateLeadOrApplicantModal;

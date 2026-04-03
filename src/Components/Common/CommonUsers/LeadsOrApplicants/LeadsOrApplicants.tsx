@@ -28,11 +28,11 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddNewCaseModal from "../../Cases/Modals/AddNewCaseModal";
-import ClientEnquiryLink from "./Components/ClientEnquiryLink";
+import ApplicantEnquiryLink from "./Components/ApplicantEnquiryLink";
 import AddLeadModal from "./Modals/AddLeadModal";
-import DeleteLeadOrClientModal from "./Modals/DeleteLeadOrClientModal";
-import UpdateLeadOrClientModal from "./Modals/UpdateLeadOrClientModal";
-import ViewLeadOrClientModal from "./Modals/ViewLeadOrClientModal";
+import DeleteLeadOrApplicantModal from "./Modals/DeleteLeadOrApplicantModal";
+import UpdateLeadOrApplicantModal from "./Modals/UpdateLeadOrApplicantModal";
+import ViewLeadOrApplicantModal from "./Modals/ViewLeadOrApplicantModal";
 
 const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   title,
@@ -63,7 +63,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   const [caseModalLeadData, setCaseModalLeadData] = useState<any | undefined>(
     undefined,
   );
-  const [selectedLeadOrClient, setSelectedLeadOrClient] = useState<
+  const [selectedLeadOrApplicant, setSelectedLeadOrApplicant] = useState<
     Partial<LeadOrApplicant>
   >({
     title: "",
@@ -112,7 +112,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   };
 
   const openViewModal = (LeadOrApplicant: LeadOrApplicant) => {
-    setSelectedLeadOrClient(LeadOrApplicant);
+    setSelectedLeadOrApplicant(LeadOrApplicant);
     toggleViewModal();
   };
 
@@ -121,12 +121,12 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   };
 
   const openUpdateModal = (LeadOrApplicant: LeadOrApplicant) => {
-    setSelectedLeadOrClient(LeadOrApplicant);
+    setSelectedLeadOrApplicant(LeadOrApplicant);
     toggleUpdateModal();
   };
 
   const openDeleteModal = (LeadOrApplicant: LeadOrApplicant) => {
-    setSelectedLeadOrClient(LeadOrApplicant);
+    setSelectedLeadOrApplicant(LeadOrApplicant);
     toggleDeleteModal();
   };
 
@@ -161,8 +161,8 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
 
   return (
     <>
-      {/* Public Lead Link - only for Leads, not Clients */}
-      {userRole === "LEAD" && <ClientEnquiryLink />}
+      {/* Public Lead Link - only for Leads, not Applicants */}
+      {userRole === "LEAD" && <ApplicantEnquiryLink />}
       <Card>
         <CardBody>
           <Row className="d-flex justify-content-between py-4">
@@ -480,10 +480,10 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
           </Row>
 
           {/* Modals */}
-          <ViewLeadOrClientModal
+          <ViewLeadOrApplicantModal
             isOpen={isViewModalOpen}
             toggle={toggleViewModal}
-            selectedLeadOrClient={selectedLeadOrClient}
+            selectedLeadOrApplicant={selectedLeadOrApplicant}
           />
           <AddLeadModal
             isOpen={isAddUserModalOpen}
@@ -499,15 +499,15 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
             leadName={caseModalLeadName}
             leadData={caseModalLeadData}
           />
-          <UpdateLeadOrClientModal
+          <UpdateLeadOrApplicantModal
             isOpen={isUpdateModalOpen}
             toggle={toggleUpdateModal}
-            selectedLeadOrClient={selectedLeadOrClient}
+            selectedLeadOrApplicant={selectedLeadOrApplicant}
           />
-          <DeleteLeadOrClientModal
+          <DeleteLeadOrApplicantModal
             isOpen={isDeleteModalOpen}
             toggle={toggleDeleteModal}
-            selectedLeadOrClient={selectedLeadOrClient}
+            selectedLeadOrApplicant={selectedLeadOrApplicant}
           />
           {/* modals end */}
         </CardBody>

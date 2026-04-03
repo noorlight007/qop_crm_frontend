@@ -1,10 +1,10 @@
-import ClientInvitationModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/ClientInvitationModal";
+import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
-import { ClientInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
+import { ApplicantInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -50,11 +50,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
-  const [selectedClient, setSelectedClient] =
-    useState<Partial<ClientInvitationProps> | null>(null);
+  const [selectedApplicant, setSelectedApplicant] =
+    useState<Partial<ApplicantInvitationProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.customer);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
-  const [isClientInvitationModalOpen, setIsClientInvitationModalOpen] =
+  const [isApplicantInvitationModalOpen, setIsApplicantInvitationModalOpen] =
     useState(false);
   const [isViewJointApplicantModalOpen, setIsViewJointApplicantModalOpen] =
     useState(false);
@@ -102,8 +102,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const toggleDeleteCaseModal = () =>
     setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
 
-  const toggleClientInvitationModal = () =>
-    setIsClientInvitationModalOpen(!isClientInvitationModalOpen);
+  const toggleApplicantInvitationModal = () =>
+    setIsApplicantInvitationModalOpen(!isApplicantInvitationModalOpen);
 
   const toggleViewJointApplicantModal = () =>
     setIsViewJointApplicantModalOpen(!isViewJointApplicantModalOpen);
@@ -264,8 +264,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         first_name: caseInfo.customer.first_name,
                         last_name: caseInfo.customer.last_name,
                       },
-                    } as Partial<ClientInvitationProps>);
-                    toggleClientInvitationModal();
+                    } as Partial<ApplicantInvitationProps>);
+                    toggleApplicantInvitationModal();
                   }}
                   disabled={!caseInfo}
                   className="opacity-100 py-3"
@@ -1016,11 +1016,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         </Row>
       </Card>
 
-      {selectedClient && (
-        <ClientInvitationModal
-          isOpen={isClientInvitationModalOpen}
-          toggle={toggleClientInvitationModal}
-          selectedClient={selectedClient}
+      {selectedApplicant && (
+        <ApplicantInvitationModal
+          isOpen={isApplicantInvitationModalOpen}
+          toggle={toggleApplicantInvitationModal}
+          selectedApplicant={selectedApplicant}
         />
       )}
       <UpdateCaseModal
