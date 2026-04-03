@@ -413,9 +413,12 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                             }
                           >
                             {copiedEmailAlias === user.alias ? (
-                              <FaCheckCircle size={12} className="text-success"/>
+                              <FaCheckCircle
+                                size={12}
+                                className="text-success"
+                              />
                             ) : (
-                              <TbCopy size={12}/>
+                              <TbCopy size={12} />
                             )}
                           </span>
                         </span>
@@ -495,81 +498,76 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                       )}
                     </td>
                     {/* Status with Dropdown */}
-                    {roles !== "LEAD" && roles !== "CLIENT" && (
-                      <td>
-                        <div style={{ position: "relative" }}>
-                          <Dropdown
-                            isOpen={dropdownOpen[user.alias] || false}
-                            toggle={() => toggleDropdown(user.alias)}
+
+                    <td>
+                      <div style={{ position: "relative" }}>
+                        <Dropdown
+                          isOpen={dropdownOpen[user.alias] || false}
+                          toggle={() => toggleDropdown(user.alias)}
+                        >
+                          <DropdownToggle
+                            tag="span"
+                            style={{ cursor: "pointer" }}
+                            caret={false}
                           >
-                            <DropdownToggle
-                              tag="span"
+                            <Badge
+                              color={user?.is_active ? "success" : "danger"}
+                              className="d-flex justify-content-center align-items-center gap-1"
                               style={{ cursor: "pointer" }}
-                              caret={false}
                             >
-                              <Badge
-                                color={user?.is_active ? "success" : "danger"}
-                                className="d-flex justify-content-center align-items-center gap-1"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <span>
-                                  {user?.is_active ? "Approved" : "Pending"}
-                                </span>
-                                <FaChevronDown size={10} />
-                              </Badge>
-                            </DropdownToggle>
+                              <span>
+                                {user?.is_active ? "Approved" : "Pending"}
+                              </span>
+                              <FaChevronDown size={10} />
+                            </Badge>
+                          </DropdownToggle>
 
-                            <DropdownMenu
-                              className="shadow-sm py-2"
-                              style={{
-                                minWidth: "140px",
-                                zIndex: 1050,
-                              }}
-                              container="body"
-                            >
-                              {statusOptions.map((option) => {
-                                const isActive =
-                                  user.is_active === option.value;
-                                const colorClass =
-                                  statusColorMap[
-                                    option.value.toString() as "true" | "false"
-                                  ];
+                          <DropdownMenu
+                            className="shadow-sm py-2"
+                            style={{
+                              minWidth: "140px",
+                              zIndex: 1050,
+                            }}
+                            container="body"
+                          >
+                            {statusOptions.map((option) => {
+                              const isActive = user.is_active === option.value;
+                              const colorClass =
+                                statusColorMap[
+                                  option.value.toString() as "true" | "false"
+                                ];
 
-                                return (
-                                  <DropdownItem
-                                    key={option.value.toString()}
-                                    onClick={() =>
-                                      handleStatusChange(
-                                        user.alias,
-                                        option.value,
-                                      )
-                                    }
-                                    className="d-flex align-items-center gap-3 px-3 py-2"
-                                    active={isActive}
-                                    style={{
-                                      backgroundColor: isActive
-                                        ? "rgba(0,0,0,0.05)"
-                                        : "transparent",
-                                    }}
-                                  >
-                                    <span
-                                      className={`rounded-circle bg-${colorClass}`}
-                                      style={{ width: "8px", height: "8px" }}
-                                    />
-                                    <span className={isActive ? "fw-bold" : ""}>
-                                      {option.label}
-                                    </span>
-                                    {isActive && (
-                                      <span className="ms-auto">✓</span>
-                                    )}
-                                  </DropdownItem>
-                                );
-                              })}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </div>
-                      </td>
-                    )}
+                              return (
+                                <DropdownItem
+                                  key={option.value.toString()}
+                                  onClick={() =>
+                                    handleStatusChange(user.alias, option.value)
+                                  }
+                                  className="d-flex align-items-center gap-3 px-3 py-2"
+                                  active={isActive}
+                                  style={{
+                                    backgroundColor: isActive
+                                      ? "rgba(0,0,0,0.05)"
+                                      : "transparent",
+                                  }}
+                                >
+                                  <span
+                                    className={`rounded-circle bg-${colorClass}`}
+                                    style={{ width: "8px", height: "8px" }}
+                                  />
+                                  <span className={isActive ? "fw-bold" : ""}>
+                                    {option.label}
+                                  </span>
+                                  {isActive && (
+                                    <span className="ms-auto">✓</span>
+                                  )}
+                                </DropdownItem>
+                              );
+                            })}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
+                    </td>
 
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
@@ -598,7 +596,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
               ) : (
                 <tr>
                   <td colSpan={10} className="text-center">
-                    No users available.
+                    No {title.toLowerCase()}s available.
                   </td>
                 </tr>
               )}
@@ -618,7 +616,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                   ? 0
                   : (currentPage - 1) * authUsersPerPage +
                     currentAuthUsers.length}{" "}
-                of {totalCount} Users
+                of {totalCount} {title.toLowerCase()}s
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
