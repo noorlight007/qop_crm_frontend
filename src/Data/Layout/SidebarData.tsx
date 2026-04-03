@@ -71,9 +71,9 @@ const AdminMenu: MenuItem[] = [
             path: "/admin/users/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/admin/users/clients",
+            path: "/admin/users/applicants",
           },
         ],
       },

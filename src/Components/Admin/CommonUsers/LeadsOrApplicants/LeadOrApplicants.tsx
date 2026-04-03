@@ -48,7 +48,7 @@ import DeleteAuthUserModal from "./Modals/DeleteAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
 
-const LeadOrApplicants: React.FC<AuthUsersProps> = ({
+const AuthUsers: React.FC<AuthUsersProps> = ({
   title,
   authUsersPerPage = 12,
   roles,
@@ -730,4 +730,4 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
   );
 };
 
-export default LeadOrApplicants;
+export default AuthUsers;
