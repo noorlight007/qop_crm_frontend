@@ -482,7 +482,7 @@ const UpdateLeadOrApplicantModal: React.FC<UpdateLeadOrApplicantModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button type="button" color="secondary" onClick={toggle}>
+          <Button type="button" color="danger" onClick={toggle}>
             Cancel
           </Button>
           <Button

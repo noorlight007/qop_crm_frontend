@@ -33,11 +33,11 @@ const ApplicantInvitationModal: React.FC<ApplicantInvitationModalProps> = ({
           <b className="text-primary">{selectedApplicant?.user.email}</b>{" "}
         </p>
         <div className="d-flex justify-content-end gap-2">
-          <Button color="secondary" onClick={toggle}>
+          <Button color="danger" onClick={toggle}>
             Cancel
           </Button>
           <Button
-            color="success"
+            color="primary"
             onClick={handleInvitationClick}
             disabled={isLoading}
           >
