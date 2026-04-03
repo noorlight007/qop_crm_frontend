@@ -1,4 +1,4 @@
-import { useDeleteAuthUserMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
+import { useDeleteLeadsOrApplicantsMutation } from "@/Redux/Reducers/Admin/CommonUsers/LeadsOrApplicantsApi";
 import { DeleteLeadsOrApplicantsModalProps } from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -7,7 +7,7 @@ const DeleteLeadsOrApplicantsModal: React.FC<
   DeleteLeadsOrApplicantsModalProps
 > = ({ isOpen, toggle, selectedLeadsOrApplicants }) => {
   const [deleteUser, { isLoading: isDeletingUser }] =
-    useDeleteAuthUserMutation();
+    useDeleteLeadsOrApplicantsMutation();
 
   const handleDelete = async () => {
     try {
@@ -44,8 +44,8 @@ const DeleteLeadsOrApplicantsModal: React.FC<
             This action is irreversible.
           </p>
           <small className="text-muted">
-            Deleting this user will permanently remove all associated data
-            and all historical records. This data cannot be restored.
+            Deleting this user will permanently remove all associated data and
+            all historical records. This data cannot be restored.
           </small>
         </div>
       </ModalBody>

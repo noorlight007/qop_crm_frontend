@@ -9,11 +9,12 @@ const ViewLeadsOrApplicantsModal: React.FC<ViewLeadsOrApplicantsModalProps> = ({
   isOpen,
   toggle,
   selectedLeadsOrApplicants,
+  title,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">User Information</span>
+        <span className="fs-5 fw-bold text-primary">{title} Information</span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
@@ -52,12 +53,6 @@ const ViewLeadsOrApplicantsModal: React.FC<ViewLeadsOrApplicantsModalProps> = ({
               : "User"}
           </p>
           <div>
-            <Badge pill className="px-3 py-2 me-2 bg-light-primary">
-              👤{" "}
-              {selectedLeadsOrApplicants?.role
-                ? formatChoiceFieldValue(selectedLeadsOrApplicants.role)
-                : "User"}
-            </Badge>
             {selectedLeadsOrApplicants?.is_active ? (
               <Badge pill className="px-3 py-2 bg-light-success">
                 ✓ Approved

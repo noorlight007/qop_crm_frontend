@@ -215,6 +215,7 @@ export const baseApi = createApi({
     "IntroducerDetails",
     "Users",
     "AuthUsers",
+    "LeadsOrApplicants",
     "UserProfileDetails",
     "ResetPassword",
     "SupportTicket",

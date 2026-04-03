@@ -1,9 +1,8 @@
 import {
-  useGetAuthUsersQuery,
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
-  useUpdateAuthUserDetailsMutation,
 } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
+import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/Admin/CommonUsers/LeadsOrApplicantsApi";
 import type {
   LeadsOrApplicants,
   LeadsOrApplicantsProps,
@@ -14,24 +13,13 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
-import {
-  FaCheckCircle,
-  FaChevronDown,
-  FaInfoCircle,
-  FaSearch,
-} from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaSearch } from "react-icons/fa";
 import { TbCopy } from "react-icons/tb";
-import { toast } from "react-toastify";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
   Col,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Input,
   InputGroup,
   Pagination,
@@ -43,7 +31,6 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
-import Swal from "sweetalert2";
 import DeleteLeadsOrApplicantsModal from "./Modals/DeleteLeadsOrApplicantsModal";
 import UpdateLeadsOrApplicantsModal from "./Modals/UpdateLeadsOrApplicantsModal";
 import ViewLeadsOrApplicantsModal from "./Modals/ViewLeadsOrApplicantsModal";
@@ -79,22 +66,10 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
     last_name: "",
     email: "",
     phone: null,
-    is_active: false,
     profile_image: null,
     created_at: "",
     created_by: null,
   });
-
-  const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-
-  const toggleDropdown = (userAlias: string) => {
-    setDropdownOpen((prev) => ({
-      ...prev,
-      [userAlias]: !prev[userAlias],
-    }));
-  };
 
   // Fetch network and organization lists
   const { data: networkList, isLoading: networkListLoading } =
@@ -109,7 +84,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
     isLoading,
     isFetching,
     isError,
-  } = useGetAuthUsersQuery(
+  } = useGetLeadsOrApplicantsQuery(
     {
       role,
       network: selectedNetwork || undefined,
@@ -122,9 +97,6 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
       refetchOnMountOrArgChange: true,
     },
   );
-
-  const [updateStatusData, isUpdateStatusLoading] =
-    useUpdateAuthUserDetailsMutation();
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
@@ -154,30 +126,6 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   const handleOrganisationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOrganisation(e.target.value);
     setCurrentPage(1);
-  };
-
-  const statusOptions = [
-    { value: true, label: "Approved" },
-    { value: false, label: "Pending" },
-  ];
-
-  // Status color map
-  const statusColorMap = {
-    true: "success",
-    false: "danger",
-  };
-
-  // Handle status change
-  const handleStatusChange = async (userAlias: string, newStatus: boolean) => {
-    try {
-      const result = await updateStatusData({
-        user_alias: userAlias, // Changed from 'alias' to 'userAlias'
-        payload: { is_active: newStatus },
-      }).unwrap();
-      Swal.fire("Success", "Status Updated Successfully!", "success");
-    } catch (error) {
-      toast.error("Failed to update status. Please try again.");
-    }
   };
 
   const openViewModal = (leadsOrApplicants: LeadsOrApplicants) => {
@@ -499,82 +447,6 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {/* Status with Dropdown */}
-                    {roles !== "LEAD" && roles !== "CLIENT" && (
-                      <td>
-                        <div style={{ position: "relative" }}>
-                          <Dropdown
-                            isOpen={dropdownOpen[user.alias] || false}
-                            toggle={() => toggleDropdown(user.alias)}
-                          >
-                            <DropdownToggle
-                              tag="span"
-                              style={{ cursor: "pointer" }}
-                              caret={false}
-                            >
-                              <Badge
-                                color={user?.is_active ? "success" : "danger"}
-                                className="d-flex justify-content-center align-items-center gap-1"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <span>
-                                  {user?.is_active ? "Approved" : "Pending"}
-                                </span>
-                                <FaChevronDown size={10} />
-                              </Badge>
-                            </DropdownToggle>
-
-                            <DropdownMenu
-                              className="shadow-sm py-2"
-                              style={{
-                                minWidth: "140px",
-                                zIndex: 1050,
-                              }}
-                              container="body"
-                            >
-                              {statusOptions.map((option) => {
-                                const isActive =
-                                  user.is_active === option.value;
-                                const colorClass =
-                                  statusColorMap[
-                                    option.value.toString() as "true" | "false"
-                                  ];
-
-                                return (
-                                  <DropdownItem
-                                    key={option.value.toString()}
-                                    onClick={() =>
-                                      handleStatusChange(
-                                        user.alias,
-                                        option.value,
-                                      )
-                                    }
-                                    className="d-flex align-items-center gap-3 px-3 py-2"
-                                    active={isActive}
-                                    style={{
-                                      backgroundColor: isActive
-                                        ? "rgba(0,0,0,0.05)"
-                                        : "transparent",
-                                    }}
-                                  >
-                                    <span
-                                      className={`rounded-circle bg-${colorClass}`}
-                                      style={{ width: "8px", height: "8px" }}
-                                    />
-                                    <span className={isActive ? "fw-bold" : ""}>
-                                      {option.label}
-                                    </span>
-                                    {isActive && (
-                                      <span className="ms-auto">✓</span>
-                                    )}
-                                  </DropdownItem>
-                                );
-                              })}
-                            </DropdownMenu>
-                          </Dropdown>
-                        </div>
-                      </td>
-                    )}
 
                     <td>
                       <div className="d-flex justify-content-center gap-2 align-items-center">
@@ -603,7 +475,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
               ) : (
                 <tr>
                   <td colSpan={10} className="text-center">
-                    No users available.
+                    No {title.toLowerCase()}s available.
                   </td>
                 </tr>
               )}
@@ -623,7 +495,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                   ? 0
                   : (currentPage - 1) * leadsOrApplicantsPerPage +
                     currentLeadsOrApplicants.length}{" "}
-                of {totalCount} Users
+                of {totalCount} {title}s
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -717,6 +589,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
         isOpen={isViewModalOpen}
         toggle={toggleViewModal}
         selectedLeadsOrApplicants={selectedLeadsOrApplicants}
+        title={title}
       />
 
       <UpdateLeadsOrApplicantsModal

@@ -28,6 +28,7 @@ export interface ViewLeadsOrApplicantsModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedLeadsOrApplicants: Partial<LeadsOrApplicants>;
+  title: string;
 }
 export interface UpdateLeadsOrApplicantsModalProps {
   title: string;

@@ -1,4 +1,4 @@
-import { useUpdateAuthUserDetailsMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
+import { useUpdateLeadsOrApplicantsDetailsMutation } from "@/Redux/Reducers/Admin/CommonUsers/LeadsOrApplicantsApi";
 import {
   LeadsOrApplicants,
   UpdateLeadsOrApplicantsModalProps,
@@ -22,19 +22,19 @@ import {
 const UpdateLeadsOrApplicantsModal: React.FC<
   UpdateLeadsOrApplicantsModalProps
 > = ({ title, isOpen, toggle, selectedLeadsOrApplicants }) => {
-  const [authUserData, setAuthUserData] = useState<Partial<LeadsOrApplicants>>(
-    selectedLeadsOrApplicants,
-  );
+  const [leadsOrApplicantsData, setLeadsOrApplicantsData] = useState<
+    Partial<LeadsOrApplicants>
+  >(selectedLeadsOrApplicants);
   const [originalData, setOriginalData] = useState<Partial<LeadsOrApplicants>>(
     selectedLeadsOrApplicants,
   );
   const [isModified, setIsModified] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [updateLeadsOrApplicantsDetails, { isLoading }] =
-    useUpdateAuthUserDetailsMutation();
+    useUpdateLeadsOrApplicantsDetailsMutation();
 
   useEffect(() => {
-    setAuthUserData(selectedLeadsOrApplicants);
+    setLeadsOrApplicantsData(selectedLeadsOrApplicants);
     setOriginalData(selectedLeadsOrApplicants);
     setIsModified(false);
     setErrors({});
@@ -45,7 +45,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
   ) => {
     const { name, value } = e.target;
     const finalValue = name === "is_active" ? value === "true" : value;
-    setAuthUserData((prev: any) => ({
+    setLeadsOrApplicantsData((prev: any) => ({
       ...prev,
       [name]: finalValue,
     }));
@@ -134,11 +134,10 @@ const UpdateLeadsOrApplicantsModal: React.FC<
           "last_name",
           "email",
           "phone",
-          "is_active",
         ];
 
         fieldsToCheck.forEach((field) => {
-          const currentValue = (authUserData as any)[field];
+          const currentValue = (leadsOrApplicantsData as any)[field];
           const originalValue = (originalData as any)[field];
 
           if (currentValue !== originalValue) {
@@ -154,7 +153,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
 
         const result = await updateLeadsOrApplicantsDetails({
           payload: payload as Partial<LeadsOrApplicants>,
-          user_alias: authUserData.alias,
+          user_alias: leadsOrApplicantsData.alias,
         });
 
         if (result.data) {
@@ -214,7 +213,9 @@ const UpdateLeadsOrApplicantsModal: React.FC<
         <span className="fs-4 text-primary">Update Info</span>
       </ModalHeader>
       <Form
-        onSubmit={(e) => handleUpdateLeadsOrApplicants(e, authUserData)}
+        onSubmit={(e) =>
+          handleUpdateLeadsOrApplicants(e, leadsOrApplicantsData)
+        }
         encType="multipart/form-data"
       >
         <ModalBody>
@@ -228,7 +229,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
                   id="title"
                   name="title"
                   type="select"
-                  value={authUserData?.title || ""}
+                  value={leadsOrApplicantsData?.title || ""}
                   onChange={handleChange}
                   required
                 >
@@ -260,7 +261,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
                   id="firstName"
                   name="first_name"
                   placeholder="First Name"
-                  value={authUserData?.first_name || ""}
+                  value={leadsOrApplicantsData?.first_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -280,7 +281,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
                   id="middleName"
                   name="middle_name"
                   placeholder="Middle Name(s)"
-                  value={authUserData?.middle_name || ""}
+                  value={leadsOrApplicantsData?.middle_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
@@ -301,7 +302,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
                   id="lastName"
                   name="last_name"
                   placeholder="Last Name"
-                  value={authUserData?.last_name || ""}
+                  value={leadsOrApplicantsData?.last_name || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -323,7 +324,7 @@ const UpdateLeadsOrApplicantsModal: React.FC<
                   id="email"
                   name="email"
                   placeholder="Email"
-                  value={authUserData?.email || ""}
+                  value={leadsOrApplicantsData?.email || ""}
                   onChange={handleChange}
                   className="mb-2"
                   required
@@ -343,36 +344,13 @@ const UpdateLeadsOrApplicantsModal: React.FC<
                   id="phone"
                   name="phone"
                   placeholder="Phone"
-                  value={authUserData?.phone || ""}
+                  value={leadsOrApplicantsData?.phone || ""}
                   onChange={handleChange}
                   className="mb-2"
                 />
                 {getFieldError("phone") && (
                   <div className="text-danger small mt-1">
                     {getFieldError("phone")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Label for="is_active">
-                  Status<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="is_active"
-                  name="is_active"
-                  type="select"
-                  value={String(authUserData?.is_active)}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="true">Approved</option>
-                  <option value="false">Pending</option>
-                </Input>
-                {getFieldError("is_active") && (
-                  <div className="text-danger small mt-1">
-                    {getFieldError("is_active")}
                   </div>
                 )}
               </FormGroup>
