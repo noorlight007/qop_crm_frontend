@@ -56,9 +56,9 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
       <ModalBody>
         <p>
           Are you sure you want to delete{" "}
-          <strong>
-            {selectedApplicant.joint_user_details?.first_name}{" "}
-            {selectedApplicant.joint_user_details?.last_name}
+          <strong className="text-danger">
+            {selectedApplicant.customer?.name ||
+              selectedApplicant.customer?.email}
           </strong>
           ? This action cannot be undone.
         </p>

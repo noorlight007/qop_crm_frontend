@@ -7,7 +7,7 @@ const NetworkDirectorSingleCaseAlias = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Network/Director/Cases/Cases/[CaseAlias]")
+          await import("@/Components/Network/Director/Cases/AllCases/[CaseAlias]")
         ).default;
         setClient(() => newClient);
       }
