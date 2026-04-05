@@ -64,7 +64,7 @@ const OrgAdvisers: React.FC = () => {
       params: {
         page: currentPage,
         search: searchQuery,
-        role: "ORGANISATION_ADVISER",
+        role: "ADVISER",
       },
     },
     { skip: !organisationslug },

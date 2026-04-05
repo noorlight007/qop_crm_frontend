@@ -945,7 +945,7 @@ const ExistingProtectionContent: React.FC<
                   color="success"
                   className="border-success"
                   onClick={toggleModal}
-                  disabled={session?.user?.user_type === "CLIENT"}
+                  disabled={session?.user?.role === "CLIENT"}
                 >
                   Add new
                 </Button>
@@ -956,7 +956,7 @@ const ExistingProtectionContent: React.FC<
                 color="primary"
                 type="button"
                 disabled={
-                  session?.user?.user_type === "CLIENT" ||
+                  session?.user?.role === "CLIENT" ||
                   submitting !== null ||
                   isUpdateLoading
                 }
@@ -970,11 +970,11 @@ const ExistingProtectionContent: React.FC<
                 color="secondary"
                 type="button"
                 disabled={
-                  session?.user?.user_type !== "CLIENT" &&
+                  session?.user?.role !== "CLIENT" &&
                   (submitting !== null || isUpdateLoading)
                 }
                 onClick={async (e) => {
-                  if (session?.user?.user_type === "CLIENT") {
+                  if (session?.user?.role === "CLIENT") {
                     handleNextTab();
                   } else {
                     await handleUpdate(e, "save_next");
@@ -982,7 +982,7 @@ const ExistingProtectionContent: React.FC<
                   }
                 }}
               >
-                {session?.user?.user_type === "CLIENT"
+                {session?.user?.role === "CLIENT"
                   ? "Go To Next"
                   : submitting === "save_next"
                     ? "Saving..."

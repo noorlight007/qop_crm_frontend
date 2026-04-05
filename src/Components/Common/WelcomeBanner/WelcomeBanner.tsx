@@ -38,7 +38,7 @@ const WelcomeBanner: React.FC = () => {
                 {appearanceData?.network || "Not Assigned"}
               </h2>
               <p className="welcomeSubtitle">
-                {formatChoiceFieldValue(session?.user?.user_type)} Dashboard
+                {formatChoiceFieldValue(session?.user?.role)} Dashboard
               </p>
             </div>
           </div>
@@ -55,7 +55,7 @@ const WelcomeBanner: React.FC = () => {
                 {appearanceData?.organisation || "Not Assigned"}
               </h2>
               <p className="welcomeSubtitle">
-                {formatChoiceFieldValue(session?.user?.user_type)} Dashboard
+                {formatChoiceFieldValue(session?.user?.role)} Dashboard
               </p>
               <div className="welcomeNetworkBadge">
                 <span className="welcomeNetworkLabel">Network:</span>

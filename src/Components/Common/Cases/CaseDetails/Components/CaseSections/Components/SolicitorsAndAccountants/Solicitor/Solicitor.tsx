@@ -526,7 +526,7 @@ const Solicitor: React.FC = () => {
                           color="success"
                           onClick={toggleModal}
                           className="border-success"
-                          disabled={session?.user?.user_type === "CLIENT"}
+                          disabled={session?.user?.role === "CLIENT"}
                         >
                           Add New Solicitor
                         </Button>
@@ -535,7 +535,7 @@ const Solicitor: React.FC = () => {
                           onClick={handleAssignSolicitor}
                           disabled={
                             !selectedSolicitor ||
-                            session?.user?.user_type === "CLIENT"
+                            session?.user?.role === "CLIENT"
                           }
                         >
                           Assign Solicitor
@@ -933,7 +933,7 @@ const Solicitor: React.FC = () => {
                     type="submit"
                     color="primary"
                     disabled={
-                      isUpdateLoading || session?.user?.user_type === "CLIENT"
+                      isUpdateLoading || session?.user?.role === "CLIENT"
                     }
                     onClick={() => {
                       submitActionRef.current = "save";
@@ -944,7 +944,7 @@ const Solicitor: React.FC = () => {
                   <Button
                     color="secondary"
                     onClick={async (e) => {
-                      if (session?.user?.user_type === "CLIENT") {
+                      if (session?.user?.role === "CLIENT") {
                         handleNextTab();
                       } else {
                         e.preventDefault();
@@ -953,7 +953,7 @@ const Solicitor: React.FC = () => {
                       }
                     }}
                   >
-                    {session?.user?.user_type === "CLIENT"
+                    {session?.user?.role === "CLIENT"
                       ? "Go To Next"
                       : "Save & Next"}
                   </Button>

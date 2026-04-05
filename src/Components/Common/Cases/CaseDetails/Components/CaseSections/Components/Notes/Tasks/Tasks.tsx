@@ -71,7 +71,7 @@ const Tasks: React.FC = () => {
     <Container fluid className="py-4">
       <Row className="mb-3">
         <Col className="text-end">
-          {session?.user?.user_type !== "CLIENT" && (
+          {session?.user?.role !== "CLIENT" && (
             <Button color="primary" onClick={() => setModalOpen(true)}>
               <i className="fa-solid fa-circle-plus"></i> Add New Task
             </Button>

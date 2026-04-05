@@ -1,4 +1,9 @@
-import { useState } from "react";
+import {
+  useGetUserRolesQuery,
+  useSwitchRoleMutation,
+} from "@/Redux/Reducers/UserProfileAndSettings/RoleSwitchingApi";
+import { useSession } from "next-auth/react";
+import { useEffect, useMemo, useState } from "react";
 import { FaSyncAlt, FaUserShield, FaUsersCog } from "react-icons/fa";
 import {
   Badge,
@@ -12,7 +17,7 @@ import {
 } from "reactstrap";
 
 type RoleOption = {
-  id: string;
+  key: string;
   label: string;
   description: string;
   badgeColor: string;
@@ -20,34 +25,83 @@ type RoleOption = {
 };
 
 const RoleSwitching: React.FC = () => {
-  const roles: RoleOption[] = [
-    {
-      id: "director",
-      label: "Director",
-      description: "Default workspace for day-to-day client and case work.",
-      badgeColor: "primary",
-    },
-    {
-      id: "admin",
-      label: "Organisation Admin",
-      description:
-        "Manage teams, permissions, pipelines and organisation level settings.",
-      badgeColor: "warning",
-    },
-  ];
+  const { data: session, update } = useSession();
+  const { data: userRoles, isLoading } = useGetUserRolesQuery(undefined);
+  const [switchRole, { isLoading: isSwitchingRole }] = useSwitchRoleMutation();
+  // Map API roles [{ name, key }] into RoleOption models
+  const roles: RoleOption[] = useMemo(() => {
+    if (!userRoles || !Array.isArray(userRoles)) return [];
 
-  const [activeRoleId] = useState<string>("director");
-  const [selectedRoleId, setSelectedRoleId] = useState<string>(activeRoleId);
+    return (userRoles as any[]).map((r) => {
+      const key = String(r.key ?? r.role ?? "");
+      const name = String(r.name ?? key);
 
-  const activeRole = roles.find((role) => role.id === activeRoleId);
+      let badgeColor: RoleOption["badgeColor"] = "secondary";
+      if (key === "DIRECTOR") badgeColor = "primary";
+      else if (key === "ADMIN") badgeColor = "warning";
+      else if (key === "ADVISER") badgeColor = "info" as any;
+      else if (key === "COMPLIANCE") badgeColor = "success";
 
-  const handleSelectRole = (id: string) => {
-    setSelectedRoleId(id);
+      const descriptionMap: Record<string, string> = {
+        DIRECTOR: "Default workspace for day-to-day client and case work.",
+        ADMIN:
+          "Manage teams, permissions, pipelines and organisation level settings.",
+        ADVISER: "Work on assigned clients, cases and tasks.",
+        COMPLIANCE:
+          "Review, monitor and approve cases for compliance requirements.",
+        CLIENT: "View and manage your own applications and documents.",
+      };
+
+      return {
+        key,
+        label: name,
+        description: descriptionMap[key] ?? "",
+        badgeColor,
+      };
+    });
+  }, [userRoles]);
+
+  const [activeRoleKey, setActiveRoleKey] = useState<string | undefined>(
+    undefined,
+  );
+  const [selectedRoleKey, setSelectedRoleKey] = useState<string | undefined>(
+    undefined,
+  );
+
+  // Initialise active role from current session role
+  useEffect(() => {
+    if (!session?.user?.role) return;
+    setActiveRoleKey(session.user.role);
+    setSelectedRoleKey((prev) => prev ?? session.user.role);
+  }, [session?.user?.role]);
+
+  const activeRole = roles.find((role) => role.key === activeRoleKey);
+
+  const handleSelectRole = (key: string) => {
+    setSelectedRoleKey(key);
   };
 
-  const handleSwitchRole = () => {
-    // Intentionally left as a no-op for now.
-    // Integrate with your auth/session logic when available.
+  const handleSwitchRole = async () => {
+    if (!selectedRoleKey || selectedRoleKey === activeRoleKey) return;
+    try {
+      await switchRole({ role: selectedRoleKey }).unwrap();
+      setActiveRoleKey(selectedRoleKey);
+
+      // Tell NextAuth to update the JWT token.role so
+      // session.user.role reflects the switched role
+      if (typeof update === "function") {
+        await update({
+          role: selectedRoleKey,
+        } as any);
+      }
+
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
+    } catch (e) {
+      // Optionally surface a toast here if you have a global toaster
+      console.error("Failed to switch role", e);
+    }
   };
 
   return (
@@ -103,14 +157,14 @@ const RoleSwitching: React.FC = () => {
 
             <ListGroup flush className="role-switching-list">
               {roles.map((role) => {
-                const isActive = role.id === activeRoleId;
-                const isSelected = role.id === selectedRoleId;
+                const isActive = role.key === activeRoleKey;
+                const isSelected = role.key === selectedRoleKey;
 
                 return (
                   <ListGroupItem
-                    key={role.id}
+                    key={role.key}
                     action
-                    onClick={() => handleSelectRole(role.id)}
+                    onClick={() => handleSelectRole(role.key)}
                     className={`d-flex align-items-start justify-content-between gap-2 rounded-3 mb-2 ${
                       isSelected
                         ? "border-primary bg-light-primary"
@@ -171,7 +225,11 @@ const RoleSwitching: React.FC = () => {
                 color="primary"
                 size="sm"
                 className="d-flex align-items-center gap-2"
-                disabled={selectedRoleId === activeRoleId}
+                disabled={
+                  !selectedRoleKey ||
+                  selectedRoleKey === activeRoleKey ||
+                  isSwitchingRole
+                }
                 onClick={handleSwitchRole}
               >
                 <FaSyncAlt size={14} />

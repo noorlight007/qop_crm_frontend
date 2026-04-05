@@ -341,7 +341,7 @@ const InsuranceOverviewContent: React.FC = () => {
                 type="submit"
                 disabled={
                   isUpdating ||
-                  (session?.user?.user_type === "CLIENT" &&
+                  (session?.user?.role === "CLIENT" &&
                     overview?.updated_by !== null)
                 }
               >
@@ -353,7 +353,7 @@ const InsuranceOverviewContent: React.FC = () => {
                 onClick={async (e) => {
                   e.preventDefault();
                   if (
-                    session?.user?.user_type === "CLIENT" &&
+                    session?.user?.role === "CLIENT" &&
                     overview?.updated_by !== null
                   ) {
                     handleNextTab();
@@ -371,7 +371,7 @@ const InsuranceOverviewContent: React.FC = () => {
                 }}
                 disabled={isUpdating}
               >
-                {session?.user?.user_type === "CLIENT" &&
+                {session?.user?.role === "CLIENT" &&
                 overview?.updated_by !== null
                   ? "Go To Next"
                   : "Save & Next"}

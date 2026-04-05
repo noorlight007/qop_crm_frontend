@@ -8,19 +8,19 @@ import { useEffect, useState } from "react";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
-  Button,
-  Card,
-  CardBody,
-  Col,
-  Input,
-  InputGroup,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  PopoverBody,
-  Row,
-  Spinner,
-  UncontrolledPopover,
+    Button,
+    Card,
+    CardBody,
+    Col,
+    Input,
+    InputGroup,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
+    PopoverBody,
+    Row,
+    Spinner,
+    UncontrolledPopover,
 } from "reactstrap";
 import AddOrganisationModal from "../Modals/AddOrganisationModal";
 
@@ -141,13 +141,15 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
               xs="12"
               className="text-md-end text-center mt-2 mt-md-0"
             >
-              {(session?.user.user_type === "NETWORK_DIRECTOR" ||
-                session?.user.user_type === "NETWORK_COMPLIANCE") && (
-                <Button color="primary" onClick={toggleModal}>
+              {session?.user.role &&
+                session.user.is_network &&
+                (session.user.role === "DIRECTOR" ||
+                  session.user.role === "COMPLIANCE") && (
+                  <Button color="primary" onClick={toggleModal}>
                   <TbCirclePlus size={18} className="me-1" />
                   Add Organisation
-                </Button>
-              )}
+                  </Button>
+                )}
             </Col>
           </Row>
           <Row>
@@ -166,9 +168,11 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                   key={item.slug}
                 >
                   <Card className="bg-white border organisation_card opacity-100  p-3 position-relative">
-                    {(session?.user.user_type === "NETWORK_DIRECTOR" ||
-                      session?.user.user_type === "NETWORK_COMPLIANCE") && (
-                      <Link
+                    {session?.user.role &&
+                      session.user.is_network &&
+                      (session.user.role === "DIRECTOR" ||
+                        session.user.role === "COMPLIANCE") && (
+                        <Link
                         href={`${getOrganisationUrl(session)}/${item.slug}`}
                         title="Website"
                         className="text-muted position-absolute top-0 end-0 p-3"
@@ -191,8 +195,10 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                           />
                         </div>
                         <h5 className="mb-1">
-                          {session?.user.user_type === "NETWORK_DIRECTOR" ||
-                          session?.user.user_type === "NETWORK_COMPLIANCE" ? (
+                          {session?.user.role &&
+                          session.user.is_network &&
+                          (session.user.role === "DIRECTOR" ||
+                            session.user.role === "COMPLIANCE") ? (
                             <Link
                               className="text-black fw-bold text_decoration_hover"
                               href={`${getOrganisationUrl(session)}/${item.slug}`}

@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetFeesOutDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import getCurrencySign from "@/utils/currency";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeOutModal from "./FeesModals/AddFeeOutModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
-import getCurrencySign from "@/utils/currency";
 
 const FeeOutTable = () => {
   const { data: session } = useSession();
@@ -92,7 +92,7 @@ const FeeOutTable = () => {
             color="primary"
             className="addFee d-flex align-items-center gap-2"
             onClick={toggleModal}
-            disabled={session?.user?.user_type === "CLIENT"}
+            disabled={session?.user?.role === "CLIENT"}
           >
             Add New Fee Out
             <i className="fa-solid fa-circle-plus"></i>
@@ -154,7 +154,8 @@ const FeeOutTable = () => {
                         <span className="fw-bold">{index + 1}</span>
                       </td>
                       <td className="text-center align-middle">
-                        {getCurrencySign()}{feeOut.fee || "0.00"}
+                        {getCurrencySign()}
+                        {feeOut.fee || "0.00"}
                       </td>
                       <td className="text-center align-middle">
                         {feeTypes.find((type) => type.value === feeOut.feeType)

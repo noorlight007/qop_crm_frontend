@@ -11,7 +11,7 @@ const NetworkCompliancesContainer: React.FC = () => {
         items={[{ label: "Users" }, { label: "Compliances", active: true }]}
       />
       <Container fluid>
-        <AuthUsers userRole="NETWORK_COMPLIANCE" title="Compliances" />
+        <AuthUsers userRole="COMPLIANCE" title="Compliances" />
       </Container>
     </>
   );

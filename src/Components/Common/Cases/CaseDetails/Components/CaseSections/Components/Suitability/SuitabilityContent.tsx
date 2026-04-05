@@ -2611,7 +2611,7 @@
 //               <Button
 //                 color="info"
 //                 onClick={toggleExtraAnswerModal}
-//                 disabled={isUpdating || session?.user?.user_type === "CLIENT"}
+//                 disabled={isUpdating || session?.user?.role === "CLIENT"}
 //               >
 //                 Add More Answer
 //               </Button>
@@ -2627,7 +2627,7 @@
 //             disabled={
 //               submitting !== null ||
 //               isUpdating ||
-//               session?.user?.user_type === "CLIENT"
+//               session?.user?.role === "CLIENT"
 //             }
 //             onClick={(e) => {
 //               void handleSubmit(e, "save");
@@ -2640,7 +2640,7 @@
 //             type="button"
 //             disabled={submitting !== null || isUpdating}
 //             onClick={async (e) => {
-//               if (session?.user?.user_type === "CLIENT") {
+//               if (session?.user?.role === "CLIENT") {
 //                 handleNextTab();
 //               } else {
 //                 const ok = await handleSubmit(e, "save_next");
@@ -2648,7 +2648,7 @@
 //               }
 //             }}
 //           >
-//             {session?.user?.user_type === "CLIENT"
+//             {session?.user?.role === "CLIENT"
 //               ? "Go To Next"
 //               : submitting === "save_next"
 //                 ? "Saving..."
@@ -3185,7 +3185,7 @@ const SuitabilityContent: React.FC = () => {
 
   if (isLoading) return <LoadingSpinner />;
 
-  const isClient = session?.user?.user_type === "CLIENT";
+  const isClient = session?.user?.role === "CLIENT";
 
   // ─── Render ───────────────────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/Common/UserProfile/UserProfileApi";
+import { useUpdateUserDetailsMutation } from "@/Redux/Reducers/UserProfileAndSettings/UserProfileApi";
 import { UserProfileModalProps } from "@/Types/Common/UserProfile/UserProfileType";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

@@ -115,7 +115,7 @@ const FeesTab: FC = () => {
                 className="mt-3"
                 onClick={handleNextTab}
               >
-                {session?.user?.user_type === "CLIENT"
+                {session?.user?.role === "CLIENT"
                   ? "Go To Next"
                   : "Save & Next"}
               </Button>

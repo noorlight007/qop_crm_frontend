@@ -1,4 +1,4 @@
-import { useSendResetPasswordEmailMutation } from "@/Redux/Reducers/Common/UserProfile/UserProfileApi";
+import { useSendResetPasswordEmailMutation } from "@/Redux/Reducers/UserProfileAndSettings/UserProfileApi";
 import { UserProfileModalProps } from "@/Types/Common/UserProfile/UserProfileType";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

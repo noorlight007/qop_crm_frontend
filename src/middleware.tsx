@@ -7,15 +7,18 @@ export default withAuth(
     const token = req.nextauth.token;
     const path = req.nextUrl.pathname;
 
-    // Check if token or user_type is missing
-    if (!token || !token.user_type) {
+    // Check if token or role is missing
+    if (!token || !token.role) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
     }
 
+    const role = token.role as string | undefined;
+    const isNetwork = (token as any).is_network as boolean | undefined;
+
     // Role-based path protection
-    if (path.startsWith("/admin") && token.user_type !== "ADMIN") {
+    if (path.startsWith("/admin") && !(role === "ADMIN" && isNetwork)) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -23,8 +26,8 @@ export default withAuth(
 
     if (
       path.startsWith("/network/director") &&
-      !["NETWORK_DIRECTOR", "NETWORK_COMPLIANCE"].includes(
-        token.user_type as string,
+      !(
+        isNetwork && (role === "DIRECTOR" || role === "COMPLIANCE")
       )
     ) {
       const loginUrl = new URL("/auth/login", req.url);
@@ -32,10 +35,7 @@ export default withAuth(
       return NextResponse.redirect(loginUrl);
     }
 
-    if (
-      path.startsWith("/network/adviser") &&
-      token.user_type !== "NETWORK_ADVISER"
-    ) {
+    if (path.startsWith("/network/adviser") && !(isNetwork && role === "ADVISER")) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -43,7 +43,7 @@ export default withAuth(
 
     if (
       path.startsWith("/organisation/director") &&
-      token.user_type !== "ORGANISATION_DIRECTOR"
+      !(isNetwork === false && role === "DIRECTOR")
     ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
@@ -52,7 +52,7 @@ export default withAuth(
 
     if (
       path.startsWith("/organisation/adviser") &&
-      token.user_type !== "ORGANISATION_ADVISER"
+      !(isNetwork === false && role === "ADVISER")
     ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
@@ -60,14 +60,14 @@ export default withAuth(
     }
     if (
       path.startsWith("/organisation/admin") &&
-      token.user_type !== "ORGANISATION_ADMIN"
+      !(isNetwork === false && role === "ADMIN")
     ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
     }
 
-    if (path.startsWith("/client") && token.user_type !== "CLIENT") {
+    if (path.startsWith("/client") && role !== "CLIENT") {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);

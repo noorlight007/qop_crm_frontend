@@ -165,7 +165,7 @@ const InsuranceHealthContent: React.FC = () => {
             disabled={
               submitting !== null ||
               isUpdating ||
-              session?.user?.user_type === "CLIENT"
+              session?.user?.role === "CLIENT"
             }
           >
             {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
@@ -175,7 +175,7 @@ const InsuranceHealthContent: React.FC = () => {
             type="button"
             disabled={submitting !== null || isUpdating}
             onClick={async () => {
-              if (session?.user?.user_type === "CLIENT") {
+              if (session?.user?.role === "CLIENT") {
                 handleNextTab();
                 return;
               }
@@ -191,7 +191,7 @@ const InsuranceHealthContent: React.FC = () => {
               }
             }}
           >
-            {session?.user?.user_type === "CLIENT" ? (
+            {session?.user?.role === "CLIENT" ? (
               "Go To Next"
             ) : submitting === "save_next" ? (
               <Spinner size="sm" />
