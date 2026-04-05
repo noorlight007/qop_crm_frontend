@@ -73,7 +73,7 @@ const Profile = () => {
             <li className="d-flex">
               <Link href="/user-profile" className="d-flex gap-2">
                 <i className="fa-solid fa-user-gear"></i>
-                Profile
+                Profile & Settings
               </Link>
             </li>
             {session?.user?.user_type === "ADMIN" ||

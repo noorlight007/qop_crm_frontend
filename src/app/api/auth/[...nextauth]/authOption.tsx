@@ -9,6 +9,8 @@ interface UserWithToken extends NextAuthUser {
   refreshToken?: string;
   user_type?: string;
   profile_image?: string | null;
+  is_network?: boolean;
+  role?: string;
   subdomain?: string | null;
 }
 
@@ -22,9 +24,11 @@ declare module "next-auth" {
       image?: string | null;
       user_type?: string | null;
       profile_image?: string | null;
+      is_network?: boolean;
       subdomain?: string | null;
       accessToken?: string;
       refreshToken?: string;
+      role?: string;
     };
   }
 
@@ -33,6 +37,8 @@ declare module "next-auth" {
     refreshToken?: string;
     user_type?: string;
     profile_image?: string | null;
+    is_network?: boolean;
+    role?: string;
   }
 
   interface JWT {
@@ -42,6 +48,8 @@ declare module "next-auth" {
     profile_image?: string | null;
     name?: string;
     subdomain?: string | null;
+    is_network?: boolean;
+    role?: string;
   }
 
   // Extend core auth options to support trustHost
@@ -107,6 +115,7 @@ export const authoption: NextAuthOptions = {
               },
             },
           );
+          console.log("TEST::", result.data);
 
           const profileResponse = result?.data?.access
             ? await apiClient.get("/auth/user-profile/", {
@@ -117,6 +126,7 @@ export const authoption: NextAuthOptions = {
                 },
               })
             : null;
+          console.log("Profile::", profileResponse?.data);
 
           if (profileResponse?.data) {
             const userData = profileResponse.data || {};
@@ -132,7 +142,9 @@ export const authoption: NextAuthOptions = {
               email: credentials.email,
               user_type: userData.user_type || "",
               profile_image: userData.profile_image || null,
+              is_network: userData.is_network || false,
               subdomain: credentials.subdomain || null,
+              role:result.data.role || "",
               accessToken: result.data.access,
               refreshToken: result.data.refresh,
             };
@@ -148,7 +160,7 @@ export const authoption: NextAuthOptions = {
     async jwt({ token, user, trigger, session }) {
       if (user) {
         const userWithToken = user as UserWithToken;
-        
+
         token.id = userWithToken.id;
         token.name = userWithToken.name;
         if (userWithToken.accessToken) {
@@ -166,6 +178,12 @@ export const authoption: NextAuthOptions = {
         if (userWithToken.subdomain) {
           token.subdomain = userWithToken.subdomain;
         }
+        if (userWithToken.is_network !== undefined) {
+          token.is_network = userWithToken.is_network;
+        }
+        if (userWithToken.role) {
+          token.role = userWithToken.role;
+        }
       }
 
       // Handle session updates (when update() is called)
@@ -182,6 +200,12 @@ export const authoption: NextAuthOptions = {
         if (session.subdomain !== undefined) {
           token.subdomain = session.subdomain;
         }
+        if (session.is_network !== undefined) {
+          token.is_network = session.is_network;
+        }
+        if (session.role !== undefined) {
+          token.role = session.role;
+        }
       }
 
       return token;
@@ -197,6 +221,8 @@ export const authoption: NextAuthOptions = {
         user_type: token.user_type as string | undefined,
         profile_image: token.profile_image as string | null | undefined,
         subdomain: token.subdomain as string | null | undefined,
+        is_network: token.is_network as boolean | undefined,
+        role: token.role as string | undefined,
       };
       return session;
     },

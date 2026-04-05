@@ -34,13 +34,6 @@ const RoleSwitching: React.FC = () => {
         "Manage teams, permissions, pipelines and organisation level settings.",
       badgeColor: "warning",
     },
-    {
-      id: "read_only",
-      label: "Read-only",
-      description: "View data without the ability to edit, ideal for auditors.",
-      badgeColor: "secondary",
-      subtle: true,
-    },
   ];
 
   const [activeRoleId] = useState<string>("director");
@@ -103,7 +96,7 @@ const RoleSwitching: React.FC = () => {
               <small className="text-muted text-uppercase fw-semibold">
                 Available roles
               </small>
-              <Badge color="light" className="text-muted fw-normal">
+              <Badge color="primary" className="text-muted fw-normal">
                 {roles.length} options
               </Badge>
             </div>

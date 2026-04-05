@@ -6,8 +6,8 @@ const UserProfileContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
-        title="My Profile"
-        subTitle="Profile management and settings"
+        title="Profile & Settings"
+        subTitle="Manage your profile information and account settings."
         items={[{ label: "Profile & Settings", active: true }]}
       />
       <Row>
