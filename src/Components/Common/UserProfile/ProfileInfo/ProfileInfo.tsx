@@ -10,6 +10,7 @@ import { FaCamera, FaUserEdit, FaUserLock } from "react-icons/fa";
 import { TbCalendar, TbMail, TbMapPin, TbPhone, TbUser } from "react-icons/tb";
 import { toast } from "react-toastify";
 import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
+import RoleSwitching from "../RoleSwitching/RoleSwitching";
 import EditProfileModal from "./Modals/EditProfileModal";
 import SendEmailForResetPasswordModal from "./Modals/SendEmailForResetPasswordModal";
 
@@ -243,6 +244,10 @@ const ProfileInfo: React.FC = () => {
             </Row>
           </CardBody>
         </Card>
+      </Col>
+
+      <Col xs="12">
+        <RoleSwitching />
       </Col>
 
       {/* Contact Information Card */}
