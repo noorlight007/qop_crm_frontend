@@ -20,9 +20,9 @@ const Menulist: React.FC<MenuListType> = ({
   const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
-  // Get role-specific menu
-  const roleBasedMenu = session?.user?.user_type
-    ? getMenuByRole(session.user.user_type)
+  // Get role-specific menu based on new role + network flag
+  const roleBasedMenu = session?.user?.role
+    ? getMenuByRole(session.user.role, session.user.is_network)
     : [];
 
   // Use role-based menu instead of passed menu prop

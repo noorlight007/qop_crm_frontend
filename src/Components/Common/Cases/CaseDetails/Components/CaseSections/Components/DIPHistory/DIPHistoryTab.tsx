@@ -74,9 +74,7 @@ const DIPHistoryTab: React.FC = () => {
             color="success"
             onClick={() => setModalIsOpen(true)}
             type="button"
-            disabled={
-              session?.user?.user_type === "CLIENT" && histories.length > 0
-            }
+            disabled={session?.user?.role === "CLIENT" && histories.length > 0}
           >
             Add New Lender History
           </Button>

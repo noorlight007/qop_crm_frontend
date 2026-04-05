@@ -483,7 +483,7 @@ const Accountant: React.FC = () => {
                   color="success"
                   onClick={toggleModal}
                   className="border-success"
-                  disabled={session?.user?.user_type === "CLIENT"}
+                  disabled={session?.user?.role === "CLIENT"}
                 >
                   Add New Accountant
                 </Button>
@@ -493,7 +493,7 @@ const Accountant: React.FC = () => {
                   disabled={
                     !selectedAccountant ||
                     isAccountantAssigned() ||
-                    session?.user?.user_type === "CLIENT"
+                    session?.user?.role === "CLIENT"
                   }
                 >
                   Assign Accountant
@@ -829,7 +829,7 @@ const Accountant: React.FC = () => {
                       submitActionRef.current = "save";
                     }}
                     disabled={
-                      isUpdatingLoading || session?.user?.user_type === "CLIENT"
+                      isUpdatingLoading || session?.user?.role === "CLIENT"
                     }
                   >
                     {isUpdatingLoading ? "Saving..." : "Save Changes"}
@@ -838,7 +838,7 @@ const Accountant: React.FC = () => {
                     color="secondary"
                     type="submit"
                     onClick={async (e) => {
-                      if (session?.user?.user_type === "CLIENT") {
+                      if (session?.user?.role === "CLIENT") {
                         handleNextTab();
                       } else {
                         e.preventDefault();
@@ -847,7 +847,7 @@ const Accountant: React.FC = () => {
                       }
                     }}
                   >
-                    {session?.user?.user_type === "CLIENT"
+                    {session?.user?.role === "CLIENT"
                       ? "Go To Next"
                       : "Save & Next"}
                   </Button>

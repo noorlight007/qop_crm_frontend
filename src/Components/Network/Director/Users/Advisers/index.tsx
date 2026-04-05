@@ -11,7 +11,7 @@ const NetworkDirectorAdvisersContainer: React.FC = () => {
         items={[{ label: "Users" }, { label: "Advisers", active: true }]}
       />
       <Container fluid>
-        <AuthUsers userRole="NETWORK_ADVISER" title="Advisers" />
+        <AuthUsers userRole="ADVISER" title="Advisers" />
       </Container>
     </>
   );

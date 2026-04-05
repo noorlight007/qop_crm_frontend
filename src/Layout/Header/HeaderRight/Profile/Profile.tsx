@@ -59,7 +59,7 @@ const Profile = () => {
           <h6>{session?.user?.name}</h6>
           <p className="mb-0 text-primary">
             <span className="bg-light-primary mt-1 px-2 py-1 rounded-5">
-              {formatChoiceFieldValue(session?.user?.user_type) || "User Role"}
+              {formatChoiceFieldValue(session?.user?.role) || "User Role"}
             </span>
             <i className="fa-solid fa-chevron-down" />
           </p>
@@ -71,15 +71,17 @@ const Profile = () => {
         >
           <ul className="profile-body">
             <li className="d-flex">
-              <Link href="/user-profile" className="d-flex gap-2">
+              <Link href="/profile-settings" className="d-flex gap-2">
                 <i className="fa-solid fa-user-gear"></i>
-                Profile
+                Profile & Settings
               </Link>
             </li>
-            {session?.user?.user_type === "ADMIN" ||
-            session?.user?.user_type === "NETWORK_DIRECTOR" ||
-            session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-            session?.user?.user_type === "ORGANISATION_DIRECTOR" ? (
+            {session?.user?.role === "ADMIN" ||
+            (session?.user?.is_network &&
+              (session?.user?.role === "DIRECTOR" ||
+                session?.user?.role === "COMPLIANCE")) ||
+            (!session?.user?.is_network &&
+              session?.user?.role === "DIRECTOR") ? (
               <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
                 <Link href="/appearance" className="d-flex gap-2">
                   <TbSettings />

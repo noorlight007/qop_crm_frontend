@@ -12,22 +12,24 @@ const UserLogin = () => {
 
   useEffect(() => {
     if (!session) return;
+    const role = session.user?.role;
+    const isNetwork = session.user?.is_network;
 
-    if (session.user?.user_type === "ADMIN") {
+    if (role === "ADMIN" && isNetwork) {
       router.push("/admin/dashboard");
-    } else if (session.user?.user_type === "NETWORK_DIRECTOR") {
+    } else if (role === "DIRECTOR" && isNetwork) {
       router.push("/network/director/dashboard");
-    } else if (session.user?.user_type === "NETWORK_COMPLIANCE") {
+    } else if (role === "COMPLIANCE" && isNetwork) {
       router.push("/network/director/dashboard");
-    } else if (session.user?.user_type === "NETWORK_ADVISER") {
+    } else if (role === "ADVISER" && isNetwork) {
       router.push("/network/adviser/dashboard");
-    } else if (session.user?.user_type === "ORGANISATION_DIRECTOR") {
+    } else if (role === "DIRECTOR" && isNetwork === false) {
       router.push("/organisation/director/dashboard");
-    } else if (session.user?.user_type === "ORGANISATION_ADVISER") {
+    } else if (role === "ADVISER" && isNetwork === false) {
       router.push("/organisation/adviser/dashboard");
-    } else if (session.user?.user_type === "ORGANISATION_ADMIN") {
+    } else if (role === "ADMIN" && isNetwork === false) {
       router.push("/organisation/admin/dashboard");
-    } else if (session.user?.user_type === "CLIENT") {
+    } else if (role === "CLIENT") {
       router.push("/applicant/dashboard");
     } else {
       logOut();

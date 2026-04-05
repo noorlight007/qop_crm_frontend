@@ -1,7 +1,6 @@
 import { getMenuByRole } from "@/Data/Layout/SidebarData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { MenuItem } from "@/Types/LayoutTypes";
-import { formatChoiceFieldValue } from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { Fragment, useState } from "react";
 import Menulist from "./Menulist";
@@ -13,18 +12,18 @@ const SidebarMenuList = () => {
   const dispatch = useAppDispatch();
   const { data: session } = useSession();
 
-  // Get role-specific menu
-  const roleBasedMenu = session?.user?.user_type
-    ? getMenuByRole(session.user.user_type)
+  // Get role-specific menu based on new role + network flag
+  const roleBasedMenu = session?.user?.role
+    ? getMenuByRole(session.user.role, session.user.is_network)
     : [];
 
   const shouldHideMenu = (mainMenu: MenuItem) => {
     return mainMenu?.Items?.map((data) => data.title).every((titles) =>
-      pinedMenu.includes(titles || "")
+      pinedMenu.includes(titles || ""),
     );
   };
 
-  if (!session?.user?.user_type) {
+  if (!session?.user?.role) {
     return null;
   }
 
@@ -45,7 +44,7 @@ const SidebarMenuList = () => {
                   }`}
                 >
                   <span className="bg-light-secondary px-2 py-1 rounded-5">
-                    {formatChoiceFieldValue(session?.user?.user_type)}
+                    {formatChoiceFieldValue(session?.user?.role)}
                   </span>
                 </h5>
               </div>

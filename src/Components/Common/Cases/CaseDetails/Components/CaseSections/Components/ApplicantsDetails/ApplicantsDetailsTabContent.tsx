@@ -2909,7 +2909,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               color="primary"
               disabled={
                 isLoading ||
-                (session?.user?.user_type === "CLIENT" &&
+                (session?.user?.role === "CLIENT" &&
                   selectedApplicant?.updated_by !== null)
               }
               onClick={() => {
@@ -2925,7 +2925,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               color="warning"
               disabled={
                 isLoading ||
-                (session?.user?.user_type === "CLIENT" &&
+                (session?.user?.role === "CLIENT" &&
                   selectedApplicant?.updated_by !== null) ||
                 !applicantsData ||
                 applicantsData.findIndex(
@@ -2947,7 +2947,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               color="info"
               disabled={
                 isLoading ||
-                (session?.user?.user_type === "CLIENT" &&
+                (session?.user?.role === "CLIENT" &&
                   selectedApplicant?.updated_by !== null) ||
                 !applicantsData ||
                 applicantsData.findIndex(
@@ -2971,7 +2971,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               onClick={async (e) => {
                 e.preventDefault();
                 if (
-                  session?.user?.user_type === "CLIENT" &&
+                  session?.user?.role === "CLIENT" &&
                   selectedApplicant?.updated_by !== null
                 ) {
                   handleNextTab();
@@ -2981,7 +2981,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 }
               }}
             >
-              {session?.user?.user_type === "CLIENT" &&
+              {session?.user?.role === "CLIENT" &&
               selectedApplicant?.updated_by !== null
                 ? "Go To Next"
                 : isUpdatingApplicant && submitting === "next"

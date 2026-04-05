@@ -14,7 +14,7 @@ export interface LeadOrApplicant {
   created_at: string;
   created_by: {
     name: string;
-    email: string;
+    email?: string;
     user_type?: string;
   };
   profile_image: string | null;

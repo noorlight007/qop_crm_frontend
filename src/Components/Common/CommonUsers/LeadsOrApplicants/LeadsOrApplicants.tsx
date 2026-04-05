@@ -344,10 +344,11 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                           >
                             <i className="icon-pencil-alt"></i>
                           </Button>
-                          {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                            session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-                            session?.user?.user_type ===
-                              "ORGANISATION_DIRECTOR") && (
+                          {((session?.user?.is_network &&
+                            (session?.user?.role === "DIRECTOR" ||
+                              session?.user?.role === "COMPLIANCE")) ||
+                            (!session?.user?.is_network &&
+                              session?.user?.role === "DIRECTOR")) && (
                             <Button
                               color="danger"
                               size="sm"

@@ -339,19 +339,21 @@ const Documents: React.FC = () => {
                 <div className="d-flex flex-wrap gap-2 ms-md-auto">
                   {selectedDocuments.size > 0 && (
                     <>
-                      {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                        session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-                        session?.user?.user_type ===
-                          "ORGANISATION_DIRECTOR") && (
-                        <Button
-                          color="danger"
-                          size="sm"
-                          onClick={handleBatchDelete}
-                        >
-                          <i className="fa-solid fa-trash me-1"></i>
-                          Delete ({selectedDocuments.size})
-                        </Button>
-                      )}
+                      {session?.user?.role &&
+                        ((session.user.is_network &&
+                          (session.user.role === "DIRECTOR" ||
+                            session.user.role === "COMPLIANCE")) ||
+                          (!session.user.is_network &&
+                            session.user.role === "DIRECTOR")) && (
+                          <Button
+                            color="danger"
+                            size="sm"
+                            onClick={handleBatchDelete}
+                          >
+                            <i className="fa-solid fa-trash me-1"></i>
+                            Delete ({selectedDocuments.size})
+                          </Button>
+                        )}
                       <Button
                         color="info"
                         size="sm"
@@ -588,21 +590,21 @@ const Documents: React.FC = () => {
                               >
                                 <i className="fa-solid fa-edit"></i>
                               </Button>
-                              {(session?.user?.user_type ===
-                                "NETWORK_DIRECTOR" ||
-                                session?.user?.user_type ===
-                                  "NETWORK_COMPLIANCE" ||
-                                session?.user?.user_type ===
-                                  "ORGANISATION_DIRECTOR") && (
-                                <Button
-                                  color="danger"
-                                  size="sm"
-                                  title="Delete"
-                                  onClick={() => handleDeleteClick(fileData)}
-                                >
-                                  <i className="fa-regular fa-trash-can"></i>
-                                </Button>
-                              )}
+                              {session?.user?.role &&
+                                ((session.user.is_network &&
+                                  (session.user.role === "DIRECTOR" ||
+                                    session.user.role === "COMPLIANCE")) ||
+                                  (!session.user.is_network &&
+                                    session.user.role === "DIRECTOR")) && (
+                                  <Button
+                                    color="danger"
+                                    size="sm"
+                                    title="Delete"
+                                    onClick={() => handleDeleteClick(fileData)}
+                                  >
+                                    <i className="fa-regular fa-trash-can"></i>
+                                  </Button>
+                                )}
                             </div>
                           </td>
                         </tr>

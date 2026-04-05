@@ -1,12 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetFeesInDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
+import getCurrencySign from "@/utils/currency";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button, Col, Row, Table } from "reactstrap";
 import AddFeeInModal from "./FeesModals/AddFeeInModal";
 import DeleteFeeModal from "./FeesModals/DeleteFeeModal";
-import getCurrencySign from "@/utils/currency";
 
 const FeeInTable = () => {
   const { data: session } = useSession();
@@ -96,7 +96,7 @@ const FeeInTable = () => {
             color="primary"
             className="addFee d-flex align-items-center gap-2"
             onClick={toggleModal}
-            disabled={session?.user?.user_type === "CLIENT"}
+            disabled={session?.user?.role === "CLIENT"}
           >
             Add New Fee In
             <i className="fa-solid fa-circle-plus"></i>
@@ -158,7 +158,8 @@ const FeeInTable = () => {
                         <span className="fw-bold">{index + 1}</span>
                       </td>
                       <td className="text-center align-middle">
-                        {getCurrencySign()}{feeIn.fee || "0.00"}
+                        {getCurrencySign()}
+                        {feeIn.fee || "0.00"}
                       </td>
                       <td className="text-center align-middle">
                         {feeTypes.find((type) => type.value === feeIn.feeType)
