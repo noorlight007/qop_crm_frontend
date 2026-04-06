@@ -84,7 +84,22 @@ const RoleSwitching: React.FC = () => {
   const handleSwitchRole = async () => {
     if (!selectedRoleKey || selectedRoleKey === activeRoleKey) return;
     try {
-      await switchRole({ role: selectedRoleKey }).unwrap();
+      const switchResult = await switchRole({ role: selectedRoleKey }).unwrap();
+      const updatedAccessToken =
+        (switchResult as any)?.accessToken ??
+        (switchResult as any)?.access ??
+        (switchResult as any)?.token ??
+        (switchResult as any)?.data?.accessToken ??
+        (switchResult as any)?.data?.access ??
+        null;
+
+      const updatedRefreshToken =
+        (switchResult as any)?.refreshToken ??
+        (switchResult as any)?.refresh ??
+        (switchResult as any)?.data?.refreshToken ??
+        (switchResult as any)?.data?.refresh ??
+        null;
+
       setActiveRoleKey(selectedRoleKey);
 
       // Tell NextAuth to update the JWT token.role so
@@ -92,7 +107,18 @@ const RoleSwitching: React.FC = () => {
       if (typeof update === "function") {
         await update({
           role: selectedRoleKey,
+          ...(updatedAccessToken ? { accessToken: updatedAccessToken } : {}),
+          ...(updatedRefreshToken ? { refreshToken: updatedRefreshToken } : {}),
         } as any);
+      }
+
+      if (typeof window !== "undefined") {
+        if (updatedAccessToken) {
+          localStorage.setItem("token", updatedAccessToken);
+        }
+        if (updatedRefreshToken) {
+          localStorage.setItem("refreshToken", updatedRefreshToken);
+        }
       }
 
       if (typeof window !== "undefined") {

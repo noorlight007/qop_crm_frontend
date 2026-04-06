@@ -183,6 +183,12 @@ export const authoption: NextAuthOptions = {
         if (session.name) {
           token.name = session.name;
         }
+        if (session.accessToken !== undefined) {
+          token.accessToken = session.accessToken;
+        }
+        if (session.refreshToken !== undefined) {
+          token.refreshToken = session.refreshToken;
+        }
         if (session.profile_image !== undefined) {
           token.profile_image = session.profile_image;
         }
