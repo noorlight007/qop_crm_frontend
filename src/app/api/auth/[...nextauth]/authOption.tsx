@@ -111,7 +111,7 @@ export const authoption: NextAuthOptions = {
               },
             },
           );
-          console.log("TEST::", result.data);
+          // console.log("TEST::", result.data);
 
           const profileResponse = result?.data?.access
             ? await apiClient.get("/auth/user-profile/", {
@@ -122,7 +122,7 @@ export const authoption: NextAuthOptions = {
                 },
               })
             : null;
-          console.log("Profile::", profileResponse?.data);
+          // console.log("Profile::", profileResponse?.data);
 
           if (profileResponse?.data) {
             const userData = profileResponse.data || {};
