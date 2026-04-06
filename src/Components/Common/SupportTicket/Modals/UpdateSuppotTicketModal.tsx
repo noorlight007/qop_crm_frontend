@@ -35,7 +35,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     files: [],
   });
   const { data: session } = useSession();
-  const userType = session?.user?.user_type;
+  const userRole = session?.user?.role;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
@@ -171,7 +171,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       fd.append("subject", formData.subject);
       fd.append("priority", formData.priority || "");
 
-      if (userType === "ADMIN") {
+      if (userRole === "ADMIN") {
         fd.append("status", formData.status || "");
       }
 
@@ -309,7 +309,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
             </Col>
           </Row>
 
-          {userType === "ADMIN" && (
+          {userRole === "ADMIN" && (
             <FormGroup>
               <Label for="status">
                 Status<span className="text-danger">*</span>

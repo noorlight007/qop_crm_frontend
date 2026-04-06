@@ -11,6 +11,7 @@ import {
   CommissionProps,
   LumpSumProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -35,7 +36,6 @@ import {
 } from "reactstrap";
 import AddLumpSumCommissionModal from "./Modals/AddLumpSumCommissionModal";
 import DeleteLumpSumCommissionModal from "./Modals/DeleteLumpSumCommissionModal";
-import getCurrencySign from "@/utils/currency";
 
 const LumpSumCommission: React.FC<CommissionProps> = ({
   caseAlias,
@@ -320,7 +320,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
           <button
             type="button"
             className="btn btn-primary"
-            disabled={session?.user?.user_type === "CLIENT"}
+            disabled={session?.user?.role === "CLIENT"}
             onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
           >
             <TbCirclePlus className="me-1" size={18} />
@@ -550,7 +550,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       color="danger"
                       title="Remove row"
                       onClick={() => openDeleteModal(lump.id)}
-                      disabled={session?.user?.user_type === "CLIENT"}
+                      disabled={session?.user?.role === "CLIENT"}
                     >
                       <FaTrash /> Delete
                     </Button>
@@ -558,7 +558,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       type="button"
                       className="btn btn-primary"
                       disabled={
-                        isUpdatingLump || session?.user?.user_type === "CLIENT"
+                        isUpdatingLump || session?.user?.role === "CLIENT"
                       }
                       onClick={() => handleUpdateLump(lump, idx)}
                     >
@@ -577,7 +577,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
-            disabled={session?.user?.user_type === "CLIENT"}
+            disabled={session?.user?.role === "CLIENT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Lump Sum

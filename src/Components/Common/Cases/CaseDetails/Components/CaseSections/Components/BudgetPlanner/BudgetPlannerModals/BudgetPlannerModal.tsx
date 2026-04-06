@@ -342,7 +342,7 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
           onClick={handleSaveChanges}
           disabled={
             (!budgetPlannerData.disclaimer && !updatedFields.disclaimer) ||
-            session?.user?.user_type === "CLIENT"
+            session?.user?.role === "CLIENT"
           }
         >
           {isLoading ? "Saving..." : "Save Changes"}

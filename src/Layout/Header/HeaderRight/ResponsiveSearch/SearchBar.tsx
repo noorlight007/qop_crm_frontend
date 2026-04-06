@@ -39,9 +39,9 @@ export const SearchBar = () => {
       }
     };
 
-    // Get menu based on user role
-    const roleBasedMenu = session?.user?.user_type
-      ? getMenuByRole(session.user.user_type)
+    // Get menu based on user role and network flag
+    const roleBasedMenu = session?.user?.role
+      ? getMenuByRole(session.user.role, session.user.is_network)
       : [];
 
     roleBasedMenu.forEach((item) => {

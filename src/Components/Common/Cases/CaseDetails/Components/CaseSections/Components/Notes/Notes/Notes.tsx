@@ -21,8 +21,8 @@ import {
 } from "reactstrap";
 import AddNoteModal from "./Modals/AddNoteModal";
 import DeleteNoteModal from "./Modals/DeleteNoteModal";
-import "./notes.css";
 import UpdateNoteModal from "./Modals/UpdateNoteModal";
+import "./notes.css";
 
 // Categories constant
 const CATEGORIES = [
@@ -71,7 +71,8 @@ const Notes: React.FC = () => {
   }, [notesData, pageSize]);
 
   const toggleAddNoteModal = () => setIsOpenAddNoteModal(!isOpenAddNoteModal);
-  const toggleEditNoteModal = () => setIsEditNoteModalOpen(!isEditNoteModalOpen);
+  const toggleEditNoteModal = () =>
+    setIsEditNoteModalOpen(!isEditNoteModalOpen);
   const toggleDeleteNoteModal = () =>
     setIsDeleteNoteModalOpen(!isDeleteNoteModalOpen);
 
@@ -143,7 +144,7 @@ const Notes: React.FC = () => {
           </div>
         </Col>
         <Col md={6} className="text-end ">
-          {session?.user?.user_type !== "CLIENT" && (
+          {session?.user?.role !== "CLIENT" && (
             <Button color="primary" onClick={toggleAddNoteModal}>
               <i className="fa-solid fa-circle-plus"></i> Add New Note
             </Button>
@@ -166,7 +167,7 @@ const Notes: React.FC = () => {
               <th style={{ minWidth: "600px", textAlign: "left" }}>
                 Information
               </th>
-              {session?.user?.user_type !== "CLIENT" && (
+              {session?.user?.role !== "CLIENT" && (
                 <>
                   <th style={{ minWidth: "100px", textAlign: "center" }}>
                     Introducer Visible
@@ -177,13 +178,16 @@ const Notes: React.FC = () => {
                 </>
               )}
 
-              {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-                session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
-                <th style={{ minWidth: "100px", textAlign: "center" }}>
-                  Actions
-                </th>
-              )}
+              {session?.user?.role &&
+                ((session.user.is_network &&
+                  (session.user.role === "DIRECTOR" ||
+                    session.user.role === "COMPLIANCE")) ||
+                  (!session.user.is_network &&
+                    session.user.role === "DIRECTOR")) && (
+                  <th style={{ minWidth: "100px", textAlign: "center" }}>
+                    Actions
+                  </th>
+                )}
             </tr>
           </thead>
           <tbody>
@@ -198,12 +202,12 @@ const Notes: React.FC = () => {
               // support old non-paginated array response and new paginated response
               (notesData.results ?? notesData)
                 .filter((note: NoteProps) => {
-                  if (session?.user?.user_type === "CLIENT") {
+                  if (session?.user?.role === "CLIENT") {
                     return (
                       (note as any).is_visible_to_client ??
                       (note as any).note_visible_to_client
                     );
-                  } else if (session?.user?.user_type === "INTRODUCER") {
+                  } else if (session?.user?.role === "INTRODUCER") {
                     return (
                       (note as any).is_visible_to_introducer ??
                       (note as any).is_visible_to_introducer
@@ -270,7 +274,7 @@ const Notes: React.FC = () => {
                         </Button>
                       )}
                     </td>
-                    {session?.user?.user_type !== "CLIENT" && (
+                    {session?.user?.role !== "CLIENT" && (
                       <>
                         <td
                           className={`text-center ${
@@ -314,34 +318,37 @@ const Notes: React.FC = () => {
                       </>
                     )}
 
-                    {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                      session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-                      session?.user?.user_type === "ORGANISATION_DIRECTOR") && (
-                      <td
-                        className={`text-center ${note.status === "DELETED" ? "opacity-50" : ""}`}
-                      >
-                        {note.status === "ACTIVE" ? (
-                          <div className="d-flex justify-content-center gap-1">
-                            <Button
-                              color="primary"
-                              className="p-1"
-                              onClick={() => handleEditClick(note)}
-                            >
-                              <Edit size={20} />
-                            </Button>
-                            <Button
-                              color="danger"
-                              className="p-1"
-                              onClick={() => handleDeleteClick(note)}
-                            >
-                              <Trash2 size={20} />
-                            </Button>
-                          </div>
-                        ) : (
-                          <small className="text-danger">Deleted</small>
-                        )}
-                      </td>
-                    )}
+                    {session?.user?.role &&
+                      ((session.user.is_network &&
+                        (session.user.role === "DIRECTOR" ||
+                          session.user.role === "COMPLIANCE")) ||
+                        (!session.user.is_network &&
+                          session.user.role === "DIRECTOR")) && (
+                        <td
+                          className={`text-center ${note.status === "DELETED" ? "opacity-50" : ""}`}
+                        >
+                          {note.status === "ACTIVE" ? (
+                            <div className="d-flex justify-content-center gap-1">
+                              <Button
+                                color="primary"
+                                className="p-1"
+                                onClick={() => handleEditClick(note)}
+                              >
+                                <Edit size={20} />
+                              </Button>
+                              <Button
+                                color="danger"
+                                className="p-1"
+                                onClick={() => handleDeleteClick(note)}
+                              >
+                                <Trash2 size={20} />
+                              </Button>
+                            </div>
+                          ) : (
+                            <small className="text-danger">Deleted</small>
+                          )}
+                        </td>
+                      )}
                   </tr>
                 ))
             ) : (

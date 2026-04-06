@@ -1089,7 +1089,7 @@ const ProductContent: React.FC = () => {
           disabled={
             submitting !== null ||
             isUpdating ||
-            (session?.user?.user_type === "CLIENT" &&
+            (session?.user?.role === "CLIENT" &&
               productDetails[0]?.updated_by !== null)
           }
         >
@@ -1101,7 +1101,7 @@ const ProductContent: React.FC = () => {
           onClick={(e) => {
             e.preventDefault();
             if (
-              session?.user?.user_type === "CLIENT" &&
+              session?.user?.role === "CLIENT" &&
               productDetails[0]?.updated_by !== null
             ) {
               handleNextTab();
@@ -1112,8 +1112,8 @@ const ProductContent: React.FC = () => {
           }}
           disabled={submitting !== null || isUpdating}
         >
-          {/* {session?.user?.user_type === "CLIENT" ? "Go to Next" : "Save & Next"} */}
-          {session?.user?.user_type === "CLIENT" &&
+          {/* {session?.user?.role === "CLIENT" ? "Go to Next" : "Save & Next"} */}
+          {session?.user?.role === "CLIENT" &&
           productDetails[0]?.updated_by !== null
             ? "Go to Next"
             : submitting === "save_next"

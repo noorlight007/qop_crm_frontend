@@ -262,7 +262,7 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Registered Advisers",
+            title: "Advisers",
             type: "link",
             path: "/network/director/advisers",
           },
@@ -742,27 +742,32 @@ export {
   OrganisationDirectorMenu,
 };
 
-export const getMenuByRole = (role?: string): MenuItem[] => {
-  switch (role) {
-    case "ADMIN":
-      return AdminMenu;
-    case "NETWORK_DIRECTOR":
-      return NetworkDirectorMenu;
-    case "NETWORK_COMPLIANCE":
-      return NetworkComplianceMenu;
-    case "NETWORK_ADVISER":
-      return NetworkAdviserMenu;
-    case "ORGANISATION_DIRECTOR":
-      return OrganisationDirectorMenu;
-    case "ORGANISATION_ADVISER":
-      return OrganisationAdviserMenu;
-    case "ORGANISATION_ADMIN":
-      return OrganisationAdminMenu;
-    case "CLIENT":
-      return ApplicantMenu;
-    default:
-      return [];
+export const getMenuByRole = (
+  role?: string,
+  isNetwork?: boolean,
+): MenuItem[] => {
+  if (!role) return [];
+
+  if (role === "CLIENT") return ApplicantMenu;
+
+  if (role === "ADMIN") {
+    return isNetwork ? AdminMenu : OrganisationAdminMenu;
   }
+
+  if (role === "DIRECTOR") {
+    return isNetwork ? NetworkDirectorMenu : OrganisationDirectorMenu;
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork ? NetworkAdviserMenu : OrganisationAdviserMenu;
+  }
+
+  if (role === "COMPLIANCE" && isNetwork) {
+    return NetworkComplianceMenu;
+  }
+
+  return [];
 };
 
-export const MenuList = (role?: string) => getMenuByRole(role);
+export const MenuList = (role?: string, isNetwork?: boolean) =>
+  getMenuByRole(role, isNetwork);

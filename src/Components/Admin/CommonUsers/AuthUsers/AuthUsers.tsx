@@ -340,10 +340,10 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                 <th>Phone</th>
                 {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
-                {session?.user?.user_type === "ADMIN" &&
+                {session?.user?.role === "ADMIN" &&
                   roles !== "LEAD" &&
                   roles !== "CLIENT" && <th>Network</th>}
-                {session?.user?.user_type === "ADMIN" &&
+                {session?.user?.role === "ADMIN" &&
                   roles !== "LEAD" &&
                   roles !== "CLIENT" && <th>Organisation</th>}
                 <th>Created By</th>
@@ -449,7 +449,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {session?.user?.user_type === "ADMIN" &&
+                    {session?.user?.role === "ADMIN" &&
                       roles !== "LEAD" &&
                       roles !== "CLIENT" && (
                         <>

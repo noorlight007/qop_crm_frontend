@@ -47,7 +47,7 @@ import SupportTicketComments from "./SupportTicketComments";
 const SupportTicketDetails: React.FC = () => {
   const { supportticketalias } = useParams();
   const { data: session } = useSession();
-  const userType = session?.user?.user_type;
+  const userRole = session?.user?.role;
 
   const {
     data: ticketDetails,
@@ -454,7 +454,7 @@ const SupportTicketDetails: React.FC = () => {
                 <Col xs="auto">
                   <div className="d-flex justify-content-end">
                     {ticketDetails.status ? (
-                      userType === "ADMIN" ? (
+                      userRole === "ADMIN" ? (
                         <div className="d-flex align-items-center gap-1">
                           <Dropdown
                             isOpen={dropdownOpen[ticketDetails.id] || false}

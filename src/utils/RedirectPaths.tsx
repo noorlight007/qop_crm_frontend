@@ -5,27 +5,45 @@ export const getDashboardHomeUrl = (session: Session | null) => {
     return "/auth/login";
   }
 
-  const userType = session?.user?.user_type;
-  switch (userType) {
-    case "ADMIN":
-      return "/admin/dashboard";
-    case "NETWORK_DIRECTOR":
-      return "/network/director/dashboard";
-    case "NETWORK_COMPLIANCE":
-      return "/network/director/dashboard";
-    case "NETWORK_ADVISER":
-      return "/network/adviser/dashboard";
-    case "ORGANISATION_DIRECTOR":
-      return "/organisation/director/dashboard";
-    case "ORGANISATION_ADVISER":
-      return "/organisation/adviser/dashboard";
-    case "ORGANISATION_ADMIN":
-      return "/organisation/admin/dashboard";
-    case "CLIENT":
-      return "/applicant/dashboard";
-    default:
-      return "/auth/login";
+  const role = session?.user?.role;
+  const isNetwork = session?.user?.is_network;
+
+  if (!role) return "/auth/login";
+
+  // Global Admin (no organisation/network scope) or network-level admin
+  if (role === "ADMIN" && isNetwork !== false) {
+    return "/admin/dashboard";
   }
+
+  // Organisation Admin
+  if (role === "ADMIN" && isNetwork === false) {
+    return "/organisation/admin/dashboard";
+  }
+
+  if (role === "DIRECTOR") {
+    return isNetwork
+      ? "/network/director/dashboard"
+      : "/organisation/director/dashboard";
+  }
+
+  if (role === "COMPLIANCE") {
+    // Compliance users share the director dashboard within their scope
+    return isNetwork
+      ? "/network/director/dashboard"
+      : "/organisation/director/dashboard";
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork
+      ? "/network/adviser/dashboard"
+      : "/organisation/adviser/dashboard";
+  }
+
+  if (role === "CLIENT") {
+    return "/applicant/dashboard";
+  }
+
+  return "/auth/login";
 };
 
 // Function to generate role-based URL for case details
@@ -33,96 +51,140 @@ export const getAllCasesUrl = (session: Session | null) => {
   if (!session) {
     return "/auth/login";
   }
-  const userType = session?.user?.user_type;
+  const role = session?.user?.role;
+  const isNetwork = session?.user?.is_network;
 
-  switch (userType) {
-    case "ADMIN":
-      return `/admin/cases`;
-    case "NETWORK_DIRECTOR":
-      return `/network/director/cases`;
-    case "NETWORK_COMPLIANCE":
-      return `/network/director/cases`;
-    case "NETWORK_ADVISER":
-      return `/network/adviser/cases`;
-    case "ORGANISATION_DIRECTOR":
-      return `/organisation/director/cases`;
-    case "ORGANISATION_ADVISER":
-      return `/organisation/adviser/cases`;
-    case "ORGANISATION_ADMIN":
-      return `/organisation/admin/cases`;
-    case "CLIENT":
-      return `/applicant/dashboard`;
-    default:
-      return `url not found`;
+  if (!role) return "/auth/login";
+
+  if (role === "ADMIN" && isNetwork !== false) {
+    return "/admin/cases";
   }
+
+  if (role === "ADMIN" && isNetwork === false) {
+    return "/organisation/admin/cases";
+  }
+
+  if (role === "DIRECTOR") {
+    return isNetwork
+      ? "/network/director/cases"
+      : "/organisation/director/cases";
+  }
+
+  if (role === "COMPLIANCE") {
+    return isNetwork
+      ? "/network/director/cases"
+      : "/organisation/director/cases";
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork ? "/network/adviser/cases" : "/organisation/adviser/cases";
+  }
+
+  if (role === "CLIENT") {
+    return "/applicant/dashboard";
+  }
+
+  return "url not found";
 };
 
 // Function to generate role-based URL for case details
-export const getCaseUrl = (caseAlias: string, userType: string) => {
-  switch (userType) {
-    case "ADMIN":
-      return `/admin/cases/${caseAlias}`;
-    case "NETWORK_DIRECTOR":
-      return `/network/director/cases/${caseAlias}`;
-    case "NETWORK_COMPLIANCE":
-      return `/network/director/cases/${caseAlias}`;
-    case "NETWORK_ADVISER":
-      return `/network/adviser/cases/${caseAlias}`;
-    case "ORGANISATION_DIRECTOR":
-      return `/organisation/director/cases/${caseAlias}`;
-    case "ORGANISATION_ADVISER":
-      return `/organisation/adviser/cases/${caseAlias}`;
-    case "ORGANISATION_ADMIN":
-      return `/organisation/admin/cases/${caseAlias}`;
-    case "CLIENT":
-      return `/client/cases/${caseAlias}`;
-    default:
-      return "#";
+export const getCaseUrl = (
+  caseAlias: string,
+  role: string,
+  isNetwork?: boolean,
+) => {
+  if (role === "ADMIN" && isNetwork !== false) {
+    return `/admin/cases/${caseAlias}`;
   }
+
+  if (role === "ADMIN" && isNetwork === false) {
+    return `/organisation/admin/cases/${caseAlias}`;
+  }
+
+  if (role === "DIRECTOR") {
+    return isNetwork
+      ? `/network/director/cases/${caseAlias}`
+      : `/organisation/director/cases/${caseAlias}`;
+  }
+
+  if (role === "COMPLIANCE") {
+    return isNetwork
+      ? `/network/director/cases/${caseAlias}`
+      : `/organisation/director/cases/${caseAlias}`;
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork
+      ? `/network/adviser/cases/${caseAlias}`
+      : `/organisation/adviser/cases/${caseAlias}`;
+  }
+
+  if (role === "CLIENT") {
+    return `/client/cases/${caseAlias}`;
+  }
+
+  return "#";
 };
+
 // Function to generate role-based URL for support-ticket details
 export const getSupportTicketUrl = (
   supportTicketAlias: string,
-  userType: string,
+  role: string,
+  isNetwork?: boolean,
 ) => {
-  switch (userType) {
-    case "ADMIN":
-      return `/admin/support-ticket/${supportTicketAlias}`;
-    case "NETWORK_DIRECTOR":
-      return `/network/director/support-ticket/${supportTicketAlias}`;
-    case "NETWORK_COMPLIANCE":
-      return `/network/director/support-ticket/${supportTicketAlias}`;
-    case "NETWORK_ADVISER":
-      return `/network/adviser/support-ticket/${supportTicketAlias}`;
-    case "ORGANISATION_DIRECTOR":
-      return `/organisation/director/support-ticket/${supportTicketAlias}`;
-    case "ORGANISATION_ADVISER":
-      return `/organisation/adviser/support-ticket/${supportTicketAlias}`;
-    case "ORGANISATION_ADMIN":
-      return `/organisation/admin/support-ticket/${supportTicketAlias}`;
-    case "CLIENT":
-      return `/client/support-ticket/${supportTicketAlias}`;
-    default:
-      return "#";
+  if (role === "ADMIN" && isNetwork !== false) {
+    return `/admin/support-ticket/${supportTicketAlias}`;
   }
+
+  if (role === "ADMIN" && isNetwork === false) {
+    return `/organisation/admin/support-ticket/${supportTicketAlias}`;
+  }
+
+  if (role === "DIRECTOR") {
+    return isNetwork
+      ? `/network/director/support-ticket/${supportTicketAlias}`
+      : `/organisation/director/support-ticket/${supportTicketAlias}`;
+  }
+
+  if (role === "COMPLIANCE") {
+    return isNetwork
+      ? `/network/director/support-ticket/${supportTicketAlias}`
+      : `/organisation/director/support-ticket/${supportTicketAlias}`;
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork
+      ? `/network/adviser/support-ticket/${supportTicketAlias}`
+      : `/organisation/adviser/support-ticket/${supportTicketAlias}`;
+  }
+
+  if (role === "CLIENT") {
+    return `/client/support-ticket/${supportTicketAlias}`;
+  }
+
+  return "#";
 };
 
 export const getOrganisationUrl = (session: Session | null) => {
   if (!session) {
     return "/auth/login";
   }
-  const userType = session?.user?.user_type;
+  const role = session?.user?.role;
+  const isNetwork = session?.user?.is_network;
 
-  switch (userType) {
-    case "ADMIN":
-      return `/admin/organisations`;
-    case "NETWORK_DIRECTOR":
-      return `/network/director/organisations`;
-    case "NETWORK_COMPLIANCE":
-      return `/network/director/organisations`;
-    case "NETWORK_ADVISER":
-      return `/network/adviser/organisations`;
-    default:
-      return `url not found`;
+  if (!role) return "/auth/login";
+
+  if (role === "ADMIN" && isNetwork !== false) {
+    return "/admin/organisations";
   }
+
+  if (role === "DIRECTOR" || role === "COMPLIANCE") {
+    return isNetwork ? "/network/director/organisations" : "url not found";
+  }
+
+  if (role === "ADVISER" && isNetwork) {
+    return "/network/adviser/organisations";
+  }
+
+  return "url not found";
 };

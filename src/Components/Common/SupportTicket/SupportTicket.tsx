@@ -98,7 +98,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
 
-  const userType = session?.user?.user_type;
+  const userRole = session?.user?.role;
 
   const {
     data: supportTicketData,
@@ -416,7 +416,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <i className="fa-solid fa-filter"></i>
                   )}
                 </Button>
-                {session?.user?.user_type !== "ADMIN" && (
+                {session?.user?.role !== "ADMIN" && (
                   <Button
                     color="primary"
                     onClick={toggleModal}
@@ -575,7 +575,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       </DropdownMenu>
                     </Dropdown>
                   </Col>
-                  {userType === "ADMIN" && (
+                  {userRole === "ADMIN" && (
                     <>
                       <Col>
                         <Label>Select Network</Label>
@@ -719,7 +719,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <th>Subject</th>
                     <th>Message</th>
                     <th>Files</th>
-                    {session?.user?.user_type === "ADMIN" && (
+                    {session?.user?.role === "ADMIN" && (
                       <>
                         <th>Network</th>
                         <th>Organisation</th>
@@ -744,7 +744,11 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       <tr key={ticket.alias} className="text-center">
                         <td className="text-truncate">
                           <Link
-                            href={`${getSupportTicketUrl(ticket.alias, userType as string)}`}
+                            href={getSupportTicketUrl(
+                              ticket.alias,
+                              session?.user?.role as string,
+                              session?.user?.is_network,
+                            )}
                             className="text_decoration_hover"
                           >
                             {ticket.ticket_id}
@@ -763,7 +767,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </td>
                         <td>
                           {ticket.status ? (
-                            userType === "ADMIN" ? (
+                            userRole === "ADMIN" ? (
                               <Dropdown
                                 isOpen={dropdownOpen[ticket.alias] || false}
                                 toggle={() => toggleDropdown(ticket.alias)}
@@ -910,7 +914,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             <span className="text-muted">No files</span>
                           )}
                         </td>
-                        {session?.user?.user_type === "ADMIN" && (
+                        {session?.user?.role === "ADMIN" && (
                           <>
                             <td className="text-truncate">
                               {ticket.network?.name || (

@@ -202,7 +202,7 @@ const PortfolioContent: React.FC = () => {
                       className="border-success"
                       onClick={toggleModal}
                       disabled={
-                        session?.user?.user_type === "CLIENT" &&
+                        session?.user?.role === "CLIENT" &&
                         data.map((item: any) => item?.alias).length > 0
                       }
                     >

@@ -295,7 +295,7 @@ const ClientSurveyContent: React.FC = () => {
               formatDateAndTime(selectedSurvey?.updated_at) ? (
               ""
             ) : (
-              session?.user?.user_type !== "CLIENT" && (
+              session?.user?.role !== "CLIENT" && (
                 <p className="small mb-3">
                   Survey submitted on{" "}
                   {formatDateAndTime(selectedSurvey?.updated_at)}

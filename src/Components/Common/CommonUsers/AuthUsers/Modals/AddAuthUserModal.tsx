@@ -124,11 +124,10 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       phone: formData.phone || null,
       designation: formData.designation,
       joining_date: formData.joining_date ? formData.joining_date : null,
-      role: userRole, 
+      role: userRole,
       company_name: formData.company_name,
       company_address: formData.company_address,
     };
-
     try {
       const result = await addAuthUser({ payload });
       if (result.data) {
@@ -331,7 +330,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
                 </FormGroup>
               </Col>
 
-              {userRole === "NETWORK_COMPLIANCE" && (
+              {userRole === "COMPLIANCE" && (
                 <Col md={6}>
                   <FormGroup>
                     <Label for="designation">

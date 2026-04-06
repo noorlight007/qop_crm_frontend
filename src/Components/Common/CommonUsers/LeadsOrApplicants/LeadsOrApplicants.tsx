@@ -322,12 +322,8 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                         {user?.created_by ? (
                           <>
                             <span>{user?.created_by?.name}</span>
-                            <small className="text-muted d-block">
-                              (
-                              {formatChoiceFieldValue(
-                                user?.created_by?.user_type,
-                              )}
-                              )
+                            <small className="text-muted d-block text-truncate">
+                              {user?.created_by?.email}
                             </small>
                           </>
                         ) : (
@@ -344,10 +340,11 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                           >
                             <i className="icon-pencil-alt"></i>
                           </Button>
-                          {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                            session?.user?.user_type === "NETWORK_COMPLIANCE" ||
-                            session?.user?.user_type ===
-                              "ORGANISATION_DIRECTOR") && (
+                          {((session?.user?.is_network &&
+                            (session?.user?.role === "DIRECTOR" ||
+                              session?.user?.role === "COMPLIANCE")) ||
+                            (!session?.user?.is_network &&
+                              session?.user?.role === "DIRECTOR")) && (
                             <Button
                               color="danger"
                               size="sm"

@@ -73,7 +73,7 @@ const OrgCases: React.FC = () => {
     ? Math.ceil(caseData.count / casesPerPage)
     : 1;
 
-  const userType = session?.user?.user_type;
+  const userRole = session?.user?.role;
 
   return (
     <Card>
@@ -243,7 +243,8 @@ const OrgCases: React.FC = () => {
                               className="text_decoration_hover text-truncate"
                               href={getCaseUrl(
                                 caseItem.alias,
-                                userType as string,
+                                userRole as string,
+                                session?.user?.is_network,
                               )}
                             >
                               {caseItem.is_removed ? (

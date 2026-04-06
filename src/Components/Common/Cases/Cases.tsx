@@ -64,30 +64,15 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   };
   const [filters, setFilters] = useState(defaultFilters);
 
-  // Determine role based on user type
-  const getAdviserRole = (): string => {
-    if (
-      session?.user?.user_type === "NETWORK_DIRECTOR" ||
-      session?.user?.user_type === "NETWORK_ADVISER" ||
-      session?.user?.user_type === "NETWORK_COMPLIANCE"
-    ) {
-      return "NETWORK_ADVISER";
-    } else if (
-      session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-      session?.user?.user_type === "ORGANISATION_ADVISER" ||
-      session?.user?.user_type === "ORGANISATION_ADMIN"
-    ) {
-      return "ORGANISATION_ADVISER";
-    }
-    return "";
-  };
-
   const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetUserListQuery({ role: getAdviserRole() });
+    useGetUserListQuery({
+      role: "ADVISER",
+    });
 
-  const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
-    role: "ORGANISATION_ADMIN",
-  });
+  const { data: adminData, isLoading: isAdminLoading } =
+    useGetUserListQuery({
+      role: "ADMIN",
+    });
 
   const { data: usersData } = useGetUsersQuery(undefined);
 
@@ -131,7 +116,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     ? Math.ceil(caseData.count / casesPerPage)
     : 1;
 
-  const userType = session?.user?.user_type;
+  const userRole = session?.user?.role;
 
   return (
     <div>
@@ -246,30 +231,31 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     ))}
                   </Input>
                 </Col>
-                {getAdviserRole() === "ORGANISATION_ADVISER" && (
-                  <Col>
-                    <Label>Select Admin</Label>
-                    <Input
-                      type="select"
-                      id="employeeFilter"
-                      className="py-1"
-                      value={filters.assigned_to_admin__id}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          "assigned_to_admin__id",
-                          e.target.value,
-                        )
-                      }
-                    >
-                      <option value="">All Users</option>
-                      {adminData?.map((admin: any) => (
-                        <option key={admin.alias} value={admin.id}>
-                          {admin.name}
-                        </option>
-                      ))}
-                    </Input>
-                  </Col>
-                )}
+                {session?.user?.role === "ADMIN" &&
+                  session.user.is_network === false && (
+                    <Col>
+                      <Label>Select Admin</Label>
+                      <Input
+                        type="select"
+                        id="employeeFilter"
+                        className="py-1"
+                        value={filters.assigned_to_admin__id}
+                        onChange={(e) =>
+                          handleFilterChange(
+                            "assigned_to_admin__id",
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option value="">All Users</option>
+                        {adminData?.map((admin: any) => (
+                          <option key={admin.alias} value={admin.id}>
+                            {admin.name}
+                          </option>
+                        ))}
+                      </Input>
+                    </Col>
+                  )}
                 <Col>
                   <Label>Select Category</Label>
                   <Input
@@ -346,9 +332,10 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Lender</th>
                   <th className="text-truncate">Security property</th>
                   <th>Case Stage</th>
-                  {session?.user?.user_type === "NETWORK_DIRECTOR" ||
-                  session?.user?.user_type === "NETWORK_ADVISER" ||
-                  session?.user?.user_type === "NETWORK_COMPLIANCE" ? (
+                  {session?.user?.is_network &&
+                  (session?.user?.role === "DIRECTOR" ||
+                    session?.user?.role === "ADVISER" ||
+                    session?.user?.role === "COMPLIANCE") ? (
                     <th>Organisation</th>
                   ) : null}
                   <th>Adviser</th>
@@ -370,7 +357,11 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <td>
                         <Link
                           className="text_decoration_hover text-truncate"
-                          href={getCaseUrl(caseItem.alias, userType as string)}
+                          href={getCaseUrl(
+                            caseItem.alias,
+                            userRole as string,
+                            session?.user?.is_network,
+                          )}
                         >
                           {caseItem.is_removed ? (
                             <s className="text-danger opacity-50">
@@ -525,9 +516,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
-                      {userType === "NETWORK_DIRECTOR" ||
-                      userType === "NETWORK_COMPLIANCE" ||
-                      userType === "NETWORK_ADVISER" ? (
+                      {session?.user?.role && session.user.is_network ? (
                         <td className="text-truncate">
                           {" "}
                           {caseItem.organization?.name ? (
@@ -615,18 +604,21 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                           >
                             <i className="icon-pencil-alt"></i>
                           </Button>
-                          {(userType === "NETWORK_DIRECTOR" ||
-                            userType === "NETWORK_COMPLIANCE" ||
-                            userType === "ORGANISATION_DIRECTOR") && (
-                            <Button
-                              size="sm"
-                              color="danger"
-                              title="Delete Case"
-                              onClick={() => openDeleteCaseModal(caseItem)}
-                            >
-                              <i className="icon-trash"></i>
-                            </Button>
-                          )}
+                          {session?.user?.role &&
+                            ((session.user.is_network &&
+                              (session.user.role === "DIRECTOR" ||
+                                session.user.role === "COMPLIANCE")) ||
+                              (!session.user.is_network &&
+                                session.user.role === "DIRECTOR")) && (
+                              <Button
+                                size="sm"
+                                color="danger"
+                                title="Delete Case"
+                                onClick={() => openDeleteCaseModal(caseItem)}
+                              >
+                                <i className="icon-trash"></i>
+                              </Button>
+                            )}
                         </div>
                       </td>
                     </tr>

@@ -74,13 +74,16 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     useUpdateCaseMutation();
 
   const { data: userNetAdviserListData } = useGetUserListQuery({
-    role: "NETWORK_ADVISER",
+    role: "ADVISER",
+    is_network: true,
   });
   const { data: userOrgAdviserListData } = useGetUserListQuery({
-    role: "ORGANISATION_ADVISER",
+    role: "ADVISER",
+    is_network: false,
   });
   const { data: userOrgAdminListData } = useGetUserListQuery({
-    role: "ORGANISATION_ADMIN",
+    role: "ADMIN",
+    is_network: false,
   });
 
   const baselineFormData = getInitialFormData(caseData);
@@ -192,89 +195,92 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
               </Input>
             </FormGroup>
 
-            {(session?.user?.user_type === "NETWORK_DIRECTOR" ||
-              session?.user?.user_type === "NETWORK_ADVISER" ||
-              session?.user?.user_type === "NETWORK_COMPLIANCE") && (
-              <FormGroup>
-                <Label for="adviser">Assign Adviser</Label>
-                <Input
-                  id="adviser"
-                  name="assigned_to"
-                  type="select"
-                  value={formData?.assigned_to || ""}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select...</option>
-                  {userNetAdviserListData?.length > 0 ? (
-                    userNetAdviserListData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user?.name}
+            {session?.user?.is_network &&
+              (session?.user?.role === "DIRECTOR" ||
+                session?.user?.role === "ADVISER" ||
+                session?.user?.role === "COMPLIANCE") && (
+                <FormGroup>
+                  <Label for="adviser">Assign Adviser</Label>
+                  <Input
+                    id="adviser"
+                    name="assigned_to"
+                    type="select"
+                    value={formData?.assigned_to || ""}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select...</option>
+                    {userNetAdviserListData?.length > 0 ? (
+                      userNetAdviserListData?.map((user: any) => (
+                        <option key={user.id} value={user.id}>
+                          {user?.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No advisers available
                       </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No advisers available
-                    </option>
-                  )}
-                </Input>
-              </FormGroup>
-            )}
+                    )}
+                  </Input>
+                </FormGroup>
+              )}
 
-            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-              session?.user?.user_type === "ORGANISATION_ADVISER" ||
-              session?.user?.user_type === "ORGANISATION_ADMIN") && (
-              <FormGroup>
-                <Label for="adviser">Assign Adviser</Label>
-                <Input
-                  id="adviser"
-                  name="assigned_to"
-                  type="select"
-                  value={formData?.assigned_to || ""}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select...</option>
-                  {userOrgAdviserListData?.length > 0 ? (
-                    userOrgAdviserListData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
+            {!session?.user?.is_network &&
+              (session?.user?.role === "DIRECTOR" ||
+                session?.user?.role === "ADVISER" ||
+                session?.user?.role === "ADMIN") && (
+                <FormGroup>
+                  <Label for="adviser">Assign Adviser</Label>
+                  <Input
+                    id="adviser"
+                    name="assigned_to"
+                    type="select"
+                    value={formData?.assigned_to || ""}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select...</option>
+                    {userOrgAdviserListData?.length > 0 ? (
+                      userOrgAdviserListData?.map((user: any) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No advisers available
                       </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No advisers available
-                    </option>
-                  )}
-                </Input>
-              </FormGroup>
-            )}
+                    )}
+                  </Input>
+                </FormGroup>
+              )}
 
-            {(session?.user?.user_type === "ORGANISATION_DIRECTOR" ||
-              session?.user?.user_type === "ORGANISATION_ADVISER" ||
-              session?.user?.user_type === "ORGANISATION_ADMIN") && (
-              <FormGroup>
-                <Label for="adviser">Assign Admin</Label>
-                <Input
-                  id="admin"
-                  name="assigned_to_admin"
-                  type="select"
-                  value={formData?.assigned_to_admin || ""}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select...</option>
-                  {userOrgAdminListData?.length > 0 ? (
-                    userOrgAdminListData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
+            {!session?.user?.is_network &&
+              (session?.user?.role === "DIRECTOR" ||
+                session?.user?.role === "ADVISER" ||
+                session?.user?.role === "ADMIN") && (
+                <FormGroup>
+                  <Label for="adviser">Assign Admin</Label>
+                  <Input
+                    id="admin"
+                    name="assigned_to_admin"
+                    type="select"
+                    value={formData?.assigned_to_admin || ""}
+                    onChange={handleInputChange}
+                  >
+                    <option value="">Select...</option>
+                    {userOrgAdminListData?.length > 0 ? (
+                      userOrgAdminListData?.map((user: any) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="" disabled>
+                        No advisers available
                       </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No advisers available
-                    </option>
-                  )}
-                </Input>
-              </FormGroup>
-            )}
+                    )}
+                  </Input>
+                </FormGroup>
+              )}
 
             <FormGroup>
               <Label for="notes">Notes</Label>
