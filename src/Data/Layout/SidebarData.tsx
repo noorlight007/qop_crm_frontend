@@ -262,7 +262,7 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Registered Advisers",
+            title: "Advisers",
             type: "link",
             path: "/network/director/advisers",
           },
