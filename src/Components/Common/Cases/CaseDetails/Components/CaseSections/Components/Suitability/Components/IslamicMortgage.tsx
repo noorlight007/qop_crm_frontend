@@ -1,210 +1,183 @@
 import React from "react";
-import {
-  Alert,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  FormGroup,
-  Input,
-  Label,
-  Row,
-} from "reactstrap";
 
-export interface IslamicMortgageData {
-  is_applicable: string; // YES | NO
-  method: string; // IJARA | MUSHARAKA | MURABAHA
-  provider: string;
-  overpayment_type: string; // WITHOUT_PENALTY | WITH_LIMIT
-  overpayment_limit_percent: string;
-  recommendation_reason: string;
-  additional_notes: string;
+/* ── Pink: advisor guidance note ── */
+const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
+  <p
+    className="fst-italic small mb-1 px-2 py-1 rounded"
+    style={{
+      background: "#fff0f3",
+      color: "#b0004e",
+      borderLeft: "3px solid #f48fb1",
+    }}
+  >
+    {children}
+  </p>
+);
+
+/* ── Purple: dropdown placeholder ── */
+const PleaseSelect = ({ label }: { label?: string }) => (
+  <span
+    className="px-2 py-1 rounded small fst-italic d-inline-block"
+    style={{
+      background: "#f3e5f5",
+      color: "#6a1b9a",
+      border: "1px dashed #ab47bc",
+    }}
+  >
+    {label ?? "Please Select"}
+  </span>
+);
+
+/* ── Purple dropdown option list ── */
+const DropdownOptions = ({
+  label,
+  options,
+}: {
+  label: string;
+  options: React.ReactNode[];
+}) => (
+  <div className="mt-2 small" style={{ color: "#6a1b9a" }}>
+    <p className="mb-1 fst-italic">{label}</p>
+    <ol className="mb-0 ps-3">
+      {options.map((opt, i) => (
+        <li key={i}>{opt}</li>
+      ))}
+    </ol>
+  </div>
+);
+
+/* ── Green: render a suitability answer line ── */
+const SuitAnswer = ({ text }: { text?: string }) =>
+  text ? (
+    <p
+      className="mb-1"
+      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
+    >
+      {text}
+    </p>
+  ) : null;
+
+const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+  <h6
+    className="fw-bold px-3 py-2 mb-3"
+    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
+  >
+    {children}
+  </h6>
+);
+
+interface IslamicMortgageProps {
+  caseData: any;
+  suitability: any;
 }
 
-interface Props {
-  data: IslamicMortgageData;
-  onChange: (field: keyof IslamicMortgageData, value: string) => void;
-}
+const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
+  caseData,
+  suitability,
+}) => {
+  const blue = "#1565c0";
+  const s = suitability;
 
-const METHOD_DESCRIPTIONS: Record<string, { title: string; description: string }> = {
-  IJARA: {
-    title: "Ijara (Sale and Leaseback)",
-    description:
-      "The provider buys the property and becomes the legal owner, entering into a lease agreement with you. You make regular payments covering both rent and the purchase of the property. At the end of the term, when all payments have been made, legal ownership transfers to you.",
-  },
-  MUSHARAKA: {
-    title: "Musharaka (Co-ownership)",
-    description:
-      "A co-ownership arrangement where you fund the initial deposit and the provider purchases the remainder. You make monthly payments (part rent, part capital), increasing your stake over time. As your stake grows, the provider's share shrinks and rent reduces accordingly. Full legal ownership transfers to you at the end of the term.",
-  },
-  MURABAHA: {
-    title: "Murabaha (Deferred Sale)",
-    description:
-      "The provider buys the property and immediately sells it to you at a higher price (original cost plus an agreed profit level). You pay this higher price on a deferred basis by making regular payments in line with a fixed repayment schedule.",
-  },
-};
-
-const Tab6_IslamicMortgage: React.FC<Props> = ({ data, onChange }) => {
-  if (data.is_applicable === "NO") {
-    return (
-      <Card className="border border-secondary">
-        <CardHeader className="bg-secondary bg-opacity-10 d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Islamic Mortgage / Home Purchase Plan</h5>
-          <Input
-            type="select"
-            className="w-auto"
-            value={data.is_applicable}
-            onChange={(e) => onChange("is_applicable", e.target.value)}
-          >
-            <option value="YES">Applicable to this case</option>
-            <option value="NO">Not applicable to this case</option>
-          </Input>
-        </CardHeader>
-        <CardBody>
-          <Alert color="secondary">
-            Islamic mortgage section is marked as not applicable and will be excluded from the letter.
-          </Alert>
-        </CardBody>
-      </Card>
-    );
-  }
-
-  const selectedMethod = METHOD_DESCRIPTIONS[data.method];
+  const lender = caseData?.lender_name ?? "HSBC";
 
   return (
-    <div className="d-flex flex-column gap-3">
-      <Card className="border border-secondary">
-        <CardHeader className="bg-secondary bg-opacity-10 d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Islamic Mortgage / Home Purchase Plan</h5>
-          <Input
-            type="select"
-            className="w-auto"
-            value={data.is_applicable}
-            onChange={(e) => onChange("is_applicable", e.target.value)}
-          >
-            <option value="YES">Applicable to this case</option>
-            <option value="NO">Not applicable to this case</option>
-          </Input>
-        </CardHeader>
-        <CardBody>
-          <Alert color="info" className="py-2">
-            The client requires finance in a manner acceptable under Sharia Law. The letter will explain that a Home Purchase Plan is recommended as it does not involve the payment of interest.
-          </Alert>
-        </CardBody>
-      </Card>
+    <>
+      <SectionHeading>Islamic Mortgage</SectionHeading>
 
-      <Card className="border border-success">
-        <CardHeader className="bg-success bg-opacity-10">
-          <h5 className="mb-0 text-success">Home Purchase Plan Method</h5>
-        </CardHeader>
-        <CardBody>
-          <Row className="g-3">
-            <Col md={6}>
-              <FormGroup>
-                <Label>Select the Method</Label>
-                <Input
-                  type="select"
-                  value={data.method}
-                  onChange={(e) => onChange("method", e.target.value)}
-                >
-                  <option value="">— Please select —</option>
-                  <option value="IJARA">Ijara (Sale and Leaseback)</option>
-                  <option value="MUSHARAKA">Musharaka (Co-ownership)</option>
-                  <option value="MURABAHA">Murabaha (Deferred Sale)</option>
-                </Input>
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label>Provider</Label>
-                <Input
-                  type="text"
-                  placeholder="e.g. Ahli United Bank"
-                  value={data.provider}
-                  onChange={(e) => onChange("provider", e.target.value)}
-                />
-              </FormGroup>
-            </Col>
+      <p>
+        You need to raise the funds to purchase a property in such a way that is
+        acceptable under Sharia Law. As such, you require a product which does
+        not involve the payment of interest to the provider. I therefore
+        recommend that you take out a Home Purchase Plan using the{" "}
+        <PleaseSelect label="Ijara / Musharaka / Murabaha" /> method.
+      </p>
 
-            {selectedMethod && (
-              <Col md={12}>
-                <Alert color="light" className="border">
-                  <strong>{selectedMethod.title}</strong>
-                  <p className="mb-0 mt-1 text-muted">{selectedMethod.description}</p>
-                </Alert>
-              </Col>
-            )}
-          </Row>
-        </CardBody>
-      </Card>
+      {/* Purple: method selection block */}
+      <div
+        className="p-3 my-3 rounded"
+        style={{ background: "#f3e5f5", border: "1px dashed #ab47bc" }}
+      >
+        <p className="fw-semibold mb-2 small" style={{ color: "#6a1b9a" }}>
+          Select one of the following three methods to include in the letter:
+        </p>
+        <PleaseSelect label="Select method" />
+        <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
+          <p className="fw-semibold mb-1">Option 1 – Ijara:</p>
+          <p className="mb-3">
+            The Ijara method is a long-term sale and leaseback arrangement. The
+            provider buys the property, becomes the legal owner and enters into a
+            lease agreement with you. This gives you the right to rent the
+            property for the full term of the plan. During this period, you make
+            regular payments to the provider consisting partly of the rental
+            payment and partly towards the purchase of the property. At the end
+            of the term, when all payments have been made, the legal ownership
+            of the property is transferred to you.
+          </p>
 
-      <Card className="border border-secondary">
-        <CardHeader className="bg-secondary bg-opacity-10">
-          <h5 className="mb-0">Overpayment Feature</h5>
-        </CardHeader>
-        <CardBody>
-          <Row className="g-3">
-            <Col md={6}>
-              <FormGroup>
-                <Label>Overpayment Flexibility</Label>
-                <Input
-                  type="select"
-                  value={data.overpayment_type}
-                  onChange={(e) => onChange("overpayment_type", e.target.value)}
-                >
-                  <option value="">— Please select —</option>
-                  <option value="WITHOUT_PENALTY">Additional payments allowed without penalty at any time</option>
-                  <option value="WITH_LIMIT">Additional payments allowed up to a defined annual limit</option>
-                </Input>
-              </FormGroup>
-            </Col>
-            {data.overpayment_type === "WITH_LIMIT" && (
-              <Col md={6}>
-                <FormGroup>
-                  <Label>Annual Overpayment Limit (%)</Label>
-                  <Input
-                    type="text"
-                    placeholder="e.g. 10"
-                    value={data.overpayment_limit_percent}
-                    onChange={(e) => onChange("overpayment_limit_percent", e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-            )}
-          </Row>
-        </CardBody>
-      </Card>
+          <p className="fw-semibold mb-1">Option 2 – Musharaka:</p>
+          <p className="mb-3">
+            The Musharaka method is a co-ownership agreement; you fund the
+            initial deposit and the provider purchases the remainder of the
+            property. You make monthly payments to the provider which consists of
+            part rent and part capital repayment, meaning that your stake in the
+            property increases over time. As your stake grows the
+            provider&rsquo;s stake shrinks, which reduces the amount of rent you
+            then have to pay for use of the provider&rsquo;s share of the
+            property. At the end of the term, when all payments have been made,
+            full legal ownership of the property is transferred to you.
+          </p>
 
-      <Card className="border border-success">
-        <CardHeader className="bg-success bg-opacity-10">
-          <h5 className="mb-0 text-success">Why This Provider Was Recommended</h5>
-        </CardHeader>
-        <CardBody>
-          <FormGroup>
-            <Label>
-              Justification
-              <small className="text-muted ms-2">All Home Purchase Plan providers and products were researched. Explain why this provider was the most suitable.</small>
-            </Label>
-            <Input
-              type="textarea"
-              rows={5}
-              value={data.recommendation_reason}
-              onChange={(e) => onChange("recommendation_reason", e.target.value)}
-            />
-          </FormGroup>
-          <FormGroup>
-            <Label>Additional Notes</Label>
-            <Input
-              type="textarea"
-              rows={3}
-              value={data.additional_notes}
-              onChange={(e) => onChange("additional_notes", e.target.value)}
-            />
-          </FormGroup>
-        </CardBody>
-      </Card>
-    </div>
+          <p className="fw-semibold mb-1">Option 3 – Murabaha:</p>
+          <p className="mb-0">
+            Under the Murabaha method, the provider buys the property and
+            immediately sells it to you for a higher price (original cost plus an
+            agreed profit level). You pay this higher price on a deferred basis
+            by making regular payments to the provider in line with a fixed
+            repayment schedule.
+          </p>
+        </div>
+      </div>
+
+      <p>
+        A feature of this plan means that if you are in a position to contribute
+        additional funds you can do so <PleaseSelect label="Please Select" />
+      </p>
+      <DropdownOptions
+        label="Options:"
+        options={[
+          "without penalty at any time.",
+          <>
+            provided you do not exceed{" "}
+            <strong style={{ color: blue }}>
+              {caseData?.hpp_overpayment_limit ?? "XX"}%
+            </strong>{" "}
+            of the total Home Purchase Plan amount during any annual period.
+          </>,
+        ]}
+      />
+
+      <p className="mt-3">
+        I researched all Home Purchase Plan providers and products, with the
+        exception of those that are only available to you direct, and I
+        recommend <strong style={{ color: blue }}>{lender}</strong> for the
+        following reasons:
+      </p>
+
+      {s?.islamic_mortgage?.recommendation_reason ? (
+        <div
+          className="p-3 mb-3 rounded"
+          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
+        >
+          <SuitAnswer text={s?.islamic_mortgage?.recommendation_reason} />
+        </div>
+      ) : (
+        <AdvisorNote>
+          (Explain why this provider and product was the best Home Purchase Plan
+          for the client based on their individual needs and circumstances)
+        </AdvisorNote>
+      )}
+    </>
   );
 };
 
-export default Tab6_IslamicMortgage;
+export default IslamicMortgage;

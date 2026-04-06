@@ -66,12 +66,12 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   </h6>
 );
 
-interface ProductTransferProps {
+interface ShortenedProductTransferProps {
   caseData: any;
   suitability: any;
 }
 
-const ProductTransfer: React.FC<ProductTransferProps> = ({
+const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
   caseData,
   suitability,
 }) => {
@@ -82,7 +82,7 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
 
   return (
     <>
-      <SectionHeading>Product Transfer</SectionHeading>
+      <SectionHeading>Shortened Product Transfer</SectionHeading>
 
       <p>
         Your current mortgage deal with{" "}
@@ -91,13 +91,13 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
           {caseData?.current_deal_end_date ?? "01/01/0001"}
         </strong>
         . As there are no penalties for changing this mortgage product beyond
-        this date, it allows us to review your options.
+        this date, it allowed us to review your options.
       </p>
 
-      <p className="fw-bold mb-1">These options included:</p>
+      <p className="fw-bold mb-1">These options were:</p>
       <ul className="mb-3">
         <li>
-          Staying on standard variable rate (SVR){" "}
+          Staying on standard variable rate (SVR) currently{" "}
           <strong style={{ color: blue }}>
             {caseData?.svr_rate ?? "X.XX%"}
           </strong>
@@ -111,37 +111,60 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
         </li>
       </ul>
 
+      <p>It was your preference not to review remortgage options.</p>
+
+      {s?.product_transfer?.preference_reason ? (
+        <div
+          className="p-3 mb-3 rounded"
+          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
+        >
+          <SuitAnswer text={s?.product_transfer?.preference_reason} />
+        </div>
+      ) : (
+        <AdvisorNote>
+          (Please include any background about why the client preferred to
+          proceed with a product transfer specifically, for example ease of
+          process, speed of application etc.)
+        </AdvisorNote>
+      )}
+
       <p>
-        Having reviewed your circumstances and discussed your needs, I then
-        compared the available products, and I recommend a product transfer
-        because <PleaseSelect label="Please Select" />
+        You confirmed that since our last review of your mortgage there were no
+        changes to your income or outgoings that would negatively affect your
+        affordability, or other material changes to your circumstances.
+      </p>
+
+      <p>
+        You also did not need to change any of the other details of the mortgage
+        such as borrowing amount, mortgage term, repayment method etc.
+      </p>
+
+      <p>
+        The product transfer recommended was <PleaseSelect label="Please Select" />
       </p>
       <DropdownOptions
         label="Options:"
         options={[
-          "this was more cost effective than the cheapest remortgage deal available.",
-          "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
-          "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
+          "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender.",
+          <>
+            not the most cost-effective deal available, and will cost{" "}
+            <strong style={{ color: blue }}>
+              {caseData?.pt_cost_difference
+                ? `£${Number(caseData.pt_cost_difference).toLocaleString("en-GB")}`
+                : "£0,000"}
+            </strong>{" "}
+            more during the initial product term. However, you were happy to
+            forfeit this saving to proceed with a product transfer.
+          </>,
         ]}
       />
 
-      {s?.product_transfer?.client_specific_reason ? (
-        <div
-          className="p-3 mt-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
-        >
-          <SuitAnswer text={s?.product_transfer?.client_specific_reason} />
-        </div>
-      ) : (
-        <AdvisorNote>
-          (If there are client-specific reasons as to why they wanted a simpler
-          process, e.g. busy work life, family commitments etc., please include
-          details here to make the suitability letter as personalised as
-          possible.)
-        </AdvisorNote>
-      )}
+      <p className="mt-3">
+        You did not wish to leave the mortgage on standard variable rate as this
+        was more expensive than completing a product transfer.
+      </p>
     </>
   );
 };
 
-export default ProductTransfer;
+export default ShortenedProductTransfer;

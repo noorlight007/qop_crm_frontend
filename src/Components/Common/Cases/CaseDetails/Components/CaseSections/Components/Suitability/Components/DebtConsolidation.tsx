@@ -1,329 +1,475 @@
-import React from "react";
-import {
-  Alert,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  FormGroup,
-  Input,
-  Label,
-  Row,
-  Table,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, Table } from "reactstrap";
 
-export interface DebtItem {
-  id: string;
-  lender_type: string;
-  balance: string;
-  monthly_repayment: string;
-  adding_recommended: string;
-  reason: string;
+/* ── Pink: advisor guidance note ── */
+const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
+  <p
+    className="fst-italic small mb-1 px-2 py-1 rounded"
+    style={{
+      background: "#fff0f3",
+      color: "#b0004e",
+      borderLeft: "3px solid #f48fb1",
+    }}
+  >
+    {children}
+  </p>
+);
+
+/* ── Purple: dropdown placeholder ── */
+const PleaseSelect = ({ label }: { label?: string }) => (
+  <span
+    className="px-2 py-1 rounded small fst-italic d-inline-block"
+    style={{
+      background: "#f3e5f5",
+      color: "#6a1b9a",
+      border: "1px dashed #ab47bc",
+    }}
+  >
+    {label ?? "Please Select"}
+  </span>
+);
+
+const SectionHeading = ({ children }: { children: React.ReactNode }) => (
+  <h3
+    className="fw-bold px-3 py-2 mb-3"
+    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
+  >
+    {children}
+  </h3>
+);
+
+const thStyle: React.CSSProperties = {
+  background: "#1a3c5e",
+  color: "#fff",
+  fontSize: "0.84rem",
+  fontWeight: 600,
+};
+
+interface DebtConsolidationProps {
+  caseData: any;
+  suitability: any;
 }
 
-export interface DebtConsolidationData {
-  is_applicable: string; // YES | NO
-  total_outstanding: string;
-  how_debts_arose: string;
-  client_goal: string;
-  alternative_finance_considered: string;
-  debts: DebtItem[];
-  overall_cost_comparison: string; // LESS | MORE
-  why_more_still_recommended: string;
-  financial_difficulty_acknowledged: string; // YES | NO
-  wants_debt_advice_info: string; // YES | NO
-  client_confirmation_reason: string;
-}
+const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
+  caseData,
+  suitability,
+}) => {
+  const blue = "#1565c0";
+  const s = suitability;
 
-interface Props {
-  data: DebtConsolidationData;
-  onChange: (field: keyof DebtConsolidationData, value: any) => void;
-}
+  const [debtsAroseReason, setDebtsAroseReason] = useState("");
+  const [savedDebtsAroseReason, setSavedDebtsAroseReason] = useState("");
+  const [isDebtsAroseEditing, setIsDebtsAroseEditing] = useState(false);
+  const [goalReason, setGoalReason] = useState("");
+  const [savedGoalReason, setSavedGoalReason] = useState("");
+  const [isGoalEditing, setIsGoalEditing] = useState(false);
+  const [alternativesReason, setAlternativesReason] = useState("");
+  const [savedAlternativesReason, setSavedAlternativesReason] = useState("");
+  const [isAlternativesEditing, setIsAlternativesEditing] = useState(false);
+  const [proceedReason, setProceedReason] = useState("");
+  const [savedProceedReason, setSavedProceedReason] = useState("");
+  const [isProceedEditing, setIsProceedEditing] = useState(false);
+  const [selectedDebtCostOption, setSelectedDebtCostOption] = useState<
+    string | null
+  >(null);
+  const [isDebtCostOptionOpen, setIsDebtCostOptionOpen] = useState(false);
 
-const emptyDebt = (): DebtItem => ({
-  id: Math.random().toString(36).slice(2),
-  lender_type: "",
-  balance: "",
-  monthly_repayment: "",
-  adding_recommended: "",
-  reason: "",
-});
+  const debtCostOptions = ["less", "more"];
 
-const Tab5_DebtConsolidation: React.FC<Props> = ({ data, onChange }) => {
-  const updateDebt = (id: string, field: keyof DebtItem, value: string) => {
-    onChange(
-      "debts",
-      data.debts.map((d) => (d.id === id ? { ...d, [field]: value } : d))
-    );
+  const handleDebtsAroseSave = () => {
+    setSavedDebtsAroseReason(debtsAroseReason);
+    setIsDebtsAroseEditing(false);
   };
 
-  const addDebt = () => onChange("debts", [...data.debts, emptyDebt()]);
+  const handleDebtsAroseCancel = () => {
+    setDebtsAroseReason(savedDebtsAroseReason);
+    setIsDebtsAroseEditing(false);
+  };
 
-  const removeDebt = (id: string) =>
-    onChange("debts", data.debts.filter((d) => d.id !== id));
+  const handleGoalSave = () => {
+    setSavedGoalReason(goalReason);
+    setIsGoalEditing(false);
+  };
 
-  if (data.is_applicable === "NO") {
-    return (
-      <Card className="border border-secondary">
-        <CardHeader className="bg-secondary bg-opacity-10 d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Debt Consolidation</h5>
-          <Input
-            type="select"
-            className="w-auto"
-            value={data.is_applicable}
-            onChange={(e) => onChange("is_applicable", e.target.value)}
-          >
-            <option value="YES">Applicable to this case</option>
-            <option value="NO">Not applicable to this case</option>
-          </Input>
-        </CardHeader>
-        <CardBody>
-          <Alert color="secondary">
-            Debt consolidation section is marked as not applicable and will be excluded from the letter.
-          </Alert>
-        </CardBody>
-      </Card>
-    );
-  }
+  const handleGoalCancel = () => {
+    setGoalReason(savedGoalReason);
+    setIsGoalEditing(false);
+  };
+
+  const handleAlternativesSave = () => {
+    setSavedAlternativesReason(alternativesReason);
+    setIsAlternativesEditing(false);
+  };
+
+  const handleAlternativesCancel = () => {
+    setAlternativesReason(savedAlternativesReason);
+    setIsAlternativesEditing(false);
+  };
+
+  const handleProceedSave = () => {
+    setSavedProceedReason(proceedReason);
+    setIsProceedEditing(false);
+  };
+
+  const handleProceedCancel = () => {
+    setProceedReason(savedProceedReason);
+    setIsProceedEditing(false);
+  };
 
   return (
-    <div className="d-flex flex-column gap-3">
-      <Card className="border border-secondary">
-        <CardHeader className="bg-secondary bg-opacity-10 d-flex justify-content-between align-items-center">
-          <h5 className="mb-0">Debt Consolidation</h5>
-          <Input
-            type="select"
-            className="w-auto"
-            value={data.is_applicable}
-            onChange={(e) => onChange("is_applicable", e.target.value)}
+    <>
+      <SectionHeading>Debt Consolidation</SectionHeading>
+
+      <p>
+        During our discussions, we reviewed your existing unsecured debts. Based
+        on the information you provided, the total outstanding balance is
+        currently <strong style={{ color: blue }}>£00,000.00</strong>
+      </p>
+
+      <p>
+        These figures were obtained directly by you from the credit provider(s).
+        I have relied on these figures and current mortgage interest rates to
+        formulate my advice.
+      </p>
+
+      <p>
+        You explained that these debts arose because{" "}
+        {isDebtsAroseEditing ? (
+          <span className="d-block w-100 mt-1">
+            <Input
+              type="textarea"
+              rows={5}
+              value={debtsAroseReason}
+              onChange={(e) => setDebtsAroseReason(e.target.value)}
+              placeholder="Enter your reason..."
+              autoFocus
+              className="w-100 p-1"
+            />
+            <div className="d-flex gap-2 mt-2">
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleDebtsAroseSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleDebtsAroseCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          </span>
+        ) : (
+          <span
+            className="d-inline text-success"
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
+            onClick={() => setIsDebtsAroseEditing(true)}
+            title="Click to edit"
           >
-            <option value="YES">Applicable to this case</option>
-            <option value="NO">Not applicable to this case</option>
-          </Input>
-        </CardHeader>
-        <CardBody>
-          <Alert color="warning" className="py-2">
-            <strong>Important:</strong> The letter will include standard regulatory risk disclosures about debt consolidation — secured vs unsecured debt, repossession risk, and total interest over term.
-          </Alert>
-          <Row className="g-3">
-            <Col md={4}>
-              <FormGroup>
-                <Label>Total Outstanding Balance (£)</Label>
-                <Input
-                  type="text"
-                  placeholder="e.g. 12,500"
-                  value={data.total_outstanding}
-                  onChange={(e) => onChange("total_outstanding", e.target.value)}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={12}>
-              <FormGroup>
-                <Label>How did these debts arise?</Label>
-                <Input
-                  type="textarea"
-                  rows={3}
-                  value={data.how_debts_arose}
-                  onChange={(e) => onChange("how_debts_arose", e.target.value)}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={12}>
-              <FormGroup>
-                <Label>What is the client's goal?</Label>
-                <Input
-                  type="textarea"
-                  rows={3}
-                  value={data.client_goal}
-                  onChange={(e) => onChange("client_goal", e.target.value)}
-                />
-              </FormGroup>
-            </Col>
-            <Col md={12}>
-              <FormGroup>
-                <Label>
-                  Alternative finance considered but not appropriate
-                  <small className="text-muted ms-2">0% balance transfer, unsecured loan, second charge, etc.</small>
-                </Label>
-                <Input
-                  type="textarea"
-                  rows={3}
-                  value={data.alternative_finance_considered}
-                  onChange={(e) => onChange("alternative_finance_considered", e.target.value)}
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
+            {savedDebtsAroseReason || "click to add reason..."}
+          </span>
+        )}
+      </p>
 
-      {/* Debt Summary Table */}
-      <Card className="border border-success">
-        <CardHeader className="bg-success bg-opacity-10 d-flex justify-content-between align-items-center">
-          <h5 className="mb-0 text-success">Debt Summary</h5>
-          <Button color="success" size="sm" onClick={addDebt}>+ Add Debt</Button>
-        </CardHeader>
-        <CardBody className="p-0">
-          <div className="table-responsive">
-            <Table bordered className="mb-0 align-middle">
-              <thead className="table-light">
-                <tr>
-                  <th>Lender &amp; Type</th>
-                  <th>Balance / Settlement (£)</th>
-                  <th>Monthly Repayment (£)</th>
-                  <th>Adding Recommended?</th>
-                  <th>Reason</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.debts.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="text-center text-muted py-3">
-                      No debts added yet. Click &quot;+ Add Debt&quot; to begin.
-                    </td>
-                  </tr>
-                )}
-                {data.debts.map((debt) => (
-                  <tr key={debt.id}>
-                    <td>
-                      <Input
-                        type="text"
-                        placeholder="e.g. Barclays credit card"
-                        bsSize="sm"
-                        value={debt.lender_type}
-                        onChange={(e) => updateDebt(debt.id, "lender_type", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        type="text"
-                        placeholder="e.g. 7,300"
-                        bsSize="sm"
-                        value={debt.balance}
-                        onChange={(e) => updateDebt(debt.id, "balance", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        type="text"
-                        placeholder="e.g. 73"
-                        bsSize="sm"
-                        value={debt.monthly_repayment}
-                        onChange={(e) => updateDebt(debt.id, "monthly_repayment", e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        type="select"
-                        bsSize="sm"
-                        value={debt.adding_recommended}
-                        onChange={(e) => updateDebt(debt.id, "adding_recommended", e.target.value)}
-                      >
-                        <option value="">—</option>
-                        <option value="YES">Yes</option>
-                        <option value="NO">No</option>
-                      </Input>
-                    </td>
-                    <td>
-                      <Input
-                        type="text"
-                        placeholder="Reason..."
-                        bsSize="sm"
-                        value={debt.reason}
-                        onChange={(e) => updateDebt(debt.id, "reason", e.target.value)}
-                      />
-                    </td>
-                    <td className="text-center">
-                      <Button
-                        color="danger"
-                        size="sm"
-                        outline
-                        onClick={() => removeDebt(debt.id)}
-                      >
-                        ✕
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-        </CardBody>
-      </Card>
+      <p>
+        You told me your goal is to{" "}
+        {isGoalEditing ? (
+          <span className="d-block w-100 mt-1">
+            <Input
+              type="textarea"
+              rows={5}
+              value={goalReason}
+              onChange={(e) => setGoalReason(e.target.value)}
+              placeholder="Enter client's goal..."
+              autoFocus
+              className="w-100 p-1"
+            />
+            <div className="d-flex gap-2 mt-2">
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleGoalSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleGoalCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          </span>
+        ) : (
+          <span
+            className="d-inline text-success"
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
+            onClick={() => setIsGoalEditing(true)}
+            title="Click to edit"
+          >
+            {savedGoalReason || "click to add goal..."}
+          </span>
+        )}
+      </p>
 
-      {/* Cost Comparison & Confirmation */}
-      <Card className="border border-secondary">
-        <CardHeader className="bg-secondary bg-opacity-10">
-          <h5 className="mb-0">Overall Assessment & Client Confirmation</h5>
-        </CardHeader>
-        <CardBody>
-          <Row className="g-3">
-            <Col md={6}>
-              <FormGroup>
-                <Label>Overall cost of adding debts to mortgage vs. current arrangements</Label>
-                <Input
-                  type="select"
-                  value={data.overall_cost_comparison}
-                  onChange={(e) => onChange("overall_cost_comparison", e.target.value)}
-                >
-                  <option value="">— Please select —</option>
-                  <option value="LESS">Less — consolidation reduces overall cost</option>
-                  <option value="MORE">More — consolidation increases overall cost</option>
-                </Input>
-              </FormGroup>
-            </Col>
+      <p>
+        For this reason, you asked us to explore consolidating these debts into
+        your mortgage.
+      </p>
 
-            {data.overall_cost_comparison === "MORE" && (
-              <Col md={12}>
-                <FormGroup>
-                  <Label>
-                    If more costly overall, explain why consolidation was still recommended
-                  </Label>
-                  <Input
-                    type="textarea"
-                    rows={4}
-                    value={data.why_more_still_recommended}
-                    onChange={(e) => onChange("why_more_still_recommended", e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-            )}
+      <p>
+        Alternative forms of finance were considered but not appropriate because{" "}
+        {isAlternativesEditing ? (
+          <span className="d-block w-100 mt-1">
+            <Input
+              type="textarea"
+              rows={5}
+              value={alternativesReason}
+              onChange={(e) => setAlternativesReason(e.target.value)}
+              placeholder="Enter your reason..."
+              autoFocus
+              className="w-100 p-1"
+            />
+            <div className="d-flex gap-2 mt-2">
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleAlternativesSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleAlternativesCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          </span>
+        ) : (
+          <span
+            className="d-inline text-success"
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
+            onClick={() => setIsAlternativesEditing(true)}
+            title="Click to edit"
+          >
+            {savedAlternativesReason || "click to add reason..."}
+          </span>
+        )}
+      </p>
+      <AdvisorNote>
+        (please indicate what has been considered, 0% balance transfer,
+        unsecured consolidation loan, second charge etc)
+      </AdvisorNote>
 
-            <Col md={12}>
-              <FormGroup>
-                <Label>
-                  Client confirmed they wish to proceed with consolidation because
-                </Label>
-                <Input
-                  type="textarea"
-                  rows={3}
-                  value={data.client_confirmation_reason}
-                  onChange={(e) => onChange("client_confirmation_reason", e.target.value)}
-                />
-              </FormGroup>
-            </Col>
+      <p className="fw-bold mb-2 mt-3">Important Considerations</p>
+      <p>
+        Consolidating debts into your mortgage can reduce monthly payments.
+        However, it is important to understand that:
+      </p>
+      <ul className="mb-3">
+        <li className="mb-1">
+          You may repay more interest overall because the debt is repaid over a
+          longer period.
+        </li>
+        <li className="mb-1">
+          Previously unsecured debts will become secured against your home.
+        </li>
+        <li className="mb-1">
+          Your property may be repossessed if you do not maintain mortgage
+          repayments. This risk does not apply to unsecured borrowing such as
+          credit cards or personal loans.
+        </li>
+      </ul>
 
-            <Col md={6}>
-              <FormGroup>
-                <Label>Client wishes to receive information about independent debt advice?</Label>
-                <Input
-                  type="select"
-                  value={data.wants_debt_advice_info}
-                  onChange={(e) => onChange("wants_debt_advice_info", e.target.value)}
-                >
-                  <option value="">— Please select —</option>
-                  <option value="YES">Yes — provide information</option>
-                  <option value="NO">No — not required at this time</option>
-                </Input>
-              </FormGroup>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    </div>
+      <p>
+        I have explained these risks and disadvantages to you in full. Despite
+        these considerations, you confirmed that you wish to proceed with
+        consolidation because{" "}
+        {isProceedEditing ? (
+          <span className="d-block w-100 mt-1">
+            <Input
+              type="textarea"
+              rows={5}
+              value={proceedReason}
+              onChange={(e) => setProceedReason(e.target.value)}
+              placeholder="Enter reason for proceeding..."
+              autoFocus
+              className="w-100 p-1"
+            />
+            <div className="d-flex gap-2 mt-2">
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleProceedSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleProceedCancel}
+              >
+                Cancel
+              </Button>
+            </div>
+          </span>
+        ) : (
+          <span
+            className="d-inline text-success"
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
+            onClick={() => setIsProceedEditing(true)}
+            title="Click to edit"
+          >
+            {savedProceedReason || "click to add reason..."}
+          </span>
+        )}
+      </p>
+
+      <p className="fw-bold mb-2 mt-3">Debt Summary and Recommendation</p>
+      <p>
+        A summary of the debts you wish to consolidate is shown in the table
+        below.
+      </p>
+
+      <Table bordered responsive size="sm" className="mb-3">
+        <thead>
+          <tr>
+            <th style={thStyle}>Lender &amp; type</th>
+            <th style={thStyle}>Balance / settlement figure</th>
+            <th style={thStyle}>Currently monthly repayment</th>
+            <th style={thStyle}>Estimated cost of adding it to the mortgage</th>
+            <th style={thStyle}>Has adding the debt been recommended</th>
+            <th style={thStyle}>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style={{ color: blue }}>Barclays credit card</td>
+            <td style={{ color: blue }}>£7,300</td>
+            <td style={{ color: blue }}>£73</td>
+            <td>
+              <AdvisorNote>
+                + _ x Possibly — discuss if debt con calculator can be built in
+              </AdvisorNote>
+            </td>
+            <td>
+              <PleaseSelect label="Y / N" />
+            </td>
+            <td style={{ color: "#2e7d32" }}>[reason]</td>
+          </tr>
+          <tr>
+            <td style={{ color: blue }}></td>
+            <td style={{ color: blue }}></td>
+            <td style={{ color: blue }}></td>
+            <td></td>
+            <td>
+              <PleaseSelect label="Y / N" />
+            </td>
+            <td style={{ color: "#2e7d32" }}>[reason]</td>
+          </tr>
+          <tr>
+            <td style={{ color: blue }}></td>
+            <td style={{ color: blue }}></td>
+            <td style={{ color: blue }}></td>
+            <td></td>
+            <td>
+              <PleaseSelect label="Y / N" />
+            </td>
+            <td style={{ color: "#2e7d32" }}>[reason]</td>
+          </tr>
+        </tbody>
+      </Table>
+
+      <p>
+        This assessment also illustrates whether adding each debt to the
+        mortgage increases or reduces the total cost of repayment compared with
+        your current arrangements.
+      </p>
+
+      <p>
+        Overall, adding these debts to your mortgage is estimated to cost{" "}
+        <Dropdown
+          isOpen={isDebtCostOptionOpen}
+          toggle={() => setIsDebtCostOptionOpen((prev) => !prev)}
+          className="d-inline-block"
+        >
+          <DropdownToggle
+            tag="span"
+            style={{
+              color: "#6a1b9a",
+        cursor: "pointer",
+        textDecoration: "underline",
+            }}
+          >
+            {selectedDebtCostOption ?? "(select option...)"}
+          </DropdownToggle>
+          <DropdownMenu>
+            {debtCostOptions.map((option, index) => (
+              <DropdownItem
+                key={index}
+                onClick={() => setSelectedDebtCostOption(option)}
+              >
+                {option}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>{" "}
+        than continuing with the current arrangements.
+      </p>
+
+      <AdvisorNote>
+        (If it costs more overall to add the debts to the mortgage, please
+        summarise here why, on balance, it was recommended for the consolidation
+        to take place)
+      </AdvisorNote>
+
+      <p>
+        If credit is regularly being used to meet essential household
+        expenditure, this can indicate financial difficulty. Debt consolidation
+        may not be the solution to this and puts your home at greater risk. It
+        is important that you are comfortable the new mortgage payments will
+        remain affordable both now and in the future.
+      </p>
+
+      <p>
+        Should you wish, I can provide information about independent debt advice
+        charities and organisations that can assist with budgeting or
+        alternative forms of debt management support.
+      </p>
+
+      <p>Please let me know if you would like this information.</p>
+    </>
   );
 };
 
-export default Tab5_DebtConsolidation;
+export default DebtConsolidation;
