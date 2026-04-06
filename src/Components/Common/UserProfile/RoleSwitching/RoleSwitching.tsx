@@ -41,15 +41,18 @@ const RoleSwitching: React.FC = () => {
       else if (key === "ADMIN") badgeColor = "warning";
       else if (key === "ADVISER") badgeColor = "info" as any;
       else if (key === "COMPLIANCE") badgeColor = "success";
+      else if (key === "CLIENT") badgeColor = "secondary";
 
       const descriptionMap: Record<string, string> = {
-        DIRECTOR: "Default workspace for day-to-day client and case work.",
+        DIRECTOR:
+          "Primary role with full oversight of clients, cases, and overall operations.",
         ADMIN:
-          "Manage teams, permissions, pipelines and organisation level settings.",
-        ADVISER: "Work on assigned clients, cases and tasks.",
+          "Supports the director by managing teams, pipelines, and settings.",
+        ADVISER:
+          "Handles assigned cases and tasks, working directly with clients.",
         COMPLIANCE:
-          "Review, monitor and approve cases for compliance requirements.",
-        CLIENT: "View and manage your own applications and documents.",
+          "Reviews, monitors, and approves cases to ensure compliance requirements are met.",
+        CLIENT: "Accesses and manages their own cases and documents.",
       };
 
       return {
@@ -191,6 +194,7 @@ const RoleSwitching: React.FC = () => {
                     key={role.key}
                     action
                     onClick={() => handleSelectRole(role.key)}
+                    style={{cursor:"pointer"}}
                     className={`d-flex align-items-start justify-content-between gap-2 rounded-3 mb-2 ${
                       isSelected
                         ? "border-primary bg-light-primary"
@@ -215,32 +219,21 @@ const RoleSwitching: React.FC = () => {
                         <span className="fw-semibold text-dark">
                           {role.label}
                         </span>
-                        {isActive && (
-                          <Badge
-                            color="success"
-                            pill
-                            className="px-2 py-1 small"
-                          >
-                            Active
-                          </Badge>
-                        )}
                       </div>
                       <small className="text-muted d-block">
                         {role.description}
                       </small>
                     </div>
-
-                    <div className="ms-2 mt-1">
+                    {isActive && (
                       <Badge
-                        color={role.badgeColor as any}
+                        color="success"
                         pill
-                        className={`px-2 py-1 small ${role.subtle ? "opacity-75" : ""}`}
+                        className="px-2 py-1 small"
+                        style={{ fontSize: "8px" }}
                       >
-                        {role.badgeColor === "primary" && "Core"}
-                        {role.badgeColor === "warning" && "Admin"}
-                        {role.badgeColor === "secondary" && "Limited"}
+                        Active
                       </Badge>
-                    </div>
+                    )}
                   </ListGroupItem>
                 );
               })}
