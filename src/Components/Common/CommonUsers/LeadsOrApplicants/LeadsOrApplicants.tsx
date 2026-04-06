@@ -322,12 +322,8 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                         {user?.created_by ? (
                           <>
                             <span>{user?.created_by?.name}</span>
-                            <small className="text-muted d-block">
-                              (
-                              {formatChoiceFieldValue(
-                                user?.created_by?.user_type,
-                              )}
-                              )
+                            <small className="text-muted d-block text-truncate">
+                              {user?.created_by?.email}
                             </small>
                           </>
                         ) : (

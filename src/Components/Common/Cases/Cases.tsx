@@ -64,39 +64,15 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   };
   const [filters, setFilters] = useState(defaultFilters);
 
-  // Build adviser/admin filters based on generic role + network flag
-  const buildAdviserParams = () => {
-    const role = session?.user?.role;
-    const isNetwork = session?.user?.is_network;
-
-    if (!role) return {};
-
-    if (role === "DIRECTOR" || role === "ADVISER" || role === "COMPLIANCE") {
-      return { role: "ADVISER", is_network: !!isNetwork };
-    }
-
-    if (role === "ADMIN" && isNetwork === false) {
-      return { role: "ADVISER", is_network: false };
-    }
-
-    return {};
-  };
-
-  const buildAdminParams = () => {
-    const role = session?.user?.role;
-    const isNetwork = session?.user?.is_network;
-
-    if (role === "ADMIN" && isNetwork === false) {
-      return { role: "ADMIN", is_network: false };
-    }
-    return {};
-  };
-
   const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetUserListQuery(buildAdviserParams());
+    useGetUserListQuery({
+      role: "ADVISER",
+    });
 
   const { data: adminData, isLoading: isAdminLoading } =
-    useGetUserListQuery(buildAdminParams());
+    useGetUserListQuery({
+      role: "ADMIN",
+    });
 
   const { data: usersData } = useGetUsersQuery(undefined);
 
