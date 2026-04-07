@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p
-    className="fst-italic small mb-1 px-2 py-1 rounded"
-    style={{
-      background: "#fff0f3",
-      color: "#b0004e",
-      borderLeft: "3px solid #f48fb1",
-    }}
-  >
+  <p className="suitability-advisor-note rounded">
     {children}
   </p>
 );
@@ -58,10 +57,7 @@ const SuitAnswer = ({ text }: { text?: string }) =>
   ) : null;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6
-    className="fw-bold px-3 py-2 mb-3"
-    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
-  >
+  <h6 className="suitability-section-heading">
     {children}
   </h6>
 );
@@ -79,6 +75,17 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
   const s = suitability;
 
   const lender = caseData?.lender_name ?? "HSBC";
+
+  const [selectedProductTransferOption, setSelectedProductTransferOption] =
+    useState<string | null>(null);
+  const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] =
+    useState(false);
+
+  const productTransferOptions = [
+    "this was more cost effective than the cheapest remortgage deal available.",
+    "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
+    "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
+  ];
 
   return (
     <>
@@ -114,32 +121,50 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
       <p>
         Having reviewed your circumstances and discussed your needs, I then
         compared the available products, and I recommend a product transfer
-        because <PleaseSelect label="Please Select" />
-      </p>
-      <DropdownOptions
-        label="Options:"
-        options={[
-          "this was more cost effective than the cheapest remortgage deal available.",
-          "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
-          "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
-        ]}
-      />
-
-      {s?.product_transfer?.client_specific_reason ? (
-        <div
-          className="p-3 mt-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
+        because{" "}
+        <Dropdown
+          isOpen={isProductTransferOptionOpen}
+          toggle={() => setIsProductTransferOptionOpen((prev) => !prev)}
+          className="d-inline"
+          style={{ display: "inline" }}
         >
-          <SuitAnswer text={s?.product_transfer?.client_specific_reason} />
-        </div>
-      ) : (
-        <AdvisorNote>
-          (If there are client-specific reasons as to why they wanted a simpler
-          process, e.g. busy work life, family commitments etc., please include
-          details here to make the suitability letter as personalised as
-          possible.)
-        </AdvisorNote>
-      )}
+          <DropdownToggle
+            tag="span"
+            style={{
+              color: "#6a1b9a",
+              cursor: "pointer",
+              textDecoration: "underline dotted",
+            }}
+          >
+            {selectedProductTransferOption ?? "select reason..."}
+          </DropdownToggle>
+          <DropdownMenu
+            style={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              maxWidth: "400px",
+            }}
+          >
+            {productTransferOptions.map((option, index) => (
+              <DropdownItem
+                key={index}
+                onClick={() => setSelectedProductTransferOption(option)}
+                className="text-wrap"
+              >
+                <span className="me-1 fw-bolder">•</span>
+                {option}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+      </p>
+
+      <AdvisorNote>
+        (If there are client-specific reasons as to why they wanted a simpler
+        process, e.g. busy work life, family commitments etc., please include
+        details here to make the suitability letter as personalised as
+        possible.)
+      </AdvisorNote>
     </>
   );
 };

@@ -34,58 +34,28 @@ const Suitability: React.FC = () => {
 
   if (isCaseLoading || isSuitLoading) return <LoadingSpinner />;
 
-  const letterStyle: React.CSSProperties = {
-    background: "#fff",
-    boxShadow: "0 4px 28px rgba(0,0,0,0.15)",
-    maxWidth: 920,
-    margin: "0 auto",
-    padding: "48px 60px 60px",
-    fontFamily: "'Times New Roman', Times, serif",
-    fontSize: "0.92rem",
-    color: "#1a1a1a",
-    lineHeight: "1.7",
-  };
-
   return (
     <Container
       fluid
-      className="py-4 px-2 px-md-4"
-      style={{ background: "#e4e4e4", minHeight: "100vh" }}
+      className="py-4 px-2 px-md-4 suitability-page-bg"  // ← class replaces inline style
     >
-      <div style={letterStyle}>
+      <div className="suitability-letter">  {/* ← class replaces inline style */}
 
-        {/* 1. Recommendation Letter */}
         <RecommendationLetter caseData={caseData} suitability={suitability} />
-
-        {/* 2. Debt Consolidation */}
         <Divider />
         <DebtConsolidation caseData={caseData} suitability={suitability} />
-
-        {/* 3. Lending into Retirement */}
         <Divider />
         <LendingIntoRetirement caseData={caseData} suitability={suitability} />
-
-        {/* 4. Porting Mortgage Increase */}
         <Divider />
         <PortingMortgageIncrease caseData={caseData} suitability={suitability} />
-
-        {/* 5. Islamic Mortgage */}
         <Divider />
         <IslamicMortgage caseData={caseData} suitability={suitability} />
-
-        {/* 6. Rate Type & Payment Method */}
         <Divider />
         <RateTypePaymentMethod caseData={caseData} suitability={suitability} />
-
-        {/* 7. Product Transfer */}
         <Divider />
         <ProductTransfer caseData={caseData} suitability={suitability} />
-
-        {/* 8. Shortened Product Transfer */}
         <Divider />
         <ShortenedProductTransfer caseData={caseData} suitability={suitability} />
-
-        {/* 9. High Loan to Value */}
         <Divider />
         <HighLoanToValue caseData={caseData} />
 

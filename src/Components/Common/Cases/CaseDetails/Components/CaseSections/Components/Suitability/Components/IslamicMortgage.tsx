@@ -1,19 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p
-    className="fst-italic small mb-1 px-2 py-1 rounded"
-    style={{
-      background: "#fff0f3",
-      color: "#b0004e",
-      borderLeft: "3px solid #f48fb1",
-    }}
-  >
-    {children}
-  </p>
+  <p className="suitability-advisor-note rounded">{children}</p>
 );
-
 /* ── Purple: dropdown placeholder ── */
 const PleaseSelect = ({ label }: { label?: string }) => (
   <span
@@ -58,10 +54,7 @@ const SuitAnswer = ({ text }: { text?: string }) =>
   ) : null;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6
-    className="fw-bold px-3 py-2 mb-3"
-    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
-  >
+  <h6 className="suitability-section-heading">
     {children}
   </h6>
 );
@@ -80,6 +73,28 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
 
   const lender = caseData?.lender_name ?? "HSBC";
 
+  const [selectedShariaMethod, setSelectedShariaMethod] = useState<
+    string | null
+  >(null);
+  const [isShariaMethodOpen, setIsShariaMethodOpen] = useState(false);
+  const [selectedShariaDetailOption, setSelectedShariaDetailOption] = useState<
+    number | null
+  >(null);
+  const [isShariaDetailOptionOpen, setIsShariaDetailOptionOpen] =
+    useState(false);
+  const [selectedOverpaymentOption, setSelectedOverpaymentOption] = useState<
+    number | null
+  >(null);
+  const [isOverpaymentOptionOpen, setIsOverpaymentOptionOpen] = useState(false);
+
+  const shariaMethods = ["Ijara", "Musharaka", "Murabaha"];
+
+  const shariaDetailOptions = [
+    "Option 1 – Ijara",
+    "Option 2 – Musharaka",
+    "Option 3 – Murabaha",
+  ];
+
   return (
     <>
       <SectionHeading>Islamic Mortgage</SectionHeading>
@@ -89,72 +104,189 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
         acceptable under Sharia Law. As such, you require a product which does
         not involve the payment of interest to the provider. I therefore
         recommend that you take out a Home Purchase Plan using the{" "}
-        <PleaseSelect label="Ijara / Musharaka / Murabaha" /> method.
+        <Dropdown
+          isOpen={isShariaMethodOpen}
+          toggle={() => setIsShariaMethodOpen((prev) => !prev)}
+          className="d-inline"
+          style={{ display: "inline" }}
+        >
+          <DropdownToggle
+            tag="span"
+            style={{
+              color: "#6a1b9a",
+              cursor: "pointer",
+              textDecoration: "underline dotted",
+            }}
+          >
+            {selectedShariaMethod ?? "(select method...)"}
+          </DropdownToggle>
+          <DropdownMenu>
+            {shariaMethods.map((method, index) => (
+              <DropdownItem
+                key={index}
+                onClick={() => setSelectedShariaMethod(method)}
+              >
+                {method}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>{" "}
+        method.
       </p>
 
       {/* Purple: method selection block */}
-      <div
-        className="p-3 my-3 rounded"
-        style={{ background: "#f3e5f5", border: "1px dashed #ab47bc" }}
-      >
+      <div className="suitability-purple-box p-3 my-3 rounded">
         <p className="fw-semibold mb-2 small" style={{ color: "#6a1b9a" }}>
           Select one of the following three methods to include in the letter:
         </p>
-        <PleaseSelect label="Select method" />
-        <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
-          <p className="fw-semibold mb-1">Option 1 – Ijara:</p>
-          <p className="mb-3">
-            The Ijara method is a long-term sale and leaseback arrangement. The
-            provider buys the property, becomes the legal owner and enters into a
-            lease agreement with you. This gives you the right to rent the
-            property for the full term of the plan. During this period, you make
-            regular payments to the provider consisting partly of the rental
-            payment and partly towards the purchase of the property. At the end
-            of the term, when all payments have been made, the legal ownership
-            of the property is transferred to you.
-          </p>
 
-          <p className="fw-semibold mb-1">Option 2 – Musharaka:</p>
-          <p className="mb-3">
-            The Musharaka method is a co-ownership agreement; you fund the
-            initial deposit and the provider purchases the remainder of the
-            property. You make monthly payments to the provider which consists of
-            part rent and part capital repayment, meaning that your stake in the
-            property increases over time. As your stake grows the
-            provider&rsquo;s stake shrinks, which reduces the amount of rent you
-            then have to pay for use of the provider&rsquo;s share of the
-            property. At the end of the term, when all payments have been made,
-            full legal ownership of the property is transferred to you.
-          </p>
+        <Dropdown
+          isOpen={isShariaDetailOptionOpen}
+          toggle={() => setIsShariaDetailOptionOpen((prev) => !prev)}
+        >
+          <DropdownToggle
+            color="light"
+            className="text-start w-100 border"
+            style={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              lineHeight: "1.4",
+            }}
+            caret
+          >
+            {selectedShariaDetailOption !== null ? (
+              shariaDetailOptions[selectedShariaDetailOption]
+            ) : (
+              <span className="text-muted fst-italic">Select method...</span>
+            )}
+          </DropdownToggle>
+          <DropdownMenu
+            className="w-100"
+            style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+          >
+            {shariaDetailOptions.map((option, index) => (
+              <DropdownItem
+                key={index}
+                onClick={() => setSelectedShariaDetailOption(index)}
+                className="text-wrap"
+              >
+                <span className="me-1 fw-bolder">•</span>
+                {option}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
 
-          <p className="fw-semibold mb-1">Option 3 – Murabaha:</p>
-          <p className="mb-0">
-            Under the Murabaha method, the provider buys the property and
-            immediately sells it to you for a higher price (original cost plus an
-            agreed profit level). You pay this higher price on a deferred basis
-            by making regular payments to the provider in line with a fixed
-            repayment schedule.
-          </p>
-        </div>
+        {selectedShariaDetailOption !== null && (
+          <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
+            {selectedShariaDetailOption === 0 && (
+              <>
+                <p className="fw-semibold mb-1">Option 1 – Ijara:</p>
+                <p className="mb-0">
+                  The Ijara method is a long-term sale and leaseback
+                  arrangement. The provider buys the property, becomes the legal
+                  owner and enters into a lease agreement with you. This gives
+                  you the right to rent the property for the full term of the
+                  plan. During this period, you make regular payments to the
+                  provider consisting partly of the rental payment and partly
+                  towards the purchase of the property. At the end of the term,
+                  when all payments have been made, the legal ownership of the
+                  property is transferred to you.
+                </p>
+              </>
+            )}
+
+            {selectedShariaDetailOption === 1 && (
+              <>
+                <p className="fw-semibold mb-1">Option 2 – Musharaka:</p>
+                <p className="mb-0">
+                  The Musharaka method is a co-ownership agreement; you fund the
+                  initial deposit and the provider purchases the remainder of
+                  the property. You make monthly payments to the provider which
+                  consists of part rent and part capital repayment, meaning that
+                  your stake in the property increases over time. As your stake
+                  grows the provider&rsquo;s stake shrinks, which reduces the
+                  amount of rent you then have to pay for use of the
+                  provider&rsquo;s share of the property. At the end of the
+                  term, when all payments have been made, full legal ownership
+                  of the property is transferred to you.
+                </p>
+              </>
+            )}
+
+            {selectedShariaDetailOption === 2 && (
+              <>
+                <p className="fw-semibold mb-1">Option 3 – Murabaha:</p>
+                <p className="mb-0">
+                  Under the Murabaha method, the provider buys the property and
+                  immediately sells it to you for a higher price (original cost
+                  plus an agreed profit level). You pay this higher price on a
+                  deferred basis by making regular payments to the provider in
+                  line with a fixed repayment schedule.
+                </p>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <p>
         A feature of this plan means that if you are in a position to contribute
-        additional funds you can do so <PleaseSelect label="Please Select" />
+        additional funds you can do so{" "}
+        <Dropdown
+          isOpen={isOverpaymentOptionOpen}
+          toggle={() => setIsOverpaymentOptionOpen((prev) => !prev)}
+          className="d-inline"
+          style={{ display: "inline" }}
+        >
+          <DropdownToggle
+            tag="span"
+            style={{
+              color: "#6a1b9a",
+              cursor: "pointer",
+              textDecoration: "underline dotted",
+            }}
+          >
+            {selectedOverpaymentOption === null && "select option..."}
+            {selectedOverpaymentOption === 0 && "without penalty at any time."}
+            {selectedOverpaymentOption === 1 && (
+              <>
+                provided you do not exceed{" "}
+                <strong style={{ color: blue }}>
+                  {caseData?.hpp_overpayment_limit ?? "XX"}%
+                </strong>{" "}
+                of the total Home Purchase Plan amount during any annual period.
+              </>
+            )}
+          </DropdownToggle>
+          <DropdownMenu
+            style={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              maxWidth: "400px",
+            }}
+          >
+            <DropdownItem
+              onClick={() => setSelectedOverpaymentOption(0)}
+              className="text-wrap"
+            >
+              <span className="me-1 fw-bolder">•</span>
+              without penalty at any time.
+            </DropdownItem>
+            <DropdownItem
+              onClick={() => setSelectedOverpaymentOption(1)}
+              className="text-wrap"
+            >
+              <span className="me-1 fw-bolder">•</span>
+              provided you do not exceed{" "}
+              <strong style={{ color: blue }}>
+                {caseData?.hpp_overpayment_limit ?? "XX"}%
+              </strong>{" "}
+              of the total Home Purchase Plan amount during any annual period.
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </p>
-      <DropdownOptions
-        label="Options:"
-        options={[
-          "without penalty at any time.",
-          <>
-            provided you do not exceed{" "}
-            <strong style={{ color: blue }}>
-              {caseData?.hpp_overpayment_limit ?? "XX"}%
-            </strong>{" "}
-            of the total Home Purchase Plan amount during any annual period.
-          </>,
-        ]}
-      />
 
       <p className="mt-3">
         I researched all Home Purchase Plan providers and products, with the
