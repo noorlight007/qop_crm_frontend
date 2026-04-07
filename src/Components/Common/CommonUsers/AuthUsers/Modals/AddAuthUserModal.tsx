@@ -124,7 +124,7 @@ const AddAuthUserModal: React.FC<AddAuthUserModalProps> = ({
       phone: formData.phone || null,
       designation: formData.designation,
       joining_date: formData.joining_date ? formData.joining_date : null,
-      role: userRole,
+      roles: userRole ? [userRole] : [],
       company_name: formData.company_name,
       company_address: formData.company_address,
     };

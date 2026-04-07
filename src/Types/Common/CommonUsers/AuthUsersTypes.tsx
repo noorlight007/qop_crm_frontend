@@ -23,6 +23,7 @@ interface AuthUsersProps {
   title: string;
   authUsersPerPage?: number;
   userRole?: string;
+  roles?: string | string[];
 }
 
 interface ViewAuthUserModalProps {
