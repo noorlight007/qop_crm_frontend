@@ -8,16 +8,7 @@ import {
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p
-    className="fst-italic small mb-1 px-2 py-1 rounded"
-    style={{
-      background: "#fff0f3",
-      color: "#b0004e",
-      borderLeft: "3px solid #f48fb1",
-    }}
-  >
-    {children}
-  </p>
+  <p className="suitability-advisor-note rounded">{children}</p>
 );
 
 /* ── Purple: dropdown placeholder ── */
@@ -64,14 +55,10 @@ const SuitAnswer = ({ text }: { text?: string }) =>
   ) : null;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h3
-    className="fw-bold px-3 py-2 mb-3"
-    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
-  >
+  <h6 className="suitability-section-heading">
     {children}
-  </h3>
+  </h6>
 );
-
 interface PortingMortgageIncreaseProps {
   caseData: any;
   suitability: any;

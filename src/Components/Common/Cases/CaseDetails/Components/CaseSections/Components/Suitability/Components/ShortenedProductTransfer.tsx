@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+} from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p
-    className="fst-italic small mb-1 px-2 py-1 rounded"
-    style={{
-      background: "#fff0f3",
-      color: "#b0004e",
-      borderLeft: "3px solid #f48fb1",
-    }}
-  >
-    {children}
-  </p>
+  <p className="suitability-advisor-note rounded">{children}</p>
 );
 
 /* ── Purple: dropdown placeholder ── */
@@ -58,10 +55,7 @@ const SuitAnswer = ({ text }: { text?: string }) =>
   ) : null;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6
-    className="fw-bold px-3 py-2 mb-3"
-    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
-  >
+  <h6 className="suitability-section-heading">
     {children}
   </h6>
 );
@@ -79,6 +73,11 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
   const s = suitability;
 
   const lender = caseData?.lender_name ?? "HSBC";
+
+  const [selectedPTCostOption, setSelectedPTCostOption] = useState<
+    number | null
+  >(null);
+  const [isPTCostOptionOpen, setIsPTCostOptionOpen] = useState(false);
 
   return (
     <>
@@ -113,20 +112,11 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
 
       <p>It was your preference not to review remortgage options.</p>
 
-      {s?.product_transfer?.preference_reason ? (
-        <div
-          className="p-3 mb-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
-        >
-          <SuitAnswer text={s?.product_transfer?.preference_reason} />
-        </div>
-      ) : (
-        <AdvisorNote>
-          (Please include any background about why the client preferred to
-          proceed with a product transfer specifically, for example ease of
-          process, speed of application etc.)
-        </AdvisorNote>
-      )}
+      <AdvisorNote>
+        (Please include any background about why the client preferred to proceed
+        with a product transfer specifically, for example ease of process, speed
+        of application etc.)
+      </AdvisorNote>
 
       <p>
         You confirmed that since our last review of your mortgage there were no
@@ -140,24 +130,69 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
       </p>
 
       <p>
-        The product transfer recommended was <PleaseSelect label="Please Select" />
+        The product transfer recommended was{" "}
+        <Dropdown
+          isOpen={isPTCostOptionOpen}
+          toggle={() => setIsPTCostOptionOpen((prev) => !prev)}
+          className="d-inline"
+          style={{ display: "inline" }}
+        >
+          <DropdownToggle
+            tag="span"
+            style={{
+              color: "#6a1b9a",
+              cursor: "pointer",
+              textDecoration: "underline dotted",
+            }}
+          >
+            {selectedPTCostOption === null && "select option..."}
+            {selectedPTCostOption === 0 &&
+              "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender."}
+            {selectedPTCostOption === 1 && (
+              <>
+                not the most cost-effective deal available, and will cost{" "}
+                <strong style={{ color: blue }}>
+                  {caseData?.pt_cost_difference
+                    ? `£${Number(caseData.pt_cost_difference).toLocaleString("en-GB")}`
+                    : "£0,000"}
+                </strong>{" "}
+                more during the initial product term. However, you were happy to
+                forfeit this saving to proceed with a product transfer.
+              </>
+            )}
+          </DropdownToggle>
+          <DropdownMenu
+            style={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              maxWidth: "400px",
+            }}
+          >
+            <DropdownItem
+              onClick={() => setSelectedPTCostOption(0)}
+              className="text-wrap"
+            >
+              <span className="me-1 fw-bolder">•</span>
+              the most cost-effective deal available, therefore there was no
+              disadvantage to remaining with your current lender.
+            </DropdownItem>
+            <DropdownItem
+              onClick={() => setSelectedPTCostOption(1)}
+              className="text-wrap"
+            >
+              <span className="me-1 fw-bolder">•</span>
+              not the most cost-effective deal available, and will cost{" "}
+              <strong style={{ color: blue }}>
+                {caseData?.pt_cost_difference
+                  ? `£${Number(caseData.pt_cost_difference).toLocaleString("en-GB")}`
+                  : "£0,000"}
+              </strong>{" "}
+              more during the initial product term. However, you were happy to
+              forfeit this saving to proceed with a product transfer.
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </p>
-      <DropdownOptions
-        label="Options:"
-        options={[
-          "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender.",
-          <>
-            not the most cost-effective deal available, and will cost{" "}
-            <strong style={{ color: blue }}>
-              {caseData?.pt_cost_difference
-                ? `£${Number(caseData.pt_cost_difference).toLocaleString("en-GB")}`
-                : "£0,000"}
-            </strong>{" "}
-            more during the initial product term. However, you were happy to
-            forfeit this saving to proceed with a product transfer.
-          </>,
-        ]}
-      />
 
       <p className="mt-3">
         You did not wish to leave the mortgage on standard variable rate as this

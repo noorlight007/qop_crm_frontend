@@ -1,10 +1,7 @@
 import React from "react";
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6
-    className="fw-bold px-3 py-2 mb-3"
-    style={{ background: "#1a3c5e", color: "#fff", letterSpacing: "0.3px" }}
-  >
+  <h6 className="suitability-section-heading">
     {children}
   </h6>
 );
