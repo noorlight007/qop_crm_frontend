@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
 import LeadsOrApplicants from "../../CommonUsers/LeadsOrApplicants/LeadsOrApplicants";
 
-const LeadsContainer: React.FC = () => {
+const SuperAdminLeadsContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -17,4 +17,4 @@ const LeadsContainer: React.FC = () => {
   );
 };
 
-export default LeadsContainer;
+export default SuperAdminLeadsContainer;

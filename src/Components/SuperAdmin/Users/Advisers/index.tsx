@@ -1,8 +1,8 @@
-import AuthUsers from "@/Components/Admin/CommonUsers/AuthUsers/AuthUsers";
+import AuthUsers from "@/Components/SuperAdmin/CommonUsers/AuthUsers/AuthUsers";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import { Container } from "reactstrap";
 
-const AdminAdvisersContainer: React.FC = () => {
+const SuperAdminAdvisersContainer: React.FC = () => {
   return (
     <>
       <Breadcrumbs
@@ -17,4 +17,4 @@ const AdminAdvisersContainer: React.FC = () => {
   );
 };
 
-export default AdminAdvisersContainer;
+export default SuperAdminAdvisersContainer;
