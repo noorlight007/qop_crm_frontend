@@ -339,7 +339,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   ? 0
                   : (currentPage - 1) * authUsersPerPage +
                     currentAuthUsers.length}{" "}
-                of {totalCount} Users
+                of {totalCount} {title.slice(0, -1)}
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
