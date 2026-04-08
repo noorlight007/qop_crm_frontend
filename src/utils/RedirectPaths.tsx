@@ -10,9 +10,9 @@ export const getDashboardHomeUrl = (session: Session | null) => {
 
   if (!role) return "/auth/login";
 
-  // Global Admin (no organisation/network scope) or network-level admin
-  if (role === "ADMIN" && isNetwork !== false) {
-    return "/admin/dashboard";
+  // Global Admin (no organisation/network scope) or network-level super-admin
+  if (role === "SUPER_ADMIN") {
+    return "/super-admin/dashboard";
   }
 
   // Organisation Admin
@@ -56,7 +56,7 @@ export const getAllCasesUrl = (session: Session | null) => {
 
   if (!role) return "/auth/login";
 
-  if (role === "ADMIN" && isNetwork !== false) {
+  if (role === "SUPER_ADMIN") {
     return "/admin/cases";
   }
 
@@ -93,7 +93,7 @@ export const getCaseUrl = (
   role: string,
   isNetwork?: boolean,
 ) => {
-  if (role === "ADMIN" && isNetwork !== false) {
+  if (role === "SUPER_ADMIN") {
     return `/admin/cases/${caseAlias}`;
   }
 
@@ -132,7 +132,7 @@ export const getSupportTicketUrl = (
   role: string,
   isNetwork?: boolean,
 ) => {
-  if (role === "ADMIN" && isNetwork !== false) {
+  if (role === "SUPER_ADMIN") {
     return `/admin/support-ticket/${supportTicketAlias}`;
   }
 
@@ -174,8 +174,8 @@ export const getOrganisationUrl = (session: Session | null) => {
 
   if (!role) return "/auth/login";
 
-  if (role === "ADMIN" && isNetwork !== false) {
-    return "/admin/organisations";
+  if (role === "SUPER_ADMIN") {
+    return "/super-admin/organisations";
   }
 
   if (role === "DIRECTOR" || role === "COMPLIANCE") {

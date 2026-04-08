@@ -7,10 +7,10 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
-//Admin
-const AdminMenu: MenuItem[] = [
+//SuperAdminMenu
+const SuperAdminMenu: MenuItem[] = [
   {
-    title: "Admin",
+    title: "Super Admin",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -19,21 +19,21 @@ const AdminMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/dashboard",
+        path: "/super-admin/dashboard",
       },
       {
         title: "Networks",
         icon: <FaNetworkWired />,
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/networks",
+        path: "/super-admin/networks",
       },
       {
         title: "Organisations",
         icon: <FaBriefcase />,
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/organisations",
+        path: "/super-admin/organisations",
       },
       {
         title: "Users",
@@ -43,37 +43,37 @@ const AdminMenu: MenuItem[] = [
           {
             title: "Directors",
             type: "link",
-            path: "/admin/users/directors",
+            path: "/super-admin/users/directors",
           },
           {
             title: "Compliances",
             type: "link",
-            path: "/admin/users/compliances",
+            path: "/super-admin/users/compliances",
           },
           {
             title: "Advisers",
             type: "link",
-            path: "/admin/users/advisers",
+            path: "/super-admin/users/advisers",
           },
           {
             title: "Admins",
             type: "link",
-            path: "/admin/users/admins",
+            path: "/super-admin/users/admins",
           },
           {
             title: "Introducers",
             type: "link",
-            path: "/admin/users/introducers",
+            path: "/super-admin/users/introducers",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/admin/users/leads",
+            path: "/super-admin/users/leads",
           },
           {
             title: "Applicants",
             type: "link",
-            path: "/admin/users/applicants",
+            path: "/super-admin/users/applicants",
           },
         ],
       },
@@ -82,7 +82,7 @@ const AdminMenu: MenuItem[] = [
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/support-ticket",
+        path: "/super-admin/support-ticket",
       },
     ],
   },
@@ -733,13 +733,13 @@ const ApplicantMenu: MenuItem[] = [
 
 // Export all menus
 export {
-  AdminMenu,
   ApplicantMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
+  SuperAdminMenu
 };
 
 export const getMenuByRole = (
@@ -750,8 +750,8 @@ export const getMenuByRole = (
 
   if (role === "CLIENT") return ApplicantMenu;
 
-  if (role === "ADMIN") {
-    return isNetwork ? AdminMenu : OrganisationAdminMenu;
+  if (role === "SUPER_ADMIN") {
+    return SuperAdminMenu;
   }
 
   if (role === "DIRECTOR") {
@@ -760,6 +760,10 @@ export const getMenuByRole = (
 
   if (role === "ADVISER") {
     return isNetwork ? NetworkAdviserMenu : OrganisationAdviserMenu;
+  }
+
+  if (role === "ADMIN") {
+    return OrganisationAdminMenu;
   }
 
   if (role === "COMPLIANCE" && isNetwork) {

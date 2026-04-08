@@ -454,7 +454,7 @@ const SupportTicketDetails: React.FC = () => {
                 <Col xs="auto">
                   <div className="d-flex justify-content-end">
                     {ticketDetails.status ? (
-                      userRole === "ADMIN" ? (
+                      userRole === "SUPER_ADMIN" ? (
                         <div className="d-flex align-items-center gap-1">
                           <Dropdown
                             isOpen={dropdownOpen[ticketDetails.id] || false}

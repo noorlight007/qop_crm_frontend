@@ -416,7 +416,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <i className="fa-solid fa-filter"></i>
                   )}
                 </Button>
-                {session?.user?.role !== "ADMIN" && (
+                {session?.user?.role !== "SUPER_ADMIN" && (
                   <Button
                     color="primary"
                     onClick={toggleModal}
@@ -575,7 +575,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       </DropdownMenu>
                     </Dropdown>
                   </Col>
-                  {userRole === "ADMIN" && (
+                  {userRole === "SUPER_ADMIN" && (
                     <>
                       <Col>
                         <Label>Select Network</Label>
@@ -719,7 +719,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <th>Subject</th>
                     <th>Message</th>
                     <th>Files</th>
-                    {session?.user?.role === "ADMIN" && (
+                    {session?.user?.role === "SUPER_ADMIN" && (
                       <>
                         <th>Network</th>
                         <th>Organisation</th>
@@ -767,7 +767,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         </td>
                         <td>
                           {ticket.status ? (
-                            userRole === "ADMIN" ? (
+                            userRole === "SUPER_ADMIN" ? (
                               <Dropdown
                                 isOpen={dropdownOpen[ticket.alias] || false}
                                 toggle={() => toggleDropdown(ticket.alias)}
@@ -914,7 +914,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             <span className="text-muted">No files</span>
                           )}
                         </td>
-                        {session?.user?.role === "ADMIN" && (
+                        {session?.user?.role === "SUPER_ADMIN" && (
                           <>
                             <td className="text-truncate">
                               {ticket.network?.name || (

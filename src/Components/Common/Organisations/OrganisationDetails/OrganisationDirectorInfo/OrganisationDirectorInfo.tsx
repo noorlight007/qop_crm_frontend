@@ -105,6 +105,12 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
       });
   };
 
+  const formatDirectorRoles = (roles?: string[] | string | null) => {
+    if (!roles) return "";
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+    return roleArray.map((role) => formatChoiceFieldValue(role)).join(", ");
+  };
+
   return (
     <>
       {isLoading ? (
@@ -230,8 +236,7 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
               </h4>
               <Badge className="px-3 py-2 bg-light-primary fw-semibold rounded-pill">
                 <i className="fa fa-crown me-1" />
-                {formatChoiceFieldValue(singleOrgInfo?.user?.user_type) ??
-                  "User"}
+                {formatDirectorRoles(singleOrgInfo?.user?.roles) ?? "User"}
               </Badge>
             </div>
 
@@ -248,7 +253,11 @@ const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
                         onClick={handleCopyDirectorEmail}
                         style={{ cursor: "pointer" }}
                       >
-                        {isDirectorEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                        {isDirectorEmailCopied ? (
+                          <FaCheckCircle className="text-success" />
+                        ) : (
+                          <TbCopy />
+                        )}
                       </span>
                     </>
                   ) : (
