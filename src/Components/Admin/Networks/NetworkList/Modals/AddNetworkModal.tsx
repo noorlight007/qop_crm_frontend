@@ -572,9 +572,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                 </Col>
                 <Col>
                   <FormGroup>
-                    <Label for="license_no">
-                      License Number<span className="text-danger">*</span>
-                    </Label>
+                    <Label for="license_no">License Number</Label>
                     <Input
                       type="text"
                       id="license_no"
@@ -582,7 +580,6 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       value={formData.network.license_no}
                       onChange={handleChange}
                       placeholder="Enter license number"
-                      required
                     />
                     {apiErrors["network.license_no"] ? (
                       <div className="text-danger small mt-1">

@@ -7,10 +7,10 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
-//Admin
-const AdminMenu: MenuItem[] = [
+//SuperAdminMenu
+const SuperAdminMenu: MenuItem[] = [
   {
-    title: "Admin",
+    title: "Super Admin",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -733,13 +733,13 @@ const ApplicantMenu: MenuItem[] = [
 
 // Export all menus
 export {
-  AdminMenu,
   ApplicantMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
+  SuperAdminMenu
 };
 
 export const getMenuByRole = (
@@ -751,7 +751,7 @@ export const getMenuByRole = (
   if (role === "CLIENT") return ApplicantMenu;
 
   if (role === "SUPER_ADMIN") {
-    return AdminMenu;
+    return SuperAdminMenu;
   }
 
   if (role === "DIRECTOR") {
