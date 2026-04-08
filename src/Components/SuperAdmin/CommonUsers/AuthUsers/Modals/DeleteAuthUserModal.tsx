@@ -1,5 +1,5 @@
-import { useDeleteAuthUserMutation } from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import { DeleteAuthUserModalProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+import { useDeleteAuthUserMutation } from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
+import { DeleteAuthUserModalProps } from "@/Types/SuperAdmin/Common/AuthUsers/AuthUserType";
 
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
@@ -23,8 +23,8 @@ const DeleteAuthUserModal: React.FC<DeleteAuthUserModalProps> = ({
         toast.error("Failed to delete user.");
       }
     } catch (error) {
-      console.error("Failed to delete network", error);
-      toast.error("Failed to delete network. Please try again.");
+      console.error("Failed to delete user", error);
+      toast.error("Failed to delete user. Please try again.");
     }
   };
 

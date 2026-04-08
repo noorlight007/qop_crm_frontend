@@ -3,11 +3,11 @@ import {
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
   useUpdateAuthUserDetailsMutation,
-} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
+} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
 import {
   AuthUser,
   AuthUsersProps,
-} from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+} from "@/Types/SuperAdmin/Common/AuthUsers/AuthUserType";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";

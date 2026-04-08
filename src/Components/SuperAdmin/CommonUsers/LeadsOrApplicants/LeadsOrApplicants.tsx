@@ -1,12 +1,12 @@
 import {
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
-} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
-import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/Admin/CommonUsers/LeadsOrApplicantsApi";
+} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
+import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/SuperAdmin/CommonUsers/LeadsOrApplicantsApi";
 import type {
   LeadsOrApplicants,
   LeadsOrApplicantsProps,
-} from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
+} from "@/Types/SuperAdmin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";

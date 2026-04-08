@@ -1,8 +1,8 @@
-import { useAddNetworkMutation } from "@/Redux/Reducers/Admin/Networks/NetworksApi";
+import { useAddNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import {
   AddNetworkModalProps,
   NetworkFormData,
-} from "@/Types/Admin/Networks/NetworkType";
+} from "@/Types/SuperAdmin/Networks/NetworkType";
 import { validateAndSanitizePhone } from "@/utils/inputHandlers";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -444,7 +444,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Network Admin
+                Network Director
               </NavLink>
             </NavItem>
           </Nav>

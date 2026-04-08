@@ -1,5 +1,5 @@
-import { useDeleteNetworkMutation } from "@/Redux/Reducers/Admin/Networks/NetworksApi";
-import { DeleteNetworkModalProps } from "@/Types/Admin/Networks/NetworkType";
+import { useDeleteNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { DeleteNetworkModalProps } from "@/Types/SuperAdmin/Networks/NetworkType";
 import { useRouter } from "next/navigation";
 
 import { toast } from "react-toastify";

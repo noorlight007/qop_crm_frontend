@@ -1,4 +1,4 @@
-import { ViewAuthUserModalProps } from "@/Types/Admin/Common/AuthUsers/AuthUserType";
+import { ViewAuthUserModalProps } from "@/Types/SuperAdmin/Common/AuthUsers/AuthUserType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -107,9 +107,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedAuthUser?.phone ? (
-                        <span
-                          className="text-primary text-decoration-none"
-                        >
+                        <span className="text-primary text-decoration-none">
                           {selectedAuthUser.phone}
                         </span>
                       ) : (

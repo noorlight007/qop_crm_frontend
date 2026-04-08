@@ -1,5 +1,5 @@
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
-import { UpdateOrgInfoModalProps } from "@/Types/Admin/Organisations/OrganisationTypes";
+import { UpdateOrgInfoModalProps } from "@/Types/SuperAdmin/Organisations/OrganisationTypes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

@@ -1,8 +1,8 @@
 import {
   useGetNetworkListQuery,
   useUpdateNetworkMutation,
-} from "@/Redux/Reducers/Admin/Networks/NetworksApi";
-import { Network } from "@/Types/Admin/Networks/NetworkType";
+} from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { Network } from "@/Types/SuperAdmin/Networks/NetworkType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Image from "next/image";
 import Link from "next/link";

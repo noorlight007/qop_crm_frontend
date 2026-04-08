@@ -1,8 +1,8 @@
-import { useUpdateLeadsOrApplicantsDetailsMutation } from "@/Redux/Reducers/Admin/CommonUsers/LeadsOrApplicantsApi";
+import { useUpdateLeadsOrApplicantsDetailsMutation } from "@/Redux/Reducers/SuperAdmin/CommonUsers/LeadsOrApplicantsApi";
 import {
   LeadsOrApplicants,
   UpdateLeadsOrApplicantsModalProps,
-} from "@/Types/Admin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
+} from "@/Types/SuperAdmin/Common/LeadsOrApplicants/LeadsOrApplicantsTypes";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
