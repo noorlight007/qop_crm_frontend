@@ -10,11 +10,14 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
   toggle,
   selectedAuthUser,
   userRole,
+  userTitle,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">User Information</span>
+        <span className="fs-5 fw-bold text-primary">
+          {userTitle.slice(0, -1)} Information
+        </span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
@@ -47,18 +50,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
               selectedAuthUser?.middle_name + " "}
             {selectedAuthUser?.last_name}
           </h4>
-          <p className="mb-2 text-muted small">
-            {selectedAuthUser?.name
-              ? formatChoiceFieldValue(selectedAuthUser.name)
-              : "User"}
-          </p>
           <div>
-            <Badge pill className="px-3 py-2 me-2 bg-light-primary">
-              👤{" "}
-              {selectedAuthUser?.role
-                ? formatChoiceFieldValue(selectedAuthUser.role)
-                : "User"}
-            </Badge>
             {selectedAuthUser?.is_active ? (
               <Badge pill className="px-3 py-2 bg-light-success">
                 ✓ Approved
@@ -108,9 +100,7 @@ const ViewAuthUserModal: React.FC<ViewAuthUserModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedAuthUser?.phone ? (
-                        <span
-                          className="text-primary text-decoration-none"
-                        >
+                        <span className="text-primary text-decoration-none">
                           {selectedAuthUser.phone}
                         </span>
                       ) : (

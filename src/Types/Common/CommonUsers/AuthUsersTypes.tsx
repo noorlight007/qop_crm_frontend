@@ -31,6 +31,7 @@ interface ViewAuthUserModalProps {
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
   userRole?: string;
+  userTitle: string;
 }
 
 export interface AddAuthUserModalProps {
@@ -45,6 +46,7 @@ interface UpdateAuthUserModalProps {
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
   userRole?: string;
+  userTitle: string;
 }
 
 export type {
