@@ -1,7 +1,7 @@
 import {
   useGetNetworkDetailsQuery,
   useUpdateNetworkMutation,
-} from "@/Redux/Reducers/Admin/Networks/NetworksApi";
+} from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";

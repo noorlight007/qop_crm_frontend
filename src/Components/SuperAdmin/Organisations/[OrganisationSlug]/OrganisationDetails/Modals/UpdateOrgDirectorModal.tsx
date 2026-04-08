@@ -1,5 +1,5 @@
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
-import { UpdateOrgInfoModalProps } from "@/Types/Admin/Organisations/OrganisationTypes";
+import { UpdateOrgInfoModalProps } from "@/Types/SuperAdmin/Organisations/OrganisationTypes";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {

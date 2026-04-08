@@ -1,7 +1,7 @@
 import {
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
-} from "@/Redux/Reducers/Admin/CommonUsers/AuthUsersApi";
+} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
 import {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
