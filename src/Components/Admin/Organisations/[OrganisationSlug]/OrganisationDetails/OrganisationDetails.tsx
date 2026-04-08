@@ -262,6 +262,12 @@ const OrganisationDetails: React.FC = () => {
       });
   };
 
+  const formatDirectorRoles = (roles?: string[] | string | null) => {
+    if (!roles) return "";
+    const roleArray = Array.isArray(roles) ? roles : [roles];
+    return roleArray.map((role) => formatChoiceFieldValue(role)).join(", ");
+  };
+
   return (
     <>
       <Row>
@@ -376,7 +382,11 @@ const OrganisationDetails: React.FC = () => {
                               style={{ cursor: "pointer" }}
                               onClick={handleCopyDomain}
                             >
-                              {isCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                              {isCopied ? (
+                                <FaCheckCircle className="text-success" />
+                              ) : (
+                                <TbCopy />
+                              )}
                             </span>
                           </Badge>
                         )}
@@ -579,7 +589,11 @@ const OrganisationDetails: React.FC = () => {
                                 style={{ cursor: "pointer", flexShrink: 0 }}
                                 onClick={handleCopyEmail}
                               >
-                                {isEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                                {isEmailCopied ? (
+                                  <FaCheckCircle className="text-success" />
+                                ) : (
+                                  <TbCopy />
+                                )}
                               </span>
                             </span>
                           ) : (
@@ -799,9 +813,7 @@ const OrganisationDetails: React.FC = () => {
                   </h4>
                   <Badge className="px-3 py-2 bg-light-primary fw-semibold rounded-pill">
                     <i className="fa fa-crown me-1" />
-                    {formatChoiceFieldValue(
-                      getOrganisationDetails?.user?.user_type,
-                    )}
+                    {formatDirectorRoles(getOrganisationDetails?.user?.roles)}
                   </Badge>
                 </div>
 
@@ -822,7 +834,7 @@ const OrganisationDetails: React.FC = () => {
                             style={{ cursor: "pointer" }}
                           >
                             {isDirectorEmailCopied ? (
-                              <FaCheckCircle className="text-success"/>
+                              <FaCheckCircle className="text-success" />
                             ) : (
                               <TbCopy />
                             )}
