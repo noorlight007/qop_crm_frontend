@@ -1,12 +1,13 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const AdminDashboardPage = () => {
+const SuperAdminDashboardPage = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const newClient = (await import("@/Components/Admin/Dashboard")).default;
+        const newClient = (await import("@/Components/SuperAdmin/Dashboard"))
+          .default;
         setClient(() => newClient);
       }
     })();
@@ -14,4 +15,4 @@ const AdminDashboardPage = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default AdminDashboardPage;
+export default SuperAdminDashboardPage;

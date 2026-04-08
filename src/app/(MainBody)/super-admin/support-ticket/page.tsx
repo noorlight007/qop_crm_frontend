@@ -1,12 +1,12 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-const AdminSupportTicketPage = () => {
+const SuperAdminSupportTicketPage = () => {
   const [MyAwesomeMap, setClient] = useState<FunctionComponent>();
   useEffect(() => {
     (async () => {
       if (typeof window !== "undefined") {
-        const newClient = (await import("@/Components/Admin/SupportTicket"))
+        const newClient = (await import("@/Components/SuperAdmin/SupportTicket"))
           .default;
         setClient(() => newClient);
       }
@@ -15,4 +15,4 @@ const AdminSupportTicketPage = () => {
   return MyAwesomeMap ? <MyAwesomeMap /> : "";
 };
 
-export default AdminSupportTicketPage;
+export default SuperAdminSupportTicketPage;
