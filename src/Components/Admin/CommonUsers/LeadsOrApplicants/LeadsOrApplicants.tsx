@@ -290,10 +290,10 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                 <th>Phone</th>
                 {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
-                {session?.user?.role === "ADMIN" &&
+                {session?.user?.role === "SUPER_ADMIN" &&
                   roles !== "LEAD" &&
                   roles !== "CLIENT" && <th>Network</th>}
-                {session?.user?.role === "ADMIN" &&
+                {session?.user?.role === "SUPER_ADMIN" &&
                   roles !== "LEAD" &&
                   roles !== "CLIENT" && <th>Organisation</th>}
                 <th>Created By</th>
@@ -399,7 +399,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {session?.user?.role === "ADMIN" &&
+                    {session?.user?.role === "SUPER_ADMIN" &&
                       roles !== "LEAD" &&
                       roles !== "CLIENT" && (
                         <>

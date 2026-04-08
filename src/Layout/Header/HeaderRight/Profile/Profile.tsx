@@ -76,7 +76,7 @@ const Profile = () => {
                 Profile & Settings
               </Link>
             </li>
-            {session?.user?.role === "ADMIN" ||
+            {session?.user?.role === "SUPER_ADMIN" ||
             (session?.user?.is_network &&
               (session?.user?.role === "DIRECTOR" ||
                 session?.user?.role === "COMPLIANCE")) ||

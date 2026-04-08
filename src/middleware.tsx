@@ -18,7 +18,7 @@ export default withAuth(
     const isNetwork = (token as any).is_network as boolean | undefined;
 
     // Role-based path protection
-    if (path.startsWith("/admin") && !(role === "ADMIN" && isNetwork)) {
+    if (path.startsWith("/super-admin") && !(role === "SUPER_ADMIN")) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -26,16 +26,17 @@ export default withAuth(
 
     if (
       path.startsWith("/network/director") &&
-      !(
-        isNetwork && (role === "DIRECTOR" || role === "COMPLIANCE")
-      )
+      !(isNetwork && (role === "DIRECTOR" || role === "COMPLIANCE"))
     ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
     }
 
-    if (path.startsWith("/network/adviser") && !(isNetwork && role === "ADVISER")) {
+    if (
+      path.startsWith("/network/adviser") &&
+      !(isNetwork && role === "ADVISER")
+    ) {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -85,7 +86,7 @@ export default withAuth(
 export const config = {
   matcher: [
     // "/dashboard/:path*",
-    "/admin/:path*",
+    "/super-admin/:path*",
     "/network/director/:path*",
     "/network/adviser/:path*",
     "/organisation/director/:path*",

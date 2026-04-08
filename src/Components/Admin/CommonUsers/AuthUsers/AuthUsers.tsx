@@ -340,12 +340,8 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                 <th>Phone</th>
                 {roles === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
-                {session?.user?.role === "ADMIN" &&
-                  roles !== "LEAD" &&
-                  roles !== "CLIENT" && <th>Network</th>}
-                {session?.user?.role === "ADMIN" &&
-                  roles !== "LEAD" &&
-                  roles !== "CLIENT" && <th>Organisation</th>}
+                {session?.user?.role === "SUPER_ADMIN" && <th>Network</th>}
+                {session?.user?.role === "SUPER_ADMIN" && <th>Organisation</th>}
                 <th>Created By</th>
                 <th>Created At</th>
                 {roles !== "LEAD" && roles !== "CLIENT" && <th>Status</th>}
@@ -449,26 +445,20 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
-                    {session?.user?.role === "ADMIN" &&
-                      roles !== "LEAD" &&
-                      roles !== "CLIENT" && (
-                        <>
-                          <td className="text-truncate">
-                            {user?.network || (
-                              <small className="text-muted">
-                                Not Specified
-                              </small>
-                            )}
-                          </td>
-                          <td className="text-truncate">
-                            {user?.organisation || (
-                              <small className="text-muted">
-                                Not Specified
-                              </small>
-                            )}
-                          </td>
-                        </>
-                      )}
+                    {session?.user?.role === "SUPER_ADMIN" && (
+                      <>
+                        <td className="text-truncate">
+                          {user?.network || (
+                            <small className="text-muted">Not Specified</small>
+                          )}
+                        </td>
+                        <td className="text-truncate">
+                          {user?.organisation || (
+                            <small className="text-muted">Not Specified</small>
+                          )}
+                        </td>
+                      </>
+                    )}
                     {user?.created_by?.name ? (
                       <td>
                         <p className="m-0">{user?.created_by.name}</p>

@@ -214,7 +214,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                   style={{ position: "relative", overflow: "hidden" }}
                 >
                   <Link
-                    href={`/admin/networks/${network.slug}`}
+                    href={`/super-admin/networks/${network.slug}`}
                     title="Website"
                     className="text-muted position-absolute top-0 end-0 p-3"
                     style={{ zIndex: 5 }}
@@ -265,7 +265,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                         >
                           <Link
                             className="text_decoration_hover"
-                            href={`/admin/networks/${network.slug}`}
+                            href={`/super-admin/networks/${network.slug}`}
                           >
                             {network.name}
                           </Link>

@@ -750,8 +750,8 @@ export const getMenuByRole = (
 
   if (role === "CLIENT") return ApplicantMenu;
 
-  if (role === "ADMIN") {
-    return isNetwork ? AdminMenu : OrganisationAdminMenu;
+  if (role === "SUPER_ADMIN") {
+    return AdminMenu;
   }
 
   if (role === "DIRECTOR") {
@@ -760,6 +760,10 @@ export const getMenuByRole = (
 
   if (role === "ADVISER") {
     return isNetwork ? NetworkAdviserMenu : OrganisationAdviserMenu;
+  }
+
+  if (role === "ADMIN") {
+    return OrganisationAdminMenu;
   }
 
   if (role === "COMPLIANCE" && isNetwork) {

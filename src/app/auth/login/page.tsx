@@ -15,8 +15,8 @@ const UserLogin = () => {
     const role = session.user?.role;
     const isNetwork = session.user?.is_network;
 
-    if (role === "ADMIN" && isNetwork) {
-      router.push("/admin/dashboard");
+    if (role === "SUPER_ADMIN") {
+      router.push("/super-admin/dashboard");
     } else if (role === "DIRECTOR" && isNetwork) {
       router.push("/network/director/dashboard");
     } else if (role === "COMPLIANCE" && isNetwork) {
