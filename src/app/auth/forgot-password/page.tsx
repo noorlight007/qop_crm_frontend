@@ -16,6 +16,7 @@ export default function ForgotPassword() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
+  const type = searchParams.get("type");
   // console.log("UID:", uid);
   // console.log("Token:", token);
 
@@ -83,7 +84,7 @@ export default function ForgotPassword() {
       toast.error("Passwords do not match.");
       return;
     }
-    if (!uid || !token || !subdomain) {
+    if (!uid || !token || !subdomain || !type) {
       toast.error("Invalid or missing credentials. Please try again.");
       return;
     }
@@ -99,6 +100,7 @@ export default function ForgotPassword() {
         uid: uid,
         token: token,
         subdomain: subdomain,
+        type: type,
       });
       console.log("Res:", res.data);
 

@@ -174,11 +174,11 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/network/director/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/network/director/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
