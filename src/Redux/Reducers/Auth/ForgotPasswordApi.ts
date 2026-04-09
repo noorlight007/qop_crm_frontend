@@ -11,8 +11,8 @@ export const ForgotPasswordApi = publicBaseApi.injectEndpoints({
       invalidatesTags: ["ForgotPassword"],
     }),
     forgotPassword: builder.mutation({
-      query: ({ payload, subdomain, uid, token }) => ({
-        url: `/auth/forgot-password/${subdomain}/${uid}/${token}/`,
+      query: ({ payload, subdomain, uid, token, type }) => ({
+        url: `/auth/forgot-password/${subdomain}/${type}/${uid}/${token}/`,
         method: "POST",
         body: payload,
       }),

@@ -16,6 +16,7 @@ export default function SetPassword() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
+  const type = searchParams.get("type");
 
   // Determine subdomain: prefer explicit ?subdomain= query, otherwise derive from hostname subdomain
   const getTenantFromHost = () => {
@@ -85,7 +86,7 @@ export default function SetPassword() {
       toast.error("Passwords do not match.");
       return;
     }
-    if (!uid || !token || !subdomain) {
+    if (!uid || !token || !subdomain || !type) {
       toast.error("Invalid or missing credentials. Please try again.");
       return;
     }
@@ -101,6 +102,7 @@ export default function SetPassword() {
         subdomain: subdomain,
         uid: uid,
         token: token,
+        type: type,
       });
       console.log("Res:", res.data);
 

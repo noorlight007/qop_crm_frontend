@@ -28,6 +28,7 @@ export default function ResetPassword() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid");
   const token = searchParams.get("token");
+  const type = searchParams.get("type");
   // console.log("UID:", uid);
   // console.log("Token:", token);
 
@@ -170,7 +171,7 @@ export default function ResetPassword() {
       return;
     }
 
-    if (!uid || !token || !subdomain) {
+    if (!uid || !token || !subdomain || !type) {
       setFormError("Invalid or missing credentials. Please try again.");
       return;
     }
@@ -187,6 +188,7 @@ export default function ResetPassword() {
         uid: uid,
         token: token,
         subdomain: subdomain,
+        type: type,
       });
       // console.log("Res:", res.data);
 
