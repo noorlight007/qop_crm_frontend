@@ -7,10 +7,10 @@ import {
   FaUsers,
 } from "react-icons/fa";
 
-//Admin
-const AdminMenu: MenuItem[] = [
+//SuperAdminMenu
+const SuperAdminMenu: MenuItem[] = [
   {
-    title: "Admin",
+    title: "Super Admin",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -19,21 +19,21 @@ const AdminMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/dashboard",
+        path: "/super-admin/dashboard",
       },
       {
         title: "Networks",
         icon: <FaNetworkWired />,
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/networks",
+        path: "/super-admin/networks",
       },
       {
         title: "Organisations",
         icon: <FaBriefcase />,
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/organisations",
+        path: "/super-admin/organisations",
       },
       {
         title: "Users",
@@ -43,37 +43,37 @@ const AdminMenu: MenuItem[] = [
           {
             title: "Directors",
             type: "link",
-            path: "/admin/users/directors",
+            path: "/super-admin/users/directors",
           },
           {
             title: "Compliances",
             type: "link",
-            path: "/admin/users/compliances",
+            path: "/super-admin/users/compliances",
           },
           {
             title: "Advisers",
             type: "link",
-            path: "/admin/users/advisers",
+            path: "/super-admin/users/advisers",
           },
           {
             title: "Admins",
             type: "link",
-            path: "/admin/users/admins",
+            path: "/super-admin/users/admins",
           },
           {
             title: "Introducers",
             type: "link",
-            path: "/admin/users/introducers",
+            path: "/super-admin/users/introducers",
           },
           {
             title: "Leads",
             type: "link",
-            path: "/admin/users/leads",
+            path: "/super-admin/users/leads",
           },
           {
-            title: "Clients",
+            title: "Applicants",
             type: "link",
-            path: "/admin/users/clients",
+            path: "/super-admin/users/applicants",
           },
         ],
       },
@@ -82,7 +82,7 @@ const AdminMenu: MenuItem[] = [
         icon: "Ticket",
         type: "link",
         lanClass: "lan-3",
-        path: "/admin/support-ticket",
+        path: "/super-admin/support-ticket",
       },
     ],
   },
@@ -108,19 +108,19 @@ const NetworkDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/network/director/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/network/director/cases",
           },
           {
-            title: "Clients",
+            title: "Leads",
             type: "link",
-            path: "/network/director/clients",
+            path: "/network/director/leads",
+          },
+          {
+            title: "Applicants",
+            type: "link",
+            path: "/network/director/applicants",
           },
           {
             title: "Reports",
@@ -135,15 +135,17 @@ const NetworkDirectorMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/organisations",
+      },
+      {
         title: "Users",
         icon: <FaUsers />,
         type: "sub",
         children: [
-          {
-            title: "Organisations",
-            type: "link",
-            path: "/network/director/organisations",
-          },
           {
             title: "Compliances",
             type: "link",
@@ -153,11 +155,6 @@ const NetworkDirectorMenu: MenuItem[] = [
             title: "Advisers",
             type: "link",
             path: "/network/director/advisers",
-          },
-          {
-            title: "Advisers Status",
-            type: "link",
-            path: "/network/director/advisers-status",
           },
         ],
       },
@@ -226,19 +223,19 @@ const NetworkComplianceMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/network/director/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/network/director/cases",
           },
           {
-            title: "Clients",
+            title: "Leads",
             type: "link",
-            path: "/network/director/clients",
+            path: "/network/director/leads",
+          },
+          {
+            title: "Applicants",
+            type: "link",
+            path: "/network/director/applicants",
           },
           {
             title: "Reports",
@@ -253,24 +250,21 @@ const NetworkComplianceMenu: MenuItem[] = [
         ],
       },
       {
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/director/organisations",
+      },
+      {
         title: "Users",
         icon: <FaUsers />,
         type: "sub",
         children: [
           {
-            title: "Organisations",
-            type: "link",
-            path: "/network/director/organisations",
-          },
-          {
-            title: "Registered Advisers",
+            title: "Advisers",
             type: "link",
             path: "/network/director/advisers",
-          },
-          {
-            title: "Advisers Status",
-            type: "link",
-            path: "/network/director/advisers-status",
           },
         ],
       },
@@ -340,19 +334,19 @@ const NetworkAdviserMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/network/adviser/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/network/adviser/cases",
           },
           {
-            title: "Clients",
+            title: "Leads",
             type: "link",
-            path: "/network/adviser/clients",
+            path: "/network/adviser/leads",
+          },
+          {
+            title: "Applicants",
+            type: "link",
+            path: "/network/adviser/applicants",
           },
           {
             title: "Reports",
@@ -367,22 +361,19 @@ const NetworkAdviserMenu: MenuItem[] = [
         ],
       },
       {
-        title: "Users",
-        icon: <FaUsers />,
-        type: "sub",
-        children: [
-          {
-            title: "Organisations",
-            type: "link",
-            path: "/network/adviser/organisations",
-          },
-          // {
-          //   title: "Marketing Hub",
-          //   type: "link",
-          //   path: "/network/adviser/marketinghub",
-          // },
-        ],
+        title: "Organisations",
+        icon: <FaBriefcase />,
+        type: "link",
+        lanClass: "lan-3",
+        path: "/network/adviser/organisations",
       },
+      // {
+      //   title: "Marketing Hub",
+      //   icon: <BiBuilding />,
+      //   type: "link",
+      //   lanClass: "lan-3",
+      //   path: "/network/adviser/marketinghub",
+      // },
       {
         title: "Calculators",
         icon: <FaCalculator />,
@@ -442,19 +433,19 @@ const OrganisationDirectorMenu: MenuItem[] = [
         type: "sub",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/organisation/director/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/organisation/director/cases",
           },
           {
-            title: "Clients",
+            title: "Leads",
             type: "link",
-            path: "/organisation/director/clients",
+            path: "/organisation/director/leads",
+          },
+          {
+            title: "Applicants",
+            type: "link",
+            path: "/organisation/director/applicants",
           },
           {
             title: "Reports",
@@ -557,19 +548,19 @@ const OrganisationAdviserMenu: MenuItem[] = [
         lanClass: "lan-3",
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/organisation/adviser/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/organisation/adviser/cases",
           },
           {
-            title: "Clients",
+            title: "Leads",
             type: "link",
-            path: "/organisation/adviser/clients",
+            path: "/organisation/adviser/leads",
+          },
+          {
+            title: "Applicants",
+            type: "link",
+            path: "/organisation/adviser/applicants",
           },
           {
             title: "Reports",
@@ -657,19 +648,19 @@ const OrganisationAdminMenu: MenuItem[] = [
 
         children: [
           {
-            title: "Leads",
-            type: "link",
-            path: "/organisation/admin/leads",
-          },
-          {
             title: "All Cases",
             type: "link",
             path: "/organisation/admin/cases",
           },
           {
-            title: "Clients",
+            title: "Leads",
             type: "link",
-            path: "/organisation/admin/clients",
+            path: "/organisation/admin/leads",
+          },
+          {
+            title: "Applicants",
+            type: "link",
+            path: "/organisation/admin/applicants",
           },
           {
             title: "Reports",
@@ -722,10 +713,10 @@ const OrganisationAdminMenu: MenuItem[] = [
   },
 ];
 
-// CLIENT Menu
-const ClientMenu: MenuItem[] = [
+// APPLICANT Menu
+const ApplicantMenu: MenuItem[] = [
   {
-    title: "Client",
+    title: "Applicant",
     lanClass: "lan-1",
     type: "group",
     Items: [
@@ -734,7 +725,7 @@ const ClientMenu: MenuItem[] = [
         icon: "Chart",
         type: "link",
         lanClass: "lan-3",
-        path: "/client/dashboard",
+        path: "/applicant/dashboard",
       },
     ],
   },
@@ -742,36 +733,45 @@ const ClientMenu: MenuItem[] = [
 
 // Export all menus
 export {
-  AdminMenu,
-  ClientMenu,
+  ApplicantMenu,
   NetworkAdviserMenu,
   NetworkDirectorMenu,
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
+  SuperAdminMenu
 };
 
-export const getMenuByRole = (role?: string): MenuItem[] => {
-  switch (role) {
-    case "ADMIN":
-      return AdminMenu;
-    case "NETWORK_DIRECTOR":
-      return NetworkDirectorMenu;
-    case "NETWORK_COMPLIANCE":
-      return NetworkComplianceMenu;
-    case "NETWORK_ADVISER":
-      return NetworkAdviserMenu;
-    case "ORGANISATION_DIRECTOR":
-      return OrganisationDirectorMenu;
-    case "ORGANISATION_ADVISER":
-      return OrganisationAdviserMenu;
-    case "ORGANISATION_ADMIN":
-      return OrganisationAdminMenu;
-    case "CLIENT":
-      return ClientMenu;
-    default:
-      return [];
+export const getMenuByRole = (
+  role?: string,
+  isNetwork?: boolean,
+): MenuItem[] => {
+  if (!role) return [];
+
+  if (role === "CLIENT") return ApplicantMenu;
+
+  if (role === "SUPER_ADMIN") {
+    return SuperAdminMenu;
   }
+
+  if (role === "DIRECTOR") {
+    return isNetwork ? NetworkDirectorMenu : OrganisationDirectorMenu;
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork ? NetworkAdviserMenu : OrganisationAdviserMenu;
+  }
+
+  if (role === "ADMIN") {
+    return OrganisationAdminMenu;
+  }
+
+  if (role === "COMPLIANCE" && isNetwork) {
+    return NetworkComplianceMenu;
+  }
+
+  return [];
 };
 
-export const MenuList = (role?: string) => getMenuByRole(role);
+export const MenuList = (role?: string, isNetwork?: boolean) =>
+  getMenuByRole(role, isNetwork);

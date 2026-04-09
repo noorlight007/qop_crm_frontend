@@ -1,4 +1,4 @@
-import { ViewOrgIntroducerModalProps } from "@/Types/Network/Director/Users/Organisations/OrgIntroducerTypes";
+import { ViewOrgIntroducerModalProps } from "@/Types/Common/Organisations/OrgIntroducerTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { Mail, Phone, User } from "react-feather";
@@ -97,9 +97,7 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
                       {selectedIntroducer?.phone ? (
-                        <span
-                          className="text-decoration-none"
-                        >
+                        <span className="text-decoration-none">
                           {selectedIntroducer.phone}
                         </span>
                       ) : (

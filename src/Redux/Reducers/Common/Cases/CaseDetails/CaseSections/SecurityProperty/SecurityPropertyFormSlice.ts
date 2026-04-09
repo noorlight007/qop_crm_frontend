@@ -38,6 +38,7 @@ const initialState: SecurityPropertyFormStateProps = {
     property_lease_term: 0,
     service_charge_per_month: null,
     ground_rent_per_annum: null,
+    monthly_gross_rental: null,
     residential: null,
     commercial: null,
     is_the_property_a_listed_building: false,

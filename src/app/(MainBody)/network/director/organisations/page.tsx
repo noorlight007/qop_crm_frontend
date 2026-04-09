@@ -7,7 +7,7 @@ const NetworkDirectorOrganisations = () => {
     (async () => {
       if (typeof window !== "undefined") {
         const newClient = (
-          await import("@/Components/Network/Director/Users/Organisations")
+          await import("@/Components/Network/Director/Organisations")
         ).default;
         setClient(() => newClient);
       }

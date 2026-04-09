@@ -61,8 +61,17 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
     created_by: null,
   });
 
+  const buildRoleParams = (roleKey?: string) => {
+    if (!roleKey) return {};
+
+    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE, CLIENT)
+    return { role: roleKey };
+  };
+
+  const roleParams = buildRoleParams(userRole);
+
   const { data: authUsersData, isLoading } = useGetAuthUsersQuery({
-    role: userRole,
+    ...roleParams,
     page: currentPage,
     search: debouncedSearch || undefined,
   });
@@ -176,7 +185,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <th className="text-start">Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                {userRole === "NETWORK_COMPLIANCE" && <th>Designation</th>}
+                {userRole === "COMPLIANCE" && <th>Designation</th>}
                 <th>Joining Date</th>
                 {userRole === "INTRODUCER" && (
                   <>
@@ -243,17 +252,13 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                     </td>
                     <td>
                       {user?.phone ? (
-                        <span
-                          className="text-black"
-                        >
-                          {user?.phone}
-                        </span>
+                        <span className="text-black">{user?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
 
-                    {userRole === "NETWORK_COMPLIANCE" && (
+                    {userRole === "COMPLIANCE" && (
                       <td>
                         {user?.designation ? (
                           user?.designation
@@ -334,7 +339,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                   ? 0
                   : (currentPage - 1) * authUsersPerPage +
                     currentAuthUsers.length}{" "}
-                of {totalCount} Users
+                of {totalCount} {title.slice(0, -1)}
               </p>
             </div>
             <Pagination className="d-flex justify-content-end p-2">
@@ -430,6 +435,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           toggle={toggleViewModal}
           selectedAuthUser={selectedAuthUser}
           userRole={userRole}
+          userTitle={title}
         />
         <AddAuthUserModal
           isOpen={isAddUserModalOpen}
@@ -442,6 +448,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
           toggle={toggleUpdateModal}
           selectedAuthUser={selectedAuthUser}
           userRole={userRole}
+          userTitle={title}
         />
         {/* modals end */}
       </CardBody>

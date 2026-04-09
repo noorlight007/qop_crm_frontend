@@ -1,0 +1,94 @@
+// ── Suitability Letter ──────────────────────────────────────────
+.suitability-page-bg {
+  background: #e4e4e4;
+  min-height: 100vh;
+}
+
+.suitability-letter {
+  background: #fff;
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.15);
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 48px 60px 60px;
+  font-family: "'Times New Roman', Times, serif";
+  font-size: 0.92rem;
+  color: #1a1a1a;
+  line-height: 1.7;
+}
+
+// Dark mode overrides
+.dark-only {
+  .suitability-page-bg {
+    background: var(--body-color);
+  }
+
+  .suitability-letter {
+    background: var(--card-color);
+    box-shadow: 0 4px 28px rgba(0, 0, 0, 0.45);
+    color: var(--body-font-color);
+  }
+
+  // Divider line inside the letter
+  .suitability-letter hr {
+    border-color: var(--border-color);
+    opacity: 1;
+  }
+
+  // Scrollbar thumb for dark mode
+  .custom-casedetails-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.18);
+  }
+  .custom-casedetails-scroll:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.32);
+  }
+  .custom-casedetails-scroll {
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
+}
+
+// ── Suitability Sub-components ──────────────────────────────────
+
+.suitability-section-heading {
+  background: #214c77;
+  color: #fff;
+  letter-spacing: 0.3px;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.suitability-advisor-note {
+  background: #fff0f3;
+  color: #b0004e !important;   // !important to beat .dark-only *
+  border-left: 3px solid #f48fb1;
+  font-style: italic;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.dark-only {
+  .suitability-section-heading {
+    background: #0d2a45;
+    color: #e0eaf4 !important;
+  }
+
+  .suitability-advisor-note {
+    background: #2a1520 !important;
+    color: #f48fb1 !important;
+    border-left-color: #b0004e;
+  }
+}
+
+.suitability-purple-box {
+  background: #f3e5f5;
+  border: 1px dashed #ab47bc;
+}
+
+.dark-only {
+  .suitability-purple-box {
+    background: #1e1228 !important;
+    border-color: #7b1fa2 !important;
+  }
+}

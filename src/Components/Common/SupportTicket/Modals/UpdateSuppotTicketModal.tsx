@@ -35,7 +35,7 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     files: [],
   });
   const { data: session } = useSession();
-  const userType = session?.user?.user_type;
+  const userRole = session?.user?.role;
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [existingFiles, setExistingFiles] = useState<any[]>([]);
@@ -171,10 +171,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
       fd.append("subject", formData.subject);
       fd.append("priority", formData.priority || "");
 
-      if (userType === "ADMIN") {
-        fd.append("status", formData.status || "");
-      }
-
       if (shouldReplaceFiles) {
         // Re-upload remaining existing files (skip any entries without a URL)
         for (const file of existingFiles) {
@@ -308,31 +304,6 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
               </FormGroup>
             </Col>
           </Row>
-
-          {userType === "ADMIN" && (
-            <FormGroup>
-              <Label for="status">
-                Status<span className="text-danger">*</span>
-              </Label>
-              <Input
-                id="status"
-                name="status"
-                type="select"
-                value={formData.status}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Status</option>
-                <option value="OPEN">Open</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="RESOLVED">Resolved</option>
-              </Input>
-              {errors.status && (
-                <div className="text-danger">{errors.status}</div>
-              )}
-            </FormGroup>
-          )}
 
           <FormGroup>
             <Label for="subject">

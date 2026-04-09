@@ -1,4 +1,4 @@
-import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrClients/Modals/AddLeadModal";
+import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/AddLeadModal";
 import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useLeadOrClientFilterListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { AddJointApplicantModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
@@ -428,39 +428,37 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
       console.error("Error refetching leads:", err);
     }
   };
+
   const handleLeadCreated = (createdLead: any) => {
     if (!createdLead) {
       handleCloseAddLead();
       return;
     }
 
-    // Created lead from /leads will have shape matching LeadsInfo
-    // i.e., { alias, user: { id, title, first_name, ... }, ... }
     const user = createdLead.user || createdLead;
-    const newLeadId = user?.id;
+    // Prefer top-level alias, fall back to alias nested inside user
+    const alias = createdLead.alias ?? user?.alias;
 
-    if (!newLeadId) {
+    if (!alias) {
       handleCloseAddLead();
       return;
     }
 
-    // Optimistically add this user into the local leads list so the
-    // dropdown can show it immediately, even before refetch completes.
+    // Add the FULL createdLead object (not just `user`) so the leadOptions
+    // mapper can resolve both lead.alias and lead.user.alias correctly
     setLeads((prev) => {
       const exists = prev?.some((l: any) => {
-        const existingId = l?.id ?? l?.user?.id;
-        return existingId === newLeadId;
+        const a = l?.alias ?? l?.user?.alias;
+        return String(a) === String(alias);
       });
-
       if (exists) return prev;
-
-      return [...(prev || []), user];
+      return [...(prev || []), createdLead];
     });
 
-    // Set the form's selected lead to the newly created one.
+    // ✅ Set customer_alias (not customer_id) to auto-select in the dropdown
     setFormData((prev) => ({
       ...prev,
-      customer_id: newLeadId,
+      customer_alias: String(alias),
     }));
 
     handleCloseAddLead();
@@ -663,6 +661,7 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
         isOpen={isAddLeadModalOpen}
         toggle={handleCloseAddLead}
         onLeadCreated={handleLeadCreated}
+        header="Applicant"
       />
     </Modal>
   );

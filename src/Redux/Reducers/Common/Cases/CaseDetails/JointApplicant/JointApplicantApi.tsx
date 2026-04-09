@@ -4,7 +4,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getJointApplicantInfo: builder.query({
       query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/joint-users/`,
+        url: `/cases/${case_alias}/joint-applicants/`,
         method: "GET",
       }),
       providesTags: [
@@ -17,7 +17,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
     }),
     addJointApplicantInfo: builder.mutation({
       query: ({ case_alias, jointuserInfo }) => ({
-        url: `/cases/${case_alias}/joint-users/`,
+        url: `/cases/${case_alias}/joint-applicants/`,
         method: "POST",
         body: jointuserInfo,
       }),
@@ -32,7 +32,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
     }),
     updateJointApplicantInfo: builder.mutation({
       query: ({ case_alias, userAlias, updatedJointuserInfo }) => ({
-        url: `/cases/${case_alias}/joint-users/${userAlias}/`,
+        url: `/cases/${case_alias}/joint-applicants/${userAlias}/`,
         method: "PATCH",
         body: updatedJointuserInfo,
       }),
@@ -47,7 +47,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
     }),
     deleteJointApplicantInfo: builder.mutation({
       query: ({ case_alias, userAlias }) => ({
-        url: `/cases/${case_alias}/joint-users/${userAlias}/`,
+        url: `/cases/${case_alias}/joint-applicants/${userAlias}/`,
         method: "DELETE",
       }),
       invalidatesTags: [

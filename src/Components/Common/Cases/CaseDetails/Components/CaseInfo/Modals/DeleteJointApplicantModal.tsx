@@ -49,30 +49,30 @@ const DeleteJointApplicantModal: React.FC<DeleteJointApplicantModalProps> = ({
   if (!selectedApplicant) return null;
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} centered>
+    <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
         <h5 className="text-danger">Delete Joint Applicant</h5>
       </ModalHeader>
       <ModalBody>
         <p>
           Are you sure you want to delete{" "}
-          <strong>
-            {selectedApplicant.joint_user_details?.first_name}{" "}
-            {selectedApplicant.joint_user_details?.last_name}
+          <strong className="text-danger">
+            {selectedApplicant.customer?.name ||
+              selectedApplicant.customer?.email}
           </strong>
           ? This action cannot be undone.
         </p>
       </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle}>
-          Cancel
-        </Button>
         <Button
           color="danger"
           onClick={handleDelete}
           disabled={isDeletingJointApplicant}
         >
           {isDeletingJointApplicant ? "Deleting..." : "Delete"}
+        </Button>
+        <Button color="info" onClick={toggle}>
+          Cancel
         </Button>
       </ModalFooter>
     </Modal>

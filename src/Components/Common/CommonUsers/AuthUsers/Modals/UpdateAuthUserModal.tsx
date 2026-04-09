@@ -24,6 +24,7 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   toggle,
   selectedAuthUser,
   userRole,
+  userTitle,
 }) => {
   const [authUserData, setAuthUserData] =
     useState<Partial<AuthUser>>(selectedAuthUser);
@@ -219,7 +220,9 @@ const UpdateAuthUserModal: React.FC<UpdateAuthUserModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Info</span>
+        <span className="fs-4 text-primary">
+          Update {userTitle.slice(0, -1)} Info
+        </span>
       </ModalHeader>
       <Form
         onSubmit={(e) => handleUpdateAuthUser(e, authUserData)}

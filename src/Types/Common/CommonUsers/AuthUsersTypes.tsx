@@ -23,6 +23,7 @@ interface AuthUsersProps {
   title: string;
   authUsersPerPage?: number;
   userRole?: string;
+  roles?: string | string[];
 }
 
 interface ViewAuthUserModalProps {
@@ -30,6 +31,7 @@ interface ViewAuthUserModalProps {
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
   userRole?: string;
+  userTitle: string;
 }
 
 export interface AddAuthUserModalProps {
@@ -44,6 +46,7 @@ interface UpdateAuthUserModalProps {
   toggle: () => void;
   selectedAuthUser: Partial<AuthUser>;
   userRole?: string;
+  userTitle: string;
 }
 
 export type {

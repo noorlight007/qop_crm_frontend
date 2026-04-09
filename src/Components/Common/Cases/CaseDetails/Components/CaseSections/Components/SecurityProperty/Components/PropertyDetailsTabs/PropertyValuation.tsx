@@ -110,8 +110,8 @@ const ValuationInfo: React.FC<ValuationInfoProps> = ({ propertyData }) => {
 
   return (
     <div className=" p-4">
-      <Row className="d-flex justify-content-center">
-        <Col sm={12} lg={8}>
+      <Row>
+        <Col sm={12}>
           <div className="bg-white rounded-lg p-4">
             {/* Section: Valuation Information */}
             <div className="mb-4">

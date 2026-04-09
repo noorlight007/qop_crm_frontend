@@ -113,12 +113,9 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
                       {displayApplicant?.customer?.email ? (
-                        <a
-                          href={`mailto:${displayApplicant.customer.email}`}
-                          className="text-decoration-none"
-                        >
+                        <span className="text-primary">
                           {displayApplicant.customer.email}
-                        </a>
+                        </span>
                       ) : (
                         "-"
                       )}
@@ -165,7 +162,7 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                       <small className="text-muted d-block fw-500">
                         Relationship
                       </small>
-                      <p className="m-0 text-dark fw-500">
+                      <p className="m-0 text-primary fw-500">
                         {displayApplicant?.relationship === "OTHER"
                           ? displayApplicant?.other_relationship || "-"
                           : displayApplicant?.relationship
@@ -181,32 +178,38 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
             </Col>
             <Col md="6">
               {/* Notes */}
-              {displayApplicant?.notes && (
-                <div className="mb-4">
-                  <h6
-                    className="text-uppercase fw-bold text-primary mb-3"
-                    style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+              <div className="mb-4">
+                <h6
+                  className="text-uppercase fw-bold text-primary mb-3"
+                  style={{ fontSize: "11px", letterSpacing: "0.5px" }}
+                >
+                  <FileText
+                    size={14}
+                    className="me-2"
+                    style={{ display: "inline" }}
+                  />
+                  Notes
+                </h6>
+                <div
+                  className="p-3 bg-light rounded"
+                  style={{
+                    borderLeft: displayApplicant?.notes
+                      ? "3px solid #0d6efd"
+                      : "3px solid #ffc107",
+                  }}
+                >
+                  <p
+                    className={
+                      displayApplicant?.notes
+                        ? "m-0 text-dark"
+                        : "m-0 text-muted fst-italic"
+                    }
+                    style={{ whiteSpace: "pre-wrap" }}
                   >
-                    <FileText
-                      size={14}
-                      className="me-2"
-                      style={{ display: "inline" }}
-                    />
-                    Notes
-                  </h6>
-                  <div
-                    className="p-3 bg-light rounded"
-                    style={{ borderLeft: "3px solid #0d6efd" }}
-                  >
-                    <p
-                      className="m-0 text-dark"
-                      style={{ whiteSpace: "pre-wrap" }}
-                    >
-                      {displayApplicant.notes}
-                    </p>
-                  </div>
+                    {displayApplicant?.notes || "No notes available"}
+                  </p>
                 </div>
-              )}
+              </div>
             </Col>
           </Row>
 
@@ -227,7 +230,7 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                     <small className="text-muted d-block fw-500 mb-2">
                       Created By
                     </small>
-                    <p className="m-0 text-dark">
+                    <span className="text-dark ">
                       <strong>
                         {displayApplicant.created_by.title
                           ? formatChoiceFieldValue(
@@ -238,8 +241,13 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                         {displayApplicant.created_by.middle_name}{" "}
                         {displayApplicant.created_by.last_name}
                       </strong>
-                    </p>
-                    <small className="text-muted">
+                    </span>
+                    <small className="text-muted d-block">
+                      {displayApplicant.created_by.email
+                        ? displayApplicant.created_by.email
+                        : ""}
+                    </small>
+                    <small className="text-muted d-block">
                       {displayApplicant.created_by.user_type
                         ? formatChoiceFieldValue(
                             displayApplicant.created_by.user_type,
