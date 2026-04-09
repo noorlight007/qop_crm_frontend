@@ -4,17 +4,15 @@ import LoadingSpinner from "@/app/loading";
 import { useParams } from "next/navigation";
 import React from "react";
 import { Container } from "reactstrap";
-import RecommendationLetter from "./Components/RecommendationLetter";
 import DebtConsolidation from "./Components/DebtConsolidation";
+import HighLoanToValue from "./Components/HighLoanToValue";
+import IslamicMortgage from "./Components/IslamicMortgage";
 import LendingIntoRetirement from "./Components/LendingIntoRetirement";
 import PortingMortgageIncrease from "./Components/PortingMortgageIncrease";
-import IslamicMortgage from "./Components/IslamicMortgage";
-import RateTypePaymentMethod from "./Components/RateTypePaymentMethod";
 import ProductTransfer from "./Components/ProductTransfer";
+import RateTypePaymentMethod from "./Components/RateTypePaymentMethod";
+import RecommendationLetter from "./Components/RecommendationLetter";
 import ShortenedProductTransfer from "./Components/ShortenedProductTransfer";
-import HighLoanToValue from "./Components/HighLoanToValue";
-
-
 
 const Divider = () => <hr className="my-4" />;
 
@@ -37,17 +35,22 @@ const Suitability: React.FC = () => {
   return (
     <Container
       fluid
-      className="py-4 px-2 px-md-4 suitability-page-bg"  // ← class replaces inline style
+      className="py-4 px-2 px-md-4 suitability-page-bg" // ← class replaces inline style
     >
-      <div className="suitability-letter">  {/* ← class replaces inline style */}
-
+      <h1 className="mb-4 text-danger text-center fw-bold">
+        This page is under Development
+      </h1>
+      <div className="suitability-letter">
         <RecommendationLetter caseData={caseData} suitability={suitability} />
         <Divider />
         <DebtConsolidation caseData={caseData} suitability={suitability} />
         <Divider />
         <LendingIntoRetirement caseData={caseData} suitability={suitability} />
         <Divider />
-        <PortingMortgageIncrease caseData={caseData} suitability={suitability} />
+        <PortingMortgageIncrease
+          caseData={caseData}
+          suitability={suitability}
+        />
         <Divider />
         <IslamicMortgage caseData={caseData} suitability={suitability} />
         <Divider />
@@ -55,10 +58,12 @@ const Suitability: React.FC = () => {
         <Divider />
         <ProductTransfer caseData={caseData} suitability={suitability} />
         <Divider />
-        <ShortenedProductTransfer caseData={caseData} suitability={suitability} />
+        <ShortenedProductTransfer
+          caseData={caseData}
+          suitability={suitability}
+        />
         <Divider />
         <HighLoanToValue caseData={caseData} />
-
       </div>
     </Container>
   );

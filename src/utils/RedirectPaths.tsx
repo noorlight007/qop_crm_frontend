@@ -133,7 +133,7 @@ export const getSupportTicketUrl = (
   isNetwork?: boolean,
 ) => {
   if (role === "SUPER_ADMIN") {
-    return `/admin/support-ticket/${supportTicketAlias}`;
+    return `/super-admin/support-ticket/${supportTicketAlias}`;
   }
 
   if (role === "ADMIN" && isNetwork === false) {

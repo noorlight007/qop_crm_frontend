@@ -251,22 +251,20 @@ const ClientSurveyContent: React.FC = () => {
           toggle={toggleConfirmModal}
           caseAlias={resolvedCaseAlias}
           onSuccess={() => setIsConfirmModalOpen(false)}
+          surveySentCount={selectedSurvey?.survey_sent_count ?? 0}
         />
 
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
           <div className="d-flex gap-2 mb-4">
-            {!selectedSurvey?.adviser_name && (
-              <Button
-                color="primary"
-                outline
-                onClick={toggleConfirmModal}
-                disabled={!resolvedCaseAlias}
-              >
-                <Send size={15} className="me-1" /> Send Survey Form To the
-                Client
-              </Button>
-            )}
+            <Button
+              color="primary"
+              outline
+              onClick={toggleConfirmModal}
+              disabled={!resolvedCaseAlias}
+            >
+              <Send size={15} className="me-1" /> Send Survey Form To the Client
+            </Button>
             <Button
               color="secondary"
               onClick={downloadSurvey}
