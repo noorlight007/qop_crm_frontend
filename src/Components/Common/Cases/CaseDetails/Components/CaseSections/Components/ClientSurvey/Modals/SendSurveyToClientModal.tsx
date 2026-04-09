@@ -4,6 +4,7 @@ import React from "react";
 import { Send } from "react-feather";
 import { toast } from "react-toastify";
 import {
+  Alert,
   Button,
   Modal,
   ModalBody,
@@ -88,6 +89,7 @@ const SendSurveyToClientModal: React.FC<SendSurveyToClientModalProps> = ({
   toggle,
   caseAlias,
   onSuccess,
+  surveySentCount = 0,
 }) => {
   const normalizedCaseAlias =
     typeof caseAlias === "string"
@@ -109,7 +111,6 @@ const SendSurveyToClientModal: React.FC<SendSurveyToClientModalProps> = ({
       await sendSurvey({ case_alias: normalizedCaseAlias }).unwrap();
       toast.success("Survey sent successfully.");
       onSuccess?.();
-      toggle();
     } catch (error) {
       toast.error(getErrorMessage(error));
     }
@@ -121,6 +122,16 @@ const SendSurveyToClientModal: React.FC<SendSurveyToClientModalProps> = ({
         Send Survey to Client
       </ModalHeader>
       <ModalBody className="text-center">
+        {/* 👇 Only shows when survey was already sent at least once */}
+        {surveySentCount > 0 && (
+          <Alert color="warning" className="text-start mb-3 text-center rounded">
+            ⚠️ This survey has already been sent{" "}
+            <strong>
+              {surveySentCount} time{surveySentCount > 1 ? "s" : ""}
+            </strong>
+            . Sending again will notify the client again.
+          </Alert>
+        )}
         Are you sure you want to send the survey form to the client? They will
         receive an email with a link to submit the survey.
       </ModalBody>

@@ -3,4 +3,5 @@ export interface SendSurveyToClientModalProps {
   toggle: () => void;
   caseAlias?: string | string[] | null;
   onSuccess?: () => void;
+  surveySentCount?: number;
 }
