@@ -76,5 +76,5 @@ export interface ApplicantInvitationProps {
 export interface ApplicantInvitationModalProps {
   isOpen: boolean;
   toggle: () => void;
-  selectedApplicant: any;
+  caseAlias?: string;
 }

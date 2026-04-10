@@ -344,7 +344,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                 {session?.user?.role === "SUPER_ADMIN" && <th>Organisation</th>}
                 <th>Created By</th>
                 <th>Created At</th>
-                {roles !== "LEAD" && roles !== "CLIENT" && <th>Status</th>}
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>

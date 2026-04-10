@@ -1651,7 +1651,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                 color="info"
                 outline
                 onClick={handleCopyAddress}
-                disabled={session?.user?.role === "CLIENT"}
+                disabled={session?.user?.role === "APPLICANT"}
               >
                 Copy Address from Previous
               </Button>
@@ -2437,7 +2437,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               color="success"
               className="border-success"
               onClick={() => setAddEmploymentModalOpen(true)}
-              disabled={session?.user?.role === "CLIENT"}
+              disabled={session?.user?.role === "APPLICANT"}
             >
               Add New
             </Button>
@@ -2447,7 +2447,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                 type="submit"
                 disabled={
                   isUpdateEmploymentDetailsLoading ||
-                  session?.user?.role === "CLIENT"
+                  session?.user?.role === "APPLICANT"
                 }
                 onClick={() => {
                   submitActionRef.current = "save";
@@ -2463,7 +2463,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                 disabled={isUpdateEmploymentDetailsLoading}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (session?.user?.role === "CLIENT") {
+                  if (session?.user?.role === "APPLICANT") {
                     handleNextTab();
                   } else {
                     submitActionRef.current = "next";
@@ -2471,7 +2471,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                   }
                 }}
               >
-                {session?.user?.role === "CLIENT"
+                {session?.user?.role === "APPLICANT"
                   ? "Go To Next"
                   : isUpdateEmploymentDetailsLoading &&
                       submitting === "save_next"

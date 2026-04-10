@@ -33,10 +33,18 @@ export const LeadsOrApplicantsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["LeadsOrApplicants"],
     }),
-    ApplicantInvitation: builder.mutation({
-      query: ({ userAlias }) => ({
-        url: `/director/users/${userAlias}/invitation/`,
+    getApplicantInvitationList: builder.query({
+      query: ({ caseAlias }) => ({
+        url: `/cases/${caseAlias}/applicant-invitation/`,
         method: "GET",
+      }),
+      providesTags: ["LeadsOrApplicants"],
+    }),
+    ApplicantInvitation: builder.mutation({
+      query: ({ caseAlias, payload }) => ({
+        url: `/cases/${caseAlias}/applicant-invitation/`,
+        method: "POST",
+        body: payload,
       }),
       invalidatesTags: ["LeadsOrApplicants"],
     }),
@@ -47,5 +55,6 @@ export const {
   useAddLeadsOrApplicantsMutation,
   useUpdateLeadsOrApplicantsDetailsMutation,
   useDeleteLeadsOrApplicantsMutation,
+  useGetApplicantInvitationListQuery,
   useApplicantInvitationMutation,
 } = LeadsOrApplicantsApi;

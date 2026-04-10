@@ -320,7 +320,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
           <button
             type="button"
             className="btn btn-primary"
-            disabled={session?.user?.role === "CLIENT"}
+            disabled={session?.user?.role === "APPLICANT"}
             onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
           >
             <TbCirclePlus className="me-1" size={18} />
@@ -550,7 +550,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       color="danger"
                       title="Remove row"
                       onClick={() => openDeleteModal(lump.id)}
-                      disabled={session?.user?.role === "CLIENT"}
+                      disabled={session?.user?.role === "APPLICANT"}
                     >
                       <FaTrash /> Delete
                     </Button>
@@ -558,7 +558,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       type="button"
                       className="btn btn-primary"
                       disabled={
-                        isUpdatingLump || session?.user?.role === "CLIENT"
+                        isUpdatingLump || session?.user?.role === "APPLICANT"
                       }
                       onClick={() => handleUpdateLump(lump, idx)}
                     >
@@ -577,7 +577,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
-            disabled={session?.user?.role === "CLIENT"}
+            disabled={session?.user?.role === "APPLICANT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Lump Sum

@@ -164,7 +164,7 @@ export const ComplianceTab = () => {
                 disabled={
                   submitting !== null ||
                   isUpdating ||
-                  session?.user?.role === "CLIENT"
+                  session?.user?.role === "APPLICANT"
                 }
               >
                 {submitting === "save" ? "Saving..." : "Save Changes"}
@@ -174,7 +174,7 @@ export const ComplianceTab = () => {
                 type="button"
                 disabled={submitting !== null || isUpdating}
                 onClick={async () => {
-                  if (session?.user?.role === "CLIENT") {
+                  if (session?.user?.role === "APPLICANT") {
                     handleNextTab();
                   } else {
                     const ok = await handleUpdateAll("save_next");
@@ -184,7 +184,7 @@ export const ComplianceTab = () => {
                   }
                 }}
               >
-                {session?.user?.role === "CLIENT"
+                {session?.user?.role === "APPLICANT"
                   ? "Go To Next"
                   : submitting === "save_next"
                     ? "Saving..."

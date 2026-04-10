@@ -64,7 +64,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const buildRoleParams = (roleKey?: string) => {
     if (!roleKey) return {};
 
-    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE, CLIENT)
+    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE, APPLICANT)
     return { role: roleKey };
   };
 

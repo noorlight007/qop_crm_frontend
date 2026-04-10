@@ -144,7 +144,7 @@ const Notes: React.FC = () => {
           </div>
         </Col>
         <Col md={6} className="text-end ">
-          {session?.user?.role !== "CLIENT" && (
+          {session?.user?.role !== "APPLICANT" && (
             <Button color="primary" onClick={toggleAddNoteModal}>
               <i className="fa-solid fa-circle-plus"></i> Add New Note
             </Button>
@@ -167,7 +167,7 @@ const Notes: React.FC = () => {
               <th style={{ minWidth: "600px", textAlign: "left" }}>
                 Information
               </th>
-              {session?.user?.role !== "CLIENT" && (
+              {session?.user?.role !== "APPLICANT" && (
                 <>
                   <th style={{ minWidth: "100px", textAlign: "center" }}>
                     Introducer Visible
@@ -202,7 +202,7 @@ const Notes: React.FC = () => {
               // support old non-paginated array response and new paginated response
               (notesData.results ?? notesData)
                 .filter((note: NoteProps) => {
-                  if (session?.user?.role === "CLIENT") {
+                  if (session?.user?.role === "APPLICANT") {
                     return (
                       (note as any).is_visible_to_client ??
                       (note as any).note_visible_to_client
@@ -274,7 +274,7 @@ const Notes: React.FC = () => {
                         </Button>
                       )}
                     </td>
-                    {session?.user?.role !== "CLIENT" && (
+                    {session?.user?.role !== "APPLICANT" && (
                       <>
                         <td
                           className={`text-center ${

@@ -490,7 +490,7 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                   type="button"
                   className="border-success"
                   onClick={() => setModalIsOpen(true)}
-                  disabled={session?.user?.role === "CLIENT"}
+                  disabled={session?.user?.role === "APPLICANT"}
                 >
                   Add New Lender History
                 </Button>
@@ -502,7 +502,7 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                   onClick={() => {
                     submitActionRef.current = "save";
                   }}
-                  disabled={session?.user?.role === "CLIENT"}
+                  disabled={session?.user?.role === "APPLICANT"}
                 >
                   Save History
                 </Button>
@@ -510,7 +510,7 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                   color="secondary"
                   onClick={async (e) => {
                     e.preventDefault();
-                    if (session?.user?.role === "CLIENT") {
+                    if (session?.user?.role === "APPLICANT") {
                       handleNextTab();
                     } else {
                       submitActionRef.current = "next";
@@ -518,7 +518,7 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
                     }
                   }}
                 >
-                  {session?.user?.role === "CLIENT"
+                  {session?.user?.role === "APPLICANT"
                     ? "Go To Next"
                     : "Save & Next"}
                 </Button>

@@ -128,7 +128,7 @@ const BudgetPlanner: React.FC = () => {
   };
 
   const handleSaveAndNext = async () => {
-    if (session?.user?.role === "CLIENT") {
+    if (session?.user?.role === "APPLICANT") {
       handleNextTab();
       return;
     }
@@ -165,7 +165,7 @@ const BudgetPlanner: React.FC = () => {
             onClick={handleSaveAndNext}
             disabled={isSaving || isBudgetPlannerLoading}
           >
-            {session?.user?.role === "CLIENT" ? "Go To Next" : "Save & Next"}
+            {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"}
           </Button>
         </div>
       </div>

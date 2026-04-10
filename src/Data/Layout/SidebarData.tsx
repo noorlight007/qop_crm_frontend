@@ -174,11 +174,11 @@ const NetworkDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/network/director/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/network/director/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
@@ -748,7 +748,7 @@ export const getMenuByRole = (
 ): MenuItem[] => {
   if (!role) return [];
 
-  if (role === "CLIENT") return ApplicantMenu;
+  if (role === "APPLICANT") return ApplicantMenu;
 
   if (role === "SUPER_ADMIN") {
     return SuperAdminMenu;

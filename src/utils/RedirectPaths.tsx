@@ -39,7 +39,7 @@ export const getDashboardHomeUrl = (session: Session | null) => {
       : "/organisation/adviser/dashboard";
   }
 
-  if (role === "CLIENT") {
+  if (role === "APPLICANT") {
     return "/applicant/dashboard";
   }
 
@@ -80,7 +80,7 @@ export const getAllCasesUrl = (session: Session | null) => {
     return isNetwork ? "/network/adviser/cases" : "/organisation/adviser/cases";
   }
 
-  if (role === "CLIENT") {
+  if (role === "APPLICANT") {
     return "/applicant/dashboard";
   }
 
@@ -119,7 +119,7 @@ export const getCaseUrl = (
       : `/organisation/adviser/cases/${caseAlias}`;
   }
 
-  if (role === "CLIENT") {
+  if (role === "APPLICANT") {
     return `/client/cases/${caseAlias}`;
   }
 
@@ -158,7 +158,7 @@ export const getSupportTicketUrl = (
       : `/organisation/adviser/support-ticket/${supportTicketAlias}`;
   }
 
-  if (role === "CLIENT") {
+  if (role === "APPLICANT") {
     return `/client/support-ticket/${supportTicketAlias}`;
   }
 

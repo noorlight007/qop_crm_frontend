@@ -7,7 +7,6 @@ import {
   AddNewCaseModalProps,
   LeadOptionType,
 } from "@/Types/Common/Cases/CaseTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -231,7 +230,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   // Custom Option Component for beautiful display
   const CustomOption = (props: any) => {
     const { data } = props;
-    const displayRole = data?.role || data?.user_type;
     return (
       <components.Option {...props}>
         <div className="d-flex align-items-center gap-2">
@@ -275,26 +273,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               >
                 {data.name}
               </div>
-              {displayRole && (
-                <span
-                  style={{
-                    backgroundColor:
-                      displayRole === "CLIENT"
-                        ? "var(--bg-light-primary)"
-                        : "var(--bg-light-secondary)",
-                    color:
-                      displayRole === "CLIENT"
-                        ? "var(--info-color)"
-                        : "var(--warning-color)",
-                    padding: "2px 6px",
-                    borderRadius: "4px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {formatChoiceFieldValue(displayRole) || ""}
-                </span>
-              )}
             </div>
 
             <div
@@ -317,7 +295,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   // Custom SingleValue Component for selected value
   const CustomSingleValue = (props: any) => {
     const { data } = props;
-    const displayRole = data?.role || data?.user_type;
     return (
       <components.SingleValue {...props}>
         <div className="d-flex align-items-center gap-2">
@@ -354,26 +331,6 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               className="d-flex gap-2"
             >
               <div>{data.name}</div>
-              {displayRole && (
-                <span
-                  style={{
-                    backgroundColor:
-                      displayRole === "CLIENT"
-                        ? "var(--bg-light-primary)"
-                        : "var(--bg-light-secondary)",
-                    color:
-                      displayRole === "CLIENT"
-                        ? "var(--info-color)"
-                        : "var(--warning-color)",
-                    padding: "2px 6px",
-                    borderRadius: "4px",
-                    fontSize: "12px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {formatChoiceFieldValue(displayRole) || ""}
-                </span>
-              )}
             </div>
             {data.email && (
               <div style={{ fontSize: "11px", color: "var(--font-color)" }}>

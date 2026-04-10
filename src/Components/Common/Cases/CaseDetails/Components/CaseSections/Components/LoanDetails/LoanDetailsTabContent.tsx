@@ -1898,7 +1898,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 disabled={
                   isLoading ||
                   isUpdating ||
-                  (session?.user?.role === "CLIENT" &&
+                  (session?.user?.role === "APPLICANT" &&
                     loandetailsData?.updated_by !== null)
                 }
               >
@@ -1917,7 +1917,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   }
 
                   if (
-                    session?.user?.role === "CLIENT" &&
+                    session?.user?.role === "APPLICANT" &&
                     loandetailsData?.updated_by !== null
                   ) {
                     handleNextTab();
@@ -1937,7 +1937,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                 }}
                 disabled={isLoading || isUpdating}
               >
-                {session?.user?.role === "CLIENT" &&
+                {session?.user?.role === "APPLICANT" &&
                 loandetailsData?.updated_by !== null
                   ? "Go To Next"
                   : isUpdating && submitting === "save_next"
