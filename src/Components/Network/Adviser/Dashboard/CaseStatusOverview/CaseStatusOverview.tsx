@@ -62,7 +62,28 @@ const CaseStatusOverview: React.FC<CommonAdviserSummaryProps> = ({
         fontSize: 12,
       },
     },
-    colors: ["#2c7d7b", "#e97451", "#a5d6a7"],
+    colors: [
+      "#2c7d7b", // teal
+      "#e97451", // burnt orange
+      "#a5d6a7", // light green
+      "#5c6bc0", // indigo
+      "#f9a825", // amber
+      "#ec407a", // pink
+      "#29b6f6", // light blue
+      "#8d6e63", // brown
+      "#ab47bc", // purple
+      "#66bb6a", // green
+      "#ef5350", // red
+      "#26c6da", // cyan
+      "#ff7043", // deep orange
+      "#7e57c2", // deep purple
+      "#d4e157", // lime
+      "#26a69a", // teal variant
+      "#ffa726", // orange
+      "#78909c", // blue grey
+      "#e53935", // crimson
+      "#43a047", // medium green
+    ],
     backgroundColor: "transparent",
     chartArea: {
       left: 30,
