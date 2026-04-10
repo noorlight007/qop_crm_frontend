@@ -1513,7 +1513,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                 <Button
                   color="success"
                   onClick={toggleModal}
-                  disabled={isUpdating || session?.user?.role === "CLIENT"}
+                  disabled={isUpdating || session?.user?.role === "APPLICANT"}
                 >
                   Add New Policy
                 </Button>
@@ -1523,7 +1523,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     type="submit"
                     disabled={
                       isUpdating ||
-                      (session?.user?.role === "CLIENT" &&
+                      (session?.user?.role === "APPLICANT" &&
                         policy?.updated_by !== null)
                     }
                   >
@@ -1536,7 +1536,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                       e.preventDefault();
                       // active policy in this pane
                       if (
-                        session?.user?.role === "CLIENT" &&
+                        session?.user?.role === "APPLICANT" &&
                         policy?.updated_by !== null
                       ) {
                         handleNextTab();
@@ -1548,7 +1548,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     }}
                     disabled={isUpdating}
                   >
-                    {session?.user?.role === "CLIENT" &&
+                    {session?.user?.role === "APPLICANT" &&
                     policy?.updated_by !== null
                       ? "Go To Next"
                       : "Save & Next"}

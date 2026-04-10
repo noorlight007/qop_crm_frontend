@@ -29,7 +29,7 @@ const UserLogin = () => {
       router.push("/organisation/adviser/dashboard");
     } else if (role === "ADMIN" && isNetwork === false) {
       router.push("/organisation/admin/dashboard");
-    } else if (role === "CLIENT") {
+    } else if (role === "APPLICANT") {
       router.push("/applicant/dashboard");
     } else {
       logOut();

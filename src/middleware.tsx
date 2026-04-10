@@ -68,7 +68,7 @@ export default withAuth(
       return NextResponse.redirect(loginUrl);
     }
 
-    if (path.startsWith("/client") && role !== "CLIENT") {
+    if (path.startsWith("/applicant") && role !== "APPLICANT") {
       const loginUrl = new URL("/auth/login", req.url);
       loginUrl.searchParams.set("error", "unauthorized");
       return NextResponse.redirect(loginUrl);
@@ -92,6 +92,6 @@ export const config = {
     "/organisation/director/:path*",
     "/organisation/adviser/:path*",
     "/organisation/admin/:path*",
-    "/client/:path*",
+    "/applicant/:path*",
   ],
 };

@@ -2,7 +2,10 @@ import {
   useGetUserRolesQuery,
   useSwitchRoleMutation,
 } from "@/Redux/Reducers/UserProfileAndSettings/RoleSwitchingApi";
+import { getDashboardHomeUrl } from "@/utils/RedirectPaths";
+import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { FaSyncAlt, FaUserShield, FaUsersCog } from "react-icons/fa";
 import {
@@ -41,7 +44,7 @@ const RoleSwitching: React.FC = () => {
       else if (key === "ADMIN") badgeColor = "warning";
       else if (key === "ADVISER") badgeColor = "info" as any;
       else if (key === "COMPLIANCE") badgeColor = "success";
-      else if (key === "CLIENT") badgeColor = "secondary";
+      else if (key === "APPLICANT") badgeColor = "secondary";
 
       const descriptionMap: Record<string, string> = {
         DIRECTOR:
@@ -52,7 +55,7 @@ const RoleSwitching: React.FC = () => {
           "Handles assigned cases and tasks, working directly with clients.",
         COMPLIANCE:
           "Reviews, monitors, and approves cases to ensure compliance requirements are met.",
-        CLIENT: "Accesses and manages their own cases and documents.",
+        APPLICANT: "Accesses and manages their own cases and documents.",
       };
 
       return {
@@ -83,6 +86,8 @@ const RoleSwitching: React.FC = () => {
   const handleSelectRole = (key: string) => {
     setSelectedRoleKey(key);
   };
+
+  const router = useRouter();
 
   const handleSwitchRole = async () => {
     if (!selectedRoleKey || selectedRoleKey === activeRoleKey) return;
@@ -124,9 +129,17 @@ const RoleSwitching: React.FC = () => {
         }
       }
 
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
+      const redirectSession = session
+        ? ({
+            ...session,
+            user: {
+              ...session.user,
+              role: selectedRoleKey,
+            },
+          } as Session)
+        : null;
+      const dashboardUrl = getDashboardHomeUrl(redirectSession);
+      router.push(dashboardUrl);
     } catch (e) {
       // Optionally surface a toast here if you have a global toaster
       console.error("Failed to switch role", e);
@@ -194,7 +207,7 @@ const RoleSwitching: React.FC = () => {
                     key={role.key}
                     action
                     onClick={() => handleSelectRole(role.key)}
-                    style={{cursor:"pointer"}}
+                    style={{ cursor: "pointer" }}
                     className={`d-flex align-items-start justify-content-between gap-2 rounded-3 mb-2 ${
                       isSelected
                         ? "border-primary bg-light-primary"

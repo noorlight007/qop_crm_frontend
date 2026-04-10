@@ -96,7 +96,7 @@ const FeeInTable = () => {
             color="primary"
             className="addFee d-flex align-items-center gap-2"
             onClick={toggleModal}
-            disabled={session?.user?.role === "CLIENT"}
+            disabled={session?.user?.role === "APPLICANT"}
           >
             Add New Fee In
             <i className="fa-solid fa-circle-plus"></i>

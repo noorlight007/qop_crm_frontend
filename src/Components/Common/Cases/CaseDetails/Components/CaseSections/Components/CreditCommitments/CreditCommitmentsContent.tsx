@@ -104,7 +104,7 @@ const CreditCommitmentsContent: React.FC = () => {
             type="submit"
             className="d-flex justify-content-center align-items-center gap-1"
             onClick={() => setModalIsOpen(!modalIsOpen)}
-            disabled={session?.user?.role === "CLIENT"}
+            disabled={session?.user?.role === "APPLICANT"}
           >
             <TbCirclePlus />
             <span>Add Credit Item</span>
@@ -281,7 +281,7 @@ const CreditCommitmentsContent: React.FC = () => {
             handleNextTab();
           }}
         >
-          {session?.user?.role === "CLIENT" ? "Go To Next" : "Save & Next"}
+          {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"}
         </Button>
       </div>
       {/* modals start */}

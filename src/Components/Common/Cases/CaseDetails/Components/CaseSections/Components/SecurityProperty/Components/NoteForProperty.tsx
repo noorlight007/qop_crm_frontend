@@ -194,14 +194,14 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
             name="next"
             className="px-4"
             onClick={async () => {
-              if (session?.user?.role === "CLIENT") return;
+              if (session?.user?.role === "APPLICANT") return;
               setSubmitting("save");
               await handleSubmit();
             }}
             disabled={
               submitting !== null ||
               isLoading ||
-              session?.user?.role === "CLIENT"
+              session?.user?.role === "APPLICANT"
             }
           >
             {submitting === "save" ? "Saving..." : "Save Changes"}
@@ -210,7 +210,7 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
             type="button"
             color="secondary"
             onClick={async () => {
-              if (session?.user?.role === "CLIENT") {
+              if (session?.user?.role === "APPLICANT") {
                 handleNextTab();
               } else {
                 setSubmitting("save_next");
@@ -220,7 +220,7 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
             }}
             disabled={submitting !== null || isLoading}
           >
-            {session?.user?.role === "CLIENT"
+            {session?.user?.role === "APPLICANT"
               ? "Go to Next"
               : submitting === "save_next"
                 ? "Saving..."

@@ -2020,7 +2020,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
                 disabled={
                   isUpdating ||
                   submitting !== null ||
-                  session?.user?.role === "CLIENT"
+                  session?.user?.role === "APPLICANT"
                 }
                 onClick={(e) =>
                   handleSubmit(e as React.MouseEvent<HTMLButtonElement>, "save")
@@ -2032,11 +2032,11 @@ const NeedsAndPreferencesContent: React.FC = () => {
                 color="secondary"
                 type="button"
                 disabled={
-                  session?.user?.role !== "CLIENT" &&
+                  session?.user?.role !== "APPLICANT" &&
                   (isUpdating || submitting !== null)
                 }
                 onClick={async (e) => {
-                  if (session?.user?.role === "CLIENT") {
+                  if (session?.user?.role === "APPLICANT") {
                     handleNextTab();
                   } else {
                     const success = await handleSubmit(
@@ -2049,7 +2049,7 @@ const NeedsAndPreferencesContent: React.FC = () => {
                   }
                 }}
               >
-                {session?.user?.role === "CLIENT"
+                {session?.user?.role === "APPLICANT"
                   ? "Go To Next"
                   : submitting === "save_next"
                     ? "Saving..."

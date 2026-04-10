@@ -748,7 +748,7 @@ export const getMenuByRole = (
 ): MenuItem[] => {
   if (!role) return [];
 
-  if (role === "CLIENT") return ApplicantMenu;
+  if (role === "APPLICANT") return ApplicantMenu;
 
   if (role === "SUPER_ADMIN") {
     return SuperAdminMenu;

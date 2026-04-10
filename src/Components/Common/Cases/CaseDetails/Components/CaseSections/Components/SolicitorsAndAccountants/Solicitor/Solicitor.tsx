@@ -526,7 +526,7 @@ const Solicitor: React.FC = () => {
                           color="success"
                           onClick={toggleModal}
                           className="border-success"
-                          disabled={session?.user?.role === "CLIENT"}
+                          disabled={session?.user?.role === "APPLICANT"}
                         >
                           Add New Solicitor
                         </Button>
@@ -535,7 +535,7 @@ const Solicitor: React.FC = () => {
                           onClick={handleAssignSolicitor}
                           disabled={
                             !selectedSolicitor ||
-                            session?.user?.role === "CLIENT"
+                            session?.user?.role === "APPLICANT"
                           }
                         >
                           Assign Solicitor
@@ -933,7 +933,7 @@ const Solicitor: React.FC = () => {
                     type="submit"
                     color="primary"
                     disabled={
-                      isUpdateLoading || session?.user?.role === "CLIENT"
+                      isUpdateLoading || session?.user?.role === "APPLICANT"
                     }
                     onClick={() => {
                       submitActionRef.current = "save";
@@ -944,7 +944,7 @@ const Solicitor: React.FC = () => {
                   <Button
                     color="secondary"
                     onClick={async (e) => {
-                      if (session?.user?.role === "CLIENT") {
+                      if (session?.user?.role === "APPLICANT") {
                         handleNextTab();
                       } else {
                         e.preventDefault();
@@ -953,7 +953,7 @@ const Solicitor: React.FC = () => {
                       }
                     }}
                   >
-                    {session?.user?.role === "CLIENT"
+                    {session?.user?.role === "APPLICANT"
                       ? "Go To Next"
                       : "Save & Next"}
                   </Button>

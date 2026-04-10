@@ -2,7 +2,6 @@ import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Moda
 import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useLeadOrClientFilterListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { AddJointApplicantModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
-import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
@@ -142,7 +141,6 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
   // ── Custom dropdown option (avatar + name + role + email) ─────────────────
   const CustomOption = (props: any) => {
     const { data } = props;
-    const displayRole = data?.role || data?.user_type;
     return (
       <components.Option {...props}>
         <div className="d-flex align-items-center gap-2">
@@ -181,26 +179,6 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
               >
                 {data.name}
               </div>
-              {displayRole && (
-                <span
-                  style={{
-                    backgroundColor:
-                      displayRole === "CLIENT"
-                        ? "var(--bg-light-primary)"
-                        : "var(--bg-light-secondary)",
-                    color:
-                      displayRole === "CLIENT"
-                        ? "var(--info-color)"
-                        : "var(--warning-color)",
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
-                >
-                  {formatChoiceFieldValue(displayRole) || ""}
-                </span>
-              )}
             </div>
             <div
               style={{
@@ -222,7 +200,6 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
   // ── Custom selected-value display ─────────────────────────────────────────
   const CustomSingleValue = (props: any) => {
     const { data } = props;
-    const displayRole = data?.role || data?.user_type;
     return (
       <components.SingleValue {...props}>
         <div className="d-flex align-items-center gap-2">
@@ -255,26 +232,6 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
               className="d-flex gap-2"
             >
               <div>{data.name}</div>
-              {displayRole && (
-                <span
-                  style={{
-                    backgroundColor:
-                      displayRole === "CLIENT"
-                        ? "var(--bg-light-primary)"
-                        : "var(--bg-light-secondary)",
-                    color:
-                      displayRole === "CLIENT"
-                        ? "var(--info-color)"
-                        : "var(--warning-color)",
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                    fontSize: 12,
-                    fontWeight: 600,
-                  }}
-                >
-                  {formatChoiceFieldValue(displayRole) || ""}
-                </span>
-              )}
             </div>
             {data.email && (
               <div style={{ fontSize: 11, color: "var(--font-color)" }}>

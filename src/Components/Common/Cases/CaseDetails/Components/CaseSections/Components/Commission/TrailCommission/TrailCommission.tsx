@@ -306,7 +306,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddModalOpen(true)}
-            disabled={session?.user?.role === "CLIENT"}
+            disabled={session?.user?.role === "APPLICANT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Trail Commission
@@ -528,14 +528,14 @@ const TrailCommission: React.FC<CommissionProps> = ({
                       color="danger"
                       title="Remove row"
                       onClick={() => openDeleteModal(trail.id)}
-                      disabled={session?.user?.role === "CLIENT"}
+                      disabled={session?.user?.role === "APPLICANT"}
                     >
                       <FaTrash /> Delete
                     </Button>
                     <button
                       type="button"
                       className="btn btn-primary"
-                      disabled={isUpdating || session?.user?.role === "CLIENT"}
+                      disabled={isUpdating || session?.user?.role === "APPLICANT"}
                       onClick={() => handleUpdateTrail(trail, idx)}
                     >
                       <ArrowUpCircle size={16} />{" "}
@@ -553,7 +553,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
             type="button"
             className="btn btn-primary"
             onClick={() => setIsAddModalOpen(true)}
-            disabled={session?.user?.role === "CLIENT"}
+            disabled={session?.user?.role === "APPLICANT"}
           >
             <TbCirclePlus className="me-1" size={18} />
             Add New Trail Commission

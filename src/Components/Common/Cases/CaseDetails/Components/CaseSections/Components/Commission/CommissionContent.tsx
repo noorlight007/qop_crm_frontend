@@ -183,7 +183,7 @@ const CommissionContent: React.FC = () => {
               <Button
                 color="primary"
                 type="submit"
-                disabled={isAdding || session?.user?.role === "CLIENT"}
+                disabled={isAdding || session?.user?.role === "APPLICANT"}
               >
                 {isAdding ? "Saving..." : "Save Changes"}
               </Button>
@@ -191,7 +191,7 @@ const CommissionContent: React.FC = () => {
                 color="secondary"
                 disabled={isAdding}
                 onClick={async () => {
-                  if (session?.user?.role === "CLIENT") {
+                  if (session?.user?.role === "APPLICANT") {
                     handleNextTab();
                   } else {
                     const success = await handleSubmit();
@@ -203,7 +203,7 @@ const CommissionContent: React.FC = () => {
               >
                 {isAdding
                   ? "Saving..."
-                  : session?.user?.role === "CLIENT"
+                  : session?.user?.role === "APPLICANT"
                     ? "Go To Next"
                     : "Save & Next"}
               </Button>

@@ -431,14 +431,14 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                     type="button"
                     color="primary"
                     onClick={async () => {
-                      if (session?.user?.role === "CLIENT") return;
+                      if (session?.user?.role === "APPLICANT") return;
                       setSubmitting("save");
                       await handleSubmit();
                     }}
                     disabled={
                       submitting !== null ||
                       isAdverseUpdating ||
-                      session?.user?.role === "CLIENT"
+                      session?.user?.role === "APPLICANT"
                     }
                   >
                     {submitting === "save" ? "Saving..." : "Save Changes"}
@@ -447,7 +447,7 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                     type="button"
                     color="secondary"
                     onClick={async (e) => {
-                      if (session?.user?.role === "CLIENT") {
+                      if (session?.user?.role === "APPLICANT") {
                         handleNextTab();
                       } else {
                         e.preventDefault();
@@ -458,7 +458,7 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                     }}
                     disabled={submitting !== null || isAdverseUpdating}
                   >
-                    {session?.user?.role === "CLIENT"
+                    {session?.user?.role === "APPLICANT"
                       ? "Go To Next"
                       : submitting === "save_next"
                         ? "Saving..."
