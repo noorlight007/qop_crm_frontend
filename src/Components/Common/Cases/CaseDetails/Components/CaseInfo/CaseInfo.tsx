@@ -16,6 +16,7 @@ import {
   TbCopy,
   TbDownload,
   TbEdit,
+  TbMailShare,
   TbUserPlus,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
@@ -50,8 +51,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [isCopyCaseModalOpen, setIsCopyCaseModalOpen] = useState(false);
-  const [selectedApplicant, setSelectedApplicant] =
-    useState<Partial<ApplicantInvitationProps> | null>(null);
   const [displayLeadUser, setDisplayLeadUser] = useState(caseInfo?.customer);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [isApplicantInvitationModalOpen, setIsApplicantInvitationModalOpen] =
@@ -243,36 +242,15 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   <TbCircleArrowUp size="16" className="me-1" />
                   <span>Update Case</span>
                 </DropdownItem>
-                {/* <DropdownItem
+                <DropdownItem
                   onClick={() => {
-                    if (!caseInfo?.customer) {
-                      toast.error("No lead user found for this case.");
-                      return;
-                    }
-
-                    if (!caseInfo.customer.alias) {
-                      toast.error(
-                        "Client alias not found. This may be an Organization Client.",
-                      );
-                      return;
-                    }
-
-                    setSelectedClient({
-                      alias: caseInfo.customer.alias,
-                      user: {
-                        email: caseInfo.customer.email,
-                        first_name: caseInfo.customer.first_name,
-                        last_name: caseInfo.customer.last_name,
-                      },
-                    } as Partial<ApplicantInvitationProps>);
                     toggleApplicantInvitationModal();
                   }}
-                  disabled={!caseInfo}
                   className="opacity-100 py-3"
                 >
                   <TbMailShare size="16" className="me-1" />
                   Client Invitation
-                </DropdownItem> */}
+                </DropdownItem>
                 <DropdownItem
                   className="opacity-100 py-3"
                   onClick={toggleCopyCaseModal}
@@ -1018,13 +996,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         </Row>
       </Card>
 
-      {selectedApplicant && (
-        <ApplicantInvitationModal
-          isOpen={isApplicantInvitationModalOpen}
-          toggle={toggleApplicantInvitationModal}
-          selectedApplicant={selectedApplicant}
-        />
-      )}
+      <ApplicantInvitationModal
+        isOpen={isApplicantInvitationModalOpen}
+        toggle={toggleApplicantInvitationModal}
+        caseAlias={caseInfo?.alias}
+      />
+
       <UpdateCaseModal
         isOpen={isUpdateCaseModalOpen}
         toggle={toggleUpdateCaseModal}
