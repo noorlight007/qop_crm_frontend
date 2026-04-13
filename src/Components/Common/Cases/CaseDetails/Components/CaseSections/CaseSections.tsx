@@ -134,7 +134,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
       Fees: "is_fees",
       Compliance: "is_compliance",
       "Client Survey": "is_client_survey",
-      "Vulnerability": "is_vulnerability",
+      Vulnerability: "is_vulnerability",
       Documents: "is_documents",
 
       // Additional tabs for Insurance case
@@ -216,9 +216,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
           {/* Case Sections Tab Content */}
           <CardBody className="px-0 pb-0">
             <div>
-              <div className="custom-casedetails-scroll">
-                <CaseSectionsTabContent />
-              </div>
+              <CaseSectionsTabContent />
             </div>
           </CardBody>
         </CardBody>
