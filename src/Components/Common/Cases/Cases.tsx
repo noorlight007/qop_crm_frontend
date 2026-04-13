@@ -12,9 +12,9 @@ import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
-import { TbArrowsRightLeft, TbCirclePlus } from "react-icons/tb";
+import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -42,6 +42,202 @@ interface CasesProps {
   initialIsRemoved?: string;
 }
 
+// ────────────────────────────────────────────────────────────────────────────────
+// Expanded row — shows the hidden columns when the user clicks the eye icon
+// ────────────────────────────────────────────────────────────────────────────────
+const ExpandedCaseRow: React.FC<{
+  caseItem: CaseInfoPrpos;
+  colSpan: number;
+}> = ({ caseItem, colSpan }) => {
+  const propertyDetails = (() => {
+    const pd = caseItem?.property_details;
+    if (!pd) return null;
+    const countryFormatted = pd.country
+      ? formatChoiceFieldValue(pd.country)
+      : pd.country;
+    const parts = [
+      pd.house_name_or_number,
+      pd.address_one,
+      pd.address_two,
+      pd.city,
+      pd.county,
+      formatChoiceFieldValue(pd.region),
+      countryFormatted,
+    ].filter((v) => v !== null && v !== undefined && String(v).trim() !== "");
+    return parts.length ? parts.join(", ") : null;
+  })();
+
+  return (
+    <tr>
+      <td colSpan={colSpan} className="p-0 bg-light border-0">
+        <div className="p-3">
+          <Row className="g-3">
+            {/* Lender */}
+            <Col>
+              <Card className="h-100 border shadow-none">
+                <CardHeader className="py-2 px-3 bg-white">
+                  <small className="fw-bold text-muted text-uppercase">
+                    Lender
+                  </small>
+                </CardHeader>
+                <CardBody className="py-2 px-3 text-muted fs-6">
+                  {caseItem.lender ? (
+                    <p className="mb-0 mt-2 small">
+                      {formatChoiceFieldValue(caseItem.lender)}
+                    </p>
+                  ) : (
+                    <small className="text-muted">Not Available</small>
+                  )}
+                </CardBody>
+              </Card>
+            </Col>
+
+            {/* Case Stage & Review Date */}
+            <Col>
+              <Card className="h-100 border shadow-none">
+                <CardHeader className="py-2 px-3 bg-white">
+                  <small className="fw-bold text-muted text-uppercase">
+                    Case Stage & Review Date
+                  </small>
+                </CardHeader>
+                <CardBody className="py-2 px-3 text-muted fs-6">
+                  {caseItem.case_stage ? (
+                    <>
+                      <p className="mb-1 mt-2 small">
+                        <strong>Case Stage:</strong>{" "}
+                        {formatChoiceFieldValue(caseItem.case_stage)}
+                      </p>
+                      {formatDate(caseItem?.review_date) ? (
+                        <p className="mb-0 small">
+                          <strong>Review Date:</strong>{" "}
+                          {formatDate(caseItem.review_date)}
+                        </p>
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </>
+                  ) : (
+                    <small className="text-muted">Not Available</small>
+                  )}
+                </CardBody>
+              </Card>
+            </Col>
+
+            {/* Category Details */}
+            {caseItem.case_category === "MORTGAGE" && (
+              <Col md={4}>
+                <Card className="h-100 border shadow-none">
+                  <CardHeader className="py-2 px-3 bg-white">
+                    <small className="fw-bold text-muted text-uppercase">
+                      Mortgage Details
+                    </small>
+                  </CardHeader>
+                  <CardBody className="py-2 px-3 fs-6 text-start">
+                    {caseItem.application_type || caseItem.mortgage_type ? (
+                      <ul
+                        className="mb-0 mt-2 small text-muted"
+                        style={{ listStyleType: "none", paddingLeft: "0" }}
+                      >
+                        {caseItem.application_type && (
+                          <li
+                          >
+                            <span className="text-primary me-1">→</span>
+                            <strong>Application Type:</strong>{" "}
+                            {formatChoiceFieldValue(caseItem.application_type)}
+                          </li>
+                        )}
+                        {caseItem.mortgage_type && (
+                          <li
+                          >
+                            <span className="text-primary me-1">→</span>
+                            <strong>Mortgage Type:</strong>{" "}
+                            {formatChoiceFieldValue(caseItem.mortgage_type)}
+                          </li>
+                        )}
+                      </ul>
+                    ) : (
+                      <small className="text-muted d-block text-center">Not Available</small>
+                    )}
+                  </CardBody>
+                </Card>
+              </Col>
+            )}
+
+            {(caseItem.case_category === "GENERAL_INSURANCE" ||
+              caseItem.case_category === "PROTECTION") && (
+              <Col md={4}>
+                <Card className="h-100 border shadow-none">
+                  <CardHeader className="py-2 px-3 bg-white">
+                    <small className="fw-bold text-muted text-uppercase">
+                      {caseItem.case_category === "GENERAL_INSURANCE"
+                        ? "Insurance Details"
+                        : "Protection Details"}
+                    </small>
+                  </CardHeader>
+                  <CardBody className="py-2 px-3 fs-6">
+                    {caseItem.case_category === "GENERAL_INSURANCE" ? (
+                      caseItem.policy_type ? (
+                        <ul
+                          className="mb-0 mt-2 small text-muted"
+                          style={{ listStyleType: "none", paddingLeft: "0" }}
+                        >
+                          <li
+                          >
+                            <span className="text-primary me-1">→</span>
+                            <strong>Insurance Type:</strong>{" "}
+                            {formatChoiceFieldValue(caseItem.policy_type)}
+                          </li>
+                        </ul>
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )
+                    ) : caseItem.provider ? (
+                      <ul
+                        className="mb-0 mt-2 small text-muted"
+                        style={{ listStyleType: "none", paddingLeft: "0" }}
+                      >
+                        <li
+                        >
+                          <span className="text-primary me-1">→</span>
+                          <strong>Protection Type:</strong>{" "}
+                          {formatChoiceFieldValue(caseItem.provider)}
+                        </li>
+                      </ul>
+                    ) : (
+                      <small className="text-muted d-block text-center">Not Available</small>
+                    )}
+                  </CardBody>
+                </Card>
+              </Col>
+            )}
+
+            {/* Security Property */}
+            <Col md={3}>
+              <Card className="h-100 border shadow-none">
+                <CardHeader className="py-2 px-3 bg-white">
+                  <small className="fw-bold text-muted text-uppercase">
+                    Security Property
+                  </small>
+                </CardHeader>
+                <CardBody className="py-2 px-3">
+                  {propertyDetails ? (
+                    <p className="mb-0 mt-2 small">{propertyDetails}</p>
+                  ) : (
+                    <small className="text-muted">Not Available</small>
+                  )}
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </td>
+    </tr>
+  );
+};
+
+// ────────────────────────────────────────────────────────────────────────────────
+// Main component
+// ────────────────────────────────────────────────────────────────────────────────
 const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const { data: session } = useSession();
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
@@ -52,6 +248,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const [casesPerPage] = useState(12);
   const [filterIcon, setFilterIcon] = useState(false);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null); // ← NEW
 
   const defaultFilters = {
     created_by__id: "",
@@ -59,20 +256,16 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     assigned_to_admin__id: "",
     case_category: "",
     case_stage: "",
-    // allow parent components to set initial is_removed filter
     is_removed: initialIsRemoved ?? "",
   };
   const [filters, setFilters] = useState(defaultFilters);
 
   const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetUserListQuery({
-      role: "ADVISER",
-    });
+    useGetUserListQuery({ role: "ADVISER" });
 
-  const { data: adminData, isLoading: isAdminLoading } =
-    useGetUserListQuery({
-      role: "ADMIN",
-    });
+  const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
+    role: "ADMIN",
+  });
 
   const { data: usersData } = useGetUsersQuery(undefined);
 
@@ -104,19 +297,22 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   };
 
   const handleFilterChange = (filterKey: string, value: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterKey]: value,
-    }));
+    setFilters((prevFilters) => ({ ...prevFilters, [filterKey]: value }));
     setCurrentPage(1);
   };
 
-  // Calculate total pages
+  // Toggle expanded row — collapse if already open
+  const toggleExpandRow = (alias: string) =>
+    setExpandedRow((prev) => (prev === alias ? null : alias));
+
   const pageCount = caseData?.count
     ? Math.ceil(caseData.count / casesPerPage)
     : 1;
 
   const userRole = session?.user?.role;
+
+  // How many columns the expanded row must span
+  const tableColSpan = 7;
 
   return (
     <div>
@@ -149,7 +345,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
                   style={{ cursor: "pointer", zIndex: 10 }}
                 />
-
                 <UncontrolledPopover
                   placement="right"
                   target="caseSearchSuggestion"
@@ -189,6 +384,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
             </Col>
           </Row>
         </CardHeader>
+
         <CardBody className="p-2 m-0">
           {filterIcon && (
             <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
@@ -197,7 +393,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <Label>Select Created By</Label>
                   <Input
                     type="select"
-                    id="employeeFilter"
                     className="py-1"
                     value={filters.created_by__id}
                     onChange={(e) =>
@@ -216,7 +411,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <Label>Select Adviser</Label>
                   <Input
                     type="select"
-                    id="employeeFilter"
                     className="py-1"
                     value={filters.assigned_to__id}
                     onChange={(e) =>
@@ -237,7 +431,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                       <Label>Select Admin</Label>
                       <Input
                         type="select"
-                        id="employeeFilter"
                         className="py-1"
                         value={filters.assigned_to_admin__id}
                         onChange={(e) =>
@@ -260,7 +453,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <Label>Select Category</Label>
                   <Input
                     type="select"
-                    id="caseCategory"
                     className="py-1"
                     value={filters.case_category}
                     onChange={(e) =>
@@ -278,7 +470,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <Label>Select Stage</Label>
                   <Input
                     type="select"
-                    id="caseStage"
                     className="py-1"
                     value={filters.case_stage}
                     onChange={(e) =>
@@ -286,23 +477,17 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     }
                     disabled={!filters.case_category}
                   >
-                    {filters?.case_category === "MORTGAGE" ? (
-                      <>
-                        {mortgageStages.map((stage) => (
+                    {filters?.case_category === "MORTGAGE"
+                      ? mortgageStages.map((stage) => (
+                          <option key={stage.value} value={stage.value}>
+                            {stage.label}
+                          </option>
+                        ))
+                      : insuranceCaseStages.map((stage) => (
                           <option key={stage.value} value={stage.value}>
                             {stage.label}
                           </option>
                         ))}
-                      </>
-                    ) : (
-                      <>
-                        {insuranceCaseStages.map((stage) => (
-                          <option key={stage.value} value={stage.value}>
-                            {stage.label}
-                          </option>
-                        ))}
-                      </>
-                    )}
                   </Input>
                 </Col>
                 <Col>
@@ -322,6 +507,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
               </Row>
             </Card>
           )}
+
           <Row>
             <Table hover responsive className="mt-3">
               <thead className="thead-light text-center">
@@ -329,303 +515,236 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Case ID</th>
                   <th>Applicants</th>
                   <th>Case Category</th>
-                  <th>Lender</th>
-                  <th className="text-truncate">Security property</th>
-                  <th>Case Stage</th>
-                  {session?.user?.is_network &&
-                  (session?.user?.role === "DIRECTOR" ||
-                    session?.user?.role === "ADVISER" ||
-                    session?.user?.role === "COMPLIANCE") ? (
+                  {session?.user?.role && session.user.is_network ? (
                     <th>Organisation</th>
                   ) : null}
                   <th>Adviser</th>
                   <th>Admin</th>
-                  <th className="text-truncate">Review Date</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody className="text-center">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={11} className="text-center">
+                    <td colSpan={tableColSpan} className="text-center">
                       <Spinner color="primary" />
                     </td>
                   </tr>
                 ) : caseData?.results?.length > 0 ? (
                   caseData.results.map((caseItem: CaseInfoPrpos) => (
-                    <tr key={caseItem.alias}>
-                      <td>
-                        <Link
-                          className="text_decoration_hover text-truncate"
-                          href={getCaseUrl(
-                            caseItem.alias,
-                            userRole as string,
-                            session?.user?.is_network,
-                          )}
-                        >
-                          {caseItem.is_removed ? (
-                            <s className="text-danger opacity-50">
-                              {caseItem.name}
-                            </s>
+                    // Use React.Fragment so each row can be followed by its
+                    // expanded details row without breaking table structure
+                    <React.Fragment key={caseItem.alias}>
+                      <tr>
+                        {/* ── Case ID ── */}
+                        <td>
+                          <Link
+                            className="text_decoration_hover text-truncate"
+                            href={getCaseUrl(
+                              caseItem.alias,
+                              userRole as string,
+                              session?.user?.is_network,
+                            )}
+                          >
+                            {caseItem.is_removed ? (
+                              <s className="text-danger opacity-50">
+                                {caseItem.name}
+                              </s>
+                            ) : (
+                              caseItem.name
+                            )}
+                          </Link>
+                        </td>
+
+                        {/* ── Applicants ── */}
+                        <td className="text-start text-truncate">
+                          <ul
+                            style={{
+                              listStyleType: "disc",
+                              paddingLeft: "40px",
+                            }}
+                          >
+                            <li>
+                              {caseItem.customer ? (
+                                <>
+                                  {caseItem.customer.title
+                                    ? formatChoiceFieldValue(
+                                        caseItem.customer.title,
+                                      ) + " "
+                                    : ""}
+                                  {caseItem.customer.first_name}{" "}
+                                  {caseItem.customer.middle_name
+                                    ? caseItem.customer.middle_name + " "
+                                    : ""}
+                                  {caseItem.customer.last_name}
+                                </>
+                              ) : (
+                                <small className="text-muted">
+                                  Not Available
+                                </small>
+                              )}
+                            </li>
+                            {(caseItem.joint_users?.length ?? 0) > 0 &&
+                              caseItem?.joint_users?.map((joint: CaseUser) => (
+                                <li key={joint.alias || joint.id}>
+                                  {joint.title
+                                    ? formatChoiceFieldValue(joint.title) + " "
+                                    : ""}
+                                  {joint.first_name}{" "}
+                                  {joint.middle_name
+                                    ? joint.middle_name + " "
+                                    : ""}
+                                  {joint.last_name}
+                                  <small style={{ fontSize: "9px" }}>
+                                    (JA)
+                                  </small>
+                                </li>
+                              ))}
+                          </ul>
+                        </td>
+
+                        {/* ── Case Category ── */}
+                        <td className="text-truncate">
+                          {caseItem.case_category ? (
+                            <>
+                              {formatChoiceFieldValue(caseItem.case_category)}
+                            </>
                           ) : (
-                            caseItem.name
+                            <small className="text-muted">Not Available</small>
                           )}
-                        </Link>
-                      </td>
-                      <td className="text-start text-truncate">
-                        <ul
-                          style={{
-                            listStyleType: "disc",
-                            paddingLeft: "40px",
-                          }}
-                        >
-                          <li>
-                            {caseItem.customer ? (
-                              <>
-                                {caseItem.customer.title
-                                  ? formatChoiceFieldValue(
-                                      caseItem.customer.title,
-                                    ) + " "
-                                  : ""}
-                                {caseItem.customer.first_name}{" "}
-                                {caseItem.customer.middle_name
-                                  ? caseItem.customer.middle_name + " "
-                                  : ""}
-                                {caseItem.customer.last_name}
-                              </>
+                        </td>
+
+                        {session?.user?.role && session.user.is_network ? (
+                          <td className="text-truncate">
+                            {" "}
+                            {caseItem.organization?.name ? (
+                              caseItem.organization.name
                             ) : (
                               <small className="text-muted">
-                                Not Available
+                                Owned by Network
                               </small>
-                            )}
-                          </li>
-                          {caseItem.joint_users &&
-                          caseItem.joint_users.length > 0 ? (
-                            caseItem.joint_users.map((joint: CaseUser) => (
-                              <li key={joint.alias || joint.id}>
-                                {joint.title
-                                  ? formatChoiceFieldValue(joint.title) + " "
-                                  : ""}
-                                {joint.first_name}{" "}
-                                {joint.middle_name
-                                  ? joint.middle_name + " "
-                                  : ""}
-                                {joint.last_name}
-                                <small style={{ fontSize: "9px" }}>(JA)</small>
-                              </li>
-                            ))
-                          ) : (
-                            <></>
-                          )}
-                        </ul>
-                      </td>
-                      <td className="text-truncate">
-                        {caseItem.case_category ? (
-                          <>
-                            {formatChoiceFieldValue(caseItem.case_category)}
-                            {caseItem.case_category === "MORTGAGE" &&
-                              ((caseItem.application_type &&
-                                String(caseItem.application_type).trim() !==
-                                  "") ||
-                                (caseItem.mortgage_type &&
-                                  String(caseItem.mortgage_type).trim() !==
-                                    "")) && (
-                                <p className="small">
-                                  (
-                                  {/* If both types exist show arrow between them */}
-                                  {caseItem.application_type
-                                    ? formatChoiceFieldValue(
-                                        caseItem.application_type,
-                                      )
-                                    : null}
-                                  {caseItem.application_type &&
-                                  caseItem.mortgage_type ? (
-                                    <>
-                                      {" "}
-                                      <TbArrowsRightLeft className="text-primary" />{" "}
-                                      {formatChoiceFieldValue(
-                                        caseItem.mortgage_type,
-                                      )}
-                                    </>
-                                  ) : caseItem.mortgage_type ? (
-                                    /* If only mortgage_type exists, show it without arrow */
-                                    <>
-                                      {formatChoiceFieldValue(
-                                        caseItem.mortgage_type,
-                                      )}
-                                    </>
-                                  ) : null}
-                                  )
-                                </p>
-                              )}
-                          </>
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                      <td className="text-truncate">
-                        {caseItem.lender ? (
-                          formatChoiceFieldValue(caseItem.lender)
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                      <td>
-                        {(() => {
-                          const pd = caseItem?.property_details;
-                          if (!pd) return "N/A";
-                          const countryFormatted = pd.country
-                            ? formatChoiceFieldValue(pd.country)
-                            : pd.country;
-                          const parts = [
-                            pd.house_name_or_number,
-                            pd.address_one,
-                            pd.address_two,
-                            pd.city,
-                            pd.county,
-                            formatChoiceFieldValue(pd.region),
-                            countryFormatted,
-                          ].filter(
-                            (v) =>
-                              v !== null &&
-                              v !== undefined &&
-                              String(v).trim() !== "",
-                          );
-                          return parts.length ? (
-                            parts.join(", ")
-                          ) : (
-                            <small className="text-muted">Not available</small>
-                          );
-                        })()}
-                      </td>
-                      <td className="text-truncate ">
-                        {caseItem.case_stage ? (
-                          <>
-                            {formatChoiceFieldValue(caseItem.case_stage)}
-                            {caseItem.case_stage === "COMPLETION" &&
-                            caseItem.completion_date ? (
-                              <p
-                                className="ms-2 m-0 opacity-75"
-                                style={{ fontSize: "10px" }}
-                              >
-                                ({formatDate(caseItem.completion_date)})
-                              </p>
-                            ) : null}
-                          </>
-                        ) : (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                      {session?.user?.role && session.user.is_network ? (
+                            )}{" "}
+                          </td>
+                        ) : null}
+
+                        {/* ── Adviser ── */}
                         <td className="text-truncate">
-                          {" "}
-                          {caseItem.organization?.name ? (
-                            caseItem.organization.name
-                          ) : (
-                            <small className="text-muted">
-                              Owned by Network
-                            </small>
-                          )}{" "}
-                        </td>
-                      ) : null}
-                      <td className="text-truncate">
-                        {caseItem.assigned_user ? (
-                          <>
-                            <p className="m-0">
-                              {caseItem.assigned_user.title
-                                ? formatChoiceFieldValue(
-                                    caseItem.assigned_user.title,
-                                  ) + " "
-                                : ""}
-                              {caseItem.assigned_user.first_name}{" "}
-                              {caseItem.assigned_user.middle_name
-                                ? caseItem.assigned_user.middle_name + " "
-                                : ""}
-                              {caseItem.assigned_user.last_name}
-                            </p>
-                            <p
-                              className="m-0 opacity-75"
-                              style={{ fontSize: "9px" }}
-                            >
-                              (
-                              {caseItem.assigned_user.email
-                                ? caseItem.assigned_user.email
-                                : ""}
-                              )
-                            </p>
-                          </>
-                        ) : (
-                          <small className="text-muted">Not Assigned</small>
-                        )}
-                      </td>
-                      <td className="text-truncate">
-                        {caseItem.assigned_admin ? (
-                          <>
-                            <p className="m-0">
-                              {caseItem.assigned_admin.title
-                                ? formatChoiceFieldValue(
-                                    caseItem.assigned_admin.title,
-                                  ) + " "
-                                : ""}
-                              {caseItem.assigned_admin.first_name}{" "}
-                              {caseItem.assigned_admin.middle_name
-                                ? caseItem.assigned_admin.middle_name + " "
-                                : ""}
-                              {caseItem.assigned_admin.last_name}
-                            </p>
-                            <p
-                              className="m-0 opacity-75"
-                              style={{ fontSize: "9px" }}
-                            >
-                              (
-                              {caseItem.assigned_admin.email
-                                ? caseItem.assigned_admin.email
-                                : ""}
-                              )
-                            </p>
-                          </>
-                        ) : (
-                          <small className="text-muted">Not Assigned</small>
-                        )}
-                      </td>
-                      <td>
-                        {formatDate(caseItem?.review_date) || (
-                          <small className="text-muted">Not Available</small>
-                        )}
-                      </td>
-                      <td>
-                        <div className="d-flex justify-content-center align-items-center">
-                          <Button
-                            size="sm"
-                            color="success"
-                            className="me-2"
-                            title="Update Case"
-                            onClick={() => openUpdateCaseModal(caseItem)}
-                          >
-                            <i className="icon-pencil-alt"></i>
-                          </Button>
-                          {session?.user?.role &&
-                            ((session.user.is_network &&
-                              (session.user.role === "DIRECTOR" ||
-                                session.user.role === "COMPLIANCE")) ||
-                              (!session.user.is_network &&
-                                session.user.role === "DIRECTOR")) && (
-                              <Button
-                                size="sm"
-                                color="danger"
-                                title="Delete Case"
-                                onClick={() => openDeleteCaseModal(caseItem)}
+                          {caseItem.assigned_user ? (
+                            <>
+                              <p className="m-0">
+                                {caseItem.assigned_user.title
+                                  ? formatChoiceFieldValue(
+                                      caseItem.assigned_user.title,
+                                    ) + " "
+                                  : ""}
+                                {caseItem.assigned_user.first_name}{" "}
+                                {caseItem.assigned_user.middle_name
+                                  ? caseItem.assigned_user.middle_name + " "
+                                  : ""}
+                                {caseItem.assigned_user.last_name}
+                              </p>
+                              <p
+                                className="m-0 opacity-75"
+                                style={{ fontSize: "9px" }}
                               >
-                                <i className="icon-trash"></i>
-                              </Button>
-                            )}
-                        </div>
-                      </td>
-                    </tr>
+                                ({caseItem.assigned_user.email ?? ""})
+                              </p>
+                            </>
+                          ) : (
+                            <small className="text-muted">Not Assigned</small>
+                          )}
+                        </td>
+
+                        {/* ── Admin ── */}
+                        <td className="text-truncate">
+                          {caseItem.assigned_admin ? (
+                            <>
+                              <p className="m-0">
+                                {caseItem.assigned_admin.title
+                                  ? formatChoiceFieldValue(
+                                      caseItem.assigned_admin.title,
+                                    ) + " "
+                                  : ""}
+                                {caseItem.assigned_admin.first_name}{" "}
+                                {caseItem.assigned_admin.middle_name
+                                  ? caseItem.assigned_admin.middle_name + " "
+                                  : ""}
+                                {caseItem.assigned_admin.last_name}
+                              </p>
+                              <p
+                                className="m-0 opacity-75"
+                                style={{ fontSize: "9px" }}
+                              >
+                                ({caseItem.assigned_admin.email ?? ""})
+                              </p>
+                            </>
+                          ) : (
+                            <small className="text-muted">Not Assigned</small>
+                          )}
+                        </td>
+
+                        {/* ── Actions ── */}
+                        <td>
+                          <div className="d-flex justify-content-center align-items-center gap-1">
+                            {/* Expand / collapse details */}
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              title={
+                                expandedRow === caseItem.alias
+                                  ? "Collapse details"
+                                  : "Expand details"
+                              }
+                              onClick={() => toggleExpandRow(caseItem.alias)}
+                            >
+                              <i
+                                className={`fa fa-chevron-${
+                                  expandedRow === caseItem.alias ? "up" : "down"
+                                }`}
+                              />
+                            </button>
+
+                            {/* Edit */}
+                            <Button
+                              size="sm"
+                              color="success"
+                              title="Update Case"
+                              onClick={() => openUpdateCaseModal(caseItem)}
+                            >
+                              <i className="icon-pencil-alt"></i>
+                            </Button>
+
+                            {/* Delete — role-gated, same as before */}
+                            {session?.user?.role &&
+                              ((session.user.is_network &&
+                                (session.user.role === "DIRECTOR" ||
+                                  session.user.role === "COMPLIANCE")) ||
+                                (!session.user.is_network &&
+                                  session.user.role === "DIRECTOR")) && (
+                                <Button
+                                  size="sm"
+                                  color="danger"
+                                  title="Delete Case"
+                                  onClick={() => openDeleteCaseModal(caseItem)}
+                                >
+                                  <i className="icon-trash"></i>
+                                </Button>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Expanded details row */}
+                      {expandedRow === caseItem.alias && (
+                        <ExpandedCaseRow
+                          caseItem={caseItem}
+                          colSpan={tableColSpan}
+                        />
+                      )}
+                    </React.Fragment>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={11} className="text-center">
+                    <td colSpan={tableColSpan} className="text-center">
                       No cases found.
                     </td>
                   </tr>
@@ -633,6 +752,8 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
               </tbody>
             </Table>
           </Row>
+
+          {/* Pagination — unchanged */}
           <Row>
             <div className="d-flex justify-content-between px-4 py-3">
               <div>
@@ -656,71 +777,50 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     onClick={() => setCurrentPage(currentPage - 1)}
                   />
                 </PaginationItem>
-
-                {/* Generate visible page numbers */}
                 {(() => {
                   const pages = [];
                   const total = pageCount;
-                  const currentPageNumber = currentPage;
+                  const curr = currentPage;
+                  let start = Math.max(2, curr - 2);
+                  let end = Math.min(total - 1, curr + 2);
 
-                  let start = Math.max(2, currentPageNumber - 2);
-                  let end = Math.min(total - 1, currentPageNumber + 2);
-
-                  // Always show page 1
                   pages.push(
-                    <PaginationItem key={1} active={currentPageNumber === 1}>
+                    <PaginationItem key={1} active={curr === 1}>
                       <PaginationLink onClick={() => setCurrentPage(1)}>
                         1
                       </PaginationLink>
                     </PaginationItem>,
                   );
-
-                  // Add ellipsis if needed before middle pages
-                  if (start > 2) {
+                  if (start > 2)
                     pages.push(
                       <PaginationItem key="ellipsis-start" disabled>
                         <PaginationLink>...</PaginationLink>
                       </PaginationItem>,
                     );
-                  }
-
-                  // Show middle pages
-                  for (let i = start; i <= end; i++) {
+                  for (let i = start; i <= end; i++)
                     pages.push(
-                      <PaginationItem key={i} active={currentPageNumber === i}>
+                      <PaginationItem key={i} active={curr === i}>
                         <PaginationLink onClick={() => setCurrentPage(i)}>
                           {i}
                         </PaginationLink>
                       </PaginationItem>,
                     );
-                  }
-
-                  // Add ellipsis if needed after middle pages
-                  if (end < total - 1) {
+                  if (end < total - 1)
                     pages.push(
                       <PaginationItem key="ellipsis-end" disabled>
                         <PaginationLink>...</PaginationLink>
                       </PaginationItem>,
                     );
-                  }
-
-                  // Always show last page
-                  if (total > 1) {
+                  if (total > 1)
                     pages.push(
-                      <PaginationItem
-                        key={total}
-                        active={currentPageNumber === total}
-                      >
+                      <PaginationItem key={total} active={curr === total}>
                         <PaginationLink onClick={() => setCurrentPage(total)}>
                           {total}
                         </PaginationLink>
                       </PaginationItem>,
                     );
-                  }
-
                   return pages;
                 })()}
-
                 <PaginationItem disabled={currentPage === pageCount}>
                   <PaginationLink
                     next
@@ -737,6 +837,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
             </div>
           </Row>
         </CardBody>
+
         <AddNewCaseModal
           isOpen={isAddNewCaseModalOpen}
           toggle={toggleAddNewCaseModal}

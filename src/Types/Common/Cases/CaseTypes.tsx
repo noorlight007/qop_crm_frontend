@@ -89,6 +89,8 @@ export interface CaseInfoPrpos {
   review_date?: string;
   lender?: string;
   loan_amount?: number;
+  policy_type?: string;
+  provider?: string;
   property_details: {
     house_name_or_number?: string;
     address_one?: string;
