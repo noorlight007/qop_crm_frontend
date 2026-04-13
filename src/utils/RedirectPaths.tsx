@@ -188,3 +188,17 @@ export const getOrganisationUrl = (session: Session | null) => {
 
   return "url not found";
 };
+
+export const getApplicantCaseUrl = (
+  session: Session | null,
+  caseAlias: string,
+) => {
+  if (!session) {
+    return "/auth/login";
+  }
+  const role = session?.user?.role;
+  if (role === "APPLICANT") {
+    return `/applicant/cases/${caseAlias}`;
+  }
+  return "url not found";
+};

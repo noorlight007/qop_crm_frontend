@@ -3,18 +3,11 @@ import { useGetApplicantCaseQuery } from "@/Redux/Reducers/Applicant/ApplicantCa
 import { ApplicantCaseTypes } from "@/Types/Applicant/ApplicantCaseTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { getApplicantCaseUrl } from "@/utils/RedirectPaths";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import {
-  Badge,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Collapse,
-  Row,
-  Table,
-} from "reactstrap";
+import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 
 const stageBadgeColor: Record<string, string> = {
   ENQUIRY: "info",
@@ -38,18 +31,20 @@ const buildFullName = (
         last_name?: string | null;
       }
     | null
-    | undefined
+    | undefined,
 ): string => {
   if (!user) return "-";
-  return [
-    user.title ? formatChoiceFieldValue(user.title) : "",
-    user.first_name || "",
-    user.middle_name || "",
-    user.last_name || "",
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .trim() || "-";
+  return (
+    [
+      user.title ? formatChoiceFieldValue(user.title) : "",
+      user.first_name || "",
+      user.middle_name || "",
+      user.last_name || "",
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .trim() || "-"
+  );
 };
 
 const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
@@ -57,7 +52,6 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
     <td colSpan={8} className="p-0 bg-light border-0">
       <div className="p-3">
         <Row className="g-3">
-
           {/* Customer */}
           <Col md={4}>
             <Card className="h-100 border shadow-none">
@@ -67,8 +61,12 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                 </small>
               </CardHeader>
               <CardBody className="py-2 px-3">
-                <p className="mb-1 fw-semibold">{buildFullName(app.customer)}</p>
-                <p className="mb-1 small text-muted">{app.customer?.email || "-"}</p>
+                <p className="mb-1 fw-semibold">
+                  {buildFullName(app.customer)}
+                </p>
+                <p className="mb-1 small text-muted">
+                  {app.customer?.email || "-"}
+                </p>
                 <p className="mb-1 small">{app.customer?.phone || "-"}</p>
                 {app.customer?.enquiry_type && (
                   <p className="mb-1 small">
@@ -180,7 +178,8 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                     <tr>
                       <td className="text-muted ps-0 small">Valuation</td>
                       <td className="text-end small pe-0">
-                        {app.property_valuation && app.property_valuation !== "0"
+                        {app.property_valuation &&
+                        app.property_valuation !== "0"
                           ? `£${parseFloat(app.property_valuation).toLocaleString()}`
                           : "-"}
                       </td>
@@ -237,7 +236,7 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                           "Property type",
                           app.property_details.property_type
                             ? formatChoiceFieldValue(
-                                app.property_details.property_type
+                                app.property_details.property_type,
                               )
                             : null,
                         ],
@@ -245,7 +244,7 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                           "House type",
                           app.property_details.house_type
                             ? formatChoiceFieldValue(
-                                app.property_details.house_type
+                                app.property_details.house_type,
                               )
                             : null,
                         ],
@@ -253,7 +252,7 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                           "Tenure",
                           app.property_details.tenure
                             ? formatChoiceFieldValue(
-                                app.property_details.tenure
+                                app.property_details.tenure,
                               )
                             : null,
                         ],
@@ -265,11 +264,13 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                             ? `£${app.property_details.estimated_value.toLocaleString()}`
                             : null,
                         ],
-                        ["Year built", app.property_details.year_built > 1 ? app.property_details.year_built : null],
                         [
-                          "EPC rating",
-                          app.property_details.epc_rating || null,
+                          "Year built",
+                          app.property_details.year_built > 1
+                            ? app.property_details.year_built
+                            : null,
                         ],
+                        ["EPC rating", app.property_details.epc_rating || null],
                         [
                           "New build",
                           app.property_details.is_the_property_a_new_build
@@ -287,7 +288,9 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                         .map(([label, value]) => (
                           <Col xs={6} md={3} key={String(label)}>
                             <p className="mb-0 text-muted small">{label}</p>
-                            <p className="mb-0 small fw-semibold">{String(value)}</p>
+                            <p className="mb-0 small fw-semibold">
+                              {String(value)}
+                            </p>
                           </Col>
                         ))}
                     </Row>
@@ -295,7 +298,6 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
                 </Card>
               </Col>
             )}
-
         </Row>
       </div>
     </td>
@@ -303,6 +305,7 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
 );
 
 const MyApplications: React.FC = () => {
+  const { data: session } = useSession();
   const { data: applicantCase, isLoading } =
     useGetApplicantCaseQuery(undefined);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
@@ -324,7 +327,12 @@ const MyApplications: React.FC = () => {
         <h5 className="mb-0">My Applications</h5>
       </CardHeader>
       <CardBody className="p-0">
-        <Table responsive hover bordered className="mb-0 text-center align-middle">
+        <Table
+          responsive
+          hover
+          bordered
+          className="mb-0 text-center align-middle"
+        >
           <thead className="table-light">
             <tr>
               <th>Case #</th>
@@ -345,7 +353,7 @@ const MyApplications: React.FC = () => {
                     <td>
                       <Link
                         className="text_decoration_hover fw-semibold"
-                        href={`/client/cases/${app.alias}`}
+                        href={getApplicantCaseUrl(session, app.alias)}
                       >
                         {app.name}
                       </Link>
@@ -414,7 +422,7 @@ const MyApplications: React.FC = () => {
                             }`}
                           />
                         </button>
-                        <Link href={`/client/cases/${app.alias}`}>
+                        <Link href={getApplicantCaseUrl(session, app.alias)}>
                           <button className="btn btn-primary btn-sm">
                             Continue
                           </button>
