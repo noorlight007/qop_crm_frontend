@@ -141,11 +141,12 @@ const RoleSwitching: React.FC = () => {
         : null;
 
       const dashboardUrl = getDashboardHomeUrl(redirectSession);
+      window.location.href = dashboardUrl;
 
       // Use a small delay and then hard refresh to ensure session is updated
-      setTimeout(() => {
-        window.location.href = dashboardUrl;
-      }, 500);
+      // setTimeout(() => {
+      //   window.location.href = dashboardUrl;
+      // }, 500);
     } catch (e) {
       // Optionally surface a toast here if you have a global toaster
       console.error("Failed to switch role", e);
