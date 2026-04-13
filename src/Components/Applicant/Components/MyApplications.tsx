@@ -7,6 +7,7 @@ import { getApplicantCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
+import { FaEye } from "react-icons/fa";
 import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 
 const stageBadgeColor: Record<string, string> = {
@@ -52,12 +53,12 @@ const ExpandedRow: React.FC<{ app: ApplicantCaseTypes }> = ({ app }) => (
     <td colSpan={8} className="p-0 bg-light border-0">
       <div className="p-3">
         <Row className="g-3">
-          {/* Customer */}
+          {/* Applicant */}
           <Col md={4}>
             <Card className="h-100 border shadow-none">
               <CardHeader className="py-2 px-3 bg-white">
                 <small className="fw-bold text-muted text-uppercase">
-                  Primary Customer
+                  Primary Applicant
                 </small>
               </CardHeader>
               <CardBody className="py-2 px-3">
@@ -339,7 +340,7 @@ const MyApplications: React.FC = () => {
               <th>Created</th>
               <th>Category</th>
               <th>Stage</th>
-              <th>Customer</th>
+              <th>Applicant</th>
               <th>Joint Applicants</th>
               <th>Phone</th>
               <th>Actions</th>
@@ -424,7 +425,7 @@ const MyApplications: React.FC = () => {
                         </button>
                         <Link href={getApplicantCaseUrl(session, app.alias)}>
                           <button className="btn btn-primary btn-sm">
-                            Continue
+                            <FaEye />
                           </button>
                         </Link>
                       </div>

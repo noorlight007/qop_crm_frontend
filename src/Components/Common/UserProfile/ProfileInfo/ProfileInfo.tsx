@@ -15,6 +15,7 @@ import EditProfileModal from "./Modals/EditProfileModal";
 import SendEmailForResetPasswordModal from "./Modals/SendEmailForResetPasswordModal";
 
 const ProfileInfo: React.FC = () => {
+  const { data: session } = useSession();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
     useState(false);
@@ -246,9 +247,11 @@ const ProfileInfo: React.FC = () => {
         </Card>
       </Col>
 
-      <Col xs="12">
-        <RoleSwitching />
-      </Col>
+      {session?.user?.role === "APPLICANT" ? null : (
+        <Col xs="12">
+          <RoleSwitching />
+        </Col>
+      )}
 
       {/* Contact Information Card */}
       <Col lg="6">
