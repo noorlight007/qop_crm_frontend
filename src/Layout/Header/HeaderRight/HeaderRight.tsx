@@ -1,4 +1,5 @@
 import DarkMode from "./DarkMode/DarkMode";
+import NotificationHeader from "./NotificationHeader/NotificationHeader";
 import Profile from "./Profile/Profile";
 
 const HeaderRight = () => {
@@ -6,7 +7,7 @@ const HeaderRight = () => {
     <div className="nav-right">
       <ul className="header-right">
         <DarkMode />
-        {/* <NotificationHeader /> */}
+        <NotificationHeader />
         <Profile />
       </ul>
     </div>
