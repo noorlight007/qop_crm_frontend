@@ -158,6 +158,7 @@ const NotificationHeader = () => {
   const [show, setShow] = useState(false);
   const [items, setItems] = useState<UINotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(4);
   const wrapperRef = useRef<HTMLLIElement>(null);
 
   const { data: notificationsData } = useGetNotificationsQuery(undefined, {
@@ -182,6 +183,12 @@ const NotificationHeader = () => {
   useEffect(() => {
     setUnreadCount(readUnreadCount(unreadData));
   }, [unreadData]);
+
+  useEffect(() => {
+    if (!show) {
+      setVisibleCount(4);
+    }
+  }, [show]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -396,6 +403,8 @@ const NotificationHeader = () => {
   );
 
   const notificationsToShow = items.length > 0 ? items : fallbackItems;
+  const visibleNotifications = notificationsToShow.slice(0, visibleCount);
+  const hasMoreNotifications = notificationsToShow.length > visibleCount;
 
   return (
     <li className="custom-dropdown" ref={wrapperRef}>
@@ -417,7 +426,7 @@ const NotificationHeader = () => {
         }`}
       >
         <ul className="activity-timeline">
-          {notificationsToShow.slice(0,4).map((item) => (
+          {visibleNotifications.map((item) => (
             <li className="d-flex align-items-start" key={item.id}>
               <div className="activity-line" />
               <div className={`activity-dot-${item.dotColor}`} />
@@ -435,6 +444,17 @@ const NotificationHeader = () => {
             </li>
           ))}
         </ul>
+        {hasMoreNotifications && (
+          <div className="text-center p-2 border-top">
+            <button
+              type="button"
+              className="btn btn-outline-primary btn-sm"
+              onClick={() => setVisibleCount((prev) => prev + 4)}
+            >
+              Show More
+            </button>
+          </div>
+        )}
       </div>
     </li>
   );
