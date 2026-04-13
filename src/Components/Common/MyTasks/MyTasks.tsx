@@ -459,17 +459,17 @@ const MyTasks: React.FC = () => {
               <thead className="thead-light text-center">
                 <tr>
                   <th>Priority</th>
-                  <th>Created By</th>
+                  <th className="text-truncate">Created By</th>
                   <th>Status</th>
-                  <th>Date & Time</th>
+                  <th className="text-truncate">Date & Time</th>
                   <th>Case ID</th>
-                  <th>Client Name</th>
+                  <th>Applicant Name</th>
                   <th>Lender</th>
                   <th>Workflow</th>
                   <th>Task Name</th>
                   <th>Case Stage</th>
-                  <th>Case Assigned User</th>
-                  <th>Task Assigned To</th>
+                  <th>Assigned</th>
+                  <th>Task Assigned</th>
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -501,7 +501,7 @@ const MyTasks: React.FC = () => {
                       </td>
                       <td>{formatDateAndTime(task.created_at)}</td>
                       <td>
-                        <span className="text-primary fw-bold text-truncate">
+                        <span className="text-truncate">
                           {task.current_case_name || "-"}
                         </span>
                       </td>
@@ -517,19 +517,17 @@ const MyTasks: React.FC = () => {
                         <span>{task.current_case_workflow || "-"}</span>
                       </td>
                       <td>
-                        <span className="fw-bold text-start">
-                          {task.name || "-"}
-                        </span>
+                        <span className="text-start">{task.name || "-"}</span>
                       </td>
                       <td>
                         <Badge color="light-primary" className="px-2">
                           {task.current_case_stage || "-"}
                         </Badge>
                       </td>
-                      <td>
+                      <td className="text-truncate">
                         <p className="m-0">{task.case_assigned_to || "-"}</p>
                       </td>
-                      <td>
+                      <td className="text-truncate">
                         <p className="m-0">{task.task_assigned_to || "-"}</p>
                       </td>
                     </tr>
