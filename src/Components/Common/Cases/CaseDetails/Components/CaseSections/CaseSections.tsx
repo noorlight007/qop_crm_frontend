@@ -23,6 +23,7 @@ import {
   restoreBasicTab,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useGetSectionCompleteStatusQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
@@ -43,6 +44,8 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
   caseCategory,
 }) => {
   const { casealias } = useParams();
+  const session = useSession();
+  const userRole = session?.data?.user?.role;
   const basicTab = useAppSelector(
     (state: any) => state.caseSections.basicTabId,
   );
@@ -76,6 +79,19 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
     NOT_PROCEED: InsuranceNPDTabTitleData,
   };
 
+  const tabRestrictions: Record<string, string[]> = {
+    APPLICANT: [
+      "Notes",
+      "Product",
+      "DIP History",
+      "Suitability",
+      "Fees",
+      "Compliance",
+      "Vulnerability",
+      "Documents",
+    ],
+  };
+
   // Get the current tab data based on caseStage and caseCategory
   let currentTabData: any[] = [];
 
@@ -90,24 +106,27 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
     currentTabData = mortgageTabDataMap[caseStage] || [];
   }
 
+  const restrictedTabs = tabRestrictions[userRole ?? ""] ?? [];
+
+  const visibleTabData = currentTabData.filter(
+    (tab) => !restrictedTabs.includes(tab.nav),
+  );
+
   // Restore tab from localStorage or set the first tab as default when caseStage changes
   useEffect(() => {
-    if (currentTabData.length > 0) {
-      // First, check if there's a saved tab in localStorage
+    if (visibleTabData.length > 0) {
       if (typeof window !== "undefined") {
         const savedTab = localStorage.getItem("caseDetailsActiveTab");
-        if (savedTab && currentTabData.some((tab) => tab.nav === savedTab)) {
+        if (savedTab && visibleTabData.some((tab) => tab.nav === savedTab)) {
           dispatch(restoreBasicTab(savedTab));
         } else {
-          // Otherwise, use the first tab
-          dispatch(basicTabIndicator(currentTabData[0].nav));
+          dispatch(basicTabIndicator(visibleTabData[0].nav));
         }
       } else {
-        // Server-side fallback
-        dispatch(basicTabIndicator(currentTabData[0].nav));
+        dispatch(basicTabIndicator(visibleTabData[0].nav));
       }
     }
-  }, [caseStage, dispatch, caseCategory]);
+  }, [caseStage, dispatch, caseCategory, userRole]); // 👈 userRole added
 
   const navToStatusKey = (nav: string) => {
     if (!nav) return "";
@@ -184,7 +203,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
               className="nav-secondary d-flex justify-content-center align-items-center flex-wrap gap-1 pb-2"
               pills
             >
-              {currentTabData.map((item, index) => (
+              {visibleTabData.map((item, index) => (
                 <NavItem
                   key={index}
                   className="d-flex justify-content-center"

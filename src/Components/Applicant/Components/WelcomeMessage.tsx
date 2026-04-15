@@ -5,8 +5,6 @@ import { Card, CardBody, CardHeader } from "reactstrap";
 const WelcomeMessage: React.FC = () => {
   const { data: appearanceData } = useGetAppranceQuery(undefined);
 
-  console.log("Appearance data: ", appearanceData);
-
   return (
     <Card className="mb-4">
       {/* <CardHeader> */}

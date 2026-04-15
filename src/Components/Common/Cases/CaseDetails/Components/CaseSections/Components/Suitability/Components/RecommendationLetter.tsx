@@ -1,3 +1,5 @@
+import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import Image from "next/image";
 import React, { useState } from "react";
 import {
   Button,
@@ -71,9 +73,7 @@ const SuitAnswers = ({ answers }: { answers: (string | undefined)[] }) => (
 const Divider = () => <hr className="my-4" />;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
 
 const thStyle: React.CSSProperties = {
@@ -94,6 +94,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 }) => {
   const blue = "#1565c0";
   const s = suitability;
+
+  const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
 
   const advisorName = caseData?.advisor_name ?? "Faye Jennings";
   const advisorJobTitle = caseData?.advisor_job_title ?? "Mortgage Advisor";
@@ -425,7 +427,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       {/* ══════════════════════════════
           LETTERHEAD
       ══════════════════════════════ */}
-      <Row className="mb-5 justify-content-end">
+      <Row className="mb-5 d-flex align-items-start justify-content-between">
+        <Col xs="auto" className="align-self-start">
+          <Image
+            width={200}
+            height={70}
+            className="img-fluid for-light"
+            src={appearanceData?.logo}
+            alt="login page"
+            priority
+            style={{ width: "130px", height: "50px" }}
+          />
+        </Col>
         <Col xs={12} md={5} className="text-end">
           <p className="mb-0 fw-bold" style={{ color: blue }}>
             {advisorName}
