@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetNotificationDetailsQuery } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Link from "next/link";
 import { TbArrowBack } from "react-icons/tb";
 import { Badge, Col, Container, Row, Spinner } from "reactstrap";
@@ -19,6 +20,32 @@ const NotificationDetailsPage = ({
     isLoading,
     isError,
   } = useGetNotificationDetailsQuery(id);
+
+  const formatDataKey = (key: string) =>
+    key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const renderDataValue = (value: unknown) => {
+    if (value === null || value === undefined) {
+      return "-";
+    }
+
+    if (typeof value === "object") {
+      return (
+        <pre
+          className="mb-0 small text-muted"
+          style={{ whiteSpace: "pre-wrap" }}
+        >
+          {JSON.stringify(value, null, 2)}
+        </pre>
+      );
+    }
+
+    return String(value);
+  };
+
+  const dataEntries = notification?.data
+    ? Object.entries(notification.data as Record<string, unknown>)
+    : [];
 
   return (
     <Container fluid className="p-0">
@@ -61,45 +88,55 @@ const NotificationDetailsPage = ({
               ) : (
                 <>
                   <div className="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
-                    <div>
-                      <h5 className="mb-2">{notification.name}</h5>
-                      {/* <p className="mb-0 text-muted">{notification.message}</p> */}
+                    <div className="flex-grow-1">
+                      <Badge
+                        color={notification.is_read ? "success" : "warning"}
+                        pill
+                        className="mb-3"
+                      >
+                        {notification.is_read ? "Read" : "Unread"}
+                      </Badge>
+                      <h5 className="mb-2 text-capitalize">
+                        {notification.notification_type?.replace(/_/g, " ")}
+                      </h5>
+                      <p className="mb-0 text-muted">{notification.message}</p>
                     </div>
                     <div className="text-md-end">
-                      <Badge color={notification.dotColor} className="mb-2">
-                        {notification.dotColor === "primary"
-                          ? "Unread"
-                          : "Read"}
-                      </Badge>
-                      <div className={`text-${notification.fontColor} small`}>
-                        <div>{notification.date}</div>
-                        <div>{notification.time}</div>
+                      <div className="small text-muted">
+                        <div>
+                          Created: {formatDateAndTime(notification.created_at)}
+                        </div>
+                        <div>
+                          Read:{" "}
+                          {notification.read_at
+                            ? formatDateAndTime(notification.read_at)
+                            : "Not read yet"}
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="row g-3 mb-4">
-                    <div className="col-sm-6">
-                      <div className="border rounded p-3 h-100">
-                        <h6 className="mb-2">Notification ID</h6>
-                        <p className="mb-0 text-break">{notification.id}</p>
-                      </div>
+                  {dataEntries.length > 0 && (
+                    <div className="row g-3 mb-4">
+                      {dataEntries.map(([key, value], index) => (
+                        <div className="col-sm-6" key={`${key}-${index}`}>
+                          <div className="border rounded p-3 h-100 bg-white">
+                            <h6 className="mb-2">{formatDataKey(key)}</h6>
+                            <p className="mb-0">{renderDataValue(value)}</p>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="col-sm-6">
-                      <div className="border rounded p-3 h-100">
-                        <h6 className="mb-2">Status</h6>
-                        <p className="mb-0 text-capitalize">
-                          {notification.dotColor === "primary"
-                            ? "Unread"
-                            : "Read"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  )}
 
-                  <div className="border rounded p-4 mb-4 bg-light-primary">
-                    <h6 className="mb-3">Message</h6>
-                    <p className="mb-0">{notification.message}</p>
+                  <div className="border rounded p-4 bg-light">
+                    <h6 className="mb-3">Raw payload</h6>
+                    <pre
+                      className="mb-0 small text-muted"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {JSON.stringify(notification.data ?? {}, null, 2)}
+                    </pre>
                   </div>
                 </>
               )}

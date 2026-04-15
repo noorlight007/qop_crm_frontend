@@ -3,9 +3,10 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 export const NotificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getNotifications: builder.query({
-      query: () => ({
+      query: (params) => ({
         url: "/notifications/",
         method: "GET",
+        params,
       }),
       providesTags: ["Notifications"],
     }),
