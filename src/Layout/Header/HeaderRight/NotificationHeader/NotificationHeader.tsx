@@ -6,6 +6,7 @@ import {
   useGetUnreadNotificationsCountQuery,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { getSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "reactstrap";
 
@@ -446,13 +447,12 @@ const NotificationHeader = () => {
         </ul>
         {hasMoreNotifications && (
           <div className="text-center p-2 border-top">
-            <button
-              type="button"
+            <Link
+              href="/notifications"
               className="btn btn-outline-primary btn-sm"
-              onClick={() => setVisibleCount((prev) => prev + 4)}
             >
               Show More
-            </button>
+            </Link>
           </div>
         )}
       </div>
