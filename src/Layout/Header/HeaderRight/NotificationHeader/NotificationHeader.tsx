@@ -18,6 +18,7 @@ type UINotification = {
   fontColor: "primary" | "secondary";
   name: string;
   message: string;
+  is_read: boolean;
 };
 
 const toSafeDateTime = (input?: string) => {
@@ -102,6 +103,7 @@ const normalizeNotification = (
         "Notification",
     ),
     message: String(item.message ?? item.body ?? item.description ?? ""),
+    is_read: item.is_read === true,
   };
 };
 
@@ -400,6 +402,7 @@ const NotificationHeader = () => {
       fontColor: item.fontColor === "secondary" ? "secondary" : "primary",
       name: item.name,
       message: item.message,
+      is_read: false,
     }),
   );
 
@@ -429,19 +432,24 @@ const NotificationHeader = () => {
         <ul className="activity-timeline">
           {visibleNotifications.map((item) => (
             <li className="d-flex align-items-start" key={item.id}>
-              <div className="activity-line" />
-              <div className={`activity-dot-${item.dotColor}`} />
-              <div className="flex-grow-1">
-                <h6 className={`f-w-600 font-${item.fontColor}`}>
-                  {item.date}
-                  <span>{item.time}</span>
-                  <span className={`circle-dot-${item.dotColor} float-end`}>
-                    <SVG className="circle-color" iconId="circle" />
-                  </span>
-                </h6>
-                <h5>{item.name}</h5>
-                <p>{item.message}</p>
-              </div>
+              <Link
+                href={`/notifications/${encodeURIComponent(item.id)}`}
+                className="d-flex align-items-start text-decoration-none text-reset w-100"
+              >
+                <div className="activity-line" />
+                <div className={`activity-dot-${item.dotColor}`} />
+                <div className="flex-grow-1">
+                  <h6 className={`f-w-600 font-${item.fontColor}`}>
+                    {item.date}
+                    <span>{item.time}</span>
+                    <span className={`circle-dot-${item.dotColor} float-end`}>
+                      <SVG className="circle-color" iconId="circle" />
+                    </span>
+                  </h6>
+                  <h5>{item.name}</h5>
+                  <p>{item.message}</p>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>
