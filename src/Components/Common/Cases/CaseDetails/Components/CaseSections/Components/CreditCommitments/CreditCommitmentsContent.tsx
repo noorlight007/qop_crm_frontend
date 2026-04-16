@@ -33,6 +33,28 @@ const CreditCommitmentsContent: React.FC = () => {
   // rtk hooks
   const { data: creditCommitments, isLoading } =
     useGetCreditCommitmentsDetailsQuery({ case_alias: casealias });
+
+  // Filter credit commitments based on user role
+  const getFilteredCreditCommitments = (data: any[] | undefined) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own credit commitments
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter(
+        (commitment) => commitment?.customer?.email === userEmail,
+      );
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all credit commitments
+    return data;
+  };
+
+  const filteredCreditCommitments =
+    getFilteredCreditCommitments(creditCommitments);
+
   const dispatch = useAppDispatch();
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -58,8 +80,6 @@ const CreditCommitmentsContent: React.FC = () => {
       toast.warning("This is the last tab.");
     }
   };
-
-  if (creditCommitments?.data?.length === 0) return <div>No data found</div>;
 
   const handleExportToCSV = async () => {
     try {
@@ -92,8 +112,8 @@ const CreditCommitmentsContent: React.FC = () => {
             onClick={handleExportToCSV}
             disabled={
               isExporting ||
-              !creditCommitments ||
-              creditCommitments.length === 0
+              !filteredCreditCommitments ||
+              filteredCreditCommitments.length === 0
             }
           >
             <FaFileExport />
@@ -104,7 +124,6 @@ const CreditCommitmentsContent: React.FC = () => {
             type="submit"
             className="d-flex justify-content-center align-items-center gap-1"
             onClick={() => setModalIsOpen(!modalIsOpen)}
-            disabled={session?.user?.role === "APPLICANT"}
           >
             <TbCirclePlus />
             <span>Add Credit Item</span>
@@ -145,7 +164,8 @@ const CreditCommitmentsContent: React.FC = () => {
                     <LoadingSpinner />
                   </td>
                 </tr>
-              ) : !creditCommitments || creditCommitments.length === 0 ? (
+              ) : !filteredCreditCommitments ||
+                filteredCreditCommitments.length === 0 ? (
                 <tr>
                   <td colSpan={18} className="text-center">
                     <span className="text-danger opacity-75 fs-6">
@@ -154,7 +174,7 @@ const CreditCommitmentsContent: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                creditCommitments.map((item: any, index: number) => (
+                filteredCreditCommitments.map((item: any, index: number) => (
                   <tr key={index}>
                     <td>
                       <div className="d-flex gap-2">

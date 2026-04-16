@@ -6,6 +6,7 @@ import { AddCreditCommitmentModalProps } from "@/Types/Common/Cases/CaseDetails/
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -28,6 +29,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
   toggle,
 }) => {
   const { casealias } = useParams();
+  const { data: session } = useSession();
   const [formData, setFormData] = useState({
     customer_id: "",
     joint: "",
@@ -91,6 +93,25 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
   const { data: caseUsers, isLoading } = useGetCaseUsersQuery({
     case_alias: casealias,
   });
+
+  // Filter case users based on user role
+  const getFilteredCaseUsers = (data: any[] | undefined) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own data
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter((user) => user?.email === userEmail);
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all users
+    return data;
+  };
+
+  const filteredCaseUsers = getFilteredCaseUsers(caseUsers);
+
   const [addCreditCommitmentsDetails, { isLoading: isAdding }] =
     useAddCreditCommitmentsDetailsMutation();
   const [updateSectionCompleteStatus] =
@@ -179,7 +200,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                   required
                 >
                   <option value="">Select...</option>
-                  {caseUsers?.map((user: any) => (
+                  {filteredCaseUsers?.map((user: any) => (
                     <option key={user.id} value={user.id}>
                       {formatChoiceFieldValue(user.title)} {user.first_name}{" "}
                       {user.middle_name} {user.last_name}

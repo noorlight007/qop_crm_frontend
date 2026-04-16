@@ -431,15 +431,10 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                     type="button"
                     color="primary"
                     onClick={async () => {
-                      if (session?.user?.role === "APPLICANT") return;
                       setSubmitting("save");
                       await handleSubmit();
                     }}
-                    disabled={
-                      submitting !== null ||
-                      isAdverseUpdating ||
-                      session?.user?.role === "APPLICANT"
-                    }
+                    disabled={submitting !== null || isAdverseUpdating}
                   >
                     {submitting === "save" ? "Saving..." : "Save Changes"}
                   </Button>

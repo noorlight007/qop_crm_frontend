@@ -15,6 +15,7 @@ import {
   NavLink,
 } from "reactstrap";
 import ApplicantsDetailsTabContent from "./ApplicantsDetailsTabContent";
+import { useSession } from "next-auth/react";
 
 export const ApplicantsDetailsTab = () => {
   const [basicTab, setBasicTab] = useState<string | null>(null);
@@ -22,11 +23,35 @@ export const ApplicantsDetailsTab = () => {
   // Get case alias from URL params
   const params = useParams();
   const { casealias } = params;
+  const { data: session } = useSession();
 
   // Fetch applicants data
   const { data: applicantsData, isLoading } = useGetApplicantsQuery({
     case_alias: casealias,
   });
+
+  console.log("applicant data: ", applicantsData);
+
+  // Filter applicants based on user role
+  const getFilteredApplicants = (data: ApplicantProps[] | undefined) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own data
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter(
+        (applicant) => applicant?.customer?.email === userEmail
+      );
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all applicants
+    return data;
+  };
+
+  const filteredApplicantsData = getFilteredApplicants(applicantsData);
+
 
   // Function to validate if an applicant has all required fields filled
   const isApplicantValid = (applicant: ApplicantProps): boolean => {
@@ -51,10 +76,10 @@ export const ApplicantsDetailsTab = () => {
 
   // Set the first applicant's alias as default when data is available
   useEffect(() => {
-    if (applicantsData?.length > 0 && !basicTab) {
-      setBasicTab(applicantsData[0]?.alias || null);
+    if (filteredApplicantsData?.length > 0 && !basicTab) {
+      setBasicTab(filteredApplicantsData[0]?.alias || null);
     }
-  }, [applicantsData, basicTab]);
+  }, [filteredApplicantsData, basicTab]);
 
   if (isLoading) {
     return (
@@ -69,10 +94,10 @@ export const ApplicantsDetailsTab = () => {
         <CardBody>
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">
             <Nav className="nav-primary" pills>
-              {applicantsData?.map(
+              {filteredApplicantsData?.map(
                 (applicantData: ApplicantProps, index: number) => {
                   const isPreviousValid =
-                    index === 0 || isApplicantValid(applicantsData[index - 1]);
+                    index === 0 || isApplicantValid(filteredApplicantsData[index - 1]);
                   const isCurrentValid = isApplicantValid(applicantData);
 
                   return (
@@ -122,7 +147,7 @@ export const ApplicantsDetailsTab = () => {
           </CardHeader>
           <CardBody className="px-0 pb-0">
             <ApplicantsDetailsTabContent
-              applicantsData={applicantsData}
+              applicantsData={filteredApplicantsData}
               basicTab={basicTab || ""}
               onTabChange={setBasicTab}
               isApplicantValid={isApplicantValid}

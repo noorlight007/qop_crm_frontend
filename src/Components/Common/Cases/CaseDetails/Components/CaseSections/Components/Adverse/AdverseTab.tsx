@@ -2,6 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useGetAdverseDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { AdverseProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -19,17 +20,37 @@ export const AdverseTab = () => {
   // Get case alias from URL params
   const params = useParams();
   const { casealias } = params;
+  const { data: session } = useSession();
 
   // Fetch applicants data
   const { data: adverseData, isLoading } = useGetAdverseDetailsQuery({
     case_alias: casealias,
   });
+
+  // Filter adverse data based on user role
+  const getFilteredAdverseData = (data: AdverseProps[] | undefined) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own data
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter((adverse) => adverse?.customer?.email === userEmail);
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all adverse data
+    return data;
+  };
+
+  const filteredAdverseData = getFilteredAdverseData(adverseData);
+
   const [basicTab, setBasicTab] = useState<string | null>(null);
   useEffect(() => {
-    if (adverseData?.length > 0) {
-      setBasicTab(adverseData[0].alias);
+    if (filteredAdverseData?.length > 0) {
+      setBasicTab(filteredAdverseData[0].alias);
     }
-  }, [adverseData]);
+  }, [filteredAdverseData]);
 
   if (isLoading)
     return (
@@ -38,7 +59,7 @@ export const AdverseTab = () => {
       </div>
     );
 
-  if (!adverseData || adverseData.length === 0) {
+  if (!filteredAdverseData || filteredAdverseData.length === 0) {
     return (
       <Col xxl="12" className="px-5">
         <h1 className="text-center text-warning">No Adverse Data Available</h1>
@@ -52,7 +73,7 @@ export const AdverseTab = () => {
         <CardBody>
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">
             <Nav className="nav-warning" pills>
-              {adverseData?.map((adverse: AdverseProps) => (
+              {filteredAdverseData?.map((adverse: AdverseProps) => (
                 <NavItem key={adverse.alias}>
                   <NavLink
                     className={`${basicTab === adverse.alias ? "active" : ""}`}
