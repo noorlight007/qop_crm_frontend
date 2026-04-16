@@ -149,7 +149,18 @@ const socketUrlsFromApiBase = (baseUrl: string, token: string) => {
     `${wsBase}${pathPrefix}/ws/notifications/?token=${encodeURIComponent(token)}`,
   ];
 
-  return [...new Set(candidates)];
+  const unique: string[] = [];
+  const seen: Record<string, true> = {};
+
+  for (let i = 0; i < candidates.length; i += 1) {
+    const url = candidates[i];
+    if (!seen[url]) {
+      seen[url] = true;
+      unique.push(url);
+    }
+  }
+
+  return unique;
 };
 
 const NotificationHeader = () => {
