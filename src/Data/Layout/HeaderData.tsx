@@ -21,9 +21,9 @@ export const notificationData = [
     time: "Today",
     dotColor: "primary",
     fontColor: "primary",
-    name: "QOP Dev. Team",
+    // name: "QOP Dev. Team",
     message:
-      "Server maintenance scheduled every Monday from GMT 5:00 AM to 6:00 AM",
+      "No new notifications yet.",
   },
   // {
   //   date: "28-06-2024",
