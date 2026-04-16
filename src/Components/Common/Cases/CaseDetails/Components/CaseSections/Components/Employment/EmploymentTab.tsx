@@ -33,6 +33,28 @@ export const EmploymentTab = () => {
   const { data: employmentData, isLoading: isEmploymentDetailLoading } =
     useGetEmploymentDetailsQuery({ case_alias: caseAlias });
 
+  // Filter employment data based on user role
+  const getFilteredEmploymentData = (
+    data: EmploymentDetailsProps[] | undefined,
+  ) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own data
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter(
+        (employment) => employment?.customer?.email === userEmail,
+      );
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all employment data
+    return data;
+  };
+
+  const filteredEmploymentData = getFilteredEmploymentData(employmentData);
+
   // Delete modal state (the modal performs the mutation)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [modalEmploymentAlias, setModalEmploymentAlias] = useState<
@@ -55,14 +77,14 @@ export const EmploymentTab = () => {
     const employmentAlias = modalEmploymentAlias;
     const userId = modalUserId as number;
 
-    const remainingForUser = (employmentData || []).filter(
+    const remainingForUser = (filteredEmploymentData || []).filter(
       (emp: any) => emp.customer.id === userId && emp.alias !== employmentAlias,
     );
 
     if (remainingForUser.length > 0) {
       setActiveTab(remainingForUser[0].alias || null);
     } else {
-      const remainingAny = (employmentData || []).filter(
+      const remainingAny = (filteredEmploymentData || []).filter(
         (emp: any) => emp.alias !== employmentAlias,
       );
       if (remainingAny.length > 0) {
@@ -80,12 +102,12 @@ export const EmploymentTab = () => {
   };
 
   useEffect(() => {
-    if (employmentData && employmentData.length > 0) {
-      const firstUserId = employmentData[0]?.customer.id;
+    if (filteredEmploymentData && filteredEmploymentData.length > 0) {
+      const firstUserId = filteredEmploymentData[0]?.customer.id;
       setActiveUser(firstUserId);
-      setActiveTab(employmentData[0]?.alias || null);
+      setActiveTab(filteredEmploymentData[0]?.alias || null);
     }
-  }, [employmentData]);
+  }, [filteredEmploymentData]);
 
   if (isEmploymentDetailLoading) return <LoadingSpinner />;
 
@@ -99,7 +121,7 @@ export const EmploymentTab = () => {
               className="nav-primary d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
-              {employmentData
+              {filteredEmploymentData
                 ?.reduce(
                   (
                     uniqueUsers: EmploymentDetailsProps[],
@@ -160,7 +182,7 @@ export const EmploymentTab = () => {
               >
                 {(() => {
                   const userEmps =
-                    employmentData?.filter(
+                    filteredEmploymentData?.filter(
                       (emp: EmploymentDetailsProps) =>
                         emp.customer.id === activeUser,
                     ) || [];
@@ -262,7 +284,7 @@ export const EmploymentTab = () => {
               activeTab={activeTab}
               activeUser={activeUser}
               groupedData={
-                employmentData?.reduce(
+                filteredEmploymentData?.reduce(
                   (
                     acc: Record<number, EmploymentDetailsProps[]>,
                     emp: EmploymentDetailsProps,

@@ -2903,7 +2903,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
           </Row>
           {/* Submit Button */}
-          <div className="d-flex justify-content-end gap-3">
+          <div className="d-flex justify-content-end gap-3 align-items-center">
+            {session?.user?.role === "APPLICANT" &&
+              selectedApplicant?.updated_by !== null && (
+                <span className="text-muted fst-italic">
+                  Your data has been saved and cannot be modified further.
+                </span>
+              )}
             <Button
               type="submit"
               color="primary"
@@ -2920,51 +2926,55 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 ? "Updating..."
                 : "Save Changes"}
             </Button>
-            <Button
-              type="submit"
-              color="warning"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null) ||
-                !applicantsData ||
-                applicantsData.findIndex(
-                  (applicant) => applicant.alias === basicTab,
-                ) <= 0
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                submitActionRef.current = "previous-applicant";
-                formRef.current?.requestSubmit();
-              }}
-            >
-              {isUpdatingApplicant && submitting === "previous-applicant"
-                ? "Saving..."
-                : "Save & Previous Applicant"}
-            </Button>
-            <Button
-              type="submit"
-              color="info"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null) ||
-                !applicantsData ||
-                applicantsData.findIndex(
-                  (applicant) => applicant.alias === basicTab,
-                ) >=
-                  applicantsData.length - 1
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                submitActionRef.current = "next-applicant";
-                formRef.current?.requestSubmit();
-              }}
-            >
-              {isUpdatingApplicant && submitting === "next-applicant"
-                ? "Saving..."
-                : "Save & Next Applicant"}
-            </Button>
+            {session?.user?.role !== "APPLICANT" && (
+              <>
+                <Button
+                  type="submit"
+                  color="warning"
+                  disabled={
+                    isLoading ||
+                    (session?.user?.role === "APPLICANT" &&
+                      selectedApplicant?.updated_by !== null) ||
+                    !applicantsData ||
+                    applicantsData.findIndex(
+                      (applicant) => applicant.alias === basicTab,
+                    ) <= 0
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    submitActionRef.current = "previous-applicant";
+                    formRef.current?.requestSubmit();
+                  }}
+                >
+                  {isUpdatingApplicant && submitting === "previous-applicant"
+                    ? "Saving..."
+                    : "Save & Previous Applicant"}
+                </Button>
+                <Button
+                  type="submit"
+                  color="info"
+                  disabled={
+                    isLoading ||
+                    (session?.user?.role === "APPLICANT" &&
+                      selectedApplicant?.updated_by !== null) ||
+                    !applicantsData ||
+                    applicantsData.findIndex(
+                      (applicant) => applicant.alias === basicTab,
+                    ) >=
+                      applicantsData.length - 1
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    submitActionRef.current = "next-applicant";
+                    formRef.current?.requestSubmit();
+                  }}
+                >
+                  {isUpdatingApplicant && submitting === "next-applicant"
+                    ? "Saving..."
+                    : "Save & Next Applicant"}
+                </Button>
+              </>
+            )}
             <Button
               type="submit"
               color="secondary"

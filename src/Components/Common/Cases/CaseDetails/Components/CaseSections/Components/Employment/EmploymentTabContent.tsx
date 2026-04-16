@@ -1647,12 +1647,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         {shouldShowCopyAddressButton && (
           <Row className="mb-3">
             <Col md={12}>
-              <Button
-                color="info"
-                outline
-                onClick={handleCopyAddress}
-                disabled={session?.user?.role === "APPLICANT"}
-              >
+              <Button color="info" outline onClick={handleCopyAddress}>
                 Copy Address from Previous
               </Button>
             </Col>
@@ -2437,7 +2432,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               color="success"
               className="border-success"
               onClick={() => setAddEmploymentModalOpen(true)}
-              disabled={session?.user?.role === "APPLICANT"}
             >
               Add New
             </Button>
@@ -2445,10 +2439,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
               <Button
                 color="primary"
                 type="submit"
-                disabled={
-                  isUpdateEmploymentDetailsLoading ||
-                  session?.user?.role === "APPLICANT"
-                }
+                disabled={isUpdateEmploymentDetailsLoading}
                 onClick={() => {
                   submitActionRef.current = "save";
                 }}
