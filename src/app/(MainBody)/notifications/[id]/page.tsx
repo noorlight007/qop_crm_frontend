@@ -2,6 +2,7 @@
 
 import { useGetNotificationDetailsQuery } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import formatChoiceFieldValue from "@/utils/formatters";
 import Link from "next/link";
 import { TbArrowBack } from "react-icons/tb";
 import { Badge, Col, Container, Row, Spinner } from "reactstrap";
@@ -118,26 +119,24 @@ const NotificationDetailsPage = ({
 
                   {dataEntries.length > 0 && (
                     <div className="row g-3 mb-4">
-                      {dataEntries.map(([key, value], index) => (
-                        <div className="col-sm-6" key={`${key}-${index}`}>
-                          <div className="border rounded p-3 h-100 bg-white">
-                            <h6 className="mb-2">{formatDataKey(key)}</h6>
-                            <p className="mb-0">{renderDataValue(value)}</p>
+                      {dataEntries.map(([key, value], index) => {
+                        const renderedValue = renderDataValue(value);
+
+                        return (
+                          <div className="col-sm-6" key={`${key}-${index}`}>
+                            <div className="border rounded p-3 h-100 bg-white">
+                              <h6 className="mb-2">{formatDataKey(key)}</h6>
+                              <p className="mb-0">
+                                {typeof renderedValue === "string"
+                                  ? formatChoiceFieldValue(renderedValue)
+                                  : renderedValue}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
-
-                  <div className="border rounded p-4 bg-light">
-                    <h6 className="mb-3">Raw payload</h6>
-                    <pre
-                      className="mb-0 small text-muted"
-                      style={{ whiteSpace: "pre-wrap" }}
-                    >
-                      {JSON.stringify(notification.data ?? {}, null, 2)}
-                    </pre>
-                  </div>
                 </>
               )}
             </div>

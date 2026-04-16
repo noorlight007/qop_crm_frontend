@@ -14,9 +14,9 @@ type UINotification = {
   id: string;
   date: string;
   time: string;
-  dotColor: "primary" | "secondary";
-  fontColor: "primary" | "secondary";
-  name: string;
+  dotColor: "primary" | "warning";
+  fontColor: "primary" | "warning";
+  notification_type?: string;
   message: string;
   is_read: boolean;
 };
@@ -69,8 +69,6 @@ const normalizeNotification = (
         : "";
 
   const eventKeySource =
-    (payloadData?.ticket_alias as string | undefined) ||
-    (payloadData?.ticket_id as string | undefined) ||
     (item.notification_id as string | undefined) ||
     (item.uuid as string | undefined) ||
     (item.id as string | undefined);
@@ -86,18 +84,15 @@ const normalizeNotification = (
         item.uuid ??
         item.notification_id ??
         derivedEventId ??
-        payloadData?.ticket_alias ??
-        payloadData?.ticket_id ??
         fallbackKey,
     ),
     date,
     time,
-    dotColor: isUnread ? "primary" : "secondary",
-    fontColor: isUnread ? "primary" : "secondary",
-    name: String(
+    dotColor: isUnread ? "warning" : "primary",
+    fontColor: isUnread ? "warning" : "primary",
+    notification_type: String(
       item.title ??
-        item.name ??
-        payloadData?.ticket_id ??
+        item.notification_type ??
         payloadData?.subject ??
         item.sender_name ??
         "Notification",
@@ -164,15 +159,17 @@ const NotificationHeader = () => {
   const [visibleCount, setVisibleCount] = useState(4);
   const wrapperRef = useRef<HTMLLIElement>(null);
 
-  const { data: notificationsData } = useGetNotificationsQuery(undefined, {
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-  });
+  const { data: notificationsData, refetch: refetchNotifications } =
+    useGetNotificationsQuery(undefined, {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
 
-  const { data: unreadData } = useGetUnreadNotificationsCountQuery(undefined, {
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
-  });
+  const { data: unreadData, refetch: refetchUnreadCount } =
+    useGetUnreadNotificationsCountQuery(undefined, {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
 
   useEffect(() => {
     const list = readList(notificationsData);
@@ -190,8 +187,12 @@ const NotificationHeader = () => {
   useEffect(() => {
     if (!show) {
       setVisibleCount(4);
+      return;
     }
-  }, [show]);
+
+    void refetchNotifications();
+    void refetchUnreadCount();
+  }, [show, refetchNotifications, refetchUnreadCount]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -398,9 +399,8 @@ const NotificationHeader = () => {
       id: `fallback-${index}`,
       date: item.date,
       time: item.time,
-      dotColor: item.dotColor === "secondary" ? "secondary" : "primary",
-      fontColor: item.fontColor === "secondary" ? "secondary" : "primary",
-      name: item.name,
+      dotColor: item.dotColor === "secondary" ? "warning" : "primary",
+      fontColor: item.fontColor === "secondary" ? "warning" : "primary",
       message: item.message,
       is_read: false,
     }),
@@ -435,18 +435,43 @@ const NotificationHeader = () => {
               <Link
                 href={`/notifications/${encodeURIComponent(item.id)}`}
                 className="d-flex align-items-start text-decoration-none text-reset w-100"
+                onClick={() => {
+                  setShow(false);
+
+                  if (!item.id.startsWith("fallback-") && !item.is_read) {
+                    setUnreadCount((prev) => Math.max(0, prev - 1));
+                  }
+
+                  setItems((prev) =>
+                    prev.map((n) =>
+                      n.id === item.id
+                        ? {
+                            ...n,
+                            is_read: true,
+                            dotColor: "primary",
+                            fontColor: "primary",
+                          }
+                        : n,
+                    ),
+                  );
+
+                  void refetchNotifications();
+                  void refetchUnreadCount();
+                }}
               >
                 <div className="activity-line" />
                 <div className={`activity-dot-${item.dotColor}`} />
                 <div className="flex-grow-1">
-                  <h6 className={`f-w-600 font-${item.fontColor}`}>
+                  <h6
+                    className={`f-w-600 font-${item.fontColor} text-${item.fontColor}`}
+                  >
                     {item.date}
                     <span>{item.time}</span>
                     <span className={`circle-dot-${item.dotColor} float-end`}>
                       <SVG className="circle-color" iconId="circle" />
                     </span>
                   </h6>
-                  <h5>{item.name}</h5>
+                  <h5>{item.notification_type || ""}</h5>
                   <p>{item.message}</p>
                 </div>
               </Link>

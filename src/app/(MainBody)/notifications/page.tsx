@@ -19,7 +19,7 @@ import {
 
 export interface UINotification {
   id: string;
-  name: string;
+  notification_type: string;
   message: string;
   is_read: boolean;
   read_at: string | null;
@@ -28,7 +28,7 @@ export interface UINotification {
 
 const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 12;
 
   const {
     data: notifications,
@@ -120,7 +120,7 @@ const NotificationsPage = () => {
                         >
                           <div className="d-flex flex-column flex-sm-row justify-content-between gap-3 align-items-start">
                             <div className="flex-grow-1">
-                              <h6 className="mb-1">{item.name}</h6>
+                              <h6 className="mb-1">{item.notification_type}</h6>
                               <p className="mb-0 text-muted">
                                 {getTruncatedMessage(item.message)}
                               </p>
