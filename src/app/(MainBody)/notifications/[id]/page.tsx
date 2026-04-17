@@ -1,9 +1,14 @@
 "use client";
 
-import { useGetNotificationDetailsQuery } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { useAppDispatch } from "@/Redux/Hooks";
+import {
+  NotificationApi,
+  useGetNotificationDetailsQuery,
+} from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { TbArrowBack } from "react-icons/tb";
 import { Badge, Col, Container, Row, Spinner } from "reactstrap";
 
@@ -16,11 +21,27 @@ interface NotificationDetailsPageProps {
 const NotificationDetailsPage = ({
   params: { id },
 }: NotificationDetailsPageProps) => {
+  const dispatch = useAppDispatch();
+  const hasSyncedReadStateRef = useRef(false);
+
   const {
     data: notification,
     isLoading,
     isError,
   } = useGetNotificationDetailsQuery(id);
+
+  useEffect(() => {
+    hasSyncedReadStateRef.current = false;
+  }, [id]);
+
+  useEffect(() => {
+    if (!notification || hasSyncedReadStateRef.current) return;
+
+    if (notification.is_read) {
+      hasSyncedReadStateRef.current = true;
+      dispatch(NotificationApi.util.invalidateTags(["Notifications"]));
+    }
+  }, [notification, dispatch]);
 
   const formatDataKey = (key: string) =>
     key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());

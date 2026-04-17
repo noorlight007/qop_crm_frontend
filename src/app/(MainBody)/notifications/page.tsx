@@ -1,9 +1,13 @@
 "use client";
 
-import { useGetNotificationsQuery } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import {
+  useGetNotificationsQuery,
+  useGetUnreadNotificationsCountQuery,
+  useMakeAllNotificationsReadMutation,
+} from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TbRefresh } from "react-icons/tb";
 import {
   Badge,
@@ -29,6 +33,15 @@ export interface UINotification {
 const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 12;
+  const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
+    useMakeAllNotificationsReadMutation();
+
+  const { data: unreadData, refetch: refetchUnreadCount } =
+    useGetUnreadNotificationsCountQuery(undefined, {
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    });
+
 
   const {
     data: notifications,
@@ -49,6 +62,15 @@ const NotificationsPage = () => {
     const words = message.trim().split(/\s+/);
     if (words.length <= 20) return message;
     return `${words.slice(0, 20).join(" ")}...`;
+  };
+
+  const handleMakeAllRead = async () => {
+    try {
+      await makeAllNotificationsRead(undefined).unwrap();
+      await refetch();
+    } catch {
+      // Keep page stable even if mark-all-read fails.
+    }
   };
 
   return (
@@ -82,8 +104,13 @@ const NotificationsPage = () => {
                   <TbRefresh className="me-1" />
                   Refresh
                 </Button>
-                <Button color="primary" size="sm">
-                  Make All Read
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={handleMakeAllRead}
+                  disabled={isLoading || isMarkingAllRead || unreadData?.unread_count === 0}
+                >
+                  {isMarkingAllRead ? "Reading..." : "Make All Read"}
                 </Button>
               </div>
             </div>
@@ -120,7 +147,9 @@ const NotificationsPage = () => {
                         >
                           <div className="d-flex flex-column flex-sm-row justify-content-between gap-3 align-items-start">
                             <div className="flex-grow-1">
-                              <h6 className="mb-1">{item.notification_type}</h6>
+                              <h6 className="mb-1 fw-semibold">
+                                {item.notification_type}
+                              </h6>
                               <p className="mb-0 text-muted">
                                 {getTruncatedMessage(item.message)}
                               </p>

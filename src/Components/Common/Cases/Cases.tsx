@@ -139,16 +139,14 @@ const ExpandedCaseRow: React.FC<{
                         style={{ listStyleType: "none", paddingLeft: "0" }}
                       >
                         {caseItem.application_type && (
-                          <li
-                          >
+                          <li>
                             <span className="text-primary me-1">→</span>
                             <strong>Application Type:</strong>{" "}
                             {formatChoiceFieldValue(caseItem.application_type)}
                           </li>
                         )}
                         {caseItem.mortgage_type && (
-                          <li
-                          >
+                          <li>
                             <span className="text-primary me-1">→</span>
                             <strong>Mortgage Type:</strong>{" "}
                             {formatChoiceFieldValue(caseItem.mortgage_type)}
@@ -156,7 +154,9 @@ const ExpandedCaseRow: React.FC<{
                         )}
                       </ul>
                     ) : (
-                      <small className="text-muted d-block text-center">Not Available</small>
+                      <small className="text-muted d-block text-center">
+                        Not Available
+                      </small>
                     )}
                   </CardBody>
                 </Card>
@@ -181,8 +181,7 @@ const ExpandedCaseRow: React.FC<{
                           className="mb-0 mt-2 small text-muted"
                           style={{ listStyleType: "none", paddingLeft: "0" }}
                         >
-                          <li
-                          >
+                          <li>
                             <span className="text-primary me-1">→</span>
                             <strong>Insurance Type:</strong>{" "}
                             {formatChoiceFieldValue(caseItem.policy_type)}
@@ -196,15 +195,16 @@ const ExpandedCaseRow: React.FC<{
                         className="mb-0 mt-2 small text-muted"
                         style={{ listStyleType: "none", paddingLeft: "0" }}
                       >
-                        <li
-                        >
+                        <li>
                           <span className="text-primary me-1">→</span>
                           <strong>Protection Type:</strong>{" "}
                           {formatChoiceFieldValue(caseItem.provider)}
                         </li>
                       </ul>
                     ) : (
-                      <small className="text-muted d-block text-center">Not Available</small>
+                      <small className="text-muted d-block text-center">
+                        Not Available
+                      </small>
                     )}
                   </CardBody>
                 </Card>
@@ -425,30 +425,29 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     ))}
                   </Input>
                 </Col>
-                {session?.user?.role === "ADMIN" &&
-                  session.user.is_network === false && (
-                    <Col>
-                      <Label>Select Admin</Label>
-                      <Input
-                        type="select"
-                        className="py-1"
-                        value={filters.assigned_to_admin__id}
-                        onChange={(e) =>
-                          handleFilterChange(
-                            "assigned_to_admin__id",
-                            e.target.value,
-                          )
-                        }
-                      >
-                        <option value="">All Users</option>
-                        {adminData?.map((admin: any) => (
-                          <option key={admin.alias} value={admin.id}>
-                            {admin.name}
-                          </option>
-                        ))}
-                      </Input>
-                    </Col>
-                  )}
+
+                <Col>
+                  <Label>Select Admin</Label>
+                  <Input
+                    type="select"
+                    className="py-1"
+                    value={filters.assigned_to_admin__id}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "assigned_to_admin__id",
+                        e.target.value,
+                      )
+                    }
+                  >
+                    <option value="">All Users</option>
+                    {adminData?.map((admin: any) => (
+                      <option key={admin.alias} value={admin.id}>
+                        {admin.name}
+                      </option>
+                    ))}
+                  </Input>
+                </Col>
+
                 <Col>
                   <Label>Select Category</Label>
                   <Input
