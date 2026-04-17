@@ -3,12 +3,18 @@ import { ImagePath } from "@/Constant";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { useGetAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { setSideBarToggle } from "@/Redux/Reducers/ThemeCustomizerReducer";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 
 const LogoWrapper = () => {
+  const { data: session } = useSession();
   const { sideBarToggle } = useAppSelector((state) => state.themeCustomizer);
   const dispatch = useAppDispatch();
   const { data: appearanceData } = useGetAppranceQuery(undefined);
+
+  if (session?.user?.role === "APPLICANT") {
+    dispatch(setSideBarToggle(true));
+  }
 
   return (
     <div className="logo-wrapper d-flex align-items-center col-auto">
@@ -33,12 +39,14 @@ const LogoWrapper = () => {
         />
       </div>
 
-      <a
-        className="close-btn ms-auto"
-        onClick={() => dispatch(setSideBarToggle(!sideBarToggle))}
-      >
-        <SVG className="svg-color" iconId="Category" />
-      </a>
+      {session?.user?.role === "APPLICANT" ? null : (
+        <a
+          className="close-btn ms-auto"
+          onClick={() => dispatch(setSideBarToggle(!sideBarToggle))}
+        >
+          <SVG className="svg-color" iconId="Category" />
+        </a>
+      )}
     </div>
   );
 };
