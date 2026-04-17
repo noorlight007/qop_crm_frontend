@@ -194,14 +194,13 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
             name="next"
             className="px-4"
             onClick={async () => {
-              if (session?.user?.role === "APPLICANT") return;
+              // if (session?.user?.role === "APPLICANT") return;
               setSubmitting("save");
               await handleSubmit();
             }}
             disabled={
-              submitting !== null ||
-              isLoading ||
-              session?.user?.role === "APPLICANT"
+              submitting !== null || isLoading
+              // || session?.user?.role === "APPLICANT"
             }
           >
             {submitting === "save" ? "Saving..." : "Save Changes"}
@@ -210,21 +209,13 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
             type="button"
             color="secondary"
             onClick={async () => {
-              if (session?.user?.role === "APPLICANT") {
-                handleNextTab();
-              } else {
-                setSubmitting("save_next");
-                await handleSubmit();
-                handleNextTab();
-              }
+              setSubmitting("save_next");
+              await handleSubmit();
+              handleNextTab();
             }}
             disabled={submitting !== null || isLoading}
           >
-            {session?.user?.role === "APPLICANT"
-              ? "Go to Next"
-              : submitting === "save_next"
-                ? "Saving..."
-                : "Save & Next"}
+            {submitting === "save_next" ? "Saving..." : "Save & Next"}
           </Button>
         </div>
       </CardFooter>

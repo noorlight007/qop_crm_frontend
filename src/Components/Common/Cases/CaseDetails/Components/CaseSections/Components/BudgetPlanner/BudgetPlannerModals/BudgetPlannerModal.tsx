@@ -340,10 +340,10 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
         <Button
           color="primary"
           onClick={handleSaveChanges}
-          disabled={
-            (!budgetPlannerData.disclaimer && !updatedFields.disclaimer) ||
-            session?.user?.role === "APPLICANT"
-          }
+          // disabled={
+          //   (!budgetPlannerData.disclaimer && !updatedFields.disclaimer) ||
+          //   session?.user?.role === "APPLICANT"
+          // }
         >
           {isLoading ? "Saving..." : "Save Changes"}
         </Button>

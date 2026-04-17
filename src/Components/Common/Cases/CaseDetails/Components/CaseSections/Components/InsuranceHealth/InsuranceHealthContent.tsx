@@ -162,11 +162,11 @@ const InsuranceHealthContent: React.FC = () => {
           <Button
             color="primary"
             type="submit"
-            disabled={
-              submitting !== null ||
-              isUpdating ||
-              session?.user?.role === "APPLICANT"
-            }
+            // disabled={
+            //   submitting !== null ||
+            //   isUpdating ||
+            //   session?.user?.role === "APPLICANT"
+            // }
           >
             {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
           </Button>

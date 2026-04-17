@@ -955,11 +955,11 @@ const ExistingProtectionContent: React.FC<
               <Button
                 color="primary"
                 type="button"
-                disabled={
-                  session?.user?.role === "APPLICANT" ||
-                  submitting !== null ||
-                  isUpdateLoading
-                }
+                // disabled={
+                //   session?.user?.role === "APPLICANT" ||
+                //   submitting !== null ||
+                //   isUpdateLoading
+                // }
                 onClick={async (e) => {
                   await handleUpdate(e, "save");
                 }}

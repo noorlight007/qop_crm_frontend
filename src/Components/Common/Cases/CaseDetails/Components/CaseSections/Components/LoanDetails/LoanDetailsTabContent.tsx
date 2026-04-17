@@ -1895,12 +1895,12 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                   }
                 }}
                 className=""
-                disabled={
-                  isLoading ||
-                  isUpdating ||
-                  (session?.user?.role === "APPLICANT" &&
-                    loandetailsData?.updated_by !== null)
-                }
+                // disabled={
+                //   isLoading ||
+                //   isUpdating ||
+                //   (session?.user?.role === "APPLICANT" &&
+                //     loandetailsData?.updated_by !== null)
+                // }
               >
                 {isUpdating && submitting === "save"
                   ? "Saving..."
@@ -1916,33 +1916,23 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     if (!ok) return;
                   }
 
-                  if (
-                    session?.user?.role === "APPLICANT" &&
-                    loandetailsData?.updated_by !== null
-                  ) {
-                    handleNextTab();
-                  } else {
-                    setSubmitting("save_next");
-                    try {
-                      const ok = await handleSave();
-                      if (ok) {
-                        handleNextTab();
-                      }
-                    } catch (error) {
-                      console.error("Save failed, not navigating to next tab");
-                    } finally {
-                      setSubmitting(null);
+                  setSubmitting("save_next");
+                  try {
+                    const ok = await handleSave();
+                    if (ok) {
+                      handleNextTab();
                     }
+                  } catch (error) {
+                    console.error("Save failed, not navigating to next tab");
+                  } finally {
+                    setSubmitting(null);
                   }
                 }}
                 disabled={isLoading || isUpdating}
               >
-                {session?.user?.role === "APPLICANT" &&
-                loandetailsData?.updated_by !== null
-                  ? "Go To Next"
-                  : isUpdating && submitting === "save_next"
-                    ? "Saving..."
-                    : "Save & Next"}
+                {isUpdating && submitting === "save_next"
+                  ? "Saving..."
+                  : "Save & Next"}
               </Button>
             </div>
           </div>

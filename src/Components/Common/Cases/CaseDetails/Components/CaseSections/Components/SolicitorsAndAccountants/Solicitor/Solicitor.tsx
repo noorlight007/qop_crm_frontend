@@ -933,7 +933,8 @@ const Solicitor: React.FC = () => {
                     type="submit"
                     color="primary"
                     disabled={
-                      isUpdateLoading || session?.user?.role === "APPLICANT"
+                      isUpdateLoading 
+                      // || session?.user?.role === "APPLICANT"
                     }
                     onClick={() => {
                       submitActionRef.current = "save";

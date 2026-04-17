@@ -2,6 +2,7 @@ import LoadingSpinner from "@/app/loading";
 import { useGetApplicantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
@@ -15,7 +16,6 @@ import {
   NavLink,
 } from "reactstrap";
 import ApplicantsDetailsTabContent from "./ApplicantsDetailsTabContent";
-import { useSession } from "next-auth/react";
 
 export const ApplicantsDetailsTab = () => {
   const [basicTab, setBasicTab] = useState<string | null>(null);
@@ -28,7 +28,9 @@ export const ApplicantsDetailsTab = () => {
   // Fetch applicants data
   const { data: applicantsData, isLoading } = useGetApplicantsQuery({
     case_alias: casealias,
-  });
+    },
+    { refetchOnMountOrArgChange: true },
+  );
 
   console.log("applicant data: ", applicantsData);
 
@@ -42,7 +44,7 @@ export const ApplicantsDetailsTab = () => {
     // If user is an APPLICANT, show only their own data
     if (userRole === "APPLICANT" && userEmail) {
       return data.filter(
-        (applicant) => applicant?.customer?.email === userEmail
+        (applicant) => applicant?.customer?.email === userEmail,
       );
     }
 
@@ -51,7 +53,6 @@ export const ApplicantsDetailsTab = () => {
   };
 
   const filteredApplicantsData = getFilteredApplicants(applicantsData);
-
 
   // Function to validate if an applicant has all required fields filled
   const isApplicantValid = (applicant: ApplicantProps): boolean => {
@@ -97,7 +98,8 @@ export const ApplicantsDetailsTab = () => {
               {filteredApplicantsData?.map(
                 (applicantData: ApplicantProps, index: number) => {
                   const isPreviousValid =
-                    index === 0 || isApplicantValid(filteredApplicantsData[index - 1]);
+                    index === 0 ||
+                    isApplicantValid(filteredApplicantsData[index - 1]);
                   const isCurrentValid = isApplicantValid(applicantData);
 
                   return (
