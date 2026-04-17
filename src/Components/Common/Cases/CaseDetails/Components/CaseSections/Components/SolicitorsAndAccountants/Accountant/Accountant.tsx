@@ -829,7 +829,8 @@ const Accountant: React.FC = () => {
                       submitActionRef.current = "save";
                     }}
                     disabled={
-                      isUpdatingLoading || session?.user?.role === "APPLICANT"
+                      isUpdatingLoading 
+                      // || session?.user?.role === "APPLICANT"
                     }
                   >
                     {isUpdatingLoading ? "Saving..." : "Save Changes"}

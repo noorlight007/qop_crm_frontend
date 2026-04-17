@@ -2017,11 +2017,11 @@ const NeedsAndPreferencesContent: React.FC = () => {
               <Button
                 color="primary"
                 type="button"
-                disabled={
-                  isUpdating ||
-                  submitting !== null ||
-                  session?.user?.role === "APPLICANT"
-                }
+                // disabled={
+                //   isUpdating ||
+                //   submitting !== null ||
+                //   session?.user?.role === "APPLICANT"
+                // }
                 onClick={(e) =>
                   handleSubmit(e as React.MouseEvent<HTMLButtonElement>, "save")
                 }

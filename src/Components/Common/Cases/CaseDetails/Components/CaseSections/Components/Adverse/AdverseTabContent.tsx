@@ -442,22 +442,14 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                     type="button"
                     color="secondary"
                     onClick={async (e) => {
-                      if (session?.user?.role === "APPLICANT") {
-                        handleNextTab();
-                      } else {
-                        e.preventDefault();
-                        setSubmitting("save_next");
-                        await handleSubmit();
-                        handleNextTab();
-                      }
+                      e.preventDefault();
+                      setSubmitting("save_next");
+                      await handleSubmit();
+                      handleNextTab();
                     }}
                     disabled={submitting !== null || isAdverseUpdating}
                   >
-                    {session?.user?.role === "APPLICANT"
-                      ? "Go To Next"
-                      : submitting === "save_next"
-                        ? "Saving..."
-                        : "Save & Next"}
+                    {submitting === "save_next" ? "Saving..." : "Save & Next"}
                   </Button>
                 </div>
               </Form>

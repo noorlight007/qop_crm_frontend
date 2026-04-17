@@ -2904,20 +2904,14 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           </Row>
           {/* Submit Button */}
           <div className="d-flex justify-content-end gap-3 align-items-center">
-            {session?.user?.role === "APPLICANT" &&
-              selectedApplicant?.updated_by !== null && (
-                <span className="text-muted fst-italic">
-                  Your data has been saved and cannot be modified further.
-                </span>
-              )}
             <Button
               type="submit"
               color="primary"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null)
-              }
+              // disabled={
+              //   isLoading ||
+              //   (session?.user?.role === "APPLICANT" &&
+              //     selectedApplicant?.updated_by !== null)
+              // }
               onClick={() => {
                 submitActionRef.current = "save";
               }}
@@ -2980,23 +2974,13 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
               color="secondary"
               onClick={async (e) => {
                 e.preventDefault();
-                if (
-                  session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null
-                ) {
-                  handleNextTab();
-                } else {
-                  submitActionRef.current = "next";
-                  formRef.current?.requestSubmit();
-                }
+                submitActionRef.current = "next";
+                formRef.current?.requestSubmit();
               }}
             >
-              {session?.user?.role === "APPLICANT" &&
-              selectedApplicant?.updated_by !== null
-                ? "Go To Next"
-                : isUpdatingApplicant && submitting === "next"
-                  ? "Saving..."
-                  : "Save & Next Section"}
+              {isUpdatingApplicant && submitting === "next"
+                ? "Saving..."
+                : "Save & Next Section"}
             </Button>
           </div>
         </form>

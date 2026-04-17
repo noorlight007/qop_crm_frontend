@@ -2454,20 +2454,13 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
                 disabled={isUpdateEmploymentDetailsLoading}
                 onClick={(e) => {
                   e.preventDefault();
-                  if (session?.user?.role === "APPLICANT") {
-                    handleNextTab();
-                  } else {
-                    submitActionRef.current = "next";
-                    formRef.current?.requestSubmit();
-                  }
+                  submitActionRef.current = "next";
+                  formRef.current?.requestSubmit();
                 }}
               >
-                {session?.user?.role === "APPLICANT"
-                  ? "Go To Next"
-                  : isUpdateEmploymentDetailsLoading &&
-                      submitting === "save_next"
-                    ? "Saving..."
-                    : "Save & Next"}
+                {isUpdateEmploymentDetailsLoading && submitting === "save_next"
+                  ? "Saving..."
+                  : "Save & Next"}
               </Button>
             </div>
           </Col>
