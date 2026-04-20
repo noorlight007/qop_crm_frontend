@@ -184,7 +184,8 @@ const NeedsAndPreferencesContent: React.FC = () => {
         formData.is_minimise_any_lender_arrangement_costs,
       is_ability_to_add_fees_to_the_mortgage:
         formData.is_ability_to_add_fees_to_the_mortgage,
-      is_ability_to_add_fees_mortgage_extra_interest_will_be_payable: formData.is_ability_to_add_fees_mortgage_extra_interest_will_be_payable,
+      is_ability_to_add_fees_mortgage_extra_interest_will_be_payable:
+        formData.is_ability_to_add_fees_mortgage_extra_interest_will_be_payable,
       cashback: formData.cashback,
       portability: formData.portability,
       guarantor_jbsp: formData.guarantor_jbsp,
@@ -300,6 +301,16 @@ const NeedsAndPreferencesContent: React.FC = () => {
       </div>
     );
   }
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
 
   return (
     <div>
@@ -670,7 +681,9 @@ const NeedsAndPreferencesContent: React.FC = () => {
                     </div>
                     {errors.is_ability_to_add_fees_mortgage_extra_interest_will_be_payable && (
                       <div className="text-danger">
-                        {errors.is_ability_to_add_fees_mortgage_extra_interest_will_be_payable}
+                        {
+                          errors.is_ability_to_add_fees_mortgage_extra_interest_will_be_payable
+                        }
                       </div>
                     )}
                   </FormGroup>
@@ -2014,31 +2027,37 @@ const NeedsAndPreferencesContent: React.FC = () => {
             </FormGroup>
 
             <div className="d-flex justify-content-end gap-2 mt-3">
-              <Button
-                color="primary"
-                type="button"
-                disabled={
-                  isUpdating ||
-                  submitting !== null ||
-                  session?.user?.role === "APPLICANT"
-                }
-                onClick={(e) =>
-                  handleSubmit(e as React.MouseEvent<HTMLButtonElement>, "save")
-                }
-              >
-                {submitting === "save" ? "Saving..." : "Save Changes"}
-              </Button>
-              <Button
-                color="secondary"
-                type="button"
-                disabled={
-                  session?.user?.role !== "APPLICANT" &&
-                  (isUpdating || submitting !== null)
-                }
-                onClick={async (e) => {
-                  if (session?.user?.role === "APPLICANT") {
-                    handleNextTab();
-                  } else {
+              {canApplicantEdit() && (
+                <Button
+                  color="primary"
+                  type="button"
+                  disabled={
+                    isUpdating || submitting !== null
+                    // || session?.user?.role === "APPLICANT"
+                  }
+                  onClick={(e) =>
+                    handleSubmit(
+                      e as React.MouseEvent<HTMLButtonElement>,
+                      "save",
+                    )
+                  }
+                >
+                  {submitting === "save" ? "Saving..." : "Save Changes"}
+                </Button>
+              )}
+
+              {session?.user?.role !== "APPLICANT" && (
+                <Button
+                  color="secondary"
+                  type="button"
+                  disabled={
+                    // session?.user?.role !== "APPLICANT" &&
+                    isUpdating || submitting !== null
+                  }
+                  onClick={async (e) => {
+                    // if (session?.user?.role === "APPLICANT") {
+                    //   handleNextTab();
+                    // } else {
                     const success = await handleSubmit(
                       e as React.MouseEvent<HTMLButtonElement>,
                       "save_next",
@@ -2046,15 +2065,17 @@ const NeedsAndPreferencesContent: React.FC = () => {
                     if (success) {
                       handleNextTab();
                     }
+                    // }
+                  }}
+                >
+                  {
+                    // session?.user?.role === "APPLICANT"
+                    //   ? "Go To Next"
+                    //   :
+                    submitting === "save_next" ? "Saving..." : "Save & Next"
                   }
-                }}
-              >
-                {session?.user?.role === "APPLICANT"
-                  ? "Go To Next"
-                  : submitting === "save_next"
-                    ? "Saving..."
-                    : "Save & Next"}
-              </Button>
+                </Button>
+              )}
             </div>
           </Form>
         </CardBody>

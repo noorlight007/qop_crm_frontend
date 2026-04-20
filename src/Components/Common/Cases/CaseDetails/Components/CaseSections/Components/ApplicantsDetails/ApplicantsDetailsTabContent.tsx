@@ -636,6 +636,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     }
   };
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   const getGoogleMapEmbedUrl: any = (
     lat: number,
     lng: number,
@@ -2904,28 +2914,19 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           </Row>
           {/* Submit Button */}
           <div className="d-flex justify-content-end gap-3 align-items-center">
-            {session?.user?.role === "APPLICANT" &&
-              selectedApplicant?.updated_by !== null && (
-                <span className="text-muted fst-italic">
-                  Your data has been saved and cannot be modified further.
-                </span>
-              )}
-            <Button
-              type="submit"
-              color="primary"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null)
-              }
-              onClick={() => {
-                submitActionRef.current = "save";
-              }}
-            >
-              {isUpdatingApplicant && submitting === "save"
-                ? "Updating..."
-                : "Save Changes"}
-            </Button>
+            {canApplicantEdit() && (
+              <Button
+                type="submit"
+                color="primary"
+                onClick={() => {
+                  submitActionRef.current = "save";
+                }}
+              >
+                {isUpdatingApplicant && submitting === "save"
+                  ? "Updating..."
+                  : "Save Changes"}
+              </Button>
+            )}
             {session?.user?.role !== "APPLICANT" && (
               <>
                 <Button
@@ -2975,29 +2976,21 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 </Button>
               </>
             )}
-            <Button
-              type="submit"
-              color="secondary"
-              onClick={async (e) => {
-                e.preventDefault();
-                if (
-                  session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null
-                ) {
-                  handleNextTab();
-                } else {
+            {session?.user?.role !== "APPLICANT" && (
+              <Button
+                type="submit"
+                color="secondary"
+                onClick={async (e) => {
+                  e.preventDefault();
                   submitActionRef.current = "next";
                   formRef.current?.requestSubmit();
-                }
-              }}
-            >
-              {session?.user?.role === "APPLICANT" &&
-              selectedApplicant?.updated_by !== null
-                ? "Go To Next"
-                : isUpdatingApplicant && submitting === "next"
+                }}
+              >
+                {isUpdatingApplicant && submitting === "next"
                   ? "Saving..."
                   : "Save & Next Section"}
-            </Button>
+              </Button>
+            )}
           </div>
         </form>
       </Row>

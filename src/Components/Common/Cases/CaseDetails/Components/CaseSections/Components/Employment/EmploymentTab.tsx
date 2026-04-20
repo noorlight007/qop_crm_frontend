@@ -4,7 +4,7 @@ import { EmploymentDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSec
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import {
   Button,
@@ -23,15 +23,18 @@ export const EmploymentTab = () => {
   const { data: session } = useSession();
   const [activeUser, setActiveUser] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
-
+  const pendingTabRef = useRef<string | null>(null);
   const params = useParams();
   const { casealias } = params as { casealias?: string | string[] };
 
   // Normalize `casealias` which can be `string | string[] | undefined` from next/navigation
   const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
 
-  const { data: employmentData, isLoading: isEmploymentDetailLoading } =
-    useGetEmploymentDetailsQuery({ case_alias: caseAlias });
+  const {
+    data: employmentData,
+    isLoading: isEmploymentDetailLoading,
+    refetch: refetchEmploymentData,
+  } = useGetEmploymentDetailsQuery({ case_alias: caseAlias });
 
   // Filter employment data based on user role
   const getFilteredEmploymentData = (
@@ -101,13 +104,38 @@ export const EmploymentTab = () => {
     setModalUserId(null);
   };
 
+  // REPLACE the existing useEffect with this:
   useEffect(() => {
     if (filteredEmploymentData && filteredEmploymentData.length > 0) {
-      const firstUserId = filteredEmploymentData[0]?.customer.id;
-      setActiveUser(firstUserId);
-      setActiveTab(filteredEmploymentData[0]?.alias || null);
+      if (pendingTabRef.current) {
+        const pendingEmp = filteredEmploymentData.find(
+          (emp: EmploymentDetailsProps) => emp.alias === pendingTabRef.current,
+        );
+        if (pendingEmp) {
+          setActiveUser(pendingEmp.customer.id);
+          setActiveTab(pendingTabRef.current);
+          pendingTabRef.current = null;
+          return;
+        }
+      }
+      // Only initialize defaults if no tab is active yet
+      if (!activeTab) {
+        setActiveUser(filteredEmploymentData[0]?.customer.id);
+        setActiveTab(filteredEmploymentData[0]?.alias || null);
+      }
     }
   }, [filteredEmploymentData]);
+
+  // Handle new employment added - refetch data and navigate to new tab
+  const handleEmploymentAddedSuccess = async (newEmploymentAlias: string) => {
+    pendingTabRef.current = newEmploymentAlias;
+    await refetchEmploymentData();
+    // If after refetch the pending alias wasn't resolved by the effect
+    // (e.g. the data didn't include it), clear the ref to avoid stale state
+    if (pendingTabRef.current) {
+      pendingTabRef.current = null;
+    }
+  };
 
   if (isEmploymentDetailLoading) return <LoadingSpinner />;
 
@@ -298,6 +326,7 @@ export const EmploymentTab = () => {
                   {} as Record<number, EmploymentDetailsProps[]>,
                 ) || {}
               }
+              onTabChange={handleEmploymentAddedSuccess}
             />
           )}
         </CardBody>

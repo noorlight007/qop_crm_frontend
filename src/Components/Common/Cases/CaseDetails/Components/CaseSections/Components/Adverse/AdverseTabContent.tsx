@@ -283,6 +283,16 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
       </div>
     );
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <Container>
       <Row className="justify-content-center">
@@ -426,40 +436,38 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                 </FormGroup>
 
                 {/* Submit Button */}
-                <div className="d-flex justify-content-end mt-4 gap-2">
-                  <Button
-                    type="button"
-                    color="primary"
-                    onClick={async () => {
-                      setSubmitting("save");
-                      await handleSubmit();
-                    }}
-                    disabled={submitting !== null || isAdverseUpdating}
-                  >
-                    {submitting === "save" ? "Saving..." : "Save Changes"}
-                  </Button>
-                  <Button
-                    type="button"
-                    color="secondary"
-                    onClick={async (e) => {
-                      if (session?.user?.role === "APPLICANT") {
-                        handleNextTab();
-                      } else {
-                        e.preventDefault();
-                        setSubmitting("save_next");
+                {canApplicantEdit() && (
+                  <div className="d-flex justify-content-end mt-4 gap-2">
+                    <Button
+                      type="button"
+                      color="primary"
+                      onClick={async () => {
+                        setSubmitting("save");
                         await handleSubmit();
-                        handleNextTab();
-                      }
-                    }}
-                    disabled={submitting !== null || isAdverseUpdating}
-                  >
-                    {session?.user?.role === "APPLICANT"
-                      ? "Go To Next"
-                      : submitting === "save_next"
-                        ? "Saving..."
-                        : "Save & Next"}
-                  </Button>
-                </div>
+                      }}
+                      disabled={submitting !== null || isAdverseUpdating}
+                    >
+                      {submitting === "save" ? "Saving..." : "Save Changes"}
+                    </Button>
+                    {session?.user?.role !== "APPLICANT" && (
+                      <Button
+                        type="button"
+                        color="secondary"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          setSubmitting("save_next");
+                          await handleSubmit();
+                          handleNextTab();
+                        }}
+                        disabled={submitting !== null || isAdverseUpdating}
+                      >
+                        {submitting === "save_next"
+                          ? "Saving..."
+                          : "Save & Next"}
+                      </Button>
+                    )}
+                  </div>
+                )}
               </Form>
             </CardBody>
           </Card>

@@ -31,6 +31,7 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
   toggle,
   employmentData,
   groupedData = {},
+  onEmploymentAdded,
 }) => {
   const params = useParams();
   const { casealias } = params;
@@ -177,6 +178,10 @@ const AddEmploymentDetailsModal: React.FC<AddEmploymentDetailsModalProps> = ({
       setErrors({});
       toast.success("Employment details added successfully!");
       setFormValues(null);
+      // Call the callback with the newly created employment alias
+      if (onEmploymentAdded && res.data.alias) {
+        onEmploymentAdded(res.data.alias);
+      }
       toggle(); // Close the modal only on success
     } else if (res.error) {
       const parsed = parseApiErrors(res.error as any);
