@@ -4,6 +4,7 @@ import { notificationData } from "@/Data/Layout/HeaderData";
 import {
   useGetNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
+  useMakeAllNotificationsReadMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { getSession } from "next-auth/react";
 import Link from "next/link";
@@ -181,6 +182,9 @@ const NotificationHeader = () => {
       refetchOnFocus: true,
       refetchOnReconnect: true,
     });
+
+  const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
+    useMakeAllNotificationsReadMutation();
 
   useEffect(() => {
     const list = readList(notificationsData);
@@ -421,6 +425,25 @@ const NotificationHeader = () => {
   const visibleNotifications = notificationsToShow.slice(0, visibleCount);
   const hasMoreNotifications = notificationsToShow.length > visibleCount;
 
+  const handleMakeAllRead = async () => {
+    try {
+      await makeAllNotificationsRead(undefined).unwrap();
+      setUnreadCount(0);
+      setItems((prev) =>
+        prev.map((item) => ({
+          ...item,
+          is_read: true,
+          dotColor: "primary",
+          fontColor: "primary",
+        })),
+      );
+      void refetchNotifications();
+      void refetchUnreadCount();
+    } catch {
+      // No-op on failure; leave state unchanged.
+    }
+  };
+
   return (
     <li className="custom-dropdown" ref={wrapperRef}>
       <a
@@ -440,6 +463,17 @@ const NotificationHeader = () => {
           show ? "show" : ""
         }`}
       >
+        <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
+          <span className="fw-semibold">Notifications</span>
+          <button
+            type="button"
+            className="btn btn-sm btn-primary"
+            onClick={handleMakeAllRead}
+            disabled={isMarkingAllRead || unreadCount === 0}
+          >
+            {isMarkingAllRead ? "Reading..." : "Make All Read"}
+          </button>
+        </div>
         <ul className="activity-timeline">
           {visibleNotifications.map((item) => (
             <li className="d-flex align-items-start" key={item.id}>

@@ -128,11 +128,6 @@ const BudgetPlanner: React.FC = () => {
   };
 
   const handleSaveAndNext = async () => {
-    if (session?.user?.role === "APPLICANT") {
-      handleNextTab();
-      return;
-    }
-
     const isSaved = await saveNotes();
     if (isSaved) {
       handleNextTab();
