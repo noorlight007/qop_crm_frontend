@@ -120,22 +120,6 @@ export const commonPageMetadata = {
     keywords: ["register", "sign up", "create account"],
     canonical: "/auth/register",
   }),
-
-  cases: generateSEOMetadata({
-    title: "Cases Management",
-    description:
-      "Manage and track all your business cases, leads, and customer interactions in one place.",
-    keywords: ["cases", "lead management", "customer tracking"],
-    canonical: "/cases",
-  }),
-
-  documents: generateSEOMetadata({
-    title: "Document Management",
-    description:
-      "Upload, organize, and manage all your business documents securely in the cloud.",
-    keywords: ["documents", "file management", "document storage"],
-    canonical: "/documents",
-  }),
 };
 
 export default generateSEOMetadata;
