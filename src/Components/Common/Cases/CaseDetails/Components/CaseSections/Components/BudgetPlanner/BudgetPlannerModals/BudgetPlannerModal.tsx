@@ -27,6 +27,7 @@ import {
   NavLink,
 } from "reactstrap";
 import BudgetPlannerTabContent from "../BudgetPlannerTabContent";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 
 const budgetPlannerTabTitleData = [
   "Household Income",
@@ -50,6 +51,11 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     useUpdateSectionCompleteStatusMutation();
   // Local state to track only the changes
   const [updatedFields, setUpdatedFields] = useState<Record<string, any>>({});
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+      { case_alias: casealias },
+      { skip: !casealias },
+    );
 
   // Server-side validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -293,6 +299,16 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     [dispatch],
   );
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
       <ModalHeader toggle={toggle} className="bg-primary text-white">
@@ -337,16 +353,18 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
         <Button color="secondary" onClick={toggle}>
           Close
         </Button>
-        <Button
-          color="primary"
-          onClick={handleSaveChanges}
-          // disabled={
-          //   (!budgetPlannerData.disclaimer && !updatedFields.disclaimer) ||
-          //   session?.user?.role === "APPLICANT"
-          // }
-        >
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
+        {canApplicantEdit() && (
+          <Button
+            color="primary"
+            onClick={handleSaveChanges}
+            disabled={
+              !budgetPlannerData.disclaimer && !updatedFields.disclaimer
+              // || session?.user?.role === "APPLICANT"
+            }
+          >
+            {isLoading ? "Saving..." : "Save Changes"}
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   );

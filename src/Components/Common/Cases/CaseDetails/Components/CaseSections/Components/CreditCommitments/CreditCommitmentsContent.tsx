@@ -100,6 +100,16 @@ const CreditCommitmentsContent: React.FC = () => {
     }
   };
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div className="p-2">
       <CreditCommitmentsSummary />
@@ -119,15 +129,17 @@ const CreditCommitmentsContent: React.FC = () => {
             <FaFileExport />
             <span>Export CSV</span>
           </Button>
-          <Button
-            color="primary"
-            type="submit"
-            className="d-flex justify-content-center align-items-center gap-1"
-            onClick={() => setModalIsOpen(!modalIsOpen)}
-          >
-            <TbCirclePlus />
-            <span>Add Credit Item</span>
-          </Button>
+          {canApplicantEdit() && (
+            <Button
+              color="primary"
+              type="submit"
+              className="d-flex justify-content-center align-items-center gap-1"
+              onClick={() => setModalIsOpen(!modalIsOpen)}
+            >
+              <TbCirclePlus />
+              <span>Add Credit Item</span>
+            </Button>
+          )}
         </Col>
       </Row>
       {/* Table start  */}
@@ -294,15 +306,18 @@ const CreditCommitmentsContent: React.FC = () => {
         </Col>
       </Row>
       <div className=" mt-3 d-flex justify-content-end">
-        <Button
-          type="submit"
-          color="secondary"
-          onClick={() => {
-            handleNextTab();
-          }}
-        >
-          {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"}
-        </Button>
+        {session?.user?.role !== "APPLICANT" && (
+          <Button
+            type="submit"
+            color="secondary"
+            onClick={() => {
+              handleNextTab();
+            }}
+          >
+            {/* {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"} */}
+            Save & Next
+          </Button>
+        )}
       </div>
       {/* modals start */}
       <AddCreditCommitmentModal

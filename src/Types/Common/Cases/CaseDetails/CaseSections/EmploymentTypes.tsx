@@ -91,6 +91,7 @@ export interface EmploymentTabContentProps {
   activeTab: string | null;
   activeUser: number | null;
   groupedData: Record<number, EmploymentDetailsProps[]>;
+  onTabChange?: (newTabAlias: string) => void;
 }
 
 export interface AddEmploymentDetailsModalProps {
@@ -98,4 +99,5 @@ export interface AddEmploymentDetailsModalProps {
   toggle: () => void;
   employmentData: EmploymentDetailsProps | null;
   groupedData?: Record<number, EmploymentDetailsProps[]>;
+  onEmploymentAdded?: (newEmploymentAlias: string) => void;
 }

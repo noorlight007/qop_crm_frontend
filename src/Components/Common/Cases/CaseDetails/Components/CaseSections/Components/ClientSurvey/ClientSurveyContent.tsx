@@ -369,16 +369,18 @@ const ClientSurveyContent: React.FC = () => {
               </Row>
             ))}
             <div className="d-flex justify-content-end mt-4 gap-2">
-              <Button
-                color="secondary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNextTab();
-                }}
-                type="button"
-              >
-                Go To Next
-              </Button>
+              {session?.user?.role !== "APPLICANT" && (
+                <Button
+                  color="secondary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNextTab();
+                  }}
+                  type="button"
+                >
+                  Go To Next
+                </Button>
+              )}
             </div>
           </Form>
         </>

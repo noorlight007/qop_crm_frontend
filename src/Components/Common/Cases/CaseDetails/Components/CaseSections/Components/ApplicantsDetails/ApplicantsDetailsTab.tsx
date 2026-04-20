@@ -32,8 +32,6 @@ export const ApplicantsDetailsTab = () => {
     { refetchOnMountOrArgChange: true },
   );
 
-  console.log("applicant data: ", applicantsData);
-
   // Filter applicants based on user role
   const getFilteredApplicants = (data: ApplicantProps[] | undefined) => {
     if (!data) return [];

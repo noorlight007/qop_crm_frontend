@@ -120,6 +120,16 @@ const InsuranceHealthContent: React.FC = () => {
     );
   }
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div>
       <Form
@@ -159,46 +169,51 @@ const InsuranceHealthContent: React.FC = () => {
         )}
 
         <div className="d-flex justify-content-end gap-2">
-          <Button
-            color="primary"
-            type="submit"
-            // disabled={
-            //   submitting !== null ||
-            //   isUpdating ||
-            //   session?.user?.role === "APPLICANT"
-            // }
-          >
-            {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
-          </Button>
-          <Button
-            color="secondary"
-            type="button"
-            disabled={submitting !== null || isUpdating}
-            onClick={async () => {
-              if (session?.user?.role === "APPLICANT") {
-                handleNextTab();
-                return;
+          {canApplicantEdit() && (
+            <Button
+              color="primary"
+              type="submit"
+              disabled={
+                submitting !== null ||
+                isUpdating 
+                // || session?.user?.role === "APPLICANT"
               }
+            >
+              {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
+            </Button>
+          )}
 
-              if (formRef.current && !formRef.current.checkValidity()) {
-                formRef.current.reportValidity();
-                return;
-              }
+          {session?.user?.role !== "APPLICANT" && (
+            <Button
+              color="secondary"
+              type="button"
+              disabled={submitting !== null || isUpdating}
+              onClick={async () => {
+                if (session?.user?.role === "APPLICANT") {
+                  handleNextTab();
+                  return;
+                }
 
-              const success = await handleSubmit("save_next");
-              if (success) {
-                handleNextTab();
-              }
-            }}
-          >
-            {session?.user?.role === "APPLICANT" ? (
-              "Go To Next"
-            ) : submitting === "save_next" ? (
-              <Spinner size="sm" />
-            ) : (
-              "Save & Next"
-            )}
-          </Button>
+                if (formRef.current && !formRef.current.checkValidity()) {
+                  formRef.current.reportValidity();
+                  return;
+                }
+
+                const success = await handleSubmit("save_next");
+                if (success) {
+                  handleNextTab();
+                }
+              }}
+            >
+              {session?.user?.role === "APPLICANT" ? (
+                "Go To Next"
+              ) : submitting === "save_next" ? (
+                <Spinner size="sm" />
+              ) : (
+                "Save & Next"
+              )}
+            </Button>
+          )}
         </div>
       </Form>
     </div>

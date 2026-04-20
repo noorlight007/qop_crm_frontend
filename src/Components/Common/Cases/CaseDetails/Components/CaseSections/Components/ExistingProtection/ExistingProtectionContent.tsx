@@ -7,6 +7,7 @@ import {
   ExistingProtectionDetailsProps,
   ExistingProtectionTabContentProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
+import getCurrencySign from "@/utils/currency";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -24,7 +25,6 @@ import {
   Row,
 } from "reactstrap";
 import AddExistingProtectionModal from "./Modals/AddExistingProtectionModal";
-import getCurrencySign from "@/utils/currency";
 
 const ExistingProtectionContent: React.FC<
   ExistingProtectionTabContentProps
@@ -280,6 +280,16 @@ const ExistingProtectionContent: React.FC<
     }
   };
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div>
       <>
@@ -412,7 +422,9 @@ const ExistingProtectionContent: React.FC<
                   <Row>
                     <Col md={4}>
                       <FormGroup>
-                        <Label for="sum_assured">Sum Assured({getCurrencySign()})</Label>
+                        <Label for="sum_assured">
+                          Sum Assured({getCurrencySign()})
+                        </Label>
                         <Input
                           type="number"
                           id="sum_assured"
@@ -431,7 +443,9 @@ const ExistingProtectionContent: React.FC<
                     </Col>
                     <Col md={4}>
                       <FormGroup>
-                        <Label for="premium">Premium({getCurrencySign()})</Label>
+                        <Label for="premium">
+                          Premium({getCurrencySign()})
+                        </Label>
                         <Input
                           type="number"
                           id="premium"
@@ -940,54 +954,64 @@ const ExistingProtectionContent: React.FC<
           </Card>
           <div className="d-flex justify-content-between gap-2">
             <div>
-              {formValues?.have_any_existing_Protection_policies_in_place && (
-                <Button
-                  color="success"
-                  className="border-success"
-                  onClick={toggleModal}
-                  disabled={session?.user?.role === "APPLICANT"}
-                >
-                  Add new
-                </Button>
+              {canApplicantEdit() && (
+                <>
+                  {formValues?.have_any_existing_Protection_policies_in_place && (
+                    <Button
+                      color="success"
+                      className="border-success"
+                      onClick={toggleModal}
+                      // disabled={session?.user?.role === "APPLICANT"}
+                    >
+                      Add new
+                    </Button>
+                  )}
+                </>
               )}
             </div>
             <div className="d-flex gap-2">
-              <Button
-                color="primary"
-                type="button"
-                // disabled={
-                //   session?.user?.role === "APPLICANT" ||
-                //   submitting !== null ||
-                //   isUpdateLoading
-                // }
-                onClick={async (e) => {
-                  await handleUpdate(e, "save");
-                }}
-              >
-                {submitting === "save" ? "Saving..." : "Save Changes"}
-              </Button>
-              <Button
-                color="secondary"
-                type="button"
-                disabled={
-                  session?.user?.role !== "APPLICANT" &&
-                  (submitting !== null || isUpdateLoading)
-                }
-                onClick={async (e) => {
-                  if (session?.user?.role === "APPLICANT") {
-                    handleNextTab();
-                  } else {
-                    await handleUpdate(e, "save_next");
-                    handleNextTab();
-                  }
-                }}
-              >
-                {session?.user?.role === "APPLICANT"
-                  ? "Go To Next"
-                  : submitting === "save_next"
-                    ? "Saving..."
-                    : "Save & Next"}
-              </Button>
+              {canApplicantEdit() && (
+                <>
+                  <Button
+                    color="primary"
+                    type="button"
+                    disabled={
+                      // session?.user?.role === "APPLICANT" ||
+                      submitting !== null || isUpdateLoading
+                    }
+                    onClick={async (e) => {
+                      await handleUpdate(e, "save");
+                    }}
+                  >
+                    {submitting === "save" ? "Saving..." : "Save Changes"}
+                  </Button>
+                  {session?.user?.role !== "APPLICANT" && (
+                    <Button
+                      color="secondary"
+                      type="button"
+                      disabled={
+                        // session?.user?.role !== "APPLICANT" &&
+                        submitting !== null || isUpdateLoading
+                      }
+                      onClick={async (e) => {
+                        // if (session?.user?.role === "APPLICANT") {
+                        //   handleNextTab();
+                        // } else {
+                        await handleUpdate(e, "save_next");
+                        handleNextTab();
+                        // }
+                      }}
+                    >
+                      {
+                        // session?.user?.role === "APPLICANT"
+                        //   ? "Go To Next"
+                        //   :
+                        submitting === "save_next" ? "Saving..." : "Save & Next"
+                      }
+                    </Button>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </Form>

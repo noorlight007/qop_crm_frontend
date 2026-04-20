@@ -34,6 +34,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
   activeTab,
   activeUser,
   groupedData,
+  onTabChange,
 }) => {
   const [formValues, setFormValues] = useState<EmploymentDetailsProps | null>(
     null,
@@ -608,6 +609,25 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
       console.error("Error fetching detailed business address:", error);
     } finally {
       setIsFetchingAddress(false);
+    }
+  };
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
+  // Handler for when a new employment is added
+  const handleEmploymentAdded = (newEmploymentAlias: string) => {
+    // Update activeTab to the newly created employment
+    // This will trigger the useEffect to switch to the new employment record
+    if (onTabChange) {
+      onTabChange(newEmploymentAlias);
     }
   };
 
@@ -2428,40 +2448,48 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         </Row>
         <Row>
           <Col className="d-flex justify-content-between pt-3">
-            <Button
-              color="success"
-              className="border-success"
-              onClick={() => setAddEmploymentModalOpen(true)}
-            >
-              Add New
-            </Button>
+            {canApplicantEdit() && (
+              <Button
+                color="success"
+                className="border-success"
+                onClick={() => setAddEmploymentModalOpen(true)}
+              >
+                Add New
+              </Button>
+            )}
             <div className=" d-flex justify-content-end gap-2">
-              <Button
-                color="primary"
-                type="submit"
-                disabled={isUpdateEmploymentDetailsLoading}
-                onClick={() => {
-                  submitActionRef.current = "save";
-                }}
-              >
-                {isUpdateEmploymentDetailsLoading && submitting === "save"
-                  ? "Saving..."
-                  : "Save Changes"}
-              </Button>
-              <Button
-                type="submit"
-                color="secondary"
-                disabled={isUpdateEmploymentDetailsLoading}
-                onClick={(e) => {
-                  e.preventDefault();
-                  submitActionRef.current = "next";
-                  formRef.current?.requestSubmit();
-                }}
-              >
-                {isUpdateEmploymentDetailsLoading && submitting === "save_next"
-                  ? "Saving..."
-                  : "Save & Next"}
-              </Button>
+              {canApplicantEdit() && (
+                <>
+                  <Button
+                    color="primary"
+                    type="submit"
+                    disabled={isUpdateEmploymentDetailsLoading}
+                    onClick={() => {
+                      submitActionRef.current = "save";
+                    }}
+                  >
+                    {isUpdateEmploymentDetailsLoading && submitting === "save"
+                      ? "Saving..."
+                      : "Save Changes"}
+                  </Button>
+                  {session?.user?.role !== "APPLICANT" && (
+                    <Button
+                      type="submit"
+                      color="secondary"
+                      disabled={isUpdateEmploymentDetailsLoading}
+                      onClick={(e) => {
+                        submitActionRef.current = "next";
+                        formRef.current?.requestSubmit();
+                      }}
+                    >
+                      {isUpdateEmploymentDetailsLoading &&
+                      submitting === "save_next"
+                        ? "Saving..."
+                        : "Save & Next"}
+                    </Button>
+                  )}
+                </>
+              )}
             </div>
           </Col>
         </Row>
@@ -2473,6 +2501,7 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         toggle={() => setAddEmploymentModalOpen(!isAddEmploymentModalOpen)}
         employmentData={formValues}
         groupedData={groupedData}
+        onEmploymentAdded={handleEmploymentAdded}
       />
 
       <GetAddressModal
