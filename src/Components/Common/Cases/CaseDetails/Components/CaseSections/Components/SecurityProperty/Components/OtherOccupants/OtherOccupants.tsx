@@ -66,7 +66,7 @@ export const DependantsTable: React.FC = () => {
             <th>Age</th>
             <th>Relationship</th>
             <th>Created At</th>
-            <th>Actions</th>
+            {canApplicantEdit() && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -90,31 +90,33 @@ export const DependantsTable: React.FC = () => {
                 </td>
                 <td>{formatChoiceFieldValue(o.relationship) || "-"}</td>
                 <td>{formatDate(o.created_at)}</td>
-                <td>
-                  <div className="d-flex justify-content-center gap-2">
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-primary"
-                      onClick={() => {
-                        setSelectedOtherOccupant(o || null);
-                        setIsUpdateOtherOccupantModalOpen(true);
-                      }}
-                    >
-                      Edit
-                    </button>
+                {canApplicantEdit() && (
+                  <td>
+                    <div className="d-flex justify-content-center gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-primary"
+                        onClick={() => {
+                          setSelectedOtherOccupant(o || null);
+                          setIsUpdateOtherOccupantModalOpen(true);
+                        }}
+                      >
+                        Edit
+                      </button>
 
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => {
-                        setSelectedOtherOccupant(o || null);
-                        setIsDeleteOtherOccupantModalOpen(true);
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => {
+                          setSelectedOtherOccupant(o || null);
+                          setIsDeleteOtherOccupantModalOpen(true);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))
           ) : (

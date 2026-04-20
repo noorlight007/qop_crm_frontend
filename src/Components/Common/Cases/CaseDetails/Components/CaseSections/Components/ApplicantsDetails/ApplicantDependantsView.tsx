@@ -4,11 +4,13 @@ import {
   useAddDependantsMutation,
   useGetDependantsQuery,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   ApplicantDependantsProps,
   ApplicantDependantsViewModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
@@ -23,6 +25,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
   applicantsData,
 }) => {
   const params = useParams();
+  const { data: session } = useSession();
   const { casealias } = params;
   const [isDependantsModalOpen, setIsDependantsModalOpen] = useState(false);
   const [isDependantDeleteModalOpen, setIsDependantDeleteModalOpen] = useState<
@@ -34,6 +37,11 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
     case_alias: casealias,
     applicantDetails_alias: applicantAlias,
   });
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
 
   // Get first applicant's dependants
   const firstApplicant = applicantsData?.[0];
@@ -111,6 +119,16 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
       </div>
     );
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <Card>
       {/* Modal Header */}
@@ -131,10 +149,12 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                 Copy Dependants from first Applicant
               </Button>
             )}
-          <Button onClick={() => setIsDependantsModalOpen(true)}>
-            <TbCirclePlus size={20} className="me-1" />
-            Add Dependant
-          </Button>
+          {canApplicantEdit() && (
+            <Button onClick={() => setIsDependantsModalOpen(true)} disabled={!canApplicantEdit()}>
+              <TbCirclePlus size={20} className="me-1" />
+              Add Dependant
+            </Button>
+          )}
         </div>
       </CardHeader>
 
@@ -149,7 +169,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                 <th>Relationship</th>
                 <th>Date of Birth</th>
                 <th>Age</th>
-                <th>Action</th>
+                {canApplicantEdit() && <th>Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -167,12 +187,13 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                       </td>
                       <td>{dependant.date_of_birth || "-"}</td>
                       <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
-                      <td>
-                        <Button
-                          color="danger"
-                          outline
-                          size="sm"
-                          onClick={() =>
+                      {canApplicantEdit() && (
+                        <td>
+                          <Button
+                            color="danger"
+                            outline
+                            size="sm"
+                            onClick={() =>
                             setIsDependantDeleteModalOpen(
                               dependant?.id != null
                                 ? String(dependant.id)
@@ -184,6 +205,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                           <FaTrash />
                         </Button>
                       </td>
+                      )}
                     </tr>
                   ),
                 )

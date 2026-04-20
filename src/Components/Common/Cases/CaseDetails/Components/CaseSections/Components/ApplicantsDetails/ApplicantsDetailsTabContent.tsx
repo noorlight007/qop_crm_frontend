@@ -674,6 +674,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         type="radio"
                         name="is_company_application"
                         value={option}
+                        disabled={!canApplicantEdit()}
                         checked={
                           formValues.is_company_application ===
                           (option === "yes")
@@ -1416,6 +1417,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         name="has_dependants"
                         className="me-1"
                         value={value}
+                        disabled={!canApplicantEdit()}
                         checked={
                           formValues.has_dependants === (value === "yes")
                         }
@@ -1742,7 +1744,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <Button
                         color="primary"
                         onClick={() => setIsAddPreviousAddressModalOpen(true)}
-                        disabled={previousAddressesData?.length > 0}
+                        disabled={
+                          previousAddressesData?.length > 0 ||
+                          !canApplicantEdit()
+                        }
                       >
                         Add Previous Address
                       </Button>
@@ -1753,10 +1758,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         View Previous Address
                       </Button>
                     </div>
-                    <small className="text-danger">
-                      Note: If you add a new address, the "Add Previous Address"
-                      button will be disabled.
-                    </small>
+                    {canApplicantEdit() ? (
+                      <small className="text-danger">
+                        Note: If you add a new address, the "Add Previous
+                        Address" button will be disabled.
+                      </small>
+                    ) : (
+                      <small className="text-muted">
+                        Note: To add a new address, please contact your case Adviser.
+                      </small>
+                    )}
                   </div>
                 )}
             </Col>

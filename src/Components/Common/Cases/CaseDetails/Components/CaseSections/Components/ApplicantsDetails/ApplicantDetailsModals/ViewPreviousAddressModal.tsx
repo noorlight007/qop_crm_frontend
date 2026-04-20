@@ -1,10 +1,12 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetPreviousAddressQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   PreviousAddressProps,
   ViewPreviousAddressModalProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { FaTrash } from "react-icons/fa";
@@ -19,6 +21,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
   applicantAlias,
 }) => {
   const params = useParams();
+  const { data: session } = useSession();
   const { casealias } = params;
   const [isAddPreviousAddressModalOpen, setIsAddPreviousAddressModalOpen] =
     useState(false);
@@ -40,6 +43,21 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
     },
   );
 
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="xl">
       <ModalHeader toggle={toggle}>
@@ -48,12 +66,14 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
       <ModalBody>
         {previousAddressesData && previousAddressesData.length > 0 && (
           <div className="d-flex justify-content-end align-items-center mb-3">
-            <Button
-              color="primary"
-              onClick={() => setIsAddPreviousAddressModalOpen(true)}
-            >
-              <TbCirclePlus size={18} /> Add Previous Address
-            </Button>
+            {canApplicantEdit() && (
+              <Button
+                color="primary"
+                onClick={() => setIsAddPreviousAddressModalOpen(true)}
+              >
+                <TbCirclePlus size={18} /> Add Previous Address
+              </Button>
+            )}
           </div>
         )}
         <Table responsive bordered hover>
@@ -70,7 +90,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
               <th>Time at Address</th>
               <th>Residential Status</th>
               <th>Notes</th>
-              <th>Action</th>
+              {canApplicantEdit() && <th>Action</th>}
             </tr>
           </thead>
           <tbody className="small">
@@ -101,20 +121,22 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                       : ""}
                   </td>
                   <td>{addressData.notes}</td>
-                  <td>
-                    <div className="d-flex justify-content-center">
-                      <Button
-                        color="danger"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedAddressAlias(addressData.alias);
-                          setIsDeletePreviousAddressModalOpen(true);
-                        }}
-                      >
-                        <FaTrash />
-                      </Button>
-                    </div>
-                  </td>
+                  {canApplicantEdit() && (
+                    <td>
+                      <div className="d-flex justify-content-center">
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedAddressAlias(addressData.alias);
+                            setIsDeletePreviousAddressModalOpen(true);
+                          }}
+                        >
+                          <FaTrash />
+                        </Button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (

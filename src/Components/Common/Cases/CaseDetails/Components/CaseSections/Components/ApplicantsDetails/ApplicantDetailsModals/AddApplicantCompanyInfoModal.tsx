@@ -5,10 +5,12 @@ import {
   useGetCompanyDetailsQuery,
   useUpdateCompanyDetailsMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   AddCompanyDetailsFormModalProps,
   ApplicantCompanyProps,
 } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
+import { useSession } from "next-auth/react";
 
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -40,6 +42,13 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     useAddCompanyDetailsMutation();
   const [updateCompanyDetails, { isLoading: isCompanyDetailsUpdating }] =
     useUpdateCompanyDetailsMutation();
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: case_alias },
+    { skip: !case_alias },
+  );
+
+  const { data: session } = useSession();
 
   const [formData, setFormData] = useState<ApplicantCompanyProps>({
     company_name: "",
@@ -494,6 +503,16 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
     );
   if (isError) return <div>Error fetching data</div>;
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl" centered>
       <ModalHeader toggle={toggle}>
@@ -504,7 +523,10 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label className="small">Company Registration Number<span className="text-danger">*</span></Label>
+                <Label className="small">
+                  Company Registration Number
+                  <span className="text-danger">*</span>
+                </Label>
                 <InputGroup>
                   <Input
                     type="text"
@@ -535,7 +557,9 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
             </Col>
             <Col md={6}>
               <FormGroup>
-                <Label className="small">Company Name<span className="text-danger">*</span></Label>
+                <Label className="small">
+                  Company Name<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="text"
                   name="company_name"
@@ -856,20 +880,21 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
               <Button color="warning" onClick={toggle} className="me-2">
                 Cancel
               </Button>
-              {data?.[0] ? (
-                <Button
-                  color="primary"
-                  type="button"
-                  onClick={handleUpdate}
-                  disabled={isCompanyDetailsUpdating}
-                >
-                  {isCompanyDetailsUpdating ? "Updating..." : "Update"}
-                </Button>
-              ) : (
-                <Button color="primary" type="submit">
-                  {isCompanyDetailsAdding ? "Adding..." : "Submit"}
-                </Button>
-              )}
+              {canApplicantEdit() &&
+                (data?.[0] ? (
+                  <Button
+                    color="primary"
+                    type="button"
+                    onClick={handleUpdate}
+                    disabled={isCompanyDetailsUpdating}
+                  >
+                    {isCompanyDetailsUpdating ? "Updating..." : "Update"}
+                  </Button>
+                ) : (
+                  <Button color="primary" type="submit">
+                    {isCompanyDetailsAdding ? "Adding..." : "Submit"}
+                  </Button>
+                ))}
             </div>
           </div>
         </Form>
