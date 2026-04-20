@@ -113,7 +113,10 @@ const ExpandedCaseRow: React.FC<{
                           {formatDate(caseItem.review_date)}
                         </p>
                       ) : (
-                        <small className="text-muted">Not Available</small>
+                        <span className="small">
+                          <strong>Review Date:</strong>{" "}
+                          <span className="text-muted">Not Available</span>
+                        </span>
                       )}
                     </>
                   ) : (
