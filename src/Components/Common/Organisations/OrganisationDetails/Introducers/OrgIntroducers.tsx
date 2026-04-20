@@ -177,7 +177,7 @@ const OrgIntroducers: React.FC = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={9} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -285,7 +285,7 @@ const OrgIntroducers: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={9} className="text-center">
                     No introducers available.
                   </td>
                 </tr>

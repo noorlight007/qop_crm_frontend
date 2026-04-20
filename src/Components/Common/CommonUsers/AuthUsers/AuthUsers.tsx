@@ -64,7 +64,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const buildRoleParams = (roleKey?: string) => {
     if (!roleKey) return {};
 
-    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE, APPLICANT)
+    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE)
     return { role: roleKey };
   };
 
@@ -201,7 +201,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <Spinner color="primary" />
                     </div>
@@ -318,7 +318,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={10} className="text-center">
                     No users available.
                   </td>
                 </tr>
