@@ -1,5 +1,6 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { EmploymentDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -35,6 +36,11 @@ export const EmploymentTab = () => {
     isLoading: isEmploymentDetailLoading,
     refetch: refetchEmploymentData,
   } = useGetEmploymentDetailsQuery({ case_alias: caseAlias });
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
 
   // Filter employment data based on user role
   const getFilteredEmploymentData = (
@@ -138,6 +144,16 @@ export const EmploymentTab = () => {
   };
 
   if (isEmploymentDetailLoading) return <LoadingSpinner />;
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
 
   return (
     <Col xxl="12" className="px-5">
@@ -269,24 +285,28 @@ export const EmploymentTab = () => {
                             }
 
                             return (
-                              <Button
-                                type="button"
-                                size="sm"
-                                outline
-                                color="danger"
-                                className="ms-1"
-                                onClick={(e) =>
-                                  openDeleteModal(
-                                    e,
-                                    employment.alias,
-                                    employment.customer.id,
-                                  )
-                                }
-                                aria-label="Delete employment"
-                                title="Delete"
-                              >
-                                <FaTrash />
-                              </Button>
+                              <>
+                                {canApplicantEdit() && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    outline
+                                    color="danger"
+                                    className="ms-1"
+                                    onClick={(e) =>
+                                      openDeleteModal(
+                                        e,
+                                        employment.alias,
+                                        employment.customer.id,
+                                      )
+                                    }
+                                    aria-label="Delete employment"
+                                    title="Delete"
+                                  >
+                                    <FaTrash />
+                                  </Button>
+                                )}
+                              </>
                             );
                           })()}
                         </NavLink>
