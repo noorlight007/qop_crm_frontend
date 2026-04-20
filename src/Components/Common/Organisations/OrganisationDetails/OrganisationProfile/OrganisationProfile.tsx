@@ -533,7 +533,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         singleOrgDashboardData?.counters?.total_clients || 0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Clients</p>
+                    <p className="small text-muted mb-0">Applicants</p>
                   </div>
                 </Col>
                 <Col className="mb-3">
