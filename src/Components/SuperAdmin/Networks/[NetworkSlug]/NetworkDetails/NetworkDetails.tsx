@@ -32,6 +32,7 @@ import {
 import DeleteNetworkModal from "./Modals/DeleteNetworkModal";
 import UpdateNetworkDirectorInfoModal from "./Modals/UpdateNetworkDirectorInfoModal";
 import UpdateNetworkInfoModal from "./Modals/UpdateNetworkInfoModal";
+import { LoadingSpinner2 } from "@/app/loading";
 
 const NetworkDetails: React.FC = () => {
   const params = useParams();
@@ -230,7 +231,7 @@ const NetworkDetails: React.FC = () => {
               className="d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <Spinner color="primary" />
+              <LoadingSpinner2 />
             </Card>
           ) : (
             <Card className="shadow-lg">

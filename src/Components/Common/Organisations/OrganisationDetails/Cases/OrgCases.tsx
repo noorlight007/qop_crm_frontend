@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   caseCategories,
   insuranceCaseStages,
@@ -28,7 +29,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -232,7 +232,7 @@ const OrgCases: React.FC = () => {
                     {isLoading ? (
                       <tr>
                         <td colSpan={11} className="text-center">
-                          <Spinner color="primary" />
+                          <LoadingSpinner2 />
                         </td>
                       </tr>
                     ) : caseData?.results?.length > 0 ? (

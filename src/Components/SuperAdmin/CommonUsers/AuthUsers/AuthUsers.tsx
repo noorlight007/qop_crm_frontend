@@ -47,6 +47,7 @@ import Swal from "sweetalert2";
 import DeleteAuthUserModal from "./Modals/DeleteAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
+import { LoadingSpinner2 } from "@/app/loading";
 
 const LeadOrApplicants: React.FC<AuthUsersProps> = ({
   title,
@@ -353,7 +354,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                 <tr>
                   <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <Spinner color="primary" />
+                      <LoadingSpinner2 />
                     </div>
                   </td>
                 </tr>

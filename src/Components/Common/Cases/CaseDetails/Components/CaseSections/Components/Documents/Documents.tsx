@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   useGetCaseDocumentsQuery,
   useGetFileCountQuery,
@@ -19,7 +20,6 @@ import {
   Col,
   Input,
   Row,
-  Spinner,
   Table,
 } from "reactstrap";
 import BatchDeleteModal from "./Modals/BatchDeleteModal";
@@ -445,7 +445,7 @@ const Documents: React.FC = () => {
           <Row>
             {isLoading ? (
               <div className="d-flex justify-content-center my-5">
-                <Spinner color="primary" />
+                <LoadingSpinner2 />
               </div>
             ) : (
               <>

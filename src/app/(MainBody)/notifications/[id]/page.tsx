@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingSpinner2 } from "@/app/loading";
 import { useAppDispatch } from "@/Redux/Hooks";
 import {
   NotificationApi,
@@ -10,7 +11,7 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { TbArrowBack } from "react-icons/tb";
-import { Badge, Col, Container, Row, Spinner } from "reactstrap";
+import { Badge, Col, Container, Row } from "reactstrap";
 
 interface NotificationDetailsPageProps {
   params: {
@@ -97,7 +98,7 @@ const NotificationDetailsPage = ({
             <div className="card-body">
               {isLoading ? (
                 <div className="text-center py-5">
-                  <Spinner color="primary" />
+                  <LoadingSpinner2 />
                 </div>
               ) : isError || !notification ? (
                 <div className="text-center py-5">

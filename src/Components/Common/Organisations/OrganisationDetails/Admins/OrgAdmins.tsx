@@ -1,7 +1,7 @@
 "use client";
 import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -21,7 +21,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -104,7 +103,7 @@ const OrgAdmins: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -167,7 +166,7 @@ const OrgAdmins: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <Spinner color="primary" />
+                      <LoadingSpinner2 />
                     </div>
                   </td>
                 </tr>

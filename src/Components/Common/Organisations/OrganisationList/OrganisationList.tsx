@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
 import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { getOrganisationUrl } from "@/utils/RedirectPaths";
@@ -8,19 +9,18 @@ import { useEffect, useState } from "react";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
-    Button,
-    Card,
-    CardBody,
-    Col,
-    Input,
-    InputGroup,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    PopoverBody,
-    Row,
-    Spinner,
-    UncontrolledPopover,
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Input,
+  InputGroup,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  PopoverBody,
+  Row,
+  UncontrolledPopover,
 } from "reactstrap";
 import AddOrganisationModal from "../Modals/AddOrganisationModal";
 
@@ -146,8 +146,8 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                 (session.user.role === "DIRECTOR" ||
                   session.user.role === "COMPLIANCE") && (
                   <Button color="primary" onClick={toggleModal}>
-                  <TbCirclePlus size={18} className="me-1" />
-                  Add Organisation
+                    <TbCirclePlus size={18} className="me-1" />
+                    Add Organisation
                   </Button>
                 )}
             </Col>
@@ -155,7 +155,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
           <Row>
             {isLoading ? (
               <Row className="pb-4 d-flex justify-content-center min-vh-100">
-                <Spinner color="primary" />
+                <LoadingSpinner2 />
               </Row>
             ) : currentOrganisations && currentOrganisations?.length > 0 ? (
               currentOrganisations.map((item: any) => (
@@ -173,16 +173,16 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                       (session.user.role === "DIRECTOR" ||
                         session.user.role === "COMPLIANCE") && (
                         <Link
-                        href={`${getOrganisationUrl(session)}/${item.slug}`}
-                        title="Website"
-                        className="text-muted position-absolute top-0 end-0 p-3"
-                      >
-                        <i
-                          style={{ fontSize: "10px" }}
-                          className="fa-solid fa-up-right-from-square"
-                        ></i>
-                      </Link>
-                    )}
+                          href={`${getOrganisationUrl(session)}/${item.slug}`}
+                          title="Website"
+                          className="text-muted position-absolute top-0 end-0 p-3"
+                        >
+                          <i
+                            style={{ fontSize: "10px" }}
+                            className="fa-solid fa-up-right-from-square"
+                          ></i>
+                        </Link>
+                      )}
                     <CardBody className="p-0 ">
                       <div className="d-flex gap-2">
                         <div className="mt-0 rounded-circle overflow-hidden border-1 border-primary">
@@ -212,7 +212,9 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
                           )}
                         </h5>
                       </div>
-                      <div className="mt-2 mb-4 text-truncate">{item.email}</div>
+                      <div className="mt-2 mb-4 text-truncate">
+                        {item.email}
+                      </div>
                       <div className="d-flex justify-content-between mt-3 pt-2 border-top">
                         <Col className="border-end">
                           <div className="text-center ">

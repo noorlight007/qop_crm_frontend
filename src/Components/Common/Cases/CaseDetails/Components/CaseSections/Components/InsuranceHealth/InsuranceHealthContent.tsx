@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -115,7 +116,7 @@ const InsuranceHealthContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center py-4">
-        <Spinner color="primary" />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -174,8 +175,7 @@ const InsuranceHealthContent: React.FC = () => {
               color="primary"
               type="submit"
               disabled={
-                submitting !== null ||
-                isUpdating 
+                submitting !== null || isUpdating
                 // || session?.user?.role === "APPLICANT"
               }
             >

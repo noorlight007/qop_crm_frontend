@@ -1,16 +1,9 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
 import Image from "next/image";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import {
-  Card,
-  CardBody,
-  Col,
-  Input,
-  InputGroup,
-  Row,
-  Spinner,
-} from "reactstrap";
+import { Card, CardBody, Col, Input, InputGroup, Row } from "reactstrap";
 
 const OrganisationCards = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,7 +56,7 @@ const OrganisationCards = () => {
           <Row>
             {isLoading ? (
               <Row className="pb-4 d-flex justify-content-center">
-                <Spinner color="primary" />
+                <LoadingSpinner2 />
               </Row>
             ) : organisationList && organisationList.length > 0 ? (
               organisationList.slice(0, 8).map((item: any) => (

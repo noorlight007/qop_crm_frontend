@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetBankruptsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewBankruptciesModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
@@ -8,7 +9,6 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Spinner,
   Table,
 } from "reactstrap";
 
@@ -39,7 +39,7 @@ const ViewBankruptciesModal: React.FC<ViewBankruptciesModalProps> = ({
       <ModalBody className="p-4">
         {isLoading ? (
           <div className="text-center p-4">
-            <Spinner color="primary" />
+            <LoadingSpinner2 />
           </div>
         ) : !data || data.length === 0 ? (
           <div className="text-center p-4">No bankruptcies found</div>

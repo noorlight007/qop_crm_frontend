@@ -34,6 +34,7 @@ import {
 import DeleteLeadsOrApplicantsModal from "./Modals/DeleteLeadsOrApplicantsModal";
 import UpdateLeadsOrApplicantsModal from "./Modals/UpdateLeadsOrApplicantsModal";
 import ViewLeadsOrApplicantsModal from "./Modals/ViewLeadsOrApplicantsModal";
+import { LoadingSpinner2 } from "@/app/loading";
 
 const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   title,
@@ -307,7 +308,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                 <tr>
                   <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <Spinner color="primary" />
+                      <LoadingSpinner2 />
                     </div>
                   </td>
                 </tr>
