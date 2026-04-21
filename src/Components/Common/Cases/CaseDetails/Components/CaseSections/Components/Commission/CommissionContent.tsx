@@ -58,6 +58,16 @@ const CommissionContent: React.FC = () => {
     );
   }
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   const totalCommission = commission?.total_commission ?? 0;
 
   const handleSubmit = async (e?: React.FormEvent): Promise<boolean> => {
@@ -180,33 +190,40 @@ const CommissionContent: React.FC = () => {
               {errors.note && <div className="text-danger">{errors.note}</div>}
             </FormGroup>
             <div className="d-flex justify-content-end gap-2">
-              <Button
-                color="primary"
-                type="submit"
-                disabled={isAdding || session?.user?.role === "APPLICANT"}
-              >
-                {isAdding ? "Saving..." : "Save Changes"}
-              </Button>
-              <Button
-                color="secondary"
-                disabled={isAdding}
-                onClick={async () => {
-                  if (session?.user?.role === "APPLICANT") {
-                    handleNextTab();
-                  } else {
-                    const success = await handleSubmit();
-                    if (success) {
-                      handleNextTab();
-                    }
+              {canApplicantEdit() && (
+                <Button
+                  color="primary"
+                  type="submit"
+                  disabled={
+                    isAdding
+                    // || session?.user?.role === "APPLICANT"
                   }
-                }}
-              >
-                {isAdding
-                  ? "Saving..."
-                  : session?.user?.role === "APPLICANT"
-                    ? "Go To Next"
-                    : "Save & Next"}
-              </Button>
+                >
+                  {isAdding ? "Saving..." : "Save Changes"}
+                </Button>
+              )}
+              {session?.user?.role !== "APPLICANT" && (
+                <Button
+                  color="secondary"
+                  disabled={isAdding}
+                  onClick={async () => {
+                    if (session?.user?.role === "APPLICANT") {
+                      handleNextTab();
+                    } else {
+                      const success = await handleSubmit();
+                      if (success) {
+                        handleNextTab();
+                      }
+                    }
+                  }}
+                >
+                  {isAdding
+                    ? "Saving..."
+                    : session?.user?.role === "APPLICANT"
+                      ? "Go To Next"
+                      : "Save & Next"}
+                </Button>
+              )}
             </div>
           </Form>
         </Col>

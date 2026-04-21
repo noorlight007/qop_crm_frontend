@@ -111,7 +111,11 @@ const AddLumpSumCommissionModal: React.FC<AddLumpSumAndTrailModalProps> = ({
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!caseAlias || !commissionAlias) return;
+//     if (!caseAlias || !commissionAlias) {
+//   toast.error("Missing case or commission reference.");
+//   return;
+// }
+   console.log("caseAlias, commissionAlias", caseAlias, commissionAlias);
 
     const payload = {
       policy: policy || null,
