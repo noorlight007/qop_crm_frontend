@@ -89,6 +89,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
       "Compliance",
       "Vulnerability",
       "Documents",
+      "Health Check",
     ],
   };
 

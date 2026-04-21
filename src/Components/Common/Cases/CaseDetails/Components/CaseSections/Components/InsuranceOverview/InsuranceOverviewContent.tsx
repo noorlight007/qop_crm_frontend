@@ -156,6 +156,16 @@ const InsuranceOverviewContent: React.FC = () => {
     );
   }
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div className="p-2">
       <Nav pills className="justify-content-center nav-primary">
@@ -336,46 +346,50 @@ const InsuranceOverviewContent: React.FC = () => {
               </Col>
             </Row>
             <div className="d-flex justify-content-end mt-3 gap-2">
-              <Button
-                color="primary"
-                type="submit"
-                disabled={
-                  isUpdating ||
-                  (session?.user?.role === "APPLICANT" &&
-                    overview?.updated_by !== null)
-                }
-              >
-                {isUpdating ? "Saving..." : "Save Changes"}
-              </Button>
-              <Button
-                type="submit"
-                color="secondary"
-                onClick={async (e) => {
-                  e.preventDefault();
-                  if (
-                    session?.user?.role === "APPLICANT" &&
-                    overview?.updated_by !== null
-                  ) {
-                    handleNextTab();
-                  } else {
-                    try {
-                      await handleSubmit(e);
+              {canApplicantEdit() && (
+                <Button
+                  color="primary"
+                  type="submit"
+                  // disabled={
+                  //   isUpdating ||
+                  //   (session?.user?.role === "APPLICANT" &&
+                  //     overview?.updated_by !== null)
+                  // }
+                >
+                  {isUpdating ? "Saving..." : "Save Changes"}
+                </Button>
+              )}
+              {session?.user?.role !== "APPLICANT" && (
+                <Button
+                  type="submit"
+                  color="secondary"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    if (
+                      session?.user?.role === "APPLICANT" &&
+                      overview?.updated_by !== null
+                    ) {
                       handleNextTab();
-                    } catch (err) {
-                      console.error(
-                        "Failed to save and navigate to next tab:",
-                        err,
-                      );
+                    } else {
+                      try {
+                        await handleSubmit(e);
+                        handleNextTab();
+                      } catch (err) {
+                        console.error(
+                          "Failed to save and navigate to next tab:",
+                          err,
+                        );
+                      }
                     }
-                  }
-                }}
-                disabled={isUpdating}
-              >
-                {session?.user?.role === "APPLICANT" &&
-                overview?.updated_by !== null
-                  ? "Go To Next"
-                  : "Save & Next"}
-              </Button>
+                  }}
+                  disabled={isUpdating}
+                >
+                  {session?.user?.role === "APPLICANT" &&
+                  overview?.updated_by !== null
+                    ? "Go To Next"
+                    : "Save & Next"}
+                </Button>
+              )}
             </div>
           </Form>
         </TabPane>
