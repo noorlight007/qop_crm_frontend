@@ -28,6 +28,7 @@ export const CasesApi = baseApi.injectEndpoints({
         "LeadDetails",
         "AuthUserList",
         "AuthUsers",
+        "CasesSummary",
       ],
     }),
     updateCase: builder.mutation({
