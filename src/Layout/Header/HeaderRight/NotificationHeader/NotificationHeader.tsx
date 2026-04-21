@@ -455,9 +455,11 @@ const NotificationHeader = () => {
       >
         <SVG iconId="notification" />
       </a>
-      <Badge pill color="warning">
-        {unreadCount}
-      </Badge>
+      {unreadCount > 0 && (
+        <Badge pill color="warning">
+          {unreadCount}
+        </Badge>
+      )}
       <div
         className={`custom-menu notification-dropdown py-0 overflow-hidden shadow ${
           show ? "show" : ""
