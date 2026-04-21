@@ -570,7 +570,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                         color="danger"
                         title="Remove row"
                         onClick={() => openDeleteModal(lump.id)}
-                        disabled={session?.user?.role === "APPLICANT"}
+                        // disabled={session?.user?.role === "APPLICANT"}
                       >
                         <FaTrash /> Delete
                       </Button>
@@ -578,7 +578,8 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                         type="button"
                         className="btn btn-primary"
                         disabled={
-                          isUpdatingLump || session?.user?.role === "APPLICANT"
+                          isUpdatingLump 
+                          // || session?.user?.role === "APPLICANT"
                         }
                         onClick={() => handleUpdateLump(lump, idx)}
                       >

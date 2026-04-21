@@ -547,7 +547,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
                         color="danger"
                         title="Remove row"
                         onClick={() => openDeleteModal(trail.id)}
-                        disabled={session?.user?.role === "APPLICANT"}
+                        // disabled={session?.user?.role === "APPLICANT"}
                       >
                         <FaTrash /> Delete
                       </Button>
@@ -555,7 +555,8 @@ const TrailCommission: React.FC<CommissionProps> = ({
                         type="button"
                         className="btn btn-primary"
                         disabled={
-                          isUpdating || session?.user?.role === "APPLICANT"
+                          isUpdating 
+                          // || session?.user?.role === "APPLICANT"
                         }
                         onClick={() => handleUpdateTrail(trail, idx)}
                       >
