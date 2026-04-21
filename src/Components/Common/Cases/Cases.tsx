@@ -428,28 +428,29 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     ))}
                   </Input>
                 </Col>
-
-                <Col>
-                  <Label>Select Admin</Label>
-                  <Input
-                    type="select"
-                    className="py-1"
-                    value={filters.assigned_to_admin__id}
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "assigned_to_admin__id",
-                        e.target.value,
-                      )
-                    }
-                  >
-                    <option value="">All Users</option>
-                    {adminData?.map((admin: any) => (
-                      <option key={admin.alias} value={admin.id}>
-                        {admin.name}
-                      </option>
-                    ))}
-                  </Input>
-                </Col>
+                {session?.user?.is_network ? null : (
+                  <Col>
+                    <Label>Select Admin</Label>
+                    <Input
+                      type="select"
+                      className="py-1"
+                      value={filters.assigned_to_admin__id}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "assigned_to_admin__id",
+                          e.target.value,
+                        )
+                      }
+                    >
+                      <option value="">All Users</option>
+                      {adminData?.map((admin: any) => (
+                        <option key={admin.alias} value={admin.id}>
+                          {admin.name}
+                        </option>
+                      ))}
+                    </Input>
+                  </Col>
+                )}
 
                 <Col>
                   <Label>Select Category</Label>
