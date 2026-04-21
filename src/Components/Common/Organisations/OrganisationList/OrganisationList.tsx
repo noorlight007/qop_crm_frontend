@@ -154,7 +154,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
           </Row>
           <Row>
             {isLoading ? (
-              <Row className="pb-4 d-flex justify-content-center min-vh-100">
+              <Row className="pb-4 d-flex justify-content-center">
                 <LoadingSpinner2 />
               </Row>
             ) : currentOrganisations && currentOrganisations?.length > 0 ? (
