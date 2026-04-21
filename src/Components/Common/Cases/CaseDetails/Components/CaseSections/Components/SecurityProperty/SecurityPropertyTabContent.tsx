@@ -5,7 +5,9 @@ import {
   initializeForm,
   setPropertyErrors,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { PropertyData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -28,6 +30,7 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
   propertyData,
 }) => {
   const dispatch = useDispatch();
+  const { data: session } = useSession();
   // form refs for each tab so we can run HTML5 validation before navigating
   const formRef1 = useRef<HTMLFormElement | null>(null);
   const formRef2 = useRef<HTMLFormElement | null>(null);
@@ -41,6 +44,11 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
   const appDispatch = useAppDispatch();
   const [validateProperty, { isLoading: isValidating }] =
     useValidatePropertyMutation();
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
 
   const parseApiErrors = (err: any): Record<string, string> => {
     const out: Record<string, string> = {};
@@ -181,6 +189,16 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
     }
   }, [propertyData, dispatch]);
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div>
       <TabContent activeTab={tabId} className="w-full">
@@ -188,25 +206,31 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
           <Form innerRef={formRef1}>
             <AddressDetails />
           </Form>
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
+          {canApplicantEdit() && (
+            <Button color="primary" onClick={handleNext} className="float-end">
+              Next
+            </Button>
+          )}
         </TabPane>
         <TabPane tabId="2">
           <Form innerRef={formRef2}>
             <PropertyDetails />
           </Form>
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
+          {canApplicantEdit() && (
+            <Button color="primary" onClick={handleNext} className="float-end">
+              Next
+            </Button>
+          )}
         </TabPane>
         <TabPane tabId="3">
           <Form innerRef={formRef3}>
             <AdditionalInfo />
           </Form>
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
+          {canApplicantEdit() && (
+            <Button color="primary" onClick={handleNext} className="float-end">
+              Next
+            </Button>
+          )}
         </TabPane>
         <TabPane tabId="4">
           <Form innerRef={formRef4}>

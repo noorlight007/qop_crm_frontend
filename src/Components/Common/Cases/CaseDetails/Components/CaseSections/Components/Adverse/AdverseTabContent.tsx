@@ -387,16 +387,18 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                           key !==
                             "is_direct_debit_returned_in_the_last_three_months" && (
                             <div className="d-flex gap-2 mt-2">
-                              <Button
-                                color="success"
-                                onClick={() =>
-                                  handleAddNewClick(
-                                    key as keyof typeof formData,
-                                  )
-                                }
-                              >
-                                Add New
-                              </Button>
+                              {canApplicantEdit() && (
+                                <Button
+                                  color="success"
+                                  onClick={() =>
+                                    handleAddNewClick(
+                                      key as keyof typeof formData,
+                                    )
+                                  }
+                                >
+                                  Add New
+                                </Button>
+                              )}
                               <Button
                                 color="primary"
                                 onClick={() =>
