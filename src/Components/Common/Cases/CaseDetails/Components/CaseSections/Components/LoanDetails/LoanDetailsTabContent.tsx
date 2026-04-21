@@ -1319,6 +1319,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                     <option value="">Select...</option>
                     <option value="ADVISING">Advising</option>
                     <option value="EXECUTION_ONLY">Execution Only</option>
+                    <option value="REFERRED">Referred</option>
                   </Input>
                   {getFieldError("repayment_method") && (
                     <FormText className="text-danger">
