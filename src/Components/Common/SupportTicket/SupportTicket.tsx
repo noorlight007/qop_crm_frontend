@@ -716,8 +716,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                       </>
                     </th>
                     <th>Priority</th>
-                    <th>Subject</th>
-                    <th>Message</th>
                     <th>Files</th>
                     {session?.user?.role === "SUPER_ADMIN" && (
                       <>
@@ -882,30 +880,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                               </small>
                             )}
                           </span>
-                        </td>
-                        <td>
-                          <span
-                            style={{
-                              maxWidth: "200px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {ticket.subject}
-                          </span>
-                        </td>
-                        <td>
-                          <div
-                            style={{
-                              maxWidth: "200px",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {ticket.message}
-                          </div>
                         </td>
                         <td>
                           {ticket.files.length > 0 ? (
