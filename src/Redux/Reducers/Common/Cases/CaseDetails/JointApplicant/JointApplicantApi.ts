@@ -28,6 +28,7 @@ export const JointApplicantApi = baseApi.injectEndpoints({
         "ExistingProtectionDetails",
         "Portfolio",
         "LeadOrClientFilterList",
+        "LeadsOrApplicants",
       ],
     }),
     updateJointApplicantInfo: builder.mutation({

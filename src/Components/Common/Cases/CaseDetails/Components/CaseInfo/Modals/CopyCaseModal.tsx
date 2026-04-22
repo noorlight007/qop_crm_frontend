@@ -189,7 +189,6 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
     is_client_survey: false,
     is_documents: false,
     is_health_insurance: false,
-    is_link_cases_together: false,
   });
 
   useEffect(() => {
@@ -218,7 +217,6 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
         is_client_survey: false,
         is_documents: false,
         is_health_insurance: false,
-        is_link_cases_together: false,
       });
     }
   }, [isOpen, caseData]);
@@ -267,7 +265,6 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
         is_client_survey: formData.is_client_survey,
         is_documents: formData.is_documents,
         is_health_insurance: formData.is_health_insurance,
-        is_link_cases_together: formData.is_link_cases_together,
       };
 
       await copyCase({ case_alias: caseData.alias, payload }).unwrap();
@@ -724,21 +721,6 @@ const CopyCaseModal: React.FC<CopyCaseModalProps> = ({
                 </FormGroup>
               </Col>
             )}
-            <Col sm="12" md="6">
-              <FormGroup check>
-                <Input
-                  type="checkbox"
-                  name="is_link_cases_together"
-                  id="is_link_cases_together"
-                  checked={formData.is_link_cases_together}
-                  onChange={handleInputChange}
-                  className="border-primary"
-                />
-                <Label for="is_link_cases_together" check>
-                  Link Cases Together
-                </Label>
-              </FormGroup>
-            </Col>
           </Row>
           <div className="d-flex justify-content-end mt-4 gap-2">
             <Button onClick={toggle}>Cancel</Button>
