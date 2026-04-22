@@ -7,9 +7,9 @@ import {
 import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
+import { useGetOrganisationListQuery } from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
-import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -34,214 +34,12 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import CaesSummary from "./CaesSummary/CaesSummary";
+import ExpandedCaseRow from "./ExpandedCaseRow";
 import AddNewCaseModal from "./Modals/AddNewCaseModal";
 import DeleteCaseModal from "./Modals/DeleteCaseModal";
 import UpdateCaseModal from "./Modals/UpdateCaseModal";
 
-interface CasesProps {
-  initialIsRemoved?: string;
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Expanded row — shows the hidden columns when the user clicks the eye icon
-// ────────────────────────────────────────────────────────────────────────────────
-const ExpandedCaseRow: React.FC<{
-  caseItem: CaseInfoPrpos;
-  colSpan: number;
-}> = ({ caseItem, colSpan }) => {
-  const propertyDetails = (() => {
-    const pd = caseItem?.property_details;
-    if (!pd) return null;
-    const countryFormatted = pd.country
-      ? formatChoiceFieldValue(pd.country)
-      : pd.country;
-    const parts = [
-      pd.house_name_or_number,
-      pd.address_one,
-      pd.address_two,
-      pd.city,
-      pd.county,
-      formatChoiceFieldValue(pd.region),
-      countryFormatted,
-    ].filter((v) => v !== null && v !== undefined && String(v).trim() !== "");
-    return parts.length ? parts.join(", ") : null;
-  })();
-
-  return (
-    <tr>
-      <td colSpan={colSpan} className="p-0 bg-light border-0">
-        <div className="p-3">
-          <Row className="g-3">
-            {/* Lender */}
-            <Col>
-              <Card className="h-100 border shadow-none">
-                <CardHeader className="py-2 px-3 bg-white">
-                  <small className="fw-bold text-muted text-uppercase">
-                    Lender
-                  </small>
-                </CardHeader>
-                <CardBody className="py-2 px-3 text-muted fs-6">
-                  {caseItem.lender ? (
-                    <p className="mb-0 mt-2 small">
-                      {formatChoiceFieldValue(caseItem.lender)}
-                    </p>
-                  ) : (
-                    <small className="text-muted">Not Available</small>
-                  )}
-                </CardBody>
-              </Card>
-            </Col>
-
-            {/* Case Stage & Review Date */}
-            <Col>
-              <Card className="h-100 border shadow-none">
-                <CardHeader className="py-2 px-3 bg-white">
-                  <small className="fw-bold text-muted text-uppercase">
-                    Case Stage & Review Date
-                  </small>
-                </CardHeader>
-                <CardBody className="py-2 px-3 text-muted fs-6">
-                  {caseItem.case_stage ? (
-                    <>
-                      <p className="mb-1 mt-2 small">
-                        <strong>Case Stage:</strong>{" "}
-                        {formatChoiceFieldValue(caseItem.case_stage)}
-                      </p>
-                      {formatDate(caseItem?.review_date) ? (
-                        <p className="mb-0 small">
-                          <strong>Review Date:</strong>{" "}
-                          {formatDate(caseItem.review_date)}
-                        </p>
-                      ) : (
-                        <span className="small">
-                          <strong>Review Date:</strong>{" "}
-                          <span className="text-muted">Not Available</span>
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <small className="text-muted">Not Available</small>
-                  )}
-                </CardBody>
-              </Card>
-            </Col>
-
-            {/* Category Details */}
-            {caseItem.case_category === "MORTGAGE" && (
-              <Col md={4}>
-                <Card className="h-100 border shadow-none">
-                  <CardHeader className="py-2 px-3 bg-white">
-                    <small className="fw-bold text-muted text-uppercase">
-                      Mortgage Details
-                    </small>
-                  </CardHeader>
-                  <CardBody className="py-2 px-3 fs-6 text-start">
-                    {caseItem.application_type || caseItem.mortgage_type ? (
-                      <ul
-                        className="mb-0 mt-2 small text-muted"
-                        style={{ listStyleType: "none", paddingLeft: "0" }}
-                      >
-                        {caseItem.application_type && (
-                          <li>
-                            <span className="text-primary me-1">→</span>
-                            <strong>Application Type:</strong>{" "}
-                            {formatChoiceFieldValue(caseItem.application_type)}
-                          </li>
-                        )}
-                        {caseItem.mortgage_type && (
-                          <li>
-                            <span className="text-primary me-1">→</span>
-                            <strong>Mortgage Type:</strong>{" "}
-                            {formatChoiceFieldValue(caseItem.mortgage_type)}
-                          </li>
-                        )}
-                      </ul>
-                    ) : (
-                      <small className="text-muted d-block text-center">
-                        Not Available
-                      </small>
-                    )}
-                  </CardBody>
-                </Card>
-              </Col>
-            )}
-
-            {(caseItem.case_category === "GENERAL_INSURANCE" ||
-              caseItem.case_category === "PROTECTION") && (
-              <Col md={4}>
-                <Card className="h-100 border shadow-none">
-                  <CardHeader className="py-2 px-3 bg-white">
-                    <small className="fw-bold text-muted text-uppercase">
-                      {caseItem.case_category === "GENERAL_INSURANCE"
-                        ? "Insurance Details"
-                        : "Protection Details"}
-                    </small>
-                  </CardHeader>
-                  <CardBody className="py-2 px-3 fs-6">
-                    {caseItem.case_category === "GENERAL_INSURANCE" ? (
-                      caseItem.policy_type ? (
-                        <ul
-                          className="mb-0 mt-2 small text-muted"
-                          style={{ listStyleType: "none", paddingLeft: "0" }}
-                        >
-                          <li>
-                            <span className="text-primary me-1">→</span>
-                            <strong>Insurance Type:</strong>{" "}
-                            {formatChoiceFieldValue(caseItem.policy_type)}
-                          </li>
-                        </ul>
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )
-                    ) : caseItem.provider ? (
-                      <ul
-                        className="mb-0 mt-2 small text-muted"
-                        style={{ listStyleType: "none", paddingLeft: "0" }}
-                      >
-                        <li>
-                          <span className="text-primary me-1">→</span>
-                          <strong>Protection Type:</strong>{" "}
-                          {formatChoiceFieldValue(caseItem.provider)}
-                        </li>
-                      </ul>
-                    ) : (
-                      <small className="text-muted d-block text-center">
-                        Not Available
-                      </small>
-                    )}
-                  </CardBody>
-                </Card>
-              </Col>
-            )}
-
-            {/* Security Property */}
-            <Col md={3}>
-              <Card className="h-100 border shadow-none">
-                <CardHeader className="py-2 px-3 bg-white">
-                  <small className="fw-bold text-muted text-uppercase">
-                    Security Property
-                  </small>
-                </CardHeader>
-                <CardBody className="py-2 px-3">
-                  {propertyDetails ? (
-                    <p className="mb-0 mt-2 small">{propertyDetails}</p>
-                  ) : (
-                    <small className="text-muted">Not Available</small>
-                  )}
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </td>
-    </tr>
-  );
-};
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Main component
-// ────────────────────────────────────────────────────────────────────────────────
-const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
+const Cases: React.FC = () => {
   const { data: session } = useSession();
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -253,24 +51,58 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [expandedRow, setExpandedRow] = useState<string | null>(null); // ← NEW
 
+  // Determine subdomain: prefer explicit ?subdomain= query, otherwise derive from hostname subdomain
+  const getTenantFromHost = () => {
+    if (typeof window === "undefined") return null;
+    const hostname = window.location.hostname;
+
+    // Local development: allow overriding via env
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || null;
+    }
+
+    const parts = hostname.split(".");
+    // Examples handled:
+    // - subdomain.example.com -> subdomain
+    // - subdomain.localhost -> subdomain (when using dev host like subdomain.localhost)
+    if (parts.length > 2 || (parts.length === 2 && parts[1] === "localhost")) {
+      const subdomain = parts[0];
+      if (subdomain && subdomain !== "www") return subdomain;
+    }
+
+    return null;
+  };
+
   const defaultFilters = {
     created_by__id: "",
     assigned_to__id: "",
     assigned_to_admin__id: "",
     case_category: "",
     case_stage: "",
-    is_removed: initialIsRemoved ?? "",
+    organization__subdomain: "",
   };
   const [filters, setFilters] = useState(defaultFilters);
+  const { data: organisationList } = useGetOrganisationListQuery({
+    subdomain: getTenantFromHost(),
+  });
+
+  const selectedOrganisationSubdomain =
+    filters.organization__subdomain || undefined;
 
   const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetUserListQuery({ role: "ADVISER" });
+    useGetUserListQuery({
+      role: "ADVISER",
+      subdomain: selectedOrganisationSubdomain,
+    });
 
   const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
     role: "ADMIN",
+    subdomain: selectedOrganisationSubdomain,
   });
 
-  const { data: usersData } = useGetUsersQuery(undefined);
+  const { data: usersData } = useGetUsersQuery({
+    subdomain: selectedOrganisationSubdomain,
+  });
 
   const { data: caseData, isLoading: isCaseLoading } = useGetCasesQuery({
     search: searchQuery,
@@ -279,7 +111,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     limit: casesPerPage,
   });
 
-  const isLoading = isAdviserLoading || isCaseLoading;
+  const isLoading = isAdviserLoading || isCaseLoading || isAdminLoading;
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
   const toggleAddNewCaseModal = () =>
@@ -319,7 +151,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
 
   return (
     <div>
-      <CaesSummary />
+      {/* <CaesSummary /> */}
       <Card>
         <CardHeader>
           <Row className="flex justify-content-between">
@@ -392,6 +224,29 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
           {filterIcon && (
             <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
               <Row className="justify-content-center g-3">
+                {session?.user?.is_network && (
+                  <Col>
+                    <Label>Select Organisation</Label>
+                    <Input
+                      type="select"
+                      className="py-1"
+                      value={filters.organization__subdomain}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "organization__subdomain",
+                          e.target.value,
+                        )
+                      }
+                    >
+                      <option value="">All Organisations</option>
+                      {organisationList?.map((org: any) => (
+                        <option key={org.subdomain} value={org.subdomain}>
+                          {org.name}
+                        </option>
+                      ))}
+                    </Input>
+                  </Col>
+                )}
                 <Col>
                   <Label>Select Created By</Label>
                   <Input
@@ -428,29 +283,28 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     ))}
                   </Input>
                 </Col>
-                {session?.user?.is_network ? null : (
-                  <Col>
-                    <Label>Select Admin</Label>
-                    <Input
-                      type="select"
-                      className="py-1"
-                      value={filters.assigned_to_admin__id}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          "assigned_to_admin__id",
-                          e.target.value,
-                        )
-                      }
-                    >
-                      <option value="">All Users</option>
-                      {adminData?.map((admin: any) => (
-                        <option key={admin.alias} value={admin.id}>
-                          {admin.name}
-                        </option>
-                      ))}
-                    </Input>
-                  </Col>
-                )}
+
+                <Col>
+                  <Label>Select Admin</Label>
+                  <Input
+                    type="select"
+                    className="py-1"
+                    value={filters.assigned_to_admin__id}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "assigned_to_admin__id",
+                        e.target.value,
+                      )
+                    }
+                  >
+                    <option value="">All Users</option>
+                    {adminData?.map((admin: any) => (
+                      <option key={admin.alias} value={admin.id}>
+                        {admin.name}
+                      </option>
+                    ))}
+                  </Input>
+                </Col>
 
                 <Col>
                   <Label>Select Category</Label>
