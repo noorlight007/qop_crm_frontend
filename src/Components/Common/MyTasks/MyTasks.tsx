@@ -468,7 +468,7 @@ const MyTasks: React.FC = () => {
                   <th>Workflow</th>
                   <th>Task Name</th>
                   <th>Case Stage</th>
-                  <th>Assigned</th>
+                  <th>Case Assigned</th>
                   <th>Task Assigned</th>
                 </tr>
               </thead>
