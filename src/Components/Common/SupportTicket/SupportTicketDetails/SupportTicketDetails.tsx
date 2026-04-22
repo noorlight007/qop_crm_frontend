@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useFetchSupportTicketDetailsQuery,
   useUpdateSupportTicketMutation,
@@ -255,7 +255,7 @@ const SupportTicketDetails: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex align-items-center justify-content-center min-vh-100">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

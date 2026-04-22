@@ -1,7 +1,7 @@
 "use client";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetOrgLeadAndApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
-import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
@@ -111,7 +111,7 @@ const OrgLeads: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }
@@ -173,7 +173,7 @@ const OrgLeads: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <LoadingSpinner />
+                      <LoadingGrow />
                     </div>
                   </td>
                 </tr>

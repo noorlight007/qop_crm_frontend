@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useFetchSupportTicketCommentsQuery,
   useMakeSupportTicketCommentMutation,
@@ -424,7 +424,7 @@ const SupportTicketComments: React.FC = () => {
   if (isLoading) {
     return (
       <div className="text-center py-4">
-        <LoadingSpinner />
+        <LoadingGrow />
         <p className="text-muted mt-2">Loading comments...</p>
       </div>
     );

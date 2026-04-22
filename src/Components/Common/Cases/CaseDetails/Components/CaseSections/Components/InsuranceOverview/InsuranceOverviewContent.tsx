@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -151,7 +151,7 @@ const InsuranceOverviewContent: React.FC = () => {
   if (isLoading || !formState) {
     return (
       <div className="p-2">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

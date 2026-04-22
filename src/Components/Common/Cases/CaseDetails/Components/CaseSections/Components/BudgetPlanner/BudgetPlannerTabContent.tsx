@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetCaseBudgetPlannerQuery,
   useValidateBudgetPlannerMutation,
@@ -398,7 +398,7 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
   if (isLoading && !initializedRef.current) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
 import Image from "next/image";
 import { useState } from "react";
@@ -56,7 +56,7 @@ const OrganisationCards = () => {
           <Row>
             {isLoading ? (
               <Row className="pb-4 d-flex justify-content-center">
-                <LoadingSpinner />
+                <LoadingGrow />
               </Row>
             ) : organisationList && organisationList.length > 0 ? (
               organisationList.slice(0, 8).map((item: any) => (

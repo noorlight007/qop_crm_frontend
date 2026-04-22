@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetTasksQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/TasksApi";
 import { TaskProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -99,7 +99,7 @@ const Tasks: React.FC = () => {
             {isLoading ? (
               <tr>
                 <td colSpan={10} className="text-center">
-                  <LoadingSpinner />
+                  <LoadingGrow />
                 </td>
               </tr>
             ) : tasksData &&

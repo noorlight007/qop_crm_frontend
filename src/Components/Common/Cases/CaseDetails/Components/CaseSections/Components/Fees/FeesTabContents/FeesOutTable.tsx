@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetFeesOutDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import getCurrencySign from "@/utils/currency";
 import { useSession } from "next-auth/react";
@@ -81,7 +81,7 @@ const FeeOutTable = () => {
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   return (

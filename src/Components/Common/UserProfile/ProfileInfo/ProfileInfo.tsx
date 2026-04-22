@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetUserDetailsQuery,
   useUpdateUserDetailsMutation,
@@ -83,7 +83,7 @@ const ProfileInfo: React.FC = () => {
         className="d-flex justify-content-center align-items-center"
         style={{ minHeight: "400px" }}
       >
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

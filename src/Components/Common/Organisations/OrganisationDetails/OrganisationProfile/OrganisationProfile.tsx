@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { useRef, useState } from "react";
@@ -179,7 +179,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
           className="d-flex justify-content-center align-items-center w-100"
           style={{ minHeight: "450px" }}
         >
-          <LoadingSpinner />
+          <LoadingGrow />
         </Card>
       ) : (
         <Card className="shadow-lg">

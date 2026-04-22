@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { EmploymentDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
@@ -143,7 +143,7 @@ export const EmploymentTab = () => {
     }
   };
 
-  if (isEmploymentDetailLoading) return <LoadingSpinner />;
+  if (isEmploymentDetailLoading) return <LoadingGrow />;
 
   const canApplicantEdit = (): boolean => {
     if (session?.user?.role === "APPLICANT") {

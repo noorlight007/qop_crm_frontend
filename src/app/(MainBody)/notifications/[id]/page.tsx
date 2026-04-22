@@ -1,6 +1,6 @@
 "use client";
 
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch } from "@/Redux/Hooks";
 import {
   NotificationApi,
@@ -98,7 +98,7 @@ const NotificationDetailsPage = ({
             <div className="card-body">
               {isLoading ? (
                 <div className="text-center py-5">
-                  <LoadingSpinner />
+                  <LoadingGrow />
                 </div>
               ) : isError || !notification ? (
                 <div className="text-center py-5">

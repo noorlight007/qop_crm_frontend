@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
 import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseSections/CaseSections";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
@@ -35,7 +35,7 @@ const ApplicantCaseDetailsContainer: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

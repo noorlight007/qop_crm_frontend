@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetLumpSumCommissionQuery,
   useUpdateLumpSumCommissionMutation,
@@ -311,7 +311,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
   if (isLoading) {
     return (
       <div className="p-2">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

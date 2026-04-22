@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetAuthUsersQuery,
   useGetNetworkListQuery,
@@ -353,7 +353,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                 <tr>
                   <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <LoadingSpinner />
+                      <LoadingGrow />
                     </div>
                   </td>
                 </tr>

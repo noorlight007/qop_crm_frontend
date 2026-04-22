@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetSingleOrganisationQuery,
   useUpdateOrganisationMutation,
@@ -279,7 +279,7 @@ const OrganisationDetails: React.FC = () => {
               className="d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <LoadingSpinner />
+              <LoadingGrow />
             </Card>
           ) : (
             <Card className="shadow-lg">

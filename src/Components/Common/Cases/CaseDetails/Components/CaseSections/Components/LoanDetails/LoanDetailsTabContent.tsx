@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -502,7 +502,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
   if (isLoading || isLoandetailsDataLoading)
     return (
       <div className=" d-flex justify-content-center">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   if (isError) return <div>Error loading data</div>;

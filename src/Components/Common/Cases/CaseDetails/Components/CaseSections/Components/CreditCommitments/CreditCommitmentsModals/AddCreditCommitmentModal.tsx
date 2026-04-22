@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAddCreditCommitmentsDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetCaseUsersQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseUsers/CaseUsersApi";
@@ -177,7 +177,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
     }
   };
 
-  if (isLoading || isAdding) return <LoadingSpinner />;
+  if (isLoading || isAdding) return <LoadingGrow />;
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg">

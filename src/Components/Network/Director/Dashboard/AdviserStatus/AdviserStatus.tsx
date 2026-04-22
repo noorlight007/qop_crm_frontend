@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { NetworkDirectorDashboardProps } from "@/Types/Network/Director/DashboardTypes";
 import Image from "next/image";
 import { User } from "react-feather";
@@ -64,7 +64,7 @@ const AdviserStatus: React.FC<NetworkDirectorDashboardProps> = ({
                 {isLoading ? (
                   <tr>
                     <td colSpan={10} className="text-center">
-                      <LoadingSpinner />
+                      <LoadingGrow />
                     </td>
                   </tr>
                 ) : (

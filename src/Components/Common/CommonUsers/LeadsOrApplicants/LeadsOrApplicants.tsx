@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import {
   LeadOrApplicant,
@@ -235,7 +235,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                   <tr>
                     <td colSpan={8} className="text-center">
                       <div className="d-flex justify-content-center align-items-center">
-                        <LoadingSpinner />
+                        <LoadingGrow />
                       </div>
                     </td>
                   </tr>

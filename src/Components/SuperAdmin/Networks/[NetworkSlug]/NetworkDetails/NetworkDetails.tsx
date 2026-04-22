@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetNetworkDetailsQuery,
   useUpdateNetworkMutation,
@@ -231,7 +231,7 @@ const NetworkDetails: React.FC = () => {
               className="d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <LoadingSpinner />
+              <LoadingGrow />
             </Card>
           ) : (
             <Card className="shadow-lg">

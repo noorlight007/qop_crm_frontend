@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -116,7 +116,7 @@ const InsuranceHealthContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center py-4">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

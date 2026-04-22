@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
@@ -9,7 +10,6 @@ import {
   useUpdateSolicitorDetailsMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountant/SolicitorAndAccountantApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import LoadingSpinner from "@/app/loading";
 import { apiAddress } from "@/services/third-party-api";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -449,7 +449,7 @@ const Solicitor: React.FC = () => {
   )
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
 

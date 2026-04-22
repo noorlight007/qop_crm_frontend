@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useAddCompanyDetailsMutation,
   useGetCompanyDetailsByRegistrationQuery,
@@ -498,7 +498,7 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   if (isError) return <div>Error fetching data</div>;

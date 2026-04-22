@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -437,7 +437,7 @@ const Accountant: React.FC = () => {
   ) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

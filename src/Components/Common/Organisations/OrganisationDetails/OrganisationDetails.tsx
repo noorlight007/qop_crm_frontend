@@ -1,9 +1,9 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
-import LoadingSpinner from "@/app/loading";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -67,7 +67,7 @@ const OrganisationDetails: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

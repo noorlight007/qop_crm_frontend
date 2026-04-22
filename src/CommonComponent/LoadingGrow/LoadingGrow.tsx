@@ -1,6 +1,6 @@
 import { Spinner } from "reactstrap";
 
-const LoadingSpinner = () => {
+const LoadingGrow = () => {
   const spinnerColors = [
     "primary",
     "secondary",
@@ -11,7 +11,7 @@ const LoadingSpinner = () => {
   ] as const;
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100">
+    <div className="d-flex justify-content-center align-items-center">
       <div className="d-flex flex-column align-items-center gap-4 p-4 rounded-4 ">
         <div className="d-flex flex-wrap justify-content-center align-items-center gap-3">
           {spinnerColors.map((color, index) => (
@@ -34,4 +34,4 @@ const LoadingSpinner = () => {
   );
 };
 
-export default LoadingSpinner;
+export default LoadingGrow;

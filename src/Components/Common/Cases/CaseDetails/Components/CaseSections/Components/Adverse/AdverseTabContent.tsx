@@ -1,5 +1,5 @@
 "use client";
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 
 import {
@@ -279,7 +279,7 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
 

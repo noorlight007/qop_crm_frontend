@@ -1,7 +1,7 @@
 "use client";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
-import LoadingSpinner from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -103,7 +103,7 @@ const OrgAdmins: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }
@@ -166,7 +166,7 @@ const OrgAdmins: React.FC = () => {
                 <tr>
                   <td colSpan={7} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <LoadingSpinner />
+                      <LoadingGrow />
                     </div>
                   </td>
                 </tr>

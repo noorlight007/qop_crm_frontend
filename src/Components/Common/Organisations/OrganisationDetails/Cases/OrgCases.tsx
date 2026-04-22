@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   caseCategories,
   insuranceCaseStages,
@@ -232,7 +232,7 @@ const OrgCases: React.FC = () => {
                     {isLoading ? (
                       <tr>
                         <td colSpan={11} className="text-center">
-                          <LoadingSpinner />
+                          <LoadingGrow />
                         </td>
                       </tr>
                     ) : caseData?.results?.length > 0 ? (

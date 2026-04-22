@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetBankruptsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewBankruptciesModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
@@ -39,7 +39,7 @@ const ViewBankruptciesModal: React.FC<ViewBankruptciesModalProps> = ({
       <ModalBody className="p-4">
         {isLoading ? (
           <div className="text-center p-4">
-            <LoadingSpinner />
+            <LoadingGrow />
           </div>
         ) : !data || data.length === 0 ? (
           <div className="text-center p-4">No bankruptcies found</div>

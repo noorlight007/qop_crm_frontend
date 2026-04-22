@@ -1,9 +1,9 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useGetCreditCommitmentsDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/CreditCommitmentsDetailsApi";
 import { useExportCreditCommitmentsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CreditCommitmentsDetails/ExportCreditCommitmentsApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import LoadingSpinner from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -173,7 +173,7 @@ const CreditCommitmentsContent: React.FC = () => {
               {isLoading ? (
                 <tr>
                   <td colSpan={18} className="text-center py-4">
-                    <LoadingSpinner />
+                    <LoadingGrow />
                   </td>
                 </tr>
               ) : !filteredCreditCommitments ||
