@@ -199,6 +199,7 @@ export const LenderList = [
   { value: "TSB", label: "TSB" },
   { value: "ULSTER_BANK", label: "Ulster Bank" },
   { value: "UNKNOWN", label: "Unknown" },
+  { value: "UNITED_TRUST_BANK", label: "United Trust Bank" },
   { value: "VERNON_BUILDING_SOCIETY", label: "Vernon Building Society" },
   { value: "VIDA_HOMELOANS", label: "Vida Homeloans" },
   {
