@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetExistingProtectionDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
 import { ExistingProtectionDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
 import getCurrencySign from "@/utils/currency";
@@ -112,7 +112,7 @@ const ExistingProtectionTab: React.FC = () => {
   };
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner2 />;
   }
 
   return (

@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetApplicantsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantsDetailsApi";
 import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -26,8 +26,9 @@ export const ApplicantsDetailsTab = () => {
   const { data: session } = useSession();
 
   // Fetch applicants data
-  const { data: applicantsData, isLoading } = useGetApplicantsQuery({
-    case_alias: casealias,
+  const { data: applicantsData, isLoading } = useGetApplicantsQuery(
+    {
+      case_alias: casealias,
     },
     { refetchOnMountOrArgChange: true },
   );
@@ -83,7 +84,7 @@ export const ApplicantsDetailsTab = () => {
   if (isLoading) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }

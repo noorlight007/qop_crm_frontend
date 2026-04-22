@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   useGetLumpSumCommissionQuery,
   useUpdateLumpSumCommissionMutation,
@@ -311,7 +311,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
   if (isLoading) {
     return (
       <div className="p-2">
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -578,7 +578,7 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                         type="button"
                         className="btn btn-primary"
                         disabled={
-                          isUpdatingLump 
+                          isUpdatingLump
                           // || session?.user?.role === "APPLICANT"
                         }
                         onClick={() => handleUpdateLump(lump, idx)}

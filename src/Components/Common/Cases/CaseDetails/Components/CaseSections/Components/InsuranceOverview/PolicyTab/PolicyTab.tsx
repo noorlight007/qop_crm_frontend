@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -187,7 +187,7 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   if (isLoading || !insuranceOverviewAlias) {
     return (
       <div className="p-2">
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetAdverseDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { AdverseProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -55,7 +55,7 @@ export const AdverseTab = () => {
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
 

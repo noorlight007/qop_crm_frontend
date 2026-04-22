@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetPropertiesQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyApi";
 import { initializeForm } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { useParams } from "next/navigation";
@@ -35,7 +35,7 @@ const SecurityProperty: React.FC = () => {
   if (isLoading || !properties || properties.length === 0) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }

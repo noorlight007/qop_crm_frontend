@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useAddDIPHistoryDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/DIPHistoryDetails/DIPHistoryDetailsApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { AddNewLenderHistoryModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/DIPHistoryTypes";
@@ -145,7 +145,7 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
   if (isLoading) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -160,7 +160,9 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label>Lender<span className="text-danger">*</span></Label>
+                <Label>
+                  Lender<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="select"
                   name="lender"
@@ -353,7 +355,9 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
           <Row>
             <Col md={6}>
               <FormGroup>
-                <Label>DIP Decision<span className="text-danger">*</span></Label>
+                <Label>
+                  DIP Decision<span className="text-danger">*</span>
+                </Label>
                 <Input
                   type="select"
                   name="dip_decision"

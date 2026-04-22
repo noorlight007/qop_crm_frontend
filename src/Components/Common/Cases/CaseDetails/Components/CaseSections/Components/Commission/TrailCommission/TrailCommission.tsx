@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   useGetTrailCommissionQuery,
   useUpdateTrailCommissionMutation,
@@ -298,7 +298,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
   if (isLoading) {
     return (
       <div className="p-2">
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -555,7 +555,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
                         type="button"
                         className="btn btn-primary"
                         disabled={
-                          isUpdating 
+                          isUpdating
                           // || session?.user?.role === "APPLICANT"
                         }
                         onClick={() => handleUpdateTrail(trail, idx)}

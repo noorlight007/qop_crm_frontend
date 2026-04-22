@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useUpdateDIPHistoryDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/DIPHistoryDetails/DIPHistoryDetailsApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import LoadingSpinner from "@/app/loading";
+import LoadingSpinner, { LoadingSpinner2 } from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -163,7 +163,7 @@ const DIPHistoryContent: React.FC<{ dipData: any }> = ({ dipData }) => {
   if (isLoading) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }

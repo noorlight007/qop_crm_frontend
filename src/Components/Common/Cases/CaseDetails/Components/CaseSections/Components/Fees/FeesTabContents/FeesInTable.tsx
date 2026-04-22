@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetFeesInDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Fees/FeesApi";
 import getCurrencySign from "@/utils/currency";
 import { useSession } from "next-auth/react";
@@ -84,7 +84,7 @@ const FeeInTable = () => {
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
 

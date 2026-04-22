@@ -11,7 +11,7 @@ import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { ApplicantProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsDetailsTypes";
 import { ApplicantsUsersProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ApplicantsUserTypes";
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { apiAddress } from "@/services/third-party-api";
 import { countries } from "@/utils/Countries";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
@@ -559,7 +559,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
   };
 
   if (isCaseFetching) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner2 />;
   }
 
   const fetchAddressByPostcode = async (postcode: string) => {
@@ -1765,7 +1765,8 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       </small>
                     ) : (
                       <small className="text-muted">
-                        Note: To add a new address, please contact your case Adviser.
+                        Note: To add a new address, please contact your case
+                        Adviser.
                       </small>
                     )}
                   </div>

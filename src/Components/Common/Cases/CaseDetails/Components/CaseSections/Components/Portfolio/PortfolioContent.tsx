@@ -7,7 +7,7 @@ import {
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Portfolio/PortfolioApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import getCurrencySign from "@/utils/currency";
 import { formatDate } from "@/utils/dateAndTimeFormatter";
@@ -82,7 +82,7 @@ const PortfolioContent: React.FC = () => {
   if (isLoading) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }
