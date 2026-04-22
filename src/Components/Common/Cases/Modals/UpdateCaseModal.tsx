@@ -75,15 +75,12 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
 
   const { data: userNetAdviserListData } = useGetUserListQuery({
     role: "ADVISER",
-    is_network: true,
   });
   const { data: userOrgAdviserListData } = useGetUserListQuery({
     role: "ADVISER",
-    is_network: false,
   });
   const { data: userOrgAdminListData } = useGetUserListQuery({
     role: "ADMIN",
-    is_network: false,
   });
 
   const baselineFormData = getInitialFormData(caseData);

@@ -151,7 +151,7 @@ const Cases: React.FC = () => {
 
   return (
     <div>
-      <CaesSummary />
+      {/* <CaesSummary /> */}
       <Card>
         <CardHeader>
           <Row className="flex justify-content-between">
