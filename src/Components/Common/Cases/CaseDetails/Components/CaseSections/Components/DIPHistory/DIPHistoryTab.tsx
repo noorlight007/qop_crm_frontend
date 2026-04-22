@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetDIPHistoryDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/DIPHistoryDetails/DIPHistoryDetailsApi";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -34,7 +34,7 @@ const DIPHistoryTab: React.FC = () => {
   };
 
   if (isLoading) {
-    return <LoadingSpinner2 />;
+    return <LoadingSpinner />;
   }
 
   return (

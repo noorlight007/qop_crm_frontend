@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import {
   useGetCaseBudgetPlannerQuery,
   useValidateBudgetPlannerMutation,
@@ -398,7 +398,7 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
   if (isLoading && !initializedRef.current) {
     return (
       <div>
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
   }

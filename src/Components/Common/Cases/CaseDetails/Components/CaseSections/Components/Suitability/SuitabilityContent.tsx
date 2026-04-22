@@ -1,6 +1,6 @@
 import { useGetSuitabilityQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useParams } from "next/navigation";
 import React from "react";
 import { Container } from "reactstrap";
@@ -30,7 +30,7 @@ const Suitability: React.FC = () => {
   const { data: suitability, isLoading: isSuitLoading } =
     useGetSuitabilityQuery({ case_alias: casealias }, { skip: !casealias });
 
-  if (isCaseLoading || isSuitLoading) return <LoadingSpinner2 />;
+  if (isCaseLoading || isSuitLoading) return <LoadingSpinner />;
 
   return (
     <Container

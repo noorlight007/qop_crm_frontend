@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import {
   caseCategories,
   insuranceCaseStages,
@@ -232,7 +232,7 @@ const OrgCases: React.FC = () => {
                     {isLoading ? (
                       <tr>
                         <td colSpan={11} className="text-center">
-                          <LoadingSpinner2 />
+                          <LoadingSpinner />
                         </td>
                       </tr>
                     ) : caseData?.results?.length > 0 ? (

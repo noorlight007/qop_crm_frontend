@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -53,7 +53,7 @@ const CommissionContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-2">
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
   }

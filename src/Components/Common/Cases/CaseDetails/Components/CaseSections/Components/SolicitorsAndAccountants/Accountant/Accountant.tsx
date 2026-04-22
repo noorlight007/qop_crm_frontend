@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -437,7 +437,7 @@ const Accountant: React.FC = () => {
   ) {
     return (
       <div>
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
   }

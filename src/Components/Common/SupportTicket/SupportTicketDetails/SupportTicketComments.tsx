@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import {
   useFetchSupportTicketCommentsQuery,
   useMakeSupportTicketCommentMutation,
@@ -26,7 +26,6 @@ import {
   Form,
   Input,
   Row,
-  Spinner,
 } from "reactstrap";
 
 interface Author {
@@ -425,7 +424,7 @@ const SupportTicketComments: React.FC = () => {
   if (isLoading) {
     return (
       <div className="text-center py-4">
-        <LoadingSpinner2 />
+        <LoadingSpinner />
         <p className="text-muted mt-2">Loading comments...</p>
       </div>
     );

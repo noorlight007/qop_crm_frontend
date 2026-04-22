@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from "reactstrap";
 
@@ -10,7 +10,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
     <div>
       {isDashboardLoading ? (
         <Card className="d-flex justify-content-center align-items-center w-100 p-4">
-          <LoadingSpinner2 />
+          <LoadingSpinner />
         </Card>
       ) : (
         <Card className="shadow-sm px-3 pt-4">

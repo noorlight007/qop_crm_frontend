@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useAddDIPHistoryDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/DIPHistoryDetails/DIPHistoryDetailsApi";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import { AddNewLenderHistoryModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/DIPHistoryTypes";
@@ -145,7 +145,7 @@ const AddNewLenderHistoryModal: React.FC<AddNewLenderHistoryModalProps> = ({
   if (isLoading) {
     return (
       <div>
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetDefaultsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewDefaultsModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import { useParams } from "next/navigation";
@@ -46,7 +46,7 @@ const ViewDefaultsModal: React.FC<ViewDefaultsModalProps> = ({
       <ModalBody className="p-4">
         {isLoading ? (
           <div className="text-center p-4">
-            <LoadingSpinner2 />
+            <LoadingSpinner />
           </div>
         ) : !data || data.length === 0 ? (
           <div className="text-center p-4">No defaults found</div>

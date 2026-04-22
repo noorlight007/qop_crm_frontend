@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetCommitmentPaymentsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/AdverseDetails/AdverseDetailsApi";
 import { ViewCommitmentPaymentsMissedModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/AdverseTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -38,7 +38,7 @@ const ViewCommitmentPaymentsMissedModal: React.FC<
       <ModalBody className="p-4">
         {isLoading ? (
           <div className="text-center p-4">
-            <LoadingSpinner2 />
+            <LoadingSpinner />
           </div>
         ) : !data || data.length === 0 ? (
           <div className="text-center p-4">No commitment payments found</div>

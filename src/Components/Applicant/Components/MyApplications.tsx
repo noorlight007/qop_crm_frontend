@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetApplicantCaseQuery } from "@/Redux/Reducers/Applicant/ApplicantCaseApi";
 import { ApplicantCaseTypes } from "@/Types/Applicant/ApplicantCaseTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -314,7 +314,7 @@ const MyApplications: React.FC = () => {
   if (isLoading)
     return (
       <div className="p-4">
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
 

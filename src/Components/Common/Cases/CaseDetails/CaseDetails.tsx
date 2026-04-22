@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
@@ -52,7 +52,7 @@ const CaseDetails: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
   }

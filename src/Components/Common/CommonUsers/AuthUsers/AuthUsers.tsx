@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import {
   AuthUser,
@@ -194,7 +194,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 <tr>
                   <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <LoadingSpinner2 />
+                      <LoadingSpinner />
                     </div>
                   </td>
                 </tr>

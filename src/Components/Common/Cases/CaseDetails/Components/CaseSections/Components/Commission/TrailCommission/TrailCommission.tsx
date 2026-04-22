@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import {
   useGetTrailCommissionQuery,
   useUpdateTrailCommissionMutation,
@@ -298,7 +298,7 @@ const TrailCommission: React.FC<CommissionProps> = ({
   if (isLoading) {
     return (
       <div className="p-2">
-        <LoadingSpinner2 />
+        <LoadingSpinner />
       </div>
     );
   }

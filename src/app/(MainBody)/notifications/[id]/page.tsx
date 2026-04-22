@@ -1,6 +1,6 @@
 "use client";
 
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useAppDispatch } from "@/Redux/Hooks";
 import {
   NotificationApi,
@@ -98,7 +98,7 @@ const NotificationDetailsPage = ({
             <div className="card-body">
               {isLoading ? (
                 <div className="text-center py-5">
-                  <LoadingSpinner2 />
+                  <LoadingSpinner />
                 </div>
               ) : isError || !notification ? (
                 <div className="text-center py-5">

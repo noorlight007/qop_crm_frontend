@@ -7,7 +7,7 @@ import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -530,7 +530,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 {isLoading ? (
                   <tr>
                     <td colSpan={tableColSpan} className="text-center">
-                      <LoadingSpinner2 />
+                      <LoadingSpinner />
                     </td>
                   </tr>
                 ) : caseData?.results?.length > 0 ? (

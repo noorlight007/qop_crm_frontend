@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetOrganisationListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationListApi";
 import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { getOrganisationUrl } from "@/utils/RedirectPaths";
@@ -155,7 +155,7 @@ const OrganisationList: React.FC<OrganisationListProps> = ({ maxItems }) => {
           <Row>
             {isLoading ? (
               <Row className="pb-4 d-flex justify-content-center">
-                <LoadingSpinner2 />
+                <LoadingSpinner />
               </Row>
             ) : currentOrganisations && currentOrganisations?.length > 0 ? (
               currentOrganisations.map((item: any) => (

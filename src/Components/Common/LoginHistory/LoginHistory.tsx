@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingSpinner from "@/app/loading";
 import { useGetLoginHistoryQuery } from "@/Redux/Reducers/Common/LoginHistory/LoginHistoryApi";
 import { LoginHistoryItem } from "@/Types/Common/LoginHistory/LoginHistoryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -153,7 +153,7 @@ const LoginHistory: React.FC = () => {
           </div>
           <div className="text-center py-5">
             <div className="text-center py-5">
-              <LoadingSpinner2 />
+              <LoadingSpinner />
             </div>
           </div>
         </CardBody>
