@@ -9,6 +9,7 @@ import {
   setApiErrors,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import { BudgetPlannerTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +20,7 @@ import DisclaimerTabContents from "./BudgetPlannerTabContents/DisclaimerTabConte
 import HouseHoldIncomeTabContent from "./BudgetPlannerTabContents/HouseHoldIncomeTabContent";
 import LivingExpensesTabContents from "./BudgetPlannerTabContents/LivingExpensesTabContents";
 import MonthlyBudgetTabContents from "./BudgetPlannerTabContents/MonthlyBudgetTabContents";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 
 const tabs = [
   { id: 1, Component: HouseHoldIncomeTabContent },
@@ -36,11 +38,16 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
   setErrors,
 }) => {
   const { casealias } = useParams();
+  const { data: session } = useSession();
   const dispatch = useDispatch();
   const { data, isLoading } = useGetCaseBudgetPlannerQuery(
     { case_alias: casealias as string },
     { skip: !casealias },
   );
+ const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+     { case_alias: casealias },
+     { skip: !casealias },
+   );
   const initializedRef = useRef<string | null>(null);
 
   // Get current form values from store so we can validate them
@@ -317,6 +324,18 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
     return 1;
   };
 
+  // Helper function to check if applicant can proceed
+  const canApplicantProceed = (): boolean => {
+    const userRole = session?.user?.role;
+    const caseStage = caseData?.case_stage;
+
+    // If user is not an applicant, allow
+    if (userRole !== "APPLICANT") return true;
+
+    // For applicants, only allow if stage is ENQUIRY or FACT_FIND
+    return caseStage === "ENQUIRY" || caseStage === "FACT_FIND";
+  };
+
   const handleNextClick = async () => {
     // Validate before advancing
     try {
@@ -390,7 +409,7 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
         <TabPane key={id} tabId={id}>
           <Component updateField={updateField} errors={mergedErrors} />{" "}
           {/* Pass updateField to each tab */}
-          {id !== 5 && (
+          {id !== 5 && canApplicantProceed() && (
             <Button
               color="primary"
               onClick={() => (tabId !== null ? handleNextClick() : null)}

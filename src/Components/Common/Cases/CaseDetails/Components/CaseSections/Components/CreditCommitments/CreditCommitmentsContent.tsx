@@ -33,6 +33,28 @@ const CreditCommitmentsContent: React.FC = () => {
   // rtk hooks
   const { data: creditCommitments, isLoading } =
     useGetCreditCommitmentsDetailsQuery({ case_alias: casealias });
+
+  // Filter credit commitments based on user role
+  const getFilteredCreditCommitments = (data: any[] | undefined) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own credit commitments
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter(
+        (commitment) => commitment?.customer?.email === userEmail,
+      );
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all credit commitments
+    return data;
+  };
+
+  const filteredCreditCommitments =
+    getFilteredCreditCommitments(creditCommitments);
+
   const dispatch = useAppDispatch();
   const { data: caseData } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -59,8 +81,6 @@ const CreditCommitmentsContent: React.FC = () => {
     }
   };
 
-  if (creditCommitments?.data?.length === 0) return <div>No data found</div>;
-
   const handleExportToCSV = async () => {
     try {
       const blob = await exportCreditCommitmentsCSV({
@@ -80,6 +100,16 @@ const CreditCommitmentsContent: React.FC = () => {
     }
   };
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div className="p-2">
       <CreditCommitmentsSummary />
@@ -92,23 +122,24 @@ const CreditCommitmentsContent: React.FC = () => {
             onClick={handleExportToCSV}
             disabled={
               isExporting ||
-              !creditCommitments ||
-              creditCommitments.length === 0
+              !filteredCreditCommitments ||
+              filteredCreditCommitments.length === 0
             }
           >
             <FaFileExport />
             <span>Export CSV</span>
           </Button>
-          <Button
-            color="primary"
-            type="submit"
-            className="d-flex justify-content-center align-items-center gap-1"
-            onClick={() => setModalIsOpen(!modalIsOpen)}
-            disabled={session?.user?.role === "APPLICANT"}
-          >
-            <TbCirclePlus />
-            <span>Add Credit Item</span>
-          </Button>
+          {canApplicantEdit() && (
+            <Button
+              color="primary"
+              type="submit"
+              className="d-flex justify-content-center align-items-center gap-1"
+              onClick={() => setModalIsOpen(!modalIsOpen)}
+            >
+              <TbCirclePlus />
+              <span>Add Credit Item</span>
+            </Button>
+          )}
         </Col>
       </Row>
       {/* Table start  */}
@@ -145,7 +176,8 @@ const CreditCommitmentsContent: React.FC = () => {
                     <LoadingSpinner />
                   </td>
                 </tr>
-              ) : !creditCommitments || creditCommitments.length === 0 ? (
+              ) : !filteredCreditCommitments ||
+                filteredCreditCommitments.length === 0 ? (
                 <tr>
                   <td colSpan={18} className="text-center">
                     <span className="text-danger opacity-75 fs-6">
@@ -154,7 +186,7 @@ const CreditCommitmentsContent: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                creditCommitments.map((item: any, index: number) => (
+                filteredCreditCommitments.map((item: any, index: number) => (
                   <tr key={index}>
                     <td>
                       <div className="d-flex gap-2">
@@ -274,15 +306,18 @@ const CreditCommitmentsContent: React.FC = () => {
         </Col>
       </Row>
       <div className=" mt-3 d-flex justify-content-end">
-        <Button
-          type="submit"
-          color="secondary"
-          onClick={() => {
-            handleNextTab();
-          }}
-        >
-          {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"}
-        </Button>
+        {session?.user?.role !== "APPLICANT" && (
+          <Button
+            type="submit"
+            color="secondary"
+            onClick={() => {
+              handleNextTab();
+            }}
+          >
+            {/* {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"} */}
+            Save & Next
+          </Button>
+        )}
       </div>
       {/* modals start */}
       <AddCreditCommitmentModal

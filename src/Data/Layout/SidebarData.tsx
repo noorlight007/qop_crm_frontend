@@ -284,11 +284,11 @@ const NetworkComplianceMenu: MenuItem[] = [
             type: "link",
             path: "/network/director/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/network/director/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/network/director/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
@@ -390,11 +390,11 @@ const NetworkAdviserMenu: MenuItem[] = [
             type: "link",
             path: "/network/adviser/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/network/adviser/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/network/adviser/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
@@ -497,11 +497,11 @@ const OrganisationDirectorMenu: MenuItem[] = [
             type: "link",
             path: "/organisation/director/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/organisation/director/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/organisation/director/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
@@ -590,11 +590,11 @@ const OrganisationAdviserMenu: MenuItem[] = [
             type: "link",
             path: "/organisation/adviser/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/organisation/adviser/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/organisation/adviser/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
@@ -690,11 +690,11 @@ const OrganisationAdminMenu: MenuItem[] = [
             type: "link",
             path: "/organisation/admin/calculators/remortgage-calculator",
           },
-          {
-            title: "Overpayment",
-            type: "link",
-            path: "/organisation/admin/calculators/overpayment-calculator",
-          },
+          // {
+          //   title: "Overpayment",
+          //   type: "link",
+          //   path: "/organisation/admin/calculators/overpayment-calculator",
+          // },
           {
             title: "Stamp Duty",
             type: "link",
@@ -739,7 +739,7 @@ export {
   OrganisationAdminMenu,
   OrganisationAdviserMenu,
   OrganisationDirectorMenu,
-  SuperAdminMenu
+  SuperAdminMenu,
 };
 
 export const getMenuByRole = (

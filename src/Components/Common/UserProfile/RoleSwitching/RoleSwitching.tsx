@@ -129,6 +129,7 @@ const RoleSwitching: React.FC = () => {
         }
       }
 
+      // Create updated session object with new role
       const redirectSession = session
         ? ({
             ...session,
@@ -138,8 +139,9 @@ const RoleSwitching: React.FC = () => {
             },
           } as Session)
         : null;
+
       const dashboardUrl = getDashboardHomeUrl(redirectSession);
-      router.push(dashboardUrl);
+      window.location.href = dashboardUrl;
     } catch (e) {
       // Optionally surface a toast here if you have a global toaster
       console.error("Failed to switch role", e);

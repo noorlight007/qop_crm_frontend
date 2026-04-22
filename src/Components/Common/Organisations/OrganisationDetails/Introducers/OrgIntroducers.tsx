@@ -1,7 +1,7 @@
 "use client";
 import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgIntroducerInfo } from "@/Types/Common/Organisations/OrgIntroducerTypes";
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
@@ -21,7 +21,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -114,7 +113,7 @@ const OrgIntroducers: React.FC = () => {
   if (isLoading) {
     return (
       <div className="p-4">
-        <LoadingSpinner />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -177,9 +176,9 @@ const OrgIntroducers: React.FC = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={9} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <Spinner color="primary" />
+                      <LoadingSpinner2 />
                     </div>
                   </td>
                 </tr>
@@ -285,7 +284,7 @@ const OrgIntroducers: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={9} className="text-center">
                     No introducers available.
                   </td>
                 </tr>

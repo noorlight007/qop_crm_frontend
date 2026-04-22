@@ -427,7 +427,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                           : setPostValues(newValues);
                       }}
                     />
-                    <InputGroupText
+                    {/* <InputGroupText
                       className="penNoteIcon_Holder"
                       onClick={(e) =>
                         toggleNotes(
@@ -440,14 +440,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                       style={{ cursor: "pointer" }}
                     >
                       <FaEdit />
-                    </InputGroupText>
+                    </InputGroupText> */}
                   </InputGroup>{" "}
                   {errorMsg && (
                     <div className="text-danger small mt-1">{errorMsg}</div>
                   )}{" "}
                 </Col>
               </FormGroup>
-              <FormGroup
+              {/* <FormGroup
                 className={`${reduxFieldName}_Notes_Holder mb-2`}
                 style={{
                   display: visibleNotes[
@@ -493,7 +493,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                       : setPostValues(newValues);
                   }}
                 />
-              </FormGroup>
+              </FormGroup> */}
             </div>
           );
         });
@@ -617,7 +617,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                           ).toFixed(2)
                     }
                   />
-                  <InputGroupText
+                  {/* <InputGroupText
                     className="penNoteIcon_Holder"
                     onClick={(e) =>
                       toggleNotes(
@@ -630,14 +630,14 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                     style={{ cursor: "pointer" }}
                   >
                     <FaEdit />
-                  </InputGroupText>
+                  </InputGroupText> */}
                 </InputGroup>
               </Col>
             </FormGroup>
           ) : (
             renderFields(prefix, fields!, mappings!)
           )}
-          {isTotal && (
+          {/* {isTotal && (
             <FormGroup
               className="TotalHome_Notes_Holder mb-2"
               style={{
@@ -683,7 +683,7 @@ const LivingExpensesTabContents: FC<LivingExpensesTabContentsProps> = ({
                 }}
               />
             </FormGroup>
-          )}
+          )} */}
         </div>
       </div>
     </div>

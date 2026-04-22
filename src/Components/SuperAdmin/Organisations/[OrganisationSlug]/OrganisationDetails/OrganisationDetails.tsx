@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   useGetSingleOrganisationQuery,
   useUpdateOrganisationMutation,
@@ -278,7 +279,7 @@ const OrganisationDetails: React.FC = () => {
               className="d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <Spinner color="primary" />
+              <LoadingSpinner2 />
             </Card>
           ) : (
             <Card className="shadow-lg">

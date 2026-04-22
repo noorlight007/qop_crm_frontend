@@ -5,7 +5,7 @@ import {
 import { ApplicantInvitationModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { Button, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Badge, Button, Modal, ModalBody, ModalHeader } from "reactstrap";
 
 const ApplicantInvitationModal: React.FC<ApplicantInvitationModalProps> = ({
   isOpen,
@@ -135,9 +135,19 @@ const ApplicantInvitationModal: React.FC<ApplicantInvitationModalProps> = ({
                     <span className="form-check-label ms-2">
                       <strong>
                         {label || user.email}
-                        <small>
-                          {user.type === "Joint Applicant" ? " (JA)" : ""}
-                        </small>
+                        {user.type === "Joint Applicant" && (
+                          <Badge
+                            color="info"
+                            pill
+                            className="ms-2"
+                            style={{
+                              fontSize: "0.65rem",
+                              padding: "0.25rem 0.3rem",
+                            }}
+                          >
+                            Joint Applicant
+                          </Badge>
+                        )}
                       </strong>
                       <br />
                       <small className="text-muted">{user.email}</small>

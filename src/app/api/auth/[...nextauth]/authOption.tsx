@@ -57,9 +57,9 @@ declare module "next-auth" {
 export const authoption: NextAuthOptions = {
   session: {
     strategy: "jwt",
-    // Auto logout after 24 hours.
+    // Auto logout after 12 hours.
     // NOTE: access tokens may still be short-lived; API layer refreshes them on 401.
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 12 * 60 * 60, // 12 hours
     updateAge: 60 * 60, // re-issue session cookie at most once/hour while active
   },
   pages: {

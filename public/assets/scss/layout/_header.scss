@@ -637,7 +637,8 @@ header {
         }
       }
     }
-    .font-primary {
+    .font-primary,
+    .font-warning {
       margin: 8px 8px 0px;
     }
     .total {
@@ -715,7 +716,8 @@ header {
             }
           }
           .activity-dot-primary,
-          .activity-dot-secondary {
+          .activity-dot-secondary,
+          .activity-dot-warning {
             left: 4px;
           }
         }
@@ -923,6 +925,20 @@ header {
       width: 8px;
       height: 8px;
       background-color: var(--theme-secondary);
+      border-radius: 30px;
+    }
+  }
+  .circle-dot-warning {
+    background-color: rgba($warning-color, 0.1);
+    border-radius: 100%;
+    padding: 3px;
+    font-size: 5px;
+    color: var(--warning-color);
+    .circle-color {
+      stroke: var(--warning-color);
+      width: 8px;
+      height: 8px;
+      background-color: var(--warning-color);
       border-radius: 30px;
     }
   }

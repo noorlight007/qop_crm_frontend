@@ -7,6 +7,7 @@ import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   CommissionProps,
   LumpSumProps,
@@ -58,6 +59,11 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
   } = useGetLumpSumCommissionQuery(
     { case_alias, commission_alias },
     { skip: !case_alias || !commission_alias },
+  );
+
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: case_alias },
+    { skip: !case_alias },
   );
 
   const [updateLumpSumCommission, { isLoading: isUpdatingLump }] =
@@ -309,6 +315,17 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
       </div>
     );
   }
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   // If there are no lump rows (API returned empty) show only the Add button
   if (!isLoading && lumps.length === 0) {
     return (
@@ -317,15 +334,17 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
           Lump Sum Commission
         </div>
         <div className="d-flex justify-content-center">
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={session?.user?.role === "APPLICANT"}
-            onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
-          >
-            <TbCirclePlus className="me-1" size={18} />
-            Add New Lump Sum
-          </button>
+          {canApplicantEdit() && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              // disabled={session?.user?.role === "APPLICANT"}
+              onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
+            >
+              <TbCirclePlus className="me-1" size={18} />
+              Add New Lump Sum
+            </button>
+          )}
         </div>
         <AddLumpSumCommissionModal
           isOpen={isAddLumpSumCommissionModalOpen}
@@ -543,29 +562,32 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
                       </FormGroup>
                     </Col>
                   </Row>
-                  <div className="d-flex justify-content-end gap-2 mt-2">
-                    <Button
-                      outline
-                      type="button"
-                      color="danger"
-                      title="Remove row"
-                      onClick={() => openDeleteModal(lump.id)}
-                      disabled={session?.user?.role === "APPLICANT"}
-                    >
-                      <FaTrash /> Delete
-                    </Button>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      disabled={
-                        isUpdatingLump || session?.user?.role === "APPLICANT"
-                      }
-                      onClick={() => handleUpdateLump(lump, idx)}
-                    >
-                      <ArrowUpCircle size={16} />{" "}
-                      {isUpdatingLump ? "Updating..." : "Update"}
-                    </button>
-                  </div>
+                  {canApplicantEdit() && (
+                    <div className="d-flex justify-content-end gap-2 mt-2">
+                      <Button
+                        outline
+                        type="button"
+                        color="danger"
+                        title="Remove row"
+                        onClick={() => openDeleteModal(lump.id)}
+                        // disabled={session?.user?.role === "APPLICANT"}
+                      >
+                        <FaTrash /> Delete
+                      </Button>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={
+                          isUpdatingLump 
+                          // || session?.user?.role === "APPLICANT"
+                        }
+                        onClick={() => handleUpdateLump(lump, idx)}
+                      >
+                        <ArrowUpCircle size={16} />{" "}
+                        {isUpdatingLump ? "Updating..." : "Update"}
+                      </button>
+                    </div>
+                  )}
                 </Form>
               </TabPane>
             ))}
@@ -573,15 +595,17 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
         </div>
 
         <div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
-            disabled={session?.user?.role === "APPLICANT"}
-          >
-            <TbCirclePlus className="me-1" size={18} />
-            Add New Lump Sum
-          </button>
+          {canApplicantEdit() && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
+              // disabled={session?.user?.role === "APPLICANT"}
+            >
+              <TbCirclePlus className="me-1" size={18} />
+              Add New Lump Sum
+            </button>
+          )}
         </div>
       </div>
       <DeleteLumpSumCommissionModal

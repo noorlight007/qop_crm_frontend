@@ -219,8 +219,42 @@ const UpdateNoteModal: FC<UpdateNoteModalProps> = ({
 
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
     e.preventDefault();
+
+    const items = Array.from(e.clipboardData.items);
+
+    // Check for image items first (handles screenshots)
+    const imageItem = items.find((item) => item.type.startsWith("image/"));
+    if (imageItem) {
+      const file = imageItem.getAsFile();
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target?.result as string;
+        const img = `<img src="${base64}" alt="pasted-image" style="max-width:100%; height:auto;" />`;
+
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+          const range = sel.getRangeAt(0);
+          range.deleteContents();
+          const temp = document.createElement("div");
+          temp.innerHTML = img;
+          const frag = document.createDocumentFragment();
+          while (temp.firstChild) frag.appendChild(temp.firstChild);
+          range.insertNode(frag);
+          sel.collapseToEnd();
+        }
+
+        handleEditorInput(); // sync state
+      };
+      reader.readAsDataURL(file);
+      return; // skip HTML/text handling
+    }
+
+    // Existing HTML paste logic
     const html = e.clipboardData.getData("text/html");
     const text = e.clipboardData.getData("text/plain");
+
     if (html) {
       const cleaned = sanitizeHtml(html);
       if (

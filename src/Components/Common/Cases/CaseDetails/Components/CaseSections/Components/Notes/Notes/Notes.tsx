@@ -48,6 +48,7 @@ const Notes: React.FC = () => {
   const [category, setCategory] = useState<string>("");
   const [appliedCategory, setAppliedCategory] = useState<string>("");
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
 
   const { data: notesData, isLoading } = useGetNotesQuery({
     case_alias: caseAlias,
@@ -69,6 +70,43 @@ const Notes: React.FC = () => {
       setPageSize(resultsLength);
     }
   }, [notesData, pageSize]);
+
+  useEffect(() => {
+    // Use event delegation on the table container to handle image clicks
+    const tableContainer = document.querySelector(".table-responsive");
+
+    if (!tableContainer) return;
+
+    const handleImageClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "IMG" && target.closest(".note-content")) {
+        e.preventDefault();
+        setLightboxSrc((target as HTMLImageElement).src);
+      }
+    };
+
+    // Attach the delegated event listener
+    tableContainer.addEventListener("click", handleImageClick);
+
+    // Set cursor for all images in note content
+    const images = document.querySelectorAll(".note-content img");
+    images.forEach((img) => {
+      (img as HTMLImageElement).style.cursor = "zoom-in";
+    });
+
+    return () => {
+      tableContainer.removeEventListener("click", handleImageClick);
+    };
+  }, [notesData, expandedNotes]);
+
+  useEffect(() => {
+    if (!lightboxSrc) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxSrc(null);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [lightboxSrc]);
 
   const toggleAddNoteModal = () => setIsOpenAddNoteModal(!isOpenAddNoteModal);
   const toggleEditNoteModal = () =>
@@ -502,6 +540,56 @@ const Notes: React.FC = () => {
         caseAlias={caseAlias}
         selectedNote={selectedNote}
       />
+
+      {/* Image Lightbox */}
+      {lightboxSrc && (
+        <div
+          onClick={() => setLightboxSrc(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: "rgba(0,0,0,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "zoom-out",
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxSrc(null)}
+            style={{
+              position: "absolute",
+              top: 16,
+              right: 20,
+              background: "none",
+              border: "none",
+              color: "#fff",
+              fontSize: 32,
+              lineHeight: 1,
+              cursor: "pointer",
+              zIndex: 10000,
+            }}
+            aria-label="Close"
+          >
+            &times;
+          </button>
+
+          <img
+            src={lightboxSrc}
+            alt="Full size preview"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+              objectFit: "contain",
+              borderRadius: 8,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+            }}
+          />
+        </div>
+      )}
     </Container>
   );
 };

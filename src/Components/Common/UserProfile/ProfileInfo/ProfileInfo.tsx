@@ -13,8 +13,10 @@ import { Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
 import RoleSwitching from "../RoleSwitching/RoleSwitching";
 import EditProfileModal from "./Modals/EditProfileModal";
 import SendEmailForResetPasswordModal from "./Modals/SendEmailForResetPasswordModal";
+import { LoadingSpinner2 } from "@/app/loading";
 
 const ProfileInfo: React.FC = () => {
+  const { data: session } = useSession();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] =
     useState(false);
@@ -81,7 +83,7 @@ const ProfileInfo: React.FC = () => {
         className="d-flex justify-content-center align-items-center"
         style={{ minHeight: "400px" }}
       >
-        <Spinner color="primary" />
+        <LoadingSpinner2 />
       </div>
     );
   }
@@ -246,9 +248,11 @@ const ProfileInfo: React.FC = () => {
         </Card>
       </Col>
 
-      <Col xs="12">
-        <RoleSwitching />
-      </Col>
+      {session?.user?.role === "APPLICANT" ? null : (
+        <Col xs="12">
+          <RoleSwitching />
+        </Col>
+      )}
 
       {/* Contact Information Card */}
       <Col lg="6">

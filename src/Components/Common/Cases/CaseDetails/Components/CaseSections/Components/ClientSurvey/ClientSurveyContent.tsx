@@ -257,14 +257,18 @@ const ClientSurveyContent: React.FC = () => {
         {/* Info Banner */}
         <div className="d-flex justify-content-between">
           <div className="d-flex gap-2 mb-4">
-            <Button
-              color="primary"
-              outline
-              onClick={toggleConfirmModal}
-              disabled={!resolvedCaseAlias}
-            >
-              <Send size={15} className="me-1" /> Send Survey Form To the Client
-            </Button>
+            {session?.user?.role === "APPLICANT" ? null : (
+              <Button
+                color="primary"
+                outline
+                onClick={toggleConfirmModal}
+                disabled={!resolvedCaseAlias}
+              >
+                <Send size={15} className="me-1" /> Send Survey Form To the
+                Client
+              </Button>
+            )}
+
             <Button
               color="secondary"
               onClick={downloadSurvey}
@@ -365,16 +369,18 @@ const ClientSurveyContent: React.FC = () => {
               </Row>
             ))}
             <div className="d-flex justify-content-end mt-4 gap-2">
-              <Button
-                color="secondary"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNextTab();
-                }}
-                type="button"
-              >
-                Go To Next
-              </Button>
+              {session?.user?.role !== "APPLICANT" && (
+                <Button
+                  color="secondary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNextTab();
+                  }}
+                  type="button"
+                >
+                  Go To Next
+                </Button>
+              )}
             </div>
           </Form>
         </>

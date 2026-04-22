@@ -1,11 +1,12 @@
-import {
-  useGetNetworkListQuery,
-  useGetOrganisationListQuery,
-} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
 } from "@/Redux/Reducers/Common/SupportTicket/SupportTicketApi";
+import {
+  useGetNetworkListQuery,
+  useGetOrganisationListQuery,
+} from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
 import { SupportTicketFormData } from "@/Types/Common/SupportTicket/SupportTicketTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -42,7 +43,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -735,7 +735,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <tr>
                       <td colSpan={12} className="text-center">
                         <div className="d-flex justify-content-center align-items-center">
-                          <Spinner color="primary" />
+                          <LoadingSpinner2 />
                         </div>
                       </td>
                     </tr>

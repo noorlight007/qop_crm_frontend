@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -115,10 +116,20 @@ const InsuranceHealthContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center py-4">
-        <Spinner color="primary" />
+        <LoadingSpinner2 />
       </div>
     );
   }
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
 
   return (
     <div>
@@ -159,46 +170,50 @@ const InsuranceHealthContent: React.FC = () => {
         )}
 
         <div className="d-flex justify-content-end gap-2">
-          <Button
-            color="primary"
-            type="submit"
-            disabled={
-              submitting !== null ||
-              isUpdating ||
-              session?.user?.role === "APPLICANT"
-            }
-          >
-            {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
-          </Button>
-          <Button
-            color="secondary"
-            type="button"
-            disabled={submitting !== null || isUpdating}
-            onClick={async () => {
-              if (session?.user?.role === "APPLICANT") {
-                handleNextTab();
-                return;
+          {canApplicantEdit() && (
+            <Button
+              color="primary"
+              type="submit"
+              disabled={
+                submitting !== null || isUpdating
+                // || session?.user?.role === "APPLICANT"
               }
+            >
+              {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
+            </Button>
+          )}
 
-              if (formRef.current && !formRef.current.checkValidity()) {
-                formRef.current.reportValidity();
-                return;
-              }
+          {session?.user?.role !== "APPLICANT" && (
+            <Button
+              color="secondary"
+              type="button"
+              disabled={submitting !== null || isUpdating}
+              onClick={async () => {
+                if (session?.user?.role === "APPLICANT") {
+                  handleNextTab();
+                  return;
+                }
 
-              const success = await handleSubmit("save_next");
-              if (success) {
-                handleNextTab();
-              }
-            }}
-          >
-            {session?.user?.role === "APPLICANT" ? (
-              "Go To Next"
-            ) : submitting === "save_next" ? (
-              <Spinner size="sm" />
-            ) : (
-              "Save & Next"
-            )}
-          </Button>
+                if (formRef.current && !formRef.current.checkValidity()) {
+                  formRef.current.reportValidity();
+                  return;
+                }
+
+                const success = await handleSubmit("save_next");
+                if (success) {
+                  handleNextTab();
+                }
+              }}
+            >
+              {session?.user?.role === "APPLICANT" ? (
+                "Go To Next"
+              ) : submitting === "save_next" ? (
+                <Spinner size="sm" />
+              ) : (
+                "Save & Next"
+              )}
+            </Button>
+          )}
         </div>
       </Form>
     </div>

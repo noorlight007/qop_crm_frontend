@@ -1,13 +1,6 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  CardTitle,
-  Col,
-  Row,
-  Spinner,
-} from "reactstrap";
+import { Card, CardBody, CardHeader, CardTitle, Col, Row } from "reactstrap";
 
 const Overview: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgDashboardData,
@@ -17,7 +10,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
     <div>
       {isDashboardLoading ? (
         <Card className="d-flex justify-content-center align-items-center w-100 p-4">
-          <Spinner color="primary" />
+          <LoadingSpinner2 />
         </Card>
       ) : (
         <Card className="shadow-sm px-3 pt-4">
@@ -70,7 +63,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
-                      </Col>                      
+                      </Col>
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
                         <span className="text-muted">
                           Full Mortgage Application:
@@ -83,12 +76,9 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                         </span>
                       </Col>
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
-                        <span className="text-muted">
-                          Submission:
-                        </span>
+                        <span className="text-muted">Submission:</span>
                         <span className="fw-bold">
-                          {singleOrgDashboardData?.stage_counts
-                            ?.SUBMISSION || (
+                          {singleOrgDashboardData?.stage_counts?.SUBMISSION || (
                             <span className="text-muted">{0}</span>
                           )}
                         </span>
@@ -128,7 +118,9 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                         </span>
                       </Col>
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
-                        <span className="text-muted">Accept Waiting Start Date:</span>
+                        <span className="text-muted">
+                          Accept Waiting Start Date:
+                        </span>
                         <span className="fw-bold">
                           {singleOrgDashboardData?.stage_counts
                             ?.ACCEPT_WAITING_START_DATE || (
@@ -146,7 +138,9 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
                         </span>
                       </Col>
                       <Col md="4" sm="12" className="d-flex flex-column mt-3">
-                        <span className="text-muted">Further Medical Required:</span>
+                        <span className="text-muted">
+                          Further Medical Required:
+                        </span>
                         <span className="fw-bold">
                           {singleOrgDashboardData?.stage_counts
                             ?.FURTHER_MEDICAL_REQUIRED || (

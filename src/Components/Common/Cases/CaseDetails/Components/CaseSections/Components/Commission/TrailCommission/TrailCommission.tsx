@@ -7,6 +7,7 @@ import {
   useGetInsuranceOverviewQuery,
   useGetInsurancePoliciesQuery,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CommissionProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/CommissionTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -66,6 +67,11 @@ const TrailCommission: React.FC<CommissionProps> = ({
 
   const { data: insuranceOverviewData } = useGetInsuranceOverviewQuery(
     { case_alias },
+    { skip: !case_alias },
+  );
+
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: case_alias },
     { skip: !case_alias },
   );
 
@@ -297,20 +303,32 @@ const TrailCommission: React.FC<CommissionProps> = ({
     );
   }
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   if (!isLoading && trails.length === 0) {
     return (
       <div className="mb-4">
         <div className="bg-primary text-white p-2 mb-3">Trail Commission</div>
         <div className="d-flex justify-content-center">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setIsAddModalOpen(true)}
-            disabled={session?.user?.role === "APPLICANT"}
-          >
-            <TbCirclePlus className="me-1" size={18} />
-            Add New Trail Commission
-          </button>
+          {canApplicantEdit() && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setIsAddModalOpen(true)}
+              // disabled={session?.user?.role === "APPLICANT"}
+            >
+              <TbCirclePlus className="me-1" size={18} />
+              Add New Trail Commission
+            </button>
+          )}
         </div>
         <AddTrailCommissionModal
           isOpen={isAddModalOpen}
@@ -521,27 +539,32 @@ const TrailCommission: React.FC<CommissionProps> = ({
                       </FormGroup>
                     </Col>
                   </Row>
-                  <div className="d-flex justify-content-end gap-2 mt-2">
-                    <Button
-                      outline
-                      type="button"
-                      color="danger"
-                      title="Remove row"
-                      onClick={() => openDeleteModal(trail.id)}
-                      disabled={session?.user?.role === "APPLICANT"}
-                    >
-                      <FaTrash /> Delete
-                    </Button>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      disabled={isUpdating || session?.user?.role === "APPLICANT"}
-                      onClick={() => handleUpdateTrail(trail, idx)}
-                    >
-                      <ArrowUpCircle size={16} />{" "}
-                      {isUpdating ? "Updating..." : "Update"}
-                    </button>
-                  </div>
+                  {canApplicantEdit() && (
+                    <div className="d-flex justify-content-end gap-2 mt-2">
+                      <Button
+                        outline
+                        type="button"
+                        color="danger"
+                        title="Remove row"
+                        onClick={() => openDeleteModal(trail.id)}
+                        // disabled={session?.user?.role === "APPLICANT"}
+                      >
+                        <FaTrash /> Delete
+                      </Button>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        disabled={
+                          isUpdating 
+                          // || session?.user?.role === "APPLICANT"
+                        }
+                        onClick={() => handleUpdateTrail(trail, idx)}
+                      >
+                        <ArrowUpCircle size={16} />{" "}
+                        {isUpdating ? "Updating..." : "Update"}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </TabPane>
             ))}
@@ -549,15 +572,17 @@ const TrailCommission: React.FC<CommissionProps> = ({
         </div>
 
         <div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setIsAddModalOpen(true)}
-            disabled={session?.user?.role === "APPLICANT"}
-          >
-            <TbCirclePlus className="me-1" size={18} />
-            Add New Trail Commission
-          </button>
+          {canApplicantEdit() && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setIsAddModalOpen(true)}
+              // disabled={session?.user?.role === "APPLICANT"}
+            >
+              <TbCirclePlus className="me-1" size={18} />
+              Add New Trail Commission
+            </button>
+          )}
         </div>
       </div>
       <DeleteTrailCommissionModal

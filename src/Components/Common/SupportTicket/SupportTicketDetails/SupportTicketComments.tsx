@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import {
   useFetchSupportTicketCommentsQuery,
   useMakeSupportTicketCommentMutation,
@@ -424,7 +425,7 @@ const SupportTicketComments: React.FC = () => {
   if (isLoading) {
     return (
       <div className="text-center py-4">
-        <Spinner color="primary" />
+        <LoadingSpinner2 />
         <p className="text-muted mt-2">Loading comments...</p>
       </div>
     );

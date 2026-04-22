@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import {
   LeadOrApplicant,
@@ -23,7 +24,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -235,7 +235,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                   <tr>
                     <td colSpan={8} className="text-center">
                       <div className="d-flex justify-content-center align-items-center">
-                        <Spinner color="primary" />
+                        <LoadingSpinner2 />
                       </div>
                     </td>
                   </tr>

@@ -7,6 +7,7 @@ import {
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/InsuranceOverview/InsuranceOverviewApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { PolicyTabProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/InsuranceOverviewTypes";
+import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { limitDecimalPlaces } from "@/utils/inputHandlers";
@@ -31,7 +32,6 @@ import {
 } from "reactstrap";
 import AddnewInsurancePolicyModal from "./Modals/AddnewInsurancePolicyModal";
 import DeleteInsurancePolicyModal from "./Modals/DeleteInsurancePolicyModal";
-import getCurrencySign from "@/utils/currency";
 
 const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
   const { casealias } = useParams();
@@ -212,6 +212,16 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     );
   }
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   return (
     <div className="p-2">
       <Nav tabs className="justify-content-center mt-3">
@@ -225,15 +235,17 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               style={{ cursor: "pointer" }}
             >
               Policy {index + 1} - {formatChoiceFieldValue(policy.policy_type)}
-              <Button
-                outline
-                color="danger"
-                size="sm"
-                className="ms-2"
-                onClick={(e) => handleDeleteClick(e, policy)}
-              >
-                <TbTrash size={16} />
-              </Button>
+              {canApplicantEdit() && (
+                <Button
+                  outline
+                  color="danger"
+                  size="sm"
+                  className="ms-2"
+                  onClick={(e) => handleDeleteClick(e, policy)}
+                >
+                  <TbTrash size={16} />
+                </Button>
+              )}
             </NavLink>
           </NavItem>
         ))}
@@ -784,7 +796,9 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
                     "BUILDINGS_AND_CONTENTS_INSURANCE") && (
                   <Col sm={12} md={6} lg={4}>
                     <FormGroup>
-                      <Label>Full Rebuild Value of your Home({getCurrencySign()})</Label>
+                      <Label>
+                        Full Rebuild Value of your Home({getCurrencySign()})
+                      </Label>
                       <Input
                         type="number"
                         step="0.01"
@@ -994,7 +1008,9 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
 
                 <Col sm={12} md={6} lg={4}>
                   <FormGroup>
-                    <Label>Policy Term<span className="text-danger">*</span></Label>
+                    <Label>
+                      Policy Term<span className="text-danger">*</span>
+                    </Label>
                     <Input
                       type="number"
                       step="1"
@@ -1510,50 +1526,57 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               </Row>
 
               <div className="d-flex justify-content-between mt-3 ">
-                <Button
-                  color="success"
-                  onClick={toggleModal}
-                  disabled={isUpdating || session?.user?.role === "APPLICANT"}
-                >
-                  Add New Policy
-                </Button>
-                <div className="d-flex gap-2">
+                {canApplicantEdit() && (
                   <Button
-                    color="primary"
-                    type="submit"
+                    color="success"
+                    onClick={toggleModal}
                     disabled={
-                      isUpdating ||
-                      (session?.user?.role === "APPLICANT" &&
-                        policy?.updated_by !== null)
+                      isUpdating
+                      // || session?.user?.role === "APPLICANT"
                     }
                   >
-                    {isUpdating ? "Saving..." : "Save Changes"}
+                    Add New Policy
                   </Button>
-                  <Button
-                    type="submit"
-                    color="secondary"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // active policy in this pane
-                      if (
-                        session?.user?.role === "APPLICANT" &&
-                        policy?.updated_by !== null
-                      ) {
-                        handleNextTab();
-                      } else {
-                        submitActionRef.current = "next";
-                        // ensure the formRef points to the active form
-                        formRef.current?.requestSubmit();
+                )}
+                {canApplicantEdit() && (
+                  <div className="d-flex gap-2">
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={
+                        isUpdating ||
+                        (session?.user?.role === "APPLICANT" &&
+                          policy?.updated_by !== null)
                       }
-                    }}
-                    disabled={isUpdating}
-                  >
-                    {session?.user?.role === "APPLICANT" &&
-                    policy?.updated_by !== null
-                      ? "Go To Next"
-                      : "Save & Next"}
-                  </Button>
-                </div>
+                    >
+                      {isUpdating ? "Saving..." : "Save Changes"}
+                    </Button>
+                    <Button
+                      type="submit"
+                      color="secondary"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        // active policy in this pane
+                        if (
+                          session?.user?.role === "APPLICANT" &&
+                          policy?.updated_by !== null
+                        ) {
+                          handleNextTab();
+                        } else {
+                          submitActionRef.current = "next";
+                          // ensure the formRef points to the active form
+                          formRef.current?.requestSubmit();
+                        }
+                      }}
+                      disabled={isUpdating}
+                    >
+                      {session?.user?.role === "APPLICANT" &&
+                      policy?.updated_by !== null
+                        ? "Go To Next"
+                        : "Save & Next"}
+                    </Button>
+                  </div>
+                )}
               </div>
             </Form>
           </TabPane>

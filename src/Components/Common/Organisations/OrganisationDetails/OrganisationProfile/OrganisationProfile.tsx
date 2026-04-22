@@ -1,3 +1,4 @@
+import { LoadingSpinner2 } from "@/app/loading";
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { useRef, useState } from "react";
@@ -178,7 +179,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
           className="d-flex justify-content-center align-items-center w-100"
           style={{ minHeight: "450px" }}
         >
-          <Spinner color="primary" />
+          <LoadingSpinner2 />
         </Card>
       ) : (
         <Card className="shadow-lg">
@@ -295,7 +296,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                           style={{ cursor: "pointer" }}
                           onClick={handleCopyDomain}
                         >
-                          {isCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                          {isCopied ? (
+                            <FaCheckCircle className="text-success" />
+                          ) : (
+                            <TbCopy />
+                          )}
                         </span>
                       </Badge>
                     )}
@@ -485,7 +490,11 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                             style={{ cursor: "pointer", flexShrink: 0 }}
                             onClick={handleCopyEmail}
                           >
-                            {isEmailCopied ? <FaCheckCircle className="text-success"/> : <TbCopy />}
+                            {isEmailCopied ? (
+                              <FaCheckCircle className="text-success" />
+                            ) : (
+                              <TbCopy />
+                            )}
                           </span>
                         </span>
                       ) : (
@@ -533,7 +542,7 @@ const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
                         singleOrgDashboardData?.counters?.total_clients || 0,
                       ).toLocaleString()}
                     </h4>
-                    <p className="small text-muted mb-0">Clients</p>
+                    <p className="small text-muted mb-0">Applicants</p>
                   </div>
                 </Col>
                 <Col className="mb-3">

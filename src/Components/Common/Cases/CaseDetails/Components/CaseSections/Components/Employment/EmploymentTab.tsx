@@ -1,10 +1,11 @@
 import LoadingSpinner from "@/app/loading";
 import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { EmploymentDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import {
   Button,
@@ -23,15 +24,45 @@ export const EmploymentTab = () => {
   const { data: session } = useSession();
   const [activeUser, setActiveUser] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<string | null>(null);
-
+  const pendingTabRef = useRef<string | null>(null);
   const params = useParams();
   const { casealias } = params as { casealias?: string | string[] };
 
   // Normalize `casealias` which can be `string | string[] | undefined` from next/navigation
   const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
 
-  const { data: employmentData, isLoading: isEmploymentDetailLoading } =
-    useGetEmploymentDetailsQuery({ case_alias: caseAlias });
+  const {
+    data: employmentData,
+    isLoading: isEmploymentDetailLoading,
+    refetch: refetchEmploymentData,
+  } = useGetEmploymentDetailsQuery({ case_alias: caseAlias });
+
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
+
+  // Filter employment data based on user role
+  const getFilteredEmploymentData = (
+    data: EmploymentDetailsProps[] | undefined,
+  ) => {
+    if (!data) return [];
+
+    const userRole = session?.user?.role;
+    const userEmail = session?.user?.email;
+
+    // If user is an APPLICANT, show only their own data
+    if (userRole === "APPLICANT" && userEmail) {
+      return data.filter(
+        (employment) => employment?.customer?.email === userEmail,
+      );
+    }
+
+    // For other roles (DIRECTOR, ADMIN, etc.), show all employment data
+    return data;
+  };
+
+  const filteredEmploymentData = getFilteredEmploymentData(employmentData);
 
   // Delete modal state (the modal performs the mutation)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -55,14 +86,14 @@ export const EmploymentTab = () => {
     const employmentAlias = modalEmploymentAlias;
     const userId = modalUserId as number;
 
-    const remainingForUser = (employmentData || []).filter(
+    const remainingForUser = (filteredEmploymentData || []).filter(
       (emp: any) => emp.customer.id === userId && emp.alias !== employmentAlias,
     );
 
     if (remainingForUser.length > 0) {
       setActiveTab(remainingForUser[0].alias || null);
     } else {
-      const remainingAny = (employmentData || []).filter(
+      const remainingAny = (filteredEmploymentData || []).filter(
         (emp: any) => emp.alias !== employmentAlias,
       );
       if (remainingAny.length > 0) {
@@ -79,15 +110,50 @@ export const EmploymentTab = () => {
     setModalUserId(null);
   };
 
+  // REPLACE the existing useEffect with this:
   useEffect(() => {
-    if (employmentData && employmentData.length > 0) {
-      const firstUserId = employmentData[0]?.customer.id;
-      setActiveUser(firstUserId);
-      setActiveTab(employmentData[0]?.alias || null);
+    if (filteredEmploymentData && filteredEmploymentData.length > 0) {
+      if (pendingTabRef.current) {
+        const pendingEmp = filteredEmploymentData.find(
+          (emp: EmploymentDetailsProps) => emp.alias === pendingTabRef.current,
+        );
+        if (pendingEmp) {
+          setActiveUser(pendingEmp.customer.id);
+          setActiveTab(pendingTabRef.current);
+          pendingTabRef.current = null;
+          return;
+        }
+      }
+      // Only initialize defaults if no tab is active yet
+      if (!activeTab) {
+        setActiveUser(filteredEmploymentData[0]?.customer.id);
+        setActiveTab(filteredEmploymentData[0]?.alias || null);
+      }
     }
-  }, [employmentData]);
+  }, [filteredEmploymentData]);
+
+  // Handle new employment added - refetch data and navigate to new tab
+  const handleEmploymentAddedSuccess = async (newEmploymentAlias: string) => {
+    pendingTabRef.current = newEmploymentAlias;
+    await refetchEmploymentData();
+    // If after refetch the pending alias wasn't resolved by the effect
+    // (e.g. the data didn't include it), clear the ref to avoid stale state
+    if (pendingTabRef.current) {
+      pendingTabRef.current = null;
+    }
+  };
 
   if (isEmploymentDetailLoading) return <LoadingSpinner />;
+
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
 
   return (
     <Col xxl="12" className="px-5">
@@ -99,7 +165,7 @@ export const EmploymentTab = () => {
               className="nav-primary d-flex flex-wrap gap-2 justify-content-center"
               pills
             >
-              {employmentData
+              {filteredEmploymentData
                 ?.reduce(
                   (
                     uniqueUsers: EmploymentDetailsProps[],
@@ -160,7 +226,7 @@ export const EmploymentTab = () => {
               >
                 {(() => {
                   const userEmps =
-                    employmentData?.filter(
+                    filteredEmploymentData?.filter(
                       (emp: EmploymentDetailsProps) =>
                         emp.customer.id === activeUser,
                     ) || [];
@@ -219,24 +285,28 @@ export const EmploymentTab = () => {
                             }
 
                             return (
-                              <Button
-                                type="button"
-                                size="sm"
-                                outline
-                                color="danger"
-                                className="ms-1"
-                                onClick={(e) =>
-                                  openDeleteModal(
-                                    e,
-                                    employment.alias,
-                                    employment.customer.id,
-                                  )
-                                }
-                                aria-label="Delete employment"
-                                title="Delete"
-                              >
-                                <FaTrash />
-                              </Button>
+                              <>
+                                {canApplicantEdit() && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    outline
+                                    color="danger"
+                                    className="ms-1"
+                                    onClick={(e) =>
+                                      openDeleteModal(
+                                        e,
+                                        employment.alias,
+                                        employment.customer.id,
+                                      )
+                                    }
+                                    aria-label="Delete employment"
+                                    title="Delete"
+                                  >
+                                    <FaTrash />
+                                  </Button>
+                                )}
+                              </>
                             );
                           })()}
                         </NavLink>
@@ -262,7 +332,7 @@ export const EmploymentTab = () => {
               activeTab={activeTab}
               activeUser={activeUser}
               groupedData={
-                employmentData?.reduce(
+                filteredEmploymentData?.reduce(
                   (
                     acc: Record<number, EmploymentDetailsProps[]>,
                     emp: EmploymentDetailsProps,
@@ -276,6 +346,7 @@ export const EmploymentTab = () => {
                   {} as Record<number, EmploymentDetailsProps[]>,
                 ) || {}
               }
+              onTabChange={handleEmploymentAddedSuccess}
             />
           )}
         </CardBody>

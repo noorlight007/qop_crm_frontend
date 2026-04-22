@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import { LoadingSpinner2 } from "@/app/loading";
 import { useGetAuthUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/AuthUsersApi";
 import {
   AuthUser,
@@ -24,7 +24,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -64,7 +63,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
   const buildRoleParams = (roleKey?: string) => {
     if (!roleKey) return {};
 
-    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE, APPLICANT)
+    // roleKey now matches API role directly (e.g. DIRECTOR, ADVISER, ADMIN, COMPLIANCE)
     return { role: roleKey };
   };
 
@@ -117,14 +116,6 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
 
   const currentAuthUsers = authUsers;
   const totalPages = Math.ceil(totalCount / authUsersPerPage) || 1;
-
-  if (isLoading) {
-    return (
-      <div className="p-4">
-        <LoadingSpinner />
-      </div>
-    );
-  }
 
   return (
     <Card>
@@ -201,9 +192,9 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <Spinner color="primary" />
+                      <LoadingSpinner2 />
                     </div>
                   </td>
                 </tr>
@@ -318,7 +309,7 @@ const AuthUsers: React.FC<AuthUsersProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={10} className="text-center">
                     No users available.
                   </td>
                 </tr>

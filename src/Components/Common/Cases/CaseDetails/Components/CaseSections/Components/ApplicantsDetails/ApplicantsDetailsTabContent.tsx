@@ -636,6 +636,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     }
   };
 
+  const canApplicantEdit = (): boolean => {
+    if (session?.user?.role === "APPLICANT") {
+      return (
+        caseData?.case_stage === "ENQUIRY" ||
+        caseData?.case_stage === "FACT_FIND"
+      );
+    }
+    return true; // Non-applicant users can always edit
+  };
+
   const getGoogleMapEmbedUrl: any = (
     lat: number,
     lng: number,
@@ -664,6 +674,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         type="radio"
                         name="is_company_application"
                         value={option}
+                        disabled={!canApplicantEdit()}
                         checked={
                           formValues.is_company_application ===
                           (option === "yes")
@@ -1406,6 +1417,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         name="has_dependants"
                         className="me-1"
                         value={value}
+                        disabled={!canApplicantEdit()}
                         checked={
                           formValues.has_dependants === (value === "yes")
                         }
@@ -1732,7 +1744,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <Button
                         color="primary"
                         onClick={() => setIsAddPreviousAddressModalOpen(true)}
-                        disabled={previousAddressesData?.length > 0}
+                        disabled={
+                          previousAddressesData?.length > 0 ||
+                          !canApplicantEdit()
+                        }
                       >
                         Add Previous Address
                       </Button>
@@ -1743,10 +1758,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         View Previous Address
                       </Button>
                     </div>
-                    <small className="text-danger">
-                      Note: If you add a new address, the "Add Previous Address"
-                      button will be disabled.
-                    </small>
+                    {canApplicantEdit() ? (
+                      <small className="text-danger">
+                        Note: If you add a new address, the "Add Previous
+                        Address" button will be disabled.
+                      </small>
+                    ) : (
+                      <small className="text-muted">
+                        Note: To add a new address, please contact your case Adviser.
+                      </small>
+                    )}
                   </div>
                 )}
             </Col>
@@ -2903,91 +2924,84 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
             </Col>
           </Row>
           {/* Submit Button */}
-          <div className="d-flex justify-content-end gap-3">
-            <Button
-              type="submit"
-              color="primary"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null)
-              }
-              onClick={() => {
-                submitActionRef.current = "save";
-              }}
-            >
-              {isUpdatingApplicant && submitting === "save"
-                ? "Updating..."
-                : "Save Changes"}
-            </Button>
-            <Button
-              type="submit"
-              color="warning"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null) ||
-                !applicantsData ||
-                applicantsData.findIndex(
-                  (applicant) => applicant.alias === basicTab,
-                ) <= 0
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                submitActionRef.current = "previous-applicant";
-                formRef.current?.requestSubmit();
-              }}
-            >
-              {isUpdatingApplicant && submitting === "previous-applicant"
-                ? "Saving..."
-                : "Save & Previous Applicant"}
-            </Button>
-            <Button
-              type="submit"
-              color="info"
-              disabled={
-                isLoading ||
-                (session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null) ||
-                !applicantsData ||
-                applicantsData.findIndex(
-                  (applicant) => applicant.alias === basicTab,
-                ) >=
-                  applicantsData.length - 1
-              }
-              onClick={(e) => {
-                e.preventDefault();
-                submitActionRef.current = "next-applicant";
-                formRef.current?.requestSubmit();
-              }}
-            >
-              {isUpdatingApplicant && submitting === "next-applicant"
-                ? "Saving..."
-                : "Save & Next Applicant"}
-            </Button>
-            <Button
-              type="submit"
-              color="secondary"
-              onClick={async (e) => {
-                e.preventDefault();
-                if (
-                  session?.user?.role === "APPLICANT" &&
-                  selectedApplicant?.updated_by !== null
-                ) {
-                  handleNextTab();
-                } else {
+          <div className="d-flex justify-content-end gap-3 align-items-center">
+            {canApplicantEdit() && (
+              <Button
+                type="submit"
+                color="primary"
+                onClick={() => {
+                  submitActionRef.current = "save";
+                }}
+              >
+                {isUpdatingApplicant && submitting === "save"
+                  ? "Updating..."
+                  : "Save Changes"}
+              </Button>
+            )}
+            {session?.user?.role !== "APPLICANT" && (
+              <>
+                <Button
+                  type="submit"
+                  color="warning"
+                  disabled={
+                    isLoading ||
+                    (session?.user?.role === "APPLICANT" &&
+                      selectedApplicant?.updated_by !== null) ||
+                    !applicantsData ||
+                    applicantsData.findIndex(
+                      (applicant) => applicant.alias === basicTab,
+                    ) <= 0
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    submitActionRef.current = "previous-applicant";
+                    formRef.current?.requestSubmit();
+                  }}
+                >
+                  {isUpdatingApplicant && submitting === "previous-applicant"
+                    ? "Saving..."
+                    : "Save & Previous Applicant"}
+                </Button>
+                <Button
+                  type="submit"
+                  color="info"
+                  disabled={
+                    isLoading ||
+                    (session?.user?.role === "APPLICANT" &&
+                      selectedApplicant?.updated_by !== null) ||
+                    !applicantsData ||
+                    applicantsData.findIndex(
+                      (applicant) => applicant.alias === basicTab,
+                    ) >=
+                      applicantsData.length - 1
+                  }
+                  onClick={(e) => {
+                    e.preventDefault();
+                    submitActionRef.current = "next-applicant";
+                    formRef.current?.requestSubmit();
+                  }}
+                >
+                  {isUpdatingApplicant && submitting === "next-applicant"
+                    ? "Saving..."
+                    : "Save & Next Applicant"}
+                </Button>
+              </>
+            )}
+            {session?.user?.role !== "APPLICANT" && (
+              <Button
+                type="submit"
+                color="secondary"
+                onClick={async (e) => {
+                  e.preventDefault();
                   submitActionRef.current = "next";
                   formRef.current?.requestSubmit();
-                }
-              }}
-            >
-              {session?.user?.role === "APPLICANT" &&
-              selectedApplicant?.updated_by !== null
-                ? "Go To Next"
-                : isUpdatingApplicant && submitting === "next"
+                }}
+              >
+                {isUpdatingApplicant && submitting === "next"
                   ? "Saving..."
                   : "Save & Next Section"}
-            </Button>
+              </Button>
+            )}
           </div>
         </form>
       </Row>
