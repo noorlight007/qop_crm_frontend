@@ -18,58 +18,6 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
 
-/* ── Purple: dropdown placeholder ── */
-const PleaseSelect = ({ label }: { label?: string }) => (
-  <span
-    className="px-2 py-1 rounded small fst-italic d-inline-block"
-    style={{
-      background: "#f3e5f5",
-      color: "#6a1b9a",
-      border: "1px dashed #ab47bc",
-    }}
-  >
-    {label ?? "Please Select"}
-  </span>
-);
-
-/* ── Purple dropdown option list ── */
-const DropdownOptions = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: React.ReactNode[];
-}) => (
-  <div className="mt-2 small" style={{ color: "#6a1b9a" }}>
-    <p className="mb-1 fst-italic">{label}</p>
-    <ol className="mb-0 ps-3">
-      {options.map((opt, i) => (
-        <li key={i}>{opt}</li>
-      ))}
-    </ol>
-  </div>
-);
-
-/* ── Green: render a suitability answer line ── */
-const SuitAnswer = ({ text }: { text?: string }) =>
-  text ? (
-    <p
-      className="mb-1"
-      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
-    >
-      {text}
-    </p>
-  ) : null;
-
-/* ── Render array of green answers ── */
-const SuitAnswers = ({ answers }: { answers: (string | undefined)[] }) => (
-  <>
-    {answers.filter(Boolean).map((a, i) => (
-      <SuitAnswer key={i} text={a} />
-    ))}
-  </>
-);
-
 const Divider = () => <hr className="my-4" />;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
@@ -104,8 +52,36 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const companyName = caseData?.company_name ?? "Cityplus Network";
   const companyAddress =
     caseData?.company_address ?? "77 Marsh Wall\nLondon\nE14 9SH";
-  const clientAddress =
-    caseData?.client_address ?? "77 Client Street\nLondon\nE1X 9XX";
+
+  const clientName = s?.client_name;
+  const jointApplicantNames = s?.joint_applicant_names || [];
+  const allApplicantNames = [clientName, ...jointApplicantNames]
+    .filter(Boolean)
+    .join(", ")
+    .replace(/,([^,]*)$/, " &$1");
+
+  const lender = s?.loan_details?.lender ?? "";
+  const initialRate = s?.loan_details?.initial_interest_rate ?? "";
+  const rateType = s?.loan_details?.interest_rate_type ?? "";
+  const dealEndDate = caseData?.deal_end_date ?? "";
+  const repaymentMethod = s?.loan_details?.repayment_method ?? "";
+  const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
+  const maxERC = caseData?.max_erc ? `£${caseData.max_erc}` : "£X";
+
+  const fmtGBP = (val: any) =>
+    val
+      ? `£${Number(val).toLocaleString("en-GB", { minimumFractionDigits: 2 })}`
+      : null;
+
+  const mortgageAmount = s?.loan_details?.mortgage_amount ?? "";
+  const monthlyRepayment = s?.loan_details?.monthly_repayment ?? "£657.81";
+  const arrangementFee = fmtGBP(caseData?.arrangement_fee) ?? "£X or N/A";
+
+  const { house_number_or_name, city, post_code } = s?.client_address ?? {};
+
+  const clientAddress = [house_number_or_name, city, post_code]
+    .filter(Boolean)
+    .join("\n");
   const propertyAddress =
     caseData?.property_address ?? "77 Client Street, London, E1X 9XX";
   const additionalRecipients = caseData?.additional_recipients ?? "";
@@ -251,7 +227,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     <>
       The mortgage amount is less than what you currently have outstanding on
       your mortgage, this is because you are making an overpayment of{" "}
-      <span style={{ color: blue }}>[amount]</span>.
+      <span style={{ color: blue }}>{mortgageAmount}</span>.
     </>,
     "Your mortgage is equal to the purchase price of the property, minus your deposit.",
   ];
@@ -313,113 +289,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     "It is important we discuss your home insurance before exchange of contracts, please confirm when you are available to do so.",
     "You have confirmed that you would prefer to arrange your own cover and do not need my advice on this matter.",
     "I recommend you seek advice from a specialist for this cover.",
-  ];
-
-  const clientName =
-    caseData?.applicants
-      ?.map((a: any) => `${a.title ?? ""} ${a.full_name ?? ""}`.trim())
-      .filter(Boolean)
-      .join(" & ") ?? "Mr & Mrs Client";
-
-  const lender = caseData?.lender_name ?? "HSBC";
-  const initialRate = caseData?.initial_rate ?? "3.86%";
-  const rateType = caseData?.rate_type ?? "Fixed";
-  const dealEndDate = caseData?.deal_end_date ?? "30/09/2030";
-  const repaymentMethod = caseData?.repayment_method ?? "Repayment";
-  const mortgageTerm = caseData?.mortgage_term ?? "20 years and 0 months";
-  const maxERC = caseData?.max_erc ? `£${caseData.max_erc}` : "£X";
-
-  const fmtGBP = (val: any) =>
-    val
-      ? `£${Number(val).toLocaleString("en-GB", { minimumFractionDigits: 2 })}`
-      : null;
-
-  const mortgageAmount = fmtGBP(caseData?.mortgage_amount) ?? "£110,000.00";
-  const monthlyRepayment = fmtGBP(caseData?.monthly_repayment) ?? "£657.81";
-  const arrangementFee = fmtGBP(caseData?.arrangement_fee) ?? "£X or N/A";
-
-  const circumAnswers =
-    s?.circumstances_objectives?.circumstances_type === "SHARIA"
-      ? [
-          s?.circumstances_objectives?.question_one_sharia,
-          s?.circumstances_objectives?.question_two_sharia,
-        ]
-      : [
-          s?.circumstances_objectives?.question_one_answer,
-          s?.circumstances_objectives?.question_two_answer,
-          s?.circumstances_objectives?.question_three_answer,
-        ];
-
-  const lenderAnswers =
-    s?.recommending_mortgage_lender?.recommending_mortgage_lender_type ===
-    "SHARIA"
-      ? [s?.recommending_mortgage_lender?.question_one_sharia]
-      : [
-          s?.recommending_mortgage_lender?.question_one_answer,
-          s?.recommending_mortgage_lender?.question_two_answer,
-          s?.recommending_mortgage_lender?.question_three_answer,
-        ];
-
-  const rateTypeAnswers =
-    s?.recommending_mortgage_type?.recommending_mortgage_type === "SHARIA"
-      ? [
-          s?.recommending_mortgage_type?.question_one_sharia,
-          s?.recommending_mortgage_type?.question_two_sharia,
-        ]
-      : [
-          s?.recommending_mortgage_type?.question_one_answer,
-          s?.recommending_mortgage_type?.question_two_answer,
-          s?.recommending_mortgage_type?.question_three_answer,
-          s?.recommending_mortgage_type?.question_four_answer,
-        ];
-
-  const termAnswers =
-    s?.recommending_term?.recommending_term === "SHARIA"
-      ? [s?.recommending_term?.question_one]
-      : [s?.recommending_term?.question_one_answer];
-
-  const repaymentAnswers =
-    s?.recommending_repayment_method?.recommending_repayment_method_type ===
-    "SHARIA"
-      ? [
-          s?.recommending_repayment_method?.question_one_sharia,
-          s?.recommending_repayment_method?.question_two_sharia,
-        ]
-      : [
-          s?.recommending_repayment_method?.question_one_answer,
-          s?.recommending_repayment_method?.question_two_answer,
-          s?.recommending_repayment_method?.question_three_answer,
-          s?.recommending_repayment_method?.question_four_answer,
-          s?.recommending_repayment_method?.question_five_answer,
-        ];
-
-  const protectionAnswers = [
-    s?.protection?.question_one_answer,
-    s?.protection?.question_two_answer,
-    s?.protection?.question_three_answer,
-    s?.protection?.question_four_answer,
-    s?.protection?.question_one_sharia,
-    s?.protection?.question_two,
-    s?.protection?.question_three_sharia,
-    s?.protection?.question_four_sharia,
-  ];
-
-  const buildingsAnswers = [
-    s?.buildings_insurance?.question_one_answer,
-    s?.buildings_insurance?.question_two_answer,
-    s?.buildings_insurance?.question_three_answer,
-    s?.buildings_insurance?.question_four_answer,
-    s?.buildings_insurance?.question_one,
-    s?.buildings_insurance?.question_two,
-    s?.buildings_insurance?.question_three_sharia,
-    s?.buildings_insurance?.question_five_sharia,
-  ];
-
-  const willsAnswers = [
-    s?.wills?.question_one_answer,
-    s?.wills?.question_two_answer,
-    s?.wills?.question_three_answer,
-    s?.wills?.question_one,
   ];
 
   return (
@@ -487,7 +356,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         </h4>
         <p className="fw-bold mb-1">Summary of your Mortgage Recommendation</p>
         <p className="mb-0">
-          Prepared for <strong style={{ color: blue }}>{clientName}</strong>
+          Prepared for{" "}
+          <strong style={{ color: blue }}>{allApplicantNames}</strong>
         </p>
         <p className="mb-0">
           By <strong style={{ color: blue }}>{advisorName}</strong>
@@ -500,7 +370,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           OPENING
       ══════════════════════════════ */}
       <p>
-        Dear <span style={{ color: blue }}>{clientName}</span>,
+        Dear <span style={{ color: blue }}>{allApplicantNames}</span>,
       </p>
 
       <p>
@@ -546,21 +416,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         of <strong style={{ color: blue }}>{propertyAddress}</strong>.
       </p>
 
-      {circumAnswers.filter(Boolean).length > 0 ? (
-        <div
-          className="p-3 mb-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
-        >
-          <SuitAnswers answers={circumAnswers} />
-        </div>
-      ) : (
+      <div className="mb-3">
         <AdvisorNote>
           (add soft facts about the transaction / what the clients overall goals
           were that were relevant to the advice and any other general
           information you feel is important to build a picture of the advice you
           have given)
         </AdvisorNote>
-      )}
+      </div>
 
       <p>
         It is important to us that you can access and understand the information
@@ -603,9 +466,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td className="fw-semibold" style={{ color: blue }}>
               {lender}
             </td>
-            <td style={{ color: blue }}>
-              {initialRate} {rateType} until {dealEndDate}
-            </td>
+            <td style={{ color: blue }}>{initialRate}</td>
             <td style={{ color: blue }}>{repaymentMethod}</td>
             <td className="fw-semibold" style={{ color: blue }}>
               {mortgageAmount}
@@ -1619,12 +1480,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           </span>
         )}
 
-      {/* {protectionAnswers.filter(Boolean).length > 0 && (
-        <div className="mt-2">
-          <SuitAnswers answers={protectionAnswers} />
-        </div>
-      )} */}
-
       <div className="mt-2">
         <AdvisorNote>
           (Where you have not recommended new policies or advice has been
@@ -1705,10 +1560,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         don&rsquo;t have a will, I recommend you speak to a solicitor to create
         one and keep it updated on a regular basis.
       </p>
-
-      {willsAnswers.filter(Boolean).length > 0 && (
-        <SuitAnswers answers={willsAnswers} />
-      )}
 
       <Divider />
 

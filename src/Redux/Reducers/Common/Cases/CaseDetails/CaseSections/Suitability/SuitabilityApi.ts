@@ -4,7 +4,7 @@ export const SuitabilityApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSuitability: builder.query({
       query: ({ case_alias }) => ({
-        url: `/cases/${case_alias}/suitability/`,
+        url: `/cases/${case_alias}/suitability-letter/`,
         method: "GET",
       }),
       providesTags: ["Suitability"],

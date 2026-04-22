@@ -29,6 +29,7 @@ const Suitability: React.FC = () => {
 
   const { data: suitability, isLoading: isSuitLoading } =
     useGetSuitabilityQuery({ case_alias: casealias }, { skip: !casealias });
+  console.log("Suitability Data:", suitability);
 
   if (isCaseLoading || isSuitLoading) return <LoadingGrow />;
 
