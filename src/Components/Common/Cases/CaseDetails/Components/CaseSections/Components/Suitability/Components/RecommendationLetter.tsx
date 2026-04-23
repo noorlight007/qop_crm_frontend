@@ -1,4 +1,17 @@
+import {
+  arrangementOptions,
+  ercMeaningOptions,
+  ercOptions,
+  ercWhyOptions,
+  homeInsuranceOptions,
+  portableMeaningOptions,
+  portableOptions,
+  portableWhyOptionTemplates,
+  protectionOptionTemplates,
+  rateSwitchOptions,
+} from "@/Data/Cases/SuitabilityData";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
+import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import Image from "next/image";
 import React, { useState } from "react";
 import {
@@ -34,27 +47,32 @@ const thStyle: React.CSSProperties = {
 interface RecommendationLetterProps {
   caseData: any;
   suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
 }
 
 const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   caseData,
   suitability,
+  formValues,
+  onFormChange,
 }) => {
   const blue = "#1565c0";
   const s = suitability;
 
   const { data: appearanceData } = useGetPublicAppranceQuery(undefined);
 
-  const advisorName = caseData?.advisor_name ?? "Faye Jennings";
-  const advisorJobTitle = caseData?.advisor_job_title ?? "Mortgage Advisor";
-  const advisorEmail = caseData?.advisor_email ?? "faye@cityplusnetwork.co.uk";
-  const advisorPhone = caseData?.advisor_phone ?? "020 8050 2479";
-  const companyName = caseData?.company_name ?? "Cityplus Network";
+  // ── Read-only display values from API ──
+  const advisorName = s?.adviser?.name ?? "";
+  const advisorJobTitle = s?.adviser?.user_type ?? "";
+  const advisorEmail = s?.adviser?.email ?? "";
+  const advisorPhone = s?.adviser?.phone ?? "";
+  const companyName = s?.adviser?.company ?? "";
   const companyAddress =
     caseData?.company_address ?? "77 Marsh Wall\nLondon\nE14 9SH";
 
-  const clientName = s?.client_name;
-  const jointApplicantNames = s?.joint_applicant_names || [];
+  const clientName = s?.applicant?.name;
+  const jointApplicantNames = s?.joint_applicants || [];
   const allApplicantNames = [clientName, ...jointApplicantNames]
     .filter(Boolean)
     .join(", ")
@@ -66,6 +84,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const dealEndDate = caseData?.deal_end_date ?? "";
   const repaymentMethod = s?.loan_details?.repayment_method ?? "";
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
+  const mortgageType = s?.loan_details?.mortgage_type ?? "";
   const maxERC = caseData?.max_erc ? `£${caseData.max_erc}` : "£X";
 
   const fmtGBP = (val: any) =>
@@ -77,220 +96,233 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const monthlyRepayment = s?.loan_details?.monthly_repayment ?? "£657.81";
   const arrangementFee = fmtGBP(caseData?.arrangement_fee) ?? "£X or N/A";
 
-  const { house_number_or_name, city, post_code } = s?.client_address ?? {};
-
+  const { house_number_or_name, city, post_code } = s?.applicant ?? {};
   const clientAddress = [house_number_or_name, city, post_code]
     .filter(Boolean)
     .join("\n");
-  const propertyAddress =
-    caseData?.property_address ?? "77 Client Street, London, E1X 9XX";
+  const property = caseData?.property_details;
+
+  const propertyAddress = property
+    ? `${property.house_name_or_number}, ${property.city}, ${property.postcode}`
+    : "";
   const additionalRecipients = caseData?.additional_recipients ?? "";
 
-  const [selectedTransactionType, setSelectedTransactionType] = useState<
-    string | null
-  >(null);
+  // ══════════════════════════════════════════════════════════
+  // LOCAL UI-ONLY STATES (dropdown open/close + edit toggles)
+  // These never go to the backend — purely for UI behaviour
+  // ══════════════════════════════════════════════════════════
   const [isTransactionTypeOpen, setIsTransactionTypeOpen] = useState(false);
-  const [lenderReason, setLenderReason] = useState("");
-  const [savedLenderReason, setSavedLenderReason] = useState("");
   const [isLenderEditing, setIsLenderEditing] = useState(false);
-  const [interestRateReason, setInterestRateReason] = useState("");
-  const [savedInterestRateReason, setSavedInterestRateReason] = useState("");
   const [isInterestRateEditing, setIsInterestRateEditing] = useState(false);
-  const [initialInterestRateReason, setInitialInterestRateReason] =
-    useState("");
-  const [savedInitialInterestRateReason, setSavedInitialInterestRateReason] =
-    useState("");
   const [isInitialInterestRateEditing, setIsInitialInterestRateEditing] =
     useState(false);
-  const [selectedMortgageOption, setSelectedMortgageOption] =
-    useState<React.ReactNode | null>(null);
   const [isMortgageOptionOpen, setIsMortgageOptionOpen] = useState(false);
-  const [selectedArrangementOption, setSelectedArrangementOption] =
-    useState<React.ReactNode | null>(null);
   const [isArrangementOptionOpen, setIsArrangementOptionOpen] = useState(false);
-
-  const [mortgageTermAdd, setMortgageTermAdd] = useState("");
-  const [savedMortgageTerm, setSavedMortgageTerm] = useState("");
   const [isMortgageTermEditing, setIsMortgageTermEditing] = useState(false);
-
-  const [selectedErcOption, setSelectedErcOption] =
-    useState<React.ReactNode | null>(null);
   const [isErcOptionOpen, setIsErcOptionOpen] = useState(false);
-  const [selectedErcMeaningOption, setSelectedErcMeaningOption] =
-    useState<React.ReactNode | null>(null);
   const [isErcMeaningOptionOpen, setIsErcMeaningOptionOpen] = useState(false);
-  const [selectedErcWhyOption, setSelectedErcWhyOption] =
-    useState<React.ReactNode | null>(null);
   const [isErcWhyOptionOpen, setIsErcWhyOptionOpen] = useState(false);
-  const [selectedPortableOption, setSelectedPortableOption] =
-    useState<React.ReactNode | null>(null);
   const [isPortableOptionOpen, setIsPortableOptionOpen] = useState(false);
-  const [selectedPortableMeaningOption, setSelectedPortableMeaningOption] =
-    useState<React.ReactNode | null>(null);
   const [isPortableMeaningOptionOpen, setIsPortableMeaningOptionOpen] =
     useState(false);
-
-  const [selectedPortableWhyOption, setSelectedPortableWhyOption] = useState<
-    number | null
-  >(null);
   const [isPortableWhyOptionOpen, setIsPortableWhyOptionOpen] = useState(false);
-
-  const [portableWhyReason, setPortableWhyReason] = useState("");
-  const [savedPortableWhyReason, setSavedPortableWhyReason] = useState("");
   const [isPortableWhyEditing, setIsPortableWhyEditing] = useState(false);
-  const [selectedRateSwitchOption, setSelectedRateSwitchOption] = useState<
-    number | null
-  >(null);
   const [isRateSwitchOptionOpen, setIsRateSwitchOptionOpen] = useState(false);
-  const [selectedProtectionOption, setSelectedProtectionOption] = useState<
-    number | null
-  >(null);
   const [isProtectionOptionOpen, setIsProtectionOptionOpen] = useState(false);
-
-  const [protectionReason, setProtectionReason] = useState("");
-  const [savedProtectionReason, setSavedProtectionReason] = useState("");
   const [isProtectionEditing, setIsProtectionEditing] = useState(false);
-  const [selectedHomeInsuranceOption, setSelectedHomeInsuranceOption] =
-    useState<React.ReactNode | null>(null);
   const [isHomeInsuranceOptionOpen, setIsHomeInsuranceOptionOpen] =
     useState(false);
 
+  // ══════════════════════════════════════════════════════════
+  // LOCAL DRAFT STATES
+  // These hold the in-progress textarea value while editing.
+  // On Save → pushed to parent via onFormChange.
+  // On Cancel → reset back to formValues (the last saved value).
+  // ══════════════════════════════════════════════════════════
+  const [lenderDraft, setLenderDraft] = useState("");
+  const [interestRateDraft, setInterestRateDraft] = useState("");
+  const [initialInterestRateDraft, setInitialInterestRateDraft] = useState("");
+  const [mortgageTermDraft, setMortgageTermDraft] = useState("");
+  const [portableWhyDraft, setPortableWhyDraft] = useState("");
+  const [protectionDraft, setProtectionDraft] = useState("");
+
+  // ══════════════════════════════════════════════════════════
+  // DROPDOWN OPTION LISTS
+  // ══════════════════════════════════════════════════════════
+  const mortgageOptions: { value: string; label: React.ReactNode }[] = [
+    {
+      value: "HOME_IMPROVEMENTS",
+      label:
+        "Your mortgage includes additional funds required for the home improvements detailed at the beginning of this letter.",
+    },
+    {
+      value: "DEBT_REPAYMENT",
+      label:
+        "Your mortgage includes additional funds to repay debts. I have explained the disadvantages to adding debts to your mortgage in the 'important information' section of this letter. Please read this carefully.",
+    },
+    {
+      value: "OTHER_REASON",
+      label:
+        "Your mortgage includes additional funds as per the reasons stated at the beginning of this letter.",
+    },
+    {
+      value: "EQUAL_OUTSTANDING",
+      label:
+        "The mortgage amount I am recommending is equal to what is currently outstanding on the mortgage.",
+    },
+    {
+      value: "LESS_THAN_OUTSTANDING",
+      label: (
+        <>
+          The mortgage amount is less than what you currently have outstanding
+          on your mortgage, this is because you are making an overpayment of{" "}
+          <span style={{ color: blue }}>{mortgageAmount}</span>.
+        </>
+      ),
+    },
+    {
+      value: "PURCHASE_MINUS_DEPOSIT",
+      label:
+        "Your mortgage is equal to the purchase price of the property, minus your deposit.",
+    },
+  ];
+
+  // ── Helpers: find full option object from stored .value string ──
+  // Used to re-hydrate dropdown display label from formValues on page load
+  const selectedMortgageOption =
+    mortgageOptions.find((o) => o.value === formValues.mortgage_amount_type) ??
+    null;
+  const selectedArrangementOption =
+    arrangementOptions.find(
+      (o) => o.value === formValues.arrangement_fee_type,
+    ) ?? null;
+  const selectedErcOption =
+    ercOptions.find(
+      (o) => o.value === formValues.early_repayment_charges_recommendation,
+    ) ?? null;
+  const selectedErcMeaningOption =
+    ercMeaningOptions.find(
+      (o) => o.value === formValues.early_repayment_charges_meaning,
+    ) ?? null;
+  const selectedErcWhyOption =
+    ercWhyOptions.find(
+      (o) => o.value === formValues.early_repayment_charges_reason,
+    ) ?? null;
+  const selectedPortableOption =
+    portableOptions.find(
+      (o) => o.value === formValues.portability_recommendation,
+    ) ?? null;
+  const selectedPortableMeaningOption =
+    portableMeaningOptions.find(
+      (o) => o.value === formValues.portability_meaning,
+    ) ?? null;
+  const selectedPortableWhyOption =
+    portableWhyOptionTemplates.find(
+      (o) => o.value === formValues.portability_reason,
+    ) ?? null;
+  const selectedRateSwitchOption =
+    rateSwitchOptions.find(
+      (o) => o.value === formValues.residential_mortgages_type,
+    ) ?? null;
+  const selectedProtectionOption =
+    protectionOptionTemplates.find(
+      (o) => o.value === formValues.protection,
+    ) ?? null;
+  const selectedHomeInsuranceOption =
+    homeInsuranceOptions.find((o) => o.value === formValues.home_insurance) ??
+    null;
+
+  // ══════════════════════════════════════════════════════════
+  // SAVE / CANCEL HANDLERS FOR TEXTAREA FIELDS
+  // ══════════════════════════════════════════════════════════
+
   const handleLenderSave = () => {
-    setSavedLenderReason(lenderReason);
+    onFormChange({ lender_text: lenderDraft });
     setIsLenderEditing(false);
   };
-
   const handleLenderCancel = () => {
-    setLenderReason(savedLenderReason);
+    setLenderDraft(formValues.lender_text ?? "");
     setIsLenderEditing(false);
+  };
+  const startLenderEdit = () => {
+    setLenderDraft(formValues.lender_text ?? "");
+    setIsLenderEditing(true);
   };
 
   const handleInterestRateSave = () => {
-    setSavedInterestRateReason(interestRateReason);
+    onFormChange({ initial_interest_rate_text: interestRateDraft });
     setIsInterestRateEditing(false);
   };
-
   const handleInterestRateCancel = () => {
-    setInterestRateReason(savedInterestRateReason);
+    setInterestRateDraft(formValues.initial_interest_rate_text ?? "");
     setIsInterestRateEditing(false);
+  };
+  const startInterestRateEdit = () => {
+    setInterestRateDraft(formValues.initial_interest_rate_text ?? "");
+    setIsInterestRateEditing(true);
   };
 
   const handleInitialInterestRateSave = () => {
-    setSavedInitialInterestRateReason(initialInterestRateReason);
+    onFormChange({
+      initial_interest_rate_deal_period_text: initialInterestRateDraft,
+    });
     setIsInitialInterestRateEditing(false);
   };
-
   const handleInitialInterestRateCancel = () => {
-    setInitialInterestRateReason(savedInitialInterestRateReason);
+    setInitialInterestRateDraft(
+      formValues.initial_interest_rate_deal_period_text ?? "",
+    );
     setIsInitialInterestRateEditing(false);
+  };
+  const startInitialInterestRateEdit = () => {
+    setInitialInterestRateDraft(
+      formValues.initial_interest_rate_deal_period_text ?? "",
+    );
+    setIsInitialInterestRateEditing(true);
   };
 
   const handleMortgageTermSave = () => {
-    setSavedMortgageTerm(mortgageTermAdd);
+    onFormChange({ repayment_method_why_text: mortgageTermDraft });
     setIsMortgageTermEditing(false);
   };
-
   const handleMortgageTermCancel = () => {
-    setMortgageTermAdd(savedMortgageTerm);
+    setMortgageTermDraft(formValues.repayment_method_why_text ?? "");
     setIsMortgageTermEditing(false);
+  };
+  const startMortgageTermEdit = () => {
+    setMortgageTermDraft(formValues.repayment_method_why_text ?? "");
+    setIsMortgageTermEditing(true);
   };
 
   const handlePortableWhySave = () => {
-    setSavedPortableWhyReason(portableWhyReason);
+    onFormChange({ portability_suggestion: portableWhyDraft });
     setIsPortableWhyEditing(false);
   };
-
   const handlePortableWhyCancel = () => {
-    setPortableWhyReason(savedPortableWhyReason);
+    setPortableWhyDraft(formValues.portability_suggestion ?? "");
     setIsPortableWhyEditing(false);
   };
-
-  const protectionOptionsWithReason = [1, 2];
+  const startPortableWhyEdit = () => {
+    setPortableWhyDraft(formValues.portability_suggestion ?? "");
+    setIsPortableWhyEditing(true);
+  };
 
   const handleProtectionSave = () => {
-    setSavedProtectionReason(protectionReason);
+    onFormChange({ protection_reason: protectionDraft });
     setIsProtectionEditing(false);
   };
-
   const handleProtectionCancel = () => {
-    setProtectionReason(savedProtectionReason);
+    setProtectionDraft(formValues.protection_reason ?? "");
     setIsProtectionEditing(false);
   };
+  const startProtectionEdit = () => {
+    setProtectionDraft(formValues.protection_reason ?? "");
+    setIsProtectionEditing(true);
+  };
 
-  const transactionTypes = ["purchase", "remortgage", "product transfer"];
-
-  const mortgageOptions = [
-    "Your mortgage includes additional funds required for the home improvements detailed at the beginning of this letter.",
-    "Your mortgage includes additional funds to repay debts. I have explained the disadvantages to adding debts to your mortgage in the 'important information' section of this letter. Please read this carefully.",
-    "Your mortgage includes additional funds as per the reasons stated at the beginning of this letter.",
-    "The mortgage amount I am recommending is equal to what is currently outstanding on the mortgage.",
-    <>
-      The mortgage amount is less than what you currently have outstanding on
-      your mortgage, this is because you are making an overpayment of{" "}
-      <span style={{ color: blue }}>{mortgageAmount}</span>.
-    </>,
-    "Your mortgage is equal to the purchase price of the property, minus your deposit.",
-  ];
-
-  const arrangementOptions = [
-    "You have chosen to add the arrangement fee to your mortgage. This will mean you incur interest on this amount for the duration of the mortgage. The mortgage illustration I have provided contains further details.",
-    "Your preference was to pay the arrangement fee up front therefore, no fees were added to the loan.",
-    "The recommended mortgage does not have an arrangement fee.",
-  ];
-
-  const ercOptions = [
-    "Early repayment charges will apply during your initial rate period.",
-    "Early repayment charges do not apply to your mortgage.",
-  ];
-
-  const ercMeaningOptions = [
-    "Early repayment charges will apply during your initial rate period. Please see the mortgage illustration I provided for further details.",
-    "Early repayment charges do not apply to your mortgage.",
-  ];
-
-  const ercWhyOptions = [
-    "Charges will apply if you choose to repay all or part of your mortgage before the end of the initial deal period. Please see your mortgage illustration for details of any overpayment allowance.",
-    "There are no early repayment charges associated with your recommended mortgage deal. However, the lender may charge an administration fee.",
-    "You have no intention of moving or repaying the mortgage in part or in full during the initial deal period, so are happy to accept that the product has early repayment charges, to secure the deal.",
-    "It was your preference to have the flexibility to repay the mortgage in part or in full during the initial deal period, without incurring early repayment charges for doing so.",
-  ];
-
-  const portableOptions = [
-    "Your mortgage is portable",
-    "Your mortgage is not portable",
-  ];
-
-  const portableMeaningOptions = [
-    "Subject to lender agreement at the time, you may be able to transfer the mortgage to another property if you move home.",
-    "If you move home, you will not be able to transfer the mortgage to a new property, you will need to repay it.",
-  ];
-
-  const portableWhyOptionTemplates = [
-    "I recommended a mortgage which is portable because",
-    "I recommended a mortgage which is not portable because",
-  ];
-
-  const rateSwitchOptions = [
-    "Option 1 – Customer's responsibility",
-    "Option 2 – AR informal / non-binding checks",
-    "Option 3 – Committed service",
-  ];
-
-  const protectionOptionTemplates = [
-    "I recommend you seek advice from a specialist protection advisor.",
-    "You decided not to accept my protection recommendations because",
-    "I am not recommending you take out any new protection policies because",
-    "You will receive a further recommendation letter from me relating to the protection advice I have given.",
-    "It is important we discuss protecting your mortgage & finances, please confirm when you are available to do so.",
-  ];
-
-  const homeInsuranceOptions = [
-    "You will receive a further recommendation letter from me relating to your home insurance.",
-    "It is important we discuss your home insurance before exchange of contracts, please confirm when you are available to do so.",
-    "You have confirmed that you would prefer to arrange your own cover and do not need my advice on this matter.",
-    "I recommend you seek advice from a specialist for this cover.",
-  ];
-
+  // ══════════════════════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════════════════════
   return (
     <>
       {/* ══════════════════════════════
@@ -372,48 +404,20 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <p>
         Dear <span style={{ color: blue }}>{allApplicantNames}</span>,
       </p>
-
       <p>
         This letter explains the advice I have given you regarding your mortgage
         following our recent discussions about your needs and circumstances.
       </p>
-
       <p>
         Please take the time to read it carefully, alongside all other documents
         relating to the mortgage, if you need clarification on anything, please
         contact me and we can arrange a time to discuss any questions or queries
         that you have.
       </p>
-
       <p>
         During our discussion you asked me to provide advice on your{" "}
-        <Dropdown
-          isOpen={isTransactionTypeOpen}
-          toggle={() => setIsTransactionTypeOpen((prev) => !prev)}
-          className="d-inline-block"
-        >
-          <DropdownToggle
-            tag="span"
-            style={{
-              color: "#6a1b9a",
-              cursor: "pointer",
-              textDecoration: "underline",
-            }}
-          >
-            {selectedTransactionType ?? "(select type...)"}
-          </DropdownToggle>
-          <DropdownMenu>
-            {transactionTypes.map((type, index) => (
-              <DropdownItem
-                key={index}
-                onClick={() => setSelectedTransactionType(type)}
-              >
-                {type}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>{" "}
-        of <strong style={{ color: blue }}>{propertyAddress}</strong>.
+        <span style={{ color: blue }}>{mortgageType}</span> of{" "}
+        <strong style={{ color: blue }}>{propertyAddress}</strong>.
       </p>
 
       <div className="mb-3">
@@ -447,7 +451,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           RECOMMENDATION SUMMARY TABLE
       ══════════════════════════════ */}
       <SectionHeading>What have I recommended and why?</SectionHeading>
-
       <p>I have recommended the following mortgage:</p>
 
       <Table bordered responsive size="sm" className="mb-3">
@@ -489,7 +492,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           FEATURES TABLE
       ══════════════════════════════ */}
       <SectionHeading>What features were recommended and why?</SectionHeading>
-
       <p>
         The main features of the mortgage and the reasons for my recommendation
         are explained in the table below.
@@ -511,53 +513,51 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td style={{ color: blue }}>{lender}</td>
             <td>This is the lender who will provide your mortgage.</td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              <span className="">
-                I have recommended <strong>{lender}</strong> because{" "}
-                {isLenderEditing ? (
-                  <span className="d-block w-100 mt-1">
-                    <Input
-                      type="textarea"
-                      rows={5}
-                      value={lenderReason}
-                      onChange={(e) => setLenderReason(e.target.value)}
-                      placeholder="Enter your reason..."
-                      autoFocus
-                      className="w-100 p-1"
-                    />
-                    <div className="d-flex gap-2 mt-2">
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleLenderSave}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleLenderCancel}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </span>
-                ) : (
-                  <span
-                    className="d-inline text-success"
-                    style={{
-                      cursor: "pointer",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                    }}
-                    onClick={() => setIsLenderEditing(true)}
-                    title="Click to edit"
-                  >
-                    {savedLenderReason || "click to add reason..."}
-                  </span>
-                )}
-              </span>
+              I have recommended <strong>{lender}</strong> because{" "}
+              {isLenderEditing ? (
+                <span className="d-block w-100 mt-1">
+                  <Input
+                    type="textarea"
+                    rows={5}
+                    value={lenderDraft}
+                    onChange={(e) => setLenderDraft(e.target.value)}
+                    placeholder="Enter your reason..."
+                    autoFocus
+                    className="w-100 p-1"
+                  />
+                  <div className="d-flex gap-2 mt-2">
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleLenderSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleLenderCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </span>
+              ) : (
+                <span
+                  className="d-inline text-success"
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={startLenderEdit}
+                  title="Click to edit"
+                >
+                  {formValues.lender_text || "click to add reason..."}
+                </span>
+              )}
             </td>
           </tr>
 
@@ -567,61 +567,60 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td style={{ color: blue }}>{rateType}</td>
             <td>Your payments will not change during the initial period.</td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              <span className="">
-                You wanted the certainty of knowing exactly what your monthly
-                payments will be because{" "}
-                {isInterestRateEditing ? (
-                  <span className="d-block w-100 mt-1">
-                    <Input
-                      type="textarea"
-                      rows={5}
-                      value={interestRateReason}
-                      onChange={(e) => setInterestRateReason(e.target.value)}
-                      placeholder="Enter your reason..."
-                      autoFocus
-                      className="w-100 p-1"
-                    />
-                    <div className="d-flex gap-2 mt-2">
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleInterestRateSave}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleInterestRateCancel}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </span>
-                ) : (
-                  <span
-                    className="d-inline text-success"
-                    style={{
-                      cursor: "pointer",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                    }}
-                    onClick={() => setIsInterestRateEditing(true)}
-                    title="Click to edit"
-                  >
-                    {savedInterestRateReason || "click to add reason..."}
-                  </span>
-                )}
-                <span className="mt-2">
-                  <AdvisorNote>
-                    (there needs to be a &lsquo;why&rsquo; based answer for all
-                    justifications. The client wants the payments to be the same
-                    each month, isn&rsquo;t enough by itself, the why answer
-                    can&rsquo;t just be assumed we need to document it.)
-                  </AdvisorNote>
+              You wanted the certainty of knowing exactly what your monthly
+              payments will be because{" "}
+              {isInterestRateEditing ? (
+                <span className="d-block w-100 mt-1">
+                  <Input
+                    type="textarea"
+                    rows={5}
+                    value={interestRateDraft}
+                    onChange={(e) => setInterestRateDraft(e.target.value)}
+                    placeholder="Enter your reason..."
+                    autoFocus
+                    className="w-100 p-1"
+                  />
+                  <div className="d-flex gap-2 mt-2">
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleInterestRateSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleInterestRateCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
                 </span>
+              ) : (
+                <span
+                  className="d-inline text-success"
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={startInterestRateEdit}
+                  title="Click to edit"
+                >
+                  {formValues.initial_interest_rate_text ||
+                    "click to add reason..."}
+                </span>
+              )}
+              <span className="mt-2">
+                <AdvisorNote>
+                  (there needs to be a &lsquo;why&rsquo; based answer for all
+                  justifications. The client wants the payments to be the same
+                  each month, isn&rsquo;t enough by itself, the why answer
+                  can&rsquo;t just be assumed we need to document it.)
+                </AdvisorNote>
               </span>
             </td>
           </tr>
@@ -658,56 +657,55 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 goals &amp; plans that are important in advising what is the
                 most suitable deal period for you.
               </p>
-              <span className="">
-                I recommend a period of 5 years because{" "}
-                {isInitialInterestRateEditing ? (
-                  <span className="d-block w-100 mt-1">
-                    <Input
-                      type="textarea"
-                      rows={5}
-                      value={initialInterestRateReason}
-                      onChange={(e) =>
-                        setInitialInterestRateReason(e.target.value)
-                      }
-                      placeholder="Enter your reason..."
-                      autoFocus
-                      className="w-100 p-1"
-                    />
-                    <div className="d-flex gap-2 mt-2">
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleInitialInterestRateSave}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleInitialInterestRateCancel}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </span>
-                ) : (
-                  <span
-                    className="d-inline text-success"
-                    style={{
-                      cursor: "pointer",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                    }}
-                    onClick={() => setIsInitialInterestRateEditing(true)}
-                    title="Click to edit"
-                  >
-                    {savedInitialInterestRateReason || "click to add reason..."}
-                  </span>
-                )}
-              </span>
-
+              I recommend a period of{" "}
+              <span style={{ color: blue }}>{mortgageTerm}</span> because{" "}
+              {isInitialInterestRateEditing ? (
+                <span className="d-block w-100 mt-1">
+                  <Input
+                    type="textarea"
+                    rows={5}
+                    value={initialInterestRateDraft}
+                    onChange={(e) =>
+                      setInitialInterestRateDraft(e.target.value)
+                    }
+                    placeholder="Enter your reason..."
+                    autoFocus
+                    className="w-100 p-1"
+                  />
+                  <div className="d-flex gap-2 mt-2">
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleInitialInterestRateSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleInitialInterestRateCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </span>
+              ) : (
+                <span
+                  className="d-inline text-success"
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={startInitialInterestRateEdit}
+                  title="Click to edit"
+                >
+                  {formValues.initial_interest_rate_deal_period_text ||
+                    "click to add reason..."}
+                </span>
+              )}
               <span className="mt-2">
                 <AdvisorNote>
                   (Always discount <strong>both</strong> shorter and longer term
@@ -749,7 +747,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td>
               <Dropdown
                 isOpen={isMortgageOptionOpen}
-                toggle={() => setIsMortgageOptionOpen((prev) => !prev)}
+                toggle={() => setIsMortgageOptionOpen((p) => !p)}
               >
                 <DropdownToggle
                   color="light"
@@ -761,7 +759,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   }}
                   caret
                 >
-                  {selectedMortgageOption ?? (
+                  {selectedMortgageOption ? (
+                    selectedMortgageOption.label
+                  ) : (
                     <span className="text-muted fst-italic">
                       Click to choose an option...
                     </span>
@@ -771,16 +771,16 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   className="w-100"
                   style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                 >
-                  {mortgageOptions.map((option, index) => (
+                  {mortgageOptions.map((option) => (
                     <DropdownItem
-                      key={index}
-                      onClick={() => {
-                        setSelectedMortgageOption(option);
-                      }}
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({ mortgage_amount_type: option.value })
+                      }
                       className="text-wrap"
                     >
                       <span className="me-1 fw-bolder">•</span>
-                      {option}
+                      {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -803,7 +803,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td>
               <Dropdown
                 isOpen={isArrangementOptionOpen}
-                toggle={() => setIsArrangementOptionOpen((prev) => !prev)}
+                toggle={() => setIsArrangementOptionOpen((p) => !p)}
               >
                 <DropdownToggle
                   color="light"
@@ -815,7 +815,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   }}
                   caret
                 >
-                  {selectedArrangementOption ?? (
+                  {selectedArrangementOption ? (
+                    selectedArrangementOption.label
+                  ) : (
                     <span className="text-muted fst-italic">
                       Click to choose an option...
                     </span>
@@ -825,16 +827,16 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   className="w-100"
                   style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                 >
-                  {arrangementOptions.map((option, index) => (
+                  {arrangementOptions.map((option) => (
                     <DropdownItem
-                      key={index}
-                      onClick={() => {
-                        setSelectedArrangementOption(option);
-                      }}
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({ arrangement_fee_type: option.value })
+                      }
                       className="text-wrap"
                     >
                       <span className="me-1 fw-bolder">•</span>
-                      {option}
+                      {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -855,53 +857,52 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               This is the term over which you will repay back your mortgage.
             </td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              <span className="">
-                The term has been recommended because{" "}
-                {isMortgageTermEditing ? (
-                  <span className="d-block w-100 mt-1">
-                    <Input
-                      type="textarea"
-                      rows={5}
-                      value={mortgageTermAdd}
-                      onChange={(e) => setMortgageTermAdd(e.target.value)}
-                      placeholder="Enter your reason..."
-                      autoFocus
-                      className="w-100 p-1"
-                    />
-                    <div className="d-flex gap-2 mt-2">
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleMortgageTermSave}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        color="light"
-                        className="text-dark"
-                        size="sm"
-                        onClick={handleMortgageTermCancel}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </span>
-                ) : (
-                  <span
-                    className="d-inline text-success"
-                    style={{
-                      cursor: "pointer",
-                      whiteSpace: "pre-wrap",
-                      wordBreak: "break-word",
-                    }}
-                    onClick={() => setIsMortgageTermEditing(true)}
-                    title="Click to edit"
-                  >
-                    {savedMortgageTerm || "click to add reason..."}
-                  </span>
-                )}
-              </span>
+              The term has been recommended because{" "}
+              {isMortgageTermEditing ? (
+                <span className="d-block w-100 mt-1">
+                  <Input
+                    type="textarea"
+                    rows={5}
+                    value={mortgageTermDraft}
+                    onChange={(e) => setMortgageTermDraft(e.target.value)}
+                    placeholder="Enter your reason..."
+                    autoFocus
+                    className="w-100 p-1"
+                  />
+                  <div className="d-flex gap-2 mt-2">
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleMortgageTermSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleMortgageTermCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </span>
+              ) : (
+                <span
+                  className="d-inline text-success"
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={startMortgageTermEdit}
+                  title="Click to edit"
+                >
+                  {formValues.repayment_method_why_text ||
+                    "click to add reason..."}
+                </span>
+              )}
               <span className="mt-2">
                 <AdvisorNote>
                   (If past retirement age, fully cover the reason why,
@@ -915,9 +916,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           <tr>
             <td className="fw-bold">Early Repayment Charges</td>
             <td>
+              {/* Recommendation column — which ERC option applies */}
               <Dropdown
                 isOpen={isErcOptionOpen}
-                toggle={() => setIsErcOptionOpen((prev) => !prev)}
+                toggle={() => setIsErcOptionOpen((p) => !p)}
               >
                 <DropdownToggle
                   color="light"
@@ -929,7 +931,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   }}
                   caret
                 >
-                  {selectedErcOption ?? (
+                  {selectedErcOption ? (
+                    selectedErcOption.label
+                  ) : (
                     <span className="text-muted fst-italic">
                       Click to choose an option...
                     </span>
@@ -939,23 +943,28 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   className="w-100"
                   style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                 >
-                  {ercOptions.map((option, index) => (
+                  {ercOptions.map((option) => (
                     <DropdownItem
-                      key={index}
-                      onClick={() => setSelectedErcOption(option)}
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({
+                          early_repayment_charges_recommendation: option.value,
+                        })
+                      }
                       className="text-wrap"
                     >
                       <span className="me-1 fw-bolder">•</span>
-                      {option}
+                      {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
               </Dropdown>
             </td>
             <td>
+              {/* What does this mean column */}
               <Dropdown
                 isOpen={isErcMeaningOptionOpen}
-                toggle={() => setIsErcMeaningOptionOpen((prev) => !prev)}
+                toggle={() => setIsErcMeaningOptionOpen((p) => !p)}
               >
                 <DropdownToggle
                   color="light"
@@ -967,7 +976,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   }}
                   caret
                 >
-                  {selectedErcMeaningOption ?? (
+                  {selectedErcMeaningOption ? (
+                    selectedErcMeaningOption.label
+                  ) : (
                     <span className="text-muted fst-italic">
                       Click to choose an option...
                     </span>
@@ -977,14 +988,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   className="w-100"
                   style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                 >
-                  {ercMeaningOptions.map((option, index) => (
+                  {ercMeaningOptions.map((option) => (
                     <DropdownItem
-                      key={index}
-                      onClick={() => setSelectedErcMeaningOption(option)}
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({
+                          early_repayment_charges_meaning: option.value,
+                        })
+                      }
                       className="text-wrap"
                     >
                       <span className="me-1 fw-bolder">•</span>
-                      {option}
+                      {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -995,9 +1010,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               </p>
             </td>
             <td>
+              {/* Why recommended column */}
               <Dropdown
                 isOpen={isErcWhyOptionOpen}
-                toggle={() => setIsErcWhyOptionOpen((prev) => !prev)}
+                toggle={() => setIsErcWhyOptionOpen((p) => !p)}
               >
                 <DropdownToggle
                   color="light"
@@ -1009,7 +1025,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   }}
                   caret
                 >
-                  {selectedErcWhyOption ?? (
+                  {selectedErcWhyOption ? (
+                    selectedErcWhyOption.label
+                  ) : (
                     <span className="text-muted fst-italic">
                       Click to choose an option...
                     </span>
@@ -1019,14 +1037,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   className="w-100"
                   style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                 >
-                  {ercWhyOptions.map((option, index) => (
+                  {ercWhyOptions.map((option) => (
                     <DropdownItem
-                      key={index}
-                      onClick={() => setSelectedErcWhyOption(option)}
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({
+                          early_repayment_charges_reason: option.value,
+                        })
+                      }
                       className="text-wrap"
                     >
                       <span className="me-1 fw-bolder">•</span>
-                      {option}
+                      {option.label}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -1038,9 +1060,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           <tr>
             <td className="fw-bold">Portability</td>
             <td>
+              {/* Recommendation — portable yes/no */}
               <Dropdown
                 isOpen={isPortableOptionOpen}
-                toggle={() => setIsPortableOptionOpen((prev) => !prev)}
+                toggle={() => setIsPortableOptionOpen((p) => !p)}
               >
                 <DropdownToggle
                   color="light"
@@ -1052,85 +1075,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   }}
                   caret
                 >
-                  {selectedPortableOption ?? (
-                    <span className="text-muted fst-italic">
-                      Click to choose an option...
-                    </span>
-                  )}
-                </DropdownToggle>
-                <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
-                >
-                  {portableOptions.map((option, index) => (
-                    <DropdownItem
-                      key={index}
-                      onClick={() => setSelectedPortableOption(option)}
-                      className="text-wrap"
-                    >
-                      <span className="me-1 fw-bolder">•</span>
-                      {option}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
-            </td>
-            <td>
-              <Dropdown
-                isOpen={isPortableMeaningOptionOpen}
-                toggle={() => setIsPortableMeaningOptionOpen((prev) => !prev)}
-              >
-                <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
-                  style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
-                  }}
-                  caret
-                >
-                  {selectedPortableMeaningOption ?? (
-                    <span className="text-muted fst-italic">
-                      Click to choose an option...
-                    </span>
-                  )}
-                </DropdownToggle>
-                <DropdownMenu
-                  className="w-100"
-                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
-                >
-                  {portableMeaningOptions.map((option, index) => (
-                    <DropdownItem
-                      key={index}
-                      onClick={() => setSelectedPortableMeaningOption(option)}
-                      className="text-wrap"
-                    >
-                      <span className="me-1 fw-bolder">•</span>
-                      {option}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
-            </td>
-            <td>
-              {/* Dropdown */}
-              <Dropdown
-                isOpen={isPortableWhyOptionOpen}
-                toggle={() => setIsPortableWhyOptionOpen((prev) => !prev)}
-              >
-                <DropdownToggle
-                  color="light"
-                  className="text-start w-100 border"
-                  style={{
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    lineHeight: "1.4",
-                  }}
-                  caret
-                >
-                  {selectedPortableWhyOption !== null ? (
-                    portableWhyOptionTemplates[selectedPortableWhyOption]
+                  {selectedPortableOption ? (
+                    selectedPortableOption.label
                   ) : (
                     <span className="text-muted fst-italic">
                       Click to choose an option...
@@ -1141,17 +1087,106 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   className="w-100"
                   style={{ whiteSpace: "normal", wordBreak: "break-word" }}
                 >
-                  {portableWhyOptionTemplates.map((option, index) => (
+                  {portableOptions.map((option) => (
                     <DropdownItem
-                      key={index}
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({
+                          portability_recommendation: option.value,
+                        })
+                      }
+                      className="text-wrap"
+                    >
+                      <span className="me-1 fw-bolder">•</span>
+                      {option.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+            </td>
+            <td>
+              {/* What does this mean */}
+              <Dropdown
+                isOpen={isPortableMeaningOptionOpen}
+                toggle={() => setIsPortableMeaningOptionOpen((p) => !p)}
+              >
+                <DropdownToggle
+                  color="light"
+                  className="text-start w-100 border"
+                  style={{
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                    lineHeight: "1.4",
+                  }}
+                  caret
+                >
+                  {selectedPortableMeaningOption ? (
+                    selectedPortableMeaningOption.label
+                  ) : (
+                    <span className="text-muted fst-italic">
+                      Click to choose an option...
+                    </span>
+                  )}
+                </DropdownToggle>
+                <DropdownMenu
+                  className="w-100"
+                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                >
+                  {portableMeaningOptions.map((option) => (
+                    <DropdownItem
+                      key={option.value}
+                      onClick={() =>
+                        onFormChange({ portability_meaning: option.value })
+                      }
+                      className="text-wrap"
+                    >
+                      <span className="me-1 fw-bolder">•</span>
+                      {option.label}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+            </td>
+            <td>
+              {/* Why recommended — dropdown + optional text reason */}
+              <Dropdown
+                isOpen={isPortableWhyOptionOpen}
+                toggle={() => setIsPortableWhyOptionOpen((p) => !p)}
+              >
+                <DropdownToggle
+                  color="light"
+                  className="text-start w-100 border"
+                  style={{
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                    lineHeight: "1.4",
+                  }}
+                  caret
+                >
+                  {selectedPortableWhyOption ? (
+                    selectedPortableWhyOption.label
+                  ) : (
+                    <span className="text-muted fst-italic">
+                      Click to choose an option...
+                    </span>
+                  )}
+                </DropdownToggle>
+                <DropdownMenu
+                  className="w-100"
+                  style={{ whiteSpace: "normal", wordBreak: "break-word" }}
+                >
+                  {portableWhyOptionTemplates.map((option) => (
+                    <DropdownItem
+                      key={option.value}
                       onClick={() => {
-                        setSelectedPortableWhyOption(index);
+                        onFormChange({ portability_reason: option.value });
                         setIsPortableWhyEditing(false);
                       }}
                       className="text-wrap"
                     >
                       <span className="me-1 fw-bolder">•</span>
-                      {option} <span style={{ color: blue }}>[reason]</span>
+                      {option.label}{" "}
+                      <span style={{ color: blue }}>[reason]</span>
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
@@ -1160,14 +1195,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               {/* Reason field — only shown after an option is selected */}
               {selectedPortableWhyOption !== null && (
                 <span className="d-block mt-2">
-                  {portableWhyOptionTemplates[selectedPortableWhyOption]}{" "}
+                  {selectedPortableWhyOption.label}{" "}
                   {isPortableWhyEditing ? (
                     <span className="d-block w-100 mt-1">
                       <Input
                         type="textarea"
                         rows={5}
-                        value={portableWhyReason}
-                        onChange={(e) => setPortableWhyReason(e.target.value)}
+                        value={portableWhyDraft ?? ""}
+                        onChange={(e) => setPortableWhyDraft(e.target.value)}
                         placeholder="Enter your reason..."
                         autoFocus
                         className="w-100 p-1"
@@ -1199,10 +1234,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
                       }}
-                      onClick={() => setIsPortableWhyEditing(true)}
+                      onClick={startPortableWhyEdit}
                       title="Click to edit"
                     >
-                      {savedPortableWhyReason || "click to add reason..."}
+                      {formValues.portability_suggestion ||
+                        "click to add reason..."}
                     </span>
                   )}
                 </span>
@@ -1226,10 +1262,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           allowed post application, select one of the following 3 paragraphs:
         </p>
 
-        {/* Dropdown */}
         <Dropdown
           isOpen={isRateSwitchOptionOpen}
-          toggle={() => setIsRateSwitchOptionOpen((prev) => !prev)}
+          toggle={() => setIsRateSwitchOptionOpen((p) => !p)}
         >
           <DropdownToggle
             color="light"
@@ -1241,11 +1276,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             }}
             caret
           >
-            {selectedRateSwitchOption !== null ? (
-              rateSwitchOptions[selectedRateSwitchOption]
+            {selectedRateSwitchOption ? (
+              selectedRateSwitchOption.displayLabel
             ) : (
               <span className="text-muted fst-italic">
-                Select rate-switch option...
+                Select rate switch option...
               </span>
             )}
           </DropdownToggle>
@@ -1253,80 +1288,30 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             className="w-100"
             style={{ whiteSpace: "normal", wordBreak: "break-word" }}
           >
-            {rateSwitchOptions.map((option, index) => (
+            {rateSwitchOptions.map((option) => (
               <DropdownItem
-                key={index}
-                onClick={() => setSelectedRateSwitchOption(index)}
+                key={option.value}
+                onClick={() =>
+                  onFormChange({ residential_mortgages_type: option.value })
+                }
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
-                {option}
+                {option.displayLabel}
               </DropdownItem>
             ))}
           </DropdownMenu>
         </Dropdown>
 
-        {/* Selected option content */}
-        {selectedRateSwitchOption !== null && (
+        {selectedRateSwitchOption && (
           <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
-            {selectedRateSwitchOption === 0 && (
-              <>
-                <p className="fw-semibold mb-1">
-                  Option 1 – Customer&rsquo;s responsibility:
-                </p>
-                <p className="mb-0">
-                  The recommended lender offers the opportunity for you to
-                  switch to a lower, like-for-like mortgage deal, should one
-                  become available prior to the completion. However, the lender
-                  will <u>not</u> contact you to tell you if their rates reduce.
-                  You should review published rates periodically to check if
-                  they have reduced. Terms and conditions apply – including how
-                  far in advance of the completion date your lender needs to
-                  receive your instruction to change rate. Please ensure that
-                  you check these to avoid missing any potential rate change
-                  deadline.
-                </p>
-              </>
-            )}
-
-            {selectedRateSwitchOption === 1 && (
-              <>
-                <p className="fw-semibold mb-1">
-                  Option 2 – AR informal / non-binding checks:
-                </p>
-                <p className="mb-0">
-                  The recommended lender offers the opportunity for you to
-                  switch to a lower, like-for-like mortgage deal, should one
-                  become available prior to the completion. However, the lender
-                  will <u>not</u> contact you to tell you if their rates reduce.
-                  We will notify you <strong>if</strong> we identify that a
-                  reduced rate is available. We do not guarantee to identify
-                  every change in interest rates. It is important, therefore,
-                  that you also check the lenders rates periodically between now
-                  and the mortgage completion date. Please note that the timing
-                  of your completion date may mean there is a final date when
-                  changes to the rate can be made.
-                </p>
-              </>
-            )}
-
-            {selectedRateSwitchOption === 2 && (
-              <>
-                <p className="fw-semibold mb-1">
-                  Option 3 – Committed service:
-                </p>
-                <p className="mb-0">
-                  We will check the lender rates at least every{" "}
-                  <span style={{ color: blue }}>(period)</span> and we will
-                  notify you if we identify a lower interest rate. Please note
-                  that the timing of your completion date may mean there is a
-                  final date when changes can be made.
-                </p>
-              </>
-            )}
+            <p className="fw-semibold mb-1">
+              {selectedRateSwitchOption.displayLabel}
+            </p>
+            <p className="mb-0">{selectedRateSwitchOption.label}</p>
           </div>
         )}
-        {/* AdvisorNote always visible after any selection */}
+
         <div className="mt-2">
           <AdvisorNote>
             (if there is a charge associated with the service, outline what this
@@ -1341,13 +1326,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           WHAT ELSE DO YOU NEED TO KNOW?
       ══════════════════════════════ */}
       <SectionHeading>What else do you need to know?</SectionHeading>
-
       <p>
         The following section contains important additional information about
         the recommendations I have made. Where relevant, it also explains
         potential risks of the mortgage.
       </p>
-
       <AdvisorNote>
         (Include details here if initial recommendation was rejected by the
         customer(s). This should include information as to the initial
@@ -1355,7 +1338,6 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         recommendation and why it was felt the reasons for changing it were
         appropriate and suitable for the clients needs and preferences.)
       </AdvisorNote>
-
       <AdvisorNote>
         (Any additional risk warnings as detailed in the first page, are to be
         generated here.)
@@ -1379,10 +1361,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         were to suffer a critical illness or die during the{" "}
         <span style={{ color: blue }}>{mortgageTerm}</span> mortgage term.
       </p>
-      {/* Dropdown */}
+
       <Dropdown
         isOpen={isProtectionOptionOpen}
-        toggle={() => setIsProtectionOptionOpen((prev) => !prev)}
+        toggle={() => setIsProtectionOptionOpen((p) => !p)}
       >
         <DropdownToggle
           color="light"
@@ -1394,8 +1376,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           }}
           caret
         >
-          {selectedProtectionOption !== null ? (
-            protectionOptionTemplates[selectedProtectionOption]
+          {selectedProtectionOption ? (
+            selectedProtectionOption.label
           ) : (
             <span className="text-muted fst-italic">
               Click to choose an option...
@@ -1406,21 +1388,22 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           className="w-100"
           style={{ whiteSpace: "normal", wordBreak: "break-word" }}
         >
-          {protectionOptionTemplates.map((option, index) => (
+          {protectionOptionTemplates.map((option) => (
             <DropdownItem
-              key={index}
+              key={option.value}
               onClick={() => {
-                setSelectedProtectionOption(index);
-                // Reset reason when switching options
-                setProtectionReason("");
-                setSavedProtectionReason("");
+                onFormChange({
+                  protection: option.value,
+                  protection_reason: "",
+                });
+                setProtectionDraft("");
                 setIsProtectionEditing(false);
               }}
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
-              {option}{" "}
-              {protectionOptionsWithReason.includes(index) && (
+              {option.label}{" "}
+              {option.requiresReason && (
                 <span style={{ color: blue }}>[reason]</span>
               )}
             </DropdownItem>
@@ -1428,57 +1411,55 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
         </DropdownMenu>
       </Dropdown>
 
-      {/* Reason field — only for options that require a reason */}
-      {selectedProtectionOption !== null &&
-        protectionOptionsWithReason.includes(selectedProtectionOption) && (
-          <span className="d-block mt-2">
-            {protectionOptionTemplates[selectedProtectionOption]}{" "}
-            {isProtectionEditing ? (
-              <span className="d-block w-100 mt-1">
-                <Input
-                  type="textarea"
-                  rows={5}
-                  value={protectionReason}
-                  onChange={(e) => setProtectionReason(e.target.value)}
-                  placeholder="Enter your reason..."
-                  autoFocus
-                  className="w-100 p-1"
-                />
-                <div className="d-flex gap-2 mt-2">
-                  <Button
-                    color="light"
-                    className="text-dark"
-                    size="sm"
-                    onClick={handleProtectionSave}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    color="light"
-                    className="text-dark"
-                    size="sm"
-                    onClick={handleProtectionCancel}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </span>
-            ) : (
-              <span
-                className="d-inline text-success"
-                style={{
-                  cursor: "pointer",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                }}
-                onClick={() => setIsProtectionEditing(true)}
-                title="Click to edit"
-              >
-                {savedProtectionReason || "click to add reason..."}
-              </span>
-            )}
-          </span>
-        )}
+      {selectedProtectionOption?.requiresReason && (
+        <span className="d-block mt-2">
+          {selectedProtectionOption.label}{" "}
+          {isProtectionEditing ? (
+            <span className="d-block w-100 mt-1">
+              <Input
+                type="textarea"
+                rows={5}
+                value={protectionDraft}
+                onChange={(e) => setProtectionDraft(e.target.value)}
+                placeholder="Enter your reason..."
+                autoFocus
+                className="w-100 p-1"
+              />
+              <div className="d-flex gap-2 mt-2">
+                <Button
+                  color="light"
+                  className="text-dark"
+                  size="sm"
+                  onClick={handleProtectionSave}
+                >
+                  Save
+                </Button>
+                <Button
+                  color="light"
+                  className="text-dark"
+                  size="sm"
+                  onClick={handleProtectionCancel}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </span>
+          ) : (
+            <span
+              className="d-inline text-success"
+              style={{
+                cursor: "pointer",
+                whiteSpace: "pre-wrap",
+                wordBreak: "break-word",
+              }}
+              onClick={startProtectionEdit}
+              title="Click to edit"
+            >
+              {formValues.protection_reason || "click to add reason..."}
+            </span>
+          )}
+        </span>
+      )}
 
       <div className="mt-2">
         <AdvisorNote>
@@ -1511,7 +1492,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
 
       <Dropdown
         isOpen={isHomeInsuranceOptionOpen}
-        toggle={() => setIsHomeInsuranceOptionOpen((prev) => !prev)}
+        toggle={() => setIsHomeInsuranceOptionOpen((p) => !p)}
       >
         <DropdownToggle
           color="light"
@@ -1523,7 +1504,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           }}
           caret
         >
-          {selectedHomeInsuranceOption ?? (
+          {selectedHomeInsuranceOption ? (
+            selectedHomeInsuranceOption.label
+          ) : (
             <span className="text-muted fst-italic">
               Click to choose an option...
             </span>
@@ -1533,14 +1516,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           className="w-100"
           style={{ whiteSpace: "normal", wordBreak: "break-word" }}
         >
-          {homeInsuranceOptions.map((option, index) => (
+          {homeInsuranceOptions.map((option) => (
             <DropdownItem
-              key={index}
-              onClick={() => setSelectedHomeInsuranceOption(option)}
+              key={option.value}
+              onClick={() => onFormChange({ home_insurance: option.value })}
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
-              {option}
+              {option.label}
             </DropdownItem>
           ))}
         </DropdownMenu>

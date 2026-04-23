@@ -11,8 +11,8 @@ export const SuitabilityApi = baseApi.injectEndpoints({
     }),
     updateSuitability: builder.mutation({
       query: ({ case_alias, payload }) => ({
-        url: `/cases/${case_alias}/suitability/`,
-        method: "PUT",
+        url: `/cases/${case_alias}/suitability-letter/`,
+        method: "PATCH",
         body: payload,
       }),
       invalidatesTags: ["Suitability"],
