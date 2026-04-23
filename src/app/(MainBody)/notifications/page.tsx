@@ -6,6 +6,9 @@ import {
   useMakeAllNotificationsReadMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
+import type { Session } from "next-auth";
+import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TbRefresh } from "react-icons/tb";
@@ -28,10 +31,12 @@ export interface UINotification {
   is_read: boolean;
   read_at: string | null;
   created_at: string;
+  data?: Record<string, unknown>;
 }
 
 const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [sessionData, setSessionData] = useState<Session | null>(null);
   const pageSize = 12;
   const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
     useMakeAllNotificationsReadMutation();
@@ -42,10 +47,10 @@ const NotificationsPage = () => {
       refetchOnReconnect: true,
     });
 
-
   const {
     data: notifications,
     isLoading,
+    isFetching,
     isError,
     refetch,
   } = useGetNotificationsQuery(
@@ -57,6 +62,29 @@ const NotificationsPage = () => {
 
   const totalCount = notifications?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSession = async () => {
+      try {
+        const session = await getSession();
+        if (mounted) {
+          setSessionData(session);
+        }
+      } catch {
+        if (mounted) {
+          setSessionData(null);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const getTruncatedMessage = (message: string) => {
     const words = message.trim().split(/\s+/);
@@ -99,16 +127,20 @@ const NotificationsPage = () => {
                   color="outline-secondary"
                   size="sm"
                   onClick={() => refetch()}
-                  disabled={isLoading}
+                  disabled={isFetching}
                 >
                   <TbRefresh className="me-1" />
-                  Refresh
+                  {isFetching ? "Refreshing..." : "Refresh"}
                 </Button>
                 <Button
                   color="primary"
                   size="sm"
                   onClick={handleMakeAllRead}
-                  disabled={isLoading || isMarkingAllRead || unreadData?.unread_count === 0}
+                  disabled={
+                    isLoading ||
+                    isMarkingAllRead ||
+                    unreadData?.unread_count === 0
+                  }
                 >
                   {isMarkingAllRead ? "Reading..." : "Make All Read"}
                 </Button>
@@ -142,7 +174,7 @@ const NotificationsPage = () => {
                         className="list-group-item border-b-light-primary p-0 mb-3"
                       >
                         <Link
-                          href={`/notifications/${encodeURIComponent(item.id)}`}
+                          href={getNotificationTargetUrl(item, sessionData)}
                           className="text-decoration-none text-reset"
                         >
                           <div className="d-flex flex-column flex-sm-row justify-content-between gap-3 align-items-start">

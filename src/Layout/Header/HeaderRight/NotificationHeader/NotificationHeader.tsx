@@ -6,6 +6,8 @@ import {
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
+import type { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -20,6 +22,8 @@ type UINotification = {
   notification_type?: string;
   message: string;
   is_read: boolean;
+  dataType?: string;
+  dataAlias?: string;
 };
 
 const toSafeDateTime = (input?: string) => {
@@ -100,6 +104,10 @@ const normalizeNotification = (
     ),
     message: String(item.message ?? item.body ?? item.description ?? ""),
     is_read: item.is_read === true,
+    dataType:
+      typeof payloadData?.type === "string" ? payloadData.type : undefined,
+    dataAlias:
+      typeof payloadData?.alias === "string" ? payloadData.alias : undefined,
   };
 };
 
@@ -169,6 +177,7 @@ const NotificationHeader = () => {
   const [items, setItems] = useState<UINotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
+  const [sessionData, setSessionData] = useState<Session | null>(null);
   const wrapperRef = useRef<HTMLLIElement>(null);
 
   const { data: notificationsData, refetch: refetchNotifications } =
@@ -185,6 +194,29 @@ const NotificationHeader = () => {
 
   const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
     useMakeAllNotificationsReadMutation();
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSession = async () => {
+      try {
+        const session = await getSession();
+        if (mounted) {
+          setSessionData(session);
+        }
+      } catch {
+        if (mounted) {
+          setSessionData(null);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const list = readList(notificationsData);
@@ -480,7 +512,7 @@ const NotificationHeader = () => {
           {visibleNotifications.map((item) => (
             <li className="d-flex align-items-start" key={item.id}>
               <Link
-                href={`/notifications/${encodeURIComponent(item.id)}`}
+                href={getNotificationTargetUrl(item, sessionData)}
                 className="d-flex align-items-start text-decoration-none text-reset w-100"
                 onClick={() => {
                   setShow(false);
