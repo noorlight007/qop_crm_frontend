@@ -108,6 +108,12 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
       return;
     }
 
+    if (formData.files.length === 0) {
+      const msg = "Please attach at least one file";
+      setErrors((prev) => ({ ...prev, upload_files: msg }));
+      return;
+    }
+
     const submissionData = new FormData();
     submissionData.append("ticket_type", formData.ticket_type);
     submissionData.append("priority", formData.priority);
@@ -265,7 +271,9 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
           </FormGroup>
 
           <FormGroup>
-            <Label for="files">Attachments (optional)</Label>
+            <Label for="files">
+              Attachments<span className="text-danger">*</span>
+            </Label>
             <Input
               id="files"
               name="files"
@@ -324,23 +332,34 @@ const AddSupportTicketModal: React.FC<AddSupportTicketModalProps> = ({
         </Form>
 
         {/* Tips Section */}
-         {/* Tips Section */}
+        {/* Tips Section */}
         <div className="mt-3 p-3 border rounded bg-light-warning">
           <p className="fw-semibold text-primary mb-2 d-flex align-items-center gap-2">
-            <span>💡</span> To help us review your request quickly, please provide:
+            <span>💡</span> To help us review your request quickly, please
+            provide:
           </p>
           <ul className="mb-0 ps-3" style={{ listStyleType: "disc" }}>
             <li className="mb-1 small">
               <span className="fw-semibold">URL Link</span>
-              <span className="text-muted"> – Share the exact page URL related to your ticket.</span>
+              <span className="text-muted">
+                {" "}
+                – Share the exact page URL related to your ticket.
+              </span>
             </li>
             <li className="mb-1 small">
               <span className="fw-semibold">Screenshot</span>
-              <span className="text-muted"> – Attach a full-page screenshot. If possible, mark the exact point.</span>
+              <span className="text-muted">
+                {" "}
+                – Attach a full-page screenshot. If possible, mark the exact
+                point.
+              </span>
             </li>
             <li className="mb-0 small">
               <span className="fw-semibold">Description</span>
-              <span className="text-muted"> – Write a short and clear explanation.</span>
+              <span className="text-muted">
+                {" "}
+                – Write a short and clear explanation.
+              </span>
             </li>
           </ul>
         </div>
