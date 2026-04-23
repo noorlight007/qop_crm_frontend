@@ -5,6 +5,7 @@ import {
   useGetNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
+  useReadNotificationMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { UINotification } from "@/Types/Common/Notification/NotificationType";
 import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
@@ -182,6 +183,7 @@ const NotificationHeader = () => {
 
   const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
     useMakeAllNotificationsReadMutation();
+  const [readNotification] = useReadNotificationMutation();
 
   useEffect(() => {
     let mounted = true;
@@ -461,6 +463,21 @@ const NotificationHeader = () => {
       void refetchUnreadCount();
     } catch {
       // No-op on failure; leave state unchanged.
+      console.warn("Failed to mark all notifications as read");
+    }
+  };
+
+  const handleReadNotification = async (item: UINotification) => {
+    if (item.id.startsWith("fallback-") || item.is_read) return;
+
+    try {
+      await readNotification({
+        id: item.id,
+        payload: { is_read: true },
+      }).unwrap();
+    } catch {
+      // Do not block navigation on read sync failure.
+      console.warn(`Failed to mark notification ${item.id} as read`);
     }
   };
 
@@ -522,6 +539,7 @@ const NotificationHeader = () => {
                     ),
                   );
 
+                  void handleReadNotification(item);
                   void refetchNotifications();
                   void refetchUnreadCount();
                 }}

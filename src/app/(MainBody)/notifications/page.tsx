@@ -4,6 +4,7 @@ import {
   useGetNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
+  useReadNotificationMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
 import { UINotification } from "@/Types/Common/Notification/NotificationType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -25,15 +26,13 @@ import {
   Spinner,
 } from "reactstrap";
 
-
-
-
 const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sessionData, setSessionData] = useState<Session | null>(null);
   const pageSize = 12;
   const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
     useMakeAllNotificationsReadMutation();
+  const [readNotification] = useReadNotificationMutation();
 
   const { data: unreadData, refetch: refetchUnreadCount } =
     useGetUnreadNotificationsCountQuery(undefined, {
@@ -92,6 +91,22 @@ const NotificationsPage = () => {
       await refetch();
     } catch {
       // Keep page stable even if mark-all-read fails.
+      console.warn("Failed to mark all notifications as read");
+    }
+  };
+
+  const handleReadNotification = async (item: UINotification) => {
+    if (item.is_read) return;
+
+    try {
+      await readNotification({
+        id: item.id,
+        payload: { is_read: true },
+      }).unwrap();
+      void refetchUnreadCount();
+    } catch {
+      // Navigation should not be blocked if read state sync fails.
+      console.warn(`Failed to mark notification ${item.id} as read`);
     }
   };
 
@@ -170,6 +185,9 @@ const NotificationsPage = () => {
                         <Link
                           href={getNotificationTargetUrl(item, sessionData)}
                           className="text-decoration-none text-reset"
+                          onClick={() => {
+                            void handleReadNotification(item);
+                          }}
                         >
                           <div className="d-flex flex-column flex-sm-row justify-content-between gap-3 align-items-start">
                             <div className="flex-grow-1">
