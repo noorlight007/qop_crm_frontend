@@ -6,25 +6,13 @@ import {
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { UINotification } from "@/Types/Common/Notification/NotificationType";
 import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
 import type { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "reactstrap";
-
-type UINotification = {
-  id: string;
-  date: string;
-  time: string;
-  dotColor: "primary" | "warning";
-  fontColor: "primary" | "warning";
-  notification_type?: string;
-  message: string;
-  is_read: boolean;
-  dataType?: string;
-  dataAlias?: string;
-};
 
 const toSafeDateTime = (input?: string) => {
   const parsed = input ? new Date(input) : new Date();

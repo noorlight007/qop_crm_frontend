@@ -1,12 +1,6 @@
-import type { Session } from "next-auth";
-
+import { NotificationRouteInput } from "@/Types/Common/Notification/NotificationType";
 import { getCaseUrl, getSupportTicketUrl } from "@/utils/RedirectPaths";
-
-export type NotificationRouteInput = {
-  data?: Record<string, unknown>;
-  dataType?: string;
-  dataAlias?: string;
-};
+import type { Session } from "next-auth";
 
 const readNotificationTypeAndAlias = (notification: NotificationRouteInput) => {
   const rawType =

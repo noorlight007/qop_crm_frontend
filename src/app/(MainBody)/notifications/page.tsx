@@ -5,6 +5,7 @@ import {
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { UINotification } from "@/Types/Common/Notification/NotificationType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
 import type { Session } from "next-auth";
@@ -24,15 +25,8 @@ import {
   Spinner,
 } from "reactstrap";
 
-export interface UINotification {
-  id: string;
-  notification_type: string;
-  message: string;
-  is_read: boolean;
-  read_at: string | null;
-  created_at: string;
-  data?: Record<string, unknown>;
-}
+
+
 
 const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
