@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, Table } from "reactstrap";
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  Table,
+} from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p className="suitability-advisor-note rounded">
-    {children}
-  </p>
+  <p className="suitability-advisor-note rounded">{children}</p>
 );
 
 /* ── Purple: dropdown placeholder ── */
@@ -23,9 +29,7 @@ const PleaseSelect = ({ label }: { label?: string }) => (
 );
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
 
 const thStyle: React.CSSProperties = {
@@ -59,12 +63,22 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   const [proceedReason, setProceedReason] = useState("");
   const [savedProceedReason, setSavedProceedReason] = useState("");
   const [isProceedEditing, setIsProceedEditing] = useState(false);
-  const [selectedDebtCostOption, setSelectedDebtCostOption] = useState<
-    string | null
-  >(null);
+  const [selectedDebtCostOption, setSelectedDebtCostOption] = useState<{
+    value: string;
+    label: React.ReactNode;
+  } | null>(null);
   const [isDebtCostOptionOpen, setIsDebtCostOptionOpen] = useState(false);
 
-  const debtCostOptions = ["less", "more"];
+  const debtCostOptions: { value: string; label: React.ReactNode }[] = [
+    {
+      value: "LESS",
+      label: "less",
+    },
+    {
+      value: "MORE",
+      label: "more",
+    },
+  ];
 
   const handleDebtsAroseSave = () => {
     setSavedDebtsAroseReason(debtsAroseReason);
@@ -417,19 +431,21 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
             tag="span"
             style={{
               color: "#6a1b9a",
-        cursor: "pointer",
-        textDecoration: "underline",
+              cursor: "pointer",
+              textDecoration: "underline",
             }}
           >
-            {selectedDebtCostOption ?? "(select option...)"}
+            {selectedDebtCostOption
+              ? selectedDebtCostOption.label
+              : "(select option...)"}
           </DropdownToggle>
           <DropdownMenu>
-            {debtCostOptions.map((option, index) => (
+            {debtCostOptions.map((option) => (
               <DropdownItem
-                key={index}
+                key={option.value}
                 onClick={() => setSelectedDebtCostOption(option)}
               >
-                {option}
+                {option.label}
               </DropdownItem>
             ))}
           </DropdownMenu>
