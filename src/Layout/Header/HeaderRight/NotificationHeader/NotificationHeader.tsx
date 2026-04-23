@@ -514,9 +514,9 @@ const NotificationHeader = () => {
                   >
                     {item.date}
                     <span>{item.time}</span>
-                    <span className={`circle-dot-${item.dotColor} float-end`}>
+                    {/* <span className={`circle-dot-${item.dotColor} float-end`}>
                       <SVG className="circle-color" iconId="circle" />
-                    </span>
+                    </span> */}
                   </h6>
                   <h5>{item.notification_type || ""}</h5>
                   <p>{item.message}</p>
