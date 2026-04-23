@@ -148,6 +148,12 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
     }
 
     const totalFilesCount = existingFiles.length + newFiles.length;
+    if (totalFilesCount === 0) {
+      const msg = "Please attach at least one file";
+      setErrors((prev) => ({ ...prev, upload_files: msg }));
+      return;
+    }
+
     const originalFilesCount = selected?.files?.length || 0;
     const shouldReplaceFiles =
       totalFilesCount !== originalFilesCount || newFiles.length > 0;
@@ -323,7 +329,9 @@ const UpdateSupportTicketModal: React.FC<UpdateSupportTicketModalProps> = ({
           </FormGroup>
 
           <FormGroup>
-            <Label for="files">Attachments (optional)</Label>
+            <Label for="files">
+              Attachments<span className="text-danger">*</span>
+            </Label>
             <Input
               id="files"
               type="file"

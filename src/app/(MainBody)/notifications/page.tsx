@@ -4,8 +4,13 @@ import {
   useGetNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
+  useReadNotificationMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { UINotification } from "@/Types/Common/Notification/NotificationType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
+import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
+import type { Session } from "next-auth";
+import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TbRefresh } from "react-icons/tb";
@@ -21,20 +26,13 @@ import {
   Spinner,
 } from "reactstrap";
 
-export interface UINotification {
-  id: string;
-  notification_type: string;
-  message: string;
-  is_read: boolean;
-  read_at: string | null;
-  created_at: string;
-}
-
 const NotificationsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [sessionData, setSessionData] = useState<Session | null>(null);
   const pageSize = 12;
   const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
     useMakeAllNotificationsReadMutation();
+  const [readNotification] = useReadNotificationMutation();
 
   const { data: unreadData, refetch: refetchUnreadCount } =
     useGetUnreadNotificationsCountQuery(undefined, {
@@ -42,10 +40,10 @@ const NotificationsPage = () => {
       refetchOnReconnect: true,
     });
 
-
   const {
     data: notifications,
     isLoading,
+    isFetching,
     isError,
     refetch,
   } = useGetNotificationsQuery(
@@ -57,6 +55,29 @@ const NotificationsPage = () => {
 
   const totalCount = notifications?.count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSession = async () => {
+      try {
+        const session = await getSession();
+        if (mounted) {
+          setSessionData(session);
+        }
+      } catch {
+        if (mounted) {
+          setSessionData(null);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const getTruncatedMessage = (message: string) => {
     const words = message.trim().split(/\s+/);
@@ -70,6 +91,22 @@ const NotificationsPage = () => {
       await refetch();
     } catch {
       // Keep page stable even if mark-all-read fails.
+      console.warn("Failed to mark all notifications as read");
+    }
+  };
+
+  const handleReadNotification = async (item: UINotification) => {
+    if (item.is_read) return;
+
+    try {
+      await readNotification({
+        id: item.id,
+        payload: { is_read: true },
+      }).unwrap();
+      void refetchUnreadCount();
+    } catch {
+      // Navigation should not be blocked if read state sync fails.
+      console.warn(`Failed to mark notification ${item.id} as read`);
     }
   };
 
@@ -99,16 +136,20 @@ const NotificationsPage = () => {
                   color="outline-secondary"
                   size="sm"
                   onClick={() => refetch()}
-                  disabled={isLoading}
+                  disabled={isFetching}
                 >
                   <TbRefresh className="me-1" />
-                  Refresh
+                  {isFetching ? "Refreshing..." : "Refresh"}
                 </Button>
                 <Button
                   color="primary"
                   size="sm"
                   onClick={handleMakeAllRead}
-                  disabled={isLoading || isMarkingAllRead || unreadData?.unread_count === 0}
+                  disabled={
+                    isLoading ||
+                    isMarkingAllRead ||
+                    unreadData?.unread_count === 0
+                  }
                 >
                   {isMarkingAllRead ? "Reading..." : "Make All Read"}
                 </Button>
@@ -142,8 +183,11 @@ const NotificationsPage = () => {
                         className="list-group-item border-b-light-primary p-0 mb-3"
                       >
                         <Link
-                          href={`/notifications/${encodeURIComponent(item.id)}`}
+                          href={getNotificationTargetUrl(item, sessionData)}
                           className="text-decoration-none text-reset"
+                          onClick={() => {
+                            void handleReadNotification(item);
+                          }}
                         >
                           <div className="d-flex flex-column flex-sm-row justify-content-between gap-3 align-items-start">
                             <div className="flex-grow-1">

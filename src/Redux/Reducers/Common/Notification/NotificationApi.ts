@@ -10,12 +10,13 @@ export const NotificationApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Notifications"],
     }),
-    getNotificationDetails: builder.query({
-      query: (id) => ({
+    readNotification: builder.mutation({
+      query: ({ id, payload }) => ({
         url: `/notifications/${id}/`,
-        method: "GET",
+        method: "PATCH",
+        body: payload,
       }),
-      providesTags: ["Notifications"],
+      invalidatesTags: ["Notifications"],
     }),
     getUnreadNotificationsCount: builder.query({
       query: () => ({
@@ -36,7 +37,7 @@ export const NotificationApi = baseApi.injectEndpoints({
 
 export const {
   useGetNotificationsQuery,
-  useGetNotificationDetailsQuery,
+  useReadNotificationMutation,
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
 } = NotificationApi;

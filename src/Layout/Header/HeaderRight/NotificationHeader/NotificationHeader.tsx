@@ -5,22 +5,15 @@ import {
   useGetNotificationsQuery,
   useGetUnreadNotificationsCountQuery,
   useMakeAllNotificationsReadMutation,
+  useReadNotificationMutation,
 } from "@/Redux/Reducers/Common/Notification/NotificationApi";
+import { UINotification } from "@/Types/Common/Notification/NotificationType";
+import { getNotificationTargetUrl } from "@/utils/notificationRedirect";
+import type { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "reactstrap";
-
-type UINotification = {
-  id: string;
-  date: string;
-  time: string;
-  dotColor: "primary" | "warning";
-  fontColor: "primary" | "warning";
-  notification_type?: string;
-  message: string;
-  is_read: boolean;
-};
 
 const toSafeDateTime = (input?: string) => {
   const parsed = input ? new Date(input) : new Date();
@@ -100,6 +93,10 @@ const normalizeNotification = (
     ),
     message: String(item.message ?? item.body ?? item.description ?? ""),
     is_read: item.is_read === true,
+    dataType:
+      typeof payloadData?.type === "string" ? payloadData.type : undefined,
+    dataAlias:
+      typeof payloadData?.alias === "string" ? payloadData.alias : undefined,
   };
 };
 
@@ -169,6 +166,7 @@ const NotificationHeader = () => {
   const [items, setItems] = useState<UINotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [visibleCount, setVisibleCount] = useState(4);
+  const [sessionData, setSessionData] = useState<Session | null>(null);
   const wrapperRef = useRef<HTMLLIElement>(null);
 
   const { data: notificationsData, refetch: refetchNotifications } =
@@ -185,6 +183,30 @@ const NotificationHeader = () => {
 
   const [makeAllNotificationsRead, { isLoading: isMarkingAllRead }] =
     useMakeAllNotificationsReadMutation();
+  const [readNotification] = useReadNotificationMutation();
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadSession = async () => {
+      try {
+        const session = await getSession();
+        if (mounted) {
+          setSessionData(session);
+        }
+      } catch {
+        if (mounted) {
+          setSessionData(null);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const list = readList(notificationsData);
@@ -441,6 +463,21 @@ const NotificationHeader = () => {
       void refetchUnreadCount();
     } catch {
       // No-op on failure; leave state unchanged.
+      console.warn("Failed to mark all notifications as read");
+    }
+  };
+
+  const handleReadNotification = async (item: UINotification) => {
+    if (item.id.startsWith("fallback-") || item.is_read) return;
+
+    try {
+      await readNotification({
+        id: item.id,
+        payload: { is_read: true },
+      }).unwrap();
+    } catch {
+      // Do not block navigation on read sync failure.
+      console.warn(`Failed to mark notification ${item.id} as read`);
     }
   };
 
@@ -480,7 +517,7 @@ const NotificationHeader = () => {
           {visibleNotifications.map((item) => (
             <li className="d-flex align-items-start" key={item.id}>
               <Link
-                href={`/notifications/${encodeURIComponent(item.id)}`}
+                href={getNotificationTargetUrl(item, sessionData)}
                 className="d-flex align-items-start text-decoration-none text-reset w-100"
                 onClick={() => {
                   setShow(false);
@@ -502,6 +539,7 @@ const NotificationHeader = () => {
                     ),
                   );
 
+                  void handleReadNotification(item);
                   void refetchNotifications();
                   void refetchUnreadCount();
                 }}
@@ -514,9 +552,9 @@ const NotificationHeader = () => {
                   >
                     {item.date}
                     <span>{item.time}</span>
-                    <span className={`circle-dot-${item.dotColor} float-end`}>
+                    {/* <span className={`circle-dot-${item.dotColor} float-end`}>
                       <SVG className="circle-color" iconId="circle" />
-                    </span>
+                    </span> */}
                   </h6>
                   <h5>{item.notification_type || ""}</h5>
                   <p>{item.message}</p>
