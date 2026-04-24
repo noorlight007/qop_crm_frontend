@@ -8,7 +8,7 @@ import { useGetOrgCasesQuery } from "@/Redux/Reducers/Common/Organisations/Organ
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import { getCaseUrl } from "@/utils/RedirectPaths";
+import { getOrganisationCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -241,10 +241,11 @@ const OrgCases: React.FC = () => {
                           <td>
                             <Link
                               className="text_decoration_hover text-truncate"
-                              href={getCaseUrl(
+                              href={getOrganisationCaseUrl(
+                                organisationslug as string,
                                 caseItem.alias,
-                                userRole as string,
                                 session?.user?.is_network,
+                                session?.user?.role,
                               )}
                             >
                               {caseItem.is_removed ? (
