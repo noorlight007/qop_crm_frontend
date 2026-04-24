@@ -4,7 +4,6 @@ import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
-import { ApplicantInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -15,7 +14,6 @@ import {
   TbCircleArrowUp,
   TbCopy,
   TbDownload,
-  TbEdit,
   TbMailShare,
   TbUserPlus,
 } from "react-icons/tb";
@@ -893,7 +891,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           }}
                           disabled={isLoading}
                         >
-                          <TbEdit size="14" /> Edit
+                          <i className="fa-solid fa-pen-to-square me-1" />
+                          Edit
                         </Button>
                       </h6>
                       <div className="p-3 bg-light rounded h-75 overflow-auto border-l-primary border-2">
