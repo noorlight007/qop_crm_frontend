@@ -1,3 +1,5 @@
+import { pensionOptions } from "@/Data/Cases/SuitabilityData";
+import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Dropdown,
@@ -11,60 +13,34 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
 
-/* ── Purple: dropdown placeholder ── */
-const PleaseSelect = ({ label }: { label?: string }) => (
-  <span
-    className="px-2 py-1 rounded small fst-italic d-inline-block"
-    style={{
-      background: "#f3e5f5",
-      color: "#6a1b9a",
-      border: "1px dashed #ab47bc",
-    }}
-  >
-    {label ?? "Please Select"}
-  </span>
-);
-
-/* ── Green: render a suitability answer line ── */
-const SuitAnswer = ({ text }: { text?: string }) =>
-  text ? (
-    <p
-      className="mb-1"
-      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
-    >
-      {text}
-    </p>
-  ) : null;
-
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
 
 interface LendingIntoRetirementProps {
   caseData: any;
   suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
 }
 
 const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
   caseData,
   suitability,
+  formValues,
+  onFormChange,
 }) => {
   const blue = "#1565c0";
   const s = suitability;
 
-  const [selectedPensionOption, setSelectedPensionOption] = useState<
-    number | null
-  >(null);
+  // ── UI only ──
   const [isPensionOptionOpen, setIsPensionOptionOpen] = useState(false);
 
-  const pensionOptions = [
-    "Option 1 – Pension statements required by lender",
-    "Option 2 – Pension statements not required by lender",
-  ];
+  // ── Derived from formValues — re-hydrates on page load if data exists ──
+  const selectedPensionOption =
+    pensionOptions.find((o) => o.value === formValues.pension_option) ?? null;
 
-  const mortgageTerm = caseData?.mortgage_term ?? "20 years and 0 months";
+  const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
 
   return (
     <>
@@ -111,8 +87,8 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
             }}
             caret
           >
-            {selectedPensionOption !== null ? (
-              pensionOptions[selectedPensionOption]
+            {selectedPensionOption ? (
+              selectedPensionOption.label
             ) : (
               <span className="text-muted fst-italic">
                 Select pension statement option...
@@ -123,22 +99,23 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
             className="w-100"
             style={{ whiteSpace: "normal", wordBreak: "break-word" }}
           >
-            {pensionOptions.map((option, index) => (
+            {pensionOptions.map((option) => (
               <DropdownItem
-                key={index}
-                onClick={() => setSelectedPensionOption(index)}
+                key={option.value}
+                onClick={() => onFormChange({ pension_option: option.value })}
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
-                {option}
+                {option.label}
               </DropdownItem>
             ))}
           </DropdownMenu>
         </Dropdown>
 
+        {/* Show content based on selected option value */}
         {selectedPensionOption !== null && (
           <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
-            {selectedPensionOption === 0 && (
+            {selectedPensionOption.value === "PENSION_STATEMENTS_REQUIRED" && (
               <>
                 <p className="fw-semibold mb-1">
                   Option 1 – Pension statements required by lender:
@@ -152,7 +129,7 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
               </>
             )}
 
-            {selectedPensionOption === 1 && (
+            {selectedPensionOption.value === "PENSION_STATEMENTS_NOT_REQUIRED" && (
               <>
                 <p className="fw-semibold mb-1">
                   Option 2 – Pension statements not required by lender:
@@ -182,19 +159,10 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
         within your intended retirement age.
       </p>
 
-      {s?.lending_into_retirement?.additional_notes ? (
-        <div
-          className="p-3 mb-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
-        >
-          <SuitAnswer text={s?.lending_into_retirement?.additional_notes} />
-        </div>
-      ) : (
-        <AdvisorNote>
-          (Please type up any information relevant to the client's individual
-          needs, circumstances and why the term was recommended into retirement)
-        </AdvisorNote>
-      )}
+      <AdvisorNote>
+        (Please type up any information relevant to the client's individual
+        needs, circumstances and why the term was recommended into retirement)
+      </AdvisorNote>
     </>
   );
 };

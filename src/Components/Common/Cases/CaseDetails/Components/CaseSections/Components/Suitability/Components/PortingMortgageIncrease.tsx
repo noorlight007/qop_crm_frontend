@@ -1,3 +1,5 @@
+import { notRecommendedOptions } from "@/Data/Cases/SuitabilityData";
+import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Dropdown,
@@ -11,75 +13,34 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
 
-/* ── Purple: dropdown placeholder ── */
-const PleaseSelect = ({ label }: { label?: string }) => (
-  <span
-    className="px-2 py-1 rounded small fst-italic d-inline-block"
-    style={{
-      background: "#f3e5f5",
-      color: "#6a1b9a",
-      border: "1px dashed #ab47bc",
-    }}
-  >
-    {label ?? "Please Select"}
-  </span>
-);
-
-/* ── Purple dropdown option list ── */
-const DropdownOptions = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: React.ReactNode[];
-}) => (
-  <div className="mt-2 small" style={{ color: "#6a1b9a" }}>
-    <p className="mb-1 fst-italic">{label}</p>
-    <ol className="mb-0 ps-3">
-      {options.map((opt, i) => (
-        <li key={i}>{opt}</li>
-      ))}
-    </ol>
-  </div>
-);
-
-/* ── Green: render a suitability answer line ── */
-const SuitAnswer = ({ text }: { text?: string }) =>
-  text ? (
-    <p
-      className="mb-1"
-      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
-    >
-      {text}
-    </p>
-  ) : null;
-
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
+
+
+
 interface PortingMortgageIncreaseProps {
   caseData: any;
   suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
 }
 
 const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
   caseData,
   suitability,
+  formValues,
+  onFormChange,
 }) => {
   const blue = "#1565c0";
   const s = suitability;
 
-  const [selectedNotRecommendedOption, setSelectedNotRecommendedOption] =
-    useState<string | null>(null);
-  const [isNotRecommendedOptionOpen, setIsNotRecommendedOptionOpen] =
-    useState(false);
+  // ── UI only ──
+  const [isNotRecommendedOptionOpen, setIsNotRecommendedOptionOpen] = useState(false);
 
-  const notRecommendedOptions = [
-    "the interest rates currently available were higher than the rate on your existing mortgage product.",
-    "the early repayment charge was greater than the savings you would have made from securing a lower rate with a new lender.",
-  ];
+  // ── Derived from formValues ──
+  const selectedNotRecommendedOption =
+    notRecommendedOptions.find((o) => o.value === formValues.new_lender_not_recommended_reason) ?? null;
 
   return (
     <>
@@ -129,7 +90,9 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
               textDecoration: "underline",
             }}
           >
-            {selectedNotRecommendedOption ?? "select reason..."}
+            {selectedNotRecommendedOption
+              ? selectedNotRecommendedOption.label
+              : "select reason..."}
           </DropdownToggle>
           <DropdownMenu
             style={{
@@ -138,14 +101,14 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
               maxWidth: "400px",
             }}
           >
-            {notRecommendedOptions.map((option, index) => (
+            {notRecommendedOptions.map((option) => (
               <DropdownItem
-                key={index}
-                onClick={() => setSelectedNotRecommendedOption(option)}
+                key={option.value}
+                onClick={() => onFormChange({ new_lender_not_recommended_reason: option.value })}
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
-                {option}
+                {option.label}
               </DropdownItem>
             ))}
           </DropdownMenu>
@@ -158,19 +121,10 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
         basis with your existing lender.
       </p>
 
-      {s?.porting?.additional_considerations ? (
-        <div
-          className="p-3 mb-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
-        >
-          <SuitAnswer text={s?.porting?.additional_considerations} />
-        </div>
-      ) : (
-        <AdvisorNote>
-          (Please expand and include any additional considerations throughout
-          the process that helped you come to the recommendation of porting)
-        </AdvisorNote>
-      )}
+      <AdvisorNote>
+        (Please expand and include any additional considerations throughout the
+        process that helped you come to the recommendation of porting)
+      </AdvisorNote>
 
       <p>This meant that porting was the most suitable option.</p>
 

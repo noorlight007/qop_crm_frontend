@@ -73,6 +73,9 @@ const Suitability: React.FC = () => {
     product_transfer_recommended: "",
     x: "",
     arrangement_fee: null,
+    pension_option: null,
+    overpayment_type: null,
+    repayment_status_type: null,
   });
 
   // Pre-populate from API response
@@ -98,7 +101,8 @@ const Suitability: React.FC = () => {
           formValues.repayment_method_recommended_text,
         mortgage_amount_type: formValues.mortgage_amount_type,
         arrangement_fee_type: formValues.arrangement_fee_type,
-        early_repayment_charges_reason: formValues.early_repayment_charges_reason,
+        early_repayment_charges_reason:
+          formValues.early_repayment_charges_reason,
         portability_recommendation: formValues.portability_recommendation,
         portability_reason: formValues.portability_reason,
         home_insurance: formValues.home_insurance,
@@ -122,12 +126,17 @@ const Suitability: React.FC = () => {
         x: formValues.x,
         arrangement_fee: formValues.arrangement_fee,
         // fields added by us not in original backend spec
-        early_repayment_charges_meaning: formValues.early_repayment_charges_meaning,
-        early_repayment_charges_recommendation: formValues.early_repayment_charges_recommendation,
+        early_repayment_charges_meaning:
+          formValues.early_repayment_charges_meaning,
+        early_repayment_charges_recommendation:
+          formValues.early_repayment_charges_recommendation,
         portability_meaning: formValues.portability_meaning,
         protection: formValues.protection,
         protection_reason: formValues.protection_reason,
         portability_suggestion: formValues.portability_suggestion,
+        pension_option: formValues.pension_option,
+        overpayment_type: formValues.overpayment_type,
+        repayment_status_type: formValues.repayment_status_type,
       };
 
       console.log("Suitability Payload:", JSON.stringify(payload, null, 2));
@@ -161,24 +170,53 @@ const Suitability: React.FC = () => {
           onFormChange={handleFormChange}
         />
         <Divider />
-        <DebtConsolidation caseData={caseData} suitability={suitability} />
+        <DebtConsolidation
+          caseData={caseData}
+          suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
+        />
         <Divider />
-        <LendingIntoRetirement caseData={caseData} suitability={suitability} />
+        <LendingIntoRetirement
+          caseData={caseData}
+          suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
+        />
         <Divider />
         <PortingMortgageIncrease
           caseData={caseData}
           suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
         />
         <Divider />
-        <IslamicMortgage caseData={caseData} suitability={suitability} />
+        <IslamicMortgage
+          caseData={caseData}
+          suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
+        />
         <Divider />
-        <RateTypePaymentMethod caseData={caseData} suitability={suitability} />
+        <RateTypePaymentMethod
+          caseData={caseData}
+          suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
+        />
         <Divider />
-        <ProductTransfer caseData={caseData} suitability={suitability} />
+        <ProductTransfer
+          caseData={caseData}
+          suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
+        />
         <Divider />
         <ShortenedProductTransfer
           caseData={caseData}
           suitability={suitability}
+          formValues={formValues}
+          onFormChange={handleFormChange}
         />
         <Divider />
         <HighLoanToValue caseData={caseData} />
