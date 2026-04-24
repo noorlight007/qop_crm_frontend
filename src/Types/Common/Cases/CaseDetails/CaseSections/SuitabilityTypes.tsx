@@ -32,4 +32,7 @@ export interface SuitabilityData {
   product_transfer_recommended: string;
   x: string;
   arrangement_fee: number | null;
+  pension_option: string | null;
+  overpayment_type: string | null;
+  repayment_status_type: string | null;
 }

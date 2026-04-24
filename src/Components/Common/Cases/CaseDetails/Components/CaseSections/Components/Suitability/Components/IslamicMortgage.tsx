@@ -1,99 +1,73 @@
+import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
 } from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
-/* ── Purple: dropdown placeholder ── */
-const PleaseSelect = ({ label }: { label?: string }) => (
-  <span
-    className="px-2 py-1 rounded small fst-italic d-inline-block"
-    style={{
-      background: "#f3e5f5",
-      color: "#6a1b9a",
-      border: "1px dashed #ab47bc",
-    }}
-  >
-    {label ?? "Please Select"}
-  </span>
-);
-
-/* ── Purple dropdown option list ── */
-const DropdownOptions = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: React.ReactNode[];
-}) => (
-  <div className="mt-2 small" style={{ color: "#6a1b9a" }}>
-    <p className="mb-1 fst-italic">{label}</p>
-    <ol className="mb-0 ps-3">
-      {options.map((opt, i) => (
-        <li key={i}>{opt}</li>
-      ))}
-    </ol>
-  </div>
-);
-
-/* ── Green: render a suitability answer line ── */
-const SuitAnswer = ({ text }: { text?: string }) =>
-  text ? (
-    <p
-      className="mb-1"
-      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
-    >
-      {text}
-    </p>
-  ) : null;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
+
+const shariaDetailOptions = [
+  { value: "IJARA", label: "Option 1 – Ijara" },
+  { value: "MUSHARAKA", label: "Option 2 – Musharaka" },
+  { value: "MURABAHA", label: "Option 3 – Murabaha" },
+];
 
 interface IslamicMortgageProps {
   caseData: any;
   suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
 }
 
 const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
   caseData,
   suitability,
+  formValues,
+  onFormChange,
 }) => {
   const blue = "#1565c0";
   const s = suitability;
+  const lender = s?.loan_details?.lender ?? "";
 
-  const lender = caseData?.lender_name ?? "HSBC";
-
-  const [selectedShariaMethod, setSelectedShariaMethod] = useState<
-    string | null
-  >(null);
-  const [isShariaMethodOpen, setIsShariaMethodOpen] = useState(false);
-  const [selectedShariaDetailOption, setSelectedShariaDetailOption] = useState<
-    number | null
-  >(null);
+  // ── UI-only states ──
   const [isShariaDetailOptionOpen, setIsShariaDetailOptionOpen] =
     useState(false);
-  const [selectedOverpaymentOption, setSelectedOverpaymentOption] = useState<
-    number | null
-  >(null);
   const [isOverpaymentOptionOpen, setIsOverpaymentOptionOpen] = useState(false);
+  const [isLenderReasonEditing, setIsLenderReasonEditing] = useState(false);
+  const [lenderReasonDraft, setLenderReasonDraft] = useState("");
 
-  const shariaMethods = ["Ijara", "Musharaka", "Murabaha"];
+  // ── Derived from formValues ──
+  const selectedShariaOption =
+    shariaDetailOptions.find(
+      (o) => o.value === formValues.islamic_mortgages_purchase_plan,
+    ) ?? null;
+  const selectedOverpaymentOption = formValues.overpayment_type ?? null;
 
-  const shariaDetailOptions = [
-    "Option 1 – Ijara",
-    "Option 2 – Musharaka",
-    "Option 3 – Murabaha",
-  ];
+  // ── Textarea save/cancel handlers ──
+  const startLenderReasonEdit = () => {
+    setLenderReasonDraft(formValues.home_purchase_plan ?? "");
+    setIsLenderReasonEditing(true);
+  };
+  const handleLenderReasonSave = () => {
+    onFormChange({ home_purchase_plan: lenderReasonDraft });
+    setIsLenderReasonEditing(false);
+  };
+  const handleLenderReasonCancel = () => {
+    setLenderReasonDraft(formValues.home_purchase_plan ?? "");
+    setIsLenderReasonEditing(false);
+  };
 
   return (
     <>
@@ -104,34 +78,10 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
         acceptable under Sharia Law. As such, you require a product which does
         not involve the payment of interest to the provider. I therefore
         recommend that you take out a Home Purchase Plan using the{" "}
-        <Dropdown
-          isOpen={isShariaMethodOpen}
-          toggle={() => setIsShariaMethodOpen((prev) => !prev)}
-          className="d-inline"
-          style={{ display: "inline" }}
-        >
-          <DropdownToggle
-            tag="span"
-            style={{
-              color: "#6a1b9a",
-              cursor: "pointer",
-              textDecoration: "underline dotted",
-            }}
-          >
-            {selectedShariaMethod ?? "(select method...)"}
-          </DropdownToggle>
-          <DropdownMenu>
-            {shariaMethods.map((method, index) => (
-              <DropdownItem
-                key={index}
-                onClick={() => setSelectedShariaMethod(method)}
-              >
-                {method}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>{" "}
-        method.
+        <span style={{ color: blue }}>
+          {selectedShariaOption?.label ?? "selected method"}
+        </span>
+        .
       </p>
 
       {/* Purple: method selection block */}
@@ -154,8 +104,8 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
             }}
             caret
           >
-            {selectedShariaDetailOption !== null ? (
-              shariaDetailOptions[selectedShariaDetailOption]
+            {selectedShariaOption ? (
+              selectedShariaOption.label
             ) : (
               <span className="text-muted fst-italic">Select method...</span>
             )}
@@ -164,22 +114,26 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
             className="w-100"
             style={{ whiteSpace: "normal", wordBreak: "break-word" }}
           >
-            {shariaDetailOptions.map((option, index) => (
+            {shariaDetailOptions.map((option) => (
               <DropdownItem
-                key={index}
-                onClick={() => setSelectedShariaDetailOption(index)}
+                key={option.value}
+                onClick={() =>
+                  onFormChange({
+                    islamic_mortgages_purchase_plan: option.value,
+                  })
+                }
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
-                {option}
+                {option.label}
               </DropdownItem>
             ))}
           </DropdownMenu>
         </Dropdown>
 
-        {selectedShariaDetailOption !== null && (
+        {selectedShariaOption !== null && (
           <div className="mt-3 small" style={{ color: "#6a1b9a" }}>
-            {selectedShariaDetailOption === 0 && (
+            {selectedShariaOption.value === "IJARA" && (
               <>
                 <p className="fw-semibold mb-1">Option 1 – Ijara:</p>
                 <p className="mb-0">
@@ -195,8 +149,7 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
                 </p>
               </>
             )}
-
-            {selectedShariaDetailOption === 1 && (
+            {selectedShariaOption.value === "MUSHARAKA" && (
               <>
                 <p className="fw-semibold mb-1">Option 2 – Musharaka:</p>
                 <p className="mb-0">
@@ -213,8 +166,7 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
                 </p>
               </>
             )}
-
-            {selectedShariaDetailOption === 2 && (
+            {selectedShariaOption.value === "MURABAHA" && (
               <>
                 <p className="fw-semibold mb-1">Option 3 – Murabaha:</p>
                 <p className="mb-0">
@@ -237,7 +189,6 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
           isOpen={isOverpaymentOptionOpen}
           toggle={() => setIsOverpaymentOptionOpen((prev) => !prev)}
           className="d-inline"
-          style={{ display: "inline" }}
         >
           <DropdownToggle
             tag="span"
@@ -248,8 +199,9 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
             }}
           >
             {selectedOverpaymentOption === null && "select option..."}
-            {selectedOverpaymentOption === 0 && "without penalty at any time."}
-            {selectedOverpaymentOption === 1 && (
+            {selectedOverpaymentOption === "NO_PENALTY" &&
+              "without penalty at any time."}
+            {selectedOverpaymentOption === "WITH_LIMIT" && (
               <>
                 provided you do not exceed{" "}
                 <strong style={{ color: blue }}>
@@ -267,14 +219,14 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
             }}
           >
             <DropdownItem
-              onClick={() => setSelectedOverpaymentOption(0)}
+              onClick={() => onFormChange({ overpayment_type: "NO_PENALTY" })}
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
               without penalty at any time.
             </DropdownItem>
             <DropdownItem
-              onClick={() => setSelectedOverpaymentOption(1)}
+              onClick={() => onFormChange({ overpayment_type: "WITH_LIMIT" })}
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
@@ -288,6 +240,7 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
         </Dropdown>
       </p>
 
+      {/* ── Lender reason ── */}
       <p className="mt-3">
         I researched all Home Purchase Plan providers and products, with the
         exception of those that are only available to you direct, and I
@@ -295,19 +248,57 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
         following reasons:
       </p>
 
-      {s?.islamic_mortgage?.recommendation_reason ? (
-        <div
-          className="p-3 mb-3 rounded"
-          style={{ background: "#f1f8e9", borderLeft: "4px solid #81c784" }}
-        >
-          <SuitAnswer text={s?.islamic_mortgage?.recommendation_reason} />
+      {isLenderReasonEditing ? (
+        <div className="w-100">
+          <Input
+            type="textarea"
+            rows={5}
+            value={lenderReasonDraft}
+            onChange={(e) => setLenderReasonDraft(e.target.value)}
+            placeholder="Enter your reason..."
+            autoFocus
+            className="w-100 p-1"
+          />
+          <div className="d-flex gap-2 mt-2">
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleLenderReasonSave}
+            >
+              Save
+            </Button>
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleLenderReasonCancel}
+            >
+              Cancel
+            </Button>
+          </div>
         </div>
       ) : (
+        <span
+          className="d-block text-success"
+          style={{
+            cursor: "pointer",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+          }}
+          onClick={startLenderReasonEdit}
+          title="Click to edit"
+        >
+          {formValues.home_purchase_plan || "click to add reason..."}
+        </span>
+      )}
+
+      <div className="mt-3">
         <AdvisorNote>
           (Explain why this provider and product was the best Home Purchase Plan
           for the client based on their individual needs and circumstances)
         </AdvisorNote>
-      )}
+      </div>
     </>
   );
 };
