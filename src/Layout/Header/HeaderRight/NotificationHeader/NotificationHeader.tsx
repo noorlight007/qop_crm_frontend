@@ -568,6 +568,9 @@ const NotificationHeader = () => {
             <Link
               href="/notifications"
               className="btn btn-outline-primary btn-sm"
+              onClick={() => {
+                setShow(false);
+              }}
             >
               Show More
             </Link>
