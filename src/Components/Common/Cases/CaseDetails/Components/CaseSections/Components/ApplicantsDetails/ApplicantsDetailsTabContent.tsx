@@ -203,6 +203,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     date_of_birth: "",
     anticipated_retirement_age: 0,
     state_retirement_age: 0,
+    landing_into_retirement: false,
     is_smoker: false,
     gender: "",
     nationality: "GB",
@@ -952,6 +953,41 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 {getFieldError("state_retirement_age") && (
                   <div className="text-danger small">
                     {getFieldError("state_retirement_age")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label for="landing_into_retirement">
+                  Landing into Retirement
+                </Label>
+                {["yes", "no"].map((value) => (
+                  <div key={value}>
+                    <Label className="me-2">
+                      <Input
+                        type="radio"
+                        name="landing_into_retirement"
+                        className="me-1"
+                        value={value}
+                        checked={
+                          formValues.landing_into_retirement ===
+                          (value === "yes")
+                        }
+                        onChange={(e) =>
+                          handleInputChange(
+                            "landing_into_retirement",
+                            e.target.value === "yes",
+                          )
+                        }
+                      />
+                      {value.charAt(0).toUpperCase() + value.slice(1)}
+                    </Label>
+                  </div>
+                ))}
+                {getFieldError("landing_into_retirement") && (
+                  <div className="text-danger small">
+                    {getFieldError("landing_into_retirement")}
                   </div>
                 )}
               </FormGroup>

@@ -168,6 +168,9 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                     <option value="OFFER_FROM_BANK">Offer From Bank</option>
                     <option value="LEGAL">Legal</option>
                     <option value="COMPLETION">Completion</option>
+                    <option value="REFERRED">
+                      Referred(Packager/External)
+                    </option>
                     <option value="FUTURE_OPPORTUNITY">
                       Future Opportunity
                     </option>
@@ -185,6 +188,12 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                     <option value="ACCEPTED_ON_RISK">Accepted on Risk</option>
                     <option value="FURTHER_MEDICAL_REQUIRED">
                       Further Medical Required
+                    </option>
+                    <option value="REFERRED">
+                      Referred(Packager/External)
+                    </option>
+                    <option value="FUTURE_OPPORTUNITY">
+                      Future Opportunity
                     </option>
                     <option value="NOT_PROCEED">Not Proceed</option>
                   </>
