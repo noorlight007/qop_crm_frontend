@@ -36,6 +36,7 @@ import {
 import DeleteCaseModal from "../../../Modals/DeleteCaseModal";
 import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
+import ApplicantEditAccessModal from "./Modals/ApplicantEditAccessModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
@@ -69,7 +70,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
-  // console.log("case info: ", caseInfo);
+  console.log("case info: ", caseInfo);
 
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
     useUpdateCaseMutation();
@@ -112,6 +113,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     setSelectedJointApplicant({ data: jointApplicant, index });
     toggleViewJointApplicantModal();
   };
+
+  const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
+    useState(false);
+
+  const toggleApplicantEditAccessModal = () =>
+    setIsApplicantEditAccessModalOpen((prev) => !prev);
 
   // Notes editing handlers
   const handleEditNotes = () => {
@@ -248,6 +255,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 >
                   <TbMailShare size="16" className="me-1" />
                   Client Invitation
+                </DropdownItem>
+                <DropdownItem
+                  onClick={toggleApplicantEditAccessModal}
+                  className="opacity-100 py-3"
+                >
+                  <TbUserPlus size="16" className="me-1" />
+                  Applicant Edit Access
                 </DropdownItem>
                 <DropdownItem
                   className="opacity-100 py-3"
@@ -1029,6 +1043,14 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <AddJointApplicantModal
         isOpen={isAddJointApplicantModalOpen}
         toggle={toggleAddJointApplicantModal}
+      />
+
+      <ApplicantEditAccessModal
+        isOpen={isApplicantEditAccessModalOpen}
+        toggle={toggleApplicantEditAccessModal}
+        caseInfo={caseInfo}
+        updateCaseDetails={updateCaseDetails}
+        isUpdating={isUpdatingNotes}
       />
     </Col>
   );

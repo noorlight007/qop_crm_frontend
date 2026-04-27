@@ -637,16 +637,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   const getGoogleMapEmbedUrl: any = (
     lat: number,
     lng: number,
@@ -675,7 +665,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         type="radio"
                         name="is_company_application"
                         value={option}
-                        disabled={!canApplicantEdit()}
                         checked={
                           formValues.is_company_application ===
                           (option === "yes")
@@ -1453,7 +1442,6 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         name="has_dependants"
                         className="me-1"
                         value={value}
-                        disabled={!canApplicantEdit()}
                         checked={
                           formValues.has_dependants === (value === "yes")
                         }
@@ -1780,10 +1768,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                       <Button
                         color="primary"
                         onClick={() => setIsAddPreviousAddressModalOpen(true)}
-                        disabled={
-                          previousAddressesData?.length > 0 ||
-                          !canApplicantEdit()
-                        }
+                        disabled={previousAddressesData?.length > 0}
                       >
                         Add Previous Address
                       </Button>
@@ -1794,17 +1779,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         View Previous Address
                       </Button>
                     </div>
-                    {canApplicantEdit() ? (
-                      <small className="text-danger">
-                        Note: If you add a new address, the "Add Previous
-                        Address" button will be disabled.
-                      </small>
-                    ) : (
-                      <small className="text-muted">
-                        Note: To add a new address, please contact your case
-                        Adviser.
-                      </small>
-                    )}
+                    <small className="text-danger">
+                      Note: If you add a new address, the "Add Previous Address"
+                      button will be disabled.
+                    </small>
                   </div>
                 )}
             </Col>
@@ -2962,19 +2940,18 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
           </Row>
           {/* Submit Button */}
           <div className="d-flex justify-content-end gap-3 align-items-center">
-            {canApplicantEdit() && (
-              <Button
-                type="submit"
-                color="primary"
-                onClick={() => {
-                  submitActionRef.current = "save";
-                }}
-              >
-                {isUpdatingApplicant && submitting === "save"
-                  ? "Updating..."
-                  : "Save Changes"}
-              </Button>
-            )}
+            <Button
+              type="submit"
+              color="primary"
+              onClick={() => {
+                submitActionRef.current = "save";
+              }}
+            >
+              {isUpdatingApplicant && submitting === "save"
+                ? "Updating..."
+                : "Save Changes"}
+            </Button>
+
             {session?.user?.role !== "APPLICANT" && (
               <>
                 <Button
@@ -3024,21 +3001,19 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 </Button>
               </>
             )}
-            {session?.user?.role !== "APPLICANT" && (
-              <Button
-                type="submit"
-                color="secondary"
-                onClick={async (e) => {
-                  e.preventDefault();
-                  submitActionRef.current = "next";
-                  formRef.current?.requestSubmit();
-                }}
-              >
-                {isUpdatingApplicant && submitting === "next"
-                  ? "Saving..."
-                  : "Save & Next Section"}
-              </Button>
-            )}
+            <Button
+              type="submit"
+              color="secondary"
+              onClick={async (e) => {
+                e.preventDefault();
+                submitActionRef.current = "next";
+                formRef.current?.requestSubmit();
+              }}
+            >
+              {isUpdatingApplicant && submitting === "next"
+                ? "Saving..."
+                : "Save & Next Section"}
+            </Button>
           </div>
         </form>
       </Row>

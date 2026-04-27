@@ -212,16 +212,6 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
     );
   }
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <div className="p-2">
       <Nav tabs className="justify-content-center mt-3">
@@ -235,17 +225,15 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               style={{ cursor: "pointer" }}
             >
               Policy {index + 1} - {formatChoiceFieldValue(policy.policy_type)}
-              {canApplicantEdit() && (
-                <Button
-                  outline
-                  color="danger"
-                  size="sm"
-                  className="ms-2"
-                  onClick={(e) => handleDeleteClick(e, policy)}
-                >
-                  <TbTrash size={16} />
-                </Button>
-              )}
+              <Button
+                outline
+                color="danger"
+                size="sm"
+                className="ms-2"
+                onClick={(e) => handleDeleteClick(e, policy)}
+              >
+                <TbTrash size={16} />
+              </Button>
             </NavLink>
           </NavItem>
         ))}
@@ -1526,57 +1514,40 @@ const PolicyTab: React.FC<PolicyTabProps> = ({ insuranceOverviewAlias }) => {
               </Row>
 
               <div className="d-flex justify-content-between mt-3 ">
-                {canApplicantEdit() && (
+                <Button
+                  color="success"
+                  onClick={toggleModal}
+                  disabled={isUpdating}
+                >
+                  Add New Policy
+                </Button>
+
+                <div className="d-flex gap-2">
                   <Button
-                    color="success"
-                    onClick={toggleModal}
-                    disabled={
-                      isUpdating
-                      // || session?.user?.role === "APPLICANT"
-                    }
+                    color="primary"
+                    type="submit"
+                    disabled={isUpdating || policy?.updated_by !== null}
                   >
-                    Add New Policy
+                    {isUpdating ? "Saving..." : "Save Changes"}
                   </Button>
-                )}
-                {canApplicantEdit() && (
-                  <div className="d-flex gap-2">
-                    <Button
-                      color="primary"
-                      type="submit"
-                      disabled={
-                        isUpdating ||
-                        (session?.user?.role === "APPLICANT" &&
-                          policy?.updated_by !== null)
+                  <Button
+                    type="submit"
+                    color="secondary"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      // active policy in this pane
+                      if (policy?.updated_by !== null) {
+                        handleNextTab();
+                      } else {
+                        submitActionRef.current = "next";
+                        formRef.current?.requestSubmit();
                       }
-                    >
-                      {isUpdating ? "Saving..." : "Save Changes"}
-                    </Button>
-                    <Button
-                      type="submit"
-                      color="secondary"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        // active policy in this pane
-                        if (
-                          session?.user?.role === "APPLICANT" &&
-                          policy?.updated_by !== null
-                        ) {
-                          handleNextTab();
-                        } else {
-                          submitActionRef.current = "next";
-                          // ensure the formRef points to the active form
-                          formRef.current?.requestSubmit();
-                        }
-                      }}
-                      disabled={isUpdating}
-                    >
-                      {session?.user?.role === "APPLICANT" &&
-                      policy?.updated_by !== null
-                        ? "Go To Next"
-                        : "Save & Next"}
-                    </Button>
-                  </div>
-                )}
+                    }}
+                    disabled={isUpdating}
+                  >
+                    {policy?.updated_by !== null ? "Go To Next" : "Save & Next"}
+                  </Button>
+                </div>
               </div>
             </Form>
           </TabPane>

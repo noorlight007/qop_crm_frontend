@@ -442,16 +442,6 @@ const Accountant: React.FC = () => {
     );
   }
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   // Update the return section
   return (
     <>
@@ -489,28 +479,23 @@ const Accountant: React.FC = () => {
                 md={12}
                 className="d-flex justify-content-between align-content-center gap-3"
               >
-                {canApplicantEdit() && (
-                  <>
-                    <Button
-                      color="success"
-                      onClick={toggleModal}
-                      className="border-success"
-                      // disabled={session?.user?.role === "APPLICANT"}
-                    >
-                      Add New Accountant
-                    </Button>
-                    <Button
-                      color="primary"
-                      onClick={handleAssignAccountant}
-                      disabled={
-                        !selectedAccountant || isAccountantAssigned()
-                        // || session?.user?.role === "APPLICANT"
-                      }
-                    >
-                      Assign Accountant
-                    </Button>
-                  </>
-                )}
+                <>
+                  <Button
+                    color="success"
+                    onClick={toggleModal}
+                    className="border-success"
+                    // disabled={session?.user?.role === "APPLICANT"}
+                  >
+                    Add New Accountant
+                  </Button>
+                  <Button
+                    color="primary"
+                    onClick={handleAssignAccountant}
+                    disabled={!selectedAccountant || isAccountantAssigned()}
+                  >
+                    Assign Accountant
+                  </Button>
+                </>
               </Col>
             </Row>
           </Form>
@@ -534,53 +519,51 @@ const Accountant: React.FC = () => {
                     ) || "N/A"}
                   </div>
                   <div className="mt-2">
-                    {canApplicantEdit() && (
-                      <Button
-                        color="danger"
-                        outline
-                        size="sm"
-                        disabled={isUnassigning}
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          const result = await Swal.fire({
-                            title: "Are you sure?",
-                            text: "This will unassign the accountant from the case.",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonText: "Yes, unassign",
-                            cancelButtonText: "Cancel",
-                          });
-                          if (result.isConfirmed) {
-                            try {
-                              await unassignAccountant({
-                                case_alias: caseAlias,
-                                accountant_alias: selectedCaseAccountant.alias,
-                              }).unwrap();
-                              Swal.fire(
-                                "Unassigned!",
-                                "Accountant has been unassigned.",
-                                "success",
-                              );
-                              // Clear selection; RTK invalidation will refetch data
-                              setSelectedCaseAccountant(null);
-                            } catch (err) {
-                              console.error(
-                                "Failed to unassign accountant:",
-                                err,
-                              );
-                              Swal.fire(
-                                "Error",
-                                "Failed to unassign accountant. Please try again.",
-                                "error",
-                              );
-                            }
+                    <Button
+                      color="danger"
+                      outline
+                      size="sm"
+                      disabled={isUnassigning}
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const result = await Swal.fire({
+                          title: "Are you sure?",
+                          text: "This will unassign the accountant from the case.",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Yes, unassign",
+                          cancelButtonText: "Cancel",
+                        });
+                        if (result.isConfirmed) {
+                          try {
+                            await unassignAccountant({
+                              case_alias: caseAlias,
+                              accountant_alias: selectedCaseAccountant.alias,
+                            }).unwrap();
+                            Swal.fire(
+                              "Unassigned!",
+                              "Accountant has been unassigned.",
+                              "success",
+                            );
+                            // Clear selection; RTK invalidation will refetch data
+                            setSelectedCaseAccountant(null);
+                          } catch (err) {
+                            console.error(
+                              "Failed to unassign accountant:",
+                              err,
+                            );
+                            Swal.fire(
+                              "Error",
+                              "Failed to unassign accountant. Please try again.",
+                              "error",
+                            );
                           }
-                        }}
-                      >
-                        <BiSolidErrorCircle size={15} />
-                        Unassign
-                      </Button>
-                    )}
+                        }
+                      }}
+                    >
+                      <BiSolidErrorCircle size={15} />
+                      Unassign
+                    </Button>
                   </div>
                 </>
               ) : (
@@ -841,41 +824,28 @@ const Accountant: React.FC = () => {
             <Row>
               <Col md={12}>
                 <FormGroup className="d-flex justify-content-end gap-3">
-                  {canApplicantEdit() && (
-                    <Button
-                      color="primary"
-                      type="submit"
-                      onClick={() => {
-                        submitActionRef.current = "save";
-                      }}
-                      disabled={
-                        isUpdatingLoading
-                        // || session?.user?.role === "APPLICANT"
-                      }
-                    >
-                      {isUpdatingLoading ? "Saving..." : "Save Changes"}
-                    </Button>
-                  )}
-                  {session?.user?.role !== "APPLICANT" && (
-                    <Button
-                      color="secondary"
-                      type="submit"
-                      onClick={async (e) => {
-                        // if (session?.user?.role === "APPLICANT") {
-                        //   handleNextTab();
-                        // } else {
-                        e.preventDefault();
-                        submitActionRef.current = "next";
-                        formRef.current?.requestSubmit();
-                        // }
-                      }}
-                    >
-                      Save & Next
-                      {/* {session?.user?.role === "APPLICANT"
-                      ? "Go To Next"
-                      : "Save & Next"} */}
-                    </Button>
-                  )}
+                  <Button
+                    color="primary"
+                    type="submit"
+                    onClick={() => {
+                      submitActionRef.current = "save";
+                    }}
+                    disabled={isUpdatingLoading}
+                  >
+                    {isUpdatingLoading ? "Saving..." : "Save Changes"}
+                  </Button>
+
+                  <Button
+                    color="secondary"
+                    type="submit"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      submitActionRef.current = "next";
+                      formRef.current?.requestSubmit();
+                    }}
+                  >
+                    Save & Next
+                  </Button>
                 </FormGroup>
               </Col>
             </Row>

@@ -280,16 +280,6 @@ const ExistingProtectionContent: React.FC<
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <div>
       <>
@@ -954,64 +944,43 @@ const ExistingProtectionContent: React.FC<
           </Card>
           <div className="d-flex justify-content-between gap-2">
             <div>
-              {canApplicantEdit() && (
-                <>
-                  {formValues?.have_any_existing_Protection_policies_in_place && (
-                    <Button
-                      color="success"
-                      className="border-success"
-                      onClick={toggleModal}
-                      // disabled={session?.user?.role === "APPLICANT"}
-                    >
-                      Add new
-                    </Button>
-                  )}
-                </>
-              )}
+              <>
+                {formValues?.have_any_existing_Protection_policies_in_place && (
+                  <Button
+                    color="success"
+                    className="border-success"
+                    onClick={toggleModal}
+                  >
+                    Add new
+                  </Button>
+                )}
+              </>
             </div>
             <div className="d-flex gap-2">
-              {canApplicantEdit() && (
-                <>
-                  <Button
-                    color="primary"
-                    type="button"
-                    disabled={
-                      // session?.user?.role === "APPLICANT" ||
-                      submitting !== null || isUpdateLoading
-                    }
-                    onClick={async (e) => {
-                      await handleUpdate(e, "save");
-                    }}
-                  >
-                    {submitting === "save" ? "Saving..." : "Save Changes"}
-                  </Button>
-                  {session?.user?.role !== "APPLICANT" && (
-                    <Button
-                      color="secondary"
-                      type="button"
-                      disabled={
-                        // session?.user?.role !== "APPLICANT" &&
-                        submitting !== null || isUpdateLoading
-                      }
-                      onClick={async (e) => {
-                        // if (session?.user?.role === "APPLICANT") {
-                        //   handleNextTab();
-                        // } else {
-                        await handleUpdate(e, "save_next");
-                        handleNextTab();
-                        // }
-                      }}
-                    >
-                      {
-                        // session?.user?.role === "APPLICANT"
-                        //   ? "Go To Next"
-                        //   :
-                        submitting === "save_next" ? "Saving..." : "Save & Next"
-                      }
-                    </Button>
-                  )}
-                </>
-              )}
+              <>
+                <Button
+                  color="primary"
+                  type="button"
+                  disabled={submitting !== null || isUpdateLoading}
+                  onClick={async (e) => {
+                    await handleUpdate(e, "save");
+                  }}
+                >
+                  {submitting === "save" ? "Saving..." : "Save Changes"}
+                </Button>
+
+                <Button
+                  color="secondary"
+                  type="button"
+                  disabled={submitting !== null || isUpdateLoading}
+                  onClick={async (e) => {
+                    await handleUpdate(e, "save_next");
+                    handleNextTab();
+                  }}
+                >
+                  {submitting === "save_next" ? "Saving..." : "Save & Next"}
+                </Button>
+              </>
             </div>
           </div>
         </Form>

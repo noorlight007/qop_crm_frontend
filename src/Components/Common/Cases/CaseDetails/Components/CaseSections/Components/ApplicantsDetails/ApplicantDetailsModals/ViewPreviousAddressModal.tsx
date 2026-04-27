@@ -48,16 +48,6 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
     { skip: !casealias },
   );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="xl">
       <ModalHeader toggle={toggle}>
@@ -66,14 +56,14 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
       <ModalBody>
         {previousAddressesData && previousAddressesData.length > 0 && (
           <div className="d-flex justify-content-end align-items-center mb-3">
-            {canApplicantEdit() && (
+            
               <Button
                 color="primary"
                 onClick={() => setIsAddPreviousAddressModalOpen(true)}
               >
                 <TbCirclePlus size={18} /> Add Previous Address
               </Button>
-            )}
+          
           </div>
         )}
         <Table responsive bordered hover>
@@ -90,7 +80,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
               <th>Time at Address</th>
               <th>Residential Status</th>
               <th>Notes</th>
-              {canApplicantEdit() && <th>Action</th>}
+              <th>Action</th>
             </tr>
           </thead>
           <tbody className="small">
@@ -121,7 +111,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                       : ""}
                   </td>
                   <td>{addressData.notes}</td>
-                  {canApplicantEdit() && (
+                  
                     <td>
                       <div className="d-flex justify-content-center">
                         <Button
@@ -136,7 +126,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                         </Button>
                       </div>
                     </td>
-                  )}
+                  
                 </tr>
               ))
             ) : (
