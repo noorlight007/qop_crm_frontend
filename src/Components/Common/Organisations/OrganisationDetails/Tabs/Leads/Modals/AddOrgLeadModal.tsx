@@ -1,5 +1,6 @@
-import { useAddLeadsOrApplicantsMutation } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
+import { useAddOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -23,10 +24,11 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
   onOpenCase,
   header,
 }) => {
-  // const [addAuthUser, { isLoading }] = useAddAuthUserMutation();
+  const params = useParams();
+  const { organisationslug } = params;
 
   const [addLeadsOrApplicants, { isLoading: isAddingLeadsOrApplicants }] =
-    useAddLeadsOrApplicantsMutation();
+    useAddOrgLeadOrApplicantMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -214,7 +216,7 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrApplicants({ payload });
+      const result = await addLeadsOrApplicants({ organisationslug, payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         if (onLeadCreated && result.data) onLeadCreated(result.data as any);
@@ -274,7 +276,7 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrApplicants({ payload });
+      const result = await addLeadsOrApplicants({ organisationslug, payload });
       if (result.data) {
         toast.success("Lead added successfully.");
         const leadId =

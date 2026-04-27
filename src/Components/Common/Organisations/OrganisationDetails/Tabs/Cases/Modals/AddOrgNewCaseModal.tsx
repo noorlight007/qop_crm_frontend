@@ -9,7 +9,7 @@ import {
 } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { User } from "react-feather";
 import { TbCirclePlus } from "react-icons/tb";
@@ -28,7 +28,6 @@ import {
 } from "reactstrap";
 import AddOrgLeadModal from "../../Leads/Modals/AddOrgLeadModal";
 
-
 const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,
   toggle,
@@ -37,6 +36,8 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   leadData,
   onCaseCreated,
 }) => {
+  const params = useParams();
+  const { organisationslug } = params;
   const [leads, setLeads] = useState<any[]>([]);
   const [leadSearchInput, setLeadSearchInput] = useState("");
   const [leadSearch, setLeadSearch] = useState("");
