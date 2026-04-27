@@ -162,3 +162,14 @@ export interface LeadOptionType {
   user_type?: string;
   profile_image?: string | null;
 }
+
+export interface ApplicantEditAccessModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  caseInfo: any;
+  updateCaseDetails: (args: {
+    caseAlias: string;
+    payload: any;
+  }) => Promise<any>;
+  isUpdating: boolean;
+}

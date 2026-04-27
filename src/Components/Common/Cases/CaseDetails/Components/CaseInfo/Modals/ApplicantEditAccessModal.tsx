@@ -1,3 +1,4 @@
+import { ApplicantEditAccessModalProps } from "@/Types/Common/Cases/CaseTypes";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -7,17 +8,6 @@ import {
   ModalHeader,
   Spinner,
 } from "reactstrap";
-
-interface ApplicantEditAccessModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  caseInfo: any;
-  updateCaseDetails: (args: {
-    caseAlias: string;
-    payload: any;
-  }) => Promise<any>;
-  isUpdating: boolean;
-}
 
 const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
   isOpen,
