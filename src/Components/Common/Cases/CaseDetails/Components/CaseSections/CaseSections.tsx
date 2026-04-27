@@ -1,9 +1,12 @@
 import {
+  ApplicantInsuranceCaseDetailsTabTitleData,
+  ApplicantMortgageCaseDetailsTabTitleData,
   InsuranceAASDTabTitleData,
   InsuranceAORTabTitleData,
   InsuranceEnquiryTabTitleData,
   InsuranceFFDTabTitleData,
   InsuranceNPDTabTitleData,
+  InsuranceREFTabTitleData,
   InsuranceSubmissionTabTitleData,
   MortgageCompletionTabTitleData,
   MortgageDIPTabTitleData,
@@ -15,6 +18,7 @@ import {
   MortgageNPDTabTitleData,
   MortgageOFBTabTitleData,
   MortgageRCCTabTitleData,
+  MortgageREFTabTitleData,
   MortgageSubmissionTabTitleData,
 } from "@/Data/Cases/CaseDetailsTabTitleData";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
@@ -66,6 +70,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
     OFFER_FROM_BANK: MortgageOFBTabTitleData,
     LEGAL: MortgageLegalTabTitleData,
     COMPLETION: MortgageCompletionTabTitleData,
+    REFERRED: MortgageREFTabTitleData,
     FUTURE_OPPORTUNITY: MortgageFOPTabTitleData,
     NOT_PROCEED: MortgageNPDTabTitleData,
   };
@@ -76,42 +81,76 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
     ACCEPT_WAITING_START_DATE: InsuranceAASDTabTitleData,
     ACCEPTED_ON_RISK: InsuranceAORTabTitleData,
     FURTHER_MEDICAL_REQUIRED: InsuranceFFDTabTitleData,
+    REFERRED: InsuranceREFTabTitleData,
     NOT_PROCEED: InsuranceNPDTabTitleData,
   };
 
-  const tabRestrictions: Record<string, string[]> = {
-    APPLICANT: [
-      "Notes",
-      "Product",
-      "DIP History",
-      "Suitability",
-      "Fees",
-      "Compliance",
-      "Vulnerability",
-      "Documents",
-      "Health Check",
-    ],
-  };
+  const mortgageApplicantStages = [
+    "ENQUIRY",
+    "FACT_FIND",
+    "RESEARCH_COMPLIANCE_CHECK",
+    "DECISION_IN_PRINCIPLE",
+    "FULL_MORTGAGE_APPLICATION",
+    "SUBMISSION",
+    "OFFER_FROM_BANK",
+    "LEGAL",
+    "COMPLETION",
+    "REFERRED",
+    "FUTURE_OPPORTUNITY",
+    "NOT_PROCEED",
+  ];
+
+  const mortgageApplicantTabDataMap: Record<string, any[]> = Object.fromEntries(
+    mortgageApplicantStages.map((stage) => [
+      stage,
+      ApplicantMortgageCaseDetailsTabTitleData,
+    ]),
+  );
+
+  const insuranceApplicantStages = [
+    "ENQUIRY",
+    "FACT_FIND",
+    "SUBMISSION",
+    "ACCEPT_WAITING_START_DATE",
+    "ACCEPTED_ON_RISK",
+    "FURTHER_MEDICAL_REQUIRED",
+    "COMPLETION",
+    "REFERRED",
+    "FUTURE_OPPORTUNITY",
+    "NOT_PROCEED",
+  ];
+
+  const insuranceApplicantTabDataMap: Record<string, any[]> =
+    Object.fromEntries(
+      insuranceApplicantStages.map((stage) => [
+        stage,
+        ApplicantInsuranceCaseDetailsTabTitleData,
+      ]),
+    );
 
   // Get the current tab data based on caseStage and caseCategory
   let currentTabData: any[] = [];
 
   if (caseCategory === "MORTGAGE") {
-    currentTabData = mortgageTabDataMap[caseStage] || [];
+    if (userRole === "APPLICANT") {
+      currentTabData = mortgageApplicantTabDataMap[caseStage] || [];
+    } else {
+      currentTabData = mortgageTabDataMap[caseStage] || [];
+    }
   } else if (
     caseCategory === "PROTECTION" ||
     caseCategory === "GENERAL_INSURANCE"
   ) {
-    currentTabData = insuranceTabDataMap[caseStage] || [];
+    if (userRole === "APPLICANT") {
+      currentTabData = insuranceApplicantTabDataMap[caseStage] || [];
+    } else {
+      currentTabData = insuranceTabDataMap[caseStage] || [];
+    }
   } else {
     currentTabData = mortgageTabDataMap[caseStage] || [];
   }
 
-  const restrictedTabs = tabRestrictions[userRole ?? ""] ?? [];
-
-  const visibleTabData = currentTabData.filter(
-    (tab) => !restrictedTabs.includes(tab.nav),
-  );
+  const visibleTabData = currentTabData;
 
   // Restore tab from localStorage or set the first tab as default when caseStage changes
   useEffect(() => {
