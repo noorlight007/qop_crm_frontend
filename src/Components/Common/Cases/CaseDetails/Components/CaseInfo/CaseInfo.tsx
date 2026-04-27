@@ -70,8 +70,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
-  console.log("case info: ", caseInfo);
-
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
     useUpdateCaseMutation();
 
