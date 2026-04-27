@@ -33,6 +33,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddNewCaseModal from "../../../../Cases/Modals/AddNewCaseModal";
+import AddOrgNewCaseModal from "./Modals/AddOrgNewCaseModal";
 
 const OrgCases: React.FC = () => {
   const { data: session } = useSession();
@@ -711,7 +712,7 @@ const OrgCases: React.FC = () => {
           </Row>
         </CardBody>
       </Card>
-      <AddNewCaseModal
+      <AddOrgNewCaseModal
         isOpen={isAddNewCaseModalOpen}
         toggle={toggleAddNewCaseModal}
       />
