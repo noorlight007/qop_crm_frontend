@@ -1,4 +1,5 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import { useAppSelector } from "@/Redux/Hooks";
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
@@ -21,18 +22,21 @@ import OrgAdmins from "./Tabs/Admins/OrgAdmins";
 import OrgAdvisers from "./Tabs/Advisers/OrgAdvisers";
 import OrgApplicants from "./Tabs/Applicants/OrgApplicant";
 import OrgCases from "./Tabs/Cases/OrgCases";
-import DangerZone from "./Tabs/DangerZone/DangerZone";
 import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";
+import DangerZone from "./Tabs/Dashboard/DangerZone/DangerZone";
 import OrganisationDirectorInfo from "./Tabs/Dashboard/OrganisationDirectorInfo/OrganisationDirectorInfo";
 import OrganisationProfile from "./Tabs/Dashboard/OrganisationProfile/OrganisationProfile";
+import Overview from "./Tabs/Dashboard/Overview/Overview";
 import OrgIntroducers from "./Tabs/Introducers/OrgIntroducers";
 import OrgLeads from "./Tabs/Leads/OrgLeads";
-import Overview from "./Tabs/Overview/Overview";
 
 const OrganisationDetails: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const currentTheme = useAppSelector(
+    (state) => state.themeCustomizer.mix_background_layout,
+  );
   const { organisationslug } = useParams();
   const router = useRouter();
 
@@ -90,10 +94,11 @@ const OrganisationDetails: React.FC = () => {
     <>
       <Container fluid>
         <Row>
-          <Col md="12">
+          <Col md="12" className="position-relative">
             <Nav
               pills
-              className="d-flex justify-content-center flex-wrap gap-2 mb-3"
+              className={`d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-light" : "bg-dark"} rounded-3 p-4 shadow-md`}
+              style={{ top: "4rem", zIndex: 10 }}
             >
               <NavItem>
                 <NavLink
@@ -165,16 +170,6 @@ const OrganisationDetails: React.FC = () => {
                   Introducers
                 </NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "danger-zone"}
-                  onClick={() => setActiveTab("danger-zone")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "danger-zone" ? "bg-danger" : "text-danger border-danger"}`}
-                >
-                  Danger Zone
-                </NavLink>
-              </NavItem>
             </Nav>
 
             <TabContent activeTab={activeTab}>
@@ -224,6 +219,9 @@ const OrganisationDetails: React.FC = () => {
                           isDashboardLoading={isDashboardLoading}
                         />
                       </Col>
+                      <Col md="12">
+                        <DangerZone singleOrgInfo={singleOrgInfo} />
+                      </Col>
                     </Row>
                   </>
                 )}
@@ -246,11 +244,6 @@ const OrganisationDetails: React.FC = () => {
               </TabPane>
               <TabPane tabId="introducers">
                 {activeTab === "introducers" && <OrgIntroducers />}
-              </TabPane>
-              <TabPane tabId="danger-zone">
-                {activeTab === "danger-zone" && (
-                  <DangerZone singleOrgInfo={singleOrgInfo} />
-                )}
               </TabPane>
             </TabContent>
           </Col>

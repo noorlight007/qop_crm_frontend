@@ -2,7 +2,7 @@ import { FetchSingleOrganisationProps } from "@/Types/Common/Organisations/Organ
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
-import DeleteOrganisationModal from "../../Modals/DeleteOrganisationModal";
+import DeleteOrganisationModal from "../../../Modals/DeleteOrganisationModal";
 
 const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,

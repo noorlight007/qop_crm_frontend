@@ -240,7 +240,7 @@ const OrgCases: React.FC = () => {
                     <tbody className="text-center">
                       {isLoading ? (
                         <tr>
-                          <td colSpan={11} className="text-center">
+                          <td colSpan={12} className="text-center">
                             <LoadingGrow />
                           </td>
                         </tr>
@@ -577,7 +577,7 @@ const OrgCases: React.FC = () => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={11} className="text-center">
+                          <td colSpan={12} className="text-center">
                             No cases found.
                           </td>
                         </tr>
