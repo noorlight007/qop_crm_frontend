@@ -47,6 +47,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
     cost_of_credit: "",
     paid_on_completion: "",
     source: "",
+    debt_consolidation: false,
     has_the_unsecured_credit_mounted_up: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -162,6 +163,7 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
           cost_of_credit: "",
           paid_on_completion: "",
           source: "",
+          debt_consolidation: false,
           has_the_unsecured_credit_mounted_up: "",
         });
       } else if (res.error) {
@@ -680,7 +682,41 @@ const AddCreditCommitmentModal: React.FC<AddCreditCommitmentModalProps> = ({
                 )}
               </>
             )}
-            <Col>
+            <Col md={6}>
+              <FormGroup>
+                <Label>Debt Consolidation</Label>
+                <div className="d-flex align-items-center gap-4 flex-wrap">
+                  {["yes", "no"].map((option) => (
+                    <div key={option}>
+                      <Label className="me-2">
+                        <Input
+                          type="radio"
+                          name="debt_consolidation"
+                          className="me-1"
+                          value={option}
+                          checked={
+                            formData.debt_consolidation === (option === "yes")
+                          }
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              debt_consolidation: e.target.value === "yes",
+                            }))
+                          }
+                        />
+                        {option.charAt(0).toUpperCase() + option.slice(1)}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                {getFieldError("debt_consolidation") && (
+                  <div className="text-danger small">
+                    {getFieldError("debt_consolidation")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
+            <Col md={12}>
               <FormGroup>
                 <Label>Note</Label>
                 <Input

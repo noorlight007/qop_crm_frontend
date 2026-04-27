@@ -15,6 +15,7 @@ export interface ApplicantProps {
   date_of_birth: string;
   anticipated_retirement_age: number;
   state_retirement_age: number;
+  landing_into_retirement?: boolean;
   is_smoker: boolean;
   gender: string;
   nationality: string;

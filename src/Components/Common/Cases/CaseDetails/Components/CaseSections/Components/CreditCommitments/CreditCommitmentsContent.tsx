@@ -166,6 +166,7 @@ const CreditCommitmentsContent: React.FC = () => {
                 <th>Cost of Credit ({getCurrencySign()})</th>
                 <th>Paid on Completion</th>
                 <th>Source</th>
+                <th>Debt Consolidation</th>
                 <th>Note</th>
               </tr>
             </thead>
@@ -290,6 +291,17 @@ const CreditCommitmentsContent: React.FC = () => {
                       </div>
                     </td>
                     <td>{item.source || "-"}</td>
+                    <td>
+                      <div className="d-flex justify-content-center align-items-center fs-5">
+                        {item.debt_consolidation === true ? (
+                          <i className="fa-solid fa-circle-check text-success"></i>
+                        ) : item.debt_consolidation === false ? (
+                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                        ) : (
+                          "-"
+                        )}
+                      </div>
+                    </td>
                     <td>
                       {item.has_the_unsecured_credit_mounted_up || (
                         <span className="text-danger opacity-50">
