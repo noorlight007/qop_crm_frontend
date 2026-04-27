@@ -7,22 +7,32 @@ import { SingleOrganisationProps } from "@/Types/Common/Organisations/Organisati
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { Col, Container, Row } from "reactstrap";
-import OrgAdmins from "./Admins/OrgAdmins";
-import OrgAdvisers from "./Advisers/OrgAdvisers";
-import OrgApplicants from "./Applicants/OrgApplicant";
-import OrgCases from "./Cases/OrgCases";
-import OrgLendersChart from "./Charts/LendersChart/LendersChart";
-import OrgMortgagesChart from "./Charts/MortgagesChart/MortgagesChart";
-import DangerZone from "./DangerZone/DangerZone";
-import OrgIntroducers from "./Introducers/OrgIntroducers";
-import OrgLeads from "./Leads/OrgLeads";
-import OrganisationDirectorInfo from "./OrganisationDirectorInfo/OrganisationDirectorInfo";
-import OrganisationProfile from "./OrganisationProfile/OrganisationProfile";
-import Overview from "./Overview/Overview";
+import {
+  Col,
+  Container,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  TabContent,
+  TabPane,
+} from "reactstrap";
+import OrgAdmins from "./Tabs/Admins/OrgAdmins";
+import OrgAdvisers from "./Tabs/Advisers/OrgAdvisers";
+import OrgApplicants from "./Tabs/Applicants/OrgApplicant";
+import OrgCases from "./Tabs/Cases/OrgCases";
+import DangerZone from "./Tabs/DangerZone/DangerZone";
+import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
+import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";
+import OrganisationDirectorInfo from "./Tabs/Dashboard/OrganisationDirectorInfo/OrganisationDirectorInfo";
+import OrganisationProfile from "./Tabs/Dashboard/OrganisationProfile/OrganisationProfile";
+import OrgIntroducers from "./Tabs/Introducers/OrgIntroducers";
+import OrgLeads from "./Tabs/Leads/OrgLeads";
+import Overview from "./Tabs/Overview/Overview";
 
 const OrganisationDetails: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
+  const [activeTab, setActiveTab] = useState<string>("dashboard");
   const { organisationslug } = useParams();
   const router = useRouter();
 
@@ -80,54 +90,169 @@ const OrganisationDetails: React.FC = () => {
     <>
       <Container fluid>
         <Row>
-          <Col lg="6" md="12">
-            <OrganisationProfile
-              singleOrgInfo={singleOrgInfo}
-              singleOrgDashboardData={singleOrgDashboardData}
-              isLoading={isLoading}
-              isDashboardLoading={isDashboardLoading}
-            />
-          </Col>
-          <Col lg="6" md="12">
-            <OrganisationDirectorInfo
-              singleOrgInfo={singleOrgInfo}
-              isLoading={isLoading}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <Col lg="6" md="12">
-            <OrgMortgagesChart
-              singleOrgInfo={singleOrgInfo}
-              singleOrgDashboardData={singleOrgDashboardData}
-              isLoading={isLoading}
-              isDashboardLoading={isDashboardLoading}
-            />
-          </Col>
-          <Col lg="6" md="12">
-            <OrgLendersChart
-              singleOrgInfo={singleOrgInfo}
-              singleOrgDashboardData={singleOrgDashboardData}
-              isLoading={isLoading}
-              isDashboardLoading={isDashboardLoading}
-            />
-          </Col>
-        </Row>
-        <Row>
           <Col md="12">
-            <Overview
-              singleOrgInfo={singleOrgInfo}
-              singleOrgDashboardData={singleOrgDashboardData}
-              isLoading={isLoading}
-              isDashboardLoading={isDashboardLoading}
-            />
-            <OrgCases />
-            <OrgLeads />
-            <OrgApplicants />
-            <OrgAdvisers />
-            <OrgAdmins />
-            <OrgIntroducers />
-            <DangerZone singleOrgInfo={singleOrgInfo} />
+            <Nav
+              pills
+              className="d-flex justify-content-center flex-wrap gap-2 mb-3"
+            >
+              <NavItem>
+                <NavLink
+                  active={activeTab === "dashboard"}
+                  onClick={() => setActiveTab("dashboard")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "dashboard" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Dashboard
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "cases"}
+                  onClick={() => setActiveTab("cases")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "cases" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Cases
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "leads"}
+                  onClick={() => setActiveTab("leads")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "leads" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Leads
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "applicants"}
+                  onClick={() => setActiveTab("applicants")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "applicants" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Applicants
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "advisers"}
+                  onClick={() => setActiveTab("advisers")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "advisers" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Advisers
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "admins"}
+                  onClick={() => setActiveTab("admins")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "admins" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Admins
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "introducers"}
+                  onClick={() => setActiveTab("introducers")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "introducers" ? "bg-primary" : "text-primary border-primary"}`}
+                >
+                  Introducers
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  active={activeTab === "danger-zone"}
+                  onClick={() => setActiveTab("danger-zone")}
+                  style={{ cursor: "pointer" }}
+                  className={`${activeTab === "danger-zone" ? "bg-danger" : "text-danger border-danger"}`}
+                >
+                  Danger Zone
+                </NavLink>
+              </NavItem>
+            </Nav>
+
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="dashboard">
+                {activeTab === "dashboard" && (
+                  <>
+                    <Row>
+                      <Col lg="6" md="12">
+                        <OrganisationProfile
+                          singleOrgInfo={singleOrgInfo}
+                          singleOrgDashboardData={singleOrgDashboardData}
+                          isLoading={isLoading}
+                          isDashboardLoading={isDashboardLoading}
+                        />
+                      </Col>
+                      <Col lg="6" md="12">
+                        <OrganisationDirectorInfo
+                          singleOrgInfo={singleOrgInfo}
+                          isLoading={isLoading}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col lg="6" md="12">
+                        <OrgMortgagesChart
+                          singleOrgInfo={singleOrgInfo}
+                          singleOrgDashboardData={singleOrgDashboardData}
+                          isLoading={isLoading}
+                          isDashboardLoading={isDashboardLoading}
+                        />
+                      </Col>
+                      <Col lg="6" md="12">
+                        <OrgLendersChart
+                          singleOrgInfo={singleOrgInfo}
+                          singleOrgDashboardData={singleOrgDashboardData}
+                          isLoading={isLoading}
+                          isDashboardLoading={isDashboardLoading}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="12">
+                        <Overview
+                          singleOrgInfo={singleOrgInfo}
+                          singleOrgDashboardData={singleOrgDashboardData}
+                          isLoading={isLoading}
+                          isDashboardLoading={isDashboardLoading}
+                        />
+                      </Col>
+                    </Row>
+                  </>
+                )}
+              </TabPane>
+
+              <TabPane tabId="cases">
+                {activeTab === "cases" && <OrgCases />}
+              </TabPane>
+              <TabPane tabId="leads">
+                {activeTab === "leads" && <OrgLeads />}
+              </TabPane>
+              <TabPane tabId="applicants">
+                {activeTab === "applicants" && <OrgApplicants />}
+              </TabPane>
+              <TabPane tabId="advisers">
+                {activeTab === "advisers" && <OrgAdvisers />}
+              </TabPane>
+              <TabPane tabId="admins">
+                {activeTab === "admins" && <OrgAdmins />}
+              </TabPane>
+              <TabPane tabId="introducers">
+                {activeTab === "introducers" && <OrgIntroducers />}
+              </TabPane>
+              <TabPane tabId="danger-zone">
+                {activeTab === "danger-zone" && (
+                  <DangerZone singleOrgInfo={singleOrgInfo} />
+                )}
+              </TabPane>
+            </TabContent>
           </Col>
         </Row>
       </Container>

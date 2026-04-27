@@ -13,7 +13,7 @@ import {
 import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
 import { Badge, Button, Card, CardBody, Col, Row, Spinner } from "reactstrap";
-import UpdateOrgDirectorInfoModal from "../Modals/UpdateOrgDirectorInfoModal";
+import UpdateOrgDirectorInfoModal from "../../../Modals/UpdateOrgDirectorInfoModal";
 
 const OrganisationDirectorInfo: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,

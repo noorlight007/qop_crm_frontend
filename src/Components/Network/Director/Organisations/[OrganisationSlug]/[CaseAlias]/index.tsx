@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Common/Breadcrumbs/Breadcrumbs";
-import CaseDetails from "@/Components/Common/Organisations/OrganisationDetails/Cases/CaseDetails/CaseDetails";
+import CaseDetails from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Cases/CaseDetails/CaseDetails";
 
 const OrgCaseDetails: React.FC = () => {
   return (
