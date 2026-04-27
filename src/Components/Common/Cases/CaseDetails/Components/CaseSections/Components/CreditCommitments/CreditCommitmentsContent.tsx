@@ -100,16 +100,6 @@ const CreditCommitmentsContent: React.FC = () => {
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <div className="p-2">
       <CreditCommitmentsSummary />
@@ -129,17 +119,16 @@ const CreditCommitmentsContent: React.FC = () => {
             <FaFileExport />
             <span>Export CSV</span>
           </Button>
-          {canApplicantEdit() && (
-            <Button
-              color="primary"
-              type="submit"
-              className="d-flex justify-content-center align-items-center gap-1"
-              onClick={() => setModalIsOpen(!modalIsOpen)}
-            >
-              <TbCirclePlus />
-              <span>Add Credit Item</span>
-            </Button>
-          )}
+
+          <Button
+            color="primary"
+            type="submit"
+            className="d-flex justify-content-center align-items-center gap-1"
+            onClick={() => setModalIsOpen(!modalIsOpen)}
+          >
+            <TbCirclePlus />
+            <span>Add Credit Item</span>
+          </Button>
         </Col>
       </Row>
       {/* Table start  */}
@@ -326,7 +315,6 @@ const CreditCommitmentsContent: React.FC = () => {
               handleNextTab();
             }}
           >
-            {/* {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"} */}
             Save & Next
           </Button>
         )}

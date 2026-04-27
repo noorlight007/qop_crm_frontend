@@ -453,16 +453,6 @@ const Solicitor: React.FC = () => {
       </div>
     );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <>
       <Card>
@@ -532,28 +522,26 @@ const Solicitor: React.FC = () => {
                         md={12}
                         className="d-flex justify-content-between align-content-center gap-3"
                       >
-                        {canApplicantEdit() && (
-                          <>
-                            <Button
-                              color="success"
-                              onClick={toggleModal}
-                              className="border-success"
-                              // disabled={session?.user?.role === "APPLICANT"}
-                            >
-                              Add New Solicitor
-                            </Button>
-                            <Button
-                              color="primary"
-                              onClick={handleAssignSolicitor}
-                              disabled={
-                                !selectedSolicitor
-                                // || session?.user?.role === "APPLICANT"
-                              }
-                            >
-                              Assign Solicitor
-                            </Button>
-                          </>
-                        )}
+                        <>
+                          <Button
+                            color="success"
+                            onClick={toggleModal}
+                            className="border-success"
+                            // disabled={session?.user?.role === "APPLICANT"}
+                          >
+                            Add New Solicitor
+                          </Button>
+                          <Button
+                            color="primary"
+                            onClick={handleAssignSolicitor}
+                            disabled={
+                              !selectedSolicitor
+                              // || session?.user?.role === "APPLICANT"
+                            }
+                          >
+                            Assign Solicitor
+                          </Button>
+                        </>
                       </Col>
                     </Row>
                   </Form>
@@ -580,57 +568,55 @@ const Solicitor: React.FC = () => {
                             ) || "N/A"}
                           </div>
                           <div>
-                            {canApplicantEdit() && (
-                              <Button
-                                outline
-                                size="sm"
-                                color="danger"
-                                className="ms-1"
-                                title="Unassign"
-                                disabled={isUnassigning}
-                                onClick={async (e) => {
-                                  e.stopPropagation();
-                                  const result = await Swal.fire({
-                                    title: "Are you sure?",
-                                    text: "This will unassign the solicitor from the case.",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonText: "Yes, unassign",
-                                    cancelButtonText: "Cancel",
-                                  });
-                                  if (result.isConfirmed) {
-                                    try {
-                                      await unassignSolicitor({
-                                        case_alias: caseAlias,
-                                        solicitor_alias:
-                                          selectedCaseSolicitor?.alias,
-                                      }).unwrap();
-                                      Swal.fire(
-                                        "Unassigned!",
-                                        "Solicitor has been unassigned.",
-                                        "success",
-                                      );
-                                      // Clear selection and reset active tab
-                                      setSelectedCaseSolicitor(null);
-                                      setActiveTab("0");
-                                    } catch (err) {
-                                      console.error(
-                                        "Failed to unassign solicitor:",
-                                        err,
-                                      );
-                                      Swal.fire(
-                                        "Error",
-                                        "Failed to unassign solicitor. Please try again.",
-                                        "error",
-                                      );
-                                    }
+                            <Button
+                              outline
+                              size="sm"
+                              color="danger"
+                              className="ms-1"
+                              title="Unassign"
+                              disabled={isUnassigning}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                const result = await Swal.fire({
+                                  title: "Are you sure?",
+                                  text: "This will unassign the solicitor from the case.",
+                                  icon: "warning",
+                                  showCancelButton: true,
+                                  confirmButtonText: "Yes, unassign",
+                                  cancelButtonText: "Cancel",
+                                });
+                                if (result.isConfirmed) {
+                                  try {
+                                    await unassignSolicitor({
+                                      case_alias: caseAlias,
+                                      solicitor_alias:
+                                        selectedCaseSolicitor?.alias,
+                                    }).unwrap();
+                                    Swal.fire(
+                                      "Unassigned!",
+                                      "Solicitor has been unassigned.",
+                                      "success",
+                                    );
+                                    // Clear selection and reset active tab
+                                    setSelectedCaseSolicitor(null);
+                                    setActiveTab("0");
+                                  } catch (err) {
+                                    console.error(
+                                      "Failed to unassign solicitor:",
+                                      err,
+                                    );
+                                    Swal.fire(
+                                      "Error",
+                                      "Failed to unassign solicitor. Please try again.",
+                                      "error",
+                                    );
                                   }
-                                }}
-                              >
-                                <BiSolidErrorCircle size={15} />
-                                Unassign
-                              </Button>
-                            )}
+                                }
+                              }}
+                            >
+                              <BiSolidErrorCircle size={15} />
+                              Unassign
+                            </Button>
                           </div>
                         </>
                       ) : (
@@ -949,38 +935,27 @@ const Solicitor: React.FC = () => {
               </Row>
               <Row>
                 <Col md={12} className="d-flex justify-content-end gap-3">
-                  {canApplicantEdit() && (
-                    <Button
-                      type="submit"
-                      color="primary"
-                      disabled={
-                        isUpdateLoading
-                        // || session?.user?.role === "APPLICANT"
-                      }
-                      onClick={() => {
-                        submitActionRef.current = "save";
-                      }}
-                    >
-                      {isUpdateLoading ? "Saving..." : "Save Changes"}
-                    </Button>
-                  )}
+                  <Button
+                    type="submit"
+                    color="primary"
+                    disabled={isUpdateLoading}
+                    onClick={() => {
+                      submitActionRef.current = "save";
+                    }}
+                  >
+                    {isUpdateLoading ? "Saving..." : "Save Changes"}
+                  </Button>
+
                   {session?.user?.role !== "APPLICANT" && (
                     <Button
                       color="secondary"
                       onClick={async (e) => {
-                        // if (session?.user?.role === "APPLICANT") {
-                        //   handleNextTab();
-                        // } else {
                         e.preventDefault();
                         submitActionRef.current = "next";
                         formRef.current?.requestSubmit();
-                        // }
                       }}
                     >
                       Save & Next
-                      {/* {session?.user?.role === "APPLICANT"
-                      ? "Go To Next"
-                      : "Save & Next"} */}
                     </Button>
                   )}
                 </Col>

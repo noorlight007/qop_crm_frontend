@@ -148,16 +148,6 @@ const PortfolioContent: React.FC = () => {
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <>
       <Container fluid className="p-4">
@@ -191,12 +181,11 @@ const PortfolioContent: React.FC = () => {
                       <FaFileExport />
                       {isExporting ? "Exporting..." : " Export to CSV"}
                     </Button>
-                    {canApplicantEdit() && (
                       <>
                         <Button
                           color="secondary"
                           className="d-flex gap-1 cursor-pointer"
-                          onClick={() => setIsImportModalOpen(true)} // ← opens modal instead
+                          onClick={() => setIsImportModalOpen(true)}
                           disabled={isImporting}
                         >
                           <FaFileImport />
@@ -214,7 +203,6 @@ const PortfolioContent: React.FC = () => {
                           Add Portfolio
                         </Button>
                       </>
-                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -429,7 +417,6 @@ const PortfolioContent: React.FC = () => {
           </Col>
         </Row>
         <div className="d-flex justify-content-end">
-          {session?.user?.role !== "APPLICANT" && (
             <Button
               type="submit"
               color="secondary"
@@ -439,7 +426,6 @@ const PortfolioContent: React.FC = () => {
             >
               Go to Next
             </Button>
-          )}
         </div>
       </Container>
 

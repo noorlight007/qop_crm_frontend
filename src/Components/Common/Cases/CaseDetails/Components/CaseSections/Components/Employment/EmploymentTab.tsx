@@ -145,16 +145,6 @@ export const EmploymentTab = () => {
 
   if (isEmploymentDetailLoading) return <LoadingGrow />;
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <Col xxl="12" className="px-5">
       <Card>
@@ -286,26 +276,24 @@ export const EmploymentTab = () => {
 
                             return (
                               <>
-                                {canApplicantEdit() && (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    outline
-                                    color="danger"
-                                    className="ms-1"
-                                    onClick={(e) =>
-                                      openDeleteModal(
-                                        e,
-                                        employment.alias,
-                                        employment.customer.id,
-                                      )
-                                    }
-                                    aria-label="Delete employment"
-                                    title="Delete"
-                                  >
-                                    <FaTrash />
-                                  </Button>
-                                )}
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  outline
+                                  color="danger"
+                                  className="ms-1"
+                                  onClick={(e) =>
+                                    openDeleteModal(
+                                      e,
+                                      employment.alias,
+                                      employment.customer.id,
+                                    )
+                                  }
+                                  aria-label="Delete employment"
+                                  title="Delete"
+                                >
+                                  <FaTrash />
+                                </Button>
                               </>
                             );
                           })()}

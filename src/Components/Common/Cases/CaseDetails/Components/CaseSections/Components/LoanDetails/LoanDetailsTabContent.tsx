@@ -129,8 +129,6 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     { skip: !casealias },
   );
 
-  console.log("case data: ", caseData);
-
   // Initialize form states with default values
   const [formDataTab1, setFormDataTab1] = useState({
     application_type: "",
@@ -488,17 +486,6 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
     }
   };
 
-  // Helper function to determine if applicant can edit based on case stage
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   if (isLoading || isLoandetailsDataLoading)
     return (
       <div className=" d-flex justify-content-center">
@@ -851,11 +838,9 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               </Col>
             </Row>
           </Form>
-          {canApplicantEdit() && (
-            <Button color="primary" onClick={handleNext} className="float-end">
-              {isValidating ? "Validating..." : "Next"}
-            </Button>
-          )}
+          <Button color="primary" onClick={handleNext} className="float-end">
+            {isValidating ? "Validating..." : "Next"}
+          </Button>
         </TabPane>
         <TabPane tabId="2">
           <Form innerRef={formRef2}>
@@ -1330,21 +1315,19 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               </Col>
             </Row>
           </Form>
-          {canApplicantEdit() && (
-            <div className="d-flex justify-content-between">
-              <Button color="secondary" onClick={handleBack}>
-                Back
-              </Button>
-              <Button
-                color="primary"
-                onClick={handleNext}
-                className="ms-2"
-                disabled={!isTab2Valid()}
-              >
-                {isValidating ? "Validating..." : "Next"}
-              </Button>
-            </div>
-          )}
+          <div className="d-flex justify-content-between">
+            <Button color="secondary" onClick={handleBack}>
+              Back
+            </Button>
+            <Button
+              color="primary"
+              onClick={handleNext}
+              className="ms-2"
+              disabled={!isTab2Valid()}
+            >
+              {isValidating ? "Validating..." : "Next"}
+            </Button>
+          </div>
         </TabPane>
         <TabPane tabId="3">
           <Form innerRef={formRef3}>
@@ -1660,16 +1643,14 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               )}
             </Row>
           </Form>
-          {canApplicantEdit() && (
-            <div className="d-flex justify-content-between">
-              <Button color="secondary" onClick={handleBack}>
-                Back
-              </Button>
-              <Button color="primary" onClick={handleNext} className="ms-2">
-                {isValidating ? "Validating..." : "Next"}
-              </Button>
-            </div>
-          )}
+          <div className="d-flex justify-content-between">
+            <Button color="secondary" onClick={handleBack}>
+              Back
+            </Button>
+            <Button color="primary" onClick={handleNext} className="ms-2">
+              {isValidating ? "Validating..." : "Next"}
+            </Button>
+          </div>
         </TabPane>
         <TabPane tabId="4">
           <Form innerRef={formRef4}>
@@ -1898,62 +1879,56 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
               </Col>
             </Row>
           </Form>
-          {canApplicantEdit() && (
-            <div className=" d-flex justify-content-between gap-3 mt-2">
-              <Button color="secondary" onClick={handleBack}>
-                Back
+          <div className=" d-flex justify-content-between gap-3 mt-2">
+            <Button color="secondary" onClick={handleBack}>
+              Back
+            </Button>
+            <div className="d-flex gap-3">
+              <Button
+                type="button"
+                color="primary"
+                onClick={async () => {
+                  setSubmitting("save");
+                  try {
+                    await handleSave();
+                  } finally {
+                    setSubmitting(null);
+                  }
+                }}
+              >
+                {isUpdating && submitting === "save"
+                  ? "Saving..."
+                  : "Save Details"}
               </Button>
-              <div className="d-flex gap-3">
-                <Button
-                  type="button"
-                  color="primary"
-                  onClick={async () => {
-                    setSubmitting("save");
-                    try {
-                      await handleSave();
-                    } finally {
-                      setSubmitting(null);
-                    }
-                  }}
-                >
-                  {isUpdating && submitting === "save"
-                    ? "Saving..."
-                    : "Save Details"}
-                </Button>
-                {session?.user?.role !== "APPLICANT" && (
-                  <Button
-                    type="button"
-                    color="secondary"
-                    onClick={async () => {
-                      if (formRef4.current) {
-                        const ok = formRef4.current.reportValidity();
-                        if (!ok) return;
-                      }
+              <Button
+                type="button"
+                color="secondary"
+                onClick={async () => {
+                  if (formRef4.current) {
+                    const ok = formRef4.current.reportValidity();
+                    if (!ok) return;
+                  }
 
-                      setSubmitting("save_next");
-                      try {
-                        const ok = await handleSave();
-                        if (ok) {
-                          handleNextTab();
-                        }
-                      } catch (error) {
-                        console.error(
-                          "Save failed, not navigating to next tab",
-                        );
-                      } finally {
-                        setSubmitting(null);
-                      }
-                    }}
-                    disabled={isLoading || isUpdating}
-                  >
-                    {isUpdating && submitting === "save_next"
-                      ? "Saving..."
-                      : "Save & Next"}
-                  </Button>
-                )}
-              </div>
+                  setSubmitting("save_next");
+                  try {
+                    const ok = await handleSave();
+                    if (ok) {
+                      handleNextTab();
+                    }
+                  } catch (error) {
+                    console.error("Save failed, not navigating to next tab");
+                  } finally {
+                    setSubmitting(null);
+                  }
+                }}
+                disabled={isLoading || isUpdating}
+              >
+                {isUpdating && submitting === "save_next"
+                  ? "Saving..."
+                  : "Save & Next"}
+              </Button>
             </div>
-          )}
+          </div>
         </TabPane>
       </TabContent>
     </div>

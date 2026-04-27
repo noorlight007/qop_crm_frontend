@@ -33,29 +33,17 @@ export const DependantsTable: React.FC = () => {
     { skip: !casealias },
   );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <div className=" mb-4">
       <div className="d-flex justify-content-between my-2">
         <h3>Other Occupants</h3>
-        {canApplicantEdit() && (
-          <Button
-            color="primary"
-            onClick={() => setIsAddOtherOccupantModalOpen(true)}
-          >
-            <TbCirclePlus className="me-1" size={18} />
-            Add Other Occupant
-          </Button>
-        )}
+        <Button
+          color="primary"
+          onClick={() => setIsAddOtherOccupantModalOpen(true)}
+        >
+          <TbCirclePlus className="me-1" size={18} />
+          Add Other Occupant
+        </Button>
       </div>
       <Table responsive bordered hover>
         <thead className="table-light text-center small">
@@ -66,7 +54,7 @@ export const DependantsTable: React.FC = () => {
             <th>Age</th>
             <th>Relationship</th>
             <th>Created At</th>
-            {canApplicantEdit() && <th>Actions</th>}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -90,33 +78,32 @@ export const DependantsTable: React.FC = () => {
                 </td>
                 <td>{formatChoiceFieldValue(o.relationship) || "-"}</td>
                 <td>{formatDate(o.created_at)}</td>
-                {canApplicantEdit() && (
-                  <td>
-                    <div className="d-flex justify-content-center gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-primary"
-                        onClick={() => {
-                          setSelectedOtherOccupant(o || null);
-                          setIsUpdateOtherOccupantModalOpen(true);
-                        }}
-                      >
-                        Edit
-                      </button>
 
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => {
-                          setSelectedOtherOccupant(o || null);
-                          setIsDeleteOtherOccupantModalOpen(true);
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                )}
+                <td>
+                  <div className="d-flex justify-content-center gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => {
+                        setSelectedOtherOccupant(o || null);
+                        setIsUpdateOtherOccupantModalOpen(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-danger"
+                      onClick={() => {
+                        setSelectedOtherOccupant(o || null);
+                        setIsDeleteOtherOccupantModalOpen(true);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))
           ) : (

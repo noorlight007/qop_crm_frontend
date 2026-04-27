@@ -612,16 +612,6 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   // Handler for when a new employment is added
   const handleEmploymentAdded = (newEmploymentAlias: string) => {
     // Update activeTab to the newly created employment
@@ -2448,48 +2438,42 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
         </Row>
         <Row>
           <Col className="d-flex justify-content-between pt-3">
-            {canApplicantEdit() && (
-              <Button
-                color="success"
-                className="border-success"
-                onClick={() => setAddEmploymentModalOpen(true)}
-              >
-                Add New
-              </Button>
-            )}
+            <Button
+              color="success"
+              className="border-success"
+              onClick={() => setAddEmploymentModalOpen(true)}
+            >
+              Add New
+            </Button>
             <div className=" d-flex justify-content-end gap-2">
-              {canApplicantEdit() && (
-                <>
-                  <Button
-                    color="primary"
-                    type="submit"
-                    disabled={isUpdateEmploymentDetailsLoading}
-                    onClick={() => {
-                      submitActionRef.current = "save";
-                    }}
-                  >
-                    {isUpdateEmploymentDetailsLoading && submitting === "save"
-                      ? "Saving..."
-                      : "Save Changes"}
-                  </Button>
-                  {session?.user?.role !== "APPLICANT" && (
-                    <Button
-                      type="submit"
-                      color="secondary"
-                      disabled={isUpdateEmploymentDetailsLoading}
-                      onClick={(e) => {
-                        submitActionRef.current = "next";
-                        formRef.current?.requestSubmit();
-                      }}
-                    >
-                      {isUpdateEmploymentDetailsLoading &&
-                      submitting === "save_next"
-                        ? "Saving..."
-                        : "Save & Next"}
-                    </Button>
-                  )}
-                </>
-              )}
+              <>
+                <Button
+                  color="primary"
+                  type="submit"
+                  disabled={isUpdateEmploymentDetailsLoading}
+                  onClick={() => {
+                    submitActionRef.current = "save";
+                  }}
+                >
+                  {isUpdateEmploymentDetailsLoading && submitting === "save"
+                    ? "Saving..."
+                    : "Save Changes"}
+                </Button>
+                <Button
+                  type="submit"
+                  color="secondary"
+                  disabled={isUpdateEmploymentDetailsLoading}
+                  onClick={(e) => {
+                    submitActionRef.current = "next";
+                    formRef.current?.requestSubmit();
+                  }}
+                >
+                  {isUpdateEmploymentDetailsLoading &&
+                  submitting === "save_next"
+                    ? "Saving..."
+                    : "Save & Next"}
+                </Button>
+              </>
             </div>
           </Col>
         </Row>

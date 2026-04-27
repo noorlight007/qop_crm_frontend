@@ -134,16 +134,6 @@ const BudgetPlanner: React.FC = () => {
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <div>
       <div className="d-flex flex-column gap-3">
@@ -158,25 +148,21 @@ const BudgetPlanner: React.FC = () => {
           onChange={(e) => setNotes(e.target.value)}
         />
         <div className="mt-auto d-flex justify-content-end w-100 gap-2">
-          {canApplicantEdit() && (
-            <Button
-              color="primary"
-              onClick={saveNotes}
-              disabled={!hasNoteChanges || isSaving || isBudgetPlannerLoading}
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
-          )}
-          {session?.user?.role !== "APPLICANT" && (
-            <Button
-              color="secondary"
-              onClick={handleSaveAndNext}
-              disabled={isSaving || isBudgetPlannerLoading}
-            >
-              Save & Next
-              {/* {session?.user?.role === "APPLICANT" ? "Go To Next" : "Save & Next"} */}
-            </Button>
-          )}
+          <Button
+            color="primary"
+            onClick={saveNotes}
+            disabled={!hasNoteChanges || isSaving || isBudgetPlannerLoading}
+          >
+            {isSaving ? "Saving..." : "Save Changes"}
+          </Button>
+
+          <Button
+            color="secondary"
+            onClick={handleSaveAndNext}
+            disabled={isSaving || isBudgetPlannerLoading}
+          >
+            Save & Next
+          </Button>
         </div>
       </div>
 

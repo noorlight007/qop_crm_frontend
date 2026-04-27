@@ -302,16 +302,6 @@ const NeedsAndPreferencesContent: React.FC = () => {
     );
   }
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <div>
       <Card>
@@ -2027,55 +2017,33 @@ const NeedsAndPreferencesContent: React.FC = () => {
             </FormGroup>
 
             <div className="d-flex justify-content-end gap-2 mt-3">
-              {canApplicantEdit() && (
-                <Button
-                  color="primary"
-                  type="button"
-                  disabled={
-                    isUpdating || submitting !== null
-                    // || session?.user?.role === "APPLICANT"
-                  }
-                  onClick={(e) =>
-                    handleSubmit(
-                      e as React.MouseEvent<HTMLButtonElement>,
-                      "save",
-                    )
-                  }
-                >
-                  {submitting === "save" ? "Saving..." : "Save Changes"}
-                </Button>
-              )}
+              <Button
+                color="primary"
+                type="button"
+                disabled={isUpdating || submitting !== null}
+                onClick={(e) =>
+                  handleSubmit(e as React.MouseEvent<HTMLButtonElement>, "save")
+                }
+              >
+                {submitting === "save" ? "Saving..." : "Save Changes"}
+              </Button>
 
-              {session?.user?.role !== "APPLICANT" && (
-                <Button
-                  color="secondary"
-                  type="button"
-                  disabled={
-                    // session?.user?.role !== "APPLICANT" &&
-                    isUpdating || submitting !== null
+              <Button
+                color="secondary"
+                type="button"
+                disabled={isUpdating || submitting !== null}
+                onClick={async (e) => {
+                  const success = await handleSubmit(
+                    e as React.MouseEvent<HTMLButtonElement>,
+                    "save_next",
+                  );
+                  if (success) {
+                    handleNextTab();
                   }
-                  onClick={async (e) => {
-                    // if (session?.user?.role === "APPLICANT") {
-                    //   handleNextTab();
-                    // } else {
-                    const success = await handleSubmit(
-                      e as React.MouseEvent<HTMLButtonElement>,
-                      "save_next",
-                    );
-                    if (success) {
-                      handleNextTab();
-                    }
-                    // }
-                  }}
-                >
-                  {
-                    // session?.user?.role === "APPLICANT"
-                    //   ? "Go To Next"
-                    //   :
-                    submitting === "save_next" ? "Saving..." : "Save & Next"
-                  }
-                </Button>
-              )}
+                }}
+              >
+                {submitting === "save_next" ? "Saving..." : "Save & Next"}
+              </Button>
             </div>
           </Form>
         </CardBody>

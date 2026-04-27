@@ -152,16 +152,6 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
     }
   };
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <Card className="mb-3">
       <CardFooter>
@@ -196,43 +186,35 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
           </Col>
         </Row>
 
-        {canApplicantEdit() && (
-          <div className="d-flex justify-content-end align-items-center gap-3">
+        <div className="d-flex justify-content-end align-items-center gap-3">
+          <Button
+            type="button"
+            color="primary"
+            id="submit"
+            name="next"
+            className="px-4"
+            onClick={async () => {
+              setSubmitting("save");
+              await handleSubmit();
+            }}
+          >
+            {submitting === "save" ? "Saving..." : "Save Changes"}
+          </Button>
+          {session?.user?.role !== "APPLICANT" && (
             <Button
               type="button"
-              color="primary"
-              id="submit"
-              name="next"
-              className="px-4"
+              color="secondary"
               onClick={async () => {
-                // if (session?.user?.role === "APPLICANT") return;
-                setSubmitting("save");
+                setSubmitting("save_next");
                 await handleSubmit();
+                handleNextTab();
               }}
-              // disabled={
-              //   submitting !== null ||
-              //   isLoading ||
-              //   session?.user?.role === "APPLICANT"
-              // }
+              disabled={submitting !== null || isLoading}
             >
-              {submitting === "save" ? "Saving..." : "Save Changes"}
+              {submitting === "save_next" ? "Saving..." : "Save & Next"}
             </Button>
-            {session?.user?.role !== "APPLICANT" && (
-              <Button
-                type="button"
-                color="secondary"
-                onClick={async () => {
-                  setSubmitting("save_next");
-                  await handleSubmit();
-                  handleNextTab();
-                }}
-                disabled={submitting !== null || isLoading}
-              >
-                {submitting === "save_next" ? "Saving..." : "Save & Next"}
-              </Button>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </CardFooter>
     </Card>
   );
