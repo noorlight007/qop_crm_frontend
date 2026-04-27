@@ -46,13 +46,10 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   } = useLeadOrClientFilterListQuery({
     search: leadSearch || undefined,
   });
-  const { data: userNetAdviserListData } = useGetUserListQuery({
+  const { data: adviserListData } = useGetUserListQuery({
     role: "ADVISER",
   });
-  const { data: userOrgAdviserListData } = useGetUserListQuery({
-    role: "ADVISER",
-  });
-  const { data: userOrgAdminListData } = useGetUserListQuery({
+  const { data: adminListData } = useGetUserListQuery({
     role: "ADMIN",
   });
   const [addCaseDetails, { isLoading: addCaseLoading }] = useAddCaseMutation();
@@ -599,73 +596,39 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               </div>
             )}
           </FormGroup>
-          {session?.user?.is_network &&
-            (session?.user?.role === "DIRECTOR" ||
-              session?.user?.role === "ADVISER" ||
-              session?.user?.role === "COMPLIANCE") && (
-              <FormGroup>
-                <Label for="adviser">Assign Adviser</Label>
-                <Input
-                  id="adviser"
-                  name="assigned_to"
-                  type="select"
-                  value={formData?.assigned_to || ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Select...</option>
-                  {userNetAdviserListData?.length > 0 ? (
-                    userNetAdviserListData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user?.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No advisers available
+          {(session?.user?.role === "DIRECTOR" ||
+            session?.user?.role === "ADVISER" ||
+            session?.user?.role === "COMPLIANCE") && (
+            <FormGroup>
+              <Label for="adviser">Assign Adviser</Label>
+              <Input
+                id="adviser"
+                name="assigned_to"
+                type="select"
+                value={formData?.assigned_to || ""}
+                onChange={handleChange}
+              >
+                <option value="">Select...</option>
+                {adviserListData?.length > 0 ? (
+                  adviserListData?.map((user: any) => (
+                    <option key={user.id} value={user.id}>
+                      {user?.name}
                     </option>
-                  )}
-                </Input>
-                {formErrors.assigned_to && (
-                  <div className="text-danger small mt-1">
-                    {formErrors.assigned_to}
-                  </div>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No advisers available
+                  </option>
                 )}
-              </FormGroup>
-            )}
+              </Input>
+              {formErrors.assigned_to && (
+                <div className="text-danger small mt-1">
+                  {formErrors.assigned_to}
+                </div>
+              )}
+            </FormGroup>
+          )}
 
-          {!session?.user?.is_network &&
-            (session?.user?.role === "DIRECTOR" ||
-              session?.user?.role === "ADVISER" ||
-              session?.user?.role === "ADMIN") && (
-              <FormGroup>
-                <Label for="adviser">Assign Adviser</Label>
-                <Input
-                  id="adviser"
-                  name="assigned_to"
-                  type="select"
-                  value={formData?.assigned_to || ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Select...</option>
-                  {userOrgAdviserListData?.length > 0 ? (
-                    userOrgAdviserListData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No advisers available
-                    </option>
-                  )}
-                </Input>
-                {formErrors.assigned_to && (
-                  <div className="text-danger small mt-1">
-                    {formErrors.assigned_to}
-                  </div>
-                )}
-              </FormGroup>
-            )}
           {!session?.user?.is_network &&
             (session?.user?.role === "DIRECTOR" ||
               session?.user?.role === "ADVISER" ||
@@ -680,15 +643,15 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
                   onChange={handleChange}
                 >
                   <option value="">Select...</option>
-                  {userOrgAdminListData?.length > 0 ? (
-                    userOrgAdminListData?.map((user: any) => (
+                  {adminListData?.length > 0 ? (
+                    adminListData?.map((user: any) => (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>
                     ))
                   ) : (
                     <option value="" disabled>
-                      No advisers available
+                      No admins available
                     </option>
                   )}
                 </Input>

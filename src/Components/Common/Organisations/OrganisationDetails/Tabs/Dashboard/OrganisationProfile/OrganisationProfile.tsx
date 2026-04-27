@@ -26,7 +26,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import UpdateOrganisationModal from "../Modals/UpdateOrganisationModal";
+import UpdateOrganisationModal from "../../../Modals/UpdateOrganisationModal";
 
 const OrganisationProfile: React.FC<FetchSingleOrganisationProps> = ({
   singleOrgInfo,

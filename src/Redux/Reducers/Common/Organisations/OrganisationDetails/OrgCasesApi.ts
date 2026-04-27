@@ -4,7 +4,7 @@ export const OrgCasesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgCases: builder.query({
       query: ({ organisationslug, params }) => ({
-        url: `/dashboard/organization/${organisationslug}/cases-overview/`,
+        url: `/dashboard/organization/${organisationslug}/cases/`,
         method: "GET",
         params,
       }),

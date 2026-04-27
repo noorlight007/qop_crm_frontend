@@ -4,11 +4,9 @@ import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseS
 import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
-import { getAllCasesUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { Container, Row } from "reactstrap";
 
 const CaseDetails: React.FC = () => {
@@ -16,38 +14,39 @@ const CaseDetails: React.FC = () => {
   const [caseInfo, setCaseInfo] = useState<CaseInfoPrpos>();
   const params = useParams();
   const { casealias } = params;
+  const { organisationslug } = params;
   const router = useRouter();
+  const caseAlias = Array.isArray(casealias) ? casealias[0] : casealias;
+  const organisationSlug = Array.isArray(organisationslug)
+    ? organisationslug[0]
+    : organisationslug;
 
   // rtk hooks
   const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
     useGetJointApplicantInfoQuery(
-      { case_alias: casealias },
-      { skip: !casealias },
+      { case_alias: caseAlias },
+      { skip: !caseAlias },
     );
 
   const {
     data: caseData,
     isLoading,
     isError,
-  } = useGetSingleCaseQuery({ case_alias: casealias }, { skip: !casealias });
+  } = useGetSingleCaseQuery({ case_alias: caseAlias }, { skip: !caseAlias });
 
   useEffect(() => {
     if (!isLoading) {
-      if (isError || !caseData) {
-        router.push(getAllCasesUrl(session));
-        toast.error("Find Wrong URL! Redirecting...");
-        return;
-      }
-
-      if (caseData.alias !== casealias) {
-        router.push(getAllCasesUrl(session));
-        toast.error("Find Wrong URL! Redirecting...");
-        return;
-      }
-
       setCaseInfo(caseData);
     }
-  }, [caseData, casealias, router, isLoading, isError]);
+  }, [
+    caseData,
+    caseAlias,
+    organisationSlug,
+    router,
+    isLoading,
+    isError,
+    session,
+  ]);
 
   if (isLoading) {
     return (
@@ -78,7 +77,6 @@ const CaseDetails: React.FC = () => {
             caseStage={caseInfo?.case_stage || ""}
           />
         </Row>
-        <Row>{/* <CalenderContainer /> */}</Row>
       </Container>
     </>
   );
