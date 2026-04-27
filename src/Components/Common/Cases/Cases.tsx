@@ -7,7 +7,6 @@ import {
 import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
-import { useGetOrganisationListQuery } from "@/Redux/Reducers/SuperAdmin/CommonUsers/AuthUsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { getCaseUrl } from "@/utils/RedirectPaths";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -51,28 +50,6 @@ const Cases: React.FC = () => {
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [expandedRow, setExpandedRow] = useState<string | null>(null); // ← NEW
 
-  // Determine subdomain: prefer explicit ?subdomain= query, otherwise derive from hostname subdomain
-  const getTenantFromHost = () => {
-    if (typeof window === "undefined") return null;
-    const hostname = window.location.hostname;
-
-    // Local development: allow overriding via env
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
-      return process.env.NEXT_PUBLIC_LOCAL_SUBDOMAIN || null;
-    }
-
-    const parts = hostname.split(".");
-    // Examples handled:
-    // - subdomain.example.com -> subdomain
-    // - subdomain.localhost -> subdomain (when using dev host like subdomain.localhost)
-    if (parts.length > 2 || (parts.length === 2 && parts[1] === "localhost")) {
-      const subdomain = parts[0];
-      if (subdomain && subdomain !== "www") return subdomain;
-    }
-
-    return null;
-  };
-
   const defaultFilters = {
     created_by__id: "",
     assigned_to__id: "",
@@ -82,9 +59,6 @@ const Cases: React.FC = () => {
     organization__subdomain: "",
   };
   const [filters, setFilters] = useState(defaultFilters);
-  const { data: organisationList } = useGetOrganisationListQuery({
-    subdomain: getTenantFromHost(),
-  });
 
   const selectedOrganisationSubdomain =
     filters.organization__subdomain || undefined;
@@ -92,17 +66,13 @@ const Cases: React.FC = () => {
   const { data: adviserData, isLoading: isAdviserLoading } =
     useGetUserListQuery({
       role: "ADVISER",
-      subdomain: selectedOrganisationSubdomain,
     });
 
   const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
     role: "ADMIN",
-    subdomain: selectedOrganisationSubdomain,
   });
 
-  const { data: usersData } = useGetUsersQuery({
-    subdomain: selectedOrganisationSubdomain,
-  });
+  const { data: usersData } = useGetUsersQuery(undefined);
 
   const { data: caseData, isLoading: isCaseLoading } = useGetCasesQuery({
     search: searchQuery,
@@ -151,7 +121,7 @@ const Cases: React.FC = () => {
 
   return (
     <div>
-      {/* <CaesSummary /> */}
+      <CaesSummary />
       <Card>
         <CardHeader>
           <Row className="flex justify-content-between">
@@ -224,29 +194,6 @@ const Cases: React.FC = () => {
           {filterIcon && (
             <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
               <Row className="justify-content-center g-3">
-                {session?.user?.is_network && (
-                  <Col>
-                    <Label>Select Organisation</Label>
-                    <Input
-                      type="select"
-                      className="py-1"
-                      value={filters.organization__subdomain}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          "organization__subdomain",
-                          e.target.value,
-                        )
-                      }
-                    >
-                      <option value="">All Organisations</option>
-                      {organisationList?.map((org: any) => (
-                        <option key={org.subdomain} value={org.subdomain}>
-                          {org.name}
-                        </option>
-                      ))}
-                    </Input>
-                  </Col>
-                )}
                 <Col>
                   <Label>Select Created By</Label>
                   <Input
@@ -284,27 +231,29 @@ const Cases: React.FC = () => {
                   </Input>
                 </Col>
 
-                <Col>
-                  <Label>Select Admin</Label>
-                  <Input
-                    type="select"
-                    className="py-1"
-                    value={filters.assigned_to_admin__id}
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "assigned_to_admin__id",
-                        e.target.value,
-                      )
-                    }
-                  >
-                    <option value="">All Users</option>
-                    {adminData?.map((admin: any) => (
-                      <option key={admin.alias} value={admin.id}>
-                        {admin.name}
-                      </option>
-                    ))}
-                  </Input>
-                </Col>
+                {session?.user?.is_network ? null : (
+                  <Col>
+                    <Label>Select Admin</Label>
+                    <Input
+                      type="select"
+                      className="py-1"
+                      value={filters.assigned_to_admin__id}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "assigned_to_admin__id",
+                          e.target.value,
+                        )
+                      }
+                    >
+                      <option value="">All Users</option>
+                      {adminData?.map((admin: any) => (
+                        <option key={admin.alias} value={admin.id}>
+                          {admin.name}
+                        </option>
+                      ))}
+                    </Input>
+                  </Col>
+                )}
 
                 <Col>
                   <Label>Select Category</Label>
@@ -372,9 +321,6 @@ const Cases: React.FC = () => {
                   <th>Case ID</th>
                   <th>Applicants</th>
                   <th>Case Category</th>
-                  {session?.user?.role && session.user.is_network ? (
-                    <th>Organisation</th>
-                  ) : null}
                   <th>Adviser</th>
                   <th>Admin</th>
                   <th>Action</th>
@@ -470,19 +416,6 @@ const Cases: React.FC = () => {
                             <small className="text-muted">Not Available</small>
                           )}
                         </td>
-
-                        {session?.user?.role && session.user.is_network ? (
-                          <td className="text-truncate">
-                            {" "}
-                            {caseItem.organization?.name ? (
-                              caseItem.organization.name
-                            ) : (
-                              <small className="text-muted">
-                                Owned by Network
-                              </small>
-                            )}{" "}
-                          </td>
-                        ) : null}
 
                         {/* ── Adviser ── */}
                         <td className="text-truncate">
