@@ -1,10 +1,10 @@
-import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
+import { useUpdateOrgCaseMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import {
   CaseInfoPrpos,
   UpdateCaseModalProps,
 } from "@/Types/Common/Cases/CaseTypes";
-import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -19,12 +19,13 @@ import {
   ModalHeader,
 } from "reactstrap";
 
-const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
+const UpdateOrgCaseModal: React.FC<UpdateCaseModalProps> = ({
   isOpen,
   toggle,
   caseData,
 }) => {
-  const { data: session } = useSession();
+  const params = useParams();
+  const { organisationslug } = params;
 
   // Initialize formData with proper assigned_to mapping
   const getInitialFormData = (data: CaseInfoPrpos | null) => {
@@ -71,15 +72,17 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
     getInitialFormData(caseData),
   );
 
-  const [updateCaseDetails, { isLoading: isUpdating }] =
-    useUpdateCaseMutation();
+  const [updateOrgCaseDetails, { isLoading: isUpdating }] =
+    useUpdateOrgCaseMutation();
 
   const { data: userAdviserListData } = useGetUserListQuery({
     role: "ADVISER",
+    organisation_slug: organisationslug,
   });
 
   const { data: userAdminListData } = useGetUserListQuery({
     role: "ADMIN",
+    organisation_slug: organisationslug,
   });
 
   const baselineFormData = getInitialFormData(caseData);
@@ -111,8 +114,9 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
       if (!caseData?.alias || !formData) return;
       if (!hasChanges) return;
 
-      const res = await updateCaseDetails({
-        caseAlias: caseData?.alias,
+      const res = await updateOrgCaseDetails({
+        organisationslug: organisationslug,
+        case_alias: caseData?.alias,
         payload: changedFields,
       });
       if (res.data) {
@@ -200,62 +204,53 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
               </Input>
             </FormGroup>
 
-            {(session?.user?.role === "DIRECTOR" ||
-              session?.user?.role === "ADVISER" ||
-              session?.user?.role === "COMPLIANCE") && (
-              <FormGroup>
-                <Label for="adviser">Assign Adviser</Label>
-                <Input
-                  id="adviser"
-                  name="assigned_to"
-                  type="select"
-                  value={formData?.assigned_to || ""}
-                  onChange={handleInputChange}
-                >
-                  <option value="">Select...</option>
-                  {userAdviserListData?.length > 0 ? (
-                    userAdviserListData?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user?.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No advisers available
+            <FormGroup>
+              <Label for="adviser">Assign Adviser</Label>
+              <Input
+                id="adviser"
+                name="assigned_to"
+                type="select"
+                value={formData?.assigned_to || ""}
+                onChange={handleInputChange}
+              >
+                <option value="">Select...</option>
+                {userAdviserListData?.length > 0 ? (
+                  userAdviserListData?.map((user: any) => (
+                    <option key={user.id} value={user.id}>
+                      {user?.name}
                     </option>
-                  )}
-                </Input>
-              </FormGroup>
-            )}
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No advisers available
+                  </option>
+                )}
+              </Input>
+            </FormGroup>
 
-            {!session?.user?.is_network &&
-              (session?.user?.role === "DIRECTOR" ||
-                session?.user?.role === "ADVISER" ||
-                session?.user?.role === "ADMIN") && (
-                <FormGroup>
-                  <Label for="adviser">Assign Admin</Label>
-                  <Input
-                    id="admin"
-                    name="assigned_to_admin"
-                    type="select"
-                    value={formData?.assigned_to_admin || ""}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select...</option>
-                    {userAdminListData?.length > 0 ? (
-                      userAdminListData?.map((user: any) => (
-                        <option key={user.id} value={user.id}>
-                          {user.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No advisers available
-                      </option>
-                    )}
-                  </Input>
-                </FormGroup>
-              )}
+            <FormGroup>
+              <Label for="adviser">Assign Admin</Label>
+              <Input
+                id="admin"
+                name="assigned_to_admin"
+                type="select"
+                value={formData?.assigned_to_admin || ""}
+                onChange={handleInputChange}
+              >
+                <option value="">Select...</option>
+                {userAdminListData?.length > 0 ? (
+                  userAdminListData?.map((user: any) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No advisers available
+                  </option>
+                )}
+              </Input>
+            </FormGroup>
 
             <FormGroup>
               <Label for="notes">Notes</Label>
@@ -290,4 +285,4 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   );
 };
 
-export default UpdateCaseModal;
+export default UpdateOrgCaseModal;

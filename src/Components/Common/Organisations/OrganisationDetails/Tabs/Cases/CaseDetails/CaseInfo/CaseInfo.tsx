@@ -1,13 +1,13 @@
-import UpdateCaseModal from "@/Components/Common/Cases/Modals/UpdateCaseModal";
 import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
-import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useUpdateOrgCaseMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 import { FaArrowRight, FaChevronDown, FaTrash } from "react-icons/fa";
 import { FiSettings } from "react-icons/fi";
@@ -35,6 +35,7 @@ import {
   Spinner,
 } from "reactstrap";
 import DeleteOrgNewCaseModal from "../../Modals/DeleteOrgNewCaseModal";
+import UpdateOrgCaseModal from "../../Modals/UpdateOrgCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
@@ -44,6 +45,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   isLoading,
   jointApplicantInfo,
 }) => {
+  const params = useParams();
+  const { casealias } = params;
+  const { organisationslug } = params;
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -69,10 +73,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     caseInfo?.notes || null,
   );
 
-  // console.log("case info: ", caseInfo);
-
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
-    useUpdateCaseMutation();
+    useUpdateOrgCaseMutation();
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.customer);
@@ -132,7 +134,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     try {
       const payload = { ...caseInfo, notes: notesDraft };
       const res = await updateCaseDetails({
-        caseAlias: caseInfo.alias,
+        organisationslug,
+        case_alias: caseInfo.alias,
         payload,
       });
       if ((res as any).data) {
@@ -1007,7 +1010,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         caseAlias={caseInfo?.alias}
       />
 
-      <UpdateCaseModal
+      <UpdateOrgCaseModal
         isOpen={isUpdateCaseModalOpen}
         toggle={toggleUpdateCaseModal}
         caseData={currentCase as CaseInfoPrpos}
