@@ -11,10 +11,10 @@ export const OrgCasesApi = baseApi.injectEndpoints({
       providesTags: ["OrgCases", "LeadDetails"],
     }),
     addOrgCase: builder.mutation({
-      query: ({ organisationslug, data }) => ({
+      query: ({ organisationslug, payload }) => ({
         url: `/dashboard/organization/${organisationslug}/cases/`,
         method: "POST",
-        data,
+        body: payload,
       }),
       invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
     }),

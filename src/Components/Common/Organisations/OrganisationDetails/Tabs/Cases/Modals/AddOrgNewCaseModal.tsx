@@ -1,8 +1,8 @@
-import { useAddCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
   useGetUserListQuery,
   useLeadOrClientFilterListQuery,
 } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
+import { useAddOrgCaseMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import {
   AddNewCaseModalProps,
   LeadOptionType,
@@ -57,7 +57,8 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     role: "ADMIN",
     organisation_slug: organisationslug as string,
   });
-  const [addCaseDetails, { isLoading: addCaseLoading }] = useAddCaseMutation();
+  const [addCaseDetails, { isLoading: addCaseLoading }] =
+    useAddOrgCaseMutation();
 
   const [formData, setFormData] = useState({
     customer_id: leadId || 0,
@@ -397,7 +398,10 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     setSubmitting(submitType);
 
     try {
-      const result = await addCaseDetails({ payload: formData });
+      const result = await addCaseDetails({
+        organisationslug,
+        payload: formData,
+      });
       if ((result as any).data) {
         setFormErrors({});
         toast.success("Case added successfully!");
