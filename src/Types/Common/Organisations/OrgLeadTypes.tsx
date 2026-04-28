@@ -31,3 +31,15 @@ export interface ViewOrgLeadModalProps {
   toggle: () => void;
   selectedLead?: Partial<OrgLeadInfo>;
 }
+
+export interface DeleteOrgLeadModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  leadToDelete: OrgLeadInfo | null;
+}
+
+export interface UpdateOrgLeadModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  leadToUpdate: OrgLeadInfo | null;
+}

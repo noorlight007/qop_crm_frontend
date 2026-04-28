@@ -31,3 +31,15 @@ export interface ViewOrgApplicantModalProps {
   toggle: () => void;
   selectedApplicant?: Partial<OrgApplicantInfo>;
 }
+
+export interface UpdateOrgApplicantModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  applicantToUpdate: OrgApplicantInfo | null;
+}
+
+export interface DeleteOrgApplicantModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  applicantToDelete: OrgApplicantInfo | null;
+}

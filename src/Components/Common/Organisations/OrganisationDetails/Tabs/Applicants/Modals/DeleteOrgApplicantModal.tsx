@@ -1,14 +1,8 @@
 import { useDeleteOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
+import { DeleteOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
-
-interface DeleteOrgApplicantModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  applicantToDelete: OrgLeadInfo | null;
-}
 
 const DeleteOrgApplicantModal: React.FC<DeleteOrgApplicantModalProps> = ({
   isOpen,

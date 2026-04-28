@@ -1,5 +1,5 @@
 import { useUpdateOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
+import { UpdateOrgLeadModalProps } from "@/Types/Common/Organisations/OrgLeadTypes";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -16,12 +16,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-interface UpdateOrgLeadModalProps {
-  isOpen: boolean;
-  toggle: () => void;
-  leadToUpdate: OrgLeadInfo | null;
-}
 
 const UpdateOrgLeadModal: React.FC<UpdateOrgLeadModalProps> = ({
   isOpen,
