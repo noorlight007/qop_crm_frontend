@@ -1,7 +1,7 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseSections/CaseSections";
-import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useGetOrgCaseDetailsQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
+import { useGetOrgJointApplicantQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgJointApplicant";
 import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -23,8 +23,8 @@ const CaseDetails: React.FC = () => {
 
   // rtk hooks
   const { data: jointApplicantInfo, isLoading: isJointApplicantLoading } =
-    useGetJointApplicantInfoQuery(
-      { case_alias: caseAlias },
+    useGetOrgJointApplicantQuery(
+      { organisationslug: organisationSlug, case_alias: caseAlias },
       { skip: !caseAlias },
     );
 

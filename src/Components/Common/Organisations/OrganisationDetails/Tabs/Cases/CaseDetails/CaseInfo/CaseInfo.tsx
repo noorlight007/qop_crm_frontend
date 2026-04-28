@@ -46,7 +46,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   jointApplicantInfo,
 }) => {
   const params = useParams();
-  const { casealias } = params;
   const { organisationslug } = params;
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
