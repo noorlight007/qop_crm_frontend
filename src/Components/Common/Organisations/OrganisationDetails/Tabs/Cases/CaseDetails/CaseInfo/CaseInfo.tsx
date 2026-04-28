@@ -1,3 +1,5 @@
+import CopyCaseModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/CopyCaseModal";
+import ViewJointApplicantModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ViewJointApplicantModal";
 import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
@@ -37,8 +39,6 @@ import {
 import DeleteOrgNewCaseModal from "../../Modals/DeleteOrgNewCaseModal";
 import UpdateOrgCaseModal from "../../Modals/UpdateOrgCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
-import CopyCaseModal from "./Modals/CopyCaseModal";
-import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({
   caseInfo,

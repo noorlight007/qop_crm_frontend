@@ -21,6 +21,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
+import AddOrgLeadModal from "../../../../Leads/Modals/AddOrgLeadModal";
 
 // ─── Local option type (value = alias string) ────────────────────────────────
 type JointLeadOption = {
@@ -614,7 +615,7 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
         </ModalFooter>
       </Form>
 
-      <AddLeadModal
+      <AddOrgLeadModal
         isOpen={isAddLeadModalOpen}
         toggle={handleCloseAddLead}
         onLeadCreated={handleLeadCreated}
