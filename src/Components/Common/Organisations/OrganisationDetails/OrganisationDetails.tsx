@@ -98,7 +98,7 @@ const OrganisationDetails: React.FC = () => {
             <Nav
               pills
               className={`d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-light" : "bg-dark"} rounded-3 p-4 shadow-md`}
-              style={{ top: "4rem", zIndex: 10 }}
+              style={{ top: "4rem", zIndex: 50 }}
             >
               <NavItem>
                 <NavLink

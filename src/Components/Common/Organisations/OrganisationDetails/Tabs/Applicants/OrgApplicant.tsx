@@ -8,8 +8,9 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { User } from "react-feather";
-import { FaInfoCircle, FaSearch } from "react-icons/fa";
+import { FaEdit, FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
 import {
+  Button,
   Card,
   CardBody,
   Col,
@@ -23,6 +24,8 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import DeleteOrgApplicantModal from "./Modals/DeleteOrgApplicantModal";
+import UpdateOrgApplicantModal from "./Modals/UpdateOrgApplicantModal";
 import ViewOrgApplicantModal from "./Modals/ViewOrgApplicantModal";
 
 const OrgApplicants: React.FC = () => {
@@ -35,6 +38,8 @@ const OrgApplicants: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [stablePageSize, setStablePageSize] = useState<number>(0);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -64,6 +69,10 @@ const OrgApplicants: React.FC = () => {
     alias: "",
     profile_image: "",
     name: "",
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
     email: "",
     phone: "",
     gender: "",
@@ -89,6 +98,16 @@ const OrgApplicants: React.FC = () => {
       setSelectedApplicant(client);
     }
     setIsViewModalOpen(!isViewModalOpen);
+  };
+
+  const openUpdateApplicantModal = (applicant: OrgApplicantInfo) => {
+    setSelectedApplicant(applicant);
+    setIsUpdateModalOpen(true);
+  };
+
+  const openDeleteApplicantModal = (applicant: OrgApplicantInfo) => {
+    setSelectedApplicant(applicant);
+    setIsDeleteModalOpen(true);
   };
 
   useEffect(() => {
@@ -190,13 +209,14 @@ const OrgApplicants: React.FC = () => {
                 <th>Enquiry Type</th>
                 <th>Created By</th>
                 <th>Created At</th>
+                <th>Actions</th>
               </tr>
             </thead>
 
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <LoadingGrow />
                     </div>
@@ -296,11 +316,29 @@ const OrgApplicants: React.FC = () => {
                       )}
                     </td>
                     <td>{formatDateAndTime(applicant?.created_at)}</td>
+                    <td>
+                      <div className="d-flex justify-content-center gap-2">
+                        <Button
+                          color="secondary"
+                          size="sm"
+                          onClick={() => openUpdateApplicantModal(applicant)}
+                        >
+                          <FaEdit />
+                        </Button>
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={() => openDeleteApplicantModal(applicant)}
+                        >
+                          <FaTrash />
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={8} className="text-center">
                     No applicants available.
                   </td>
                 </tr>
@@ -369,6 +407,16 @@ const OrgApplicants: React.FC = () => {
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedApplicant={selectedApplicant}
+        />
+        <UpdateOrgApplicantModal
+          isOpen={isUpdateModalOpen}
+          toggle={() => setIsUpdateModalOpen(false)}
+          applicantToUpdate={selectedApplicant as OrgApplicantInfo}
+        />
+        <DeleteOrgApplicantModal
+          isOpen={isDeleteModalOpen}
+          toggle={() => setIsDeleteModalOpen(false)}
+          applicantToDelete={selectedApplicant as OrgApplicantInfo}
         />
         {/* modals end */}
       </CardBody>

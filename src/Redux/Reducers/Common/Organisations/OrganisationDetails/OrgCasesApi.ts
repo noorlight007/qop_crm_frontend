@@ -10,6 +10,13 @@ export const OrgCasesApi = baseApi.injectEndpoints({
       }),
       providesTags: ["OrgCases", "LeadDetails"],
     }),
+    getOrgCaseDetails: builder.query({
+      query: ({ organisationslug, case_alias }) => ({
+        url: `/dashboard/organization/${organisationslug}/cases/${case_alias}/`,
+        method: "GET",
+      }),
+      providesTags: ["OrgCases"],
+    }),
     addOrgCase: builder.mutation({
       query: ({ organisationslug, payload }) => ({
         url: `/dashboard/organization/${organisationslug}/cases/`,
@@ -18,7 +25,19 @@ export const OrgCasesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
     }),
+    deleteOrgCase: builder.mutation({
+      query: ({ organisationslug, case_alias }) => ({
+        url: `/dashboard/organization/${organisationslug}/cases/${case_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
+    }),
   }),
 });
 
-export const { useGetOrgCasesQuery, useAddOrgCaseMutation } = OrgCasesApi;
+export const {
+  useGetOrgCasesQuery,
+  useGetOrgCaseDetailsQuery,
+  useAddOrgCaseMutation,
+  useDeleteOrgCaseMutation,
+} = OrgCasesApi;

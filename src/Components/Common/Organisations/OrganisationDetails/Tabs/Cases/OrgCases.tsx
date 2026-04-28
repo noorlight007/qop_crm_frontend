@@ -1,5 +1,4 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import DeleteCaseModal from "@/Components/Common/Cases/Modals/DeleteCaseModal";
 import {
   caseCategories,
   insuranceCaseStages,
@@ -35,6 +34,7 @@ import {
 } from "reactstrap";
 import AddNewCaseModal from "../../../../Cases/Modals/AddNewCaseModal";
 import AddOrgNewCaseModal from "./Modals/AddOrgNewCaseModal";
+import DeleteOrgNewCaseModal from "./Modals/DeleteOrgNewCaseModal";
 
 const OrgCases: React.FC = () => {
   const { data: session } = useSession();
@@ -736,14 +736,10 @@ const OrgCases: React.FC = () => {
         isOpen={isAddNewCaseModalOpen}
         toggle={toggleAddNewCaseModal}
       />
-      <DeleteCaseModal
+      <DeleteOrgNewCaseModal
         isOpen={isDeleteCaseModalOpen}
         toggle={toggleDeleteCaseModal}
-        caseData={caseToDelete}
-        onDelete={() => {
-          setCaseToDelete(null);
-          toggleDeleteCaseModal();
-        }}
+        caseToDelete={caseToDelete}
       />
     </>
   );

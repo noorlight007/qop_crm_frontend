@@ -18,7 +18,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["OrgLeadAndApplicantList"],
     }),
-    editOrgLeadOrApplicant: builder.mutation({
+    updateOrgLeadOrApplicant: builder.mutation({
       query: ({ organisationslug, user_alias, payload }) => ({
         url: `/organization/${organisationslug}/applicants/${user_alias}/`,
         method: "PATCH",
@@ -47,7 +47,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
 export const {
   useGetOrgLeadAndApplicantListQuery,
   useAddOrgLeadOrApplicantMutation,
-  useEditOrgLeadOrApplicantMutation,
+  useUpdateOrgLeadOrApplicantMutation,
   useDeleteOrgLeadOrApplicantMutation,
   useGetOrgUserListQuery,
 } = OrgUserListApi;

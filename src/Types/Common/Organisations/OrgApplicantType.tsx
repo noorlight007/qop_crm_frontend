@@ -2,6 +2,10 @@ export interface OrgApplicantInfo {
   alias: string;
   profile_image: string;
   name: string;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   email: string;
   phone: string;
   gender: string;

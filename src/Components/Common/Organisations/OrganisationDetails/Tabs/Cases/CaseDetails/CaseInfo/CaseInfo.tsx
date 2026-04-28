@@ -1,3 +1,4 @@
+import UpdateCaseModal from "@/Components/Common/Cases/Modals/UpdateCaseModal";
 import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
@@ -33,8 +34,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import DeleteCaseModal from "../../../Modals/DeleteCaseModal";
-import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
+import DeleteOrgNewCaseModal from "../../Modals/DeleteOrgNewCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
@@ -1012,11 +1012,10 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         toggle={toggleUpdateCaseModal}
         caseData={currentCase as CaseInfoPrpos}
       />
-      <DeleteCaseModal
+      <DeleteOrgNewCaseModal
         isOpen={isDeleteCaseModalOpen}
         toggle={toggleDeleteCaseModal}
-        caseData={currentCase}
-        onDelete={toggleDeleteCaseModal}
+        caseToDelete={currentCase}
       />
       {/* Copy Case Modal - To be implemented */}
       <CopyCaseModal

@@ -6,7 +6,7 @@ import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaInfoCircle, FaSearch } from "react-icons/fa";
+import { FaEdit, FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
 import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
@@ -25,6 +25,8 @@ import {
 } from "reactstrap";
 import AddOrgNewCaseModal from "../Cases/Modals/AddOrgNewCaseModal";
 import AddOrgLeadModal from "./Modals/AddOrgLeadModal";
+import DeleteOrgLeadModal from "./Modals/DeleteOrgLeadModal";
+import UpdateOrgLeadModal from "./Modals/UpdateOrgLeadModal";
 import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
 const OrgLeads: React.FC = () => {
@@ -38,6 +40,10 @@ const OrgLeads: React.FC = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isAddCaseModalOpen, setIsAddCaseModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [leadToDelete, setLeadToDelete] = useState<OrgLeadInfo | null>(null);
+  const [leadToUpdate, setLeadToUpdate] = useState<OrgLeadInfo | null>(null);
   const [newCaseLead, setNewCaseLead] = useState<{
     leadId?: number;
     leadName?: string;
@@ -72,6 +78,10 @@ const OrgLeads: React.FC = () => {
     alias: "",
     profile_image: "",
     name: "",
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
     email: "",
     phone: "",
     gender: "",
@@ -113,6 +123,16 @@ const OrgLeads: React.FC = () => {
     if (isAddCaseModalOpen) {
       setNewCaseLead({});
     }
+  };
+
+  const openUpdateLeadModal = (lead: OrgLeadInfo) => {
+    setLeadToUpdate(lead);
+    setIsUpdateModalOpen(true);
+  };
+
+  const openDeleteLeadModal = (lead: OrgLeadInfo) => {
+    setLeadToDelete(lead);
+    setIsDeleteModalOpen(true);
   };
 
   // Extract leads and pagination info from API response
@@ -203,6 +223,7 @@ const OrgLeads: React.FC = () => {
                 <th>Enquiry Type</th>
                 <th>Created By</th>
                 <th>Created At</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -292,6 +313,24 @@ const OrgLeads: React.FC = () => {
                     <td>
                       {formatDateAndTime(lead?.created_at || "Not Available")}
                     </td>
+                    <td>
+                      <div className="d-flex justify-content-center gap-2">
+                        <Button
+                          color="secondary"
+                          size="sm"
+                          onClick={() => openUpdateLeadModal(lead)}
+                        >
+                          <FaEdit />
+                        </Button>
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={() => openDeleteLeadModal(lead)}
+                        >
+                          <FaTrash />
+                        </Button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -379,6 +418,16 @@ const OrgLeads: React.FC = () => {
           leadId={newCaseLead.leadId}
           leadName={newCaseLead.leadName}
           leadData={newCaseLead.leadData}
+        />
+        <UpdateOrgLeadModal
+          isOpen={isUpdateModalOpen}
+          toggle={() => setIsUpdateModalOpen(false)}
+          leadToUpdate={leadToUpdate}
+        />
+        <DeleteOrgLeadModal
+          isOpen={isDeleteModalOpen}
+          toggle={() => setIsDeleteModalOpen(false)}
+          leadToDelete={leadToDelete}
         />
         {/* modals end */}
       </CardBody>
