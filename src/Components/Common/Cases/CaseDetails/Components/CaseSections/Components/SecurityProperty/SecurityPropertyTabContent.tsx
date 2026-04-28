@@ -6,7 +6,6 @@ import {
   setPropertyErrors,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
 import { PropertyData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SecurityPropertyTypes";
-import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { FC, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -16,6 +15,7 @@ import AdditionalInfo from "./Components/PropertyDetailsTabs/PropertyAdditionalI
 import AddressDetails from "./Components/PropertyDetailsTabs/PropertyAddress";
 import PropertyDetails from "./Components/PropertyDetailsTabs/PropertyType";
 import ValuationInfo from "./Components/PropertyDetailsTabs/PropertyValuation";
+import { useIsLocked } from "./context/EditableContext";
 
 interface SecurityPropertyTabContentProps {
   tabId: string;
@@ -29,7 +29,7 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
   propertyData,
 }) => {
   const dispatch = useDispatch();
-  const { data: session } = useSession();
+  const isLocked = useIsLocked();
   // form refs for each tab so we can run HTML5 validation before navigating
   const formRef1 = useRef<HTMLFormElement | null>(null);
   const formRef2 = useRef<HTMLFormElement | null>(null);
@@ -184,38 +184,59 @@ const SecurityPropertyTabContent: FC<SecurityPropertyTabContentProps> = ({
   }, [propertyData, dispatch]);
 
   return (
-    <div>
-      <TabContent activeTab={tabId} className="w-full">
-        <TabPane tabId="1">
-          <Form innerRef={formRef1}>
-            <AddressDetails />
-          </Form>
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
-        </TabPane>
-        <TabPane tabId="2">
-          <Form innerRef={formRef2}>
-            <PropertyDetails />
-          </Form>
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
-        </TabPane>
-        <TabPane tabId="3">
-          <Form innerRef={formRef3}>
-            <AdditionalInfo />
-          </Form>
-          <Button color="primary" onClick={handleNext} className="float-end">
-            Next
-          </Button>
-        </TabPane>
-        <TabPane tabId="4">
-          <Form innerRef={formRef4}>
-            <ValuationInfo />
-          </Form>
-        </TabPane>
-      </TabContent>
+    <div style={{ position: "relative" }}>
+      {isLocked && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 10,
+            cursor: "not-allowed",
+            backgroundColor: "rgba(0,0,0,0.0001)",
+          }}
+          title="This case is not editable"
+        />
+      )}
+      <div
+        style={{
+          opacity: isLocked ? 0.45 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
+          transition: "opacity 0.2s ease",
+          userSelect: isLocked ? "none" : "auto",
+        }}
+      >
+        <TabContent activeTab={tabId} className="w-full">
+          <TabPane tabId="1">
+            <Form innerRef={formRef1}>
+              <AddressDetails />
+            </Form>
+            <Button color="primary" onClick={handleNext} className="float-end">
+              Next
+            </Button>
+          </TabPane>
+          <TabPane tabId="2">
+            <Form innerRef={formRef2}>
+              <PropertyDetails />
+            </Form>
+            <Button color="primary" onClick={handleNext} className="float-end">
+              Next
+            </Button>
+          </TabPane>
+          <TabPane tabId="3">
+            <Form innerRef={formRef3}>
+              <AdditionalInfo />
+            </Form>
+            <Button color="primary" onClick={handleNext} className="float-end">
+              Next
+            </Button>
+          </TabPane>
+          <TabPane tabId="4">
+            <Form innerRef={formRef4}>
+              <ValuationInfo />
+            </Form>
+          </TabPane>
+        </TabContent>
+      </div>
     </div>
   );
 };

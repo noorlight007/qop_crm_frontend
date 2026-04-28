@@ -1,4 +1,6 @@
 import {
+  ApplicantInsuranceCaseDetailsTabTitleData,
+  ApplicantMortgageCaseDetailsTabTitleData,
   InsuranceAASDTabTitleData,
   InsuranceAORTabTitleData,
   InsuranceEnquiryTabTitleData,
@@ -15,6 +17,7 @@ import {
   MortgageNPDTabTitleData,
   MortgageOFBTabTitleData,
   MortgageRCCTabTitleData,
+  MortgageREFTabTitleData,
   MortgageSubmissionTabTitleData,
 } from "@/Data/Cases/CaseDetailsTabTitleData";
 
@@ -22,9 +25,8 @@ export const getNextTabNav = (
   caseStage: string,
   caseCategory: string,
   currentTabNav: string,
+  userRole?: string,
 ): string | null => {
-  console.log(caseStage);
-  // Map case stages to corresponding tab title data
   const mortgageTabDataMap: Record<string, any[]> = {
     ENQUIRY: MortgageEnquiryTabTitleData,
     FACT_FIND: MortgageFFDTabTitleData,
@@ -35,9 +37,11 @@ export const getNextTabNav = (
     OFFER_FROM_BANK: MortgageOFBTabTitleData,
     LEGAL: MortgageLegalTabTitleData,
     COMPLETION: MortgageCompletionTabTitleData,
+    REFERRED: MortgageREFTabTitleData,
     FUTURE_OPPORTUNITY: MortgageFOPTabTitleData,
     NOT_PROCEED: MortgageNPDTabTitleData,
   };
+
   const insuranceTabDataMap: Record<string, any[]> = {
     ENQUIRY: InsuranceEnquiryTabTitleData,
     FACT_FIND: InsuranceFFDTabTitleData,
@@ -48,35 +52,84 @@ export const getNextTabNav = (
     NOT_PROCEED: InsuranceNPDTabTitleData,
   };
 
-  // Get the current tab data based on caseStage and caseCategory
+  // Applicant maps — same tab list for every stage
+  // const mortgageApplicantStages = Object.keys(mortgageTabDataMap);
+  // const insuranceApplicantStages = Object.keys(insuranceTabDataMap);
+
+  const mortgageApplicantStages = [
+    "ENQUIRY",
+    "FACT_FIND",
+    "RESEARCH_COMPLIANCE_CHECK",
+    "DECISION_IN_PRINCIPLE",
+    "FULL_MORTGAGE_APPLICATION",
+    "SUBMISSION",
+    "OFFER_FROM_BANK",
+    "LEGAL",
+    "COMPLETION",
+    "REFERRED",
+    "FUTURE_OPPORTUNITY",
+    "NOT_PROCEED",
+  ];
+
+  const insuranceApplicantStages = [
+    "ENQUIRY",
+    "FACT_FIND",
+    "SUBMISSION",
+    "ACCEPT_WAITING_START_DATE",
+    "ACCEPTED_ON_RISK",
+    "FURTHER_MEDICAL_REQUIRED",
+    "COMPLETION",
+    "REFERRED",
+    "FUTURE_OPPORTUNITY",
+    "NOT_PROCEED",
+  ];
+
+  const mortgageApplicantTabDataMap: Record<string, any[]> = Object.fromEntries(
+    mortgageApplicantStages.map((stage) => [
+      stage,
+      ApplicantMortgageCaseDetailsTabTitleData,
+    ]),
+  );
+
+  const insuranceApplicantTabDataMap: Record<string, any[]> =
+    Object.fromEntries(
+      insuranceApplicantStages.map((stage) => [
+        stage,
+        ApplicantInsuranceCaseDetailsTabTitleData,
+      ]),
+    );
+
   let currentTabData: any[] = [];
 
   if (caseCategory === "MORTGAGE") {
-    currentTabData = mortgageTabDataMap[caseStage] || [];
+    currentTabData =
+      userRole === "APPLICANT"
+        ? mortgageApplicantTabDataMap[caseStage] || []
+        : mortgageTabDataMap[caseStage] || [];
   } else if (
     caseCategory === "PROTECTION" ||
     caseCategory === "GENERAL_INSURANCE"
   ) {
-    currentTabData = insuranceTabDataMap[caseStage] || [];
+    currentTabData =
+      userRole === "APPLICANT"
+        ? insuranceApplicantTabDataMap[caseStage] || []
+        : insuranceTabDataMap[caseStage] || [];
   } else {
-    currentTabData = mortgageTabDataMap[caseStage] || [];
+    currentTabData =
+      userRole === "APPLICANT"
+        ? mortgageApplicantTabDataMap[caseStage] || []
+        : mortgageTabDataMap[caseStage] || [];
   }
 
-  // If caseStage is invalid or currentTabData is empty, return null
-  if (!currentTabData || currentTabData.length === 0) {
-    return null;
-  }
+  if (!currentTabData || currentTabData.length === 0) return null;
 
-  // Find the index of the current tab by its nav name
   const currentIndex = currentTabData.findIndex(
     (tab) => tab.nav === currentTabNav,
   );
 
-  // If current tab is not found or it's the last tab, return null
   if (currentIndex === -1 || currentIndex === currentTabData.length - 1) {
     return null;
   }
 
-  // Return the nav name of the next tab
   return currentTabData[currentIndex + 1].nav;
 };
