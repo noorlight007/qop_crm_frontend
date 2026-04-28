@@ -7,7 +7,9 @@ import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaInfoCircle, FaSearch } from "react-icons/fa";
+import { TbCirclePlus } from "react-icons/tb";
 import {
+  Button,
   Card,
   CardBody,
   Col,
@@ -21,6 +23,8 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import AddOrgNewCaseModal from "../Cases/Modals/AddOrgNewCaseModal";
+import AddOrgLeadModal from "./Modals/AddOrgLeadModal";
 import ViewOrgLeadModal from "./Modals/ViewOrgLeadModal";
 
 const OrgLeads: React.FC = () => {
@@ -32,6 +36,13 @@ const OrgLeads: React.FC = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddCaseModalOpen, setIsAddCaseModalOpen] = useState(false);
+  const [newCaseLead, setNewCaseLead] = useState<{
+    leadId?: number;
+    leadName?: string;
+    leadData?: any;
+  }>({});
   const [pageSize, setPageSize] = useState<number>(0);
 
   // Debounce search input
@@ -88,6 +99,22 @@ const OrgLeads: React.FC = () => {
     setIsViewModalOpen(!isViewModalOpen);
   };
 
+  const toggleAddModal = () => {
+    setIsAddModalOpen((prev) => !prev);
+  };
+
+  const handleOpenCase = ({ leadId, leadName, leadData }: any) => {
+    setNewCaseLead({ leadId, leadName, leadData });
+    setIsAddCaseModalOpen(true);
+  };
+
+  const toggleAddCaseModal = () => {
+    setIsAddCaseModalOpen((prev) => !prev);
+    if (isAddCaseModalOpen) {
+      setNewCaseLead({});
+    }
+  };
+
   // Extract leads and pagination info from API response
   const leads = Array.isArray(leadData) ? leadData : leadData?.results || [];
   const totalCount = leadData?.count || 0; // from API e.g. 12
@@ -121,7 +148,7 @@ const OrgLeads: React.FC = () => {
       <CardBody>
         <Row className="d-flex justify-content-between py-4">
           <Col md="3" xs="12">
-            <h2>Leads</h2>
+            <h2 className="mb-0">Leads</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -154,7 +181,16 @@ const OrgLeads: React.FC = () => {
               </UncontrolledPopover>
             </InputGroup>
           </Col>
-          <Col md={3} xs="12" />
+          <Col
+            md={3}
+            xs="12"
+            className="d-flex justify-content-md-end justify-content-start mt-3 mt-md-0"
+          >
+            <Button color="primary" onClick={toggleAddModal}>
+              <TbCirclePlus className="me-1" />
+              Add Lead
+            </Button>
+          </Col>
         </Row>
         <Row>
           <Table hover responsive>
@@ -164,6 +200,7 @@ const OrgLeads: React.FC = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
+                <th>Enquiry Type</th>
                 <th>Created By</th>
                 <th>Created At</th>
               </tr>
@@ -208,10 +245,25 @@ const OrgLeads: React.FC = () => {
                       )}
                     </td>
                     <td>
-                      {lead?.source ? (
+                      {lead?.source === "OTHER" ? (
+                        lead?.other_source || (
+                          <small className="text-muted">Not Available</small>
+                        )
+                      ) : lead?.source ? (
                         formatChoiceFieldValue(lead.source)
                       ) : (
-                        <small className="text-muted">Not Found</small>
+                        <small className="text-muted">Not specified</small>
+                      )}
+                    </td>
+                    <td>
+                      {lead?.enquiry_type === "OTHER" ? (
+                        lead?.other_enquiry_type || (
+                          <small className="text-muted">Not Available</small>
+                        )
+                      ) : lead?.enquiry_type ? (
+                        formatChoiceFieldValue(lead.enquiry_type)
+                      ) : (
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
@@ -313,6 +365,20 @@ const OrgLeads: React.FC = () => {
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
           selectedLead={selectedLead}
+        />
+        <AddOrgLeadModal
+          isOpen={isAddModalOpen}
+          toggle={toggleAddModal}
+          header="Lead"
+          onLeadCreated={() => setCurrentPage(1)}
+          onOpenCase={handleOpenCase}
+        />
+        <AddOrgNewCaseModal
+          isOpen={isAddCaseModalOpen}
+          toggle={toggleAddCaseModal}
+          leadId={newCaseLead.leadId}
+          leadName={newCaseLead.leadName}
+          leadData={newCaseLead.leadData}
         />
         {/* modals end */}
       </CardBody>

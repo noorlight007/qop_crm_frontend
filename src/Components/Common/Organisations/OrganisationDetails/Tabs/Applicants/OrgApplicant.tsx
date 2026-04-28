@@ -187,6 +187,7 @@ const OrgApplicants: React.FC = () => {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Source</th>
+                <th>Enquiry Type</th>
                 <th>Created By</th>
                 <th>Created At</th>
               </tr>
@@ -250,10 +251,25 @@ const OrgApplicants: React.FC = () => {
                       )}
                     </td>
                     <td>
-                      {applicant?.source ? (
-                        formatChoiceFieldValue(applicant?.source)
+                      {applicant?.source === "OTHER" ? (
+                        applicant?.other_source || (
+                          <small className="text-muted">Not Available</small>
+                        )
+                      ) : applicant?.source ? (
+                        formatChoiceFieldValue(applicant.source)
                       ) : (
-                        <small className="text-muted">Not Found</small>
+                        <small className="text-muted">Not specified</small>
+                      )}
+                    </td>
+                    <td>
+                      {applicant?.enquiry_type === "OTHER" ? (
+                        applicant?.other_enquiry_type || (
+                          <small className="text-muted">Not Available</small>
+                        )
+                      ) : applicant?.enquiry_type ? (
+                        formatChoiceFieldValue(applicant.enquiry_type)
+                      ) : (
+                        <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>

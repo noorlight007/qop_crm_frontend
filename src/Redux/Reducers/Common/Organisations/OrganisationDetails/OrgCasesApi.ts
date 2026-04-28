@@ -16,20 +16,9 @@ export const OrgCasesApi = baseApi.injectEndpoints({
         method: "POST",
         data,
       }),
-      invalidatesTags: ["OrgCases"],
-    }),
-    deleteOrgCase: builder.mutation({
-      query: ({ organisationslug, case_alias }) => ({
-        url: `/dashboard/organization/${organisationslug}/cases/${case_alias}/`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["OrgCases"],
+      invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
     }),
   }),
 });
 
-export const {
-  useGetOrgCasesQuery,
-  useAddOrgCaseMutation,
-  useDeleteOrgCaseMutation,
-} = OrgCasesApi;
+export const { useGetOrgCasesQuery, useAddOrgCaseMutation } = OrgCasesApi;

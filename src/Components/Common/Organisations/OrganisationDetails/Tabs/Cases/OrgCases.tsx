@@ -1,4 +1,5 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import DeleteCaseModal from "@/Components/Common/Cases/Modals/DeleteCaseModal";
 import {
   caseCategories,
   insuranceCaseStages,
@@ -13,7 +14,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { FaInfoCircle, FaSearch } from "react-icons/fa";
+import { FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
 import { TbArrowsRightLeft, TbCirclePlus } from "react-icons/tb";
 import {
   Button,
@@ -43,6 +44,8 @@ const OrgCases: React.FC = () => {
   const [casesPerPage] = useState(10);
   const [filterIcon, setFilterIcon] = useState(false);
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
+  const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
+  const [caseToDelete, setCaseToDelete] = useState<CaseInfoPrpos | null>(null);
 
   const defaultFilters = {
     case_category: "",
@@ -64,6 +67,10 @@ const OrgCases: React.FC = () => {
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
   const toggleAddNewCaseModal = () =>
     setIsAddNewCaseModalOpen(!isAddNewCaseModalOpen);
+
+  const toggleDeleteCaseModal = () => {
+    setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
+  };
 
   const handleFilterChange = (filterKey: string, value: string) => {
     setFilters((prevFilters) => ({
@@ -227,15 +234,16 @@ const OrgCases: React.FC = () => {
                         <th>Case Name</th>
                         <th>Applicants</th>
                         <th>Phone</th>
-                        <th>Case Category</th>
+                        <th>Category</th>
                         <th>Lender</th>
                         <th className="text-truncate">Security property</th>
-                        <th>Case Stage</th>
+                        <th>Stage</th>
                         <th className="text-truncate">Review Date</th>
                         <th className="text-truncate">Created At</th>
                         <th>Created By</th>
-                        <th>Assigned Adviser</th>
-                        <th>Assigned Admin</th>
+                        <th>Adviser</th>
+                        <th>Admin</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody className="text-center">
@@ -574,6 +582,18 @@ const OrgCases: React.FC = () => {
                                 </small>
                               )}
                             </td>
+                            <td>
+                              <Button
+                                color="danger"
+                                size="sm"
+                                onClick={() => {
+                                  setCaseToDelete(caseItem);
+                                  toggleDeleteCaseModal();
+                                }}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </td>
                           </tr>
                         ))
                       ) : (
@@ -715,6 +735,15 @@ const OrgCases: React.FC = () => {
       <AddOrgNewCaseModal
         isOpen={isAddNewCaseModalOpen}
         toggle={toggleAddNewCaseModal}
+      />
+      <DeleteCaseModal
+        isOpen={isDeleteCaseModalOpen}
+        toggle={toggleDeleteCaseModal}
+        caseData={caseToDelete}
+        onDelete={() => {
+          setCaseToDelete(null);
+          toggleDeleteCaseModal();
+        }}
       />
     </>
   );

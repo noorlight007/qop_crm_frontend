@@ -55,6 +55,7 @@ export const CasesApi = baseApi.injectEndpoints({
         "LeadDetails",
         "AuthUserList",
         "AuthUsers",
+        "OrgCases",
       ],
     }),
   }),
