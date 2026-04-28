@@ -60,9 +60,6 @@ const Cases: React.FC = () => {
   };
   const [filters, setFilters] = useState(defaultFilters);
 
-  const selectedOrganisationSubdomain =
-    filters.organization__subdomain || undefined;
-
   const { data: adviserData, isLoading: isAdviserLoading } =
     useGetUserListQuery({
       role: "ADVISER",

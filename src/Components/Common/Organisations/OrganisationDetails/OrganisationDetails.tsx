@@ -97,15 +97,17 @@ const OrganisationDetails: React.FC = () => {
           <Col md="12" className="position-relative">
             <Nav
               pills
-              className={`d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-light" : "bg-dark"} rounded-3 p-4 shadow-md`}
+              className={`d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
               style={{ top: "4rem", zIndex: 50 }}
             >
               <NavItem>
                 <NavLink
                   active={activeTab === "dashboard"}
                   onClick={() => setActiveTab("dashboard")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "dashboard" ? "bg-primary" : "text-primary border-primary"}`}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  className={`${activeTab === "dashboard" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Dashboard
                 </NavLink>
@@ -114,8 +116,10 @@ const OrganisationDetails: React.FC = () => {
                 <NavLink
                   active={activeTab === "cases"}
                   onClick={() => setActiveTab("cases")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "cases" ? "bg-primary" : "text-primary border-primary"}`}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  className={`${activeTab === "cases" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Cases
                 </NavLink>
@@ -124,8 +128,10 @@ const OrganisationDetails: React.FC = () => {
                 <NavLink
                   active={activeTab === "leads"}
                   onClick={() => setActiveTab("leads")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "leads" ? "bg-primary" : "text-primary border-primary"}`}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  className={`${activeTab === "leads" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Leads
                 </NavLink>
@@ -135,7 +141,7 @@ const OrganisationDetails: React.FC = () => {
                   active={activeTab === "applicants"}
                   onClick={() => setActiveTab("applicants")}
                   style={{ cursor: "pointer" }}
-                  className={`${activeTab === "applicants" ? "bg-primary" : "text-primary border-primary"}`}
+                  className={`${activeTab === "applicants" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Applicants
                 </NavLink>
@@ -145,7 +151,7 @@ const OrganisationDetails: React.FC = () => {
                   active={activeTab === "advisers"}
                   onClick={() => setActiveTab("advisers")}
                   style={{ cursor: "pointer" }}
-                  className={`${activeTab === "advisers" ? "bg-primary" : "text-primary border-primary"}`}
+                  className={`${activeTab === "advisers" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Advisers
                 </NavLink>
@@ -155,7 +161,7 @@ const OrganisationDetails: React.FC = () => {
                   active={activeTab === "admins"}
                   onClick={() => setActiveTab("admins")}
                   style={{ cursor: "pointer" }}
-                  className={`${activeTab === "admins" ? "bg-primary" : "text-primary border-primary"}`}
+                  className={`${activeTab === "admins" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Admins
                 </NavLink>
@@ -165,7 +171,7 @@ const OrganisationDetails: React.FC = () => {
                   active={activeTab === "introducers"}
                   onClick={() => setActiveTab("introducers")}
                   style={{ cursor: "pointer" }}
-                  className={`${activeTab === "introducers" ? "bg-primary" : "text-primary border-primary"}`}
+                  className={`${activeTab === "introducers" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                 >
                   Introducers
                 </NavLink>

@@ -4,6 +4,7 @@ import {
   insuranceCaseStages,
   mortgageStages,
 } from "@/Data/Common/FilterChoiceFields";
+import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
 import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -50,7 +51,8 @@ const OrgCases: React.FC = () => {
   const defaultFilters = {
     case_category: "",
     case_stage: "",
-    is_removed: "",
+    assigned_to__id: "",
+    assigned_to_admin__id: "",
   };
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -85,7 +87,16 @@ const OrgCases: React.FC = () => {
     ? Math.ceil(caseData.count / casesPerPage)
     : 1;
 
-  const userRole = session?.user?.role;
+  const { data: adviserData, isLoading: isAdviserLoading } =
+    useGetUserListQuery({
+      role: "ADVISER",
+      organisation_slug: organisationslug as string,
+    });
+
+  const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
+    role: "ADMIN",
+    organisation_slug: organisationslug as string,
+  });
 
   return (
     <>
@@ -161,7 +172,51 @@ const OrgCases: React.FC = () => {
                 {filterIcon && (
                   <Card className="shadow-lg bg-light-secondary rounded-3 p-3 mt-3 mb-3">
                     <Row className="justify-content-center g-3">
-                      <Col xs="12" sm="6" md="4">
+                      <Col>
+                        <Label>Select Adviser</Label>
+                        <Input
+                          type="select"
+                          className="py-1"
+                          value={filters.assigned_to__id}
+                          onChange={(e) =>
+                            handleFilterChange(
+                              "assigned_to__id",
+                              e.target.value,
+                            )
+                          }
+                        >
+                          <option value="">All Users</option>
+                          {adviserData?.map((adviser: any) => (
+                            <option key={adviser.alias} value={adviser.id}>
+                              {adviser.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+
+                      <Col>
+                        <Label>Select Admin</Label>
+                        <Input
+                          type="select"
+                          className="py-1"
+                          value={filters.assigned_to_admin__id}
+                          onChange={(e) =>
+                            handleFilterChange(
+                              "assigned_to_admin__id",
+                              e.target.value,
+                            )
+                          }
+                        >
+                          <option value="">All Users</option>
+                          {adminData?.map((admin: any) => (
+                            <option key={admin.alias} value={admin.id}>
+                              {admin.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+
+                      <Col>
                         <Label>Select Category</Label>
                         <Input
                           type="select"
@@ -179,7 +234,7 @@ const OrgCases: React.FC = () => {
                           ))}
                         </Input>
                       </Col>
-                      <Col xs="12" sm="6" md="4">
+                      <Col>
                         <Label>Select Stage</Label>
                         <Input
                           type="select"
@@ -210,7 +265,7 @@ const OrgCases: React.FC = () => {
                           )}
                         </Input>
                       </Col>
-                      <Col xs="12" sm="6" md="4">
+                      <Col>
                         <Label>Clear All Filters</Label>
                         <Button
                           outline
@@ -266,13 +321,7 @@ const OrgCases: React.FC = () => {
                                   session?.user?.role,
                                 )}
                               >
-                                {caseItem.is_removed ? (
-                                  <s className="text-danger opacity-50">
-                                    {caseItem.name}
-                                  </s>
-                                ) : (
-                                  caseItem.name
-                                )}
+                                {caseItem.name}
                               </Link>
                             </td>
                             <td className="text-start text-truncate">
@@ -478,18 +527,6 @@ const OrgCases: React.FC = () => {
                                       : ""}
                                     )
                                   </p>
-                                  <p
-                                    className="m-0 opacity-75"
-                                    style={{ fontSize: "9px" }}
-                                  >
-                                    (
-                                    {caseItem.created_by?.user_type
-                                      ? formatChoiceFieldValue(
-                                          caseItem.created_by?.user_type,
-                                        )
-                                      : "Not Found"}
-                                    )
-                                  </p>
                                 </>
                               )}
                             </td>
@@ -515,18 +552,6 @@ const OrgCases: React.FC = () => {
                                     (
                                     {caseItem.assigned_user.email
                                       ? caseItem.assigned_user.email
-                                      : "Not Found"}
-                                    )
-                                  </p>
-                                  <p
-                                    className="m-0 opacity-75"
-                                    style={{ fontSize: "9px" }}
-                                  >
-                                    (
-                                    {caseItem.assigned_user.user_type
-                                      ? formatChoiceFieldValue(
-                                          caseItem.assigned_user.user_type,
-                                        )
                                       : "Not Found"}
                                     )
                                   </p>
@@ -560,18 +585,6 @@ const OrgCases: React.FC = () => {
                                     (
                                     {caseItem.assigned_admin.email
                                       ? caseItem.assigned_admin.email
-                                      : "Not Found"}
-                                    )
-                                  </p>
-                                  <p
-                                    className="m-0 opacity-75"
-                                    style={{ fontSize: "9px" }}
-                                  >
-                                    (
-                                    {caseItem.assigned_admin.user_type
-                                      ? formatChoiceFieldValue(
-                                          caseItem.assigned_admin.user_type,
-                                        )
                                       : "Not Found"}
                                     )
                                   </p>
