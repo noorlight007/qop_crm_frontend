@@ -1,13 +1,13 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import CaseInfo from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/CaseInfo";
 import CaseSections from "@/Components/Common/Cases/CaseDetails/Components/CaseSections/CaseSections";
 import { useGetJointApplicantInfoQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useGetOrgCaseDetailsQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import { CaseInfoPrpos } from "@/Types/Common/Cases/CaseTypes";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Container, Row } from "reactstrap";
+import CaseInfo from "./CaseInfo/CaseInfo";
 
 const CaseDetails: React.FC = () => {
   const { data: session } = useSession();
@@ -32,7 +32,10 @@ const CaseDetails: React.FC = () => {
     data: caseData,
     isLoading,
     isError,
-  } = useGetSingleCaseQuery({ case_alias: caseAlias }, { skip: !caseAlias });
+  } = useGetOrgCaseDetailsQuery(
+    { organisationslug: organisationSlug, case_alias: caseAlias },
+    { skip: !caseAlias },
+  );
 
   useEffect(() => {
     if (!isLoading) {

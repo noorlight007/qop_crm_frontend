@@ -2,6 +2,10 @@ export interface OrgApplicantInfo {
   alias: string;
   profile_image: string;
   name: string;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   email: string;
   phone: string;
   gender: string;
@@ -26,4 +30,16 @@ export interface ViewOrgApplicantModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedApplicant?: Partial<OrgApplicantInfo>;
+}
+
+export interface UpdateOrgApplicantModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  applicantToUpdate: OrgApplicantInfo | null;
+}
+
+export interface DeleteOrgApplicantModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  applicantToDelete: OrgApplicantInfo | null;
 }

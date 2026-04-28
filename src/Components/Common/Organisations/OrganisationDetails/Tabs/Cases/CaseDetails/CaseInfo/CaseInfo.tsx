@@ -1,14 +1,22 @@
+import CopyCaseModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/CopyCaseModal";
+import ViewJointApplicantModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ViewJointApplicantModal";
 import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
 import { useDownloadApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadApplicantInfo/DownloadApplicantInfo";
 import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadDIPCertificate/DownloadDIPCertificateAPi";
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
-import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useUpdateOrgCaseMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
-import { FaArrowRight, FaChevronDown, FaTrash } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaArrowRight,
+  FaChevronDown,
+  FaTrash,
+} from "react-icons/fa";
 import { FiSettings } from "react-icons/fi";
 import {
   TbCircleArrowUp,
@@ -33,18 +41,17 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import DeleteCaseModal from "../../../Modals/DeleteCaseModal";
-import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
+import DeleteOrgNewCaseModal from "../../Modals/DeleteOrgNewCaseModal";
+import UpdateOrgCaseModal from "../../Modals/UpdateOrgCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
-import ApplicantEditAccessModal from "./Modals/ApplicantEditAccessModal";
-import CopyCaseModal from "./Modals/CopyCaseModal";
-import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
 const CaseInfo: React.FC<SingleCaseProps> = ({
   caseInfo,
   isLoading,
   jointApplicantInfo,
 }) => {
+  const params = useParams();
+  const { organisationslug } = params;
   const { data: session } = useSession();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -71,7 +78,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   );
 
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
-    useUpdateCaseMutation();
+    useUpdateOrgCaseMutation();
 
   useEffect(() => {
     setDisplayLeadUser(caseInfo?.customer);
@@ -112,12 +119,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     toggleViewJointApplicantModal();
   };
 
-  const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
-    useState(false);
-
-  const toggleApplicantEditAccessModal = () =>
-    setIsApplicantEditAccessModalOpen((prev) => !prev);
-
   // Notes editing handlers
   const handleEditNotes = () => {
     setNotesDraft(caseInfo?.notes || "");
@@ -137,7 +138,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     try {
       const payload = { ...caseInfo, notes: notesDraft };
       const res = await updateCaseDetails({
-        caseAlias: caseInfo.alias,
+        organisationslug,
+        case_alias: caseInfo.alias,
         payload,
       });
       if ((res as any).data) {
@@ -225,75 +227,54 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
           <h3 className="mb-2">
             <span className="text-primary">{caseInfo?.name}</span>
           </h3>
-          <ButtonGroup>
-            <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-              <DropdownToggle color="primary">
-                <FiSettings className="me-1" />
-                <span>Actions</span>
-                <FaChevronDown className="ms-1" />
-              </DropdownToggle>
-              <DropdownMenu
-                style={{
-                  width: "200px",
-                }}
-              >
-                <DropdownItem
-                  onClick={() => openUpdateCaseModal(caseInfo!)}
-                  disabled={!caseInfo}
-                  className="opacity-100 py-3"
-                >
-                  <TbCircleArrowUp size="16" className="me-1" />
-                  <span>Update Case</span>
-                </DropdownItem>
-                <DropdownItem
-                  onClick={() => {
-                    toggleApplicantInvitationModal();
+          <div className="d-flex align-items-center gap-2">
+            <Button color="secondary" onClick={() => window.history.back()}>
+              <FaArrowLeft className="me-1" />
+              Previous page
+            </Button>
+            <ButtonGroup>
+              <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+                <DropdownToggle color="primary">
+                  <FiSettings className="me-1" />
+                  <span>Actions</span>
+                  <FaChevronDown className="ms-1" />
+                </DropdownToggle>
+                <DropdownMenu
+                  style={{
+                    width: "200px",
                   }}
-                  className="opacity-100 py-3"
                 >
-                  <TbMailShare size="16" className="me-1" />
-                  Client Invitation
-                </DropdownItem>
-                <DropdownItem
-                  onClick={toggleApplicantEditAccessModal}
-                  className="opacity-100 py-3"
-                >
-                  <TbUserPlus size="16" className="me-1" />
-                  Applicant Edit Access
-                </DropdownItem>
-                <DropdownItem
-                  className="opacity-100 py-3"
-                  onClick={toggleCopyCaseModal}
-                >
-                  <TbCopy size="16" className="me-1" />
-                  Copy Case
-                </DropdownItem>
-                <DropdownItem
-                  className="opacity-100 py-3"
-                  onClick={handleDownloadApplicantInfo}
-                  disabled={isApplicantsInfoLoading}
-                  toggle={false}
-                >
-                  {isApplicantsInfoLoading ? (
-                    <>
-                      <Spinner size="sm" className="me-1" />
-                      Downloading...
-                    </>
-                  ) : (
-                    <>
-                      <TbDownload size="16" className="me-1" />
-                      Download Applicants Info
-                    </>
-                  )}
-                </DropdownItem>
-                {caseInfo?.case_stage !== "ENQUIRY" && (
+                  <DropdownItem
+                    onClick={() => openUpdateCaseModal(caseInfo!)}
+                    disabled={!caseInfo}
+                    className="opacity-100 py-3"
+                  >
+                    <TbCircleArrowUp size="16" className="me-1" />
+                    <span>Update Case</span>
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => {
+                      toggleApplicantInvitationModal();
+                    }}
+                    className="opacity-100 py-3"
+                  >
+                    <TbMailShare size="16" className="me-1" />
+                    Client Invitation
+                  </DropdownItem>
                   <DropdownItem
                     className="opacity-100 py-3"
-                    onClick={handleDownloadFactFind}
-                    disabled={isFactFindDownloading}
+                    onClick={toggleCopyCaseModal}
+                  >
+                    <TbCopy size="16" className="me-1" />
+                    Copy Case
+                  </DropdownItem>
+                  <DropdownItem
+                    className="opacity-100 py-3"
+                    onClick={handleDownloadApplicantInfo}
+                    disabled={isApplicantsInfoLoading}
                     toggle={false}
                   >
-                    {isFactFindDownloading ? (
+                    {isApplicantsInfoLoading ? (
                       <>
                         <Spinner size="sm" className="me-1" />
                         Downloading...
@@ -301,27 +282,18 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                     ) : (
                       <>
                         <TbDownload size="16" className="me-1" />
-                        Download Fact Find
+                        Download Applicants Info
                       </>
                     )}
                   </DropdownItem>
-                )}
-                {caseInfo?.case_category === "MORTGAGE" &&
-                  (caseInfo?.case_stage === "DECISION_IN_PRINCIPLE" ||
-                    caseInfo?.case_stage === "FULL_MORTGAGE_APPLICATION" ||
-                    caseInfo?.case_stage === "SUBMISSION" ||
-                    caseInfo?.case_stage === "OFFER_FROM_BANK" ||
-                    caseInfo?.case_stage === "LEGAL" ||
-                    caseInfo?.case_stage === "COMPLETION" ||
-                    caseInfo?.case_stage === "FUTURE_OPPORTUNITY" ||
-                    caseInfo?.case_stage === "NOT_PROCEED") && (
+                  {caseInfo?.case_stage !== "ENQUIRY" && (
                     <DropdownItem
                       className="opacity-100 py-3"
-                      onClick={handleDownloadDIPCertificate}
-                      disabled={isDIPCertificateDownloading}
+                      onClick={handleDownloadFactFind}
+                      disabled={isFactFindDownloading}
                       toggle={false}
                     >
-                      {isDIPCertificateDownloading ? (
+                      {isFactFindDownloading ? (
                         <>
                           <Spinner size="sm" className="me-1" />
                           Downloading...
@@ -329,31 +301,60 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                       ) : (
                         <>
                           <TbDownload size="16" className="me-1" />
-                          Download DIP PDF
+                          Download Fact Find
                         </>
                       )}
                     </DropdownItem>
                   )}
-                {((session?.user?.is_network &&
-                  (session?.user?.role === "DIRECTOR" ||
-                    session?.user?.role === "COMPLIANCE")) ||
-                  (!session?.user?.is_network &&
-                    session?.user?.role === "DIRECTOR")) && (
-                  <>
-                    <DropdownItem divider />
-                    <DropdownItem
-                      onClick={() => openDeleteCaseModal(caseInfo!)}
-                      disabled={!caseInfo}
-                      className="text-danger opacity-100 py-3"
-                    >
-                      <FaTrash size="16" className="me-1" />
-                      Delete Case
-                    </DropdownItem>
-                  </>
-                )}
-              </DropdownMenu>
-            </Dropdown>
-          </ButtonGroup>
+                  {caseInfo?.case_category === "MORTGAGE" &&
+                    (caseInfo?.case_stage === "DECISION_IN_PRINCIPLE" ||
+                      caseInfo?.case_stage === "FULL_MORTGAGE_APPLICATION" ||
+                      caseInfo?.case_stage === "SUBMISSION" ||
+                      caseInfo?.case_stage === "OFFER_FROM_BANK" ||
+                      caseInfo?.case_stage === "LEGAL" ||
+                      caseInfo?.case_stage === "COMPLETION" ||
+                      caseInfo?.case_stage === "FUTURE_OPPORTUNITY" ||
+                      caseInfo?.case_stage === "NOT_PROCEED") && (
+                      <DropdownItem
+                        className="opacity-100 py-3"
+                        onClick={handleDownloadDIPCertificate}
+                        disabled={isDIPCertificateDownloading}
+                        toggle={false}
+                      >
+                        {isDIPCertificateDownloading ? (
+                          <>
+                            <Spinner size="sm" className="me-1" />
+                            Downloading...
+                          </>
+                        ) : (
+                          <>
+                            <TbDownload size="16" className="me-1" />
+                            Download DIP PDF
+                          </>
+                        )}
+                      </DropdownItem>
+                    )}
+                  {((session?.user?.is_network &&
+                    (session?.user?.role === "DIRECTOR" ||
+                      session?.user?.role === "COMPLIANCE")) ||
+                    (!session?.user?.is_network &&
+                      session?.user?.role === "DIRECTOR")) && (
+                    <>
+                      <DropdownItem divider />
+                      <DropdownItem
+                        onClick={() => openDeleteCaseModal(caseInfo!)}
+                        disabled={!caseInfo}
+                        className="text-danger opacity-100 py-3"
+                      >
+                        <FaTrash size="16" className="me-1" />
+                        Delete Case
+                      </DropdownItem>
+                    </>
+                  )}
+                </DropdownMenu>
+              </Dropdown>
+            </ButtonGroup>
+          </div>
         </CardHeader>
 
         <Row className="px-3 mt-3">
@@ -1019,16 +1020,15 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         caseAlias={caseInfo?.alias}
       />
 
-      <UpdateCaseModal
+      <UpdateOrgCaseModal
         isOpen={isUpdateCaseModalOpen}
         toggle={toggleUpdateCaseModal}
         caseData={currentCase as CaseInfoPrpos}
       />
-      <DeleteCaseModal
+      <DeleteOrgNewCaseModal
         isOpen={isDeleteCaseModalOpen}
         toggle={toggleDeleteCaseModal}
-        caseData={currentCase}
-        onDelete={toggleDeleteCaseModal}
+        caseToDelete={currentCase}
       />
       {/* Copy Case Modal - To be implemented */}
       <CopyCaseModal
@@ -1047,14 +1047,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <AddJointApplicantModal
         isOpen={isAddJointApplicantModalOpen}
         toggle={toggleAddJointApplicantModal}
-      />
-
-      <ApplicantEditAccessModal
-        isOpen={isApplicantEditAccessModalOpen}
-        toggle={toggleApplicantEditAccessModal}
-        caseInfo={caseInfo}
-        updateCaseDetails={updateCaseDetails}
-        isUpdating={isUpdatingNotes}
       />
     </Col>
   );
