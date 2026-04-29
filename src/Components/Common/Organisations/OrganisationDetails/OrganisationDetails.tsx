@@ -34,6 +34,15 @@ import OrgLeads from "./Tabs/Leads/OrgLeads";
 const OrganisationDetails: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const navItems = [
+    { id: "dashboard", label: "Dashboard" },
+    { id: "cases", label: "Cases" },
+    { id: "leads", label: "Leads" },
+    { id: "applicants", label: "Applicants" },
+    { id: "advisers", label: "Advisers" },
+    { id: "admins", label: "Admins" },
+    { id: "introducers", label: "Introducers" },
+  ];
   const currentTheme = useAppSelector(
     (state) => state.themeCustomizer.mix_background_layout,
   );
@@ -97,85 +106,20 @@ const OrganisationDetails: React.FC = () => {
           <Col md="12" className="position-relative">
             <Nav
               pills
-              className={`d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
+              className={`org-details-tabs d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
               style={{ top: "4rem", zIndex: 50 }}
             >
-              <NavItem>
-                <NavLink
-                  active={activeTab === "dashboard"}
-                  onClick={() => setActiveTab("dashboard")}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                  className={`${activeTab === "dashboard" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Dashboard
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "cases"}
-                  onClick={() => setActiveTab("cases")}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                  className={`${activeTab === "cases" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Cases
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "leads"}
-                  onClick={() => setActiveTab("leads")}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                  className={`${activeTab === "leads" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Leads
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "applicants"}
-                  onClick={() => setActiveTab("applicants")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "applicants" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Applicants
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "advisers"}
-                  onClick={() => setActiveTab("advisers")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "advisers" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Advisers
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "admins"}
-                  onClick={() => setActiveTab("admins")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "admins" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Admins
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink
-                  active={activeTab === "introducers"}
-                  onClick={() => setActiveTab("introducers")}
-                  style={{ cursor: "pointer" }}
-                  className={`${activeTab === "introducers" ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
-                >
-                  Introducers
-                </NavLink>
-              </NavItem>
+              {navItems.map((item) => (
+                <NavItem key={item.id}>
+                  <NavLink
+                    active={activeTab === item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`${activeTab === item.id ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
+                  >
+                    {item.label}
+                  </NavLink>
+                </NavItem>
+              ))}
             </Nav>
 
             <TabContent activeTab={activeTab}>
