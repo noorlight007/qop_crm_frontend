@@ -1,3 +1,4 @@
+import ApplicantEditAccessModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ApplicantEditAccessModal";
 import CopyCaseModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/CopyCaseModal";
 import ViewJointApplicantModal from "@/Components/Common/Cases/CaseDetails/Components/CaseInfo/Modals/ViewJointApplicantModal";
 import ApplicantInvitationModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/ApplicantInvitationModal";
@@ -24,6 +25,7 @@ import {
   TbDownload,
   TbMailShare,
   TbUserPlus,
+  TbUserShield,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
@@ -69,6 +71,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   } | null>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
+  const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
+    useState(false);
 
   // Inline notes editing state
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -113,6 +117,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
 
   const toggleAddJointApplicantModal = () =>
     setIsAddJointApplicantModalOpen(!isAddJointApplicantModalOpen);
+
+  const toggleApplicantEditAccessModal = () =>
+    setIsApplicantEditAccessModalOpen((prev) => !prev);
 
   const openViewJointApplicantModal = (jointApplicant: any, index: number) => {
     setSelectedJointApplicant({ data: jointApplicant, index });
@@ -260,6 +267,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   >
                     <TbMailShare size="16" className="me-1" />
                     Client Invitation
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={toggleApplicantEditAccessModal}
+                    className="opacity-100 py-3"
+                  >
+                    <TbUserShield size="16" className="me-1" />
+                    Applicant Edit Access
                   </DropdownItem>
                   <DropdownItem
                     className="opacity-100 py-3"
@@ -1047,6 +1061,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <AddJointApplicantModal
         isOpen={isAddJointApplicantModalOpen}
         toggle={toggleAddJointApplicantModal}
+      />
+      <ApplicantEditAccessModal
+        isOpen={isApplicantEditAccessModalOpen}
+        toggle={toggleApplicantEditAccessModal}
+        caseInfo={caseInfo}
       />
     </Col>
   );

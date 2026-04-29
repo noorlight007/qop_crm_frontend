@@ -167,9 +167,4 @@ export interface ApplicantEditAccessModalProps {
   isOpen: boolean;
   toggle: () => void;
   caseInfo: any;
-  updateCaseDetails: (args: {
-    caseAlias: string;
-    payload: any;
-  }) => Promise<any>;
-  isUpdating: boolean;
 }

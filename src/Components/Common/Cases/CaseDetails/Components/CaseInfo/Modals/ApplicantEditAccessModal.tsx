@@ -1,4 +1,6 @@
+import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { ApplicantEditAccessModalProps } from "@/Types/Common/Cases/CaseTypes";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -13,10 +15,15 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
   isOpen,
   toggle,
   caseInfo,
-  updateCaseDetails,
-  isUpdating,
 }) => {
-  const isEditable = caseInfo?.is_editable ?? false;
+  const [updateCaseDetails, { isLoading: isUpdating }] =
+    useUpdateCaseMutation();
+
+  const [isEditable, setIsEditable] = useState(caseInfo?.is_editable ?? false);
+
+  useEffect(() => {
+    setIsEditable(caseInfo?.is_editable ?? false);
+  }, [caseInfo?.is_editable]);
 
   const handleSubmit = async () => {
     if (!caseInfo) {
@@ -32,6 +39,7 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
       });
 
       if ((res as any).data) {
+        setIsEditable((prev: boolean) => !prev);
         toast.success(
           isEditable
             ? "Edit access removed from applicant."
@@ -51,7 +59,9 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
-      <ModalHeader toggle={toggle}>Applicant Edit Access</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        <h4 className="text-primary">Applicant Edit Access</h4>
+      </ModalHeader>
       <ModalBody>
         <div className="text-center py-3">
           {/* Icon */}
@@ -61,23 +71,26 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
               width: 64,
               height: 64,
               backgroundColor: isEditable
-                ? "rgba(220, 53, 69, 0.12)"
-                : "rgba(13, 110, 253, 0.12)",
+                ? "rgba(220, 53, 69)"
+                : "rgba(25, 135, 84)",
             }}
           >
             <i
-              className={`fa-solid ${isEditable ? "fa-lock" : "fa-lock-open"} fa-xl`}
+              className={`fa-solid ${isEditable ? "fa-lock-open" : "fa-lock"} fa-xl`}
               style={{
                 color: isEditable
                   ? "rgba(220, 53, 69, 0.85)"
-                  : "rgba(13, 110, 253, 0.85)",
+                  : "rgba(25, 135, 84, 0.85)",
               }}
             />
           </div>
 
-          {/* Dynamic heading */}
-          <h5 className="fw-semibold mb-2">
-            {isEditable ? "Remove Edit Access" : "Grant Edit Access"}
+          <h5
+            className={`fw-semibold mb-2 ${isEditable ? "text-danger" : "text-success"}`}
+          >
+            {isEditable
+              ? "Status: Edit access enabled"
+              : "Status: Edit access disabled"}
           </h5>
 
           {/* Dynamic description */}
@@ -86,14 +99,14 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
               <>
                 The applicant currently has permission to edit their form data.{" "}
                 <br />
-                <strong className="text-danger">
+                <strong className="text-success">
                   Removing access will prevent them from making further changes.
                 </strong>
               </>
             ) : (
               <>
                 The applicant currently cannot edit their form data. <br />
-                <strong className="text-primary">
+                <strong className="text-danger">
                   Granting access will allow them to update their information
                   directly.
                 </strong>
@@ -112,7 +125,7 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
           Cancel
         </Button>
         <Button
-          color={isEditable ? "danger" : "primary"}
+          color={isEditable ? "success" : "danger"}
           onClick={handleSubmit}
           disabled={isUpdating}
         >

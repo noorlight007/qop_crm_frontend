@@ -16,6 +16,7 @@ import {
   TbDownload,
   TbMailShare,
   TbUserPlus,
+  TbUserShield,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
@@ -61,6 +62,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     index: number;
   } | null>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
+    useState(false);
+  const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
     useState(false);
 
   // Inline notes editing state
@@ -111,9 +114,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     setSelectedJointApplicant({ data: jointApplicant, index });
     toggleViewJointApplicantModal();
   };
-
-  const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
-    useState(false);
 
   const toggleApplicantEditAccessModal = () =>
     setIsApplicantEditAccessModalOpen((prev) => !prev);
@@ -258,7 +258,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                   onClick={toggleApplicantEditAccessModal}
                   className="opacity-100 py-3"
                 >
-                  <TbUserPlus size="16" className="me-1" />
+                  <TbUserShield size="16" className="me-1" />
                   Applicant Edit Access
                 </DropdownItem>
                 <DropdownItem
@@ -1053,8 +1053,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
         isOpen={isApplicantEditAccessModalOpen}
         toggle={toggleApplicantEditAccessModal}
         caseInfo={caseInfo}
-        updateCaseDetails={updateCaseDetails}
-        isUpdating={isUpdatingNotes}
       />
     </Col>
   );

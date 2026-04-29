@@ -43,6 +43,7 @@ export const CasesApi = baseApi.injectEndpoints({
         "Tasks",
         "AuthUserList",
         "AuthUsers",
+        "OrgCases",
       ],
     }),
     deleteCase: builder.mutation({
