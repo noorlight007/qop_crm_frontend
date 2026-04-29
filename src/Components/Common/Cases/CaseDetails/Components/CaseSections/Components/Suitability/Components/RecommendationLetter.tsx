@@ -132,6 +132,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [isProtectionEditing, setIsProtectionEditing] = useState(false);
   const [isHomeInsuranceOptionOpen, setIsHomeInsuranceOptionOpen] =
     useState(false);
+  const [isArrangementFeeEditing, setIsArrangementFeeEditing] = useState(false);
+  const [isMaxErcEditing, setIsMaxErcEditing] = useState(false);
+  const [isAdditionalRecipientsEditing, setIsAdditionalRecipientsEditing] = useState(false);
+  const [additionalRecipientsDraft, setAdditionalRecipientsDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -145,6 +149,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [mortgageTermDraft, setMortgageTermDraft] = useState("");
   const [portableWhyDraft, setPortableWhyDraft] = useState("");
   const [protectionDraft, setProtectionDraft] = useState("");
+  const [arrangementFeeDraft, setArrangementFeeDraft] = useState("");
+  const [maxErcDraft, setMaxErcDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
   // DROPDOWN OPTION LISTS
@@ -318,6 +324,44 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const startProtectionEdit = () => {
     setProtectionDraft(formValues.protection_reason ?? "");
     setIsProtectionEditing(true);
+  };
+
+  const handleArrangementFeeSave = () => {
+    onFormChange({ arrangement_fee_value: arrangementFeeDraft });
+    setIsArrangementFeeEditing(false);
+  };
+  const handleArrangementFeeCancel = () => {
+    setArrangementFeeDraft(formValues.arrangement_fee_value ?? "");
+    setIsArrangementFeeEditing(false);
+  };
+  const startArrangementFeeEdit = () => {
+    setArrangementFeeDraft(formValues.arrangement_fee_value ?? "");
+    setIsArrangementFeeEditing(true);
+  };
+
+  const handleMaxErcSave = () => {
+    onFormChange({ max_erc_value: maxErcDraft });
+    setIsMaxErcEditing(false);
+  };
+  const handleMaxErcCancel = () => {
+    setMaxErcDraft(formValues.max_erc_value ?? "");
+    setIsMaxErcEditing(false);
+  };
+  const startMaxErcEdit = () => {
+    setMaxErcDraft(formValues.max_erc_value ?? "");
+    setIsMaxErcEditing(true);
+  };
+  const handleAdditionalRecipientsSave = () => {
+    onFormChange({ additional_recipients_text: additionalRecipientsDraft });
+    setIsAdditionalRecipientsEditing(false);
+  };
+  const handleAdditionalRecipientsCancel = () => {
+    setAdditionalRecipientsDraft(formValues.additional_recipients_text ?? "");
+    setIsAdditionalRecipientsEditing(false);
+  };
+  const startAdditionalRecipientsEdit = () => {
+    setAdditionalRecipientsDraft(formValues.additional_recipients_text ?? "");
+    setIsAdditionalRecipientsEditing(true);
   };
 
   // ══════════════════════════════════════════════════════════
@@ -791,7 +835,33 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           {/* ── 6. Arrangement Fee ── */}
           <tr>
             <td className="fw-bold">Arrangement Fee</td>
-            <td style={{ color: blue }}>{arrangementFee}</td>
+            <td>
+              {isArrangementFeeEditing ? (
+                <>
+                  <Input
+                    type="text"
+                    value={arrangementFeeDraft}
+                    onChange={(e) => setArrangementFeeDraft(e.target.value)}
+                    placeholder="e.g. £999"
+                    autoFocus
+                    className="w-100 p-1 mb-2"
+                  />
+                  <div className="d-flex gap-2">
+                    <Button color="light" className="text-dark" size="sm" onClick={handleArrangementFeeSave}>Save</Button>
+                    <Button color="light" className="text-dark" size="sm" onClick={handleArrangementFeeCancel}>Cancel</Button>
+                  </div>
+                </>
+              ) : (
+                <span
+                  className={formValues.arrangement_fee_value ? "fw-semibold" : "text-success fst-italic"}
+                  style={{ cursor: "pointer", color: formValues.arrangement_fee_value ? blue : undefined }}
+                  onClick={startArrangementFeeEdit}
+                  title="Click to edit"
+                >
+                  {formValues.arrangement_fee_value || "＋ Add arrangement fee"}
+                </span>
+              )}
+            </td>
             <td>
               <p className="mb-1">
                 Your mortgage may have fees and charges payable.
@@ -1006,7 +1076,30 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               </Dropdown>
               <p className="mt-2 mb-0">
                 The Maximum Early Repayment Charge that could apply is{" "}
-                <strong style={{ color: blue }}>{maxERC}</strong>
+                {isMaxErcEditing ? (
+                  <span className="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                    <strong>£</strong>
+                    <Input
+                      type="text"
+                      value={maxErcDraft}
+                      onChange={(e) => setMaxErcDraft(e.target.value)}
+                      placeholder="e.g. 2500"
+                      autoFocus
+                      style={{ width: "140px" }}
+                      className="p-1"
+                    />
+                    <Button color="light" className="text-dark" size="sm" onClick={handleMaxErcSave}>Save</Button>
+                    <Button color="light" className="text-dark" size="sm" onClick={handleMaxErcCancel}>Cancel</Button>
+                  </span>
+                ) : (
+                  <strong
+                    style={{ color: formValues.max_erc_value ? blue : "green", cursor: "pointer" }}
+                    onClick={startMaxErcEdit}
+                    title="Click to edit"
+                  >
+                    {formValues.max_erc_value ? `£${formValues.max_erc_value}` : "＋ Add max ERC charge"}
+                  </strong>
+                )}
               </p>
             </td>
             <td>
@@ -1579,9 +1672,39 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <p className="mb-0">
         This Recommendation Letter is also being sent by email/post to:
       </p>
-      <p style={{ color: "#2e7d32" }}>
-        {additionalRecipients || "[Insert email / address]"}
-      </p>
+
+      {isAdditionalRecipientsEditing ? (
+        <div className="mt-1">
+          <Input
+            type="textarea"
+            rows={3}
+            value={additionalRecipientsDraft}
+            onChange={(e) => setAdditionalRecipientsDraft(e.target.value)}
+            placeholder="Enter email address or postal address..."
+            autoFocus
+            className="w-100 p-1"
+          />
+          <div className="d-flex gap-2 mt-2">
+            <Button color="light" className="text-dark" size="sm" onClick={handleAdditionalRecipientsSave}>
+              Save
+            </Button>
+            <Button color="light" className="text-dark" size="sm" onClick={handleAdditionalRecipientsCancel}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <p
+          style={{
+            color: formValues.additional_recipients_text ? "#2e7d32" : "green",
+            cursor: "pointer",
+          }}
+          onClick={startAdditionalRecipientsEdit}
+          title="Click to edit"
+        >
+          {formValues.additional_recipients_text || "click to add email / address"}
+        </p>
+      )}
     </>
   );
 };
