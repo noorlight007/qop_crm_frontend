@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetNotesQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Notes/NotesApi";
 import { NoteProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/NotesAndTaskTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
@@ -232,7 +232,7 @@ const Notes: React.FC = () => {
             {isLoading ? (
               <tr>
                 <td colSpan={8} className="text-center">
-                  <LoadingSpinner />
+                  <LoadingGrow />
                 </td>
               </tr>
             ) : notesData &&

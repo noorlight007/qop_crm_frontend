@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetCaseDocumentsQuery,
   useGetFileCountQuery,
@@ -445,7 +445,7 @@ const Documents: React.FC = () => {
           <Row>
             {isLoading ? (
               <div className="d-flex justify-content-center my-5">
-                <LoadingSpinner2 />
+                <LoadingGrow />
               </div>
             ) : (
               <>

@@ -25,6 +25,7 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   caseData,
 }) => {
   const { data: session } = useSession();
+
   // Initialize formData with proper assigned_to mapping
   const getInitialFormData = (data: CaseInfoPrpos | null) => {
     if (!data) return null;
@@ -73,17 +74,12 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
   const [updateCaseDetails, { isLoading: isUpdating }] =
     useUpdateCaseMutation();
 
-  const { data: userNetAdviserListData } = useGetUserListQuery({
+  const { data: userAdviserListData } = useGetUserListQuery({
     role: "ADVISER",
-    is_network: true,
   });
-  const { data: userOrgAdviserListData } = useGetUserListQuery({
-    role: "ADVISER",
-    is_network: false,
-  });
-  const { data: userOrgAdminListData } = useGetUserListQuery({
+
+  const { data: userAdminListData } = useGetUserListQuery({
     role: "ADMIN",
-    is_network: false,
   });
 
   const baselineFormData = getInitialFormData(caseData);
@@ -171,6 +167,9 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                     <option value="OFFER_FROM_BANK">Offer From Bank</option>
                     <option value="LEGAL">Legal</option>
                     <option value="COMPLETION">Completion</option>
+                    <option value="REFERRED">
+                      Referred(Packager/External)
+                    </option>
                     <option value="FUTURE_OPPORTUNITY">
                       Future Opportunity
                     </option>
@@ -189,69 +188,45 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                     <option value="FURTHER_MEDICAL_REQUIRED">
                       Further Medical Required
                     </option>
+                    <option value="REFERRED">
+                      Referred(Packager/External)
+                    </option>
+                    <option value="FUTURE_OPPORTUNITY">
+                      Future Opportunity
+                    </option>
                     <option value="NOT_PROCEED">Not Proceed</option>
                   </>
                 )}
               </Input>
             </FormGroup>
 
-            {session?.user?.is_network &&
-              (session?.user?.role === "DIRECTOR" ||
-                session?.user?.role === "ADVISER" ||
-                session?.user?.role === "COMPLIANCE") && (
-                <FormGroup>
-                  <Label for="adviser">Assign Adviser</Label>
-                  <Input
-                    id="adviser"
-                    name="assigned_to"
-                    type="select"
-                    value={formData?.assigned_to || ""}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select...</option>
-                    {userNetAdviserListData?.length > 0 ? (
-                      userNetAdviserListData?.map((user: any) => (
-                        <option key={user.id} value={user.id}>
-                          {user?.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No advisers available
+            {(session?.user?.role === "DIRECTOR" ||
+              session?.user?.role === "ADVISER" ||
+              session?.user?.role === "COMPLIANCE") && (
+              <FormGroup>
+                <Label for="adviser">Assign Adviser</Label>
+                <Input
+                  id="adviser"
+                  name="assigned_to"
+                  type="select"
+                  value={formData?.assigned_to || ""}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select...</option>
+                  {userAdviserListData?.length > 0 ? (
+                    userAdviserListData?.map((user: any) => (
+                      <option key={user.id} value={user.id}>
+                        {user?.name}
                       </option>
-                    )}
-                  </Input>
-                </FormGroup>
-              )}
-
-            {!session?.user?.is_network &&
-              (session?.user?.role === "DIRECTOR" ||
-                session?.user?.role === "ADVISER" ||
-                session?.user?.role === "ADMIN") && (
-                <FormGroup>
-                  <Label for="adviser">Assign Adviser</Label>
-                  <Input
-                    id="adviser"
-                    name="assigned_to"
-                    type="select"
-                    value={formData?.assigned_to || ""}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select...</option>
-                    {userOrgAdviserListData?.length > 0 ? (
-                      userOrgAdviserListData?.map((user: any) => (
-                        <option key={user.id} value={user.id}>
-                          {user.name}
-                        </option>
-                      ))
-                    ) : (
-                      <option value="" disabled>
-                        No advisers available
-                      </option>
-                    )}
-                  </Input>
-                </FormGroup>
-              )}
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No advisers available
+                    </option>
+                  )}
+                </Input>
+              </FormGroup>
+            )}
 
             {!session?.user?.is_network &&
               (session?.user?.role === "DIRECTOR" ||
@@ -267,8 +242,8 @@ const UpdateCaseModal: React.FC<UpdateCaseModalProps> = ({
                     onChange={handleInputChange}
                   >
                     <option value="">Select...</option>
-                    {userOrgAdminListData?.length > 0 ? (
-                      userOrgAdminListData?.map((user: any) => (
+                    {userAdminListData?.length > 0 ? (
+                      userAdminListData?.map((user: any) => (
                         <option key={user.id} value={user.id}>
                           {user.name}
                         </option>

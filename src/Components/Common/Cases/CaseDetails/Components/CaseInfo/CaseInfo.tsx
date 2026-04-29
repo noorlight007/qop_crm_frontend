@@ -4,7 +4,6 @@ import { useDownloadDIPCertificateMutation } from "@/Redux/Reducers/Common/Cases
 import { useDownloadFactFindMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/DownloadFactFind/DownloadFactFindApi";
 import { useUpdateCaseMutation } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { CaseInfoPrpos, SingleCaseProps } from "@/Types/Common/Cases/CaseTypes";
-import { ApplicantInvitationProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
 import getCurrencySign from "@/utils/currency";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -15,9 +14,9 @@ import {
   TbCircleArrowUp,
   TbCopy,
   TbDownload,
-  TbEdit,
   TbMailShare,
   TbUserPlus,
+  TbUserShield,
 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import {
@@ -38,6 +37,7 @@ import {
 import DeleteCaseModal from "../../../Modals/DeleteCaseModal";
 import UpdateCaseModal from "../../../Modals/UpdateCaseModal";
 import AddJointApplicantModal from "./Modals/AddJointApplicantModal";
+import ApplicantEditAccessModal from "./Modals/ApplicantEditAccessModal";
 import CopyCaseModal from "./Modals/CopyCaseModal";
 import ViewJointApplicantModal from "./Modals/ViewJointApplicantModal";
 
@@ -63,6 +63,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   } | null>(null);
   const [isAddJointApplicantModalOpen, setIsAddJointApplicantModalOpen] =
     useState(false);
+  const [isApplicantEditAccessModalOpen, setIsApplicantEditAccessModalOpen] =
+    useState(false);
 
   // Inline notes editing state
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -70,8 +72,6 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
   const [localNotes, setLocalNotes] = useState<string | null>(
     caseInfo?.notes || null,
   );
-
-  // console.log("case info: ", caseInfo);
 
   const [updateCaseDetails, { isLoading: isUpdatingNotes }] =
     useUpdateCaseMutation();
@@ -114,6 +114,9 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
     setSelectedJointApplicant({ data: jointApplicant, index });
     toggleViewJointApplicantModal();
   };
+
+  const toggleApplicantEditAccessModal = () =>
+    setIsApplicantEditAccessModalOpen((prev) => !prev);
 
   // Notes editing handlers
   const handleEditNotes = () => {
@@ -250,6 +253,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                 >
                   <TbMailShare size="16" className="me-1" />
                   Client Invitation
+                </DropdownItem>
+                <DropdownItem
+                  onClick={toggleApplicantEditAccessModal}
+                  className="opacity-100 py-3"
+                >
+                  <TbUserShield size="16" className="me-1" />
+                  Applicant Edit Access
                 </DropdownItem>
                 <DropdownItem
                   className="opacity-100 py-3"
@@ -397,9 +407,7 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         ) : (
                           <>
                             <span className="small">Phone:</span>{" "}
-                            <strong className="text-muted opacity-50 small">
-                              Not Found
-                            </strong>
+                            <small className="text-muted">Not Found</small>
                           </>
                         )}
                       </h6>
@@ -560,9 +568,11 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                       <h6 className="pt-1">
                         <span className="small">Case Stage:</span>{" "}
                         <strong className="small rounded-1 px-1 bg-secondary text-white">
-                          {caseInfo?.case_stage
-                            ? formatChoiceFieldValue(caseInfo.case_stage)
-                            : "N/A"}
+                          {caseInfo?.case_stage ? (
+                            formatChoiceFieldValue(caseInfo.case_stage)
+                          ) : (
+                            <small className="text-muted">Not Found</small>
+                          )}
                         </strong>
                       </h6>
                     </Col>
@@ -612,13 +622,15 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                             </strong>
                           </h6>
                           <h6 className="pt-1">
-                            <span className="small">User Type:</span>{" "}
+                            <span className="small">Phone:</span>{" "}
                             <strong className="small">
-                              {caseInfo?.assigned_user?.user_type
-                                ? formatChoiceFieldValue(
-                                    caseInfo.assigned_user?.user_type,
-                                  )
-                                : "N/A"}
+                              {caseInfo?.assigned_user?.phone ? (
+                                formatChoiceFieldValue(
+                                  caseInfo.assigned_user?.phone,
+                                )
+                              ) : (
+                                <small className="text-muted">Not Found</small>
+                              )}
                             </strong>
                           </h6>
                         </>
@@ -678,13 +690,17 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                               </strong>
                             </h6>
                             <h6 className="pt-1">
-                              <span className="small">User Type:</span>{" "}
+                              <span className="small">Phone:</span>{" "}
                               <strong className="small">
-                                {caseInfo?.assigned_admin?.user_type
-                                  ? formatChoiceFieldValue(
-                                      caseInfo.assigned_admin?.user_type,
-                                    )
-                                  : "N/A"}
+                                {caseInfo?.assigned_admin?.phone ? (
+                                  formatChoiceFieldValue(
+                                    caseInfo.assigned_admin?.phone,
+                                  )
+                                ) : (
+                                  <small className="text-muted">
+                                    Not Found
+                                  </small>
+                                )}
                               </strong>
                             </h6>
                           </>
@@ -741,13 +757,13 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                         </strong>
                       </h6>
                       <h6 className="pt-1">
-                        <span className="small">User Type:</span>{" "}
+                        <span className="small">Phone:</span>{" "}
                         <strong className="small">
-                          {caseInfo?.created_by?.user_type
-                            ? formatChoiceFieldValue(
-                                caseInfo.created_by?.user_type,
-                              )
-                            : "N/A"}
+                          {caseInfo?.created_by?.phone ? (
+                            formatChoiceFieldValue(caseInfo.created_by?.phone)
+                          ) : (
+                            <small className="text-muted">Not Found</small>
+                          )}
                         </strong>
                       </h6>
                     </Col>
@@ -893,7 +909,8 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
                           }}
                           disabled={isLoading}
                         >
-                          <TbEdit size="14" /> Edit
+                          <i className="fa-solid fa-pen-to-square me-1" />
+                          Edit
                         </Button>
                       </h6>
                       <div className="p-3 bg-light rounded h-75 overflow-auto border-l-primary border-2">
@@ -1030,6 +1047,12 @@ const CaseInfo: React.FC<SingleCaseProps> = ({
       <AddJointApplicantModal
         isOpen={isAddJointApplicantModalOpen}
         toggle={toggleAddJointApplicantModal}
+      />
+
+      <ApplicantEditAccessModal
+        isOpen={isApplicantEditAccessModalOpen}
+        toggle={toggleApplicantEditAccessModal}
+        caseInfo={caseInfo}
       />
     </Col>
   );

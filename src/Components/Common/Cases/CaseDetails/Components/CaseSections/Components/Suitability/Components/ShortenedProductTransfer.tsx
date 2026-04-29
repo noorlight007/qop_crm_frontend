@@ -1,3 +1,4 @@
+import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Dropdown,
@@ -11,73 +12,43 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
 
-/* ── Purple: dropdown placeholder ── */
-const PleaseSelect = ({ label }: { label?: string }) => (
-  <span
-    className="px-2 py-1 rounded small fst-italic d-inline-block"
-    style={{
-      background: "#f3e5f5",
-      color: "#6a1b9a",
-      border: "1px dashed #ab47bc",
-    }}
-  >
-    {label ?? "Please Select"}
-  </span>
-);
-
-/* ── Purple dropdown option list ── */
-const DropdownOptions = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: React.ReactNode[];
-}) => (
-  <div className="mt-2 small" style={{ color: "#6a1b9a" }}>
-    <p className="mb-1 fst-italic">{label}</p>
-    <ol className="mb-0 ps-3">
-      {options.map((opt, i) => (
-        <li key={i}>{opt}</li>
-      ))}
-    </ol>
-  </div>
-);
-
-/* ── Green: render a suitability answer line ── */
-const SuitAnswer = ({ text }: { text?: string }) =>
-  text ? (
-    <p
-      className="mb-1"
-      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
-    >
-      {text}
-    </p>
-  ) : null;
-
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
+
+const ptCostOptions: { value: string; label: React.ReactNode }[] = [
+  {
+    value: "MOST_COST_EFFECTIVE",
+    label: "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender.",
+  },
+  {
+    value: "NOT_MOST_COST_EFFECTIVE",
+    label: "not the most cost-effective deal available.",
+  },
+];
 
 interface ShortenedProductTransferProps {
   caseData: any;
   suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
 }
 
 const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
   caseData,
   suitability,
+  formValues,
+  onFormChange,
 }) => {
   const blue = "#1565c0";
-  const s = suitability;
-
   const lender = caseData?.lender_name ?? "HSBC";
 
-  const [selectedPTCostOption, setSelectedPTCostOption] = useState<
-    number | null
-  >(null);
+  // ── UI only ──
   const [isPTCostOptionOpen, setIsPTCostOptionOpen] = useState(false);
+
+  // ── Derived from formValues ──
+  const selectedPTCostOption =
+    ptCostOptions.find((o) => o.value === formValues.product_transfer_recommended) ?? null;
 
   return (
     <>
@@ -94,18 +65,21 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
       </p>
 
       <p className="fw-bold mb-1">These options were:</p>
-      <ul className="mb-3">
+      <ul className="mb-3" style={{ listStyle: "none", paddingLeft: "1rem" }}>
         <li>
+          <span className="me-2">•</span>
           Staying on standard variable rate (SVR) currently{" "}
           <strong style={{ color: blue }}>
             {caseData?.svr_rate ?? "X.XX%"}
           </strong>
         </li>
         <li>
+          <span className="me-2">•</span>
           Moving to another deal from the lender&rsquo;s product range &mdash;
           known as a product transfer
         </li>
         <li>
+          <span className="me-2">•</span>
           Moving your mortgage to a new lender &mdash; known as a remortgage
         </li>
       </ul>
@@ -146,9 +120,9 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
             }}
           >
             {selectedPTCostOption === null && "select option..."}
-            {selectedPTCostOption === 0 &&
+            {selectedPTCostOption?.value === "MOST_COST_EFFECTIVE" &&
               "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender."}
-            {selectedPTCostOption === 1 && (
+            {selectedPTCostOption?.value === "NOT_MOST_COST_EFFECTIVE" && (
               <>
                 not the most cost-effective deal available, and will cost{" "}
                 <strong style={{ color: blue }}>
@@ -169,7 +143,7 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
             }}
           >
             <DropdownItem
-              onClick={() => setSelectedPTCostOption(0)}
+              onClick={() => onFormChange({ product_transfer_recommended: "MOST_COST_EFFECTIVE" })}
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
@@ -177,7 +151,7 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
               disadvantage to remaining with your current lender.
             </DropdownItem>
             <DropdownItem
-              onClick={() => setSelectedPTCostOption(1)}
+              onClick={() => onFormChange({ product_transfer_recommended: "NOT_MOST_COST_EFFECTIVE" })}
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>

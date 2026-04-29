@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetTrailCommissionQuery,
   useUpdateTrailCommissionMutation,
@@ -298,37 +298,24 @@ const TrailCommission: React.FC<CommissionProps> = ({
   if (isLoading) {
     return (
       <div className="p-2">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }
-
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
 
   if (!isLoading && trails.length === 0) {
     return (
       <div className="mb-4">
         <div className="bg-primary text-white p-2 mb-3">Trail Commission</div>
         <div className="d-flex justify-content-center">
-          {canApplicantEdit() && (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => setIsAddModalOpen(true)}
-              // disabled={session?.user?.role === "APPLICANT"}
-            >
-              <TbCirclePlus className="me-1" size={18} />
-              Add New Trail Commission
-            </button>
-          )}
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <TbCirclePlus className="me-1" size={18} />
+            Add New Trail Commission
+          </button>
         </div>
         <AddTrailCommissionModal
           isOpen={isAddModalOpen}
@@ -352,12 +339,40 @@ const TrailCommission: React.FC<CommissionProps> = ({
     return found?.policy_type ?? null;
   })();
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
     <>
       <div className="mb-4">
-        <div className="bg-primary fs-6 p-2 mb-3 rounded-1">
-          Trail Commission
+        <div style={{ position: "relative" }}>
+          {isLocked && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 10,
+                cursor: "not-allowed",
+                backgroundColor: "rgba(0,0,0,0.0001)",
+              }}
+              title="This case is not editable"
+            />
+          )}
+          <div
+            style={{
+              opacity: isLocked ? 0.45 : 1,
+              pointerEvents: isLocked ? "none" : "auto",
+              transition: "opacity 0.2s ease",
+              userSelect: isLocked ? "none" : "auto",
+            }}
+          >
+            <div className="bg-primary fs-6 p-2 mb-3 rounded-1">
+              Trail Commission
+            </div>
+          </div>
         </div>
+
         <div>
           <Nav tabs className="mb-3 justify-content-center">
             {trails.map((trail, idx) => (
@@ -381,209 +396,229 @@ const TrailCommission: React.FC<CommissionProps> = ({
             ))}
           </Nav>
 
-          <TabContent activeTab={activeTab}>
-            {trails.map((trail, idx) => (
-              <TabPane tabId={String(idx)} key={trail.id}>
-                <div className="border border-primary p-3 mb-3 rounded-1">
-                  <Row className="g-3 align-items-start">
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Policy</Label>
-                        <Input
-                          type="select"
-                          value={trail.policy}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setTrails((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], policy: val };
-                              return copy;
-                            });
-                            clearFieldError(idx, "policy");
-                          }}
-                        >
-                          <option value="">Select...</option>
-                          {policies.map((policy: any) => (
-                            <option key={policy.alias} value={policy.alias}>
-                              {formatChoiceFieldValue(policy.policy_type) ||
-                                "Policy"}
-                            </option>
-                          ))}
-                        </Input>
-                      </FormGroup>
-                    </Col>
+          <div style={{ position: "relative" }}>
+            {isLocked && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 10,
+                  cursor: "not-allowed",
+                  backgroundColor: "rgba(0,0,0,0.0001)",
+                }}
+                title="This case is not editable"
+              />
+            )}
+            <div
+              style={{
+                opacity: isLocked ? 0.45 : 1,
+                pointerEvents: isLocked ? "none" : "auto",
+                transition: "opacity 0.2s ease",
+                userSelect: isLocked ? "none" : "auto",
+              }}
+            >
+              <TabContent activeTab={activeTab}>
+                {trails.map((trail, idx) => (
+                  <TabPane tabId={String(idx)} key={trail.id}>
+                    <div className="border border-primary p-3 mb-3 rounded-1">
+                      <Row className="g-3 align-items-start">
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Policy</Label>
+                            <Input
+                              type="select"
+                              value={trail.policy}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setTrails((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = { ...copy[idx], policy: val };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "policy");
+                              }}
+                            >
+                              <option value="">Select...</option>
+                              {policies.map((policy: any) => (
+                                <option key={policy.alias} value={policy.alias}>
+                                  {formatChoiceFieldValue(policy.policy_type) ||
+                                    "Policy"}
+                                </option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
 
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Monthly Payment</Label>
-                        <div className="input-group">
-                          <InputGroupText>{getCurrencySign()}</InputGroupText>
-                          <Input
-                            type="number"
-                            value={trail.monthlyPayment}
-                            min={0}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setTrails((prev) => {
-                                const copy = [...prev];
-                                copy[idx] = {
-                                  ...copy[idx],
-                                  monthlyPayment: val,
-                                };
-                                return copy;
-                              });
-                              clearFieldError(idx, "monthlyPayment");
-                            }}
-                          />
-                        </div>
-                        {errors[`${idx}.monthlyPayment`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.monthlyPayment`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Number Of Payments</Label>
-                        <Input
-                          type="number"
-                          value={trail.numberOfPayments}
-                          min={0}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setTrails((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = {
-                                ...copy[idx],
-                                numberOfPayments: val,
-                              };
-                              return copy;
-                            });
-                            clearFieldError(idx, "numberOfPayments");
-                          }}
-                        />
-                        {errors[`${idx}.numberOfPayments`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.numberOfPayments`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                  </Row>
-
-                  <Row className="g-3 align-items-center mt-3">
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Start Date</Label>
-                        <Input
-                          type="date"
-                          value={trail.startDate}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setTrails((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], startDate: val };
-                              return copy;
-                            });
-                            clearFieldError(idx, "startDate");
-                          }}
-                        />
-                        {errors[`${idx}.startDate`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.startDate`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>End Date</Label>
-                        <Input
-                          type="date"
-                          value={trail.endDate}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setTrails((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], endDate: val };
-                              return copy;
-                            });
-                            clearFieldError(idx, "endDate");
-                          }}
-                        />
-                        {errors[`${idx}.endDate`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.endDate`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={3}>
-                      <FormGroup>
-                        <Label>Total Trail Commission</Label>
-                        <div className="input-group">
-                          <InputGroupText>{getCurrencySign()}</InputGroupText>
-                          <Input
-                            type="text"
-                            readOnly
-                            className="bg-light-dark"
-                            value={Number(trail.totalTrailCommission).toFixed(
-                              2,
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Monthly Payment</Label>
+                            <div className="input-group">
+                              <InputGroupText>
+                                {getCurrencySign()}
+                              </InputGroupText>
+                              <Input
+                                type="number"
+                                value={trail.monthlyPayment}
+                                min={0}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setTrails((prev) => {
+                                    const copy = [...prev];
+                                    copy[idx] = {
+                                      ...copy[idx],
+                                      monthlyPayment: val,
+                                    };
+                                    return copy;
+                                  });
+                                  clearFieldError(idx, "monthlyPayment");
+                                }}
+                              />
+                            </div>
+                            {errors[`${idx}.monthlyPayment`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.monthlyPayment`]}
+                              </div>
                             )}
-                          />
-                        </div>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  {canApplicantEdit() && (
-                    <div className="d-flex justify-content-end gap-2 mt-2">
-                      <Button
-                        outline
-                        type="button"
-                        color="danger"
-                        title="Remove row"
-                        onClick={() => openDeleteModal(trail.id)}
-                        // disabled={session?.user?.role === "APPLICANT"}
-                      >
-                        <FaTrash /> Delete
-                      </Button>
-                      <button
-                        type="button"
-                        className="btn btn-primary"
-                        disabled={
-                          isUpdating 
-                          // || session?.user?.role === "APPLICANT"
-                        }
-                        onClick={() => handleUpdateTrail(trail, idx)}
-                      >
-                        <ArrowUpCircle size={16} />{" "}
-                        {isUpdating ? "Updating..." : "Update"}
-                      </button>
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Number Of Payments</Label>
+                            <Input
+                              type="number"
+                              value={trail.numberOfPayments}
+                              min={0}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setTrails((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = {
+                                    ...copy[idx],
+                                    numberOfPayments: val,
+                                  };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "numberOfPayments");
+                              }}
+                            />
+                            {errors[`${idx}.numberOfPayments`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.numberOfPayments`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+
+                      <Row className="g-3 align-items-center mt-3">
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Start Date</Label>
+                            <Input
+                              type="date"
+                              value={trail.startDate}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setTrails((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = { ...copy[idx], startDate: val };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "startDate");
+                              }}
+                            />
+                            {errors[`${idx}.startDate`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.startDate`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>End Date</Label>
+                            <Input
+                              type="date"
+                              value={trail.endDate}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setTrails((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = { ...copy[idx], endDate: val };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "endDate");
+                              }}
+                            />
+                            {errors[`${idx}.endDate`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.endDate`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={3}>
+                          <FormGroup>
+                            <Label>Total Trail Commission</Label>
+                            <div className="input-group">
+                              <InputGroupText>
+                                {getCurrencySign()}
+                              </InputGroupText>
+                              <Input
+                                type="text"
+                                readOnly
+                                className="bg-light-dark"
+                                value={Number(
+                                  trail.totalTrailCommission,
+                                ).toFixed(2)}
+                              />
+                            </div>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <div className="d-flex justify-content-end gap-2 mt-2">
+                        <Button
+                          outline
+                          type="button"
+                          color="danger"
+                          title="Remove row"
+                          onClick={() => openDeleteModal(trail.id)}
+                        >
+                          <FaTrash /> Delete
+                        </Button>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          disabled={isUpdating}
+                          onClick={() => handleUpdateTrail(trail, idx)}
+                        >
+                          <ArrowUpCircle size={16} />{" "}
+                          {isUpdating ? "Updating..." : "Update"}
+                        </button>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </TabPane>
-            ))}
-          </TabContent>
+                  </TabPane>
+                ))}
+              </TabContent>
+            </div>
+          </div>
         </div>
 
-        <div>
-          {canApplicantEdit() && (
+        {!isLocked && (
+          <div>
             <button
               type="button"
               className="btn btn-primary"
               onClick={() => setIsAddModalOpen(true)}
-              // disabled={session?.user?.role === "APPLICANT"}
             >
               <TbCirclePlus className="me-1" size={18} />
               Add New Trail Commission
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <DeleteTrailCommissionModal
         isOpen={isDeleteModalOpen}

@@ -189,6 +189,31 @@ export const getOrganisationUrl = (session: Session | null) => {
   return "url not found";
 };
 
+export const getOrganisationCaseUrl = (
+  organisationSlug: string,
+  caseAlias: string,
+  isNetwork?: boolean,
+  role?: string,
+) => {
+  if (!organisationSlug || !caseAlias) {
+    return "#";
+  }
+
+  if (role === "DIRECTOR" || role === "COMPLIANCE") {
+    return isNetwork
+      ? `/network/director/organisations/${organisationSlug}/${caseAlias}`
+      : `url not found`;
+  }
+
+  if (role === "ADVISER") {
+    return isNetwork
+      ? `/network/adviser/organisations/${organisationSlug}/${caseAlias}`
+      : `url not found`;
+  }
+
+  return "url not found";
+};
+
 export const getApplicantCaseUrl = (
   session: Session | null,
   caseAlias: string,

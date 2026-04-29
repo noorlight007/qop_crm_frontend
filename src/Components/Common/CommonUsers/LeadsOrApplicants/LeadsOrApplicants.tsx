@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetLeadsOrApplicantsQuery } from "@/Redux/Reducers/Common/CommonUsers/LeadsOrApplicantsApi";
 import {
   LeadOrApplicant,
@@ -78,7 +78,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
     enquiry_type: "",
     other_enquiry_type: null,
     created_at: "",
-    created_by: { name: "", user_type: "" },
+    created_by: { name: "", email: "" },
   });
 
   const { data: leadsOrApplicantsData, isLoading: isLeadsOrApplicantsLoading } =
@@ -235,7 +235,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                   <tr>
                     <td colSpan={8} className="text-center">
                       <div className="d-flex justify-content-center align-items-center">
-                        <LoadingSpinner2 />
+                        <LoadingGrow />
                       </div>
                     </td>
                   </tr>

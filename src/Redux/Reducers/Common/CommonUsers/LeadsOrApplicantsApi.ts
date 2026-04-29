@@ -40,7 +40,7 @@ export const LeadsOrApplicantsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["LeadsOrApplicants"],
     }),
-    ApplicantInvitation: builder.mutation({
+    applicantInvitation: builder.mutation({
       query: ({ caseAlias, payload }) => ({
         url: `/cases/${caseAlias}/applicant-invitation/`,
         method: "POST",

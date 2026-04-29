@@ -2,6 +2,10 @@ export interface OrgLeadInfo {
   alias: string;
   profile_image: string;
   name: string;
+  title: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   email: string;
   phone: string;
   gender: string;
@@ -17,7 +21,7 @@ export interface OrgLeadInfo {
     first_name?: string;
     middle_name?: string;
     last_name?: string;
-    user_type?: string;
+    email?: string;
   };
   created_at: string;
 }
@@ -26,4 +30,16 @@ export interface ViewOrgLeadModalProps {
   isOpen: boolean;
   toggle: () => void;
   selectedLead?: Partial<OrgLeadInfo>;
+}
+
+export interface DeleteOrgLeadModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  leadToDelete: OrgLeadInfo | null;
+}
+
+export interface UpdateOrgLeadModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  leadToUpdate: OrgLeadInfo | null;
 }

@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetPreviousAddressQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ApplicantsDetails/ApplicantPreviousAddressApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import {
@@ -48,16 +48,6 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
     { skip: !casealias },
   );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered size="xl">
       <ModalHeader toggle={toggle}>
@@ -66,14 +56,14 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
       <ModalBody>
         {previousAddressesData && previousAddressesData.length > 0 && (
           <div className="d-flex justify-content-end align-items-center mb-3">
-            {canApplicantEdit() && (
+            
               <Button
                 color="primary"
                 onClick={() => setIsAddPreviousAddressModalOpen(true)}
               >
                 <TbCirclePlus size={18} /> Add Previous Address
               </Button>
-            )}
+          
           </div>
         )}
         <Table responsive bordered hover>
@@ -90,14 +80,14 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
               <th>Time at Address</th>
               <th>Residential Status</th>
               <th>Notes</th>
-              {canApplicantEdit() && <th>Action</th>}
+              <th>Action</th>
             </tr>
           </thead>
           <tbody className="small">
             {isLoading ? (
               <tr>
                 <td colSpan={12} className="text-center p-2">
-                  <LoadingSpinner />
+                  <LoadingGrow />
                 </td>
               </tr>
             ) : previousAddressesData && previousAddressesData.length > 0 ? (
@@ -121,7 +111,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                       : ""}
                   </td>
                   <td>{addressData.notes}</td>
-                  {canApplicantEdit() && (
+                  
                     <td>
                       <div className="d-flex justify-content-center">
                         <Button
@@ -136,7 +126,7 @@ const ViewPreviousAddressModal: React.FC<ViewPreviousAddressModalProps> = ({
                         </Button>
                       </div>
                     </td>
-                  )}
+                  
                 </tr>
               ))
             ) : (

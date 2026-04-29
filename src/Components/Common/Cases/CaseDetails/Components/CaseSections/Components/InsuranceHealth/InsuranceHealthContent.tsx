@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import {
@@ -18,6 +18,7 @@ const InsuranceHealthContent: React.FC = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const { casealias } = useParams();
   const { data: session } = useSession();
+  const userRole = session?.user?.role;
   const { data: InsuranceHealthData, isLoading } =
     useGetInsuranceHealthDetailsQuery({ case_alias: casealias });
 
@@ -105,6 +106,7 @@ const InsuranceHealthContent: React.FC = () => {
       caseData?.case_stage,
       caseData?.case_category,
       currentTab!,
+      userRole,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -116,106 +118,107 @@ const InsuranceHealthContent: React.FC = () => {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center py-4">
-        <LoadingSpinner2 />
+        <LoadingGrow />
       </div>
     );
   }
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
 
   return (
     <div>
-      <Form
-        innerRef={formRef}
-        onSubmit={(e) => {
-          void handleSubmit("save", e);
-        }}
-      >
-        <FormGroup check className="mt-2">
-          <Label check>
-            <Input
-              type="checkbox"
-              className="border-primary"
-              checked={healthConditions}
-              onChange={(e) => setHealthConditions(e.target.checked)}
-            />{" "}
-            Do you have or have you had any health conditions past or present?
-          </Label>
-        </FormGroup>
-
-        {healthConditions && (
-          <FormGroup className="mt-1">
-            <Label for="insuranceNote">
-              Note
-              <span className="text-danger">*</span>
-            </Label>
-            <Input
-              id="insuranceNote"
-              type="textarea"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Add note..."
-              rows={4}
-              required
-            />
-          </FormGroup>
+      <div style={{ position: "relative" }}>
+        {isLocked && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              cursor: "not-allowed",
+              backgroundColor: "rgba(0,0,0,0.0001)",
+            }}
+          />
         )}
+        <div
+          style={{
+            opacity: isLocked ? 0.45 : 1,
+            pointerEvents: isLocked ? "none" : "auto",
+          }}
+        >
+          <Form
+            innerRef={formRef}
+            onSubmit={(e) => {
+              void handleSubmit("save", e);
+            }}
+          >
+            <FormGroup check className="mt-2">
+              <Label check>
+                <Input
+                  type="checkbox"
+                  className="border-primary"
+                  checked={healthConditions}
+                  onChange={(e) => setHealthConditions(e.target.checked)}
+                />{" "}
+                Do you have or have you had any health conditions past or
+                present?
+              </Label>
+            </FormGroup>
 
-        <div className="d-flex justify-content-end gap-2">
-          {canApplicantEdit() && (
-            <Button
-              color="primary"
-              type="submit"
-              disabled={
-                submitting !== null || isUpdating
-                // || session?.user?.role === "APPLICANT"
-              }
-            >
-              {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
-            </Button>
-          )}
+            {healthConditions && (
+              <FormGroup className="mt-1">
+                <Label for="insuranceNote">
+                  Note
+                  <span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="insuranceNote"
+                  type="textarea"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Add note..."
+                  rows={4}
+                  required
+                />
+              </FormGroup>
+            )}
 
-          {session?.user?.role !== "APPLICANT" && (
-            <Button
-              color="secondary"
-              type="button"
-              disabled={submitting !== null || isUpdating}
-              onClick={async () => {
-                if (session?.user?.role === "APPLICANT") {
-                  handleNextTab();
-                  return;
-                }
+            <div className="d-flex justify-content-end gap-2">
+              <Button
+                color="primary"
+                type="submit"
+                disabled={submitting !== null || isUpdating}
+              >
+                {submitting === "save" ? <Spinner size="sm" /> : "Save changes"}
+              </Button>
 
-                if (formRef.current && !formRef.current.checkValidity()) {
-                  formRef.current.reportValidity();
-                  return;
-                }
+              <Button
+                color="secondary"
+                type="button"
+                disabled={submitting !== null || isUpdating}
+                onClick={async () => {
+                  if (formRef.current && !formRef.current.checkValidity()) {
+                    formRef.current.reportValidity();
+                    return;
+                  }
 
-                const success = await handleSubmit("save_next");
-                if (success) {
-                  handleNextTab();
-                }
-              }}
-            >
-              {session?.user?.role === "APPLICANT" ? (
-                "Go To Next"
-              ) : submitting === "save_next" ? (
-                <Spinner size="sm" />
-              ) : (
-                "Save & Next"
-              )}
-            </Button>
-          )}
+                  const success = await handleSubmit("save_next");
+                  if (success) {
+                    handleNextTab();
+                  }
+                }}
+              >
+                {submitting === "save_next" ? (
+                  <Spinner size="sm" />
+                ) : (
+                  "Save & Next"
+                )}
+              </Button>
+            </div>
+          </Form>
         </div>
-      </Form>
+      </div>
     </div>
   );
 };

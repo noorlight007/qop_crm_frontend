@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetNetworkListQuery,
   useGetOrganisationListQuery,
@@ -27,14 +28,12 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
 import DeleteLeadsOrApplicantsModal from "./Modals/DeleteLeadsOrApplicantsModal";
 import UpdateLeadsOrApplicantsModal from "./Modals/UpdateLeadsOrApplicantsModal";
 import ViewLeadsOrApplicantsModal from "./Modals/ViewLeadsOrApplicantsModal";
-import { LoadingSpinner2 } from "@/app/loading";
 
 const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
   title,
@@ -308,7 +307,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                 <tr>
                   <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <LoadingSpinner2 />
+                      <LoadingGrow />
                     </div>
                   </td>
                 </tr>
@@ -433,7 +432,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                           className="m-0 opacity-75"
                           style={{ fontSize: "9px" }}
                         >
-                          ({formatChoiceFieldValue(user?.created_by?.user_type)}
+                          ({formatChoiceFieldValue(user?.created_by?.email)}
                           )
                         </p>
                       </td>

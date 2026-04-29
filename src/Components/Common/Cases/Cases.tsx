@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   caseCategories,
   insuranceCaseStages,
@@ -7,9 +8,7 @@ import { useGetCasesQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
-import { LoadingSpinner2 } from "@/app/loading";
 import { getCaseUrl } from "@/utils/RedirectPaths";
-import { formatDate } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -34,214 +33,12 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import CaesSummary from "./CaesSummary/CaesSummary";
+import ExpandedCaseRow from "./ExpandedCaseRow";
 import AddNewCaseModal from "./Modals/AddNewCaseModal";
 import DeleteCaseModal from "./Modals/DeleteCaseModal";
 import UpdateCaseModal from "./Modals/UpdateCaseModal";
 
-interface CasesProps {
-  initialIsRemoved?: string;
-}
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Expanded row — shows the hidden columns when the user clicks the eye icon
-// ────────────────────────────────────────────────────────────────────────────────
-const ExpandedCaseRow: React.FC<{
-  caseItem: CaseInfoPrpos;
-  colSpan: number;
-}> = ({ caseItem, colSpan }) => {
-  const propertyDetails = (() => {
-    const pd = caseItem?.property_details;
-    if (!pd) return null;
-    const countryFormatted = pd.country
-      ? formatChoiceFieldValue(pd.country)
-      : pd.country;
-    const parts = [
-      pd.house_name_or_number,
-      pd.address_one,
-      pd.address_two,
-      pd.city,
-      pd.county,
-      formatChoiceFieldValue(pd.region),
-      countryFormatted,
-    ].filter((v) => v !== null && v !== undefined && String(v).trim() !== "");
-    return parts.length ? parts.join(", ") : null;
-  })();
-
-  return (
-    <tr>
-      <td colSpan={colSpan} className="p-0 bg-light border-0">
-        <div className="p-3">
-          <Row className="g-3">
-            {/* Lender */}
-            <Col>
-              <Card className="h-100 border shadow-none">
-                <CardHeader className="py-2 px-3 bg-white">
-                  <small className="fw-bold text-muted text-uppercase">
-                    Lender
-                  </small>
-                </CardHeader>
-                <CardBody className="py-2 px-3 text-muted fs-6">
-                  {caseItem.lender ? (
-                    <p className="mb-0 mt-2 small">
-                      {formatChoiceFieldValue(caseItem.lender)}
-                    </p>
-                  ) : (
-                    <small className="text-muted">Not Available</small>
-                  )}
-                </CardBody>
-              </Card>
-            </Col>
-
-            {/* Case Stage & Review Date */}
-            <Col>
-              <Card className="h-100 border shadow-none">
-                <CardHeader className="py-2 px-3 bg-white">
-                  <small className="fw-bold text-muted text-uppercase">
-                    Case Stage & Review Date
-                  </small>
-                </CardHeader>
-                <CardBody className="py-2 px-3 text-muted fs-6">
-                  {caseItem.case_stage ? (
-                    <>
-                      <p className="mb-1 mt-2 small">
-                        <strong>Case Stage:</strong>{" "}
-                        {formatChoiceFieldValue(caseItem.case_stage)}
-                      </p>
-                      {formatDate(caseItem?.review_date) ? (
-                        <p className="mb-0 small">
-                          <strong>Review Date:</strong>{" "}
-                          {formatDate(caseItem.review_date)}
-                        </p>
-                      ) : (
-                        <span className="small">
-                          <strong>Review Date:</strong>{" "}
-                          <span className="text-muted">Not Available</span>
-                        </span>
-                      )}
-                    </>
-                  ) : (
-                    <small className="text-muted">Not Available</small>
-                  )}
-                </CardBody>
-              </Card>
-            </Col>
-
-            {/* Category Details */}
-            {caseItem.case_category === "MORTGAGE" && (
-              <Col md={4}>
-                <Card className="h-100 border shadow-none">
-                  <CardHeader className="py-2 px-3 bg-white">
-                    <small className="fw-bold text-muted text-uppercase">
-                      Mortgage Details
-                    </small>
-                  </CardHeader>
-                  <CardBody className="py-2 px-3 fs-6 text-start">
-                    {caseItem.application_type || caseItem.mortgage_type ? (
-                      <ul
-                        className="mb-0 mt-2 small text-muted"
-                        style={{ listStyleType: "none", paddingLeft: "0" }}
-                      >
-                        {caseItem.application_type && (
-                          <li>
-                            <span className="text-primary me-1">→</span>
-                            <strong>Application Type:</strong>{" "}
-                            {formatChoiceFieldValue(caseItem.application_type)}
-                          </li>
-                        )}
-                        {caseItem.mortgage_type && (
-                          <li>
-                            <span className="text-primary me-1">→</span>
-                            <strong>Mortgage Type:</strong>{" "}
-                            {formatChoiceFieldValue(caseItem.mortgage_type)}
-                          </li>
-                        )}
-                      </ul>
-                    ) : (
-                      <small className="text-muted d-block text-center">
-                        Not Available
-                      </small>
-                    )}
-                  </CardBody>
-                </Card>
-              </Col>
-            )}
-
-            {(caseItem.case_category === "GENERAL_INSURANCE" ||
-              caseItem.case_category === "PROTECTION") && (
-              <Col md={4}>
-                <Card className="h-100 border shadow-none">
-                  <CardHeader className="py-2 px-3 bg-white">
-                    <small className="fw-bold text-muted text-uppercase">
-                      {caseItem.case_category === "GENERAL_INSURANCE"
-                        ? "Insurance Details"
-                        : "Protection Details"}
-                    </small>
-                  </CardHeader>
-                  <CardBody className="py-2 px-3 fs-6">
-                    {caseItem.case_category === "GENERAL_INSURANCE" ? (
-                      caseItem.policy_type ? (
-                        <ul
-                          className="mb-0 mt-2 small text-muted"
-                          style={{ listStyleType: "none", paddingLeft: "0" }}
-                        >
-                          <li>
-                            <span className="text-primary me-1">→</span>
-                            <strong>Insurance Type:</strong>{" "}
-                            {formatChoiceFieldValue(caseItem.policy_type)}
-                          </li>
-                        </ul>
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )
-                    ) : caseItem.provider ? (
-                      <ul
-                        className="mb-0 mt-2 small text-muted"
-                        style={{ listStyleType: "none", paddingLeft: "0" }}
-                      >
-                        <li>
-                          <span className="text-primary me-1">→</span>
-                          <strong>Protection Type:</strong>{" "}
-                          {formatChoiceFieldValue(caseItem.provider)}
-                        </li>
-                      </ul>
-                    ) : (
-                      <small className="text-muted d-block text-center">
-                        Not Available
-                      </small>
-                    )}
-                  </CardBody>
-                </Card>
-              </Col>
-            )}
-
-            {/* Security Property */}
-            <Col md={3}>
-              <Card className="h-100 border shadow-none">
-                <CardHeader className="py-2 px-3 bg-white">
-                  <small className="fw-bold text-muted text-uppercase">
-                    Security Property
-                  </small>
-                </CardHeader>
-                <CardBody className="py-2 px-3">
-                  {propertyDetails ? (
-                    <p className="mb-0 mt-2 small">{propertyDetails}</p>
-                  ) : (
-                    <small className="text-muted">Not Available</small>
-                  )}
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </td>
-    </tr>
-  );
-};
-
-// ────────────────────────────────────────────────────────────────────────────────
-// Main component
-// ────────────────────────────────────────────────────────────────────────────────
-const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
+const Cases: React.FC = () => {
   const { data: session } = useSession();
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
   const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
@@ -259,12 +56,14 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     assigned_to_admin__id: "",
     case_category: "",
     case_stage: "",
-    is_removed: initialIsRemoved ?? "",
+    organization__subdomain: "",
   };
   const [filters, setFilters] = useState(defaultFilters);
 
   const { data: adviserData, isLoading: isAdviserLoading } =
-    useGetUserListQuery({ role: "ADVISER" });
+    useGetUserListQuery({
+      role: "ADVISER",
+    });
 
   const { data: adminData, isLoading: isAdminLoading } = useGetUserListQuery({
     role: "ADMIN",
@@ -279,7 +78,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
     limit: casesPerPage,
   });
 
-  const isLoading = isAdviserLoading || isCaseLoading;
+  const isLoading = isAdviserLoading || isCaseLoading || isAdminLoading;
 
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
   const toggleAddNewCaseModal = () =>
@@ -428,6 +227,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                     ))}
                   </Input>
                 </Col>
+
                 {session?.user?.is_network ? null : (
                   <Col>
                     <Label>Select Admin</Label>
@@ -518,9 +318,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                   <th>Case ID</th>
                   <th>Applicants</th>
                   <th>Case Category</th>
-                  {session?.user?.role && session.user.is_network ? (
-                    <th>Organisation</th>
-                  ) : null}
                   <th>Adviser</th>
                   <th>Admin</th>
                   <th>Action</th>
@@ -530,7 +327,7 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                 {isLoading ? (
                   <tr>
                     <td colSpan={tableColSpan} className="text-center">
-                      <LoadingSpinner2 />
+                      <LoadingGrow />
                     </td>
                   </tr>
                 ) : caseData?.results?.length > 0 ? (
@@ -616,19 +413,6 @@ const Cases: React.FC<CasesProps> = ({ initialIsRemoved }) => {
                             <small className="text-muted">Not Available</small>
                           )}
                         </td>
-
-                        {session?.user?.role && session.user.is_network ? (
-                          <td className="text-truncate">
-                            {" "}
-                            {caseItem.organization?.name ? (
-                              caseItem.organization.name
-                            ) : (
-                              <small className="text-muted">
-                                Owned by Network
-                              </small>
-                            )}{" "}
-                          </td>
-                        ) : null}
 
                         {/* ── Adviser ── */}
                         <td className="text-truncate">

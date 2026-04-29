@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetLoginHistoryQuery } from "@/Redux/Reducers/Common/LoginHistory/LoginHistoryApi";
 import { LoginHistoryItem } from "@/Types/Common/LoginHistory/LoginHistoryTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -153,7 +153,7 @@ const LoginHistory: React.FC = () => {
           </div>
           <div className="text-center py-5">
             <div className="text-center py-5">
-              <LoadingSpinner2 />
+              <LoadingGrow />
             </div>
           </div>
         </CardBody>
@@ -279,14 +279,6 @@ const LoginHistory: React.FC = () => {
                             </small>
                           )}
                         </div>
-                        <Badge
-                          color="primary"
-                          className="bg-opacity-10 border border-primary px-2 py-1"
-                          style={{ fontSize: "0.7rem" }}
-                        >
-                          {formatChoiceFieldValue(history.user.user_type) ||
-                            "Not Found"}
-                        </Badge>
                       </div>
                     </div>
 

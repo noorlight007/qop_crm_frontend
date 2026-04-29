@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   ANSWER_OPTIONS,
   ClientSurveyQuestions,
@@ -234,7 +234,7 @@ const ClientSurveyContent: React.FC = () => {
   if (isSurveyLoading) {
     return (
       <div className="d-flex justify-content-center my-4">
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

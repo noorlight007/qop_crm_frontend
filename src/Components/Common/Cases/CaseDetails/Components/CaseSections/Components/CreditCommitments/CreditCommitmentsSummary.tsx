@@ -9,134 +9,90 @@ const CreditCommitmentsSummary: React.FC = () => {
     case_alias: casealias,
   });
 
+  const summaryCards = [
+    {
+      title: "Total Balance",
+      value: summaryData?.total_balance,
+      color: "primary",
+      borderClass: "border-b-primary",
+      iconClass: "fa-solid fa-sterling-sign",
+    },
+    {
+      title: "Total Balance To Be Repaid",
+      value: summaryData?.total_balance_to_be_repaid,
+      color: "secondary",
+      borderClass: "border-b-secondary",
+      iconClass: "fa-solid fa-sterling-sign",
+    },
+    {
+      title: "Total Balance To Remain",
+      value: summaryData?.total_balance_to_remain,
+      color: "success",
+      borderClass: "border-b-success",
+      iconClass: "fa-solid fa-sterling-sign",
+    },
+    {
+      title: "Total Monthly Payment",
+      value: summaryData?.total_monthly_payment,
+      color: "primary",
+      borderClass: "border-b-primary",
+      iconClass: "fa-solid fa-calendar-days",
+    },
+    {
+      title: "Total Monthly Payment To Be Repaid",
+      value: summaryData?.total_monthly_payment_to_be_repaid,
+      color: "secondary",
+      borderClass: "border-b-secondary",
+      iconClass: "fa-solid fa-calendar-days",
+    },
+    {
+      title: "Total Monthly Payment To Remain",
+      value: summaryData?.total_monthly_payment_to_remain,
+      color: "success",
+      borderClass: "border-b-success",
+      iconClass: "fa-solid fa-calendar-days",
+    },
+    {
+      title: "Total Settlement Balance",
+      value: summaryData?.total_settlement_balance,
+      color: "primary",
+      borderClass: "border-b-primary",
+      iconClass: "fa-solid fa-sterling-sign",
+    },
+    {
+      title: "Total Debt Consolidation Balance",
+      value: summaryData?.total_debt_consolidation_balance,
+      color: "secondary",
+      borderClass: "border-b-secondary",
+      iconClass: "fa-solid fa-sterling-sign",
+    },
+  ];
+
   return (
     <div className="p-2">
       <Row>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-primary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold fs-6">Total Balance</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-primary h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-primary font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_balance || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-secondary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Balance To Be Repaid</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-secondary h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-secondary font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_balance_to_be_repaid || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-success">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Balance To Remain</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-success h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-success font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_balance_to_remain || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      {/* 2nd row  */}
-      <Row>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-primary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Monthly Payment</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-primary h1">
-                  <i className="fa-solid fa-calendar-days"></i>
-                </span>
-                <span className="h2 text-primary font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_monthly_payment || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-secondary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Monthly Payment To Be Repaid</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-secondary h1">
-                  <i className="fa-solid fa-calendar-days"></i>
-                </span>
-                <span className="h2 text-secondary font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_monthly_payment_to_be_repaid || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-success">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Monthly Payment To Remain</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-success h1">
-                  <i className="fa-solid fa-calendar-days"></i>
-                </span>
-                <span className="h2 text-success font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_monthly_payment_to_remain || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-      {/* 3r row  */}
-      <Row>
-        <Col lg="4" md="12">
-          <Card className="shadow">
-            <CardBody className="support-ticket-font pt-2 pb-3 border-3 rounded-3 border-b-primary">
-              <CardHeader className="pt-0 pb-1 m-0 text-center">
-                <h6 className="fw-bold">Total Settlement Balance</h6>
-              </CardHeader>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <span className="text-primary h1">
-                  <i className="fa-solid fa-sterling-sign"></i>
-                </span>
-                <span className="h2 text-primary font-weight-bold">
-                  {getCurrencySign()}{summaryData?.total_settlement_balance || "0.00"}
-                </span>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
+        {summaryCards.map((card) => (
+          <Col key={card.title} lg="4" md="12">
+            <Card className="shadow">
+              <CardBody
+                className={`support-ticket-font pt-2 pb-3 border-3 rounded-3 ${card.borderClass}`}
+              >
+                <CardHeader className="pt-0 pb-1 m-0 text-center">
+                  <h6 className="fw-bold fs-6">{card.title}</h6>
+                </CardHeader>
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                  <span className={`text-${card.color} h1`}>
+                    <i className={card.iconClass}></i>
+                  </span>
+                  <span className={`h2 text-${card.color} font-weight-bold`}>
+                    {getCurrencySign()}
+                    {card.value || "0.00"}
+                  </span>
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        ))}
       </Row>
     </div>
   );

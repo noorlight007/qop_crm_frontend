@@ -43,14 +43,14 @@ const CaesSummary: React.FC = () => {
       ) : (
         // Actual Content
         <>
-          {/* All Cases  */}
+          {/* Total Cases */}
           <Col>
             <Card className="p-2 shadow">
               <CardBody className="p-2">
                 <div className="d-flex justify-content-between">
                   <div>
                     <CardTitle className="small text-muted">
-                      All Cases
+                      Total Cases
                     </CardTitle>
                     <h4 className="mb-1 text-dark">{summary.all_cases || 0}</h4>
                   </div>

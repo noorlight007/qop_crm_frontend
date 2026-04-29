@@ -13,7 +13,6 @@ export interface DocumentOwnerProps {
     middle_name: string;
     last_name: string;
     profile_image: string | null;
-    user_type: string;
   };
   joint_users: {
     joint_user: {
@@ -25,7 +24,6 @@ export interface DocumentOwnerProps {
       middle_name: string;
       last_name: string;
       profile_image: string | null;
-      user_type: string;
     };
     relationship: string;
     notes: string;
@@ -44,7 +42,6 @@ export interface CaseDocumentProps {
     middle_name?: string;
     last_name?: string;
     profile_image?: string;
-    user_type?: string;
   };
   name?: string;
   description?: string;
@@ -57,7 +54,6 @@ export interface CaseDocumentProps {
     middle_name?: string;
     last_name?: string;
     profile_image?: string;
-    user_type?: string;
   };
   updated_by: {
     email?: string;
@@ -67,7 +63,6 @@ export interface CaseDocumentProps {
     middle_name?: string;
     last_name?: string;
     profile_image?: string;
-    user_type?: string;
   };
   created_at: string;
   updated_at: string;

@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetAuthUsersQuery,
   useGetNetworkListQuery,
@@ -39,7 +40,6 @@ import {
   PaginationLink,
   PopoverBody,
   Row,
-  Spinner,
   Table,
   UncontrolledPopover,
 } from "reactstrap";
@@ -47,7 +47,6 @@ import Swal from "sweetalert2";
 import DeleteAuthUserModal from "./Modals/DeleteAuthUserModal";
 import UpdateAuthUserModal from "./Modals/UpdateAuthUserModal";
 import ViewAuthUserModal from "./Modals/ViewAuthUserModal";
-import { LoadingSpinner2 } from "@/app/loading";
 
 const LeadOrApplicants: React.FC<AuthUsersProps> = ({
   title,
@@ -354,7 +353,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                 <tr>
                   <td colSpan={10} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
-                      <LoadingSpinner2 />
+                      <LoadingGrow />
                     </div>
                   </td>
                 </tr>
@@ -473,7 +472,7 @@ const LeadOrApplicants: React.FC<AuthUsersProps> = ({
                           className="m-0 opacity-75"
                           style={{ fontSize: "9px" }}
                         >
-                          ({formatChoiceFieldValue(user?.created_by?.user_type)}
+                          ({formatChoiceFieldValue(user?.created_by?.email)}
                           )
                         </p>
                       </td>

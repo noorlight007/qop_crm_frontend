@@ -279,6 +279,7 @@ export const baseApi = createApi({
     "OrgLeadAndApplicantList",
     "OrgCases",
     "NetworkDirectorDashboard",
+    "OrgJointApplicant",
     //Network Director end
 
     //Network Adviser start

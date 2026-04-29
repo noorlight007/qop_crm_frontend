@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useFetchSupportTicketCommentsQuery,
   useMakeSupportTicketCommentMutation,
@@ -17,17 +17,7 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
-import {
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  Col,
-  Form,
-  Input,
-  Row,
-  Spinner,
-} from "reactstrap";
+import { Button, Card, CardBody, Col, Form, Input, Row } from "reactstrap";
 
 interface Author {
   id: number;
@@ -35,7 +25,6 @@ interface Author {
   profile_image: string;
   name: string;
   email: string;
-  user_type: string;
 }
 
 interface CommentFile {
@@ -213,9 +202,7 @@ const SupportTicketComments: React.FC = () => {
         <div className="flex-grow-1">
           <div className="d-flex align-items-center gap-2 mb-1">
             <strong className="text-dark">{reply.author.name}</strong>
-            <Badge color="primary" pill>
-              {formatUserType(reply.author.user_type)}
-            </Badge>
+
             <small className="text-muted">
               {formatDateAndTime(reply.created_at)}
             </small>
@@ -276,9 +263,7 @@ const SupportTicketComments: React.FC = () => {
           <div className="flex-grow-1">
             <div className="d-flex align-items-center gap-2 mb-2">
               <strong className="text-dark">{comment.author.name}</strong>
-              <Badge color="primary" pill>
-                {formatUserType(comment.author.user_type)}
-              </Badge>
+
               <small className="text-muted">
                 {formatDateAndTime(comment.created_at)}
               </small>
@@ -425,7 +410,7 @@ const SupportTicketComments: React.FC = () => {
   if (isLoading) {
     return (
       <div className="text-center py-4">
-        <LoadingSpinner2 />
+        <LoadingGrow />
         <p className="text-muted mt-2">Loading comments...</p>
       </div>
     );

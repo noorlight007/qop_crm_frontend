@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetUsersQuery } from "@/Redux/Reducers/Common/CommonUsers/UsersApi";
 import { useGetMyTasksQuery } from "@/Redux/Reducers/Common/MyTasks/MyTasksApi";
 import { MyTaskProps } from "@/Types/Common/MyTask/MyTaskTypes";
@@ -468,7 +468,7 @@ const MyTasks: React.FC = () => {
                   <th>Workflow</th>
                   <th>Task Name</th>
                   <th>Case Stage</th>
-                  <th>Assigned</th>
+                  <th>Case Assigned</th>
                   <th>Task Assigned</th>
                 </tr>
               </thead>
@@ -476,7 +476,7 @@ const MyTasks: React.FC = () => {
                 {isLoading ? (
                   <tr>
                     <td colSpan={12} className="text-center p-4">
-                      <LoadingSpinner />
+                      <LoadingGrow />
                     </td>
                   </tr>
                 ) : currentTasks.length > 0 ? (

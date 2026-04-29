@@ -1,5 +1,5 @@
 "use client";
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 
 import {
@@ -85,7 +85,6 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
       first_name: "",
       last_name: "",
       profile_image: null,
-      user_type: "",
     },
   });
 
@@ -279,179 +278,197 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
 
   return (
     <Container>
-      <Row className="justify-content-center">
-        <Col md={12}>
-          <Card className="shadow-sm border-0 rounded-lg p-4">
-            <CardBody>
-              <Form>
-                <Row>
-                  {[
-                    {
-                      key: "has_any_defaults_registered_in_the_last_six_years",
-                      label: "Defaults registered in the last 6 years?",
-                    },
-                    {
-                      key: "has_any_ccj_registered_in_the_last_six_years",
-                      label: "CCJ's registered in the last 6 years?",
-                    },
-                    {
-                      key: "missed_any_payments_on_commitments_in_the_last_five_years",
-                      label: "Missed commitment payments in the last 5 years?",
-                    },
-                    {
-                      key: "is_a_property_repossessed",
-                      label: "Property repossessed?",
-                    },
-                    {
-                      key: "has_ever_been_made_bankrupt",
-                      label: "Ever been made bankrupt?",
-                    },
-                    {
-                      key: "have_you_ever_entered_into_an_individual_voluntary_arrangement",
-                      label:
-                        "Ever entered into an Individual Voluntary Arrangement (IVA)?",
-                    },
-                    {
-                      key: "is_ever_enter_into_a_debt_management_plan_or_debt_relief_order",
-                      label: "Entered into a Debt Management Plan (DMP)?",
-                    },
-                    {
-                      key: "is_ever_taken_out_a_pay_day_loan",
-                      label: "Taken out a payday loan?",
-                    },
-                    {
-                      key: "is_exceeded_your_overdraft_in_the_last_three_months",
-                      label: "Exceeded overdraft in the last 3 months?",
-                    },
-                    {
-                      key: "is_direct_debit_returned_in_the_last_three_months",
-                      label:
-                        "Had a direct debit returned in the last 3 months?",
-                    },
-                  ].map(({ key, label }) => (
-                    <Col md={6} key={key} className="mb-3">
-                      <FormGroup>
-                        <Label>{label}</Label>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <div>
-                            <Input
-                              type="radio"
-                              name={key}
-                              onChange={() =>
-                                handleRadioChange(
-                                  key as keyof typeof formData,
-                                  true,
-                                )
-                              }
-                              checked={
-                                formData[key as keyof typeof formData] === true
-                              }
-                            />{" "}
-                            Yes
-                            <Input
-                              type="radio"
-                              name={key}
-                              className="ms-2"
-                              onChange={() =>
-                                handleRadioChange(
-                                  key as keyof typeof formData,
-                                  false,
-                                )
-                              }
-                              checked={
-                                formData[key as keyof typeof formData] === false
-                              }
-                            />{" "}
-                            No
-                          </div>
-                        </div>
-                        {formData[key as keyof typeof formData] === true &&
-                          key !==
-                            "is_exceeded_your_overdraft_in_the_last_three_months" &&
-                          key !==
-                            "is_direct_debit_returned_in_the_last_three_months" && (
-                            <div className="d-flex gap-2 mt-2">
-                              {canApplicantEdit() && (
-                                <Button
-                                  color="success"
-                                  onClick={() =>
-                                    handleAddNewClick(
+      <div style={{ position: "relative" }}>
+        {isLocked && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              cursor: "not-allowed",
+              backgroundColor: "rgba(0,0,0,0.0001)",
+            }}
+            title="This case is not editable"
+          />
+        )}
+        <div
+          style={{
+            opacity: isLocked ? 0.45 : 1,
+            pointerEvents: isLocked ? "none" : "auto",
+            transition: "opacity 0.2s ease",
+            userSelect: isLocked ? "none" : "auto",
+          }}
+        >
+          <Row className="justify-content-center">
+            <Col md={12}>
+              <Card className="shadow-sm border-0 rounded-lg p-4">
+                <CardBody>
+                  <Form>
+                    <Row>
+                      {[
+                        {
+                          key: "has_any_defaults_registered_in_the_last_six_years",
+                          label: "Defaults registered in the last 6 years?",
+                        },
+                        {
+                          key: "has_any_ccj_registered_in_the_last_six_years",
+                          label: "CCJ's registered in the last 6 years?",
+                        },
+                        {
+                          key: "missed_any_payments_on_commitments_in_the_last_five_years",
+                          label:
+                            "Missed commitment payments in the last 5 years?",
+                        },
+                        {
+                          key: "is_a_property_repossessed",
+                          label: "Property repossessed?",
+                        },
+                        {
+                          key: "has_ever_been_made_bankrupt",
+                          label: "Ever been made bankrupt?",
+                        },
+                        {
+                          key: "have_you_ever_entered_into_an_individual_voluntary_arrangement",
+                          label:
+                            "Ever entered into an Individual Voluntary Arrangement (IVA)?",
+                        },
+                        {
+                          key: "is_ever_enter_into_a_debt_management_plan_or_debt_relief_order",
+                          label: "Entered into a Debt Management Plan (DMP)?",
+                        },
+                        {
+                          key: "is_ever_taken_out_a_pay_day_loan",
+                          label: "Taken out a payday loan?",
+                        },
+                        {
+                          key: "is_exceeded_your_overdraft_in_the_last_three_months",
+                          label: "Exceeded overdraft in the last 3 months?",
+                        },
+                        {
+                          key: "is_direct_debit_returned_in_the_last_three_months",
+                          label:
+                            "Had a direct debit returned in the last 3 months?",
+                        },
+                      ].map(({ key, label }) => (
+                        <Col md={6} key={key} className="mb-3">
+                          <FormGroup>
+                            <Label>{label}</Label>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <div>
+                                <Input
+                                  type="radio"
+                                  name={key}
+                                  onChange={() =>
+                                    handleRadioChange(
                                       key as keyof typeof formData,
+                                      true,
                                     )
                                   }
-                                >
-                                  Add New
-                                </Button>
-                              )}
-                              <Button
-                                color="primary"
-                                onClick={() =>
-                                  handleViewClick(key as keyof typeof formData)
-                                }
-                              >
-                                View
-                              </Button>
+                                  checked={
+                                    formData[key as keyof typeof formData] ===
+                                    true
+                                  }
+                                />{" "}
+                                Yes
+                                <Input
+                                  type="radio"
+                                  name={key}
+                                  className="ms-2"
+                                  onChange={() =>
+                                    handleRadioChange(
+                                      key as keyof typeof formData,
+                                      false,
+                                    )
+                                  }
+                                  checked={
+                                    formData[key as keyof typeof formData] ===
+                                    false
+                                  }
+                                />{" "}
+                                No
+                              </div>
                             </div>
-                          )}
-                      </FormGroup>
-                    </Col>
-                  ))}
-                </Row>
+                            {formData[key as keyof typeof formData] === true &&
+                              key !==
+                                "is_exceeded_your_overdraft_in_the_last_three_months" &&
+                              key !==
+                                "is_direct_debit_returned_in_the_last_three_months" && (
+                                <div className="d-flex gap-2 mt-2">
+                                  <Button
+                                    color="success"
+                                    onClick={() =>
+                                      handleAddNewClick(
+                                        key as keyof typeof formData,
+                                      )
+                                    }
+                                  >
+                                    Add New
+                                  </Button>
+                                  <Button
+                                    color="primary"
+                                    onClick={() =>
+                                      handleViewClick(
+                                        key as keyof typeof formData,
+                                      )
+                                    }
+                                  >
+                                    View
+                                  </Button>
+                                </div>
+                              )}
+                          </FormGroup>
+                        </Col>
+                      ))}
+                    </Row>
 
-                <FormGroup>
-                  <Label for="reasonForAdverse">
-                    Why did the adverse occur?(If applicable)
-                  </Label>
-                  <Input
-                    type="textarea"
-                    name="why_did_the_adverse_occur"
-                    id="why_did_the_adverse_occur"
-                    value={formData.why_did_the_adverse_occur || ""}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        why_did_the_adverse_occur: e.target.value,
-                      }))
-                    }
-                    disabled={
-                      !Object.entries(formData)
-                        .filter(([key, value]) => typeof value === "boolean")
-                        .some(([_, value]) => value === true)
-                    }
-                  />
-                </FormGroup>
+                    <FormGroup>
+                      <Label for="reasonForAdverse">
+                        Why did the adverse occur?(If applicable)
+                      </Label>
+                      <Input
+                        type="textarea"
+                        name="why_did_the_adverse_occur"
+                        id="why_did_the_adverse_occur"
+                        value={formData.why_did_the_adverse_occur || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            why_did_the_adverse_occur: e.target.value,
+                          }))
+                        }
+                        disabled={
+                          !Object.entries(formData)
+                            .filter(
+                              ([key, value]) => typeof value === "boolean",
+                            )
+                            .some(([_, value]) => value === true)
+                        }
+                      />
+                    </FormGroup>
 
-                {/* Submit Button */}
-                {canApplicantEdit() && (
-                  <div className="d-flex justify-content-end mt-4 gap-2">
-                    <Button
-                      type="button"
-                      color="primary"
-                      onClick={async () => {
-                        setSubmitting("save");
-                        await handleSubmit();
-                      }}
-                      disabled={submitting !== null || isAdverseUpdating}
-                    >
-                      {submitting === "save" ? "Saving..." : "Save Changes"}
-                    </Button>
-                    {session?.user?.role !== "APPLICANT" && (
+                    {/* Submit Button */}
+                    <div className="d-flex justify-content-end mt-4 gap-2">
+                      <Button
+                        type="button"
+                        color="primary"
+                        onClick={async () => {
+                          setSubmitting("save");
+                          await handleSubmit();
+                        }}
+                        disabled={submitting !== null || isAdverseUpdating}
+                      >
+                        {submitting === "save" ? "Saving..." : "Save Changes"}
+                      </Button>
                       <Button
                         type="button"
                         color="secondary"
@@ -467,14 +484,14 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
                           ? "Saving..."
                           : "Save & Next"}
                       </Button>
-                    )}
-                  </div>
-                )}
-              </Form>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+                    </div>
+                  </Form>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </div>
 
       {/* Modals */}
       {addNewDefaultsModal && (

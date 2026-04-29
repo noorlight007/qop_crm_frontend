@@ -1,3 +1,4 @@
+import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Dropdown,
@@ -8,84 +9,51 @@ import {
 
 /* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
-  <p className="suitability-advisor-note rounded">
-    {children}
-  </p>
+  <p className="suitability-advisor-note rounded">{children}</p>
 );
-
-/* ── Purple: dropdown placeholder ── */
-const PleaseSelect = ({ label }: { label?: string }) => (
-  <span
-    className="px-2 py-1 rounded small fst-italic d-inline-block"
-    style={{
-      background: "#f3e5f5",
-      color: "#6a1b9a",
-      border: "1px dashed #ab47bc",
-    }}
-  >
-    {label ?? "Please Select"}
-  </span>
-);
-
-/* ── Purple dropdown option list ── */
-const DropdownOptions = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: React.ReactNode[];
-}) => (
-  <div className="mt-2 small" style={{ color: "#6a1b9a" }}>
-    <p className="mb-1 fst-italic">{label}</p>
-    <ol className="mb-0 ps-3">
-      {options.map((opt, i) => (
-        <li key={i}>{opt}</li>
-      ))}
-    </ol>
-  </div>
-);
-
-/* ── Green: render a suitability answer line ── */
-const SuitAnswer = ({ text }: { text?: string }) =>
-  text ? (
-    <p
-      className="mb-1"
-      style={{ color: "#2e7d32", whiteSpace: "pre-wrap", lineHeight: "1.7" }}
-    >
-      {text}
-    </p>
-  ) : null;
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
+
+const productTransferOptions: { value: string; label: string }[] = [
+  {
+    value: "MORE_COST_EFFECTIVE",
+    label: "this was more cost effective than the cheapest remortgage deal available.",
+  },
+  {
+    value: "TIME_RESTRAINTS",
+    label: "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
+  },
+  {
+    value: "SIMPLER_PROCESS",
+    label: "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
+  },
+];
 
 interface ProductTransferProps {
   caseData: any;
   suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
 }
 
 const ProductTransfer: React.FC<ProductTransferProps> = ({
   caseData,
   suitability,
+  formValues,
+  onFormChange,
 }) => {
   const blue = "#1565c0";
   const s = suitability;
+  const lender = s?.loan_details?.lender ?? "";
 
-  const lender = caseData?.lender_name ?? "HSBC";
+  // ── UI only ──
+  const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] = useState(false);
 
-  const [selectedProductTransferOption, setSelectedProductTransferOption] =
-    useState<string | null>(null);
-  const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] =
-    useState(false);
-
-  const productTransferOptions = [
-    "this was more cost effective than the cheapest remortgage deal available.",
-    "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
-    "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
-  ];
+  // ── Derived from formValues ──
+  const selectedProductTransferOption =
+    productTransferOptions.find((o) => o.value === formValues.product_transfer_reason) ?? null;
 
   return (
     <>
@@ -102,18 +70,21 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
       </p>
 
       <p className="fw-bold mb-1">These options included:</p>
-      <ul className="mb-3">
+      <ul className="mb-3" style={{ listStyle: "none", paddingLeft: "1rem" }}>
         <li>
+          <span className="me-2">•</span>
           Staying on standard variable rate (SVR){" "}
           <strong style={{ color: blue }}>
             {caseData?.svr_rate ?? "X.XX%"}
           </strong>
         </li>
         <li>
+          <span className="me-2">•</span>
           Moving to another deal from the lender&rsquo;s product range &mdash;
           known as a product transfer
         </li>
         <li>
+          <span className="me-2">•</span>
           Moving your mortgage to a new lender &mdash; known as a remortgage
         </li>
       </ul>
@@ -136,7 +107,9 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
               textDecoration: "underline dotted",
             }}
           >
-            {selectedProductTransferOption ?? "select reason..."}
+            {selectedProductTransferOption
+              ? selectedProductTransferOption.label
+              : "select reason..."}
           </DropdownToggle>
           <DropdownMenu
             style={{
@@ -145,14 +118,14 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
               maxWidth: "400px",
             }}
           >
-            {productTransferOptions.map((option, index) => (
+            {productTransferOptions.map((option) => (
               <DropdownItem
-                key={index}
-                onClick={() => setSelectedProductTransferOption(option)}
+                key={option.value}
+                onClick={() => onFormChange({ product_transfer_reason: option.value })}
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
-                {option}
+                {option.label}
               </DropdownItem>
             ))}
           </DropdownMenu>

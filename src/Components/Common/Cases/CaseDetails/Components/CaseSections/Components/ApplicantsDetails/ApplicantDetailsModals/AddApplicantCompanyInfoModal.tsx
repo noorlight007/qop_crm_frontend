@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useAddCompanyDetailsMutation,
   useGetCompanyDetailsByRegistrationQuery,
@@ -498,20 +498,10 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
   if (isLoading)
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   if (isError) return <div>Error fetching data</div>;
-
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl" centered>
@@ -880,21 +870,20 @@ const AddCompanyDetailsFormModal: React.FC<AddCompanyDetailsFormModalProps> = ({
               <Button color="warning" onClick={toggle} className="me-2">
                 Cancel
               </Button>
-              {canApplicantEdit() &&
-                (data?.[0] ? (
-                  <Button
-                    color="primary"
-                    type="button"
-                    onClick={handleUpdate}
-                    disabled={isCompanyDetailsUpdating}
-                  >
-                    {isCompanyDetailsUpdating ? "Updating..." : "Update"}
-                  </Button>
-                ) : (
-                  <Button color="primary" type="submit">
-                    {isCompanyDetailsAdding ? "Adding..." : "Submit"}
-                  </Button>
-                ))}
+              (data?.[0] ? (
+              <Button
+                color="primary"
+                type="button"
+                onClick={handleUpdate}
+                disabled={isCompanyDetailsUpdating}
+              >
+                {isCompanyDetailsUpdating ? "Updating..." : "Update"}
+              </Button>
+              ) : (
+              <Button color="primary" type="submit">
+                {isCompanyDetailsAdding ? "Adding..." : "Submit"}
+              </Button>
+              ))
             </div>
           </div>
         </Form>

@@ -119,16 +119,6 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
       </div>
     );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <Card>
       {/* Modal Header */}
@@ -149,12 +139,10 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                 Copy Dependants from first Applicant
               </Button>
             )}
-          {canApplicantEdit() && (
-            <Button onClick={() => setIsDependantsModalOpen(true)} disabled={!canApplicantEdit()}>
-              <TbCirclePlus size={20} className="me-1" />
-              Add Dependant
-            </Button>
-          )}
+          <Button onClick={() => setIsDependantsModalOpen(true)}>
+            <TbCirclePlus size={20} className="me-1" />
+            Add Dependant
+          </Button>
         </div>
       </CardHeader>
 
@@ -169,7 +157,7 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                 <th>Relationship</th>
                 <th>Date of Birth</th>
                 <th>Age</th>
-                {canApplicantEdit() && <th>Action</th>}
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -187,13 +175,13 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                       </td>
                       <td>{dependant.date_of_birth || "-"}</td>
                       <td>{calcAge(dependant.date_of_birth) || "0"} y</td>
-                      {canApplicantEdit() && (
-                        <td>
-                          <Button
-                            color="danger"
-                            outline
-                            size="sm"
-                            onClick={() =>
+
+                      <td>
+                        <Button
+                          color="danger"
+                          outline
+                          size="sm"
+                          onClick={() =>
                             setIsDependantDeleteModalOpen(
                               dependant?.id != null
                                 ? String(dependant.id)
@@ -205,7 +193,6 @@ const ApplicantDependantsView: React.FC<ApplicantDependantsViewModalProps> = ({
                           <FaTrash />
                         </Button>
                       </td>
-                      )}
                     </tr>
                   ),
                 )

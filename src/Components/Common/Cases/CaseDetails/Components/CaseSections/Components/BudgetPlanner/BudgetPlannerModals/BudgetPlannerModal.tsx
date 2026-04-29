@@ -7,6 +7,7 @@ import {
   updateBudgetPlannerSection,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { BudgetPlannerModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -27,7 +28,6 @@ import {
   NavLink,
 } from "reactstrap";
 import BudgetPlannerTabContent from "../BudgetPlannerTabContent";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 
 const budgetPlannerTabTitleData = [
   "Household Income",
@@ -53,9 +53,9 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
   const [updatedFields, setUpdatedFields] = useState<Record<string, any>>({});
 
   const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
-      { case_alias: casealias },
-      { skip: !casealias },
-    );
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
 
   // Server-side validation errors
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -299,16 +299,6 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
     [dispatch],
   );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
-
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="xl">
       <ModalHeader toggle={toggle} className="bg-primary text-white">
@@ -353,18 +343,15 @@ const BudgetPlannerModal: FC<BudgetPlannerModalProps> = ({
         <Button color="secondary" onClick={toggle}>
           Close
         </Button>
-        {canApplicantEdit() && (
-          <Button
-            color="primary"
-            onClick={handleSaveChanges}
-            disabled={
-              !budgetPlannerData.disclaimer && !updatedFields.disclaimer
-              // || session?.user?.role === "APPLICANT"
-            }
-          >
-            {isLoading ? "Saving..." : "Save Changes"}
-          </Button>
-        )}
+        <Button
+          color="primary"
+          onClick={handleSaveChanges}
+          disabled={
+            !budgetPlannerData.disclaimer && !updatedFields.disclaimer
+          }
+        >
+          {isLoading ? "Saving..." : "Save Changes"}
+        </Button>
       </ModalFooter>
     </Modal>
   );

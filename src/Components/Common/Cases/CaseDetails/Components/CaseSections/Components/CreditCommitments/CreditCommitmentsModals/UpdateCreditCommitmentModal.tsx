@@ -45,6 +45,7 @@ const UpdateCreditCommitmentModal: React.FC<
     cost_of_credit: data?.cost_of_credit || "",
     paid_on_completion: data?.paid_on_completion || "",
     source: data?.source || "",
+    debt_consolidation: Boolean(data?.debt_consolidation),
     has_the_unsecured_credit_mounted_up:
       data?.has_the_unsecured_credit_mounted_up || "",
   });
@@ -649,6 +650,40 @@ const UpdateCreditCommitmentModal: React.FC<
                 )}
               </>
             )}
+            <Col md={6}>
+              <FormGroup>
+                <Label>Debt Consolidation</Label>
+                <div className="d-flex align-items-center gap-4 flex-wrap">
+                  {["yes", "no"].map((option) => (
+                    <div key={option}>
+                      <Label className="me-2">
+                        <Input
+                          type="radio"
+                          name="debt_consolidation"
+                          className="me-1"
+                          value={option}
+                          checked={
+                            formData.debt_consolidation === (option === "yes")
+                          }
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              debt_consolidation: e.target.value === "yes",
+                            }))
+                          }
+                        />
+                        {option.charAt(0).toUpperCase() + option.slice(1)}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                {getFieldError("debt_consolidation") && (
+                  <div className="text-danger small">
+                    {getFieldError("debt_consolidation")}
+                  </div>
+                )}
+              </FormGroup>
+            </Col>
             <Col>
               <FormGroup>
                 <Label>Note</Label>

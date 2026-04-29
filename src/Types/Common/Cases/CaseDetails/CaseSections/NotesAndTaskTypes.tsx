@@ -31,7 +31,6 @@ export interface NoteProps {
     middle_name: string;
     last_name: string;
     profile_image: string | null;
-    user_type: string;
   };
   note_visible_to_introducer: boolean;
   note_visible_to_client: boolean;

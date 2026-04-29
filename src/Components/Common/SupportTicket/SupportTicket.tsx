@@ -1,4 +1,4 @@
-import { LoadingSpinner2 } from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useFetchSupportTicketQuery,
   useUpdateSupportTicketMutation,
@@ -733,7 +733,7 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                     <tr>
                       <td colSpan={12} className="text-center">
                         <div className="d-flex justify-content-center align-items-center">
-                          <LoadingSpinner2 />
+                          <LoadingGrow />
                         </div>
                       </td>
                     </tr>
@@ -891,14 +891,14 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                         {session?.user?.role === "SUPER_ADMIN" && (
                           <>
                             <td className="text-truncate">
-                              {ticket.network?.name || (
+                              {ticket.network || (
                                 <small className="text-muted">
                                   Not Specified
                                 </small>
                               )}
                             </td>
                             <td className="text-truncate">
-                              {ticket.organisation?.name || (
+                              {ticket.organisation || (
                                 <small className="text-muted">
                                   Not Specified
                                 </small>
@@ -915,16 +915,6 @@ const SupportTicket: React.FC<SupportTicketProps> = ({ initialIsRemoved }) => {
                             style={{ fontSize: "9px" }}
                           >
                             {ticket.created_by?.email}
-                          </p>
-                          <p
-                            className="m-0 opacity-75"
-                            style={{ fontSize: "9px" }}
-                          >
-                            (
-                            {formatChoiceFieldValue(
-                              ticket.created_by?.user_type,
-                            )}
-                            )
                           </p>
                         </td>
                         <td>{formatDateAndTime(ticket.created_at)}</td>

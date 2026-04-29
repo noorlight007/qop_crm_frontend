@@ -17,9 +17,11 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import { useIsLocked } from "../context/EditableContext";
 
 const PropertyValuationCard: FC = () => {
   const { casealias } = useParams();
+  const isLocked = useIsLocked();
   const { data: caseLoanDetails, isLoading } =
     useGetCaseLoanDetailsQuery(casealias);
 
@@ -41,49 +43,72 @@ const PropertyValuationCard: FC = () => {
   const estimatedValue = loandetailsData?.estimated_value;
 
   return (
-    <Card className="shadow-sm border-0 mb-2">
-      <CardBody>
-        <Row>
-          {!(purchasePrice === 0 && estimatedValue !== 0) && (
-            <Col sm={6} className="mb-2">
-              <FormGroup>
-                <Label for="property_value">Property Purchase Price</Label>
-                <InputGroup>
-                  <InputGroupText>{getCurrencySign()}</InputGroupText>
-                  <Input
-                    id="property_value"
-                    name="property_value"
-                    type="text"
-                    value={purchasePrice}
-                    readOnly
-                    className="form-control"
-                  />
-                </InputGroup>
-              </FormGroup>
-            </Col>
-          )}
+    <div style={{ position: "relative" }}>
+      {isLocked && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 10,
+            cursor: "not-allowed",
+            backgroundColor: "rgba(0,0,0,0.0001)",
+          }}
+          title="This case is not editable"
+        />
+      )}
+      <div
+        style={{
+          opacity: isLocked ? 0.45 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
+          transition: "opacity 0.2s ease",
+          userSelect: isLocked ? "none" : "auto",
+        }}
+      >
+        <Card className="shadow-sm border-0 mb-2">
+          <CardBody>
+            <Row>
+              {!(purchasePrice === 0 && estimatedValue !== 0) && (
+                <Col sm={6} className="mb-2">
+                  <FormGroup>
+                    <Label for="property_value">Property Purchase Price</Label>
+                    <InputGroup>
+                      <InputGroupText>{getCurrencySign()}</InputGroupText>
+                      <Input
+                        id="property_value"
+                        name="property_value"
+                        type="text"
+                        value={purchasePrice}
+                        readOnly
+                        className="form-control"
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                </Col>
+              )}
 
-          <Col sm={6} className="mb-3">
-            <FormGroup>
-              <Label for="estimated_valuation">
-                Property Estimated Valuation
-              </Label>
-              <InputGroup>
-                <InputGroupText>{getCurrencySign()}</InputGroupText>
-                <Input
-                  id="estimated_valuation"
-                  name="estimated_valuation"
-                  type="text"
-                  value={estimatedValue}
-                  readOnly
-                  className="form-control"
-                />
-              </InputGroup>
-            </FormGroup>
-          </Col>
-        </Row>
-      </CardBody>
-    </Card>
+              <Col sm={6} className="mb-3">
+                <FormGroup>
+                  <Label for="estimated_valuation">
+                    Property Estimated Valuation
+                  </Label>
+                  <InputGroup>
+                    <InputGroupText>{getCurrencySign()}</InputGroupText>
+                    <Input
+                      id="estimated_valuation"
+                      name="estimated_valuation"
+                      type="text"
+                      value={estimatedValue}
+                      readOnly
+                      className="form-control"
+                    />
+                  </InputGroup>
+                </FormGroup>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      </div>
+    </div>
   );
 };
 

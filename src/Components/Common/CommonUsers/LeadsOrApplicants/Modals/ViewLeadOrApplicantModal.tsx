@@ -208,13 +208,6 @@ const ViewLeadOrApplicantModal: React.FC<ViewLeadOrApplicantModalProps> = ({
                           )
                         : ""}
                     </small>
-                    <small className="text-muted d-block">
-                      {selectedLeadOrApplicant.created_by.user_type
-                        ? formatChoiceFieldValue(
-                            selectedLeadOrApplicant.created_by.user_type,
-                          )
-                        : ""}
-                    </small>
                   </div>
                 ) : (
                   <div

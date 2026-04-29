@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetEmploymentDetailsQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/EmploymentDetails/EmploymentDetailsApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { EmploymentDetailsProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/EmploymentTypes";
@@ -143,17 +143,11 @@ export const EmploymentTab = () => {
     }
   };
 
-  if (isEmploymentDetailLoading) return <LoadingSpinner />;
+  if (isEmploymentDetailLoading) return <LoadingGrow />;
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
+  const isApplicant = session?.user?.role === "APPLICANT";
+const isEditable = caseData?.is_editable !== false;
+const isLocked = isApplicant && !isEditable;
 
   return (
     <Col xxl="12" className="px-5">
@@ -284,28 +278,28 @@ export const EmploymentTab = () => {
                               return null;
                             }
 
+                            if (isLocked) return null;
+
                             return (
                               <>
-                                {canApplicantEdit() && (
-                                  <Button
-                                    type="button"
-                                    size="sm"
-                                    outline
-                                    color="danger"
-                                    className="ms-1"
-                                    onClick={(e) =>
-                                      openDeleteModal(
-                                        e,
-                                        employment.alias,
-                                        employment.customer.id,
-                                      )
-                                    }
-                                    aria-label="Delete employment"
-                                    title="Delete"
-                                  >
-                                    <FaTrash />
-                                  </Button>
-                                )}
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  outline
+                                  color="danger"
+                                  className="ms-1"
+                                  onClick={(e) =>
+                                    openDeleteModal(
+                                      e,
+                                      employment.alias,
+                                      employment.customer.id,
+                                    )
+                                  }
+                                  aria-label="Delete employment"
+                                  title="Delete"
+                                >
+                                  <FaTrash />
+                                </Button>
                               </>
                             );
                           })()}

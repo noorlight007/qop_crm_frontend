@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAddExistingProtectionDetailsMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/ExistingProtection/ExistingProtectionDetailsApi";
 import { AddExistingProtectionModalProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/ExistingProtectionTypes";
 import getCurrencySign from "@/utils/currency";
@@ -249,7 +249,7 @@ const AddExistingProtectionModal: React.FC<AddExistingProtectionModalProps> = ({
   if (isLoading) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

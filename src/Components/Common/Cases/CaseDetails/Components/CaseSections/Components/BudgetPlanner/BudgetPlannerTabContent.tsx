@@ -1,4 +1,4 @@
-import LoadingSpinner from "@/app/loading";
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetCaseBudgetPlannerQuery,
   useValidateBudgetPlannerMutation,
@@ -8,6 +8,7 @@ import {
   initializeBudgetPlannerForm,
   setApiErrors,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { BudgetPlannerTabContentProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/BudgetPlannerTypes";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
@@ -20,7 +21,6 @@ import DisclaimerTabContents from "./BudgetPlannerTabContents/DisclaimerTabConte
 import HouseHoldIncomeTabContent from "./BudgetPlannerTabContents/HouseHoldIncomeTabContent";
 import LivingExpensesTabContents from "./BudgetPlannerTabContents/LivingExpensesTabContents";
 import MonthlyBudgetTabContents from "./BudgetPlannerTabContents/MonthlyBudgetTabContents";
-import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 
 const tabs = [
   { id: 1, Component: HouseHoldIncomeTabContent },
@@ -44,10 +44,10 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
     { case_alias: casealias as string },
     { skip: !casealias },
   );
- const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
-     { case_alias: casealias },
-     { skip: !casealias },
-   );
+  const { data: caseData, isLoading: isCaseFetching } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
   const initializedRef = useRef<string | null>(null);
 
   // Get current form values from store so we can validate them
@@ -398,7 +398,7 @@ const BudgetPlannerTabContent: FC<BudgetPlannerTabContentProps> = ({
   if (isLoading && !initializedRef.current) {
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
   }

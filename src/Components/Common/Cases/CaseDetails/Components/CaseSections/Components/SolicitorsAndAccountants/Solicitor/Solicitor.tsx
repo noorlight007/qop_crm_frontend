@@ -1,3 +1,4 @@
+import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
@@ -9,7 +10,6 @@ import {
   useUpdateSolicitorDetailsMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SolicitorAndAccountant/SolicitorAndAccountantApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
-import LoadingSpinner from "@/app/loading";
 import { apiAddress } from "@/services/third-party-api";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -449,19 +449,13 @@ const Solicitor: React.FC = () => {
   )
     return (
       <div>
-        <LoadingSpinner />
+        <LoadingGrow />
       </div>
     );
 
-  const canApplicantEdit = (): boolean => {
-    if (session?.user?.role === "APPLICANT") {
-      return (
-        caseData?.case_stage === "ENQUIRY" ||
-        caseData?.case_stage === "FACT_FIND"
-      );
-    }
-    return true; // Non-applicant users can always edit
-  };
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
 
   return (
     <>
@@ -490,503 +484,520 @@ const Solicitor: React.FC = () => {
             </Nav>
           )}
 
-          <Row>
-            <Col md={12}>
-              <Row>
-                <Col md={6}>
-                  <Form>
-                    <Row>
-                      <FormGroup>
-                        <Label for="assignSolicitor">Assign Solicitor:</Label>
-                        <Input
-                          id="assignSolicitor"
-                          name="assignSolicitor"
-                          type="select"
-                          value={
-                            selectedSolicitor?.id ||
-                            selectedCaseSolicitor?.solicitor_details?.id ||
-                            ""
-                          }
-                          onChange={handleSolicitorChange}
-                        >
-                          <option value="">Select Solicitor...</option>
-                          {solicitorName?.map((solicitor: any) => (
-                            <option key={solicitor?.id} value={solicitor?.id}>
-                              {solicitor?.name}
-                              {solicitor?.id ===
-                              selectedCaseSolicitor?.solicitor_details?.id
-                                ? " (Currently Assigned)"
-                                : ""}
-                            </option>
-                          ))}
-                        </Input>
-                        <small className="text-muted text-danger">
-                          Note: Please select and assigned a solicitor from the
-                          dropdown list. If the solicitor is not listed, please
-                          add a new solicitor.
-                        </small>
-                      </FormGroup>
-                    </Row>
-                    <Row>
-                      <Col
-                        md={12}
-                        className="d-flex justify-content-between align-content-center gap-3"
-                      >
-                        {canApplicantEdit() && (
-                          <>
-                            <Button
-                              color="success"
-                              onClick={toggleModal}
-                              className="border-success"
-                              // disabled={session?.user?.role === "APPLICANT"}
-                            >
-                              Add New Solicitor
-                            </Button>
-                            <Button
-                              color="primary"
-                              onClick={handleAssignSolicitor}
-                              disabled={
-                                !selectedSolicitor
-                                // || session?.user?.role === "APPLICANT"
-                              }
-                            >
-                              Assign Solicitor
-                            </Button>
-                          </>
-                        )}
-                      </Col>
-                    </Row>
-                  </Form>
-                </Col>
-                <Col md={6}>
-                  <Card className="border-primary rounded-b-3 mt-4 m-0">
-                    <CardHeader className="bg-primary">
-                      <span className="fs-6 text-center">
-                        Selected Solicitor
-                      </span>
-                    </CardHeader>
-                    <CardBody className="text-center">
-                      {selectedCaseSolicitor?.solicitor_details ? (
-                        <>
-                          <div>
-                            <strong>Name: </strong>
-                            {selectedCaseSolicitor.solicitor_details.name ||
-                              "N/A"}
-                          </div>
-                          <div>
-                            <strong>Type: </strong>
-                            {formatChoiceFieldValue(
-                              selectedCaseSolicitor.solicitor_details.user_type,
-                            ) || "N/A"}
-                          </div>
-                          <div>
-                            {canApplicantEdit() && (
-                              <Button
-                                outline
-                                size="sm"
-                                color="danger"
-                                className="ms-1"
-                                title="Unassign"
-                                disabled={isUnassigning}
-                                onClick={async (e) => {
-                                  e.stopPropagation();
-                                  const result = await Swal.fire({
-                                    title: "Are you sure?",
-                                    text: "This will unassign the solicitor from the case.",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonText: "Yes, unassign",
-                                    cancelButtonText: "Cancel",
-                                  });
-                                  if (result.isConfirmed) {
-                                    try {
-                                      await unassignSolicitor({
-                                        case_alias: caseAlias,
-                                        solicitor_alias:
-                                          selectedCaseSolicitor?.alias,
-                                      }).unwrap();
-                                      Swal.fire(
-                                        "Unassigned!",
-                                        "Solicitor has been unassigned.",
-                                        "success",
-                                      );
-                                      // Clear selection and reset active tab
-                                      setSelectedCaseSolicitor(null);
-                                      setActiveTab("0");
-                                    } catch (err) {
-                                      console.error(
-                                        "Failed to unassign solicitor:",
-                                        err,
-                                      );
-                                      Swal.fire(
-                                        "Error",
-                                        "Failed to unassign solicitor. Please try again.",
-                                        "error",
-                                      );
-                                    }
-                                  }
-                                }}
-                              >
-                                <BiSolidErrorCircle size={15} />
-                                Unassign
-                              </Button>
-                            )}
-                          </div>
-                        </>
-                      ) : (
-                        <em className="text-danger fs-4">
-                          "Not Assigned Yet!"
-                        </em>
-                      )}
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-
-          <hr />
-
-          <Row>
-            <form
-              ref={formRef}
-              id="solicitor-form"
-              onSubmit={handleUpdateSolicitorDetails}
+          <div style={{ position: "relative" }}>
+            {isLocked && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 10,
+                  cursor: "not-allowed",
+                  backgroundColor: "rgba(0,0,0,0.0001)",
+                }}
+              />
+            )}
+            <div
+              style={{
+                opacity: isLocked ? 0.45 : 1,
+                pointerEvents: isLocked ? "none" : "auto",
+              }}
             >
               <Row>
-                <Col sm={12}>
-                  <Label className="fw-semibold mb-2">Location Preview</Label>
-                  <div className="border rounded overflow-hidden shadow-sm mb-3">
-                    <iframe
-                      src={
-                        mapCoords
-                          ? getGoogleMapEmbedUrl(
-                              mapCoords.lat,
-                              mapCoords.lng,
-                              currentZoom,
-                            )
-                          : getGoogleMapEmbedUrl(
-                              LONDON_CENTER.lat,
-                              LONDON_CENTER.lng,
-                              DEFAULT_ZOOM,
-                            )
-                      }
-                      width="100%"
-                      height="250"
-                      style={{ border: 0 }}
-                      loading="lazy"
-                      title="Solicitor Location"
-                    />
-                  </div>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="qualifications">
-                      Qualification<span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      id="qualifications"
-                      name="qualifications"
-                      type="text"
-                      value={formData.qualifications || ""}
-                      onChange={handleInputChange}
-                      required
-                    />
-                    {errors.qualifications && (
-                      <div className="text-danger">{errors.qualifications}</div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="sraNumber">SRA Number</Label>
-                    <Input
-                      id="sraNumber"
-                      name="sra_number"
-                      type="text"
-                      value={formData.sra_number || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.sra_number || errors.sraNumber) && (
-                      <div className="text-danger">
-                        {errors.sra_number || errors.sraNumber}
-                      </div>
-                    )}
-                  </FormGroup>
+                <Col md={12}>
+                  <Row>
+                    <Col md={6}>
+                      <Form>
+                        <Row>
+                          <FormGroup>
+                            <Label for="assignSolicitor">
+                              Assign Solicitor:
+                            </Label>
+                            <Input
+                              id="assignSolicitor"
+                              name="assignSolicitor"
+                              type="select"
+                              value={
+                                selectedSolicitor?.id ||
+                                selectedCaseSolicitor?.solicitor_details?.id ||
+                                ""
+                              }
+                              onChange={handleSolicitorChange}
+                            >
+                              <option value="">Select Solicitor...</option>
+                              {solicitorName?.map((solicitor: any) => (
+                                <option
+                                  key={solicitor?.id}
+                                  value={solicitor?.id}
+                                >
+                                  {solicitor?.name}
+                                  {solicitor?.id ===
+                                  selectedCaseSolicitor?.solicitor_details?.id
+                                    ? " (Currently Assigned)"
+                                    : ""}
+                                </option>
+                              ))}
+                            </Input>
+                            <small className="text-muted text-danger">
+                              Note: Please select and assigned a solicitor from
+                              the dropdown list. If the solicitor is not listed,
+                              please add a new solicitor.
+                            </small>
+                          </FormGroup>
+                        </Row>
+                        <Row>
+                          <Col
+                            md={12}
+                            className="d-flex justify-content-between align-content-center gap-3"
+                          >
+                            <>
+                              <Button
+                                color="success"
+                                onClick={toggleModal}
+                                className="border-success"
+                                // disabled={session?.user?.role === "APPLICANT"}
+                              >
+                                Add New Solicitor
+                              </Button>
+                              <Button
+                                color="primary"
+                                onClick={handleAssignSolicitor}
+                                disabled={
+                                  !selectedSolicitor
+                                  // || session?.user?.role === "APPLICANT"
+                                }
+                              >
+                                Assign Solicitor
+                              </Button>
+                            </>
+                          </Col>
+                        </Row>
+                      </Form>
+                    </Col>
+                    <Col md={6}>
+                      <Card className="border-primary rounded-b-3 mt-4 m-0">
+                        <CardHeader className="bg-primary">
+                          <span className="fs-6 text-center">
+                            Selected Solicitor
+                          </span>
+                        </CardHeader>
+                        <CardBody className="text-center">
+                          {selectedCaseSolicitor?.solicitor_details ? (
+                            <>
+                              <div>
+                                <strong>Name: </strong>
+                                {selectedCaseSolicitor.solicitor_details.name ||
+                                  "N/A"}
+                              </div>
+                              <div>
+                                <strong>Type: </strong>
+                                {formatChoiceFieldValue(
+                                  selectedCaseSolicitor.solicitor_details
+                                    .user_type,
+                                ) || "N/A"}
+                              </div>
+                              <div>
+                                <Button
+                                  outline
+                                  size="sm"
+                                  color="danger"
+                                  className="ms-1"
+                                  title="Unassign"
+                                  disabled={isUnassigning}
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    const result = await Swal.fire({
+                                      title: "Are you sure?",
+                                      text: "This will unassign the solicitor from the case.",
+                                      icon: "warning",
+                                      showCancelButton: true,
+                                      confirmButtonText: "Yes, unassign",
+                                      cancelButtonText: "Cancel",
+                                    });
+                                    if (result.isConfirmed) {
+                                      try {
+                                        await unassignSolicitor({
+                                          case_alias: caseAlias,
+                                          solicitor_alias:
+                                            selectedCaseSolicitor?.alias,
+                                        }).unwrap();
+                                        Swal.fire(
+                                          "Unassigned!",
+                                          "Solicitor has been unassigned.",
+                                          "success",
+                                        );
+                                        // Clear selection and reset active tab
+                                        setSelectedCaseSolicitor(null);
+                                        setActiveTab("0");
+                                      } catch (err) {
+                                        console.error(
+                                          "Failed to unassign solicitor:",
+                                          err,
+                                        );
+                                        Swal.fire(
+                                          "Error",
+                                          "Failed to unassign solicitor. Please try again.",
+                                          "error",
+                                        );
+                                      }
+                                    }
+                                  }}
+                                >
+                                  <BiSolidErrorCircle size={15} />
+                                  Unassign
+                                </Button>
+                              </div>
+                            </>
+                          ) : (
+                            <em className="text-danger fs-4">
+                              "Not Assigned Yet!"
+                            </em>
+                          )}
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
+
+              <hr />
+
               <Row>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="postcode">
-                      Postcode<span className="text-danger">*</span>
-                    </Label>
-                    <InputGroup className="d-flex align-items-center gap-2">
-                      <Input
-                        id="postcode"
-                        type="text"
-                        name="postcode"
-                        className="rounded"
-                        value={formData.postcode || ""}
-                        onChange={handleInputChange}
-                        required
-                      />
+                <form
+                  ref={formRef}
+                  id="solicitor-form"
+                  onSubmit={handleUpdateSolicitorDetails}
+                >
+                  <Row>
+                    <Col sm={12}>
+                      <Label className="fw-semibold mb-2">
+                        Location Preview
+                      </Label>
+                      <div className="border rounded overflow-hidden shadow-sm mb-3">
+                        <iframe
+                          src={
+                            mapCoords
+                              ? getGoogleMapEmbedUrl(
+                                  mapCoords.lat,
+                                  mapCoords.lng,
+                                  currentZoom,
+                                )
+                              : getGoogleMapEmbedUrl(
+                                  LONDON_CENTER.lat,
+                                  LONDON_CENTER.lng,
+                                  DEFAULT_ZOOM,
+                                )
+                          }
+                          width="100%"
+                          height="250"
+                          style={{ border: 0 }}
+                          loading="lazy"
+                          title="Solicitor Location"
+                        />
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="qualifications">
+                          Qualification<span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          id="qualifications"
+                          name="qualifications"
+                          type="text"
+                          value={formData.qualifications || ""}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        {errors.qualifications && (
+                          <div className="text-danger">
+                            {errors.qualifications}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="sraNumber">SRA Number</Label>
+                        <Input
+                          id="sraNumber"
+                          name="sra_number"
+                          type="text"
+                          value={formData.sra_number || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.sra_number || errors.sraNumber) && (
+                          <div className="text-danger">
+                            {errors.sra_number || errors.sraNumber}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="postcode">
+                          Postcode<span className="text-danger">*</span>
+                        </Label>
+                        <InputGroup className="d-flex align-items-center gap-2">
+                          <Input
+                            id="postcode"
+                            type="text"
+                            name="postcode"
+                            className="rounded"
+                            value={formData.postcode || ""}
+                            onChange={handleInputChange}
+                            required
+                          />
+                          <Button
+                            color="primary"
+                            type="button"
+                            className="text-nowrap"
+                            style={{
+                              paddingTop: "0.7rem",
+                              paddingBottom: "0.7rem",
+                            }}
+                            onClick={() =>
+                              fetchAddressByPostcode(formData.postcode)
+                            }
+                            disabled={isFetchingAddress || isSearchingPostcode}
+                          >
+                            {isSearchingPostcode ? "Loading..." : "Lookup"}
+                          </Button>
+                        </InputGroup>
+                        {errors.postcode && (
+                          <div className="text-danger mt-1">
+                            {errors.postcode}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="buildingName">
+                          Building Name or Number
+                        </Label>
+                        <Input
+                          id="buildingName"
+                          name="building_name_or_number"
+                          type="text"
+                          value={formData.building_name_or_number || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.building_name_or_number ||
+                          errors.buildingName) && (
+                          <div className="text-danger">
+                            {errors.building_name_or_number ||
+                              errors.buildingName}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="street">Street</Label>
+                        <Input
+                          id="street"
+                          name="street"
+                          type="text"
+                          value={formData.street || ""}
+                          onChange={handleInputChange}
+                        />
+                        {errors.street && (
+                          <div className="text-danger">{errors.street}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="city">City</Label>
+                        <Input
+                          id="city"
+                          name="city"
+                          type="text"
+                          value={formData.city || ""}
+                          onChange={handleInputChange}
+                        />
+                        {errors.city && (
+                          <div className="text-danger">{errors.city}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="county">County</Label>
+                        <Input
+                          id="county"
+                          name="county"
+                          type="text"
+                          value={formData.county || ""}
+                          onChange={handleInputChange}
+                        />
+                        {errors.county && (
+                          <div className="text-danger">{errors.county}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="country">Country</Label>
+                        <Input
+                          id="country"
+                          name="country"
+                          type="text"
+                          value={formData.country || ""}
+                          onChange={handleInputChange}
+                        />
+                        {errors.country && (
+                          <div className="text-danger">{errors.country}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="phoneNumber">Phone Number</Label>
+                        <Input
+                          id="phoneNumber"
+                          name="phone_number"
+                          type="tel"
+                          value={formData.phone_number || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.phone_number || errors.phoneNumber) && (
+                          <div className="text-danger">
+                            {errors.phone_number || errors.phoneNumber}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="faxNumber">Fax Number</Label>
+                        <Input
+                          id="faxNumber"
+                          name="fax_number"
+                          type="tel"
+                          value={formData.fax_number || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.fax_number || errors.faxNumber) && (
+                          <div className="text-danger">
+                            {errors.fax_number || errors.faxNumber}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="dxNumber">DX Number</Label>
+                        <Input
+                          id="dxNumber"
+                          name="dx_number"
+                          type="text"
+                          value={formData.dx_number || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.dx_number || errors.dxNumber) && (
+                          <div className="text-danger">
+                            {errors.dx_number || errors.dxNumber}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="contactName">Contact Name</Label>
+                        <Input
+                          id="contactName"
+                          name="contact_name"
+                          type="text"
+                          value={formData.contact_name || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.contact_name || errors.contactName) && (
+                          <div className="text-danger">
+                            {errors.contact_name || errors.contactName}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="emailAddress">Email Address</Label>
+                        <Input
+                          id="emailAddress"
+                          name="email_address"
+                          type="email"
+                          value={formData.email_address || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.email_address || errors.emailAddress) && (
+                          <div className="text-danger">
+                            {errors.email_address || errors.emailAddress}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="numberOfPartners">
+                          Number of Partners in firm
+                        </Label>
+                        <Input
+                          id="numberOfPartners"
+                          name="number_of_partners_in_firm"
+                          type="number"
+                          value={formData.number_of_partners_in_firm || ""}
+                          onChange={handleInputChange}
+                        />
+                        {(errors.number_of_partners_in_firm ||
+                          errors.numberOfPartners) && (
+                          <div className="text-danger">
+                            {errors.number_of_partners_in_firm ||
+                              errors.numberOfPartners}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md={12} className="d-flex justify-content-end gap-3">
                       <Button
+                        type="submit"
                         color="primary"
-                        type="button"
-                        className="text-nowrap"
-                        style={{
-                          paddingTop: "0.7rem",
-                          paddingBottom: "0.7rem",
+                        disabled={isUpdateLoading}
+                        onClick={() => {
+                          submitActionRef.current = "save";
                         }}
-                        onClick={() =>
-                          fetchAddressByPostcode(formData.postcode)
-                        }
-                        disabled={isFetchingAddress || isSearchingPostcode}
                       >
-                        {isSearchingPostcode ? "Loading..." : "Lookup"}
+                        {isUpdateLoading ? "Saving..." : "Save Changes"}
                       </Button>
-                    </InputGroup>
-                    {errors.postcode && (
-                      <div className="text-danger mt-1">{errors.postcode}</div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="buildingName">Building Name or Number</Label>
-                    <Input
-                      id="buildingName"
-                      name="building_name_or_number"
-                      type="text"
-                      value={formData.building_name_or_number || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.building_name_or_number ||
-                      errors.buildingName) && (
-                      <div className="text-danger">
-                        {errors.building_name_or_number || errors.buildingName}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
+                      <Button
+                        color="secondary"
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          submitActionRef.current = "next";
+                          formRef.current?.requestSubmit();
+                        }}
+                      >
+                        Save & Next
+                      </Button>
+                    </Col>
+                  </Row>
+                </form>
               </Row>
-              <Row>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="street">Street</Label>
-                    <Input
-                      id="street"
-                      name="street"
-                      type="text"
-                      value={formData.street || ""}
-                      onChange={handleInputChange}
-                    />
-                    {errors.street && (
-                      <div className="text-danger">{errors.street}</div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="city">City</Label>
-                    <Input
-                      id="city"
-                      name="city"
-                      type="text"
-                      value={formData.city || ""}
-                      onChange={handleInputChange}
-                    />
-                    {errors.city && (
-                      <div className="text-danger">{errors.city}</div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="county">County</Label>
-                    <Input
-                      id="county"
-                      name="county"
-                      type="text"
-                      value={formData.county || ""}
-                      onChange={handleInputChange}
-                    />
-                    {errors.county && (
-                      <div className="text-danger">{errors.county}</div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="country">Country</Label>
-                    <Input
-                      id="country"
-                      name="country"
-                      type="text"
-                      value={formData.country || ""}
-                      onChange={handleInputChange}
-                    />
-                    {errors.country && (
-                      <div className="text-danger">{errors.country}</div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="phoneNumber">Phone Number</Label>
-                    <Input
-                      id="phoneNumber"
-                      name="phone_number"
-                      type="tel"
-                      value={formData.phone_number || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.phone_number || errors.phoneNumber) && (
-                      <div className="text-danger">
-                        {errors.phone_number || errors.phoneNumber}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="faxNumber">Fax Number</Label>
-                    <Input
-                      id="faxNumber"
-                      name="fax_number"
-                      type="tel"
-                      value={formData.fax_number || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.fax_number || errors.faxNumber) && (
-                      <div className="text-danger">
-                        {errors.fax_number || errors.faxNumber}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="dxNumber">DX Number</Label>
-                    <Input
-                      id="dxNumber"
-                      name="dx_number"
-                      type="text"
-                      value={formData.dx_number || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.dx_number || errors.dxNumber) && (
-                      <div className="text-danger">
-                        {errors.dx_number || errors.dxNumber}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="contactName">Contact Name</Label>
-                    <Input
-                      id="contactName"
-                      name="contact_name"
-                      type="text"
-                      value={formData.contact_name || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.contact_name || errors.contactName) && (
-                      <div className="text-danger">
-                        {errors.contact_name || errors.contactName}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="emailAddress">Email Address</Label>
-                    <Input
-                      id="emailAddress"
-                      name="email_address"
-                      type="email"
-                      value={formData.email_address || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.email_address || errors.emailAddress) && (
-                      <div className="text-danger">
-                        {errors.email_address || errors.emailAddress}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="numberOfPartners">
-                      Number of Partners in firm
-                    </Label>
-                    <Input
-                      id="numberOfPartners"
-                      name="number_of_partners_in_firm"
-                      type="number"
-                      value={formData.number_of_partners_in_firm || ""}
-                      onChange={handleInputChange}
-                    />
-                    {(errors.number_of_partners_in_firm ||
-                      errors.numberOfPartners) && (
-                      <div className="text-danger">
-                        {errors.number_of_partners_in_firm ||
-                          errors.numberOfPartners}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </Row>
-              <Row>
-                <Col md={12} className="d-flex justify-content-end gap-3">
-                  {canApplicantEdit() && (
-                    <Button
-                      type="submit"
-                      color="primary"
-                      disabled={
-                        isUpdateLoading
-                        // || session?.user?.role === "APPLICANT"
-                      }
-                      onClick={() => {
-                        submitActionRef.current = "save";
-                      }}
-                    >
-                      {isUpdateLoading ? "Saving..." : "Save Changes"}
-                    </Button>
-                  )}
-                  {session?.user?.role !== "APPLICANT" && (
-                    <Button
-                      color="secondary"
-                      onClick={async (e) => {
-                        // if (session?.user?.role === "APPLICANT") {
-                        //   handleNextTab();
-                        // } else {
-                        e.preventDefault();
-                        submitActionRef.current = "next";
-                        formRef.current?.requestSubmit();
-                        // }
-                      }}
-                    >
-                      Save & Next
-                      {/* {session?.user?.role === "APPLICANT"
-                      ? "Go To Next"
-                      : "Save & Next"} */}
-                    </Button>
-                  )}
-                </Col>
-              </Row>
-            </form>
-          </Row>
+            </div>
+          </div>
         </CardBody>
       </Card>
 
