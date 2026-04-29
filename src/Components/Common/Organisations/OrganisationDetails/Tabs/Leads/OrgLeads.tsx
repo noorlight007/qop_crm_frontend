@@ -97,7 +97,7 @@ const OrgLeads: React.FC = () => {
       first_name: "",
       middle_name: "",
       last_name: "",
-      user_type: "",
+      email: "",
     },
     created_at: "",
   });
@@ -300,9 +300,9 @@ const OrgLeads: React.FC = () => {
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {lead.created_by?.user_type
+                            {lead.created_by?.email
                               ? formatChoiceFieldValue(
-                                  lead.created_by?.user_type,
+                                  lead.created_by?.email,
                                 )
                               : "Not Found"}
                             )

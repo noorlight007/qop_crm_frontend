@@ -78,7 +78,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
     enquiry_type: "",
     other_enquiry_type: null,
     created_at: "",
-    created_by: { name: "", user_type: "" },
+    created_by: { name: "", email: "" },
   });
 
   const { data: leadsOrApplicantsData, isLoading: isLeadsOrApplicantsLoading } =

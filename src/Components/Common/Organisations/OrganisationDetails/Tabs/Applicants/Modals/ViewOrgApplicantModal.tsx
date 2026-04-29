@@ -206,9 +206,9 @@ const ViewOrgApplicantModal: React.FC<ViewOrgApplicantModalProps> = ({
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedApplicant.created_by.user_type
+                  {selectedApplicant.created_by.email
                     ? formatChoiceFieldValue(
-                        selectedApplicant.created_by.user_type,
+                        selectedApplicant.created_by.email,
                       )
                     : ""}
                 </small>

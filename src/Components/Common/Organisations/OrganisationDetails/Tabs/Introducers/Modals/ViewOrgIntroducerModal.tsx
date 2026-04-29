@@ -194,9 +194,9 @@ const ViewOrgIntroducerModal: React.FC<ViewOrgIntroducerModalProps> = ({
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedIntroducer.created_by.user_type
+                  {selectedIntroducer.created_by.email
                     ? formatChoiceFieldValue(
-                        selectedIntroducer.created_by.user_type,
+                        selectedIntroducer.created_by.email,
                       )
                     : ""}
                 </small>

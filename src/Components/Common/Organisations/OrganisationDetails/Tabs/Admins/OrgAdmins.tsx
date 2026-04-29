@@ -235,9 +235,9 @@ const OrgAdmins: React.FC = () => {
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {admin.created_by?.user_type
+                            {admin.created_by?.email
                               ? formatChoiceFieldValue(
-                                  admin.created_by?.user_type,
+                                  admin.created_by?.email,
                                 )
                               : "Not Found"}
                             )

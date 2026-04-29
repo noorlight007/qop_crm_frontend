@@ -1,5 +1,9 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useAppSelector } from "@/Redux/Hooks";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import {
+  restoreOrganisationDetailsTab,
+  setOrganisationDetailsTab,
+} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrganisationDetailsTabSlice";
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
@@ -33,7 +37,7 @@ import OrgLeads from "./Tabs/Leads/OrgLeads";
 
 const OrganisationDetails: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
-  const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const dispatch = useAppDispatch();
   const navItems = [
     { id: "dashboard", label: "Dashboard" },
     { id: "cases", label: "Cases" },
@@ -47,7 +51,13 @@ const OrganisationDetails: React.FC = () => {
     (state) => state.themeCustomizer.mix_background_layout,
   );
   const { organisationslug } = useParams();
+  const orgSlug = Array.isArray(organisationslug)
+    ? organisationslug[0]
+    : organisationslug;
   const router = useRouter();
+  const activeTab = useAppSelector(
+    (state) => state.organisationDetailsTabs.activeTab,
+  );
 
   // rtk hooks
   const {
@@ -87,6 +97,14 @@ const OrganisationDetails: React.FC = () => {
     }
   }, [singleOrgData, organisationslug, router, isLoading, isError]);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !orgSlug) return;
+    const savedTab = localStorage.getItem(
+      `organisationDetailsActiveTab:${orgSlug}`,
+    );
+    dispatch(restoreOrganisationDetailsTab(savedTab || "dashboard"));
+  }, [dispatch, orgSlug]);
+
   if (isLoading) {
     return (
       <div className="p-4">
@@ -113,7 +131,14 @@ const OrganisationDetails: React.FC = () => {
                 <NavItem key={item.id}>
                   <NavLink
                     active={activeTab === item.id}
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() =>
+                      dispatch(
+                        setOrganisationDetailsTab({
+                          tabId: item.id,
+                          organisationslug: orgSlug,
+                        }),
+                      )
+                    }
                     className={`${activeTab === item.id ? "bg-primary" : "text-primary border-primary"} px-3 py-2 fs-6`}
                   >
                     {item.label}

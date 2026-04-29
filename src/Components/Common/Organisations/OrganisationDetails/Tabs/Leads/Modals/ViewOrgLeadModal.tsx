@@ -214,8 +214,8 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedLead.created_by.user_type
-                    ? formatChoiceFieldValue(selectedLead.created_by.user_type)
+                  {selectedLead.created_by.email
+                    ? formatChoiceFieldValue(selectedLead.created_by.email)
                     : ""}
                 </small>
               </div>

@@ -88,7 +88,7 @@ const OrgApplicants: React.FC = () => {
       first_name: "",
       middle_name: "",
       last_name: "",
-      user_type: "",
+      email: "",
     },
     created_at: "",
   });
@@ -305,9 +305,9 @@ const OrgApplicants: React.FC = () => {
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {applicant.created_by?.user_type
+                            {applicant.created_by?.email
                               ? formatChoiceFieldValue(
-                                  applicant.created_by?.user_type,
+                                  applicant.created_by?.email,
                                 )
                               : "Not Found"}
                             )

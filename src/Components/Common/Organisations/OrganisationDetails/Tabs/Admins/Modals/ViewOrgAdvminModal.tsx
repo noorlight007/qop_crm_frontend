@@ -176,8 +176,8 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedAdmin.created_by.user_type
-                    ? formatChoiceFieldValue(selectedAdmin.created_by.user_type)
+                  {selectedAdmin.created_by.email
+                    ? formatChoiceFieldValue(selectedAdmin.created_by.email)
                     : ""}
                 </small>
               </div>

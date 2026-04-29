@@ -26,7 +26,6 @@ export interface SingleOrganisationProps {
     last_name: string;
     profile_image: string | null;
     roles?: string[];
-    user_type: string;
     is_active: boolean;
   };
   name?: string;

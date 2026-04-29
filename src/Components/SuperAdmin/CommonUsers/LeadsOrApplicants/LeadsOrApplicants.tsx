@@ -432,7 +432,7 @@ const LeadsOrApplicants: React.FC<LeadsOrApplicantsProps> = ({
                           className="m-0 opacity-75"
                           style={{ fontSize: "9px" }}
                         >
-                          ({formatChoiceFieldValue(user?.created_by?.user_type)}
+                          ({formatChoiceFieldValue(user?.created_by?.email)}
                           )
                         </p>
                       </td>

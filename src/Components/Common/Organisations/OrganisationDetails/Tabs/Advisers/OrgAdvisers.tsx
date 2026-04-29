@@ -242,9 +242,9 @@ const OrgAdvisers: React.FC = () => {
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {adviser.created_by?.user_type
+                            {adviser.created_by?.email
                               ? formatChoiceFieldValue(
-                                  adviser.created_by?.user_type,
+                                  adviser.created_by?.email,
                                 )
                               : "Not Found"}
                             )

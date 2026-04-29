@@ -262,9 +262,9 @@ const OrgIntroducers: React.FC = () => {
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {introducer.created_by?.user_type
+                            {introducer.created_by?.email
                               ? formatChoiceFieldValue(
-                                  introducer.created_by?.user_type,
+                                  introducer.created_by?.email,
                                 )
                               : "Not Found"}
                             )

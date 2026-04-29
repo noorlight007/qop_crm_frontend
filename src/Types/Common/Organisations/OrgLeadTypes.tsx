@@ -21,7 +21,7 @@ export interface OrgLeadInfo {
     first_name?: string;
     middle_name?: string;
     last_name?: string;
-    user_type?: string;
+    email?: string;
   };
   created_at: string;
 }

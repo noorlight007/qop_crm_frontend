@@ -166,9 +166,9 @@ const ViewOrgAdviserModal: React.FC<ViewOrgAdviserModalProps> = ({
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedAdviser.created_by.user_type
+                  {selectedAdviser.created_by.email
                     ? formatChoiceFieldValue(
-                        selectedAdviser.created_by.user_type,
+                        selectedAdviser.created_by.email,
                       )
                     : ""}
                 </small>

@@ -6,6 +6,7 @@ import budgetPlannerReducer from "./Reducers/Common/Cases/CaseDetails/CaseSectio
 import CaseSectionsTabIndicatorReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import ComplianceReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceSlice";
 import propertyFormReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import OrganisationDetailsTabReducer from "./Reducers/Common/Organisations/OrganisationDetails/OrganisationDetailsTabSlice";
 import FormWizardOne from "./Reducers/FormLayout/FormWizardOneSlice";
 import FormWizardTwoSlice from "./Reducers/FormLayout/FormWizardTwoSlice";
 import TwoFactorSlice from "./Reducers/FormLayout/TwoFactorSlice";
@@ -23,6 +24,7 @@ const Store = configureStore({
     formWizardOne: FormWizardOne,
     themeCustomizer: ThemeCustomizerReducer,
     caseSections: CaseSectionsTabIndicatorReducer,
+    organisationDetailsTabs: OrganisationDetailsTabReducer,
     propertyForm: propertyFormReducer,
     budgetPlanner: budgetPlannerReducer,
     compliance: ComplianceReducer,
