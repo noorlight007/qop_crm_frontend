@@ -417,6 +417,16 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
         const apiError: any = (result as any).error;
         const fieldErrors: Record<string, string> = {};
         const data = apiError?.data || apiError || {};
+        const detailMessage =
+          data?.detail || data?.message || apiError?.message || null;
+        if (detailMessage) {
+          toast.error(
+            typeof detailMessage === "string"
+              ? detailMessage
+              : "Invalid Request",
+          );
+          return;
+        }
         if (data?.errors && typeof data.errors === "object") {
           Object.keys(data.errors).forEach((k) => {
             const v = data.errors[k];
@@ -424,6 +434,7 @@ const AddNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           });
         } else if (data && typeof data === "object") {
           Object.keys(data).forEach((k) => {
+            if (k === "detail" || k === "message") return;
             const v = (data as any)[k];
             if (Array.isArray(v)) {
               fieldErrors[k] = v.join(" ");
