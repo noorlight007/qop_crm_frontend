@@ -7,13 +7,12 @@ import {
 import { useGetUserListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useGetOrgCasesQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
 import { CaseInfoPrpos, CaseUser } from "@/Types/Common/Cases/CaseTypes";
-import { formatDate, formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { getOrganisationCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
 import { TbArrowsRightLeft, TbCirclePlus } from "react-icons/tb";
 import {
@@ -34,6 +33,7 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 import AddNewCaseModal from "../../../../Cases/Modals/AddNewCaseModal";
+import ExpandedCaseRow from "./ExpandedCaseRow";
 import AddOrgNewCaseModal from "./Modals/AddOrgNewCaseModal";
 import DeleteOrgNewCaseModal from "./Modals/DeleteOrgNewCaseModal";
 
@@ -47,6 +47,7 @@ const OrgCases: React.FC = () => {
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
   const [isDeleteCaseModalOpen, setIsDeleteCaseModalOpen] = useState(false);
   const [caseToDelete, setCaseToDelete] = useState<CaseInfoPrpos | null>(null);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   const defaultFilters = {
     case_category: "",
@@ -72,6 +73,10 @@ const OrgCases: React.FC = () => {
 
   const toggleDeleteCaseModal = () => {
     setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
+  };
+
+  const toggleExpandRow = (alias: string) => {
+    setExpandedRow((prev) => (prev === alias ? null : alias));
   };
 
   const handleFilterChange = (filterKey: string, value: string) => {
@@ -290,328 +295,260 @@ const OrgCases: React.FC = () => {
                         <th>Applicants</th>
                         <th>Phone</th>
                         <th>Category</th>
-                        <th>Lender</th>
-                        <th className="text-truncate">Security property</th>
-                        <th>Stage</th>
-                        <th className="text-truncate">Review Date</th>
-                        <th className="text-truncate">Created At</th>
-                        <th>Created By</th>
                         <th>Adviser</th>
                         <th>Admin</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody className="text-center">
                       {isLoading ? (
                         <tr>
-                          <td colSpan={12} className="text-center">
+                          <td colSpan={7} className="text-center">
                             <LoadingGrow />
                           </td>
                         </tr>
                       ) : caseData?.results?.length > 0 ? (
                         caseData.results.map((caseItem: CaseInfoPrpos) => (
-                          <tr key={caseItem.alias}>
-                            <td>
-                              <Link
-                                className="text_decoration_hover text-truncate"
-                                href={getOrganisationCaseUrl(
-                                  organisationslug as string,
-                                  caseItem.alias,
-                                  session?.user?.is_network,
-                                  session?.user?.role,
-                                )}
-                              >
-                                {caseItem.name}
-                              </Link>
-                            </td>
-                            <td className="text-start text-truncate">
-                              <ul
-                                style={{
-                                  listStyleType: "disc",
-                                  paddingLeft: "40px",
-                                }}
-                              >
-                                <li>
-                                  {caseItem.customer ? (
-                                    <>
-                                      {caseItem.customer.title
-                                        ? formatChoiceFieldValue(
-                                            caseItem.customer.title,
-                                          ) + " "
-                                        : ""}
-                                      {caseItem.customer.first_name}{" "}
-                                      {caseItem.customer.middle_name
-                                        ? caseItem.customer.middle_name + " "
-                                        : ""}
-                                      {caseItem.customer.last_name}
-                                    </>
-                                  ) : (
-                                    <small className="text-muted">
-                                      Not Available
-                                    </small>
+                          <Fragment key={caseItem.alias}>
+                            <tr>
+                              <td>
+                                <Link
+                                  className="text_decoration_hover text-truncate"
+                                  href={getOrganisationCaseUrl(
+                                    organisationslug as string,
+                                    caseItem.alias,
+                                    session?.user?.is_network,
+                                    session?.user?.role,
                                   )}
-                                </li>
-                                {caseItem.joint_users &&
-                                caseItem.joint_users.length > 0 ? (
-                                  caseItem.joint_users.map(
-                                    (joint: CaseUser) => (
-                                      <li key={joint.alias || joint.id}>
-                                        {joint.title
+                                >
+                                  {caseItem.name}
+                                </Link>
+                              </td>
+                              <td className="text-start text-truncate">
+                                <ul
+                                  style={{
+                                    listStyleType: "disc",
+                                    paddingLeft: "40px",
+                                  }}
+                                >
+                                  <li>
+                                    {caseItem.customer ? (
+                                      <>
+                                        {caseItem.customer.title
                                           ? formatChoiceFieldValue(
-                                              joint.title,
+                                              caseItem.customer.title,
                                             ) + " "
                                           : ""}
-                                        {joint.first_name}{" "}
-                                        {joint.middle_name
-                                          ? joint.middle_name + " "
+                                        {caseItem.customer.first_name}{" "}
+                                        {caseItem.customer.middle_name
+                                          ? caseItem.customer.middle_name + " "
                                           : ""}
-                                        {joint.last_name}
-                                        <small style={{ fontSize: "9px" }}>
-                                          (JA)
-                                        </small>
-                                      </li>
-                                    ),
-                                  )
-                                ) : (
-                                  <></>
-                                )}
-                              </ul>
-                            </td>
-                            <td>
-                              {caseItem.customer.phone ? (
-                                <span className="text-black">
-                                  {caseItem.customer.phone}
-                                </span>
-                              ) : (
-                                <small className="text-muted">
-                                  Not Available
-                                </small>
-                              )}
-                            </td>
-                            <td className="text-truncate">
-                              {caseItem.case_category ? (
-                                <>
-                                  {formatChoiceFieldValue(
-                                    caseItem.case_category,
-                                  )}
-                                  {caseItem.case_category === "MORTGAGE" &&
-                                    ((caseItem.application_type &&
-                                      String(
-                                        caseItem.application_type,
-                                      ).trim() !== "") ||
-                                      (caseItem.mortgage_type &&
-                                        String(
-                                          caseItem.mortgage_type,
-                                        ).trim() !== "")) && (
-                                      <p className="small">
-                                        (
-                                        {/* If both types exist show arrow between them */}
-                                        {caseItem.application_type
-                                          ? formatChoiceFieldValue(
-                                              caseItem.application_type,
-                                            )
-                                          : null}
-                                        {caseItem.application_type &&
-                                        caseItem.mortgage_type ? (
-                                          <>
-                                            {" "}
-                                            <TbArrowsRightLeft className="text-primary" />{" "}
-                                            {formatChoiceFieldValue(
-                                              caseItem.mortgage_type,
-                                            )}
-                                          </>
-                                        ) : caseItem.mortgage_type ? (
-                                          /* If only mortgage_type exists, show it without arrow */
-                                          <>
-                                            {formatChoiceFieldValue(
-                                              caseItem.mortgage_type,
-                                            )}
-                                          </>
-                                        ) : null}
-                                        )
-                                      </p>
+                                        {caseItem.customer.last_name}
+                                      </>
+                                    ) : (
+                                      <small className="text-muted">
+                                        Not Available
+                                      </small>
                                     )}
-                                </>
-                              ) : (
-                                <small className="text-muted">
-                                  Not Available
-                                </small>
-                              )}
-                            </td>
-                            <td className="text-truncate">
-                              {caseItem.lender ? (
-                                formatChoiceFieldValue(caseItem.lender)
-                              ) : (
-                                <small className="text-muted">
-                                  Not Available
-                                </small>
-                              )}
-                            </td>
-                            <td>
-                              {(() => {
-                                const pd = caseItem?.property_details;
-                                if (!pd) return "N/A";
-                                const countryFormatted = pd.country
-                                  ? formatChoiceFieldValue(pd.country)
-                                  : pd.country;
-                                const parts = [
-                                  pd.house_name_or_number,
-                                  pd.address_one,
-                                  pd.address_two,
-                                  pd.city,
-                                  pd.county,
-                                  formatChoiceFieldValue(pd.region),
-                                  countryFormatted,
-                                ].filter(
-                                  (v) =>
-                                    v !== null &&
-                                    v !== undefined &&
-                                    String(v).trim() !== "",
-                                );
-                                return parts.length ? (
-                                  parts.join(", ")
+                                  </li>
+                                  {caseItem.joint_users &&
+                                  caseItem.joint_users.length > 0 ? (
+                                    caseItem.joint_users.map(
+                                      (joint: CaseUser) => (
+                                        <li key={joint.alias || joint.id}>
+                                          {joint.title
+                                            ? formatChoiceFieldValue(
+                                                joint.title,
+                                              ) + " "
+                                            : ""}
+                                          {joint.first_name}{" "}
+                                          {joint.middle_name
+                                            ? joint.middle_name + " "
+                                            : ""}
+                                          {joint.last_name}
+                                          <small style={{ fontSize: "9px" }}>
+                                            (JA)
+                                          </small>
+                                        </li>
+                                      ),
+                                    )
+                                  ) : (
+                                    <></>
+                                  )}
+                                </ul>
+                              </td>
+                              <td>
+                                {caseItem.customer.phone ? (
+                                  <span className="text-black">
+                                    {caseItem.customer.phone}
+                                  </span>
                                 ) : (
                                   <small className="text-muted">
-                                    Not available
+                                    Not Available
                                   </small>
-                                );
-                              })()}
-                            </td>
-                            <td className="text-truncate">
-                              {caseItem.case_stage ? (
-                                <>
-                                  {formatChoiceFieldValue(caseItem.case_stage)}
-                                  {caseItem.case_stage === "COMPLETION" &&
-                                  caseItem.completion_date ? (
-                                    <p
-                                      className="ms-2 m-0 opacity-75"
-                                      style={{ fontSize: "10px" }}
-                                    >
-                                      ({formatDate(caseItem.completion_date)})
+                                )}
+                              </td>
+                              <td className="text-truncate">
+                                {caseItem.case_category ? (
+                                  <>
+                                    {formatChoiceFieldValue(
+                                      caseItem.case_category,
+                                    )}
+                                    {caseItem.case_category === "MORTGAGE" &&
+                                      ((caseItem.application_type &&
+                                        String(
+                                          caseItem.application_type,
+                                        ).trim() !== "") ||
+                                        (caseItem.mortgage_type &&
+                                          String(
+                                            caseItem.mortgage_type,
+                                          ).trim() !== "")) && (
+                                        <p className="small">
+                                          (
+                                          {/* If both types exist show arrow between them */}
+                                          {caseItem.application_type
+                                            ? formatChoiceFieldValue(
+                                                caseItem.application_type,
+                                              )
+                                            : null}
+                                          {caseItem.application_type &&
+                                          caseItem.mortgage_type ? (
+                                            <>
+                                              {" "}
+                                              <TbArrowsRightLeft className="text-primary" />{" "}
+                                              {formatChoiceFieldValue(
+                                                caseItem.mortgage_type,
+                                              )}
+                                            </>
+                                          ) : caseItem.mortgage_type ? (
+                                            /* If only mortgage_type exists, show it without arrow */
+                                            <>
+                                              {formatChoiceFieldValue(
+                                                caseItem.mortgage_type,
+                                              )}
+                                            </>
+                                          ) : null}
+                                          )
+                                        </p>
+                                      )}
+                                  </>
+                                ) : (
+                                  <small className="text-muted">
+                                    Not Available
+                                  </small>
+                                )}
+                              </td>
+                              <td>
+                                {caseItem.assigned_user ? (
+                                  <>
+                                    <p className="m-0">
+                                      {caseItem.assigned_user.title
+                                        ? formatChoiceFieldValue(
+                                            caseItem.assigned_user.title,
+                                          ) + " "
+                                        : ""}
+                                      {caseItem.assigned_user.first_name}{" "}
+                                      {caseItem.assigned_user.middle_name
+                                        ? caseItem.assigned_user.middle_name +
+                                          " "
+                                        : ""}
+                                      {caseItem.assigned_user.last_name}
                                     </p>
-                                  ) : null}
-                                </>
-                              ) : (
-                                <small className="text-muted">
-                                  Not Available
-                                </small>
-                              )}
-                            </td>
-                            <td>
-                              {formatDate(caseItem?.review_date) || (
-                                <small className="text-muted">
-                                  Not Available
-                                </small>
-                              )}
-                            </td>
-                            <td>{formatDateAndTime(caseItem.created_at)}</td>
-                            <td>
-                              {caseItem.created_by == null ? (
-                                <small className="text-muted">
-                                  Not Available
-                                </small>
-                              ) : (
-                                <>
-                                  <p className="m-0">
-                                    {caseItem.created_by?.name}
-                                  </p>
-                                  <p
-                                    className="m-0 opacity-75"
-                                    style={{ fontSize: "9px" }}
+                                    <p
+                                      className="m-0 opacity-75"
+                                      style={{ fontSize: "9px" }}
+                                    >
+                                      (
+                                      {caseItem.assigned_user.email
+                                        ? caseItem.assigned_user.email
+                                        : "Not Found"}
+                                      )
+                                    </p>
+                                  </>
+                                ) : (
+                                  <small className="text-muted">
+                                    Not Assigned
+                                  </small>
+                                )}
+                              </td>
+                              <td>
+                                {caseItem.assigned_admin ? (
+                                  <>
+                                    <p className="m-0">
+                                      {caseItem.assigned_admin.title
+                                        ? formatChoiceFieldValue(
+                                            caseItem.assigned_admin.title,
+                                          ) + " "
+                                        : ""}
+                                      {caseItem.assigned_admin.first_name}{" "}
+                                      {caseItem.assigned_admin.middle_name
+                                        ? caseItem.assigned_admin.middle_name +
+                                          " "
+                                        : ""}
+                                      {caseItem.assigned_admin.last_name}
+                                    </p>
+                                    <p
+                                      className="m-0 opacity-75"
+                                      style={{ fontSize: "9px" }}
+                                    >
+                                      (
+                                      {caseItem.assigned_admin.email
+                                        ? caseItem.assigned_admin.email
+                                        : "Not Found"}
+                                      )
+                                    </p>
+                                  </>
+                                ) : (
+                                  <small className="text-muted">
+                                    Not Assigned
+                                  </small>
+                                )}
+                              </td>
+                              <td>
+                                <div className="d-flex justify-content-center gap-1">
+                                  <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    title={
+                                      expandedRow === caseItem.alias
+                                        ? "Collapse details"
+                                        : "Expand details"
+                                    }
+                                    onClick={() =>
+                                      toggleExpandRow(caseItem.alias)
+                                    }
                                   >
-                                    (
-                                    {caseItem.created_by?.email
-                                      ? formatChoiceFieldValue(
-                                          caseItem.created_by?.email,
-                                        )
-                                      : ""}
-                                    )
-                                  </p>
-                                </>
-                              )}
-                            </td>
-                            <td>
-                              {caseItem.assigned_user ? (
-                                <>
-                                  <p className="m-0">
-                                    {caseItem.assigned_user.title
-                                      ? formatChoiceFieldValue(
-                                          caseItem.assigned_user.title,
-                                        ) + " "
-                                      : ""}
-                                    {caseItem.assigned_user.first_name}{" "}
-                                    {caseItem.assigned_user.middle_name
-                                      ? caseItem.assigned_user.middle_name + " "
-                                      : ""}
-                                    {caseItem.assigned_user.last_name}
-                                  </p>
-                                  <p
-                                    className="m-0 opacity-75"
-                                    style={{ fontSize: "9px" }}
+                                    <i
+                                      className={`fa fa-chevron-${
+                                        expandedRow === caseItem.alias
+                                          ? "up"
+                                          : "down"
+                                      }`}
+                                    />
+                                  </button>
+                                  <Button
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() => {
+                                      setCaseToDelete(caseItem);
+                                      toggleDeleteCaseModal();
+                                    }}
                                   >
-                                    (
-                                    {caseItem.assigned_user.email
-                                      ? caseItem.assigned_user.email
-                                      : "Not Found"}
-                                    )
-                                  </p>
-                                </>
-                              ) : (
-                                <small className="text-muted">
-                                  Not Assigned
-                                </small>
-                              )}
-                            </td>
-                            <td>
-                              {caseItem.assigned_admin ? (
-                                <>
-                                  <p className="m-0">
-                                    {caseItem.assigned_admin.title
-                                      ? formatChoiceFieldValue(
-                                          caseItem.assigned_admin.title,
-                                        ) + " "
-                                      : ""}
-                                    {caseItem.assigned_admin.first_name}{" "}
-                                    {caseItem.assigned_admin.middle_name
-                                      ? caseItem.assigned_admin.middle_name +
-                                        " "
-                                      : ""}
-                                    {caseItem.assigned_admin.last_name}
-                                  </p>
-                                  <p
-                                    className="m-0 opacity-75"
-                                    style={{ fontSize: "9px" }}
-                                  >
-                                    (
-                                    {caseItem.assigned_admin.email
-                                      ? caseItem.assigned_admin.email
-                                      : "Not Found"}
-                                    )
-                                  </p>
-                                </>
-                              ) : (
-                                <small className="text-muted">
-                                  Not Assigned
-                                </small>
-                              )}
-                            </td>
-                            <td>
-                              <Button
-                                color="danger"
-                                size="sm"
-                                onClick={() => {
-                                  setCaseToDelete(caseItem);
-                                  toggleDeleteCaseModal();
-                                }}
-                              >
-                                <FaTrash />
-                              </Button>
-                            </td>
-                          </tr>
+                                    <FaTrash />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                            {expandedRow === caseItem.alias && (
+                              <ExpandedCaseRow
+                                caseItem={caseItem}
+                                colSpan={7}
+                              />
+                            )}
+                          </Fragment>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={12} className="text-center">
+                          <td colSpan={7} className="text-center">
                             No cases found.
                           </td>
                         </tr>
