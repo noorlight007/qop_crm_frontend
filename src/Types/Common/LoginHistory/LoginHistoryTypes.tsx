@@ -7,7 +7,6 @@ export interface LoginHistoryItem {
     email: string;
     phone: string;
     profile_image: string;
-    user_type: string;
   };
   ip_address: string;
   device_type: string;

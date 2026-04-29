@@ -279,14 +279,6 @@ const LoginHistory: React.FC = () => {
                             </small>
                           )}
                         </div>
-                        <Badge
-                          color="primary"
-                          className="bg-opacity-10 border border-primary px-2 py-1"
-                          style={{ fontSize: "0.7rem" }}
-                        >
-                          {formatChoiceFieldValue(history.user.user_type) ||
-                            "Not Found"}
-                        </Badge>
                       </div>
                     </div>
 

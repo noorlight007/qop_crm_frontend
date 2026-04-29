@@ -305,7 +305,6 @@ const SupportTicketDetails: React.FC = () => {
       .join(" ") ||
     "Unknown User";
   const creatorEmail = _creator?.email || "";
-  const creatorUserType = _creator?.user_type || "USER";
 
   const getInitials = () => {
     const first_name = _creator?.first_name || "";
@@ -435,14 +434,7 @@ const SupportTicketDetails: React.FC = () => {
                           {creatorEmail}
                         </div>
                       )}
-                      {creatorUserType && (
-                        <div
-                          className="text-muted text-truncate"
-                          style={{ fontSize: "9px" }}
-                        >
-                          ({formatChoiceFieldValue(creatorUserType)})
-                        </div>
-                      )}
+
                       {ticketDetails.created_at && (
                         <div className="text-muted small mt-1">
                           Created: {formatDateAndTime(ticketDetails.created_at)}

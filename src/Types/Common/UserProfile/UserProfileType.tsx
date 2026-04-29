@@ -12,7 +12,6 @@ export interface UserProfileData {
   country: string | null;
   post_code: string | null;
   is_active: boolean;
-  user_type: string;
   created_at: string;
   updated_at: string;
 }

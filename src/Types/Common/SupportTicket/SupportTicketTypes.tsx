@@ -12,7 +12,6 @@ export interface SupportTicketFormData {
     first_name: string;
     middle_name: string;
     last_name: string;
-    user_type: string;
     name?: string;
     email?: string;
   };

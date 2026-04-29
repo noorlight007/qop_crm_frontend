@@ -9,7 +9,6 @@ export interface AdviserInfoProps {
     email?: string;
     phone?: string;
     profile_image?: string;
-    user_type: string;
   };
   role: string;
   gender: string;
@@ -20,7 +19,6 @@ export interface AdviserInfoProps {
     first_name: string;
     middle_name: string;
     last_name: string;
-    user_type: string;
   };
   created_at: string;
 }

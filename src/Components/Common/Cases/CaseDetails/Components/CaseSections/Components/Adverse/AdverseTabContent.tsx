@@ -85,7 +85,6 @@ const AdverseTabContent: React.FC<ApplicantsUsersProps> = ({ basicTab }) => {
       first_name: "",
       last_name: "",
       profile_image: null,
-      user_type: "",
     },
   });
 

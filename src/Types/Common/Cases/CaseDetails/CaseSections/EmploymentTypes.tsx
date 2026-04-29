@@ -10,7 +10,6 @@ export interface EmploymentDetailsProps {
     middle_name: string | null;
     last_name: string;
     profile_image: string | null;
-    user_type: string;
   };
   employment_status: string;
   employment_type: string | null;

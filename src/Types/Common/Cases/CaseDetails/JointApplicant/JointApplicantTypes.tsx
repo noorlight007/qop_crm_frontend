@@ -12,7 +12,6 @@ export interface JointApplicantProps {
     middle_name?: string;
     last_name?: string;
     profile_image?: string | null;
-    user_type?: string;
   };
   relationship?: string;
   other_relationship?: string;

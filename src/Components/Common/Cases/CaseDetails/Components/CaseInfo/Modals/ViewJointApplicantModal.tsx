@@ -247,13 +247,6 @@ const ViewJointApplicantModal: React.FC<JointApplicantViewModalProps> = ({
                         ? displayApplicant.created_by.email
                         : ""}
                     </small>
-                    <small className="text-muted d-block">
-                      {displayApplicant.created_by.user_type
-                        ? formatChoiceFieldValue(
-                            displayApplicant.created_by.user_type,
-                          )
-                        : ""}
-                    </small>
                   </div>
                 ) : (
                   <div
