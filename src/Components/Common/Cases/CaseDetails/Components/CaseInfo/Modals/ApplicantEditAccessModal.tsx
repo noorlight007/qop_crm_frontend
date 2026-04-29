@@ -76,12 +76,7 @@ const ApplicantEditAccessModal: React.FC<ApplicantEditAccessModalProps> = ({
             }}
           >
             <i
-              className={`fa-solid ${isEditable ? "fa-lock-open" : "fa-lock"} fa-xl`}
-              style={{
-                color: isEditable
-                  ? "rgba(220, 53, 69, 0.85)"
-                  : "rgba(25, 135, 84, 0.85)",
-              }}
+              className={`fa-solid text-white ${isEditable ? "fa-lock-open" : "fa-lock"} fa-xl`}
             />
           </div>
 
