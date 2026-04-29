@@ -357,12 +357,40 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
     return found?.policy_type ?? null;
   })();
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
     <>
       <div className="mb-4">
-        <div className="bg-primary fs-6 p-2 mb-3 rounded-1">
-          Lump Sum Commission
+        <div style={{ position: "relative" }}>
+          {isLocked && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 10,
+                cursor: "not-allowed",
+                backgroundColor: "rgba(0,0,0,0.0001)",
+              }}
+              title="This case is not editable"
+            />
+          )}
+          <div
+            style={{
+              opacity: isLocked ? 0.45 : 1,
+              pointerEvents: isLocked ? "none" : "auto",
+              transition: "opacity 0.2s ease",
+              userSelect: isLocked ? "none" : "auto",
+            }}
+          >
+            <div className="bg-primary fs-6 p-2 mb-3 rounded-1">
+              Lump Sum Commission
+            </div>
+          </div>
         </div>
+
         <div>
           <Nav tabs className="mb-3 justify-content-center">
             {lumps.map((lump, idx) => (
@@ -386,206 +414,243 @@ const LumpSumCommission: React.FC<CommissionProps> = ({
             ))}
           </Nav>
 
-          <TabContent activeTab={activeTab}>
-            {lumps.map((lump, idx) => (
-              <TabPane tabId={String(idx)} key={lump.id}>
-                <Form className="border border-primary p-3 mb-3 rounded-1">
-                  <Row className="g-3 align-items-start">
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Policy</Label>
-                        <Input
-                          type="select"
-                          value={lump.policy}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setLumps((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], policy: val };
-                              return copy;
-                            });
-                            clearFieldError(idx, "policy");
-                          }}
+          <div style={{ position: "relative" }}>
+            {isLocked && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 10,
+                  cursor: "not-allowed",
+                  backgroundColor: "rgba(0,0,0,0.0001)",
+                }}
+                title="This case is not editable"
+              />
+            )}
+            <div
+              style={{
+                opacity: isLocked ? 0.45 : 1,
+                pointerEvents: isLocked ? "none" : "auto",
+                transition: "opacity 0.2s ease",
+                userSelect: isLocked ? "none" : "auto",
+              }}
+            >
+              <TabContent activeTab={activeTab}>
+                {lumps.map((lump, idx) => (
+                  <TabPane tabId={String(idx)} key={lump.id}>
+                    <Form className="border border-primary p-3 mb-3 rounded-1">
+                      <Row className="g-3 align-items-start">
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Policy</Label>
+                            <Input
+                              type="select"
+                              value={lump.policy}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setLumps((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = { ...copy[idx], policy: val };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "policy");
+                              }}
+                            >
+                              <option value="">Select...</option>
+                              {policies.map((policy: any) => (
+                                <option key={policy.alias} value={policy.alias}>
+                                  {formatChoiceFieldValue(policy.policy_type) ||
+                                    "Policy"}
+                                </option>
+                              ))}
+                            </Input>
+                            {errors[`${idx}.policy`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.policy`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Commission Amount</Label>
+                            <div className="input-group">
+                              <InputGroupText>
+                                {getCurrencySign()}
+                              </InputGroupText>
+                              <Input
+                                type="number"
+                                value={lump.commissionAmount}
+                                min={0}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setLumps((prev) => {
+                                    const copy = [...prev];
+                                    copy[idx] = {
+                                      ...copy[idx],
+                                      commissionAmount: val,
+                                    };
+                                    return copy;
+                                  });
+                                  clearFieldError(idx, "commissionAmount");
+                                }}
+                              />
+                            </div>
+                            {errors[`${idx}.commissionAmount`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.commissionAmount`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Date Received</Label>
+                            <Input
+                              type="date"
+                              value={lump.dateReceived}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setLumps((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = {
+                                    ...copy[idx],
+                                    dateReceived: val,
+                                  };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "dateReceived");
+                              }}
+                            />
+                            {errors[`${idx}.dateReceived`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.dateReceived`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+
+                      <Row className="g-3 align-items-start mt-3">
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Clawback Amount</Label>
+                            <div className="input-group">
+                              <InputGroupText>
+                                {getCurrencySign()}
+                              </InputGroupText>
+                              <Input
+                                type="number"
+                                value={lump.clawbackAmount}
+                                min={0}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setLumps((prev) => {
+                                    const copy = [...prev];
+                                    copy[idx] = {
+                                      ...copy[idx],
+                                      clawbackAmount: val,
+                                    };
+                                    return copy;
+                                  });
+                                  clearFieldError(idx, "clawbackAmount");
+                                }}
+                              />
+                            </div>
+                            {errors[`${idx}.clawbackAmount`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.clawbackAmount`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={4}>
+                          <FormGroup>
+                            <Label>Clawback Date</Label>
+                            <Input
+                              type="date"
+                              value={lump.clawbackDate}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setLumps((prev) => {
+                                  const copy = [...prev];
+                                  copy[idx] = {
+                                    ...copy[idx],
+                                    clawbackDate: val,
+                                  };
+                                  return copy;
+                                });
+                                clearFieldError(idx, "clawbackDate");
+                              }}
+                            />
+                            {errors[`${idx}.clawbackDate`] && (
+                              <div className="text-danger small mt-1">
+                                {errors[`${idx}.clawbackDate`]}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+
+                        <Col md={3}>
+                          <FormGroup>
+                            <Label>Reconciled Amount</Label>
+                            <div className="input-group">
+                              <InputGroupText>
+                                {getCurrencySign()}
+                              </InputGroupText>
+                              <Input
+                                type="text"
+                                readOnly
+                                className="bg-light-dark"
+                                value={Number(lump.reconciledAmount).toFixed(2)}
+                              />
+                            </div>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <div className="d-flex justify-content-end gap-2 mt-2">
+                        <Button
+                          outline
+                          type="button"
+                          color="danger"
+                          title="Remove row"
+                          onClick={() => openDeleteModal(lump.id)}
                         >
-                          <option value="">Select...</option>
-                          {policies.map((policy: any) => (
-                            <option key={policy.alias} value={policy.alias}>
-                              {formatChoiceFieldValue(policy.policy_type) ||
-                                "Policy"}
-                            </option>
-                          ))}
-                        </Input>
-                        {errors[`${idx}.policy`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.policy`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Commission Amount</Label>
-                        <div className="input-group">
-                          <InputGroupText>{getCurrencySign()}</InputGroupText>
-                          <Input
-                            type="number"
-                            value={lump.commissionAmount}
-                            min={0}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setLumps((prev) => {
-                                const copy = [...prev];
-                                copy[idx] = {
-                                  ...copy[idx],
-                                  commissionAmount: val,
-                                };
-                                return copy;
-                              });
-                              clearFieldError(idx, "commissionAmount");
-                            }}
-                          />
-                        </div>
-                        {errors[`${idx}.commissionAmount`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.commissionAmount`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Date Received</Label>
-                        <Input
-                          type="date"
-                          value={lump.dateReceived}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setLumps((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], dateReceived: val };
-                              return copy;
-                            });
-                            clearFieldError(idx, "dateReceived");
-                          }}
-                        />
-                        {errors[`${idx}.dateReceived`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.dateReceived`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                  </Row>
-
-                  <Row className="g-3 align-items-start mt-3">
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Clawback Amount</Label>
-                        <div className="input-group">
-                          <InputGroupText>{getCurrencySign()}</InputGroupText>
-                          <Input
-                            type="number"
-                            value={lump.clawbackAmount}
-                            min={0}
-                            onChange={(e) => {
-                              const val = e.target.value;
-                              setLumps((prev) => {
-                                const copy = [...prev];
-                                copy[idx] = {
-                                  ...copy[idx],
-                                  clawbackAmount: val,
-                                };
-                                return copy;
-                              });
-                              clearFieldError(idx, "clawbackAmount");
-                            }}
-                          />
-                        </div>
-                        {errors[`${idx}.clawbackAmount`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.clawbackAmount`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={4}>
-                      <FormGroup>
-                        <Label>Clawback Date</Label>
-                        <Input
-                          type="date"
-                          value={lump.clawbackDate}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setLumps((prev) => {
-                              const copy = [...prev];
-                              copy[idx] = { ...copy[idx], clawbackDate: val };
-                              return copy;
-                            });
-                            clearFieldError(idx, "clawbackDate");
-                          }}
-                        />
-                        {errors[`${idx}.clawbackDate`] && (
-                          <div className="text-danger small mt-1">
-                            {errors[`${idx}.clawbackDate`]}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-
-                    <Col md={3}>
-                      <FormGroup>
-                        <Label>Reconciled Amount</Label>
-                        <div className="input-group">
-                          <InputGroupText>{getCurrencySign()}</InputGroupText>
-                          <Input
-                            type="text"
-                            readOnly
-                            className="bg-light-dark"
-                            value={Number(lump.reconciledAmount).toFixed(2)}
-                          />
-                        </div>
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <div className="d-flex justify-content-end gap-2 mt-2">
-                    <Button
-                      outline
-                      type="button"
-                      color="danger"
-                      title="Remove row"
-                      onClick={() => openDeleteModal(lump.id)}
-                    >
-                      <FaTrash /> Delete
-                    </Button>
-                    <button
-                      type="button"
-                      className="btn btn-primary"
-                      disabled={isUpdatingLump}
-                      onClick={() => handleUpdateLump(lump, idx)}
-                    >
-                      <ArrowUpCircle size={16} />{" "}
-                      {isUpdatingLump ? "Updating..." : "Update"}
-                    </button>
-                  </div>
-                </Form>
-              </TabPane>
-            ))}
-          </TabContent>
+                          <FaTrash /> Delete
+                        </Button>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          disabled={isUpdatingLump}
+                          onClick={() => handleUpdateLump(lump, idx)}
+                        >
+                          <ArrowUpCircle size={16} />{" "}
+                          {isUpdatingLump ? "Updating..." : "Update"}
+                        </button>
+                      </div>
+                    </Form>
+                  </TabPane>
+                ))}
+              </TabContent>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
-          >
-            <TbCirclePlus className="me-1" size={18} />
-            Add New Lump Sum
-          </button>
-        </div>
+        {!isLocked && (
+          <div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => setIsAddLumpSumCommissionModalOpen(true)}
+            >
+              <TbCirclePlus className="me-1" size={18} />
+              Add New Lump Sum
+            </button>
+          </div>
+        )}
       </div>
       <DeleteLumpSumCommissionModal
         isOpen={isDeleteModalOpen}

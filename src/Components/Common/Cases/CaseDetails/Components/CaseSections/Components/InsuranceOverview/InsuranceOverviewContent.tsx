@@ -156,6 +156,10 @@ const InsuranceOverviewContent: React.FC = () => {
     );
   }
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
     <div className="p-2">
       <Nav pills className="justify-content-center nav-primary">
@@ -181,194 +185,225 @@ const InsuranceOverviewContent: React.FC = () => {
 
       <TabContent activeTab={activeMainTab}>
         <TabPane tabId="overview">
-          <Form onSubmit={handleSubmit} className="mt-3">
-            <Row>
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Applicant</Label>
-                  <Input
-                    value={formState?.applicant ?? ""}
-                    className="bg-light-dark"
-                    readOnly
-                  />
-                </FormGroup>
-              </Col>
-
-              {/* Render each joint user in its own column */}
-              {formState?.joint_users && formState.joint_users.length > 0 ? (
-                formState.joint_users.map((ju: string, idx: number) => (
-                  <Col sm={12} md={4} key={`joint-${idx}`}>
+          <div style={{ position: "relative" }}>
+            {isLocked && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 10,
+                  cursor: "not-allowed",
+                  backgroundColor: "rgba(0,0,0,0.0001)",
+                }}
+                title="This case is not editable"
+              />
+            )}
+            <div
+              style={{
+                opacity: isLocked ? 0.45 : 1,
+                pointerEvents: isLocked ? "none" : "auto",
+                transition: "opacity 0.2s ease",
+                userSelect: isLocked ? "none" : "auto",
+              }}
+            >
+              <Form onSubmit={handleSubmit} className="mt-3">
+                <Row>
+                  <Col sm={12} md={4}>
                     <FormGroup>
-                      <Label>{`Joint Applicant ${idx + 1}`}</Label>
+                      <Label>Applicant</Label>
                       <Input
-                        value={ju ?? ""}
+                        value={formState?.applicant ?? ""}
                         className="bg-light-dark"
                         readOnly
                       />
                     </FormGroup>
                   </Col>
-                ))
-              ) : (
-                <Col sm={12} md={4}>
-                  <FormGroup>
-                    <Label>Joint Applicants</Label>
-                    <Input value={formState?.joint_users[0] ?? ""} readOnly />
-                  </FormGroup>
-                </Col>
-              )}
-            </Row>
 
-            <Row className="mt-2">
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Introduction Type</Label>
-                  <Input
-                    value={formState?.introduction_type ?? ""}
-                    type="select"
-                    onChange={(e) =>
-                      handleChange("introduction_type", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="DIRECT">Direct</option>
-                    <option value="RDI">RDI</option>
-                  </Input>
-                  {errors.introduction_type && (
-                    <div className="text-danger">
-                      {errors.introduction_type}
-                    </div>
+                  {/* Render each joint user in its own column */}
+                  {formState?.joint_users &&
+                  formState.joint_users.length > 0 ? (
+                    formState.joint_users.map((ju: string, idx: number) => (
+                      <Col sm={12} md={4} key={`joint-${idx}`}>
+                        <FormGroup>
+                          <Label>{`Joint Applicant ${idx + 1}`}</Label>
+                          <Input
+                            value={ju ?? ""}
+                            className="bg-light-dark"
+                            readOnly
+                          />
+                        </FormGroup>
+                      </Col>
+                    ))
+                  ) : (
+                    <Col sm={12} md={4}>
+                      <FormGroup>
+                        <Label>Joint Applicants</Label>
+                        <Input
+                          value={formState?.joint_users[0] ?? ""}
+                          readOnly
+                        />
+                      </FormGroup>
+                    </Col>
                   )}
-                </FormGroup>
-              </Col>
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Advise Level</Label>
-                  <Input
-                    value={formState?.advise_level ?? ""}
-                    type="select"
-                    onChange={(e) =>
-                      handleChange("advise_level", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="ADVISING">Advising</option>
-                    <option value="EXECUTION_ONLY">Execution Only</option>
-                  </Input>
-                  {errors.advise_level && (
-                    <div className="text-danger">{errors.advise_level}</div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Lead Source</Label>
-                  <Input
-                    value={formState?.lead_source ?? ""}
-                    type="select"
-                    onChange={(e) =>
-                      handleChange("lead_source", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="INTERNAL">Internal</option>
-                    <option value="EXTERNAL">External</option>
-                    <option value="FACEBOOK">Facebook</option>
-                    <option value="WEBSITE">Website</option>
-                    <option value="ESTATE_AGENTS">Estate Agents</option>
-                    <option value="TV3">TV3</option>
-                    <option value="FAMILY">Family</option>
-                    <option value="FRIENDS">Friends</option>
-                    <option value="REFERRALS">Referrals</option>
-                  </Input>
-                  {errors.lead_source && (
-                    <div className="text-danger">{errors.lead_source}</div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
+                </Row>
 
-            <Row className="mt-2">
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Total Final Premium</Label>
-                  <Input
-                    value={formState?.total_final_premium ?? 0}
-                    className="bg-light-dark"
-                    readOnly
-                  />
-                </FormGroup>
-              </Col>
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Total Premium Quoted</Label>
-                  <Input
-                    value={formState?.total_premium_quoted ?? 0}
-                    className="bg-light-dark"
-                    readOnly
-                  />
-                </FormGroup>
-              </Col>
-              <Col sm={12} md={4}>
-                <FormGroup>
-                  <Label>Net Case Value</Label>
-                  <Input
-                    value={formState?.net_case_value ?? 0}
-                    className="bg-light-dark"
-                    readOnly
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
+                <Row className="mt-2">
+                  <Col sm={12} md={4}>
+                    <FormGroup>
+                      <Label>Introduction Type</Label>
+                      <Input
+                        value={formState?.introduction_type ?? ""}
+                        type="select"
+                        onChange={(e) =>
+                          handleChange("introduction_type", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="DIRECT">Direct</option>
+                        <option value="RDI">RDI</option>
+                      </Input>
+                      {errors.introduction_type && (
+                        <div className="text-danger">
+                          {errors.introduction_type}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col sm={12} md={4}>
+                    <FormGroup>
+                      <Label>Advise Level</Label>
+                      <Input
+                        value={formState?.advise_level ?? ""}
+                        type="select"
+                        onChange={(e) =>
+                          handleChange("advise_level", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="ADVISING">Advising</option>
+                        <option value="EXECUTION_ONLY">Execution Only</option>
+                      </Input>
+                      {errors.advise_level && (
+                        <div className="text-danger">{errors.advise_level}</div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col sm={12} md={4}>
+                    <FormGroup>
+                      <Label>Lead Source</Label>
+                      <Input
+                        value={formState?.lead_source ?? ""}
+                        type="select"
+                        onChange={(e) =>
+                          handleChange("lead_source", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="INTERNAL">Internal</option>
+                        <option value="EXTERNAL">External</option>
+                        <option value="FACEBOOK">Facebook</option>
+                        <option value="WEBSITE">Website</option>
+                        <option value="ESTATE_AGENTS">Estate Agents</option>
+                        <option value="TV3">TV3</option>
+                        <option value="FAMILY">Family</option>
+                        <option value="FRIENDS">Friends</option>
+                        <option value="REFERRALS">Referrals</option>
+                      </Input>
+                      {errors.lead_source && (
+                        <div className="text-danger">{errors.lead_source}</div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
 
-            <Row className="mt-2">
-              <Col sm={12}>
-                <FormGroup>
-                  <Label>Summary</Label>
-                  <Input
-                    type="textarea"
-                    value={formState?.summary ?? ""}
-                    onChange={(e) => handleChange("summary", e.target.value)}
-                  />
-                  {errors.summary && (
-                    <div className="text-danger">{errors.summary}</div>
+                <Row className="mt-2">
+                  <Col sm={12} md={4}>
+                    <FormGroup>
+                      <Label>Total Final Premium</Label>
+                      <Input
+                        value={formState?.total_final_premium ?? 0}
+                        className="bg-light-dark"
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm={12} md={4}>
+                    <FormGroup>
+                      <Label>Total Premium Quoted</Label>
+                      <Input
+                        value={formState?.total_premium_quoted ?? 0}
+                        className="bg-light-dark"
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm={12} md={4}>
+                    <FormGroup>
+                      <Label>Net Case Value</Label>
+                      <Input
+                        value={formState?.net_case_value ?? 0}
+                        className="bg-light-dark"
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+
+                <Row className="mt-2">
+                  <Col sm={12}>
+                    <FormGroup>
+                      <Label>Summary</Label>
+                      <Input
+                        type="textarea"
+                        value={formState?.summary ?? ""}
+                        onChange={(e) =>
+                          handleChange("summary", e.target.value)
+                        }
+                      />
+                      {errors.summary && (
+                        <div className="text-danger">{errors.summary}</div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <div className="d-flex justify-content-end mt-3 gap-2">
+                  <Button color="primary" type="submit">
+                    {isUpdating ? "Saving..." : "Save Changes"}
+                  </Button>
+                  {session?.user?.role !== "APPLICANT" && (
+                    <Button
+                      type="submit"
+                      color="secondary"
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        // if (
+                        //   session?.user?.role === "APPLICANT" &&
+                        //   overview?.updated_by !== null
+                        // ) {
+                        //   handleNextTab();
+                        // } else {
+                        try {
+                          await handleSubmit(e);
+                          handleNextTab();
+                        } catch (err) {
+                          console.error(
+                            "Failed to save and navigate to next tab:",
+                            err,
+                          );
+                        }
+                        // }
+                      }}
+                      disabled={isUpdating}
+                    >
+                      {overview?.updated_by !== null
+                        ? "Go To Next"
+                        : "Save & Next"}
+                    </Button>
                   )}
-                </FormGroup>
-              </Col>
-            </Row>
-            <div className="d-flex justify-content-end mt-3 gap-2">
-              <Button color="primary" type="submit">
-                {isUpdating ? "Saving..." : "Save Changes"}
-              </Button>
-              {session?.user?.role !== "APPLICANT" && (
-                <Button
-                  type="submit"
-                  color="secondary"
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    // if (
-                    //   session?.user?.role === "APPLICANT" &&
-                    //   overview?.updated_by !== null
-                    // ) {
-                    //   handleNextTab();
-                    // } else {
-                    try {
-                      await handleSubmit(e);
-                      handleNextTab();
-                    } catch (err) {
-                      console.error(
-                        "Failed to save and navigate to next tab:",
-                        err,
-                      );
-                    }
-                    // }
-                  }}
-                  disabled={isUpdating}
-                >
-                  {overview?.updated_by !== null ? "Go To Next" : "Save & Next"}
-                </Button>
-              )}
+                </div>
+              </Form>
             </div>
-          </Form>
+          </div>
         </TabPane>
 
         <TabPane tabId="policies">

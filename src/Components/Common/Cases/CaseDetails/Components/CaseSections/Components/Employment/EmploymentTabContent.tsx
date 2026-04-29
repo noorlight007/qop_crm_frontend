@@ -621,1863 +621,1946 @@ export const EmploymentTabContent: React.FC<EmploymentTabContentProps> = ({
     }
   };
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
     <CardBody className="px-0 pb-0">
-      <h4 className="text-primary pb-0 fs-4 mb-4 mt-2">Employment Details</h4>
-      <form ref={formRef} id="employment-form" onSubmit={handleSaveClick}>
-        <Row className="d-flex justify-content-center align-items-center">
-          <Col md={6}>
-            <FormGroup>
-              <Label for="employmentStatus" className="fs-5">
-                Employment Status<span className="text-danger">*</span>
-              </Label>
-              <Input
-                type="select"
-                id="employmentStatus"
-                className="border-primary"
-                value={formValues?.employment_status || ""}
-                onChange={(e) =>
-                  handleInputChange("employment_status", e.target.value)
-                }
-                required
-              >
-                <option value="">Select...</option>
-                <option value="EMPLOYED">Employed</option>
-                <option value="SELF_EMPLOYED">Self Employed</option>
-                <option value="RETIRED">Retired</option>
-                <option value="OTHER">Other</option>
-                <option value="UNEMPLOYED">Unemployed</option>
-                <option value="HOUSEPERSON">Houseperson</option>
-                <option value="CONTRACTOR">Contractor</option>
-              </Input>
-              {getFieldError("employment_status") && (
-                <div className="text-danger small">
-                  {getFieldError("employment_status")}
-                </div>
-              )}
-            </FormGroup>
-          </Col>
-        </Row>
-        <hr className="border-secondary" />
-        <Row>
-          {formValues?.employment_status === "EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="employmentType">Employment Type</Label>
-                <Input
-                  type="select"
-                  id="employmentType"
-                  value={formValues?.employment_type || ""}
-                  onChange={(e) =>
-                    handleInputChange("employment_type", e.target.value)
-                  }
-                >
-                  <option value="">Select...</option>
-                  <option value="PERMANENT">Permanent</option>
-                  <option value="CONTRACT">Contract</option>
-                  <option value="TEMPORARY">Temporary</option>
-                </Input>
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "SELF_EMPLOYED" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="occupation">
-                  Occupation<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="text"
-                  id="occupation"
-                  value={formValues?.occupation || ""}
-                  onChange={(e) =>
-                    handleInputChange("occupation", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("occupation") && (
-                  <div className="text-danger small">
-                    {getFieldError("occupation")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "SELF_EMPLOYED") && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="industry">Industry</Label>
-                <Input
-                  type="text"
-                  id="industry"
-                  value={formValues?.industry || ""}
-                  onChange={(e) =>
-                    handleInputChange("industry", e.target.value)
-                  }
-                />
-                {getFieldError("industry") && (
-                  <div className="text-danger small">
-                    {getFieldError("industry")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="employerName">
-                  Employer Name<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="text"
-                  id="employerName"
-                  value={formValues?.employer_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("employer_name", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("employer_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("employer_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="employerTelephone">Employer's Telephone</Label>
-                <Input
-                  type="text"
-                  id="employerTelephone"
-                  value={formValues?.employer_telephone || ""}
-                  onChange={(e) =>
-                    handleInputChange("employer_telephone", e.target.value)
-                  }
-                />
-                {getFieldError("employer_telephone") && (
-                  <div className="text-danger small">
-                    {getFieldError("employer_telephone")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="employer_name_for_reference">
-                  Employer's Name for Reference
-                </Label>
-                <Input
-                  type="text"
-                  id="employer_name_for_reference"
-                  value={formValues?.employer_name_for_reference || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "employer_name_for_reference",
-                      e.target.value,
-                    )
-                  }
-                />
-                {getFieldError("employer_name_for_reference") && (
-                  <div className="text-danger small">
-                    {getFieldError("employer_name_for_reference")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-          {formValues?.employment_status === "EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="employerEmail">
-                  Employer's Email for Reference
-                </Label>
-                <Input
-                  type="email"
-                  id="employerEmail"
-                  value={formValues?.employer_email_for_reference || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "employer_email_for_reference",
-                      e.target.value,
-                    )
-                  }
-                />
-                {getFieldError("employer_email_for_reference") && (
-                  <div className="text-danger small">
-                    {getFieldError("employer_email_for_reference")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
-        {(formValues?.employment_status === "EMPLOYED" ||
-          formValues?.employment_status === "CONTRACTOR") && (
-          <Row>
-            <Col sm={12}>
-              <Label className="fw-semibold mb-2">Location Preview</Label>
-              <div className="border rounded overflow-hidden shadow-sm mb-3">
-                <iframe
-                  src={
-                    employerMapCoords
-                      ? getGoogleMapEmbedUrl(
-                          employerMapCoords.lat,
-                          employerMapCoords.lng,
-                          employerZoom,
-                        )
-                      : getGoogleMapEmbedUrl(
-                          LONDON_CENTER.lat,
-                          LONDON_CENTER.lng,
-                          DEFAULT_ZOOM,
-                        )
-                  }
-                  width="100%"
-                  height="250"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  title="Employer Location"
-                />
-              </div>
-            </Col>
-          </Row>
-        )}
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <>
+      <div style={{ position: "relative" }}>
+      {isLocked && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 10,
+            cursor: "not-allowed",
+            backgroundColor: "rgba(0,0,0,0.0001)",
+          }}
+          title="This case is not editable"
+        />
+      )}
+      <div
+        style={{
+          opacity: isLocked ? 0.45 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
+          transition: "opacity 0.2s ease",
+          userSelect: isLocked ? "none" : "auto",
+        }}
+      >
+          <h4 className="text-primary pb-0 fs-4 mb-4 mt-2">
+            Employment Details
+          </h4>
+          <form ref={formRef} id="employment-form" onSubmit={handleSaveClick}>
+            <Row className="d-flex justify-content-center align-items-center">
               <Col md={6}>
                 <FormGroup>
-                  <Label for="employerPostcode">Employer's Postcode</Label>
-                  <InputGroup className="d-flex align-items-center gap-2">
-                    <Input
-                      type="text"
-                      id="employerPostcode"
-                      className="border-primary rounded"
-                      value={formValues.employer_postcode || ""}
-                      onChange={(e) =>
-                        handleInputChange("employer_postcode", e.target.value)
-                      }
-                    />
-                    <Button
-                      color="primary"
-                      type="button"
-                      className="text-nowrap"
-                      style={{ paddingTop: "0.7rem", paddingBottom: "0.7rem" }}
-                      onClick={() =>
-                        fetchAddressByPostcode(
-                          formValues.employer_postcode,
-                          "employer",
-                        )
-                      }
-                      disabled={isFetchingAddress || isSearchingPostcode}
-                    >
-                      {isSearchingPostcode ? "Loading..." : "Lookup"}
-                    </Button>
-                  </InputGroup>
-                  {getFieldError("employer_postcode") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_postcode")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="employerHouseNumber">
-                    Employer's House Name or Number
+                  <Label for="employmentStatus" className="fs-5">
+                    Employment Status<span className="text-danger">*</span>
                   </Label>
                   <Input
-                    type="text"
-                    id="employerHouseNumber"
-                    value={formValues?.employer_house_name_or_number || ""}
+                    type="select"
+                    id="employmentStatus"
+                    className="border-primary"
+                    value={formValues?.employment_status || ""}
                     onChange={(e) =>
-                      handleInputChange(
-                        "employer_house_name_or_number",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("employer_house_name_or_number") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_house_name_or_number")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="employerAddressLine1">
-                    Employer's Address Line 1
-                  </Label>
-                  <Input
-                    type="text"
-                    id="employerAddressLine1"
-                    value={formValues?.employer_address_line_1 || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "employer_address_line_1",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("employer_address_line_1") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_address_line_1")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="employerAddressLine2">
-                    Employer's Address Line 2
-                  </Label>
-                  <Input
-                    type="text"
-                    id="employerAddressLine2"
-                    value={formValues?.employer_address_line_2 || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "employer_address_line_2",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("employer_address_line_2") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_address_line_2")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="employerCity">Employer's City</Label>
-                  <Input
-                    type="text"
-                    id="employerCity"
-                    value={formValues?.employer_city || ""}
-                    onChange={(e) =>
-                      handleInputChange("employer_city", e.target.value)
-                    }
-                  />
-                  {getFieldError("employer_city") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_city")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="employerCounty">Employer's County</Label>
-                  <Input
-                    type="text"
-                    id="employerCounty"
-                    value={formValues?.employer_county || ""}
-                    onChange={(e) =>
-                      handleInputChange("employer_county", e.target.value)
-                    }
-                  />
-                  {getFieldError("employer_county") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_county")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="employerCountry">Employer's Country</Label>
-                  <Input
-                    type="text"
-                    id="employerCountry"
-                    value={formValues?.employer_country || ""}
-                    onChange={(e) =>
-                      handleInputChange("employer_country", e.target.value)
-                    }
-                  />
-                  {getFieldError("employer_country") && (
-                    <div className="text-danger small">
-                      {getFieldError("employer_country")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <Label for="employmentCommenced">
-                  Employment Commenced<span className="text-danger">*</span>
-                </Label>
-                <FormGroup className="d-flex justify-content-center align-items-center">
-                  <Input
-                    type="date"
-                    id="employmentCommenced"
-                    value={formValues?.employment_commenced || ""}
-                    className="rounded-end-0"
-                    onChange={(e) =>
-                      handleInputChange("employment_commenced", e.target.value)
+                      handleInputChange("employment_status", e.target.value)
                     }
                     required
-                  />
-                  <InputGroupText
-                    className="border-start-0 rounded-start-0"
-                    style={{ padding: "11px 20px" }}
                   >
-                    {calculateMonthsDuration(formValues?.employment_commenced)}
-                  </InputGroupText>
-                  {getFieldError("employment_commenced") && (
+                    <option value="">Select...</option>
+                    <option value="EMPLOYED">Employed</option>
+                    <option value="SELF_EMPLOYED">Self Employed</option>
+                    <option value="RETIRED">Retired</option>
+                    <option value="OTHER">Other</option>
+                    <option value="UNEMPLOYED">Unemployed</option>
+                    <option value="HOUSEPERSON">Houseperson</option>
+                    <option value="CONTRACTOR">Contractor</option>
+                  </Input>
+                  {getFieldError("employment_status") && (
                     <div className="text-danger small">
-                      {getFieldError("employment_commenced")}
+                      {getFieldError("employment_status")}
                     </div>
                   )}
                 </FormGroup>
               </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="employmentEnded">Employment Ended</Label>
-                  <Input
-                    type="date"
-                    id="employmentEnded"
-                    value={formValues?.employment_ended || ""}
-                    onChange={(e) =>
-                      handleInputChange("employment_ended", e.target.value)
-                    }
-                  />
-                  {getFieldError("employment_ended") && (
-                    <div className="text-danger small">
-                      {getFieldError("employment_ended")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        {formValues?.employment_status === "EMPLOYED" && (
-          <Row>
-            <p>Please enter previous employment details where applicable.</p>
-          </Row>
-        )}
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "RETIRED") && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="grossAnnualIncome">
-                  Gross Annual Income({getCurrencySign()})
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  type="number"
-                  id="grossAnnualIncome"
-                  placeholder="0"
-                  value={formValues?.gross_annual_income || ""}
-                  onChange={(e) =>
-                    handleInputChange("gross_annual_income", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("gross_annual_income") && (
-                  <div className="text-danger small">
-                    {getFieldError("gross_annual_income")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-          {formValues?.employment_status === "EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="netMonthlyIncome">
-                  Net Monthly Income({getCurrencySign()})
-                </Label>
-                <Input
-                  type="number"
-                  id="netMonthlyIncome"
-                  placeholder="0"
-                  value={formValues?.net_monthly_income || ""}
-                  onChange={(e) =>
-                    handleInputChange("net_monthly_income", e.target.value)
-                  }
-                />
-                {getFieldError("net_monthly_income") && (
-                  <div className="text-danger small">
-                    {getFieldError("net_monthly_income")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-          {formValues?.employment_status === "RETIRED" && (
-            <Col md={6}>
-              <FormGroup>
-                <Label for="income_source">Income Source</Label>
-                <Input
-                  type="text"
-                  id="income_source"
-                  value={formValues?.income_source || ""}
-                  onChange={(e) =>
-                    handleInputChange("income_source", e.target.value)
-                  }
-                />
-                {getFieldError("income_source") && (
-                  <div className="text-danger small">
-                    {getFieldError("income_source")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "EMPLOYED" && (
-            <Col md={6}>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="checkbox"
-                    name="probationaryPeriod"
-                    checked={formValues?.is_probationary_period || false}
-                    onChange={(e) =>
-                      setFormValues((prevValues) => ({
-                        ...prevValues!,
-                        is_probationary_period: e.target.checked,
-                      }))
-                    }
-                  />
-                  Are you on a probationary period?
-                </Label>
-                {getFieldError("is_probationary_period") && (
-                  <div className="text-danger small">
-                    {getFieldError("is_probationary_period")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          )}
-        </Row>
-        <Row>
-          {(formValues?.employment_status === "EMPLOYED" ||
-            formValues?.employment_status === "SELF_EMPLOYED" ||
-            formValues?.employment_status === "RETIRED" ||
-            formValues?.employment_status === "OTHER" ||
-            formValues?.employment_status === "CONTRACTOR") && (
-            <>
-              <Col md={6}>
-                <FormGroup check>
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name="foreignCurrency"
-                      checked={
-                        formValues?.is_income_in_foreign_currency || false
-                      }
-                      onChange={(e) =>
-                        setFormValues((prevValues) => ({
-                          ...prevValues!,
-                          is_income_in_foreign_currency: e.target.checked,
-                        }))
-                      }
-                    />
-                    Is any income paid in a foreign currency?
-                  </Label>
-                  {getFieldError("is_income_in_foreign_currency") && (
-                    <div className="text-danger small">
-                      {getFieldError("is_income_in_foreign_currency")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                {formValues?.is_income_in_foreign_currency && (
+            </Row>
+            <hr className="border-secondary" />
+            <Row>
+              {formValues?.employment_status === "EMPLOYED" && (
+                <Col md={6}>
                   <FormGroup>
-                    <Label for="further_details">
-                      Further Details<span className="text-danger">*</span>
+                    <Label for="employmentType">Employment Type</Label>
+                    <Input
+                      type="select"
+                      id="employmentType"
+                      value={formValues?.employment_type || ""}
+                      onChange={(e) =>
+                        handleInputChange("employment_type", e.target.value)
+                      }
+                    >
+                      <option value="">Select...</option>
+                      <option value="PERMANENT">Permanent</option>
+                      <option value="CONTRACT">Contract</option>
+                      <option value="TEMPORARY">Temporary</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              )}
+            </Row>
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "SELF_EMPLOYED" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="occupation">
+                      Occupation<span className="text-danger">*</span>
                     </Label>
                     <Input
-                      type="textarea"
-                      id="further_details"
-                      value={formValues?.further_details || ""}
+                      type="text"
+                      id="occupation"
+                      value={formValues?.occupation || ""}
                       onChange={(e) =>
-                        handleInputChange("further_details", e.target.value)
+                        handleInputChange("occupation", e.target.value)
                       }
                       required
                     />
-                    {getFieldError("further_details") && (
+                    {getFieldError("occupation") && (
                       <div className="text-danger small">
-                        {getFieldError("further_details")}
-                      </div>
-                    )}
-                  </FormGroup>
-                )}
-              </Col>
-            </>
-          )}
-        </Row>
-        {formValues?.employment_status === "EMPLOYED" && (
-          <>
-            <Row className="d-flex justify-content-between">
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="bonus">
-                    Bonus({getCurrencySign()})
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="bonus"
-                    placeholder="0"
-                    value={formValues?.bonus || ""}
-                    onChange={(e) => handleInputChange("bonus", e.target.value)}
-                  />
-                  {getFieldError("bonus") && (
-                    <div className="text-danger small">
-                      {getFieldError("bonus")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup
-                  check
-                  className="d-flex justify-content-center align-content-center"
-                >
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name="is_bonus_guaranteed"
-                      checked={formValues?.is_bonus_guaranteed || false}
-                      onChange={(e) =>
-                        setFormValues((prevValues) => ({
-                          ...prevValues!,
-                          is_bonus_guaranteed: e.target.checked,
-                        }))
-                      }
-                    />
-                    Bonus Guaranteed?
-                  </Label>
-                  {getFieldError("is_bonus_guaranteed") && (
-                    <div className="text-danger small">
-                      {getFieldError("is_bonus_guaranteed")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="bonusFrequency">Bonus Frequency</Label>
-                  <Input
-                    type="select"
-                    id="bonusFrequency"
-                    value={formValues?.bonus_frequency || ""}
-                    onChange={(e) =>
-                      handleInputChange("bonus_frequency", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="DAILY">Daily</option>
-                    <option value="WEEKLY">Weekly</option>
-                    <option value="BI_WEEKLY">Bi Weekly</option>
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="BI_MONTHLY">Bi Monthly</option>
-                    <option value="QUARTERLY">Quarterly</option>
-                    <option value="BI_ANNUALLY">Bi Annually</option>
-                    <option value="ANNUALLY">Annually</option>
-                  </Input>
-                  {getFieldError("bonus_frequency") && (
-                    <div className="text-danger small">
-                      {getFieldError("bonus_frequency")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row className="d-flex justify-content-between">
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="overtime">
-                    Overtime({getCurrencySign()})
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="overtime"
-                    placeholder="0"
-                    value={formValues?.overtime || ""}
-                    onChange={(e) =>
-                      handleInputChange("overtime", e.target.value)
-                    }
-                  />
-                  {getFieldError("overtime") && (
-                    <div className="text-danger small">
-                      {getFieldError("overtime")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup
-                  check
-                  className="d-flex justify-content-center align-content-center"
-                >
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name="is_overtime_guaranteed"
-                      checked={formValues?.is_overtime_guaranteed || false}
-                      onChange={(e) =>
-                        setFormValues((prevValues) => ({
-                          ...prevValues!,
-                          is_overtime_guaranteed: e.target.checked,
-                        }))
-                      }
-                    />
-                    Overtime Guaranteed?
-                  </Label>
-                  {getFieldError("is_overtime_guaranteed") && (
-                    <div className="text-danger small">
-                      {getFieldError("is_overtime_guaranteed")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="overtimeFrequency">Overtime Frequency</Label>
-                  <Input
-                    type="select"
-                    id="overtimeFrequency"
-                    value={formValues?.overtime_frequency || ""}
-                    onChange={(e) =>
-                      handleInputChange("overtime_frequency", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="DAILY">Daily</option>
-                    <option value="WEEKLY">Weekly</option>
-                    <option value="BI_WEEKLY">Bi Weekly</option>
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="BI_MONTHLY">Bi Monthly</option>
-                    <option value="QUARTERLY">Quarterly</option>
-                    <option value="BI_ANNUALLY">Bi Annually</option>
-                    <option value="ANNUALLY">Annually</option>
-                  </Input>
-                  {getFieldError("overtime_frequency") && (
-                    <div className="text-danger small">
-                      {getFieldError("overtime_frequency")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row className="d-flex justify-content-between">
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="allowance">
-                    Allowance({getCurrencySign()})
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="allowance"
-                    placeholder="0"
-                    value={formValues?.allowance || ""}
-                    onChange={(e) =>
-                      handleInputChange("allowance", e.target.value)
-                    }
-                  />
-                  {getFieldError("allowance") && (
-                    <div className="text-danger small">
-                      {getFieldError("allowance")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup
-                  check
-                  className="d-flex justify-content-center align-content-center"
-                >
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name="is_allowance_guaranteed"
-                      checked={formValues?.is_allowance_guaranteed || false}
-                      onChange={(e) =>
-                        setFormValues((prevValues) => ({
-                          ...prevValues!,
-                          is_allowance_guaranteed: e.target.checked,
-                        }))
-                      }
-                    />
-                    Allowance Guaranteed?
-                  </Label>
-                  {getFieldError("is_allowance_guaranteed") && (
-                    <div className="text-danger small">
-                      {getFieldError("is_allowance_guaranteed")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="allowanceFrequency">Allowance Frequency</Label>
-                  <Input
-                    type="select"
-                    id="allowanceFrequency"
-                    value={formValues?.allowance_frequency || ""}
-                    onChange={(e) =>
-                      handleInputChange("allowance_frequency", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="DAILY">Daily</option>
-                    <option value="WEEKLY">Weekly</option>
-                    <option value="BI_WEEKLY">Bi Weekly</option>
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="BI_MONTHLY">Bi Monthly</option>
-                    <option value="QUARTERLY">Quarterly</option>
-                    <option value="BI_ANNUALLY">Bi Annually</option>
-                    <option value="ANNUALLY">Annually</option>
-                  </Input>
-                  {getFieldError("allowance_frequency") && (
-                    <div className="text-danger small">
-                      {getFieldError("allowance_frequency")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-          </>
-        )}
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <Label for="employmentTime">Employment Time</Label>
-                <Row>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Input
-                        type="number"
-                        id="employment_time_year"
-                        placeholder="0"
-                        value={formValues?.employment_time_year || ""}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "employment_time_year",
-                            e.target.value,
-                          )
-                        }
-                      />
-                      <FormText>Years</FormText>
-                      {getFieldError("employment_time_year") && (
-                        <div className="text-danger small">
-                          {getFieldError("employment_time_year")}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Col>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Input
-                        type="number"
-                        id="employment_time_month"
-                        placeholder="0"
-                        value={formValues?.employment_time_month || ""}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "employment_time_month",
-                            e.target.value,
-                          )
-                        }
-                      />
-                      <FormText>Months</FormText>
-                      {getFieldError("employment_time_month") && (
-                        <div className="text-danger small">
-                          {getFieldError("employment_time_month")}
-                        </div>
-                      )}
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_telephone">Business Telephone</Label>
-                  <Input
-                    type="text"
-                    id="business_telephone"
-                    value={formValues?.business_telephone || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_telephone", e.target.value)
-                    }
-                  />
-                  {getFieldError("business_telephone") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_telephone")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <Col sm={12}>
-              <Label className="fw-semibold mb-2">Location Preview</Label>
-              <div className="border rounded overflow-hidden shadow-sm mb-3">
-                <iframe
-                  src={
-                    businessMapCoords
-                      ? getGoogleMapEmbedUrl(
-                          businessMapCoords.lat,
-                          businessMapCoords.lng,
-                          businessZoom,
-                        )
-                      : getGoogleMapEmbedUrl(
-                          LONDON_CENTER.lat,
-                          LONDON_CENTER.lng,
-                          DEFAULT_ZOOM,
-                        )
-                  }
-                  width="100%"
-                  height="250"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  title="Business Location"
-                />
-              </div>
-            </Col>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_postcode">Business Postcode</Label>
-                  <InputGroup className="d-flex align-items-center gap-2">
-                    <Input
-                      type="text"
-                      id="business_postcode"
-                      className="border-primary rounded"
-                      value={formValues?.business_postcode || ""}
-                      onChange={(e) =>
-                        handleInputChange("business_postcode", e.target.value)
-                      }
-                    />
-                    <Button
-                      color="primary"
-                      type="button"
-                      className="text-nowrap"
-                      style={{ paddingTop: "0.7rem", paddingBottom: "0.7rem" }}
-                      onClick={() =>
-                        fetchAddressByPostcode(
-                          formValues.business_postcode,
-                          "business",
-                        )
-                      }
-                      disabled={isFetchingAddress || isSearchingPostcode}
-                    >
-                      {isSearchingPostcode ? "Loading..." : "Lookup"}
-                    </Button>
-                  </InputGroup>
-                  {getFieldError("business_postcode") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_postcode")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_house_name_or_number">
-                    Business House Name/Number
-                  </Label>
-                  <Input
-                    type="text"
-                    id="business_house_name_or_number"
-                    value={formValues?.business_house_name_or_number || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "business_house_name_or_number",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("business_house_name_or_number") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_house_name_or_number")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        {shouldShowCopyAddressButton && (
-          <Row className="mb-3">
-            <Col md={12}>
-              <Button color="info" outline onClick={handleCopyAddress}>
-                Copy Address from Previous
-              </Button>
-            </Col>
-          </Row>
-        )}
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_address_line_1">
-                    Business Address Line 1
-                  </Label>
-                  <Input
-                    type="text"
-                    id="business_address_line_1"
-                    value={formValues?.business_address_line_1 || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "business_address_line_1",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("business_address_line_1") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_address_line_1")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_address_line_2">
-                    Business Address Line 2
-                  </Label>
-                  <Input
-                    type="text"
-                    id="business_address_line_2"
-                    value={formValues?.business_address_line_2 || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "business_address_line_2",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("business_address_line_2") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_address_line_2")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="business_city">Business City</Label>
-                  <Input
-                    type="text"
-                    id="business_city"
-                    value={formValues?.business_city || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_city", e.target.value)
-                    }
-                  />
-                  {getFieldError("business_city") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_city")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="business_county">Business County</Label>
-                  <Input
-                    type="text"
-                    id="business_county"
-                    value={formValues?.business_county || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_county", e.target.value)
-                    }
-                  />
-                  {getFieldError("business_county") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_county")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="business_country">Business Country</Label>
-                  <Input
-                    type="text"
-                    id="business_country"
-                    value={formValues?.business_country || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_country", e.target.value)
-                    }
-                  />
-                  {getFieldError("business_country") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_country")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="job_title">Job Title</Label>
-                  <Input
-                    type="text"
-                    id="job_title"
-                    value={formValues?.job_title || ""}
-                    onChange={(e) =>
-                      handleInputChange("job_title", e.target.value)
-                    }
-                  />
-                  {getFieldError("job_title") && (
-                    <div className="text-danger small">
-                      {getFieldError("job_title")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_name">Business Name</Label>
-                  <Input
-                    type="text"
-                    id="business_name"
-                    value={formValues?.business_name || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_name", e.target.value)
-                    }
-                  />
-                  {getFieldError("business_name") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_name")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="business_type">Business Type</Label>
-                  <Input
-                    type="select"
-                    id="business_type"
-                    value={formValues?.business_type || ""}
-                    onChange={(e) =>
-                      handleInputChange("business_type", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="SOLE_TRADER">Sole Trader</option>
-                    <option value="PUBLIC_LIMITED">
-                      Public Limited Company
-                    </option>
-                    <option value="PRIVATE_LIMITED">
-                      Private Limited Company
-                    </option>
-                    <option value="PARTNERSHIP">Partnership</option>
-                    <option value="LLP">LLP</option>
-                    <option value="INDIVIDUAL">Individual</option>
-                  </Input>
-                  {getFieldError("business_type") && (
-                    <div className="text-danger small">
-                      {getFieldError("business_type")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="percentage_of_business_owned">
-                    Percentage Of Business Owned(%)
-                  </Label>
-                  <Input
-                    type="text"
-                    id="percentage_of_business_owned"
-                    value={formValues?.percentage_of_business_owned || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "percentage_of_business_owned",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("percentage_of_business_owned") && (
-                    <div className="text-danger small">
-                      {getFieldError("percentage_of_business_owned")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={12}>
-                <FormGroup check>
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name="is_accounts_available"
-                      checked={formValues?.is_accounts_available || false}
-                      onChange={(e) =>
-                        setFormValues((prevValues) => ({
-                          ...prevValues!,
-                          is_accounts_available: e.target.checked,
-                        }))
-                      }
-                    />
-                    Accounts Available?
-                  </Label>
-                  {getFieldError("is_accounts_available") && (
-                    <div className="text-danger small">
-                      {getFieldError("is_accounts_available")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={12}>
-                {formValues?.is_accounts_available && (
-                  <Row>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="year1">
-                          Year 1<span className="text-danger">*</span>
-                        </Label>
-                        <Input
-                          type="text"
-                          id="year1"
-                          placeholder="e.g. 2014"
-                          value={formValues?.year1 || ""}
-                          onChange={(e) =>
-                            handleInputChange("year1", e.target.value)
-                          }
-                          required
-                        />
-                        {getFieldError("year1") && (
-                          <div className="text-danger small">
-                            {getFieldError("year1")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="year1_net_profit">
-                          Year 1 net profit({getCurrencySign()})
-                          <span className="text-danger">*</span>
-                        </Label>
-                        <Input
-                          type="number"
-                          id="year1_net_profit"
-                          placeholder="0"
-                          value={formValues?.year1_net_profit || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "year1_net_profit",
-                              e.target.value,
-                            )
-                          }
-                          required
-                        />
-                        {getFieldError("year1_net_profit") && (
-                          <div className="text-danger small">
-                            {getFieldError("year1_net_profit")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="year2">Year 2</Label>
-                        <Input
-                          type="text"
-                          id="year2"
-                          placeholder="e.g. 2013"
-                          value={formValues?.year2 || ""}
-                          onChange={(e) =>
-                            handleInputChange("year2", e.target.value)
-                          }
-                        />
-                        {getFieldError("year2") && (
-                          <div className="text-danger small">
-                            {getFieldError("year2")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="year2_net_profit">
-                          Year 2 net profit({getCurrencySign()})
-                        </Label>
-                        <Input
-                          type="number"
-                          id="year2_net_profit"
-                          placeholder="0"
-                          value={formValues?.year2_net_profit || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "year2_net_profit",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        {getFieldError("year2_net_profit") && (
-                          <div className="text-danger small">
-                            {getFieldError("year2_net_profit")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="year3">Year 3</Label>
-                        <Input
-                          type="text"
-                          id="year3"
-                          placeholder="e.g. 2012"
-                          value={formValues?.year3 || ""}
-                          onChange={(e) =>
-                            handleInputChange("year3", e.target.value)
-                          }
-                        />
-                        {getFieldError("year3") && (
-                          <div className="text-danger small">
-                            {getFieldError("year3")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="year3_net_profit">
-                          Year 3 net profit({getCurrencySign()})
-                        </Label>
-                        <Input
-                          type="number"
-                          id="year3_net_profit"
-                          placeholder="0"
-                          value={formValues?.year3_net_profit || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "year3_net_profit",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        {getFieldError("year3_net_profit") && (
-                          <div className="text-danger small">
-                            {getFieldError("year3_net_profit")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                )}
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="accountant_name">Accountant Name</Label>
-                  <Input
-                    type="text"
-                    id="accountant_name"
-                    value={formValues?.accountant_name || ""}
-                    onChange={(e) =>
-                      handleInputChange("accountant_name", e.target.value)
-                    }
-                  />
-                  {getFieldError("accountant_name") && (
-                    <div className="text-danger small">
-                      {getFieldError("accountant_name")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="accountant_qualifications">
-                    Accountant Qualifications
-                  </Label>
-                  <Input
-                    type="text"
-                    id="accountant_qualifications"
-                    value={formValues?.accountant_qualifications || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "accountant_qualifications",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("accountant_qualifications") && (
-                    <div className="text-danger small">
-                      {getFieldError("accountant_qualifications")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        <Row>
-          {formValues?.employment_status === "SELF_EMPLOYED" && (
-            <>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="salary">
-                    Salary({getCurrencySign()})
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="salary"
-                    placeholder="0"
-                    value={formValues?.salary || ""}
-                    onChange={(e) =>
-                      handleInputChange("salary", e.target.value)
-                    }
-                    required
-                  />
-                  {getFieldError("salary") && (
-                    <div className="text-danger small">
-                      {getFieldError("salary")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="dividends">
-                    Dividends({getCurrencySign()})
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="dividends"
-                    placeholder="0"
-                    value={formValues?.dividends || ""}
-                    onChange={(e) =>
-                      handleInputChange("dividends", e.target.value)
-                    }
-                    required
-                  />
-                  {getFieldError("dividends") && (
-                    <div className="text-danger small">
-                      {getFieldError("dividends")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="turnover">Turn Over({getCurrencySign()})</Label>
-                  <Input
-                    type="number"
-                    id="turnover"
-                    placeholder="0"
-                    value={formValues?.turnover || ""}
-                    onChange={(e) =>
-                      handleInputChange("turnover", e.target.value)
-                    }
-                  />
-                  {getFieldError("turnover") && (
-                    <div className="text-danger small">
-                      {getFieldError("turnover")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </>
-          )}
-        </Row>
-        {formValues?.employment_status === "OTHER" && (
-          <>
-            <Row>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="other_income">
-                    Other Income({getCurrencySign()})
-                  </Label>
-                  <Input
-                    type="number"
-                    id="other_income"
-                    placeholder="0"
-                    value={formValues?.other_income || ""}
-                    onChange={(e) =>
-                      handleInputChange("other_income", e.target.value)
-                    }
-                  />
-                  {getFieldError("other_income") && (
-                    <div className="text-danger small">
-                      {getFieldError("other_income")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="other_income_source">
-                    Other Income Source<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="select"
-                    id="other_income_source"
-                    required
-                    value={formValues?.other_income_source || ""}
-                    onChange={(e) =>
-                      handleInputChange("other_income_source", e.target.value)
-                    }
-                  >
-                    <option value="">Select...</option>
-                    <option value="CARERS_ALLOWANCE">Carer's Allowance</option>
-                    <option value="CHILD_BENEFIT">Child Benefit</option>
-                    <option value="CHILD_MAINTENANCE_COURT_ORDERED">
-                      Child Maintenance Court Ordered
-                    </option>
-                    <option value="CHILD_MAINTENANCE_NON_COURT_ORDERED">
-                      Child Maintenance Non Court Ordered
-                    </option>
-                    <option value="CHILD_TAX_CREDITS">Child Tax Credits</option>
-                    <option value="DISABILITY_LIVING_ALLOWANCE">
-                      Disability Living Allowance (DLA)
-                    </option>
-                    <option value="EMPLOYMENT_AND_SUPPORT_ALLOWANCE">
-                      Employment and Support Allowance (ESA)
-                    </option>
-                    <option value="MAINTENANCE_INCOME">
-                      Maintenance Income
-                    </option>
-                    <option value="PERSONAL_INDEPENDENCE_PAYMENTS">
-                      Personal Independence Payments (PIP)
-                    </option>
-                    <option value="MATERNITY_PAY">Maternity Pay</option>
-                    <option value="PENSION_CREDIT">Pension Credit</option>
-                    <option value="RENTAL_INCOME">Rental Income</option>
-                    <option value="WORKING_TAX_CREDITS">
-                      Working Tax Credits
-                    </option>
-                    <option value="OTHER">Other</option>
-                  </Input>
-                  {getFieldError("other_income_source") && (
-                    <div className="text-danger small">
-                      {getFieldError("other_income_source")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              {formValues?.other_income_source === "OTHER" && (
-                <Col md={4}>
-                  <FormGroup>
-                    <Label for="other">Other Income Source Details</Label>
-                    <Input
-                      type="text"
-                      id="other"
-                      value={formValues?.other || ""}
-                      onChange={(e) =>
-                        handleInputChange("other", e.target.value)
-                      }
-                    />
-                    {getFieldError("other") && (
-                      <div className="text-danger small">
-                        {getFieldError("other")}
+                        {getFieldError("occupation")}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
               )}
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="other_income_start_date">
-                    Other income start date
-                  </Label>
-                  <Input
-                    type="date"
-                    id="other_income_start_date"
-                    value={formValues?.other_income_start_date || 0}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "other_income_start_date",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {getFieldError("other_income_start_date") && (
-                    <div className="text-danger small">
-                      {getFieldError("other_income_start_date")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-          </>
-        )}
-        {formValues?.employment_status === "CONTRACTOR" && (
-          <>
-            <Row>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="contractor_industry">Contractor Industry</Label>
-                  <Input
-                    type="text"
-                    id="contractor_industry"
-                    value={formValues?.contractor_industry || ""}
-                    onChange={(e) =>
-                      handleInputChange("contractor_industry", e.target.value)
-                    }
-                  />
-                  {getFieldError("contractor_industry") && (
-                    <div className="text-danger small">
-                      {getFieldError("contractor_industry")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="current_contract_start">
-                    Current Contract Start<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="date"
-                    id="current_contract_start"
-                    value={formValues?.current_contract_start || 0}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "current_contract_start",
-                        e.target.value,
-                      )
-                    }
-                    required
-                  />
-                  {getFieldError("current_contract_start") && (
-                    <div className="text-danger small">
-                      {getFieldError("current_contract_start")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="current_contract_end">
-                    Current Contract End<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="date"
-                    id="current_contract_end"
-                    value={formValues?.current_contract_end || 0}
-                    onChange={(e) =>
-                      handleInputChange("current_contract_end", e.target.value)
-                    }
-                    required
-                  />
-                  {getFieldError("current_contract_end") && (
-                    <div className="text-danger small">
-                      {getFieldError("current_contract_end")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-            <Row>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="time_contracting">
-                    Time contracting<span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="text"
-                    id="time_contracting"
-                    value={formValues?.time_contracting || ""}
-                    onChange={(e) =>
-                      handleInputChange("time_contracting", e.target.value)
-                    }
-                    required
-                  />
-                  {getFieldError("time_contracting") && (
-                    <div className="text-danger small">
-                      {getFieldError("time_contracting")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="day_rate">
-                    Day Rate({getCurrencySign()})
-                    <span className="text-danger">*</span>
-                  </Label>
-                  <Input
-                    type="number"
-                    id="day_rate"
-                    placeholder="0"
-                    value={formValues?.day_rate || ""}
-                    onChange={(e) =>
-                      handleInputChange("day_rate", e.target.value)
-                    }
-                    required
-                  />
-                  {getFieldError("day_rate") && (
-                    <div className="text-danger small">
-                      {getFieldError("day_rate")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="hourly_rate">
-                    Hourly Rate({getCurrencySign()})
-                  </Label>
-                  <Input
-                    type="number"
-                    id="hourly_rate"
-                    placeholder="0"
-                    value={formValues?.hourly_rate || ""}
-                    onChange={(e) =>
-                      handleInputChange("hourly_rate", e.target.value)
-                    }
-                  />
-                  {getFieldError("hourly_rate") && (
-                    <div className="text-danger small">
-                      {getFieldError("hourly_rate")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-          </>
-        )}
-        <Row>
-          <Col md={12}>
-            <FormGroup>
-              <Label for="note">Note</Label>
-              <Input
-                type="textarea"
-                id="note"
-                value={formValues?.note || ""}
-                onChange={(e) => handleInputChange("note", e.target.value)}
-              />
-              {getFieldError("note") && (
-                <div className="text-danger small">{getFieldError("note")}</div>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "SELF_EMPLOYED") && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="industry">Industry</Label>
+                    <Input
+                      type="text"
+                      id="industry"
+                      value={formValues?.industry || ""}
+                      onChange={(e) =>
+                        handleInputChange("industry", e.target.value)
+                      }
+                    />
+                    {getFieldError("industry") && (
+                      <div className="text-danger small">
+                        {getFieldError("industry")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
               )}
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="d-flex justify-content-between pt-3">
-            <Button
-              color="success"
-              className="border-success"
-              onClick={() => setAddEmploymentModalOpen(true)}
-            >
-              Add New
-            </Button>
-            <div className=" d-flex justify-content-end gap-2">
+            </Row>
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerName">
+                      Employer Name<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="employerName"
+                      value={formValues?.employer_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_name", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("employer_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("employer_name")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerTelephone">Employer's Telephone</Label>
+                    <Input
+                      type="text"
+                      id="employerTelephone"
+                      value={formValues?.employer_telephone || ""}
+                      onChange={(e) =>
+                        handleInputChange("employer_telephone", e.target.value)
+                      }
+                    />
+                    {getFieldError("employer_telephone") && (
+                      <div className="text-danger small">
+                        {getFieldError("employer_telephone")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "EMPLOYED" && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employer_name_for_reference">
+                      Employer's Name for Reference
+                    </Label>
+                    <Input
+                      type="text"
+                      id="employer_name_for_reference"
+                      value={formValues?.employer_name_for_reference || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "employer_name_for_reference",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    {getFieldError("employer_name_for_reference") && (
+                      <div className="text-danger small">
+                        {getFieldError("employer_name_for_reference")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+              {formValues?.employment_status === "EMPLOYED" && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="employerEmail">
+                      Employer's Email for Reference
+                    </Label>
+                    <Input
+                      type="email"
+                      id="employerEmail"
+                      value={formValues?.employer_email_for_reference || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "employer_email_for_reference",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    {getFieldError("employer_email_for_reference") && (
+                      <div className="text-danger small">
+                        {getFieldError("employer_email_for_reference")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+            </Row>
+            {(formValues?.employment_status === "EMPLOYED" ||
+              formValues?.employment_status === "CONTRACTOR") && (
+              <Row>
+                <Col sm={12}>
+                  <Label className="fw-semibold mb-2">Location Preview</Label>
+                  <div className="border rounded overflow-hidden shadow-sm mb-3">
+                    <iframe
+                      src={
+                        employerMapCoords
+                          ? getGoogleMapEmbedUrl(
+                              employerMapCoords.lat,
+                              employerMapCoords.lng,
+                              employerZoom,
+                            )
+                          : getGoogleMapEmbedUrl(
+                              LONDON_CENTER.lat,
+                              LONDON_CENTER.lng,
+                              DEFAULT_ZOOM,
+                            )
+                      }
+                      width="100%"
+                      height="250"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      title="Employer Location"
+                    />
+                  </div>
+                </Col>
+              </Row>
+            )}
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="employerPostcode">Employer's Postcode</Label>
+                      <InputGroup className="d-flex align-items-center gap-2">
+                        <Input
+                          type="text"
+                          id="employerPostcode"
+                          className="border-primary rounded"
+                          value={formValues.employer_postcode || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "employer_postcode",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <Button
+                          color="primary"
+                          type="button"
+                          className="text-nowrap"
+                          style={{
+                            paddingTop: "0.7rem",
+                            paddingBottom: "0.7rem",
+                          }}
+                          onClick={() =>
+                            fetchAddressByPostcode(
+                              formValues.employer_postcode,
+                              "employer",
+                            )
+                          }
+                          disabled={isFetchingAddress || isSearchingPostcode}
+                        >
+                          {isSearchingPostcode ? "Loading..." : "Lookup"}
+                        </Button>
+                      </InputGroup>
+                      {getFieldError("employer_postcode") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_postcode")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="employerHouseNumber">
+                        Employer's House Name or Number
+                      </Label>
+                      <Input
+                        type="text"
+                        id="employerHouseNumber"
+                        value={formValues?.employer_house_name_or_number || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "employer_house_name_or_number",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("employer_house_name_or_number") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_house_name_or_number")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="employerAddressLine1">
+                        Employer's Address Line 1
+                      </Label>
+                      <Input
+                        type="text"
+                        id="employerAddressLine1"
+                        value={formValues?.employer_address_line_1 || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "employer_address_line_1",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("employer_address_line_1") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_address_line_1")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="employerAddressLine2">
+                        Employer's Address Line 2
+                      </Label>
+                      <Input
+                        type="text"
+                        id="employerAddressLine2"
+                        value={formValues?.employer_address_line_2 || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "employer_address_line_2",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("employer_address_line_2") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_address_line_2")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="employerCity">Employer's City</Label>
+                      <Input
+                        type="text"
+                        id="employerCity"
+                        value={formValues?.employer_city || ""}
+                        onChange={(e) =>
+                          handleInputChange("employer_city", e.target.value)
+                        }
+                      />
+                      {getFieldError("employer_city") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_city")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="employerCounty">Employer's County</Label>
+                      <Input
+                        type="text"
+                        id="employerCounty"
+                        value={formValues?.employer_county || ""}
+                        onChange={(e) =>
+                          handleInputChange("employer_county", e.target.value)
+                        }
+                      />
+                      {getFieldError("employer_county") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_county")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="employerCountry">Employer's Country</Label>
+                      <Input
+                        type="text"
+                        id="employerCountry"
+                        value={formValues?.employer_country || ""}
+                        onChange={(e) =>
+                          handleInputChange("employer_country", e.target.value)
+                        }
+                      />
+                      {getFieldError("employer_country") && (
+                        <div className="text-danger small">
+                          {getFieldError("employer_country")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <Label for="employmentCommenced">
+                      Employment Commenced<span className="text-danger">*</span>
+                    </Label>
+                    <FormGroup className="d-flex justify-content-center align-items-center">
+                      <Input
+                        type="date"
+                        id="employmentCommenced"
+                        value={formValues?.employment_commenced || ""}
+                        className="rounded-end-0"
+                        onChange={(e) =>
+                          handleInputChange(
+                            "employment_commenced",
+                            e.target.value,
+                          )
+                        }
+                        required
+                      />
+                      <InputGroupText
+                        className="border-start-0 rounded-start-0"
+                        style={{ padding: "11px 20px" }}
+                      >
+                        {calculateMonthsDuration(
+                          formValues?.employment_commenced,
+                        )}
+                      </InputGroupText>
+                      {getFieldError("employment_commenced") && (
+                        <div className="text-danger small">
+                          {getFieldError("employment_commenced")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="employmentEnded">Employment Ended</Label>
+                      <Input
+                        type="date"
+                        id="employmentEnded"
+                        value={formValues?.employment_ended || ""}
+                        onChange={(e) =>
+                          handleInputChange("employment_ended", e.target.value)
+                        }
+                      />
+                      {getFieldError("employment_ended") && (
+                        <div className="text-danger small">
+                          {getFieldError("employment_ended")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            {formValues?.employment_status === "EMPLOYED" && (
+              <Row>
+                <p>
+                  Please enter previous employment details where applicable.
+                </p>
+              </Row>
+            )}
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "RETIRED") && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="grossAnnualIncome">
+                      Gross Annual Income({getCurrencySign()})
+                      <span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="number"
+                      id="grossAnnualIncome"
+                      placeholder="0"
+                      value={formValues?.gross_annual_income || ""}
+                      onChange={(e) =>
+                        handleInputChange("gross_annual_income", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("gross_annual_income") && (
+                      <div className="text-danger small">
+                        {getFieldError("gross_annual_income")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+              {formValues?.employment_status === "EMPLOYED" && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="netMonthlyIncome">
+                      Net Monthly Income({getCurrencySign()})
+                    </Label>
+                    <Input
+                      type="number"
+                      id="netMonthlyIncome"
+                      placeholder="0"
+                      value={formValues?.net_monthly_income || ""}
+                      onChange={(e) =>
+                        handleInputChange("net_monthly_income", e.target.value)
+                      }
+                    />
+                    {getFieldError("net_monthly_income") && (
+                      <div className="text-danger small">
+                        {getFieldError("net_monthly_income")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+              {formValues?.employment_status === "RETIRED" && (
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="income_source">Income Source</Label>
+                    <Input
+                      type="text"
+                      id="income_source"
+                      value={formValues?.income_source || ""}
+                      onChange={(e) =>
+                        handleInputChange("income_source", e.target.value)
+                      }
+                    />
+                    {getFieldError("income_source") && (
+                      <div className="text-danger small">
+                        {getFieldError("income_source")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "EMPLOYED" && (
+                <Col md={6}>
+                  <FormGroup check>
+                    <Label check>
+                      <Input
+                        type="checkbox"
+                        name="probationaryPeriod"
+                        checked={formValues?.is_probationary_period || false}
+                        onChange={(e) =>
+                          setFormValues((prevValues) => ({
+                            ...prevValues!,
+                            is_probationary_period: e.target.checked,
+                          }))
+                        }
+                      />
+                      Are you on a probationary period?
+                    </Label>
+                    {getFieldError("is_probationary_period") && (
+                      <div className="text-danger small">
+                        {getFieldError("is_probationary_period")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              )}
+            </Row>
+            <Row>
+              {(formValues?.employment_status === "EMPLOYED" ||
+                formValues?.employment_status === "SELF_EMPLOYED" ||
+                formValues?.employment_status === "RETIRED" ||
+                formValues?.employment_status === "OTHER" ||
+                formValues?.employment_status === "CONTRACTOR") && (
+                <>
+                  <Col md={6}>
+                    <FormGroup check>
+                      <Label check>
+                        <Input
+                          type="checkbox"
+                          name="foreignCurrency"
+                          checked={
+                            formValues?.is_income_in_foreign_currency || false
+                          }
+                          onChange={(e) =>
+                            setFormValues((prevValues) => ({
+                              ...prevValues!,
+                              is_income_in_foreign_currency: e.target.checked,
+                            }))
+                          }
+                        />
+                        Is any income paid in a foreign currency?
+                      </Label>
+                      {getFieldError("is_income_in_foreign_currency") && (
+                        <div className="text-danger small">
+                          {getFieldError("is_income_in_foreign_currency")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    {formValues?.is_income_in_foreign_currency && (
+                      <FormGroup>
+                        <Label for="further_details">
+                          Further Details<span className="text-danger">*</span>
+                        </Label>
+                        <Input
+                          type="textarea"
+                          id="further_details"
+                          value={formValues?.further_details || ""}
+                          onChange={(e) =>
+                            handleInputChange("further_details", e.target.value)
+                          }
+                          required
+                        />
+                        {getFieldError("further_details") && (
+                          <div className="text-danger small">
+                            {getFieldError("further_details")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    )}
+                  </Col>
+                </>
+              )}
+            </Row>
+            {formValues?.employment_status === "EMPLOYED" && (
               <>
-                <Button
-                  color="primary"
-                  type="submit"
-                  disabled={isUpdateEmploymentDetailsLoading}
-                  onClick={() => {
-                    submitActionRef.current = "save";
-                  }}
-                >
-                  {isUpdateEmploymentDetailsLoading && submitting === "save"
-                    ? "Saving..."
-                    : "Save Changes"}
-                </Button>
-                <Button
-                  type="submit"
-                  color="secondary"
-                  disabled={isUpdateEmploymentDetailsLoading}
-                  onClick={(e) => {
-                    submitActionRef.current = "next";
-                    formRef.current?.requestSubmit();
-                  }}
-                >
-                  {isUpdateEmploymentDetailsLoading &&
-                  submitting === "save_next"
-                    ? "Saving..."
-                    : "Save & Next"}
-                </Button>
+                <Row className="d-flex justify-content-between">
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="bonus">
+                        Bonus({getCurrencySign()})
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="number"
+                        id="bonus"
+                        placeholder="0"
+                        value={formValues?.bonus || ""}
+                        onChange={(e) =>
+                          handleInputChange("bonus", e.target.value)
+                        }
+                      />
+                      {getFieldError("bonus") && (
+                        <div className="text-danger small">
+                          {getFieldError("bonus")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup
+                      check
+                      className="d-flex justify-content-center align-content-center"
+                    >
+                      <Label check>
+                        <Input
+                          type="checkbox"
+                          name="is_bonus_guaranteed"
+                          checked={formValues?.is_bonus_guaranteed || false}
+                          onChange={(e) =>
+                            setFormValues((prevValues) => ({
+                              ...prevValues!,
+                              is_bonus_guaranteed: e.target.checked,
+                            }))
+                          }
+                        />
+                        Bonus Guaranteed?
+                      </Label>
+                      {getFieldError("is_bonus_guaranteed") && (
+                        <div className="text-danger small">
+                          {getFieldError("is_bonus_guaranteed")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="bonusFrequency">Bonus Frequency</Label>
+                      <Input
+                        type="select"
+                        id="bonusFrequency"
+                        value={formValues?.bonus_frequency || ""}
+                        onChange={(e) =>
+                          handleInputChange("bonus_frequency", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="DAILY">Daily</option>
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="BI_WEEKLY">Bi Weekly</option>
+                        <option value="MONTHLY">Monthly</option>
+                        <option value="BI_MONTHLY">Bi Monthly</option>
+                        <option value="QUARTERLY">Quarterly</option>
+                        <option value="BI_ANNUALLY">Bi Annually</option>
+                        <option value="ANNUALLY">Annually</option>
+                      </Input>
+                      {getFieldError("bonus_frequency") && (
+                        <div className="text-danger small">
+                          {getFieldError("bonus_frequency")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className="d-flex justify-content-between">
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="overtime">
+                        Overtime({getCurrencySign()})
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="number"
+                        id="overtime"
+                        placeholder="0"
+                        value={formValues?.overtime || ""}
+                        onChange={(e) =>
+                          handleInputChange("overtime", e.target.value)
+                        }
+                      />
+                      {getFieldError("overtime") && (
+                        <div className="text-danger small">
+                          {getFieldError("overtime")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup
+                      check
+                      className="d-flex justify-content-center align-content-center"
+                    >
+                      <Label check>
+                        <Input
+                          type="checkbox"
+                          name="is_overtime_guaranteed"
+                          checked={formValues?.is_overtime_guaranteed || false}
+                          onChange={(e) =>
+                            setFormValues((prevValues) => ({
+                              ...prevValues!,
+                              is_overtime_guaranteed: e.target.checked,
+                            }))
+                          }
+                        />
+                        Overtime Guaranteed?
+                      </Label>
+                      {getFieldError("is_overtime_guaranteed") && (
+                        <div className="text-danger small">
+                          {getFieldError("is_overtime_guaranteed")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="overtimeFrequency">Overtime Frequency</Label>
+                      <Input
+                        type="select"
+                        id="overtimeFrequency"
+                        value={formValues?.overtime_frequency || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "overtime_frequency",
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="DAILY">Daily</option>
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="BI_WEEKLY">Bi Weekly</option>
+                        <option value="MONTHLY">Monthly</option>
+                        <option value="BI_MONTHLY">Bi Monthly</option>
+                        <option value="QUARTERLY">Quarterly</option>
+                        <option value="BI_ANNUALLY">Bi Annually</option>
+                        <option value="ANNUALLY">Annually</option>
+                      </Input>
+                      {getFieldError("overtime_frequency") && (
+                        <div className="text-danger small">
+                          {getFieldError("overtime_frequency")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row className="d-flex justify-content-between">
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="allowance">
+                        Allowance({getCurrencySign()})
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="number"
+                        id="allowance"
+                        placeholder="0"
+                        value={formValues?.allowance || ""}
+                        onChange={(e) =>
+                          handleInputChange("allowance", e.target.value)
+                        }
+                      />
+                      {getFieldError("allowance") && (
+                        <div className="text-danger small">
+                          {getFieldError("allowance")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup
+                      check
+                      className="d-flex justify-content-center align-content-center"
+                    >
+                      <Label check>
+                        <Input
+                          type="checkbox"
+                          name="is_allowance_guaranteed"
+                          checked={formValues?.is_allowance_guaranteed || false}
+                          onChange={(e) =>
+                            setFormValues((prevValues) => ({
+                              ...prevValues!,
+                              is_allowance_guaranteed: e.target.checked,
+                            }))
+                          }
+                        />
+                        Allowance Guaranteed?
+                      </Label>
+                      {getFieldError("is_allowance_guaranteed") && (
+                        <div className="text-danger small">
+                          {getFieldError("is_allowance_guaranteed")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="allowanceFrequency">
+                        Allowance Frequency
+                      </Label>
+                      <Input
+                        type="select"
+                        id="allowanceFrequency"
+                        value={formValues?.allowance_frequency || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "allowance_frequency",
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="DAILY">Daily</option>
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="BI_WEEKLY">Bi Weekly</option>
+                        <option value="MONTHLY">Monthly</option>
+                        <option value="BI_MONTHLY">Bi Monthly</option>
+                        <option value="QUARTERLY">Quarterly</option>
+                        <option value="BI_ANNUALLY">Bi Annually</option>
+                        <option value="ANNUALLY">Annually</option>
+                      </Input>
+                      {getFieldError("allowance_frequency") && (
+                        <div className="text-danger small">
+                          {getFieldError("allowance_frequency")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
               </>
-            </div>
-          </Col>
-        </Row>
-      </form>
+            )}
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <Label for="employmentTime">Employment Time</Label>
+                    <Row>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Input
+                            type="number"
+                            id="employment_time_year"
+                            placeholder="0"
+                            value={formValues?.employment_time_year || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "employment_time_year",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <FormText>Years</FormText>
+                          {getFieldError("employment_time_year") && (
+                            <div className="text-danger small">
+                              {getFieldError("employment_time_year")}
+                            </div>
+                          )}
+                        </FormGroup>
+                      </Col>
+                      <Col md={6}>
+                        <FormGroup>
+                          <Input
+                            type="number"
+                            id="employment_time_month"
+                            placeholder="0"
+                            value={formValues?.employment_time_month || ""}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "employment_time_month",
+                                e.target.value,
+                              )
+                            }
+                          />
+                          <FormText>Months</FormText>
+                          {getFieldError("employment_time_month") && (
+                            <div className="text-danger small">
+                              {getFieldError("employment_time_month")}
+                            </div>
+                          )}
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_telephone">Business Telephone</Label>
+                      <Input
+                        type="text"
+                        id="business_telephone"
+                        value={formValues?.business_telephone || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "business_telephone",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("business_telephone") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_telephone")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <Col sm={12}>
+                  <Label className="fw-semibold mb-2">Location Preview</Label>
+                  <div className="border rounded overflow-hidden shadow-sm mb-3">
+                    <iframe
+                      src={
+                        businessMapCoords
+                          ? getGoogleMapEmbedUrl(
+                              businessMapCoords.lat,
+                              businessMapCoords.lng,
+                              businessZoom,
+                            )
+                          : getGoogleMapEmbedUrl(
+                              LONDON_CENTER.lat,
+                              LONDON_CENTER.lng,
+                              DEFAULT_ZOOM,
+                            )
+                      }
+                      width="100%"
+                      height="250"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      title="Business Location"
+                    />
+                  </div>
+                </Col>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_postcode">Business Postcode</Label>
+                      <InputGroup className="d-flex align-items-center gap-2">
+                        <Input
+                          type="text"
+                          id="business_postcode"
+                          className="border-primary rounded"
+                          value={formValues?.business_postcode || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "business_postcode",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <Button
+                          color="primary"
+                          type="button"
+                          className="text-nowrap"
+                          style={{
+                            paddingTop: "0.7rem",
+                            paddingBottom: "0.7rem",
+                          }}
+                          onClick={() =>
+                            fetchAddressByPostcode(
+                              formValues.business_postcode,
+                              "business",
+                            )
+                          }
+                          disabled={isFetchingAddress || isSearchingPostcode}
+                        >
+                          {isSearchingPostcode ? "Loading..." : "Lookup"}
+                        </Button>
+                      </InputGroup>
+                      {getFieldError("business_postcode") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_postcode")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_house_name_or_number">
+                        Business House Name/Number
+                      </Label>
+                      <Input
+                        type="text"
+                        id="business_house_name_or_number"
+                        value={formValues?.business_house_name_or_number || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "business_house_name_or_number",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("business_house_name_or_number") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_house_name_or_number")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            {shouldShowCopyAddressButton && (
+              <Row className="mb-3">
+                <Col md={12}>
+                  <Button color="info" outline onClick={handleCopyAddress}>
+                    Copy Address from Previous
+                  </Button>
+                </Col>
+              </Row>
+            )}
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_address_line_1">
+                        Business Address Line 1
+                      </Label>
+                      <Input
+                        type="text"
+                        id="business_address_line_1"
+                        value={formValues?.business_address_line_1 || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "business_address_line_1",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("business_address_line_1") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_address_line_1")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_address_line_2">
+                        Business Address Line 2
+                      </Label>
+                      <Input
+                        type="text"
+                        id="business_address_line_2"
+                        value={formValues?.business_address_line_2 || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "business_address_line_2",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("business_address_line_2") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_address_line_2")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="business_city">Business City</Label>
+                      <Input
+                        type="text"
+                        id="business_city"
+                        value={formValues?.business_city || ""}
+                        onChange={(e) =>
+                          handleInputChange("business_city", e.target.value)
+                        }
+                      />
+                      {getFieldError("business_city") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_city")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="business_county">Business County</Label>
+                      <Input
+                        type="text"
+                        id="business_county"
+                        value={formValues?.business_county || ""}
+                        onChange={(e) =>
+                          handleInputChange("business_county", e.target.value)
+                        }
+                      />
+                      {getFieldError("business_county") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_county")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="business_country">Business Country</Label>
+                      <Input
+                        type="text"
+                        id="business_country"
+                        value={formValues?.business_country || ""}
+                        onChange={(e) =>
+                          handleInputChange("business_country", e.target.value)
+                        }
+                      />
+                      {getFieldError("business_country") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_country")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="job_title">Job Title</Label>
+                      <Input
+                        type="text"
+                        id="job_title"
+                        value={formValues?.job_title || ""}
+                        onChange={(e) =>
+                          handleInputChange("job_title", e.target.value)
+                        }
+                      />
+                      {getFieldError("job_title") && (
+                        <div className="text-danger small">
+                          {getFieldError("job_title")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_name">Business Name</Label>
+                      <Input
+                        type="text"
+                        id="business_name"
+                        value={formValues?.business_name || ""}
+                        onChange={(e) =>
+                          handleInputChange("business_name", e.target.value)
+                        }
+                      />
+                      {getFieldError("business_name") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_name")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="business_type">Business Type</Label>
+                      <Input
+                        type="select"
+                        id="business_type"
+                        value={formValues?.business_type || ""}
+                        onChange={(e) =>
+                          handleInputChange("business_type", e.target.value)
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="SOLE_TRADER">Sole Trader</option>
+                        <option value="PUBLIC_LIMITED">
+                          Public Limited Company
+                        </option>
+                        <option value="PRIVATE_LIMITED">
+                          Private Limited Company
+                        </option>
+                        <option value="PARTNERSHIP">Partnership</option>
+                        <option value="LLP">LLP</option>
+                        <option value="INDIVIDUAL">Individual</option>
+                      </Input>
+                      {getFieldError("business_type") && (
+                        <div className="text-danger small">
+                          {getFieldError("business_type")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="percentage_of_business_owned">
+                        Percentage Of Business Owned(%)
+                      </Label>
+                      <Input
+                        type="text"
+                        id="percentage_of_business_owned"
+                        value={formValues?.percentage_of_business_owned || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "percentage_of_business_owned",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("percentage_of_business_owned") && (
+                        <div className="text-danger small">
+                          {getFieldError("percentage_of_business_owned")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={12}>
+                    <FormGroup check>
+                      <Label check>
+                        <Input
+                          type="checkbox"
+                          name="is_accounts_available"
+                          checked={formValues?.is_accounts_available || false}
+                          onChange={(e) =>
+                            setFormValues((prevValues) => ({
+                              ...prevValues!,
+                              is_accounts_available: e.target.checked,
+                            }))
+                          }
+                        />
+                        Accounts Available?
+                      </Label>
+                      {getFieldError("is_accounts_available") && (
+                        <div className="text-danger small">
+                          {getFieldError("is_accounts_available")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={12}>
+                    {formValues?.is_accounts_available && (
+                      <Row>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="year1">
+                              Year 1<span className="text-danger">*</span>
+                            </Label>
+                            <Input
+                              type="text"
+                              id="year1"
+                              placeholder="e.g. 2014"
+                              value={formValues?.year1 || ""}
+                              onChange={(e) =>
+                                handleInputChange("year1", e.target.value)
+                              }
+                              required
+                            />
+                            {getFieldError("year1") && (
+                              <div className="text-danger small">
+                                {getFieldError("year1")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="year1_net_profit">
+                              Year 1 net profit({getCurrencySign()})
+                              <span className="text-danger">*</span>
+                            </Label>
+                            <Input
+                              type="number"
+                              id="year1_net_profit"
+                              placeholder="0"
+                              value={formValues?.year1_net_profit || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "year1_net_profit",
+                                  e.target.value,
+                                )
+                              }
+                              required
+                            />
+                            {getFieldError("year1_net_profit") && (
+                              <div className="text-danger small">
+                                {getFieldError("year1_net_profit")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="year2">Year 2</Label>
+                            <Input
+                              type="text"
+                              id="year2"
+                              placeholder="e.g. 2013"
+                              value={formValues?.year2 || ""}
+                              onChange={(e) =>
+                                handleInputChange("year2", e.target.value)
+                              }
+                            />
+                            {getFieldError("year2") && (
+                              <div className="text-danger small">
+                                {getFieldError("year2")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="year2_net_profit">
+                              Year 2 net profit({getCurrencySign()})
+                            </Label>
+                            <Input
+                              type="number"
+                              id="year2_net_profit"
+                              placeholder="0"
+                              value={formValues?.year2_net_profit || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "year2_net_profit",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("year2_net_profit") && (
+                              <div className="text-danger small">
+                                {getFieldError("year2_net_profit")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="year3">Year 3</Label>
+                            <Input
+                              type="text"
+                              id="year3"
+                              placeholder="e.g. 2012"
+                              value={formValues?.year3 || ""}
+                              onChange={(e) =>
+                                handleInputChange("year3", e.target.value)
+                              }
+                            />
+                            {getFieldError("year3") && (
+                              <div className="text-danger small">
+                                {getFieldError("year3")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="year3_net_profit">
+                              Year 3 net profit({getCurrencySign()})
+                            </Label>
+                            <Input
+                              type="number"
+                              id="year3_net_profit"
+                              placeholder="0"
+                              value={formValues?.year3_net_profit || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "year3_net_profit",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("year3_net_profit") && (
+                              <div className="text-danger small">
+                                {getFieldError("year3_net_profit")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    )}
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="accountant_name">Accountant Name</Label>
+                      <Input
+                        type="text"
+                        id="accountant_name"
+                        value={formValues?.accountant_name || ""}
+                        onChange={(e) =>
+                          handleInputChange("accountant_name", e.target.value)
+                        }
+                      />
+                      {getFieldError("accountant_name") && (
+                        <div className="text-danger small">
+                          {getFieldError("accountant_name")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="accountant_qualifications">
+                        Accountant Qualifications
+                      </Label>
+                      <Input
+                        type="text"
+                        id="accountant_qualifications"
+                        value={formValues?.accountant_qualifications || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "accountant_qualifications",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("accountant_qualifications") && (
+                        <div className="text-danger small">
+                          {getFieldError("accountant_qualifications")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            <Row>
+              {formValues?.employment_status === "SELF_EMPLOYED" && (
+                <>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="salary">
+                        Salary({getCurrencySign()})
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="number"
+                        id="salary"
+                        placeholder="0"
+                        value={formValues?.salary || ""}
+                        onChange={(e) =>
+                          handleInputChange("salary", e.target.value)
+                        }
+                        required
+                      />
+                      {getFieldError("salary") && (
+                        <div className="text-danger small">
+                          {getFieldError("salary")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="dividends">
+                        Dividends({getCurrencySign()})
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="number"
+                        id="dividends"
+                        placeholder="0"
+                        value={formValues?.dividends || ""}
+                        onChange={(e) =>
+                          handleInputChange("dividends", e.target.value)
+                        }
+                        required
+                      />
+                      {getFieldError("dividends") && (
+                        <div className="text-danger small">
+                          {getFieldError("dividends")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="turnover">
+                        Turn Over({getCurrencySign()})
+                      </Label>
+                      <Input
+                        type="number"
+                        id="turnover"
+                        placeholder="0"
+                        value={formValues?.turnover || ""}
+                        onChange={(e) =>
+                          handleInputChange("turnover", e.target.value)
+                        }
+                      />
+                      {getFieldError("turnover") && (
+                        <div className="text-danger small">
+                          {getFieldError("turnover")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </>
+              )}
+            </Row>
+            {formValues?.employment_status === "OTHER" && (
+              <>
+                <Row>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="other_income">
+                        Other Income({getCurrencySign()})
+                      </Label>
+                      <Input
+                        type="number"
+                        id="other_income"
+                        placeholder="0"
+                        value={formValues?.other_income || ""}
+                        onChange={(e) =>
+                          handleInputChange("other_income", e.target.value)
+                        }
+                      />
+                      {getFieldError("other_income") && (
+                        <div className="text-danger small">
+                          {getFieldError("other_income")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="other_income_source">
+                        Other Income Source
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="select"
+                        id="other_income_source"
+                        required
+                        value={formValues?.other_income_source || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "other_income_source",
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option value="">Select...</option>
+                        <option value="CARERS_ALLOWANCE">
+                          Carer's Allowance
+                        </option>
+                        <option value="CHILD_BENEFIT">Child Benefit</option>
+                        <option value="CHILD_MAINTENANCE_COURT_ORDERED">
+                          Child Maintenance Court Ordered
+                        </option>
+                        <option value="CHILD_MAINTENANCE_NON_COURT_ORDERED">
+                          Child Maintenance Non Court Ordered
+                        </option>
+                        <option value="CHILD_TAX_CREDITS">
+                          Child Tax Credits
+                        </option>
+                        <option value="DISABILITY_LIVING_ALLOWANCE">
+                          Disability Living Allowance (DLA)
+                        </option>
+                        <option value="EMPLOYMENT_AND_SUPPORT_ALLOWANCE">
+                          Employment and Support Allowance (ESA)
+                        </option>
+                        <option value="MAINTENANCE_INCOME">
+                          Maintenance Income
+                        </option>
+                        <option value="PERSONAL_INDEPENDENCE_PAYMENTS">
+                          Personal Independence Payments (PIP)
+                        </option>
+                        <option value="MATERNITY_PAY">Maternity Pay</option>
+                        <option value="PENSION_CREDIT">Pension Credit</option>
+                        <option value="RENTAL_INCOME">Rental Income</option>
+                        <option value="WORKING_TAX_CREDITS">
+                          Working Tax Credits
+                        </option>
+                        <option value="OTHER">Other</option>
+                      </Input>
+                      {getFieldError("other_income_source") && (
+                        <div className="text-danger small">
+                          {getFieldError("other_income_source")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  {formValues?.other_income_source === "OTHER" && (
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label for="other">Other Income Source Details</Label>
+                        <Input
+                          type="text"
+                          id="other"
+                          value={formValues?.other || ""}
+                          onChange={(e) =>
+                            handleInputChange("other", e.target.value)
+                          }
+                        />
+                        {getFieldError("other") && (
+                          <div className="text-danger small">
+                            {getFieldError("other")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  )}
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="other_income_start_date">
+                        Other income start date
+                      </Label>
+                      <Input
+                        type="date"
+                        id="other_income_start_date"
+                        value={formValues?.other_income_start_date || 0}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "other_income_start_date",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("other_income_start_date") && (
+                        <div className="text-danger small">
+                          {getFieldError("other_income_start_date")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </>
+            )}
+            {formValues?.employment_status === "CONTRACTOR" && (
+              <>
+                <Row>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="contractor_industry">
+                        Contractor Industry
+                      </Label>
+                      <Input
+                        type="text"
+                        id="contractor_industry"
+                        value={formValues?.contractor_industry || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "contractor_industry",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      {getFieldError("contractor_industry") && (
+                        <div className="text-danger small">
+                          {getFieldError("contractor_industry")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="current_contract_start">
+                        Current Contract Start
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="date"
+                        id="current_contract_start"
+                        value={formValues?.current_contract_start || 0}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "current_contract_start",
+                            e.target.value,
+                          )
+                        }
+                        required
+                      />
+                      {getFieldError("current_contract_start") && (
+                        <div className="text-danger small">
+                          {getFieldError("current_contract_start")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="current_contract_end">
+                        Current Contract End
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="date"
+                        id="current_contract_end"
+                        value={formValues?.current_contract_end || 0}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "current_contract_end",
+                            e.target.value,
+                          )
+                        }
+                        required
+                      />
+                      {getFieldError("current_contract_end") && (
+                        <div className="text-danger small">
+                          {getFieldError("current_contract_end")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="time_contracting">
+                        Time contracting<span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="text"
+                        id="time_contracting"
+                        value={formValues?.time_contracting || ""}
+                        onChange={(e) =>
+                          handleInputChange("time_contracting", e.target.value)
+                        }
+                        required
+                      />
+                      {getFieldError("time_contracting") && (
+                        <div className="text-danger small">
+                          {getFieldError("time_contracting")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="day_rate">
+                        Day Rate({getCurrencySign()})
+                        <span className="text-danger">*</span>
+                      </Label>
+                      <Input
+                        type="number"
+                        id="day_rate"
+                        placeholder="0"
+                        value={formValues?.day_rate || ""}
+                        onChange={(e) =>
+                          handleInputChange("day_rate", e.target.value)
+                        }
+                        required
+                      />
+                      {getFieldError("day_rate") && (
+                        <div className="text-danger small">
+                          {getFieldError("day_rate")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label for="hourly_rate">
+                        Hourly Rate({getCurrencySign()})
+                      </Label>
+                      <Input
+                        type="number"
+                        id="hourly_rate"
+                        placeholder="0"
+                        value={formValues?.hourly_rate || ""}
+                        onChange={(e) =>
+                          handleInputChange("hourly_rate", e.target.value)
+                        }
+                      />
+                      {getFieldError("hourly_rate") && (
+                        <div className="text-danger small">
+                          {getFieldError("hourly_rate")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </>
+            )}
+            <Row>
+              <Col md={12}>
+                <FormGroup>
+                  <Label for="note">Note</Label>
+                  <Input
+                    type="textarea"
+                    id="note"
+                    value={formValues?.note || ""}
+                    onChange={(e) => handleInputChange("note", e.target.value)}
+                  />
+                  {getFieldError("note") && (
+                    <div className="text-danger small">
+                      {getFieldError("note")}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col className="d-flex justify-content-between pt-3">
+                <Button
+                  color="success"
+                  className="border-success"
+                  onClick={() => setAddEmploymentModalOpen(true)}
+                >
+                  Add New
+                </Button>
+                <div className=" d-flex justify-content-end gap-2">
+                  <>
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={isUpdateEmploymentDetailsLoading}
+                      onClick={() => {
+                        submitActionRef.current = "save";
+                      }}
+                    >
+                      {isUpdateEmploymentDetailsLoading && submitting === "save"
+                        ? "Saving..."
+                        : "Save Changes"}
+                    </Button>
+                    <Button
+                      type="submit"
+                      color="secondary"
+                      disabled={isUpdateEmploymentDetailsLoading}
+                      onClick={(e) => {
+                        submitActionRef.current = "next";
+                        formRef.current?.requestSubmit();
+                      }}
+                    >
+                      {isUpdateEmploymentDetailsLoading &&
+                      submitting === "save_next"
+                        ? "Saving..."
+                        : "Save & Next"}
+                    </Button>
+                  </>
+                </div>
+              </Col>
+            </Row>
+          </form>
+        </div>
+      </div>
 
       {/* Add new employment details */}
       <AddEmploymentDetailsModal

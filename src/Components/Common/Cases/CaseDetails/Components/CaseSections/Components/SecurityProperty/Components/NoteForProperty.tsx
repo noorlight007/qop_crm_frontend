@@ -10,7 +10,6 @@ import {
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { RootState } from "@/Redux/Store";
 import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
-import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
@@ -25,12 +24,13 @@ import {
   Label,
   Row,
 } from "reactstrap";
+import { useIsLocked } from "../context/EditableContext";
 
 const NoteForProperty: React.FC<{ property_alias: string }> = ({
   property_alias,
 }) => {
   const { casealias } = useParams();
-  const { data: session } = useSession();
+  const isLocked = useIsLocked();
 
   const formData = useSelector(
     (state: RootState) => state.propertyForm.Properties,
@@ -153,70 +153,93 @@ const NoteForProperty: React.FC<{ property_alias: string }> = ({
   };
 
   return (
-    <Card className="mb-3">
-      <CardFooter>
-        <Row>
-          <Col xs={12}>
-            <FormGroup>
-              <Label className="fw-semibold" for="PropertyNotes">
-                Note
-              </Label>
-              <Input
-                type="textarea"
-                id="PropertyNotes"
-                name="notes"
-                value={formData.notes || ""}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleChange(
-                    e as unknown as React.ChangeEvent<HTMLTextAreaElement>,
-                  )
-                }
-                style={{
-                  maxWidth: "100%",
-                  minWidth: "100%",
-                  minHeight: "80px",
-                  resize: "vertical",
-                }}
-                className="mb-3"
-              />
-              {formData?.api_errors?.notes && (
-                <div className="text-danger">{formData.api_errors.notes}</div>
-              )}
-            </FormGroup>
-          </Col>
-        </Row>
+    <div style={{ position: "relative" }}>
+      {isLocked && (
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 10,
+            cursor: "not-allowed",
+            backgroundColor: "rgba(0,0,0,0.0001)",
+          }}
+          title="This case is not editable"
+        />
+      )}
+      <div
+        style={{
+          opacity: isLocked ? 0.45 : 1,
+          pointerEvents: isLocked ? "none" : "auto",
+          transition: "opacity 0.2s ease",
+          userSelect: isLocked ? "none" : "auto",
+        }}
+      >
+        <Card className="mb-3">
+          <CardFooter>
+            <Row>
+              <Col xs={12}>
+                <FormGroup>
+                  <Label className="fw-semibold" for="PropertyNotes">
+                    Note
+                  </Label>
+                  <Input
+                    type="textarea"
+                    id="PropertyNotes"
+                    name="notes"
+                    value={formData.notes || ""}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      handleChange(
+                        e as unknown as React.ChangeEvent<HTMLTextAreaElement>,
+                      )
+                    }
+                    style={{
+                      maxWidth: "100%",
+                      minWidth: "100%",
+                      minHeight: "80px",
+                      resize: "vertical",
+                    }}
+                    className="mb-3"
+                  />
+                  {formData?.api_errors?.notes && (
+                    <div className="text-danger">
+                      {formData.api_errors.notes}
+                    </div>
+                  )}
+                </FormGroup>
+              </Col>
+            </Row>
 
-        <div className="d-flex justify-content-end align-items-center gap-3">
-          <Button
-            type="button"
-            color="primary"
-            id="submit"
-            name="next"
-            className="px-4"
-            onClick={async () => {
-              setSubmitting("save");
-              await handleSubmit();
-            }}
-          >
-            {submitting === "save" ? "Saving..." : "Save Changes"}
-          </Button>
-          {session?.user?.role !== "APPLICANT" && (
-            <Button
-              type="button"
-              color="secondary"
-              onClick={async () => {
-                setSubmitting("save_next");
-                await handleSubmit();
-                handleNextTab();
-              }}
-              disabled={submitting !== null || isLoading}
-            >
-              {submitting === "save_next" ? "Saving..." : "Save & Next"}
-            </Button>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
+            <div className="d-flex justify-content-end align-items-center gap-3">
+              <Button
+                type="button"
+                color="primary"
+                id="submit"
+                name="next"
+                className="px-4"
+                onClick={async () => {
+                  setSubmitting("save");
+                  await handleSubmit();
+                }}
+              >
+                {submitting === "save" ? "Saving..." : "Save Changes"}
+              </Button>
+              <Button
+                type="button"
+                color="secondary"
+                onClick={async () => {
+                  setSubmitting("save_next");
+                  await handleSubmit();
+                  handleNextTab();
+                }}
+                disabled={submitting !== null || isLoading}
+              >
+                {submitting === "save_next" ? "Saving..." : "Save & Next"}
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
+    </div>
   );
 };
 

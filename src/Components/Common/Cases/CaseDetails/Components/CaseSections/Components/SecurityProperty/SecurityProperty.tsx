@@ -1,6 +1,8 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetPropertiesQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyApi";
 import { initializeForm } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -8,6 +10,7 @@ import { Card, CardBody, CardHeader, Nav, NavItem, NavLink } from "reactstrap";
 import NoteForProperty from "./Components/NoteForProperty";
 import OtherOccupants from "./Components/OtherOccupants/OtherOccupants";
 import PropertyValuationCard from "./Components/PropertyValuationCard";
+import { EditableContext } from "./context/EditableContext";
 import SecurityPropertyTabContent from "./SecurityPropertyTabContent";
 
 const propertyContentTabs = [
@@ -19,11 +22,17 @@ const propertyContentTabs = [
 
 const SecurityProperty: React.FC = () => {
   const { casealias } = useParams();
+  const { data: session } = useSession();
   const dispatch = useDispatch();
   const [activeContentTab, setActiveContentTab] = useState("1");
   const { data: properties, isLoading } = useGetPropertiesQuery({
     case_alias: casealias,
   });
+
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
 
   useEffect(() => {
     if (properties && properties.length > 0) {
@@ -40,45 +49,51 @@ const SecurityProperty: React.FC = () => {
     );
   }
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
-    <div>
-      <PropertyValuationCard />
-      <section>
-        <Card className="shadow-sm">
-          <CardHeader className="bg-white border-bottom">
-            <Nav
-              className="nav-primary d-flex justify-content-center align-items-center"
-              pills
-              style={{ gap: "0.5rem" }}
-            >
-              {propertyContentTabs.map((tab) => (
-                <NavItem key={tab.id}>
-                  <NavLink
-                    className={activeContentTab === tab.id ? "active" : ""}
-                    onClick={() => setActiveContentTab(tab.id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {tab.title}
-                  </NavLink>
-                </NavItem>
-              ))}
-            </Nav>
-          </CardHeader>
-          <CardBody>
-            <SecurityPropertyTabContent
-              tabId={activeContentTab}
-              setTabId={setActiveContentTab}
-              propertyData={properties[0]}
-            />
-          </CardBody>
-        </Card>
-      </section>
-      <hr />
-      <section>
-        <OtherOccupants />
-      </section>
-      <NoteForProperty property_alias={properties[0].alias} />
-    </div>
+    <EditableContext.Provider value={isLocked}>
+      <div>
+        <PropertyValuationCard />
+        <section>
+          <Card className="shadow-sm">
+            <CardHeader className="bg-white border-bottom">
+              <Nav
+                className="nav-primary d-flex justify-content-center align-items-center"
+                pills
+                style={{ gap: "0.5rem" }}
+              >
+                {propertyContentTabs.map((tab) => (
+                  <NavItem key={tab.id}>
+                    <NavLink
+                      className={activeContentTab === tab.id ? "active" : ""}
+                      onClick={() => setActiveContentTab(tab.id)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {tab.title}
+                    </NavLink>
+                  </NavItem>
+                ))}
+              </Nav>
+            </CardHeader>
+            <CardBody>
+              <SecurityPropertyTabContent
+                tabId={activeContentTab}
+                setTabId={setActiveContentTab}
+                propertyData={properties[0]}
+              />
+            </CardBody>
+          </Card>
+        </section>
+        <hr />
+        <section>
+          <OtherOccupants />
+        </section>
+        <NoteForProperty property_alias={properties[0].alias} />
+      </div>
+    </EditableContext.Provider>
   );
 };
 

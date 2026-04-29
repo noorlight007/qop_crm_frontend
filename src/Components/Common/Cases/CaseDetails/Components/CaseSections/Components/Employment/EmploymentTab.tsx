@@ -145,6 +145,10 @@ export const EmploymentTab = () => {
 
   if (isEmploymentDetailLoading) return <LoadingGrow />;
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+const isEditable = caseData?.is_editable !== false;
+const isLocked = isApplicant && !isEditable;
+
   return (
     <Col xxl="12" className="px-5">
       <Card>
@@ -273,6 +277,8 @@ export const EmploymentTab = () => {
                             if (indexForUser === 0) {
                               return null;
                             }
+
+                            if (isLocked) return null;
 
                             return (
                               <>

@@ -171,6 +171,10 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     useUpdateSectionCompleteStatusMutation();
   const { data } = useGetCaseLoanDetailsQuery(casealias);
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   // Ensure data exists and has elements before accessing [0]
   const loandetailsAlias =
     Array.isArray(data) && data.length > 0 ? data[0].alias : null;
@@ -647,1448 +651,363 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
 
   return (
     <>
-      <Row>
-        <form ref={formRef} id="applicant-form" onSubmit={handleSubmit}>
-          {applicationType === "RESIDENTIAL_MORTGAGE" ||
-          applicationType === "" ? (
-            ""
-          ) : (
-            <Row className="mb-3 border-primary rounded-2 p-3">
-              <h3 className="text-info fs-4 mb-2">Company Applicant</h3>
-              {/* Company Applicant Section */}
-              <FormGroup>
-                <Label>Is this application being made in a company name?</Label>
-                {["yes", "no"].map((option) => (
-                  <div key={option}>
-                    <Label>
-                      <Input
-                        type="radio"
-                        name="is_company_application"
-                        value={option}
-                        checked={
-                          formValues.is_company_application ===
-                          (option === "yes")
-                        }
-                        onChange={(e) => {
-                          handleInputChange(
-                            "is_company_application",
-                            e.target.value === "yes",
-                          );
-                          // Trigger immediate save on selection
-                          setTimeout(() => {
-                            formRef.current?.dispatchEvent(
-                              new Event("submit", { bubbles: true }),
-                            );
-                          }, 100);
-                        }}
-                        className="me-1"
-                      />
-                      {option.charAt(0).toUpperCase() + option.slice(1)}
-                    </Label>
-                  </div>
-                ))}
-                {formValues?.is_company_application && (
-                  <Button
-                    onClick={() => setIsCompanyModalOpen(true)}
-                    color="primary"
-                  >
-                    Continue with Company Application
-                  </Button>
-                )}
-              </FormGroup>
-            </Row>
-          )}
-
-          <h3 className="text-primary fs-4 mb-2"> Applicant</h3>
-          {/* Personal Details Section */}
+      <div style={{ position: "relative" }}>
+        {isLocked && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              cursor: "not-allowed",
+              backgroundColor: "rgba(0,0,0,0.0001)",
+            }}
+            title="This case is not editable"
+          />
+        )}
+        <div
+          style={{
+            opacity: isLocked ? 0.45 : 1,
+            pointerEvents: isLocked ? "none" : "auto",
+            transition: "opacity 0.2s ease",
+            userSelect: isLocked ? "none" : "auto",
+          }}
+        >
           <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="customer.title">
-                  Title<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="customer.title"
-                  type="select"
-                  style={{ padding: "11px 11px" }}
-                  value={formValues?.customer?.title}
-                  onChange={(e) =>
-                    handleInputChange("customer.title", e.target.value)
-                  }
-                  required
-                >
-                  <option value="">Select...</option>
-                  <option value="MR">Mr</option>
-                  <option value="MRS">Mrs</option>
-                  <option value="MS">Ms</option>
-                  <option value="DR">Dr</option>
-                  <option value="MISS">Miss</option>
-                  <option value="MADAM">Madam</option>
-                  <option value="MAIDEN">Maiden</option>
-                  <option value="PROFESSOR">Professor</option>
-                  <option value="DOCTOR">Doctor</option>
-                </Input>
-                {getFieldError("customer.title") && (
-                  <div className="text-danger small">
-                    {getFieldError("customer.title")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="customer.first_name">
-                  First Name<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="customer.first_name"
-                  type="text"
-                  value={formValues?.customer?.first_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("customer.first_name", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("customer.first_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("customer.first_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="customer.middle_name">Middle Name(s)</Label>
-                <Input
-                  id="customer.middle_name"
-                  type="text"
-                  value={formValues.customer?.middle_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("customer.middle_name", e.target.value)
-                  }
-                />
-                {getFieldError("customer.middle_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("customer.middle_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="customer.last_name">
-                  Last Name<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="customer.last_name"
-                  type="text"
-                  value={formValues.customer?.last_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("customer.last_name", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("customer.last_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("customer.last_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="maiden_name">Maiden / Previous Last Name</Label>
-                <Input
-                  id="maiden_name"
-                  type="text"
-                  value={formValues.maiden_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("maiden_name", e.target.value)
-                  }
-                />
-                {getFieldError("maiden_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("maiden_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            {formValues?.maiden_name && (
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="date_of_name_change">
-                    Date of Maiden Name Change (if applicable)
-                  </Label>
-                  <Input
-                    id="date_of_name_change"
-                    type="date"
-                    value={formValues.date_of_name_change || ""}
-                    onChange={(e) =>
-                      handleInputChange("date_of_name_change", e.target.value)
-                    }
-                  />
-                  {getFieldError("date_of_name_change") && (
-                    <div className="text-danger small">
-                      {getFieldError("date_of_name_change")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            )}
-            <Col md={6}>
-              <Row>
-                <Col md={8}>
-                  <Label for="date_of_birth">
-                    Date of Birth<span className="text-danger">*</span>
-                  </Label>
-                  <FormGroup className="d-flex justify-content-center align-items-center">
-                    <Input
-                      id="date_of_birth"
-                      type="date"
-                      value={formValues.date_of_birth || ""}
-                      className="rounded-end-0"
-                      onChange={(e) =>
-                        handleInputChange("date_of_birth", e.target.value)
-                      }
-                      required
-                    />
-                    {getFieldError("date_of_birth") && (
-                      <div className="text-danger small">
-                        {getFieldError("date_of_birth")}
-                      </div>
-                    )}
-                    <InputGroupText
-                      className="border-start-0 rounded-start-0"
-                      style={{ padding: "11px 20px" }}
-                    >
-                      {formValues.date_of_birth
-                        ? Math.floor(
-                            (new Date().getTime() -
-                              new Date(formValues.date_of_birth).getTime()) /
-                              (1000 * 60 * 60 * 24 * 365.25),
-                          ) + "y"
-                        : "0y"}
-                    </InputGroupText>
-                  </FormGroup>
-                </Col>
-                <Col md={4}>
+            <form ref={formRef} id="applicant-form" onSubmit={handleSubmit}>
+              {applicationType === "RESIDENTIAL_MORTGAGE" ||
+              applicationType === "" ? (
+                ""
+              ) : (
+                <Row className="mb-3 border-primary rounded-2 p-3">
+                  <h3 className="text-info fs-4 mb-2">Company Applicant</h3>
+                  {/* Company Applicant Section */}
                   <FormGroup>
-                    <Label for="is_smoker">Are you a smoker?</Label>
-                    {["yes", "no"].map((value) => (
-                      <div key={value}>
-                        <Label className="me-2">
+                    <Label>
+                      Is this application being made in a company name?
+                    </Label>
+                    {["yes", "no"].map((option) => (
+                      <div key={option}>
+                        <Label>
                           <Input
                             type="radio"
-                            name="is_smoker"
-                            className="me-1"
-                            value={value}
-                            checked={formValues.is_smoker === (value === "yes")}
-                            onChange={(e) =>
-                              handleInputChange(
-                                "is_smoker",
-                                e.target.value === "yes",
-                              )
+                            name="is_company_application"
+                            value={option}
+                            checked={
+                              formValues.is_company_application ===
+                              (option === "yes")
                             }
+                            onChange={(e) => {
+                              handleInputChange(
+                                "is_company_application",
+                                e.target.value === "yes",
+                              );
+                              // Trigger immediate save on selection
+                              setTimeout(() => {
+                                formRef.current?.dispatchEvent(
+                                  new Event("submit", { bubbles: true }),
+                                );
+                              }, 100);
+                            }}
+                            className="me-1"
                           />
-                          {value.charAt(0).toUpperCase() + value.slice(1)}
+                          {option.charAt(0).toUpperCase() + option.slice(1)}
                         </Label>
                       </div>
                     ))}
-                    {getFieldError("is_smoker") && (
-                      <div className="text-danger small">
-                        {getFieldError("is_smoker")}
-                      </div>
+                    {formValues?.is_company_application && (
+                      <Button
+                        onClick={() => setIsCompanyModalOpen(true)}
+                        color="primary"
+                      >
+                        Continue with Company Application
+                      </Button>
                     )}
                   </FormGroup>
-                </Col>
-              </Row>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="anticipated_retirement_age">
-                  Anticipated Retirement Age
-                  <span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="anticipated_retirement_age"
-                  type="number"
-                  value={formValues.anticipated_retirement_age || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      "anticipated_retirement_age",
-                      e.target.value,
-                    )
-                  }
-                  required
-                />
-                {getFieldError("anticipated_retirement_age") && (
-                  <div className="text-danger small">
-                    {getFieldError("anticipated_retirement_age")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="state_retirement_age">State Retirement Age</Label>
-                <Input
-                  id="state_retirement_age"
-                  type="number"
-                  value={formValues.state_retirement_age || ""}
-                  onChange={(e) =>
-                    handleInputChange("state_retirement_age", e.target.value)
-                  }
-                />
-                {getFieldError("state_retirement_age") && (
-                  <div className="text-danger small">
-                    {getFieldError("state_retirement_age")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="landing_into_retirement">
-                  Landing into Retirement
-                </Label>
-                {["yes", "no"].map((value) => (
-                  <div key={value}>
-                    <Label className="me-2">
-                      <Input
-                        type="radio"
-                        name="landing_into_retirement"
-                        className="me-1"
-                        value={value}
-                        checked={
-                          formValues.landing_into_retirement ===
-                          (value === "yes")
-                        }
-                        onChange={(e) =>
-                          handleInputChange(
-                            "landing_into_retirement",
-                            e.target.value === "yes",
-                          )
-                        }
-                      />
-                      {value.charAt(0).toUpperCase() + value.slice(1)}
-                    </Label>
-                  </div>
-                ))}
-                {getFieldError("landing_into_retirement") && (
-                  <div className="text-danger small">
-                    {getFieldError("landing_into_retirement")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
+                </Row>
+              )}
 
-            {/* Additional Fields */}
-            <Col md={6}>
-              <FormGroup>
-                <Label for="nationality">Nationality</Label>
-                <Input
-                  id="nationality"
-                  type="select"
-                  value={formValues.nationality}
-                  onChange={(e) =>
-                    handleInputChange("nationality", e.target.value)
-                  }
-                >
-                  <option value="">Select a country</option>
-                  {/* Map through the list of countries */}
-                  {countries.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </Input>
-                {getFieldError("nationality") && (
-                  <div className="text-danger small">
-                    {getFieldError("nationality")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="is_dual_nationality">
-                  Does the applicant have a dual nationality?
-                </Label>
-                {["yes", "no"].map((value) => (
-                  <div key={value}>
-                    <Label className="me-2">
-                      <Input
-                        type="radio"
-                        name="is_dual_nationality"
-                        className="me-1"
-                        value={value}
-                        checked={
-                          formValues.is_dual_nationality === (value === "yes")
-                        }
-                        onChange={(e) =>
-                          handleInputChange(
-                            "is_dual_nationality",
-                            e.target.value === "yes",
-                          )
-                        }
-                      />
-                      {value.charAt(0).toUpperCase() + value.slice(1)}
-                    </Label>
-                  </div>
-                ))}
-                {getFieldError("is_dual_nationality") && (
-                  <div className="text-danger small">
-                    {getFieldError("is_dual_nationality")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="marital_status">Marital Status</Label>
-                <Input
-                  id="marital_status"
-                  type="select"
-                  value={formValues.marital_status}
-                  onChange={(e) =>
-                    handleInputChange("marital_status", e.target.value)
-                  }
-                >
-                  <option value="">Select an option</option>
-                  <option value="SINGLE">Single</option>
-                  <option value="MARRIED">Married</option>
-                  <option value="DIVORCED">Divorced</option>
-                  <option value="SEPARATED">Separated</option>
-                  <option value="WIDOW">Widow</option>
-                  <option value="WIDOWER">Widower</option>
-                  <option value="CO_HABITING">Co-Habiting</option>
-                  <option value="CIVIL_PARTNER">Civil Partner</option>
-                  <option value="RELIGIOUSLY_MARRIED">
-                    Religiously Married
-                  </option>
-                </Input>
-                {getFieldError("marital_status") && (
-                  <div className="text-danger small">
-                    {getFieldError("marital_status")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            {formValues.is_dual_nationality && (
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="dual_nationality">Dual Nationality</Label>
-                  <Input
-                    id="dual_nationality"
-                    type="select"
-                    value={formValues.dual_nationality}
-                    onChange={(e) =>
-                      handleInputChange("dual_nationality", e.target.value)
-                    }
-                  >
-                    <option value="">Select a country</option>
-                    {/* Map through the list of countries */}
-                    {countries.map((country) => (
-                      <option key={country.code} value={country.code}>
-                        {country.name}
-                      </option>
-                    ))}
-                  </Input>
-                  {getFieldError("dual_nationality") && (
-                    <div className="text-danger small">
-                      {getFieldError("dual_nationality")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            )}
-          </Row>
-
-          {/* Conditional Fields */}
-          {formValues.nationality !== "GB" && formValues.nationality !== "" && (
-            <Row>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="date_of_arrival_uk">Date of Arrival in UK</Label>
-                  <Input
-                    id="date_of_arrival_uk"
-                    type="date"
-                    value={formValues.date_of_arrival_uk || ""}
-                    onChange={(e) =>
-                      handleInputChange("date_of_arrival_uk", e.target.value)
-                    }
-                  />
-                  {getFieldError("date_of_arrival_uk") && (
-                    <div className="text-danger small">
-                      {getFieldError("date_of_arrival_uk")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-              <Col md={6}>
-                <FormGroup>
-                  <Label for="indefinite_right_to_reside">
-                    Indefinite Right To Reside?
-                  </Label>
-                  {["yes", "no"].map((option) => (
-                    <div key={option}>
-                      <Label className="me-2">
-                        <Input
-                          type="radio"
-                          name="indefinite_right_to_reside"
-                          className="me-1"
-                          value={option}
-                          checked={
-                            formValues.indefinite_right_to_reside ===
-                            (option === "no")
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              "indefinite_right_to_reside",
-                              e.target.value === "no",
-                            )
-                          }
-                        />
-                        {option.charAt(0).toUpperCase() + option.slice(1)}
-                      </Label>
-                    </div>
-                  ))}
-                  {getFieldError("indefinite_right_to_reside") && (
-                    <div className="text-danger small">
-                      {getFieldError("indefinite_right_to_reside")}
-                    </div>
-                  )}
-                </FormGroup>
-              </Col>
-            </Row>
-          )}
-
-          {/* Visa Details - Hidden if Indefinite Right to Reside is "yes" */}
-          {formValues.nationality !== "GB" &&
-            formValues.nationality !== "" &&
-            !formValues.indefinite_right_to_reside && (
+              <h3 className="text-primary fs-4 mb-2"> Applicant</h3>
+              {/* Personal Details Section */}
               <Row>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="visa_details">Visa Details</Label>
+                    <Label for="customer.title">
+                      Title<span className="text-danger">*</span>
+                    </Label>
                     <Input
-                      id="visa_details"
-                      type="text"
-                      value={formValues.visa_details || ""}
+                      id="customer.title"
+                      type="select"
+                      style={{ padding: "11px 11px" }}
+                      value={formValues?.customer?.title}
                       onChange={(e) =>
-                        handleInputChange("visa_details", e.target.value)
+                        handleInputChange("customer.title", e.target.value)
                       }
-                    />
-                    {getFieldError("visa_details") && (
+                      required
+                    >
+                      <option value="">Select...</option>
+                      <option value="MR">Mr</option>
+                      <option value="MRS">Mrs</option>
+                      <option value="MS">Ms</option>
+                      <option value="DR">Dr</option>
+                      <option value="MISS">Miss</option>
+                      <option value="MADAM">Madam</option>
+                      <option value="MAIDEN">Maiden</option>
+                      <option value="PROFESSOR">Professor</option>
+                      <option value="DOCTOR">Doctor</option>
+                    </Input>
+                    {getFieldError("customer.title") && (
                       <div className="text-danger small">
-                        {getFieldError("visa_details")}
+                        {getFieldError("customer.title")}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="visa_expiry_date">Visa Expiry Date</Label>
+                    <Label for="customer.first_name">
+                      First Name<span className="text-danger">*</span>
+                    </Label>
                     <Input
-                      id="visa_expiry_date"
-                      type="date"
-                      value={formValues.visa_expiry_date || ""}
+                      id="customer.first_name"
+                      type="text"
+                      value={formValues?.customer?.first_name || ""}
                       onChange={(e) =>
-                        handleInputChange("visa_expiry_date", e.target.value)
+                        handleInputChange("customer.first_name", e.target.value)
                       }
+                      required
                     />
-                    {getFieldError("visa_expiry_date") && (
+                    {getFieldError("customer.first_name") && (
                       <div className="text-danger small">
-                        {getFieldError("visa_expiry_date")}
+                        {getFieldError("customer.first_name")}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
-              </Row>
-            )}
-
-          {/* Identification and Contact Information */}
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="ni_number">NI Number</Label>
-                <Input
-                  id="ni_number"
-                  type="text"
-                  value={formValues.ni_number || ""}
-                  onChange={(e) =>
-                    handleInputChange("ni_number", e.target.value)
-                  }
-                />
-                {getFieldError("ni_number") && (
-                  <div className="text-danger small">
-                    {getFieldError("ni_number")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="country_of_birth">Country of Birth</Label>
-                <Input
-                  id="country_of_birth"
-                  type="select"
-                  value={formValues.country_of_birth || ""}
-                  onChange={(e) =>
-                    handleInputChange("country_of_birth", e.target.value)
-                  }
-                >
-                  <option value="">Select a country</option>
-                  {countries.map((country) => (
-                    <option key={country.code} value={country.code}>
-                      {country.name}
-                    </option>
-                  ))}
-                </Input>
-                {getFieldError("country_of_birth") && (
-                  <div className="text-danger small">
-                    {getFieldError("country_of_birth")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="bank_name">Who do you bank with?</Label>
-                <Input
-                  id="bank_name"
-                  type="text"
-                  value={formValues.bank_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("bank_name", e.target.value)
-                  }
-                />
-                {getFieldError("bank_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("bank_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <Label for="how_long_banked">
-                How long have you banked with them?
-              </Label>
-              <FormGroup className="d-flex justify-content-center align-items-center gap-3">
-                <Input
-                  id="banking_years"
-                  type="number"
-                  placeholder="Years"
-                  value={formValues.banking_years || ""}
-                  onChange={(e) =>
-                    handleInputChange("banking_years", e.target.value)
-                  }
-                />
-                {getFieldError("banking_years") && (
-                  <div className="text-danger small">
-                    {getFieldError("banking_years")}
-                  </div>
-                )}
-                <Input
-                  id="banking_months"
-                  type="number"
-                  placeholder="Months"
-                  value={formValues.banking_months || ""}
-                  onChange={(e) =>
-                    handleInputChange("banking_months", e.target.value)
-                  }
-                />
-                {getFieldError("banking_months") && (
-                  <div className="text-danger small">
-                    {getFieldError("banking_months")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="home_phone">Home Telephone</Label>
-                <Input
-                  id="home_phone"
-                  type="text"
-                  value={formValues.home_phone || ""}
-                  onChange={(e) =>
-                    handleInputChange("home_phone", e.target.value)
-                  }
-                />
-                {getFieldError("home_phone") && (
-                  <div className="text-danger small">
-                    {getFieldError("home_phone")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="customer.phone">
-                  Mobile Number<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="customer.phone"
-                  type="text"
-                  value={formValues?.customer?.phone || ""}
-                  onChange={(e) =>
-                    handleInputChange("customer.phone", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("customer.phone") && (
-                  <div className="text-danger small">
-                    {getFieldError("customer.phone")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="work_phone">Work Number</Label>
-                <Input
-                  id="work_phone"
-                  type="text"
-                  value={formValues.work_phone || ""}
-                  onChange={(e) =>
-                    handleInputChange("work_phone", e.target.value)
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="customer.email">Email Address</Label>
-                <Input
-                  id="customer.email"
-                  type="email"
-                  value={formValues?.customer?.email || ""}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    if (newValue !== (formValues?.customer?.email || "")) {
-                      handleInputChange("customer.email", newValue);
-                    }
-                  }}
-                />
-                {getFieldError("customer.email") && (
-                  <div className="text-danger small">
-                    {getFieldError("customer.email")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-
-          {/* Marketing Preferences */}
-          <Row>
-            <Col md={12}>
-              <FormGroup>
-                <Label for="marketing_preferences">
-                  Marketing Preferences:
-                </Label>{" "}
-                {["EMAIL", "TELEPHONE", "SMS", "POST", "NO_COMMUNICATION"].map(
-                  (type) => (
-                    <Label key={type} className="me-2">
-                      <Input
-                        type="checkbox"
-                        className="me-2 border-primary"
-                        checked={(
-                          formValues.marketing_preferences || []
-                        ).includes(type)}
-                        onChange={(e) => {
-                          const isChecked = e.target.checked;
-                          const currentValue =
-                            formValues.marketing_preferences || [];
-                          const updatedValue = isChecked
-                            ? [...currentValue, type]
-                            : currentValue.filter((item) => item !== type);
-                          handleInputChange(
-                            "marketing_preferences",
-                            updatedValue,
-                          );
-                        }}
-                      />
-                      {formatChoiceFieldValue(type)}
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="customer.middle_name">Middle Name(s)</Label>
+                    <Input
+                      id="customer.middle_name"
+                      type="text"
+                      value={formValues.customer?.middle_name || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "customer.middle_name",
+                          e.target.value,
+                        )
+                      }
+                    />
+                    {getFieldError("customer.middle_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("customer.middle_name")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="customer.last_name">
+                      Last Name<span className="text-danger">*</span>
                     </Label>
-                  ),
-                )}
-                {getFieldError("marketing_preferences") && (
-                  <div className="text-danger small">
-                    {getFieldError("marketing_preferences")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-
-          {/* Dependents */}
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="has_dependants">Do you have any dependants?</Label>
-                {["yes", "no"].map((value) => (
-                  <div key={value}>
-                    <Label className="me-2">
+                    <Input
+                      id="customer.last_name"
+                      type="text"
+                      value={formValues.customer?.last_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("customer.last_name", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("customer.last_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("customer.last_name")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="maiden_name">Maiden / Previous Last Name</Label>
+                    <Input
+                      id="maiden_name"
+                      type="text"
+                      value={formValues.maiden_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("maiden_name", e.target.value)
+                      }
+                    />
+                    {getFieldError("maiden_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("maiden_name")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                {formValues?.maiden_name && (
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="date_of_name_change">
+                        Date of Maiden Name Change (if applicable)
+                      </Label>
                       <Input
-                        type="radio"
-                        name="has_dependants"
-                        className="me-1"
-                        value={value}
-                        checked={
-                          formValues.has_dependants === (value === "yes")
+                        id="date_of_name_change"
+                        type="date"
+                        value={formValues.date_of_name_change || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "date_of_name_change",
+                            e.target.value,
+                          )
                         }
-                        onChange={(e) => {
-                          handleInputChange(
-                            "has_dependants",
-                            e.target.value === "yes",
-                          );
-                          setTimeout(() => {
-                            formRef.current?.dispatchEvent(
-                              new Event("submit", { bubbles: true }),
-                            );
-                          }, 100);
-                        }}
                       />
-                      {value.charAt(0).toUpperCase() + value.slice(1)}
-                    </Label>
-                  </div>
-                ))}
-                {getFieldError("has_dependants") && (
-                  <div className="text-danger small">
-                    {getFieldError("has_dependants")}
-                  </div>
+                      {getFieldError("date_of_name_change") && (
+                        <div className="text-danger small">
+                          {getFieldError("date_of_name_change")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
                 )}
-              </FormGroup>
-            </Col>
-          </Row>
-          {formValues.has_dependants && (
-            <Row>
-              <Col>
-                <ApplicantDependantsView
-                  applicantAlias={basicTab}
-                  applicantsData={applicantsData}
-                />
-              </Col>
-            </Row>
-          )}
-          <Row className="d-flex justify-content-between align-items-center mb-3">
-            <Col xs="auto">
-              <h3 className="text-info my-0">Current Address</h3>
-            </Col>
-            {applicantsData &&
-              applicantsData.findIndex(
-                (applicant) => applicant.alias === basicTab,
-              ) > 0 && (
-                <Col xs="auto">
-                  <Button
-                    color="info"
-                    size="sm"
-                    outline
-                    onClick={handleCopyAddress}
-                    title="Copy address from first applicant"
-                  >
-                    <i className="fa fa-copy me-2"></i>
-                    Copy Address from First Applicant
-                  </Button>
+                <Col md={6}>
+                  <Row>
+                    <Col md={8}>
+                      <Label for="date_of_birth">
+                        Date of Birth<span className="text-danger">*</span>
+                      </Label>
+                      <FormGroup className="d-flex justify-content-center align-items-center">
+                        <Input
+                          id="date_of_birth"
+                          type="date"
+                          value={formValues.date_of_birth || ""}
+                          className="rounded-end-0"
+                          onChange={(e) =>
+                            handleInputChange("date_of_birth", e.target.value)
+                          }
+                          required
+                        />
+                        {getFieldError("date_of_birth") && (
+                          <div className="text-danger small">
+                            {getFieldError("date_of_birth")}
+                          </div>
+                        )}
+                        <InputGroupText
+                          className="border-start-0 rounded-start-0"
+                          style={{ padding: "11px 20px" }}
+                        >
+                          {formValues.date_of_birth
+                            ? Math.floor(
+                                (new Date().getTime() -
+                                  new Date(
+                                    formValues.date_of_birth,
+                                  ).getTime()) /
+                                  (1000 * 60 * 60 * 24 * 365.25),
+                              ) + "y"
+                            : "0y"}
+                        </InputGroupText>
+                      </FormGroup>
+                    </Col>
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label for="is_smoker">Are you a smoker?</Label>
+                        {["yes", "no"].map((value) => (
+                          <div key={value}>
+                            <Label className="me-2">
+                              <Input
+                                type="radio"
+                                name="is_smoker"
+                                className="me-1"
+                                value={value}
+                                checked={
+                                  formValues.is_smoker === (value === "yes")
+                                }
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    "is_smoker",
+                                    e.target.value === "yes",
+                                  )
+                                }
+                              />
+                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                            </Label>
+                          </div>
+                        ))}
+                        {getFieldError("is_smoker") && (
+                          <div className="text-danger small">
+                            {getFieldError("is_smoker")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
                 </Col>
-              )}
-          </Row>
-          {/* Current Address */}
-
-          {/* Permanent Address Map Preview */}
-          <Row className="my-4">
-            <Col>
-              <Label className="fw-semibold mb-2">Location Preview</Label>
-              <div
-                className="border rounded overflow-hidden shadow-sm"
-                style={{ backgroundColor: "#f0f0f0" }}
-              >
-                <iframe
-                  src={
-                    mapCoords && mapCoords.lat !== 0
-                      ? getGoogleMapEmbedUrl(
-                          mapCoords.lat,
-                          mapCoords.lng,
-                          DETAIL_ZOOM,
-                        )
-                      : getGoogleMapEmbedUrl(
-                          LONDON_CENTER.lat,
-                          LONDON_CENTER.lng,
-                          DEFAULT_ZOOM,
-                        )
-                  }
-                  width="100%"
-                  height="350"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Address Location Map"
-                />
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="postcode">
-                  Postcode<span className="text-danger">*</span>
-                </Label>
-                <InputGroup className="d-flex align-items-stretch gap-2">
-                  <Input
-                    id="postcode"
-                    type="text"
-                    className="border-primary rounded"
-                    value={formValues.postcode || ""}
-                    onChange={(e) =>
-                      handleInputChange("postcode", e.target.value)
-                    }
-                    required
-                  />
-                  {getFieldError("postcode") && (
-                    <div className="text-danger small">
-                      {getFieldError("postcode")}
-                    </div>
-                  )}
-                  <Button
-                    color="primary"
-                    type="button"
-                    className="text-nowrap"
-                    onClick={() => fetchAddressByPostcode(formValues.postcode)}
-                    disabled={isSearchingPostcode}
-                  >
-                    {isSearchingPostcode ? "Loading..." : "Lookup"}
-                  </Button>
-                </InputGroup>
-                {getFieldError("postcode") && (
-                  <div className="text-danger small">
-                    {getFieldError("postcode")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="house_number_or_name">
-                  House Name or Number<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="house_number_or_name"
-                  type="text"
-                  value={formValues.house_number_or_name || ""}
-                  onChange={(e) =>
-                    handleInputChange("house_number_or_name", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("house_number_or_name") && (
-                  <div className="text-danger small">
-                    {getFieldError("house_number_or_name")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="address_line1">
-                  Address Line 1<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="address_line1"
-                  type="text"
-                  value={formValues.address_line1 || ""}
-                  onChange={(e) =>
-                    handleInputChange("address_line1", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("address_line1") && (
-                  <div className="text-danger small">
-                    {getFieldError("address_line1")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="city">
-                  City<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="city"
-                  type="text"
-                  value={formValues.city || ""}
-                  onChange={(e) => handleInputChange("city", e.target.value)}
-                  required
-                />
-                {getFieldError("city") && (
-                  <div className="text-danger small">
-                    {getFieldError("city")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="county">County</Label>
-                <Input
-                  id="county"
-                  type="text"
-                  value={formValues.county || ""}
-                  onChange={(e) => handleInputChange("county", e.target.value)}
-                />
-                {getFieldError("county") && (
-                  <div className="text-danger small">
-                    {getFieldError("county")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="country">
-                  Country<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="country"
-                  type="text"
-                  value={formValues.country || ""}
-                  onChange={(e) => handleInputChange("country", e.target.value)}
-                  required
-                />
-                {getFieldError("country") && (
-                  <div className="text-danger small">
-                    {getFieldError("country")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="effective_from">
-                  Effective From<span className="text-danger">*</span>
-                  {formValues.effective_from &&
-                  new Date(formValues.effective_from) <
-                    new Date(
-                      new Date().setFullYear(new Date().getFullYear() - 3),
-                    ) ? null : (
-                    <small className="text-danger">
-                      (Three years address history required)
-                    </small>
-                  )}
-                </Label>
-                <Input
-                  id="effective_from"
-                  type="date"
-                  value={formValues.effective_from || ""}
-                  onChange={(e) =>
-                    handleInputChange("effective_from", e.target.value)
-                  }
-                  required
-                />
-                {getFieldError("effective_from") && (
-                  <div className="text-danger small">
-                    {getFieldError("effective_from")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-            <Col md={6}>
-              <Label for="time_at_address">Time at this Address</Label>
-              <FormGroup className="d-flex justify-content-center align-items-center gap-3">
-                <InputGroup>
-                  <Input
-                    id="time_at_address_years"
-                    type="number"
-                    placeholder="Years"
-                    readOnly
-                    className="rounded-end-0"
-                    value={formValues.time_at_address_years || ""}
-                    onChange={(e) =>
-                      handleInputChange("time_at_address_years", e.target.value)
-                    }
-                  />
-                  <InputGroupText className="border-start-0 rounded-start-0">
-                    Years
-                  </InputGroupText>
-                </InputGroup>
-
-                <InputGroup>
-                  <Input
-                    id="time_at_address"
-                    type="number"
-                    placeholder="Months"
-                    readOnly
-                    className="rounded-end-0"
-                    value={formValues.time_at_address_months || ""}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "time_at_address_months",
-                        e.target.value,
-                      )
-                    }
-                  />
-                  <InputGroupText className="border-start-0 rounded-start-0">
-                    Months
-                  </InputGroupText>
-                </InputGroup>
-              </FormGroup>
-              {getFieldError("effective_from") && (
-                <div className="text-danger small">
-                  {getFieldError("effective_from")}
-                </div>
-              )}
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              {formValues.effective_from &&
-                new Date(formValues.effective_from) >
-                  new Date(
-                    new Date().setFullYear(new Date().getFullYear() - 3),
-                  ) && (
-                  <div className="mb-3">
-                    <div className="d-flex gap-3 mt-2 mb-2">
-                      <Button
-                        color="primary"
-                        onClick={() => setIsAddPreviousAddressModalOpen(true)}
-                        disabled={previousAddressesData?.length > 0}
-                      >
-                        Add Previous Address
-                      </Button>
-                      <Button
-                        color="success"
-                        onClick={() => setIsViewPreviousAddressModalOpen(true)}
-                      >
-                        View Previous Address
-                      </Button>
-                    </div>
-                    <small className="text-danger">
-                      Note: If you add a new address, the "Add Previous Address"
-                      button will be disabled.
-                    </small>
-                  </div>
-                )}
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <FormGroup>
-                <Label for="residential_status">
-                  Residential Status<span className="text-danger">*</span>
-                </Label>
-                <Input
-                  id="residential_status"
-                  type="select"
-                  value={formValues.residential_status || ""}
-                  onChange={(e) => {
-                    handleInputChange("residential_status", e.target.value);
-                  }}
-                  required
-                >
-                  <option value="">Select...</option>
-                  <option value="OWNER">Owner</option>
-                  <option value="RENTING_PRIVATE">Renting - Private</option>
-                  <option value="RENTING_LOCAL_AUTHORITY">
-                    Renting - Local Authority
-                  </option>
-                  <option value="TIED_ACCOMMODATION">Tied Accommodation</option>
-                  <option value="LIVING_WITH_PARENTS">
-                    Living with Parents
-                  </option>
-                  <option value="LIVING_WITH_FRIENDS_FAMILY">
-                    Living with Friends/Family
-                  </option>
-                </Input>
-                {getFieldError("residential_status") && (
-                  <div className="text-danger small">
-                    {getFieldError("residential_status")}
-                  </div>
-                )}
-              </FormGroup>
-            </Col>
-          </Row>
-          <Row>
-            {formValues.residential_status === "OWNER" && (
-              <>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="current_mortgage_balance">
-                      Current Mortgage Balance
+                    <Label for="anticipated_retirement_age">
+                      Anticipated Retirement Age
+                      <span className="text-danger">*</span>
                     </Label>
                     <Input
-                      id="current_mortgage_balance"
+                      id="anticipated_retirement_age"
                       type="number"
-                      value={formValues.current_mortgage_balance || ""}
+                      value={formValues.anticipated_retirement_age || ""}
                       onChange={(e) =>
                         handleInputChange(
-                          "current_mortgage_balance",
+                          "anticipated_retirement_age",
+                          e.target.value,
+                        )
+                      }
+                      required
+                    />
+                    {getFieldError("anticipated_retirement_age") && (
+                      <div className="text-danger small">
+                        {getFieldError("anticipated_retirement_age")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="state_retirement_age">
+                      State Retirement Age
+                    </Label>
+                    <Input
+                      id="state_retirement_age"
+                      type="number"
+                      value={formValues.state_retirement_age || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "state_retirement_age",
                           e.target.value,
                         )
                       }
                     />
-                    {getFieldError("current_mortgage_balance") && (
+                    {getFieldError("state_retirement_age") && (
                       <div className="text-danger small">
-                        {getFieldError("current_mortgage_balance")}
+                        {getFieldError("state_retirement_age")}
                       </div>
                     )}
                   </FormGroup>
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="property_value">Property Value</Label>
-                    <Input
-                      id="property_value"
-                      type="number"
-                      value={formValues.property_value || ""}
-                      onChange={(e) =>
-                        handleInputChange("property_value", e.target.value)
-                      }
-                    />
-                    {getFieldError("property_value") && (
-                      <div className="text-danger small">
-                        {getFieldError("property_value")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="owner_monthly_payment">
-                      Owner Monthly Payment
-                    </Label>
-                    <Input
-                      id="owner_monthly_payment"
-                      type="number"
-                      value={formValues.owner_monthly_payment || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "owner_monthly_payment",
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {getFieldError("owner_monthly_payment") && (
-                      <div className="text-danger small">
-                        {getFieldError("owner_monthly_payment")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="lender">Lender</Label>
-                    <Input
-                      id="lender"
-                      type="text"
-                      value={formValues.lender || ""}
-                      onChange={(e) =>
-                        handleInputChange("lender", e.target.value)
-                      }
-                    />
-                    {getFieldError("lender") && (
-                      <div className="text-danger small">
-                        {getFieldError("lender")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="current_interest_rate">
-                      Current Interest Rate
-                    </Label>
-                    <Input
-                      id="current_interest_rate"
-                      type="number"
-                      value={formValues.current_interest_rate || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "current_interest_rate",
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {getFieldError("current_interest_rate") && (
-                      <div className="text-danger small">
-                        {getFieldError("current_interest_rate")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="mortgage_start_date">Mortgage Start Date</Label>
-                    <Input
-                      id="mortgage_start_date"
-                      type="date"
-                      value={formValues.mortgage_start_date || ""}
-                      onChange={(e) =>
-                        handleInputChange("mortgage_start_date", e.target.value)
-                      }
-                    />
-                    {getFieldError("mortgage_start_date") && (
-                      <div className="text-danger small">
-                        {getFieldError("mortgage_start_date")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="remaining_term">Remaining Term</Label>
-                    <Input
-                      id="remaining_term"
-                      type="number"
-                      value={formValues.remaining_term || ""}
-                      onChange={(e) =>
-                        handleInputChange("remaining_term", e.target.value)
-                      }
-                    />
-                    {getFieldError("remaining_term") && (
-                      <div className="text-danger small">
-                        {getFieldError("remaining_term")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="mortgage_type">Mortgage Type</Label>
-                    <Input
-                      id="mortgage_type"
-                      type="select"
-                      value={formValues.mortgage_type || ""}
-                      onChange={(e) =>
-                        handleInputChange("mortgage_type", e.target.value)
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="SECURED_LOAN">
-                        Secured Loan (Applicant Commitments)
-                      </option>
-                      <option value="SECOND_HOME">
-                        Second Home (Applicant Commitments)
-                      </option>
-                      <option value="HOLIDAY_HOME">
-                        Holiday Home (Applicant Commitments)
-                      </option>
-                      <option value="BUY_TO_LET">
-                        Buy to Let (Applicant Mortgage Details)
-                      </option>
-                      <option value="HOLIDAY_LET">
-                        Holiday Let (Applicant Mortgage Details)
-                      </option>
-                      <option value="COMMERCIAL_INVESTMENT">
-                        Commercial Investment (Applicant Mortgage Details)
-                      </option>
-                    </Input>
-                    {getFieldError("mortgage_type") && (
-                      <div className="text-danger small">
-                        {getFieldError("mortgage_type")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="repayment_type">Repayment Type</Label>
-                    <Input
-                      id="repayment_type"
-                      type="select"
-                      value={formValues.repayment_type || ""}
-                      onChange={(e) =>
-                        handleInputChange("repayment_type", e.target.value)
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="CAPITAL_INTEREST">
-                        Capital and Interest
-                      </option>
-                      <option value="INTEREST_ONLY">Interest Only</option>
-                      <option value="PART_AND_PART">Part And Part</option>
-                      <option value="SERVICED">Serviced</option>
-                      <option value="ROLLED_UP">Rolled Up</option>
-                      <option value="RETAINED">Retained</option>
-                      <option value="OTHER">Other</option>
-                    </Input>
-                    {getFieldError("repayment_type") && (
-                      <div className="text-danger small">
-                        {getFieldError("repayment_type")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="current_interest_type">
-                      Current Interest Type
-                    </Label>
-                    <Input
-                      id="current_interest_type"
-                      type="select"
-                      value={formValues.current_interest_type || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "current_interest_type",
-                          e.target.value,
-                        )
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="FIXED">Fixed</option>
-                      <option value="VARIABLE">Variable</option>
-                      <option value="TRACKER">Tracker</option>
-                      <option value="DISCOUNT">Discount</option>
-                      <option value="CAPPED">Capped</option>
-                      <option value="SVR">SVR</option>
-                      <option value="OFFSET">Offset</option>
-                      <option value="LIFETIME">Lifetime</option>
-                      <option value="OTHER">Other</option>
-                    </Input>
-                    {getFieldError("current_interest_type") && (
-                      <div className="text-danger small">
-                        {getFieldError("current_interest_type")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="early_repayment_charge_applies">
-                      Does an early repayment charge apply?
+                    <Label for="landing_into_retirement">
+                      Landing into Retirement
                     </Label>
                     {["yes", "no"].map((value) => (
                       <div key={value}>
                         <Label className="me-2">
                           <Input
                             type="radio"
-                            name="early_repayment_charge_applies"
+                            name="landing_into_retirement"
                             className="me-1"
                             value={value}
                             checked={
-                              formValues.early_repayment_charge_applies ===
+                              formValues.landing_into_retirement ===
                               (value === "yes")
                             }
                             onChange={(e) =>
                               handleInputChange(
-                                "early_repayment_charge_applies",
+                                "landing_into_retirement",
                                 e.target.value === "yes",
                               )
                             }
@@ -2097,106 +1016,1162 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         </Label>
                       </div>
                     ))}
+                    {getFieldError("landing_into_retirement") && (
+                      <div className="text-danger small">
+                        {getFieldError("landing_into_retirement")}
+                      </div>
+                    )}
                   </FormGroup>
-                  {getFieldError("early_repayment_charge_applies") && (
-                    <div className="text-danger small">
-                      {getFieldError("early_repayment_charge_applies")}
-                    </div>
-                  )}
                 </Col>
-                {formValues.early_repayment_charge_applies === true && (
-                  <>
+
+                {/* Additional Fields */}
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="nationality">Nationality</Label>
+                    <Input
+                      id="nationality"
+                      type="select"
+                      value={formValues.nationality}
+                      onChange={(e) =>
+                        handleInputChange("nationality", e.target.value)
+                      }
+                    >
+                      <option value="">Select a country</option>
+                      {/* Map through the list of countries */}
+                      {countries.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </Input>
+                    {getFieldError("nationality") && (
+                      <div className="text-danger small">
+                        {getFieldError("nationality")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="is_dual_nationality">
+                      Does the applicant have a dual nationality?
+                    </Label>
+                    {["yes", "no"].map((value) => (
+                      <div key={value}>
+                        <Label className="me-2">
+                          <Input
+                            type="radio"
+                            name="is_dual_nationality"
+                            className="me-1"
+                            value={value}
+                            checked={
+                              formValues.is_dual_nationality ===
+                              (value === "yes")
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "is_dual_nationality",
+                                e.target.value === "yes",
+                              )
+                            }
+                          />
+                          {value.charAt(0).toUpperCase() + value.slice(1)}
+                        </Label>
+                      </div>
+                    ))}
+                    {getFieldError("is_dual_nationality") && (
+                      <div className="text-danger small">
+                        {getFieldError("is_dual_nationality")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="marital_status">Marital Status</Label>
+                    <Input
+                      id="marital_status"
+                      type="select"
+                      value={formValues.marital_status}
+                      onChange={(e) =>
+                        handleInputChange("marital_status", e.target.value)
+                      }
+                    >
+                      <option value="">Select an option</option>
+                      <option value="SINGLE">Single</option>
+                      <option value="MARRIED">Married</option>
+                      <option value="DIVORCED">Divorced</option>
+                      <option value="SEPARATED">Separated</option>
+                      <option value="WIDOW">Widow</option>
+                      <option value="WIDOWER">Widower</option>
+                      <option value="CO_HABITING">Co-Habiting</option>
+                      <option value="CIVIL_PARTNER">Civil Partner</option>
+                      <option value="RELIGIOUSLY_MARRIED">
+                        Religiously Married
+                      </option>
+                    </Input>
+                    {getFieldError("marital_status") && (
+                      <div className="text-danger small">
+                        {getFieldError("marital_status")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                {formValues.is_dual_nationality && (
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label for="dual_nationality">Dual Nationality</Label>
+                      <Input
+                        id="dual_nationality"
+                        type="select"
+                        value={formValues.dual_nationality}
+                        onChange={(e) =>
+                          handleInputChange("dual_nationality", e.target.value)
+                        }
+                      >
+                        <option value="">Select a country</option>
+                        {/* Map through the list of countries */}
+                        {countries.map((country) => (
+                          <option key={country.code} value={country.code}>
+                            {country.name}
+                          </option>
+                        ))}
+                      </Input>
+                      {getFieldError("dual_nationality") && (
+                        <div className="text-danger small">
+                          {getFieldError("dual_nationality")}
+                        </div>
+                      )}
+                    </FormGroup>
+                  </Col>
+                )}
+              </Row>
+
+              {/* Conditional Fields */}
+              {formValues.nationality !== "GB" &&
+                formValues.nationality !== "" && (
+                  <Row>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="erc_expiry_date">ERC Expiry Date</Label>
+                        <Label for="date_of_arrival_uk">
+                          Date of Arrival in UK
+                        </Label>
                         <Input
-                          id="erc_expiry_date"
+                          id="date_of_arrival_uk"
                           type="date"
-                          value={formValues.erc_expiry_date || ""}
+                          value={formValues.date_of_arrival_uk || ""}
                           onChange={(e) =>
-                            handleInputChange("erc_expiry_date", e.target.value)
+                            handleInputChange(
+                              "date_of_arrival_uk",
+                              e.target.value,
+                            )
                           }
                         />
-                        {getFieldError("erc_expiry_date") && (
+                        {getFieldError("date_of_arrival_uk") && (
                           <div className="text-danger small">
-                            {getFieldError("erc_expiry_date")}
+                            {getFieldError("date_of_arrival_uk")}
                           </div>
                         )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="mortgage_not_to_complete_until_erc_ended">
-                          Mortgage not to complete until ERC ended
+                        <Label for="indefinite_right_to_reside">
+                          Indefinite Right To Reside?
                         </Label>
+                        {["yes", "no"].map((option) => (
+                          <div key={option}>
+                            <Label className="me-2">
+                              <Input
+                                type="radio"
+                                name="indefinite_right_to_reside"
+                                className="me-1"
+                                value={option}
+                                checked={
+                                  formValues.indefinite_right_to_reside ===
+                                  (option === "no")
+                                }
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    "indefinite_right_to_reside",
+                                    e.target.value === "no",
+                                  )
+                                }
+                              />
+                              {option.charAt(0).toUpperCase() + option.slice(1)}
+                            </Label>
+                          </div>
+                        ))}
+                        {getFieldError("indefinite_right_to_reside") && (
+                          <div className="text-danger small">
+                            {getFieldError("indefinite_right_to_reside")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                )}
+
+              {/* Visa Details - Hidden if Indefinite Right to Reside is "yes" */}
+              {formValues.nationality !== "GB" &&
+                formValues.nationality !== "" &&
+                !formValues.indefinite_right_to_reside && (
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="visa_details">Visa Details</Label>
                         <Input
-                          id="mortgage_not_to_complete_until_erc_ended"
-                          type="select"
-                          value={
-                            formValues.mortgage_not_to_complete_until_erc_ended ||
-                            ""
+                          id="visa_details"
+                          type="text"
+                          value={formValues.visa_details || ""}
+                          onChange={(e) =>
+                            handleInputChange("visa_details", e.target.value)
                           }
+                        />
+                        {getFieldError("visa_details") && (
+                          <div className="text-danger small">
+                            {getFieldError("visa_details")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="visa_expiry_date">Visa Expiry Date</Label>
+                        <Input
+                          id="visa_expiry_date"
+                          type="date"
+                          value={formValues.visa_expiry_date || ""}
                           onChange={(e) =>
                             handleInputChange(
-                              "mortgage_not_to_complete_until_erc_ended",
+                              "visa_expiry_date",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("visa_expiry_date") && (
+                          <div className="text-danger small">
+                            {getFieldError("visa_expiry_date")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                )}
+
+              {/* Identification and Contact Information */}
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="ni_number">NI Number</Label>
+                    <Input
+                      id="ni_number"
+                      type="text"
+                      value={formValues.ni_number || ""}
+                      onChange={(e) =>
+                        handleInputChange("ni_number", e.target.value)
+                      }
+                    />
+                    {getFieldError("ni_number") && (
+                      <div className="text-danger small">
+                        {getFieldError("ni_number")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="country_of_birth">Country of Birth</Label>
+                    <Input
+                      id="country_of_birth"
+                      type="select"
+                      value={formValues.country_of_birth || ""}
+                      onChange={(e) =>
+                        handleInputChange("country_of_birth", e.target.value)
+                      }
+                    >
+                      <option value="">Select a country</option>
+                      {countries.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.name}
+                        </option>
+                      ))}
+                    </Input>
+                    {getFieldError("country_of_birth") && (
+                      <div className="text-danger small">
+                        {getFieldError("country_of_birth")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="bank_name">Who do you bank with?</Label>
+                    <Input
+                      id="bank_name"
+                      type="text"
+                      value={formValues.bank_name || ""}
+                      onChange={(e) =>
+                        handleInputChange("bank_name", e.target.value)
+                      }
+                    />
+                    {getFieldError("bank_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("bank_name")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <Label for="how_long_banked">
+                    How long have you banked with them?
+                  </Label>
+                  <FormGroup className="d-flex justify-content-center align-items-center gap-3">
+                    <Input
+                      id="banking_years"
+                      type="number"
+                      placeholder="Years"
+                      value={formValues.banking_years || ""}
+                      onChange={(e) =>
+                        handleInputChange("banking_years", e.target.value)
+                      }
+                    />
+                    {getFieldError("banking_years") && (
+                      <div className="text-danger small">
+                        {getFieldError("banking_years")}
+                      </div>
+                    )}
+                    <Input
+                      id="banking_months"
+                      type="number"
+                      placeholder="Months"
+                      value={formValues.banking_months || ""}
+                      onChange={(e) =>
+                        handleInputChange("banking_months", e.target.value)
+                      }
+                    />
+                    {getFieldError("banking_months") && (
+                      <div className="text-danger small">
+                        {getFieldError("banking_months")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="home_phone">Home Telephone</Label>
+                    <Input
+                      id="home_phone"
+                      type="text"
+                      value={formValues.home_phone || ""}
+                      onChange={(e) =>
+                        handleInputChange("home_phone", e.target.value)
+                      }
+                    />
+                    {getFieldError("home_phone") && (
+                      <div className="text-danger small">
+                        {getFieldError("home_phone")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="customer.phone">
+                      Mobile Number<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="customer.phone"
+                      type="text"
+                      value={formValues?.customer?.phone || ""}
+                      onChange={(e) =>
+                        handleInputChange("customer.phone", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("customer.phone") && (
+                      <div className="text-danger small">
+                        {getFieldError("customer.phone")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="work_phone">Work Number</Label>
+                    <Input
+                      id="work_phone"
+                      type="text"
+                      value={formValues.work_phone || ""}
+                      onChange={(e) =>
+                        handleInputChange("work_phone", e.target.value)
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="customer.email">Email Address</Label>
+                    <Input
+                      id="customer.email"
+                      type="email"
+                      value={formValues?.customer?.email || ""}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        if (newValue !== (formValues?.customer?.email || "")) {
+                          handleInputChange("customer.email", newValue);
+                        }
+                      }}
+                    />
+                    {getFieldError("customer.email") && (
+                      <div className="text-danger small">
+                        {getFieldError("customer.email")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              {/* Marketing Preferences */}
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <Label for="marketing_preferences">
+                      Marketing Preferences:
+                    </Label>{" "}
+                    {[
+                      "EMAIL",
+                      "TELEPHONE",
+                      "SMS",
+                      "POST",
+                      "NO_COMMUNICATION",
+                    ].map((type) => (
+                      <Label key={type} className="me-2">
+                        <Input
+                          type="checkbox"
+                          className="me-2 border-primary"
+                          checked={(
+                            formValues.marketing_preferences || []
+                          ).includes(type)}
+                          onChange={(e) => {
+                            const isChecked = e.target.checked;
+                            const currentValue =
+                              formValues.marketing_preferences || [];
+                            const updatedValue = isChecked
+                              ? [...currentValue, type]
+                              : currentValue.filter((item) => item !== type);
+                            handleInputChange(
+                              "marketing_preferences",
+                              updatedValue,
+                            );
+                          }}
+                        />
+                        {formatChoiceFieldValue(type)}
+                      </Label>
+                    ))}
+                    {getFieldError("marketing_preferences") && (
+                      <div className="text-danger small">
+                        {getFieldError("marketing_preferences")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              {/* Dependents */}
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="has_dependants">
+                      Do you have any dependants?
+                    </Label>
+                    {["yes", "no"].map((value) => (
+                      <div key={value}>
+                        <Label className="me-2">
+                          <Input
+                            type="radio"
+                            name="has_dependants"
+                            className="me-1"
+                            value={value}
+                            checked={
+                              formValues.has_dependants === (value === "yes")
+                            }
+                            onChange={(e) => {
+                              handleInputChange(
+                                "has_dependants",
+                                e.target.value === "yes",
+                              );
+                              setTimeout(() => {
+                                formRef.current?.dispatchEvent(
+                                  new Event("submit", { bubbles: true }),
+                                );
+                              }, 100);
+                            }}
+                          />
+                          {value.charAt(0).toUpperCase() + value.slice(1)}
+                        </Label>
+                      </div>
+                    ))}
+                    {getFieldError("has_dependants") && (
+                      <div className="text-danger small">
+                        {getFieldError("has_dependants")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+              {formValues.has_dependants && (
+                <Row>
+                  <Col>
+                    <ApplicantDependantsView
+                      applicantAlias={basicTab}
+                      applicantsData={applicantsData}
+                    />
+                  </Col>
+                </Row>
+              )}
+              <Row className="d-flex justify-content-between align-items-center mb-3">
+                <Col xs="auto">
+                  <h3 className="text-info my-0">Current Address</h3>
+                </Col>
+                {applicantsData &&
+                  applicantsData.findIndex(
+                    (applicant) => applicant.alias === basicTab,
+                  ) > 0 && (
+                    <Col xs="auto">
+                      <Button
+                        color="info"
+                        size="sm"
+                        outline
+                        onClick={handleCopyAddress}
+                        title="Copy address from first applicant"
+                      >
+                        <i className="fa fa-copy me-2"></i>
+                        Copy Address from First Applicant
+                      </Button>
+                    </Col>
+                  )}
+              </Row>
+              {/* Current Address */}
+
+              {/* Permanent Address Map Preview */}
+              <Row className="my-4">
+                <Col>
+                  <Label className="fw-semibold mb-2">Location Preview</Label>
+                  <div
+                    className="border rounded overflow-hidden shadow-sm"
+                    style={{ backgroundColor: "#f0f0f0" }}
+                  >
+                    <iframe
+                      src={
+                        mapCoords && mapCoords.lat !== 0
+                          ? getGoogleMapEmbedUrl(
+                              mapCoords.lat,
+                              mapCoords.lng,
+                              DETAIL_ZOOM,
+                            )
+                          : getGoogleMapEmbedUrl(
+                              LONDON_CENTER.lat,
+                              LONDON_CENTER.lng,
+                              DEFAULT_ZOOM,
+                            )
+                      }
+                      width="100%"
+                      height="350"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Address Location Map"
+                    />
+                  </div>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="postcode">
+                      Postcode<span className="text-danger">*</span>
+                    </Label>
+                    <InputGroup className="d-flex align-items-stretch gap-2">
+                      <Input
+                        id="postcode"
+                        type="text"
+                        className="border-primary rounded"
+                        value={formValues.postcode || ""}
+                        onChange={(e) =>
+                          handleInputChange("postcode", e.target.value)
+                        }
+                        required
+                      />
+                      {getFieldError("postcode") && (
+                        <div className="text-danger small">
+                          {getFieldError("postcode")}
+                        </div>
+                      )}
+                      <Button
+                        color="primary"
+                        type="button"
+                        className="text-nowrap"
+                        onClick={() =>
+                          fetchAddressByPostcode(formValues.postcode)
+                        }
+                        disabled={isSearchingPostcode}
+                      >
+                        {isSearchingPostcode ? "Loading..." : "Lookup"}
+                      </Button>
+                    </InputGroup>
+                    {getFieldError("postcode") && (
+                      <div className="text-danger small">
+                        {getFieldError("postcode")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="house_number_or_name">
+                      House Name or Number<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="house_number_or_name"
+                      type="text"
+                      value={formValues.house_number_or_name || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "house_number_or_name",
+                          e.target.value,
+                        )
+                      }
+                      required
+                    />
+                    {getFieldError("house_number_or_name") && (
+                      <div className="text-danger small">
+                        {getFieldError("house_number_or_name")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="address_line1">
+                      Address Line 1<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="address_line1"
+                      type="text"
+                      value={formValues.address_line1 || ""}
+                      onChange={(e) =>
+                        handleInputChange("address_line1", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("address_line1") && (
+                      <div className="text-danger small">
+                        {getFieldError("address_line1")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="city">
+                      City<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="city"
+                      type="text"
+                      value={formValues.city || ""}
+                      onChange={(e) =>
+                        handleInputChange("city", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("city") && (
+                      <div className="text-danger small">
+                        {getFieldError("city")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="county">County</Label>
+                    <Input
+                      id="county"
+                      type="text"
+                      value={formValues.county || ""}
+                      onChange={(e) =>
+                        handleInputChange("county", e.target.value)
+                      }
+                    />
+                    {getFieldError("county") && (
+                      <div className="text-danger small">
+                        {getFieldError("county")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="country">
+                      Country<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="country"
+                      type="text"
+                      value={formValues.country || ""}
+                      onChange={(e) =>
+                        handleInputChange("country", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("country") && (
+                      <div className="text-danger small">
+                        {getFieldError("country")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="effective_from">
+                      Effective From<span className="text-danger">*</span>
+                      {formValues.effective_from &&
+                      new Date(formValues.effective_from) <
+                        new Date(
+                          new Date().setFullYear(new Date().getFullYear() - 3),
+                        ) ? null : (
+                        <small className="text-danger">
+                          (Three years address history required)
+                        </small>
+                      )}
+                    </Label>
+                    <Input
+                      id="effective_from"
+                      type="date"
+                      value={formValues.effective_from || ""}
+                      onChange={(e) =>
+                        handleInputChange("effective_from", e.target.value)
+                      }
+                      required
+                    />
+                    {getFieldError("effective_from") && (
+                      <div className="text-danger small">
+                        {getFieldError("effective_from")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+                <Col md={6}>
+                  <Label for="time_at_address">Time at this Address</Label>
+                  <FormGroup className="d-flex justify-content-center align-items-center gap-3">
+                    <InputGroup>
+                      <Input
+                        id="time_at_address_years"
+                        type="number"
+                        placeholder="Years"
+                        readOnly
+                        className="rounded-end-0"
+                        value={formValues.time_at_address_years || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "time_at_address_years",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      <InputGroupText className="border-start-0 rounded-start-0">
+                        Years
+                      </InputGroupText>
+                    </InputGroup>
+
+                    <InputGroup>
+                      <Input
+                        id="time_at_address"
+                        type="number"
+                        placeholder="Months"
+                        readOnly
+                        className="rounded-end-0"
+                        value={formValues.time_at_address_months || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "time_at_address_months",
+                            e.target.value,
+                          )
+                        }
+                      />
+                      <InputGroupText className="border-start-0 rounded-start-0">
+                        Months
+                      </InputGroupText>
+                    </InputGroup>
+                  </FormGroup>
+                  {getFieldError("effective_from") && (
+                    <div className="text-danger small">
+                      {getFieldError("effective_from")}
+                    </div>
+                  )}
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  {formValues.effective_from &&
+                    new Date(formValues.effective_from) >
+                      new Date(
+                        new Date().setFullYear(new Date().getFullYear() - 3),
+                      ) && (
+                      <div className="mb-3">
+                        <div className="d-flex gap-3 mt-2 mb-2">
+                          <Button
+                            color="primary"
+                            onClick={() =>
+                              setIsAddPreviousAddressModalOpen(true)
+                            }
+                            disabled={previousAddressesData?.length > 0}
+                          >
+                            Add Previous Address
+                          </Button>
+                          <Button
+                            color="success"
+                            onClick={() =>
+                              setIsViewPreviousAddressModalOpen(true)
+                            }
+                          >
+                            View Previous Address
+                          </Button>
+                        </div>
+                        <small className="text-danger">
+                          Note: If you add a new address, the "Add Previous
+                          Address" button will be disabled.
+                        </small>
+                      </div>
+                    )}
+                </Col>
+              </Row>
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <Label for="residential_status">
+                      Residential Status<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      id="residential_status"
+                      type="select"
+                      value={formValues.residential_status || ""}
+                      onChange={(e) => {
+                        handleInputChange("residential_status", e.target.value);
+                      }}
+                      required
+                    >
+                      <option value="">Select...</option>
+                      <option value="OWNER">Owner</option>
+                      <option value="RENTING_PRIVATE">Renting - Private</option>
+                      <option value="RENTING_LOCAL_AUTHORITY">
+                        Renting - Local Authority
+                      </option>
+                      <option value="TIED_ACCOMMODATION">
+                        Tied Accommodation
+                      </option>
+                      <option value="LIVING_WITH_PARENTS">
+                        Living with Parents
+                      </option>
+                      <option value="LIVING_WITH_FRIENDS_FAMILY">
+                        Living with Friends/Family
+                      </option>
+                    </Input>
+                    {getFieldError("residential_status") && (
+                      <div className="text-danger small">
+                        {getFieldError("residential_status")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                {formValues.residential_status === "OWNER" && (
+                  <>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="current_mortgage_balance">
+                          Current Mortgage Balance
+                        </Label>
+                        <Input
+                          id="current_mortgage_balance"
+                          type="number"
+                          value={formValues.current_mortgage_balance || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "current_mortgage_balance",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("current_mortgage_balance") && (
+                          <div className="text-danger small">
+                            {getFieldError("current_mortgage_balance")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="property_value">Property Value</Label>
+                        <Input
+                          id="property_value"
+                          type="number"
+                          value={formValues.property_value || ""}
+                          onChange={(e) =>
+                            handleInputChange("property_value", e.target.value)
+                          }
+                        />
+                        {getFieldError("property_value") && (
+                          <div className="text-danger small">
+                            {getFieldError("property_value")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="owner_monthly_payment">
+                          Owner Monthly Payment
+                        </Label>
+                        <Input
+                          id="owner_monthly_payment"
+                          type="number"
+                          value={formValues.owner_monthly_payment || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "owner_monthly_payment",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("owner_monthly_payment") && (
+                          <div className="text-danger small">
+                            {getFieldError("owner_monthly_payment")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="lender">Lender</Label>
+                        <Input
+                          id="lender"
+                          type="text"
+                          value={formValues.lender || ""}
+                          onChange={(e) =>
+                            handleInputChange("lender", e.target.value)
+                          }
+                        />
+                        {getFieldError("lender") && (
+                          <div className="text-danger small">
+                            {getFieldError("lender")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="current_interest_rate">
+                          Current Interest Rate
+                        </Label>
+                        <Input
+                          id="current_interest_rate"
+                          type="number"
+                          value={formValues.current_interest_rate || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "current_interest_rate",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("current_interest_rate") && (
+                          <div className="text-danger small">
+                            {getFieldError("current_interest_rate")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="mortgage_start_date">
+                          Mortgage Start Date
+                        </Label>
+                        <Input
+                          id="mortgage_start_date"
+                          type="date"
+                          value={formValues.mortgage_start_date || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "mortgage_start_date",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("mortgage_start_date") && (
+                          <div className="text-danger small">
+                            {getFieldError("mortgage_start_date")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="remaining_term">Remaining Term</Label>
+                        <Input
+                          id="remaining_term"
+                          type="number"
+                          value={formValues.remaining_term || ""}
+                          onChange={(e) =>
+                            handleInputChange("remaining_term", e.target.value)
+                          }
+                        />
+                        {getFieldError("remaining_term") && (
+                          <div className="text-danger small">
+                            {getFieldError("remaining_term")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="mortgage_type">Mortgage Type</Label>
+                        <Input
+                          id="mortgage_type"
+                          type="select"
+                          value={formValues.mortgage_type || ""}
+                          onChange={(e) =>
+                            handleInputChange("mortgage_type", e.target.value)
+                          }
+                        >
+                          <option value="">Select...</option>
+                          <option value="SECURED_LOAN">
+                            Secured Loan (Applicant Commitments)
+                          </option>
+                          <option value="SECOND_HOME">
+                            Second Home (Applicant Commitments)
+                          </option>
+                          <option value="HOLIDAY_HOME">
+                            Holiday Home (Applicant Commitments)
+                          </option>
+                          <option value="BUY_TO_LET">
+                            Buy to Let (Applicant Mortgage Details)
+                          </option>
+                          <option value="HOLIDAY_LET">
+                            Holiday Let (Applicant Mortgage Details)
+                          </option>
+                          <option value="COMMERCIAL_INVESTMENT">
+                            Commercial Investment (Applicant Mortgage Details)
+                          </option>
+                        </Input>
+                        {getFieldError("mortgage_type") && (
+                          <div className="text-danger small">
+                            {getFieldError("mortgage_type")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="repayment_type">Repayment Type</Label>
+                        <Input
+                          id="repayment_type"
+                          type="select"
+                          value={formValues.repayment_type || ""}
+                          onChange={(e) =>
+                            handleInputChange("repayment_type", e.target.value)
+                          }
+                        >
+                          <option value="">Select...</option>
+                          <option value="CAPITAL_INTEREST">
+                            Capital and Interest
+                          </option>
+                          <option value="INTEREST_ONLY">Interest Only</option>
+                          <option value="PART_AND_PART">Part And Part</option>
+                          <option value="SERVICED">Serviced</option>
+                          <option value="ROLLED_UP">Rolled Up</option>
+                          <option value="RETAINED">Retained</option>
+                          <option value="OTHER">Other</option>
+                        </Input>
+                        {getFieldError("repayment_type") && (
+                          <div className="text-danger small">
+                            {getFieldError("repayment_type")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="current_interest_type">
+                          Current Interest Type
+                        </Label>
+                        <Input
+                          id="current_interest_type"
+                          type="select"
+                          value={formValues.current_interest_type || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "current_interest_type",
                               e.target.value,
                             )
                           }
                         >
                           <option value="">Select...</option>
-                          <option value="NA">N/A</option>
-                          <option value="YES">Yes</option>
-                          <option value="NO">No</option>
+                          <option value="FIXED">Fixed</option>
+                          <option value="VARIABLE">Variable</option>
+                          <option value="TRACKER">Tracker</option>
+                          <option value="DISCOUNT">Discount</option>
+                          <option value="CAPPED">Capped</option>
+                          <option value="SVR">SVR</option>
+                          <option value="OFFSET">Offset</option>
+                          <option value="LIFETIME">Lifetime</option>
+                          <option value="OTHER">Other</option>
                         </Input>
-                        {getFieldError(
-                          "mortgage_not_to_complete_until_erc_ended",
-                        ) && (
+                        {getFieldError("current_interest_type") && (
                           <div className="text-danger small">
-                            {getFieldError(
-                              "mortgage_not_to_complete_until_erc_ended",
-                            )}
+                            {getFieldError("current_interest_type")}
                           </div>
                         )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="erc_amount">ERC Amount</Label>
-                        <Input
-                          id="erc_amount"
-                          type="number"
-                          value={formValues.erc_amount || ""}
-                          onChange={(e) =>
-                            handleInputChange("erc_amount", e.target.value)
-                          }
-                        />
-                        {getFieldError("erc_amount") && (
-                          <div className="text-danger small">
-                            {getFieldError("erc_amount")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="erc_being_paid">
-                          Is The ERC Being Paid?
+                        <Label for="early_repayment_charge_applies">
+                          Does an early repayment charge apply?
                         </Label>
                         {["yes", "no"].map((value) => (
                           <div key={value}>
                             <Label className="me-2">
                               <Input
                                 type="radio"
-                                name="erc_being_paid"
+                                name="early_repayment_charge_applies"
                                 className="me-1"
                                 value={value}
                                 checked={
-                                  formValues.erc_being_paid ===
+                                  formValues.early_repayment_charge_applies ===
                                   (value === "yes")
                                 }
                                 onChange={(e) =>
                                   handleInputChange(
-                                    "erc_being_paid",
+                                    "early_repayment_charge_applies",
                                     e.target.value === "yes",
                                   )
                                 }
@@ -2206,103 +2181,144 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           </div>
                         ))}
                       </FormGroup>
-                      {getFieldError("erc_being_paid") && (
+                      {getFieldError("early_repayment_charge_applies") && (
                         <div className="text-danger small">
-                          {getFieldError("erc_being_paid")}
+                          {getFieldError("early_repayment_charge_applies")}
                         </div>
                       )}
                     </Col>
-                  </>
-                )}
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="being_redeemed">Being Redeemed?</Label>
-                    {["yes", "no"].map((value) => (
-                      <div key={value}>
-                        <Label className="me-2">
-                          <Input
-                            type="radio"
-                            name="being_redeemed"
-                            className="me-1"
-                            value={value}
-                            checked={
-                              formValues.being_redeemed === (value === "yes")
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                "being_redeemed",
-                                e.target.value === "yes",
-                              )
-                            }
-                          />
-                          {value.charAt(0).toUpperCase() + value.slice(1)}
-                        </Label>
-                      </div>
-                    ))}
-                  </FormGroup>
-                  {getFieldError("being_redeemed") && (
-                    <div className="text-danger small">
-                      {getFieldError("being_redeemed")}
-                    </div>
-                  )}
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="is_mortgage_portable">
-                      Is The Mortgage Portable?
-                    </Label>
-                    {["yes", "no"].map((value) => (
-                      <div key={value}>
-                        <Label className="me-2">
-                          <Input
-                            type="radio"
-                            name="is_mortgage_portable"
-                            className="me-1"
-                            value={value}
-                            checked={
-                              formValues.is_mortgage_portable ===
-                              (value === "yes")
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                "is_mortgage_portable",
-                                e.target.value === "yes",
-                              )
-                            }
-                          />
-                          {value.charAt(0).toUpperCase() + value.slice(1)}
-                        </Label>
-                      </div>
-                    ))}
-                  </FormGroup>
-                  {getFieldError("is_mortgage_portable") && (
-                    <div className="text-danger small">
-                      {getFieldError("is_mortgage_portable")}
-                    </div>
-                  )}
-                </Col>
-                {formValues.is_mortgage_portable === true && (
-                  <>
+                    {formValues.early_repayment_charge_applies === true && (
+                      <>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="erc_expiry_date">ERC Expiry Date</Label>
+                            <Input
+                              id="erc_expiry_date"
+                              type="date"
+                              value={formValues.erc_expiry_date || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "erc_expiry_date",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("erc_expiry_date") && (
+                              <div className="text-danger small">
+                                {getFieldError("erc_expiry_date")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="mortgage_not_to_complete_until_erc_ended">
+                              Mortgage not to complete until ERC ended
+                            </Label>
+                            <Input
+                              id="mortgage_not_to_complete_until_erc_ended"
+                              type="select"
+                              value={
+                                formValues.mortgage_not_to_complete_until_erc_ended ||
+                                ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "mortgage_not_to_complete_until_erc_ended",
+                                  e.target.value,
+                                )
+                              }
+                            >
+                              <option value="">Select...</option>
+                              <option value="NA">N/A</option>
+                              <option value="YES">Yes</option>
+                              <option value="NO">No</option>
+                            </Input>
+                            {getFieldError(
+                              "mortgage_not_to_complete_until_erc_ended",
+                            ) && (
+                              <div className="text-danger small">
+                                {getFieldError(
+                                  "mortgage_not_to_complete_until_erc_ended",
+                                )}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="erc_amount">ERC Amount</Label>
+                            <Input
+                              id="erc_amount"
+                              type="number"
+                              value={formValues.erc_amount || ""}
+                              onChange={(e) =>
+                                handleInputChange("erc_amount", e.target.value)
+                              }
+                            />
+                            {getFieldError("erc_amount") && (
+                              <div className="text-danger small">
+                                {getFieldError("erc_amount")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="erc_being_paid">
+                              Is The ERC Being Paid?
+                            </Label>
+                            {["yes", "no"].map((value) => (
+                              <div key={value}>
+                                <Label className="me-2">
+                                  <Input
+                                    type="radio"
+                                    name="erc_being_paid"
+                                    className="me-1"
+                                    value={value}
+                                    checked={
+                                      formValues.erc_being_paid ===
+                                      (value === "yes")
+                                    }
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        "erc_being_paid",
+                                        e.target.value === "yes",
+                                      )
+                                    }
+                                  />
+                                  {value.charAt(0).toUpperCase() +
+                                    value.slice(1)}
+                                </Label>
+                              </div>
+                            ))}
+                          </FormGroup>
+                          {getFieldError("erc_being_paid") && (
+                            <div className="text-danger small">
+                              {getFieldError("erc_being_paid")}
+                            </div>
+                          )}
+                        </Col>
+                      </>
+                    )}
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="is_mortgage_being_ported">
-                          Is The Mortgage Being Ported?
-                        </Label>
+                        <Label for="being_redeemed">Being Redeemed?</Label>
                         {["yes", "no"].map((value) => (
                           <div key={value}>
                             <Label className="me-2">
                               <Input
                                 type="radio"
-                                name="is_mortgage_being_ported"
+                                name="being_redeemed"
                                 className="me-1"
                                 value={value}
                                 checked={
-                                  formValues.is_mortgage_being_ported ===
+                                  formValues.being_redeemed ===
                                   (value === "yes")
                                 }
                                 onChange={(e) =>
                                   handleInputChange(
-                                    "is_mortgage_being_ported",
+                                    "being_redeemed",
                                     e.target.value === "yes",
                                   )
                                 }
@@ -2312,711 +2328,815 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                           </div>
                         ))}
                       </FormGroup>
+                      {getFieldError("being_redeemed") && (
+                        <div className="text-danger small">
+                          {getFieldError("being_redeemed")}
+                        </div>
+                      )}
                     </Col>
-                    {getFieldError("is_mortgage_being_ported") && (
-                      <div className="text-danger small">
-                        {getFieldError("is_mortgage_being_ported")}
-                      </div>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="is_mortgage_portable">
+                          Is The Mortgage Portable?
+                        </Label>
+                        {["yes", "no"].map((value) => (
+                          <div key={value}>
+                            <Label className="me-2">
+                              <Input
+                                type="radio"
+                                name="is_mortgage_portable"
+                                className="me-1"
+                                value={value}
+                                checked={
+                                  formValues.is_mortgage_portable ===
+                                  (value === "yes")
+                                }
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    "is_mortgage_portable",
+                                    e.target.value === "yes",
+                                  )
+                                }
+                              />
+                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                            </Label>
+                          </div>
+                        ))}
+                      </FormGroup>
+                      {getFieldError("is_mortgage_portable") && (
+                        <div className="text-danger small">
+                          {getFieldError("is_mortgage_portable")}
+                        </div>
+                      )}
+                    </Col>
+                    {formValues.is_mortgage_portable === true && (
+                      <>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="is_mortgage_being_ported">
+                              Is The Mortgage Being Ported?
+                            </Label>
+                            {["yes", "no"].map((value) => (
+                              <div key={value}>
+                                <Label className="me-2">
+                                  <Input
+                                    type="radio"
+                                    name="is_mortgage_being_ported"
+                                    className="me-1"
+                                    value={value}
+                                    checked={
+                                      formValues.is_mortgage_being_ported ===
+                                      (value === "yes")
+                                    }
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        "is_mortgage_being_ported",
+                                        e.target.value === "yes",
+                                      )
+                                    }
+                                  />
+                                  {value.charAt(0).toUpperCase() +
+                                    value.slice(1)}
+                                </Label>
+                              </div>
+                            ))}
+                          </FormGroup>
+                        </Col>
+                        {getFieldError("is_mortgage_being_ported") && (
+                          <div className="text-danger small">
+                            {getFieldError("is_mortgage_being_ported")}
+                          </div>
+                        )}
+                      </>
                     )}
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="mortgage_account_number">
+                          Mortgage Account Number
+                        </Label>
+                        <Input
+                          id="mortgage_account_number"
+                          type="text"
+                          value={formValues.mortgage_account_number || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "mortgage_account_number",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("mortgage_account_number") && (
+                          <div className="text-danger small">
+                            {getFieldError("mortgage_account_number")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="mortgage_charter_scheme">
+                          Are you in a Mortgage Charter Scheme?
+                        </Label>
+                        {["yes", "no"].map((value) => (
+                          <div key={value}>
+                            <Label className="me-2">
+                              <Input
+                                type="radio"
+                                name="mortgage_charter_scheme"
+                                className="me-1"
+                                value={value}
+                                checked={
+                                  formValues.mortgage_charter_scheme ===
+                                  (value === "yes")
+                                }
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    "mortgage_charter_scheme",
+                                    e.target.value === "yes",
+                                  )
+                                }
+                              />
+                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                            </Label>
+                          </div>
+                        ))}
+                      </FormGroup>
+                      {getFieldError("mortgage_charter_scheme") && (
+                        <div className="text-danger small">
+                          {getFieldError("mortgage_charter_scheme")}
+                        </div>
+                      )}
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="property_type">Property Type</Label>
+                        <Input
+                          id="property_type"
+                          type="select"
+                          value={formValues.property_type || ""}
+                          onChange={(e) =>
+                            handleInputChange("property_type", e.target.value)
+                          }
+                        >
+                          <option value="">Select...</option>
+                          <option value="HOUSE">House</option>
+                          <option value="FLAT">Flat</option>
+                          <option value="MAISONETTE">Maisonette</option>
+                          <option value="BUNGALOW">Bungalow</option>
+                          <option value="WAREHOUSE">Warehouse</option>
+                          <option value="LAND">Land</option>
+                          <option value="COMMERCIAL">Commercial</option>
+                          <option value="SEMI_COMMERCIAL">
+                            Semi-Commercial
+                          </option>
+                          <option value="MULTI_UNIT_BLOCK">
+                            Multi-Unit Block (MUB)
+                          </option>
+                          <option value="HMO">HMO</option>
+                        </Input>
+                        {getFieldError("property_type") && (
+                          <div className="text-danger small">
+                            {getFieldError("property_type")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="bedrooms">Bedrooms</Label>
+                        <Input
+                          id="bedrooms"
+                          type="number"
+                          value={formValues.bedrooms || ""}
+                          onChange={(e) =>
+                            handleInputChange("bedrooms", e.target.value)
+                          }
+                        />
+                        {getFieldError("bedrooms") && (
+                          <div className="text-danger small">
+                            {getFieldError("bedrooms")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="tenure">Tenure</Label>
+                        <Input
+                          id="tenure"
+                          type="select"
+                          value={formValues.tenure || ""}
+                          onChange={(e) =>
+                            handleInputChange("tenure", e.target.value)
+                          }
+                        >
+                          <option value="">Select...</option>
+                          <option value="FREEHOLD">Freehold</option>
+                          <option value="LEASEHOLD">Leasehold</option>
+                          <option value="COMMONHOLD">Commonhold</option>
+                          <option value="FEUDAL">Feudal</option>
+                        </Input>
+                        {getFieldError("tenure") && (
+                          <div className="text-danger small">
+                            {getFieldError("tenure")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="year_built">Year Built</Label>
+                        <Input
+                          id="year_built"
+                          type="number"
+                          value={formValues.year_built || ""}
+                          onChange={(e) =>
+                            handleInputChange("year_built", e.target.value)
+                          }
+                        />
+                        {getFieldError("year_built") && (
+                          <div className="text-danger small">
+                            {getFieldError("year_built")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
                   </>
                 )}
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="mortgage_account_number">
-                      Mortgage Account Number
-                    </Label>
-                    <Input
-                      id="mortgage_account_number"
-                      type="text"
-                      value={formValues.mortgage_account_number || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "mortgage_account_number",
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {getFieldError("mortgage_account_number") && (
-                      <div className="text-danger small">
-                        {getFieldError("mortgage_account_number")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="mortgage_charter_scheme">
-                      Are you in a Mortgage Charter Scheme?
-                    </Label>
-                    {["yes", "no"].map((value) => (
-                      <div key={value}>
-                        <Label className="me-2">
-                          <Input
-                            type="radio"
-                            name="mortgage_charter_scheme"
-                            className="me-1"
-                            value={value}
-                            checked={
-                              formValues.mortgage_charter_scheme ===
-                              (value === "yes")
-                            }
-                            onChange={(e) =>
-                              handleInputChange(
-                                "mortgage_charter_scheme",
-                                e.target.value === "yes",
-                              )
-                            }
-                          />
-                          {value.charAt(0).toUpperCase() + value.slice(1)}
-                        </Label>
-                      </div>
-                    ))}
-                  </FormGroup>
-                  {getFieldError("mortgage_charter_scheme") && (
-                    <div className="text-danger small">
-                      {getFieldError("mortgage_charter_scheme")}
-                    </div>
-                  )}
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="property_type">Property Type</Label>
-                    <Input
-                      id="property_type"
-                      type="select"
-                      value={formValues.property_type || ""}
-                      onChange={(e) =>
-                        handleInputChange("property_type", e.target.value)
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="HOUSE">House</option>
-                      <option value="FLAT">Flat</option>
-                      <option value="MAISONETTE">Maisonette</option>
-                      <option value="BUNGALOW">Bungalow</option>
-                      <option value="WAREHOUSE">Warehouse</option>
-                      <option value="LAND">Land</option>
-                      <option value="COMMERCIAL">Commercial</option>
-                      <option value="SEMI_COMMERCIAL">Semi-Commercial</option>
-                      <option value="MULTI_UNIT_BLOCK">
-                        Multi-Unit Block (MUB)
-                      </option>
-                      <option value="HMO">HMO</option>
-                    </Input>
-                    {getFieldError("property_type") && (
-                      <div className="text-danger small">
-                        {getFieldError("property_type")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="bedrooms">Bedrooms</Label>
-                    <Input
-                      id="bedrooms"
-                      type="number"
-                      value={formValues.bedrooms || ""}
-                      onChange={(e) =>
-                        handleInputChange("bedrooms", e.target.value)
-                      }
-                    />
-                    {getFieldError("bedrooms") && (
-                      <div className="text-danger small">
-                        {getFieldError("bedrooms")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="tenure">Tenure</Label>
-                    <Input
-                      id="tenure"
-                      type="select"
-                      value={formValues.tenure || ""}
-                      onChange={(e) =>
-                        handleInputChange("tenure", e.target.value)
-                      }
-                    >
-                      <option value="">Select...</option>
-                      <option value="FREEHOLD">Freehold</option>
-                      <option value="LEASEHOLD">Leasehold</option>
-                      <option value="COMMONHOLD">Commonhold</option>
-                      <option value="FEUDAL">Feudal</option>
-                    </Input>
-                    {getFieldError("tenure") && (
-                      <div className="text-danger small">
-                        {getFieldError("tenure")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="year_built">Year Built</Label>
-                    <Input
-                      id="year_built"
-                      type="number"
-                      value={formValues.year_built || ""}
-                      onChange={(e) =>
-                        handleInputChange("year_built", e.target.value)
-                      }
-                    />
-                    {getFieldError("year_built") && (
-                      <div className="text-danger small">
-                        {getFieldError("year_built")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </>
-            )}
-            {formValues.residential_status === "RENTING_PRIVATE" ||
-            formValues.residential_status === "RENTING_LOCAL_AUTHORITY" ? (
-              <>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="rental_monthly_payment">
-                      Rental Monthly Payment
-                    </Label>
-                    <Input
-                      id="rental_monthly_payment"
-                      type="number"
-                      value={formValues.rental_monthly_payment || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "rental_monthly_payment",
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {getFieldError("rental_monthly_payment") && (
-                      <div className="text-danger small">
-                        {getFieldError("rental_monthly_payment")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_name">Landlord Name</Label>
-                    <Input
-                      id="landlord_name"
-                      type="text"
-                      value={formValues.landlord_name || ""}
-                      onChange={(e) =>
-                        handleInputChange("landlord_name", e.target.value)
-                      }
-                    />
-                    {getFieldError("landlord_name") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_name")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_telephone">Landlord's Telephone</Label>
-                    <Input
-                      id="landlord_telephone"
-                      type="text"
-                      value={formValues.landlord_telephone || ""}
-                      onChange={(e) =>
-                        handleInputChange("landlord_telephone", e.target.value)
-                      }
-                    />
-                    {getFieldError("landlord_telephone") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_telephone")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_email">Landlord's Email</Label>
-                    <Input
-                      id="landlord_email"
-                      type="email"
-                      value={formValues.landlord_email || ""}
-                      onChange={(e) =>
-                        handleInputChange("landlord_email", e.target.value)
-                      }
-                    />
-                    {getFieldError("landlord_email") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_email")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <h3 className="mb-2 mt-2">Landlord Address</h3>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_address_postcode">Postcode</Label>
-                    <Input
-                      id="landlord_address_postcode"
-                      className="border-primary"
-                      type="text"
-                      value={formValues.landlord_address_postcode || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "landlord_address_postcode",
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {getFieldError("landlord_address_postcode") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_address_postcode")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_address_line_1">Address Line 1</Label>
-                    <Input
-                      id="landlord_address_line_1"
-                      type="text"
-                      value={formValues.landlord_address_line_one || ""}
-                      onChange={(e) =>
-                        handleInputChange(
-                          "landlord_address_line_one",
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {getFieldError("landlord_address_line_one") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_address_line_one")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_city">City</Label>
-                    <Input
-                      id="landlord_city"
-                      type="text"
-                      value={formValues.landlord_city || ""}
-                      onChange={(e) =>
-                        handleInputChange("landlord_city", e.target.value)
-                      }
-                    />
-                    {getFieldError("landlord_city") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_city")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_country">Country</Label>
-                    <Input
-                      id="landlord_country"
-                      type="text"
-                      value={formValues.landlord_country || ""}
-                      onChange={(e) =>
-                        handleInputChange("landlord_country", e.target.value)
-                      }
-                    />
-                    {getFieldError("landlord_country") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_country")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-                <Col md={6}>
-                  <FormGroup>
-                    <Label for="landlord_county">County</Label>
-                    <Input
-                      id="landlord_county"
-                      type="text"
-                      value={formValues.landlord_county || ""}
-                      onChange={(e) =>
-                        handleInputChange("landlord_county", e.target.value)
-                      }
-                    />
-                    {getFieldError("landlord_county") && (
-                      <div className="text-danger small">
-                        {getFieldError("landlord_county")}
-                      </div>
-                    )}
-                  </FormGroup>
-                </Col>
-              </>
-            ) : null}
-          </Row>
-          {loandetailsData?.application_type === "RESIDENTIAL_MORTGAGE" &&
-            loandetailsData?.mortgage_type === "PURCHASE" &&
-            loandetailsData?.case_completed_date !== null && (
-              <Row className="border-dark rounded p-2">
-                <Col md={12}>
-                  <FormGroup>
-                    <Label for="intend_to_move_into_the_new_property">
-                      Do you intend to move into the new property immediately
-                      after completion?
-                    </Label>
-                    <div className="d-flex flex-wrap">
-                      <Button
-                        className="me-2"
-                        color={
-                          formValues.intend_to_move_into_the_new_property
-                            ? "primary"
-                            : "outline-primary"
-                        }
-                        onClick={() =>
-                          handleInputChange(
-                            "intend_to_move_into_the_new_property",
-                            true,
-                          )
-                        }
-                      >
-                        Yes
-                      </Button>
-                      <Button
-                        className="me-2"
-                        color={
-                          !formValues.intend_to_move_into_the_new_property
-                            ? "danger"
-                            : "outline-danger"
-                        }
-                        onClick={() =>
-                          handleInputChange(
-                            "intend_to_move_into_the_new_property",
-                            false,
-                          )
-                        }
-                      >
-                        No
-                      </Button>
-                    </div>
-                  </FormGroup>
-                  {getFieldError("intend_to_move_into_the_new_property") && (
-                    <div className="text-danger small">
-                      {getFieldError("intend_to_move_into_the_new_property")}
-                    </div>
-                  )}
-                </Col>
-                {formValues.intend_to_move_into_the_new_property === true ? (
+                {formValues.residential_status === "RENTING_PRIVATE" ||
+                formValues.residential_status === "RENTING_LOCAL_AUTHORITY" ? (
                   <>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="new_address_house_number_or_name">
-                          New Address House Number or Name
+                        <Label for="rental_monthly_payment">
+                          Rental Monthly Payment
                         </Label>
                         <Input
-                          id="new_address_house_number_or_name"
-                          type="text"
-                          readOnly
-                          value={
-                            formValues.new_address_house_number_or_name || ""
-                          }
+                          id="rental_monthly_payment"
+                          type="number"
+                          value={formValues.rental_monthly_payment || ""}
                           onChange={(e) =>
                             handleInputChange(
-                              "new_address_house_number_or_name",
+                              "rental_monthly_payment",
                               e.target.value,
                             )
                           }
                         />
-                        {getFieldError("new_address_house_number_or_name") && (
+                        {getFieldError("rental_monthly_payment") && (
                           <div className="text-danger small">
-                            {getFieldError("new_address_house_number_or_name")}
+                            {getFieldError("rental_monthly_payment")}
                           </div>
                         )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="new_address_address_one">
+                        <Label for="landlord_name">Landlord Name</Label>
+                        <Input
+                          id="landlord_name"
+                          type="text"
+                          value={formValues.landlord_name || ""}
+                          onChange={(e) =>
+                            handleInputChange("landlord_name", e.target.value)
+                          }
+                        />
+                        {getFieldError("landlord_name") && (
+                          <div className="text-danger small">
+                            {getFieldError("landlord_name")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="landlord_telephone">
+                          Landlord's Telephone
+                        </Label>
+                        <Input
+                          id="landlord_telephone"
+                          type="text"
+                          value={formValues.landlord_telephone || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "landlord_telephone",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("landlord_telephone") && (
+                          <div className="text-danger small">
+                            {getFieldError("landlord_telephone")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="landlord_email">Landlord's Email</Label>
+                        <Input
+                          id="landlord_email"
+                          type="email"
+                          value={formValues.landlord_email || ""}
+                          onChange={(e) =>
+                            handleInputChange("landlord_email", e.target.value)
+                          }
+                        />
+                        {getFieldError("landlord_email") && (
+                          <div className="text-danger small">
+                            {getFieldError("landlord_email")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <h3 className="mb-2 mt-2">Landlord Address</h3>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="landlord_address_postcode">Postcode</Label>
+                        <Input
+                          id="landlord_address_postcode"
+                          className="border-primary"
+                          type="text"
+                          value={formValues.landlord_address_postcode || ""}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "landlord_address_postcode",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        {getFieldError("landlord_address_postcode") && (
+                          <div className="text-danger small">
+                            {getFieldError("landlord_address_postcode")}
+                          </div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="landlord_address_line_1">
                           Address Line 1
                         </Label>
                         <Input
-                          id="new_address_address_one"
+                          id="landlord_address_line_1"
                           type="text"
-                          readOnly
-                          value={formValues.new_address_address_one || ""}
+                          value={formValues.landlord_address_line_one || ""}
                           onChange={(e) =>
                             handleInputChange(
-                              "new_address_address_one",
+                              "landlord_address_line_one",
                               e.target.value,
                             )
                           }
                         />
-                        {getFieldError("new_address_address_one") && (
+                        {getFieldError("landlord_address_line_one") && (
                           <div className="text-danger small">
-                            {getFieldError("new_address_address_one")}
+                            {getFieldError("landlord_address_line_one")}
                           </div>
                         )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="new_address_address_two">
-                          Address Line 2
-                        </Label>
+                        <Label for="landlord_city">City</Label>
                         <Input
-                          id="new_address_address_two"
+                          id="landlord_city"
                           type="text"
-                          readOnly
-                          value={formValues.new_address_address_two || ""}
+                          value={formValues.landlord_city || ""}
                           onChange={(e) =>
-                            handleInputChange(
-                              "new_address_address_two",
-                              e.target.value,
-                            )
+                            handleInputChange("landlord_city", e.target.value)
                           }
                         />
-                        {getFieldError("new_address_address_two") && (
+                        {getFieldError("landlord_city") && (
                           <div className="text-danger small">
-                            {getFieldError("new_address_address_two")}
+                            {getFieldError("landlord_city")}
                           </div>
                         )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="new_address_city">City</Label>
+                        <Label for="landlord_country">Country</Label>
                         <Input
-                          id="new_address_city"
+                          id="landlord_country"
                           type="text"
-                          readOnly
-                          value={formValues.new_address_city || ""}
+                          value={formValues.landlord_country || ""}
                           onChange={(e) =>
                             handleInputChange(
-                              "new_address_city",
+                              "landlord_country",
                               e.target.value,
                             )
                           }
                         />
-                        {getFieldError("new_address_city") && (
+                        {getFieldError("landlord_country") && (
                           <div className="text-danger small">
-                            {getFieldError("new_address_city")}
+                            {getFieldError("landlord_country")}
                           </div>
                         )}
                       </FormGroup>
                     </Col>
                     <Col md={6}>
                       <FormGroup>
-                        <Label for="new_address_county">County</Label>
+                        <Label for="landlord_county">County</Label>
                         <Input
-                          id="new_address_county"
+                          id="landlord_county"
                           type="text"
-                          readOnly
-                          value={formValues.new_address_county || ""}
+                          value={formValues.landlord_county || ""}
                           onChange={(e) =>
-                            handleInputChange(
-                              "new_address_county",
-                              e.target.value,
-                            )
+                            handleInputChange("landlord_county", e.target.value)
                           }
                         />
-                        {getFieldError("new_address_county") && (
+                        {getFieldError("landlord_county") && (
                           <div className="text-danger small">
-                            {getFieldError("new_address_county")}
+                            {getFieldError("landlord_county")}
                           </div>
                         )}
                       </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="new_address_postcode">Postcode</Label>
-                        <Input
-                          id="new_address_postcode"
-                          type="text"
-                          className="border-primary"
-                          readOnly
-                          value={formValues.new_address_postcode || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "new_address_postcode",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        {getFieldError("new_address_postcode") && (
-                          <div className="text-danger small">
-                            {getFieldError("new_address_postcode")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="new_address_country">Country</Label>
-                        <Input
-                          id="new_address_country"
-                          type="text"
-                          readOnly
-                          value={
-                            formValues.new_address_country
-                              ? formValues.new_address_country
-                                  .split("_")
-                                  .map((word) =>
-                                    word
-                                      .toLowerCase()
-                                      .replace(/\b\w/g, (l) => l.toUpperCase()),
-                                  )
-                                  .join(" ")
-                              : ""
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              "new_address_country",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        {getFieldError("new_address_country") && (
-                          <div className="text-danger small">
-                            {getFieldError("new_address_country")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormGroup>
-                        <Label for="new_address_effective_from">
-                          Effective From
-                        </Label>
-                        <Input
-                          id="new_address_effective_from"
-                          type="date"
-                          readOnly
-                          value={formValues.new_address_effective_from || ""}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "new_address_effective_from",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        {getFieldError("new_address_effective_from") && (
-                          <div className="text-danger small">
-                            {getFieldError("new_address_effective_from")}
-                          </div>
-                        )}
-                      </FormGroup>
-                    </Col>
-                    <Col md={6}>
-                      <FormText className="text-warning">
-                        Note1: These fields are only for view.
-                      </FormText>
-                      <br />
-                      <FormText className="text-warning">
-                        Note2: These data auto-fill from the Security Property.
-                        If you don't see any data, please check the Security
-                        Property section.
-                      </FormText>
                     </Col>
                   </>
                 ) : null}
               </Row>
-            )}
-
-          <Row>
-            <Col md={12}>
-              <FormGroup>
-                <Label for="notes">Notes</Label>
-                <Input
-                  id="notes"
-                  type="textarea"
-                  value={formValues.notes || ""}
-                  onChange={(e) => handleInputChange("notes", e.target.value)}
-                />
-                {getFieldError("notes") && (
-                  <div className="text-danger small">
-                    {getFieldError("notes")}
-                  </div>
+              {loandetailsData?.application_type === "RESIDENTIAL_MORTGAGE" &&
+                loandetailsData?.mortgage_type === "PURCHASE" &&
+                loandetailsData?.case_completed_date !== null && (
+                  <Row className="border-dark rounded p-2">
+                    <Col md={12}>
+                      <FormGroup>
+                        <Label for="intend_to_move_into_the_new_property">
+                          Do you intend to move into the new property
+                          immediately after completion?
+                        </Label>
+                        <div className="d-flex flex-wrap">
+                          <Button
+                            className="me-2"
+                            color={
+                              formValues.intend_to_move_into_the_new_property
+                                ? "primary"
+                                : "outline-primary"
+                            }
+                            onClick={() =>
+                              handleInputChange(
+                                "intend_to_move_into_the_new_property",
+                                true,
+                              )
+                            }
+                          >
+                            Yes
+                          </Button>
+                          <Button
+                            className="me-2"
+                            color={
+                              !formValues.intend_to_move_into_the_new_property
+                                ? "danger"
+                                : "outline-danger"
+                            }
+                            onClick={() =>
+                              handleInputChange(
+                                "intend_to_move_into_the_new_property",
+                                false,
+                              )
+                            }
+                          >
+                            No
+                          </Button>
+                        </div>
+                      </FormGroup>
+                      {getFieldError(
+                        "intend_to_move_into_the_new_property",
+                      ) && (
+                        <div className="text-danger small">
+                          {getFieldError(
+                            "intend_to_move_into_the_new_property",
+                          )}
+                        </div>
+                      )}
+                    </Col>
+                    {formValues.intend_to_move_into_the_new_property ===
+                    true ? (
+                      <>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_house_number_or_name">
+                              New Address House Number or Name
+                            </Label>
+                            <Input
+                              id="new_address_house_number_or_name"
+                              type="text"
+                              readOnly
+                              value={
+                                formValues.new_address_house_number_or_name ||
+                                ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_house_number_or_name",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError(
+                              "new_address_house_number_or_name",
+                            ) && (
+                              <div className="text-danger small">
+                                {getFieldError(
+                                  "new_address_house_number_or_name",
+                                )}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_address_one">
+                              Address Line 1
+                            </Label>
+                            <Input
+                              id="new_address_address_one"
+                              type="text"
+                              readOnly
+                              value={formValues.new_address_address_one || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_address_one",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_address_one") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_address_one")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_address_two">
+                              Address Line 2
+                            </Label>
+                            <Input
+                              id="new_address_address_two"
+                              type="text"
+                              readOnly
+                              value={formValues.new_address_address_two || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_address_two",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_address_two") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_address_two")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_city">City</Label>
+                            <Input
+                              id="new_address_city"
+                              type="text"
+                              readOnly
+                              value={formValues.new_address_city || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_city",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_city") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_city")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_county">County</Label>
+                            <Input
+                              id="new_address_county"
+                              type="text"
+                              readOnly
+                              value={formValues.new_address_county || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_county",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_county") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_county")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_postcode">Postcode</Label>
+                            <Input
+                              id="new_address_postcode"
+                              type="text"
+                              className="border-primary"
+                              readOnly
+                              value={formValues.new_address_postcode || ""}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_postcode",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_postcode") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_postcode")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_country">Country</Label>
+                            <Input
+                              id="new_address_country"
+                              type="text"
+                              readOnly
+                              value={
+                                formValues.new_address_country
+                                  ? formValues.new_address_country
+                                      .split("_")
+                                      .map((word) =>
+                                        word
+                                          .toLowerCase()
+                                          .replace(/\b\w/g, (l) =>
+                                            l.toUpperCase(),
+                                          ),
+                                      )
+                                      .join(" ")
+                                  : ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_country",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_country") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_country")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormGroup>
+                            <Label for="new_address_effective_from">
+                              Effective From
+                            </Label>
+                            <Input
+                              id="new_address_effective_from"
+                              type="date"
+                              readOnly
+                              value={
+                                formValues.new_address_effective_from || ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "new_address_effective_from",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            {getFieldError("new_address_effective_from") && (
+                              <div className="text-danger small">
+                                {getFieldError("new_address_effective_from")}
+                              </div>
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={6}>
+                          <FormText className="text-warning">
+                            Note1: These fields are only for view.
+                          </FormText>
+                          <br />
+                          <FormText className="text-warning">
+                            Note2: These data auto-fill from the Security
+                            Property. If you don't see any data, please check
+                            the Security Property section.
+                          </FormText>
+                        </Col>
+                      </>
+                    ) : null}
+                  </Row>
                 )}
-              </FormGroup>
-            </Col>
-          </Row>
-          {/* Submit Button */}
-          <div className="d-flex justify-content-end gap-3 align-items-center">
-            <Button
-              type="submit"
-              color="primary"
-              onClick={() => {
-                submitActionRef.current = "save";
-              }}
-            >
-              {isUpdatingApplicant && submitting === "save"
-                ? "Updating..."
-                : "Save Changes"}
-            </Button>
 
-            {session?.user?.role !== "APPLICANT" && (
-              <>
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <Label for="notes">Notes</Label>
+                    <Input
+                      id="notes"
+                      type="textarea"
+                      value={formValues.notes || ""}
+                      onChange={(e) =>
+                        handleInputChange("notes", e.target.value)
+                      }
+                    />
+                    {getFieldError("notes") && (
+                      <div className="text-danger small">
+                        {getFieldError("notes")}
+                      </div>
+                    )}
+                  </FormGroup>
+                </Col>
+              </Row>
+              {/* Submit Button */}
+              <div className="d-flex justify-content-end gap-3 align-items-center">
                 <Button
                   type="submit"
-                  color="warning"
-                  disabled={
-                    isLoading ||
-                    (session?.user?.role === "APPLICANT" &&
-                      selectedApplicant?.updated_by !== null) ||
-                    !applicantsData ||
-                    applicantsData.findIndex(
-                      (applicant) => applicant.alias === basicTab,
-                    ) <= 0
-                  }
-                  onClick={(e) => {
+                  color="primary"
+                  onClick={() => {
+                    submitActionRef.current = "save";
+                  }}
+                >
+                  {isUpdatingApplicant && submitting === "save"
+                    ? "Updating..."
+                    : "Save Changes"}
+                </Button>
+
+                {session?.user?.role !== "APPLICANT" && (
+                  <>
+                    <Button
+                      type="submit"
+                      color="warning"
+                      disabled={
+                        isLoading ||
+                        (session?.user?.role === "APPLICANT" &&
+                          selectedApplicant?.updated_by !== null) ||
+                        !applicantsData ||
+                        applicantsData.findIndex(
+                          (applicant) => applicant.alias === basicTab,
+                        ) <= 0
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        submitActionRef.current = "previous-applicant";
+                        formRef.current?.requestSubmit();
+                      }}
+                    >
+                      {isUpdatingApplicant &&
+                      submitting === "previous-applicant"
+                        ? "Saving..."
+                        : "Save & Previous Applicant"}
+                    </Button>
+                    <Button
+                      type="submit"
+                      color="info"
+                      disabled={
+                        isLoading ||
+                        (session?.user?.role === "APPLICANT" &&
+                          selectedApplicant?.updated_by !== null) ||
+                        !applicantsData ||
+                        applicantsData.findIndex(
+                          (applicant) => applicant.alias === basicTab,
+                        ) >=
+                          applicantsData.length - 1
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        submitActionRef.current = "next-applicant";
+                        formRef.current?.requestSubmit();
+                      }}
+                    >
+                      {isUpdatingApplicant && submitting === "next-applicant"
+                        ? "Saving..."
+                        : "Save & Next Applicant"}
+                    </Button>
+                  </>
+                )}
+                <Button
+                  type="submit"
+                  color="secondary"
+                  onClick={async (e) => {
                     e.preventDefault();
-                    submitActionRef.current = "previous-applicant";
+                    submitActionRef.current = "next";
                     formRef.current?.requestSubmit();
                   }}
                 >
-                  {isUpdatingApplicant && submitting === "previous-applicant"
+                  {isUpdatingApplicant && submitting === "next"
                     ? "Saving..."
-                    : "Save & Previous Applicant"}
+                    : "Save & Next Section"}
                 </Button>
-                <Button
-                  type="submit"
-                  color="info"
-                  disabled={
-                    isLoading ||
-                    (session?.user?.role === "APPLICANT" &&
-                      selectedApplicant?.updated_by !== null) ||
-                    !applicantsData ||
-                    applicantsData.findIndex(
-                      (applicant) => applicant.alias === basicTab,
-                    ) >=
-                      applicantsData.length - 1
-                  }
-                  onClick={(e) => {
-                    e.preventDefault();
-                    submitActionRef.current = "next-applicant";
-                    formRef.current?.requestSubmit();
-                  }}
-                >
-                  {isUpdatingApplicant && submitting === "next-applicant"
-                    ? "Saving..."
-                    : "Save & Next Applicant"}
-                </Button>
-              </>
-            )}
-            <Button
-              type="submit"
-              color="secondary"
-              onClick={async (e) => {
-                e.preventDefault();
-                submitActionRef.current = "next";
-                formRef.current?.requestSubmit();
-              }}
-            >
-              {isUpdatingApplicant && submitting === "next"
-                ? "Saving..."
-                : "Save & Next Section"}
-            </Button>
-          </div>
-        </form>
-      </Row>
+              </div>
+            </form>
+          </Row>
+        </div>
+      </div>
 
       {/* Company Applicant Modal */}
       {formValues?.is_company_application === true ? (

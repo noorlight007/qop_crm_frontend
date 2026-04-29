@@ -18,6 +18,7 @@ import TrailCommission from "./TrailCommission/TrailCommission";
 
 const CommissionContent: React.FC = () => {
   const { data: session } = useSession();
+  const userRole = session?.user?.role;
   const { casealias } = useParams();
   // RTK hooks
   const { data: commissionData, isLoading } = useGetCommissionQuery({
@@ -122,6 +123,7 @@ const CommissionContent: React.FC = () => {
       caseData?.case_stage,
       caseData?.case_category,
       currentTab!,
+      userRole,
     );
     if (nextTabNav) {
       dispatch(basicTabIndicator(nextTabNav));
@@ -129,6 +131,10 @@ const CommissionContent: React.FC = () => {
       toast.warning("This is the last tab.");
     }
   };
+
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
 
   return (
     <div className="p-2">
@@ -165,56 +171,74 @@ const CommissionContent: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <Form onSubmit={handleSubmit}>
-            <FormGroup>
-              <Label for="commissionNotes">Commission Notes</Label>
-              <Input
-                type="textarea"
-                id="commissionNotes"
-                name="commissionNotes"
-                placeholder="Enter commission notes here..."
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                rows={5}
+          <div style={{ position: "relative" }}>
+            {isLocked && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: 10,
+                  cursor: "not-allowed",
+                  backgroundColor: "rgba(0,0,0,0.0001)",
+                }}
+                title="This case is not editable"
               />
-              {errors.note && <div className="text-danger">{errors.note}</div>}
-            </FormGroup>
-            <div className="d-flex justify-content-end gap-2">
-              
-                <Button
-                  color="primary"
-                  type="submit"
-                  disabled={
-                    isAdding
-                    // || session?.user?.role === "APPLICANT"
-                  }
-                >
-                  {isAdding ? "Saving..." : "Save Changes"}
-                </Button>
-              {session?.user?.role !== "APPLICANT" && (
-                <Button
-                  color="secondary"
-                  disabled={isAdding}
-                  onClick={async () => {
-                    if (session?.user?.role === "APPLICANT") {
-                      handleNextTab();
-                    } else {
+            )}
+            <div
+              style={{
+                opacity: isLocked ? 0.45 : 1,
+                pointerEvents: isLocked ? "none" : "auto",
+                transition: "opacity 0.2s ease",
+                userSelect: isLocked ? "none" : "auto",
+              }}
+            >
+              <Form onSubmit={handleSubmit}>
+                <FormGroup>
+                  <Label for="commissionNotes">Commission Notes</Label>
+                  <Input
+                    type="textarea"
+                    id="commissionNotes"
+                    name="commissionNotes"
+                    placeholder="Enter commission notes here..."
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    rows={5}
+                  />
+                  {errors.note && (
+                    <div className="text-danger">{errors.note}</div>
+                  )}
+                </FormGroup>
+                <div className="d-flex justify-content-end gap-2">
+                  <Button
+                    color="primary"
+                    type="submit"
+                    disabled={
+                      isAdding
+                      // || session?.user?.role === "APPLICANT"
+                    }
+                  >
+                    {isAdding ? "Saving..." : "Save Changes"}
+                  </Button>
+                  <Button
+                    color="secondary"
+                    disabled={isAdding}
+                    onClick={async () => {
+                      // if (session?.user?.role === "APPLICANT") {
+                      //   handleNextTab();
+                      // } else {
                       const success = await handleSubmit();
                       if (success) {
                         handleNextTab();
                       }
-                    }
-                  }}
-                >
-                  {isAdding
-                    ? "Saving..."
-                    : session?.user?.role === "APPLICANT"
-                      ? "Go To Next"
-                      : "Save & Next"}
-                </Button>
-              )}
+                      // }
+                    }}
+                  >
+                    {isAdding ? "Saving..." : "Save & Next"}
+                  </Button>
+                </div>
+              </Form>
             </div>
-          </Form>
+          </div>
         </Col>
       </Row>
     </div>

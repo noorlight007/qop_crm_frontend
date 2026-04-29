@@ -148,6 +148,10 @@ const PortfolioContent: React.FC = () => {
     }
   };
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
     <>
       <Container fluid className="p-4">
@@ -162,270 +166,297 @@ const PortfolioContent: React.FC = () => {
           </Card>
         </Row>
         <hr />
-        <Row className="mb-4">
-          <Col md={12}>
-            <Card>
-              <CardHeader>
-                <div className="d-flex justify-content-between mb-2">
-                  <h5 className="mb-0 fs-3 text-primary">
-                    Additional Properties
-                  </h5>
-                  <div className="d-flex justify-content-end gap-2">
-                    <Button
-                      outline
-                      color="primary"
-                      className="d-flex gap-1"
-                      onClick={handleExportToCSV}
-                      disabled={isExporting || data.length === 0}
-                    >
-                      <FaFileExport />
-                      {isExporting ? "Exporting..." : " Export to CSV"}
-                    </Button>
-                      <>
+        <div style={{ position: "relative" }}>
+          {isLocked && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                zIndex: 10,
+                cursor: "not-allowed",
+                backgroundColor: "rgba(0,0,0,0.0001)",
+              }}
+              title="This case is not editable"
+            />
+          )}
+          <div
+            style={{
+              opacity: isLocked ? 0.45 : 1,
+              pointerEvents: isLocked ? "none" : "auto",
+              transition: "opacity 0.2s ease",
+              userSelect: isLocked ? "none" : "auto",
+            }}
+          >
+            <Row className="mb-4">
+              <Col md={12}>
+                <Card>
+                  <CardHeader>
+                    <div className="d-flex justify-content-between mb-2">
+                      <h5 className="mb-0 fs-3 text-primary">
+                        Additional Properties
+                      </h5>
+                      <div className="d-flex justify-content-end gap-2">
                         <Button
-                          color="secondary"
-                          className="d-flex gap-1 cursor-pointer"
-                          onClick={() => setIsImportModalOpen(true)}
-                          disabled={isImporting}
+                          outline
+                          color="primary"
+                          className="d-flex gap-1"
+                          onClick={handleExportToCSV}
+                          disabled={isExporting || data.length === 0}
                         >
-                          <FaFileImport />
-                          {isImporting ? "Importing..." : "Import CSV"}
+                          <FaFileExport />
+                          {isExporting ? "Exporting..." : " Export to CSV"}
                         </Button>
-                        <Button
-                          color="success"
-                          className="border-success"
-                          onClick={toggleModal}
-                          disabled={
-                            session?.user?.role === "APPLICANT" &&
-                            data.map((item: any) => item?.alias).length > 0
-                          }
-                        >
-                          Add Portfolio
-                        </Button>
-                      </>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardBody>
-                <div className="mt-3">
-                  {data && data.length === 0 ? (
-                    <div className="p-4 text-center text-muted">
-                      <i className="fa-solid fa-inbox fs-3 mb-2 d-block"></i>
-                      <div className="fw-semibold">
-                        No additional properties found.
-                      </div>
-                      <div className="small">
-                        You can add a portfolio using the button above.
+                        <>
+                          <Button
+                            color="secondary"
+                            className="d-flex gap-1 cursor-pointer"
+                            onClick={() => setIsImportModalOpen(true)}
+                            disabled={isImporting}
+                          >
+                            <FaFileImport />
+                            {isImporting ? "Importing..." : "Import CSV"}
+                          </Button>
+                          <Button
+                            color="success"
+                            className="border-success"
+                            onClick={toggleModal}
+                            disabled={
+                              session?.user?.role === "APPLICANT" &&
+                              data.map((item: any) => item?.alias).length > 0
+                            }
+                          >
+                            Add Portfolio
+                          </Button>
+                        </>
                       </div>
                     </div>
-                  ) : (
-                    <>
-                      <div className="table-responsive">
-                        <Table
-                          className="table table-bordered table-hover"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          <thead className="table-light">
-                            <tr>
-                              <th className="text-center">Action</th>
-                              <th className="text-center">
-                                Applicant&apos;s/Company
-                              </th>
-                              <th>Is Ltd Company</th>
-                              <th>Full Address</th>
-                              <th>Property Value</th>
-                              <th>Monthly Rental</th>
-                              <th>Lender</th>
-                              <th>Balance</th>
-                              <th>Value At Purchase</th>
-                              <th>Date Purchased</th>
-                              <th>Monthly Payment</th>
-                              <th>Loan To Value</th>
-                              <th>ICR</th>
-                              <th>Is HMO</th>
-                              <th>Is MUFB</th>
-                              <th>EPC Rating</th>
-                              <th>Repayment Type</th>
-                              <th>To Be Repaid</th>
-                              <th>Current Rate</th>
-                              <th>Rate Type</th>
-                              <th>Current Rate End Date</th>
-                              <th>ERC End Date</th>
-                              <th>Account Number</th>
-                              <th>Ownership</th>
-                              <th>Remaining Mortgage Term</th>
-                              <th>Bedrooms</th>
-                              <th>Year Built</th>
-                              <th>Leasehold</th>
-                              <th>Property Type</th>
-                              <th style={{ minWidth: "300px" }}>Notes</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {data?.map((item: any) => (
-                              <tr key={item?.alias}>
-                                <td>
-                                  <div className="text-center d-flex justify-content-center align-items-center gap-2">
-                                    <Button
-                                      color="danger"
-                                      size="xs"
-                                      outline
-                                      onClick={() => handleDeleteClick(item)}
-                                      className="text-truncate d-flex gap-1"
-                                    >
-                                      <i className="fa-solid fa-trash"></i>
-                                      Delete
-                                    </Button>
-                                    <Button
-                                      color="success"
-                                      size="xs"
-                                      outline
-                                      onClick={() => handleEditClick(item)}
-                                      className="text-truncate d-flex gap-1"
-                                    >
-                                      <i className="fa-regular fa-pen-to-square"></i>
-                                      Edit
-                                    </Button>
-                                  </div>
-                                </td>
-                                <td>
-                                  {item?.customers?.length > 0 ? (
-                                    <ul
-                                      className="mb-0 text-truncate"
-                                      style={{
-                                        listStyleType: "disc",
-                                        paddingLeft: "40px",
-                                      }}
-                                    >
-                                      {(item?.customers || []).map(
-                                        (app: any, idx: number) => (
-                                          <li key={app?.id ?? idx}>
-                                            {`${formatChoiceFieldValue(app?.title) || ""} ${app?.first_name || ""} ${app?.middle_name || ""} ${
-                                              app?.last_name || ""
-                                            }`.trim() || "-"}
-                                          </li>
-                                        ),
+                  </CardHeader>
+                  <CardBody>
+                    <div className="mt-3">
+                      {data && data.length === 0 ? (
+                        <div className="p-4 text-center text-muted">
+                          <i className="fa-solid fa-inbox fs-3 mb-2 d-block"></i>
+                          <div className="fw-semibold">
+                            No additional properties found.
+                          </div>
+                          <div className="small">
+                            You can add a portfolio using the button above.
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="table-responsive">
+                            <Table
+                              className="table table-bordered table-hover"
+                              style={{ fontSize: "0.9rem" }}
+                            >
+                              <thead className="table-light">
+                                <tr>
+                                  <th className="text-center">Action</th>
+                                  <th className="text-center">
+                                    Applicant&apos;s/Company
+                                  </th>
+                                  <th>Is Ltd Company</th>
+                                  <th>Full Address</th>
+                                  <th>Property Value</th>
+                                  <th>Monthly Rental</th>
+                                  <th>Lender</th>
+                                  <th>Balance</th>
+                                  <th>Value At Purchase</th>
+                                  <th>Date Purchased</th>
+                                  <th>Monthly Payment</th>
+                                  <th>Loan To Value</th>
+                                  <th>ICR</th>
+                                  <th>Is HMO</th>
+                                  <th>Is MUFB</th>
+                                  <th>EPC Rating</th>
+                                  <th>Repayment Type</th>
+                                  <th>To Be Repaid</th>
+                                  <th>Current Rate</th>
+                                  <th>Rate Type</th>
+                                  <th>Current Rate End Date</th>
+                                  <th>ERC End Date</th>
+                                  <th>Account Number</th>
+                                  <th>Ownership</th>
+                                  <th>Remaining Mortgage Term</th>
+                                  <th>Bedrooms</th>
+                                  <th>Year Built</th>
+                                  <th>Leasehold</th>
+                                  <th>Property Type</th>
+                                  <th style={{ minWidth: "300px" }}>Notes</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {data?.map((item: any) => (
+                                  <tr key={item?.alias}>
+                                    <td>
+                                      <div className="text-center d-flex justify-content-center align-items-center gap-2">
+                                        <Button
+                                          color="danger"
+                                          size="xs"
+                                          outline
+                                          onClick={() =>
+                                            handleDeleteClick(item)
+                                          }
+                                          className="text-truncate d-flex gap-1"
+                                        >
+                                          <i className="fa-solid fa-trash"></i>
+                                          Delete
+                                        </Button>
+                                        <Button
+                                          color="success"
+                                          size="xs"
+                                          outline
+                                          onClick={() => handleEditClick(item)}
+                                          className="text-truncate d-flex gap-1"
+                                        >
+                                          <i className="fa-regular fa-pen-to-square"></i>
+                                          Edit
+                                        </Button>
+                                      </div>
+                                    </td>
+                                    <td>
+                                      {item?.customers?.length > 0 ? (
+                                        <ul
+                                          className="mb-0 text-truncate"
+                                          style={{
+                                            listStyleType: "disc",
+                                            paddingLeft: "40px",
+                                          }}
+                                        >
+                                          {(item?.customers || []).map(
+                                            (app: any, idx: number) => (
+                                              <li key={app?.id ?? idx}>
+                                                {`${formatChoiceFieldValue(app?.title) || ""} ${app?.first_name || ""} ${app?.middle_name || ""} ${
+                                                  app?.last_name || ""
+                                                }`.trim() || "-"}
+                                              </li>
+                                            ),
+                                          )}
+                                        </ul>
+                                      ) : (
+                                        <ul className="text-center">
+                                          {item?.company_name || "-"}
+                                        </ul>
                                       )}
-                                    </ul>
-                                  ) : (
-                                    <ul className="text-center">
-                                      {item?.company_name || "-"}
-                                    </ul>
-                                  )}
-                                </td>
-                                <td>
-                                  <div className="d-flex justify-content-center fs-6">
-                                    {item?.is_limited_company ? (
-                                      <i className="fa-solid fa-circle-check text-success"></i>
-                                    ) : (
-                                      <i className="fa-solid fa-circle-xmark text-danger"></i>
-                                    )}
-                                  </div>
-                                </td>
-                                <td>{`${item?.house_name_or_number}, ${item?.address_1}, ${item?.city}, ${item?.postcode}`}</td>
-                                <td>
-                                  {getCurrencySign()}
-                                  {Number(
-                                    item?.property_value,
-                                  ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {getCurrencySign()}
-                                  {Number(
-                                    item?.monthly_rental_income,
-                                  ).toLocaleString()}
-                                </td>
-                                <td>{item?.mortgage_lender || "-"}</td>
-                                <td>
-                                  {getCurrencySign()}
-                                  {Number(
-                                    item?.current_mortgage_balance,
-                                  ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {getCurrencySign()}
-                                  {Number(
-                                    item?.value_at_purchase,
-                                  ).toLocaleString()}
-                                </td>
-                                <td>
-                                  {item?.date_purchased
-                                    ? formatDate(item.date_purchased)
-                                    : "-"}
-                                </td>
-                                <td>
-                                  {getCurrencySign()}
-                                  {Number(
-                                    item?.monthly_mortgage_payment,
-                                  ).toLocaleString()}
-                                </td>
-                                <td>{item?.ltv}%</td>
-                                <td>{item?.icr}%</td>
-                                <td>
-                                  <div className="d-flex justify-content-center fs-6">
-                                    {item?.is_hmo ? (
-                                      <i className="fa-solid fa-circle-check text-success"></i>
-                                    ) : (
-                                      <i className="fa-solid fa-circle-xmark text-danger"></i>
-                                    )}
-                                  </div>
-                                </td>
-                                <td>
-                                  <div className="d-flex justify-content-center fs-6">
-                                    {item?.is_mufb ? (
-                                      <i className="fa-solid fa-circle-check text-success"></i>
-                                    ) : (
-                                      <i className="fa-solid fa-circle-xmark text-danger"></i>
-                                    )}
-                                  </div>
-                                </td>
-                                <td>{item?.epc_rating || "-"}</td>
-                                <td>{item?.repayment_type || "-"}</td>
-                                <td>{item?.to_be_repaid || "-"}</td>
-                                <td>{item?.current_rate || "-"}</td>
-                                <td>{item?.rate_type || "-"}</td>
-                                <td>
-                                  {item?.current_rate_end_date
-                                    ? formatDate(item.current_rate_end_date)
-                                    : "-"}
-                                </td>
-                                <td>
-                                  {item?.erc_end_date
-                                    ? formatDate(item.erc_end_date)
-                                    : "-"}
-                                </td>
-                                <td>{item?.account_number || "-"}</td>
-                                <td>{item?.ownership || "-"}</td>
-                                <td>{item?.remaining_mortgage_term || "-"}</td>
-                                <td>{item?.number_of_bedrooms || "-"}</td>
-                                <td>{item?.year_built || "-"}</td>
-                                <td>{item?.leasehold || "-"}</td>
-                                <td>{item?.property_type || "-"}</td>
-                                <td style={{ minWidth: "300px" }}>
-                                  {item?.note || "No Notes Available"}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <div className="d-flex justify-content-end">
-            <Button
-              type="submit"
-              color="secondary"
-              onClick={() => {
-                handleNextTab();
-              }}
-            >
-              Go to Next
-            </Button>
+                                    </td>
+                                    <td>
+                                      <div className="d-flex justify-content-center fs-6">
+                                        {item?.is_limited_company ? (
+                                          <i className="fa-solid fa-circle-check text-success"></i>
+                                        ) : (
+                                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td>{`${item?.house_name_or_number}, ${item?.address_1}, ${item?.city}, ${item?.postcode}`}</td>
+                                    <td>
+                                      {getCurrencySign()}
+                                      {Number(
+                                        item?.property_value,
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>
+                                      {getCurrencySign()}
+                                      {Number(
+                                        item?.monthly_rental_income,
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>{item?.mortgage_lender || "-"}</td>
+                                    <td>
+                                      {getCurrencySign()}
+                                      {Number(
+                                        item?.current_mortgage_balance,
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>
+                                      {getCurrencySign()}
+                                      {Number(
+                                        item?.value_at_purchase,
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>
+                                      {item?.date_purchased
+                                        ? formatDate(item.date_purchased)
+                                        : "-"}
+                                    </td>
+                                    <td>
+                                      {getCurrencySign()}
+                                      {Number(
+                                        item?.monthly_mortgage_payment,
+                                      ).toLocaleString()}
+                                    </td>
+                                    <td>{item?.ltv}%</td>
+                                    <td>{item?.icr}%</td>
+                                    <td>
+                                      <div className="d-flex justify-content-center fs-6">
+                                        {item?.is_hmo ? (
+                                          <i className="fa-solid fa-circle-check text-success"></i>
+                                        ) : (
+                                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td>
+                                      <div className="d-flex justify-content-center fs-6">
+                                        {item?.is_mufb ? (
+                                          <i className="fa-solid fa-circle-check text-success"></i>
+                                        ) : (
+                                          <i className="fa-solid fa-circle-xmark text-danger"></i>
+                                        )}
+                                      </div>
+                                    </td>
+                                    <td>{item?.epc_rating || "-"}</td>
+                                    <td>{item?.repayment_type || "-"}</td>
+                                    <td>{item?.to_be_repaid || "-"}</td>
+                                    <td>{item?.current_rate || "-"}</td>
+                                    <td>{item?.rate_type || "-"}</td>
+                                    <td>
+                                      {item?.current_rate_end_date
+                                        ? formatDate(item.current_rate_end_date)
+                                        : "-"}
+                                    </td>
+                                    <td>
+                                      {item?.erc_end_date
+                                        ? formatDate(item.erc_end_date)
+                                        : "-"}
+                                    </td>
+                                    <td>{item?.account_number || "-"}</td>
+                                    <td>{item?.ownership || "-"}</td>
+                                    <td>
+                                      {item?.remaining_mortgage_term || "-"}
+                                    </td>
+                                    <td>{item?.number_of_bedrooms || "-"}</td>
+                                    <td>{item?.year_built || "-"}</td>
+                                    <td>{item?.leasehold || "-"}</td>
+                                    <td>{item?.property_type || "-"}</td>
+                                    <td style={{ minWidth: "300px" }}>
+                                      {item?.note || "No Notes Available"}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </Table>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+            <div className="d-flex justify-content-end">
+              <Button
+                type="submit"
+                color="secondary"
+                onClick={() => {
+                  handleNextTab();
+                }}
+              >
+                Go to Next
+              </Button>
+            </div>
+          </div>
         </div>
       </Container>
 

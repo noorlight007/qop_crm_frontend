@@ -134,35 +134,59 @@ const BudgetPlanner: React.FC = () => {
     }
   };
 
+  const isApplicant = session?.user?.role === "APPLICANT";
+  const isEditable = caseData?.is_editable !== false;
+  const isLocked = isApplicant && !isEditable;
+
   return (
     <div>
-      <div className="d-flex flex-column gap-3">
-        <Button color="primary" onClick={toggleModal}>
-          Complete Budget Planner
-        </Button>
-        <Input
-          type="textarea"
-          placeholder="Enter notes..."
-          rows={4}
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-        <div className="mt-auto d-flex justify-content-end w-100 gap-2">
-          <Button
-            color="primary"
-            onClick={saveNotes}
-            disabled={!hasNoteChanges || isSaving || isBudgetPlannerLoading}
-          >
-            {isSaving ? "Saving..." : "Save Changes"}
-          </Button>
+      <div style={{ position: "relative" }}>
+        {isLocked && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 10,
+              cursor: "not-allowed",
+              backgroundColor: "rgba(0,0,0,0.0001)",
+            }}
+          />
+        )}
+        <div
+          style={{
+            opacity: isLocked ? 0.45 : 1,
+            pointerEvents: isLocked ? "none" : "auto",
+          }}
+        >
+          <div className="d-flex flex-column gap-3">
+            <Button color="primary" onClick={toggleModal}>
+              Complete Budget Planner
+            </Button>
+            <Input
+              type="textarea"
+              placeholder="Enter notes..."
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+            <div className="mt-auto d-flex justify-content-end w-100 gap-2">
+              <Button
+                color="primary"
+                onClick={saveNotes}
+                disabled={!hasNoteChanges || isSaving || isBudgetPlannerLoading}
+              >
+                {isSaving ? "Saving..." : "Save Changes"}
+              </Button>
 
-          <Button
-            color="secondary"
-            onClick={handleSaveAndNext}
-            disabled={isSaving || isBudgetPlannerLoading}
-          >
-            Save & Next
-          </Button>
+              <Button
+                color="secondary"
+                onClick={handleSaveAndNext}
+                disabled={isSaving || isBudgetPlannerLoading}
+              >
+                Save & Next
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
