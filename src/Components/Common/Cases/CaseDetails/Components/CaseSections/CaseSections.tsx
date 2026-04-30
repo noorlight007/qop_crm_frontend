@@ -27,6 +27,7 @@ import {
   restoreBasicTab,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import { useGetSectionCompleteStatusQuery } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
+import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
@@ -55,7 +56,7 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
   );
   const dispatch = useAppDispatch();
 
-  const { data: SectionCompleteStatusData } = useGetSectionCompleteStatusQuery({
+  const { data: sectionCompleteStatusData } = useGetSectionCompleteStatusQuery({
     case_alias: casealias,
   });
 
@@ -219,21 +220,32 @@ const CaseSections: React.FC<{ caseStage: string; caseCategory: string }> = ({
     try {
       const key = navToStatusKey(nav);
       return !!(
-        SectionCompleteStatusData &&
+        sectionCompleteStatusData &&
         key &&
-        SectionCompleteStatusData[key]
+        sectionCompleteStatusData[key]
       );
     } catch (err) {
       return false;
     }
   };
 
+  const { data: caseData } = useGetSingleCaseQuery(
+    { case_alias: casealias },
+    { skip: !casealias },
+  );
+
   return (
     <Col sm="12" className="box-col-12">
       <Card>
         <CardHeader>
           <Col md="3">
-            <h3>Case Details</h3>
+            <h3>
+              {session.data?.user?.role === "APPLICANT" ? (
+                <span>{caseData?.name}</span>
+              ) : (
+                <span>Case Details</span>
+              )}
+            </h3>
           </Col>
         </CardHeader>
         {/* Tabs for Case Sections */}
