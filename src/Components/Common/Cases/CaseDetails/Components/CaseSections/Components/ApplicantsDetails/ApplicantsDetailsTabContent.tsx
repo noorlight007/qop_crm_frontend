@@ -207,7 +207,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
     date_of_birth: "",
     anticipated_retirement_age: 0,
     state_retirement_age: 0,
-    landing_into_retirement: false,
+    lending_into_retirement: false,
     is_smoker: false,
     gender: "",
     nationality: "GB",
@@ -990,7 +990,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 </Col>
                 <Col md={6}>
                   <FormGroup>
-                    <Label for="landing_into_retirement">
+                    <Label for="lending_into_retirement">
                       Lending into Retirement
                     </Label>
                     {["yes", "no"].map((value) => (
@@ -998,16 +998,16 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         <Label className="me-2">
                           <Input
                             type="radio"
-                            name="landing_into_retirement"
+                            name="lending_into_retirement"
                             className="me-1"
                             value={value}
                             checked={
-                              formValues.landing_into_retirement ===
+                              formValues.lending_into_retirement ===
                               (value === "yes")
                             }
                             onChange={(e) =>
                               handleInputChange(
-                                "landing_into_retirement",
+                                "lending_into_retirement",
                                 e.target.value === "yes",
                               )
                             }
@@ -1016,9 +1016,9 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                         </Label>
                       </div>
                     ))}
-                    {getFieldError("landing_into_retirement") && (
+                    {getFieldError("lending_into_retirement") && (
                       <div className="text-danger small">
-                        {getFieldError("landing_into_retirement")}
+                        {getFieldError("lending_into_retirement")}
                       </div>
                     )}
                   </FormGroup>
