@@ -2,7 +2,7 @@ export interface SuitabilityData {
   lender_text: string;
   initial_interest_rate_text: string;
   initial_interest_rate_deal_period_text: string;
-  repayment_method_why_text: string;
+  mortgage_term_text: string;
   repayment_method_recommended_text: string;
   mortgage_amount_type: string | null;
   arrangement_fee_type: string | null;
@@ -35,7 +35,6 @@ export interface SuitabilityData {
   pension_option: string | null;
   overpayment_type: string | null;
   repayment_status_type: string | null;
-  arrangement_fee_value: string | null;
-  max_erc_value: string | null;
+  max_erc: string | null;
   additional_recipients_text: string | null;
 }

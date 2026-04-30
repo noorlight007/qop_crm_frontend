@@ -95,15 +95,15 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   // NOTE: no dedicated backend field yet — mapped to `x` as placeholder
   // Update the field name once backend confirms the key
   const startAlternativesEdit = () => {
-    setAlternativesDraft(formValues.x ?? "");
+    setAlternativesDraft(formValues.additional_risk_warnings_text ?? "");
     setIsAlternativesEditing(true);
   };
   const handleAlternativesSave = () => {
-    onFormChange({ x: alternativesDraft });
+    onFormChange({ additional_risk_warnings_text: alternativesDraft });
     setIsAlternativesEditing(false);
   };
   const handleAlternativesCancel = () => {
-    setAlternativesDraft(formValues.x ?? "");
+    setAlternativesDraft(formValues.additional_risk_warnings_text ?? "");
     setIsAlternativesEditing(false);
   };
 
@@ -230,7 +230,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
             onClick={startAlternativesEdit}
             title="Click to edit"
           >
-            {formValues.x || "click to add reason..."}
+            {formValues.additional_risk_warnings_text || "click to add reason..."}
           </span>
         )}
       </p>

@@ -43,7 +43,7 @@ const Suitability: React.FC = () => {
     lender_text: "",
     initial_interest_rate_text: "",
     initial_interest_rate_deal_period_text: "",
-    repayment_method_why_text: "",
+    mortgage_term_text: "",
     repayment_method_recommended_text: "",
     mortgage_amount_type: null,
     arrangement_fee_type: null,
@@ -76,8 +76,7 @@ const Suitability: React.FC = () => {
     pension_option: null,
     overpayment_type: null,
     repayment_status_type: null,
-    arrangement_fee_value: null,
-    max_erc_value: null,
+    max_erc: null,
     additional_recipients_text: null,
   });
 
@@ -99,7 +98,7 @@ const Suitability: React.FC = () => {
         initial_interest_rate_text: formValues.initial_interest_rate_text,
         initial_interest_rate_deal_period_text:
           formValues.initial_interest_rate_deal_period_text,
-        repayment_method_why_text: formValues.repayment_method_why_text,
+        mortgage_term_text: formValues.mortgage_term_text,
         repayment_method_recommended_text:
           formValues.repayment_method_recommended_text,
         mortgage_amount_type: formValues.mortgage_amount_type,
@@ -140,8 +139,7 @@ const Suitability: React.FC = () => {
         pension_option: formValues.pension_option,
         overpayment_type: formValues.overpayment_type,
         repayment_status_type: formValues.repayment_status_type,
-        arrangement_fee_value: formValues.arrangement_fee_value,
-        max_erc_value: formValues.max_erc_value,
+        max_erc_value: formValues.max_erc,
         additional_recipients_text: formValues.additional_recipients_text,
       };
 
