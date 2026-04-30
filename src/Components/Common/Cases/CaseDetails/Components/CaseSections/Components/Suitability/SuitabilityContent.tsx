@@ -76,6 +76,9 @@ const Suitability: React.FC = () => {
     pension_option: null,
     overpayment_type: null,
     repayment_status_type: null,
+    arrangement_fee_value: null,
+    max_erc_value: null,
+    additional_recipients_text: null,
   });
 
   // Pre-populate from API response
@@ -137,6 +140,9 @@ const Suitability: React.FC = () => {
         pension_option: formValues.pension_option,
         overpayment_type: formValues.overpayment_type,
         repayment_status_type: formValues.repayment_status_type,
+        arrangement_fee_value: formValues.arrangement_fee_value,
+        max_erc_value: formValues.max_erc_value,
+        additional_recipients_text: formValues.additional_recipients_text,
       };
 
       console.log("Suitability Payload:", JSON.stringify(payload, null, 2));
