@@ -35,4 +35,7 @@ export interface SuitabilityData {
   pension_option: string | null;
   overpayment_type: string | null;
   repayment_status_type: string | null;
+  arrangement_fee_value: string | null;
+  max_erc_value: string | null;
+  additional_recipients_text: string | null;
 }

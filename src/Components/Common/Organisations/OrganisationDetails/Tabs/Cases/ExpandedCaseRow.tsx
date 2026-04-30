@@ -77,7 +77,7 @@ const ExpandedCaseRow: React.FC<ExpandedCaseRowProps> = ({
                       <p className="mb-0 small opacity-75">
                         (
                         {caseItem.created_by?.email
-                          ? formatChoiceFieldValue(caseItem.created_by?.email)
+                          ? caseItem.created_by?.email
                           : ""}
                         )
                       </p>

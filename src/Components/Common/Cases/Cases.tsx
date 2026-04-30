@@ -36,12 +36,10 @@ import CaesSummary from "./CaesSummary/CaesSummary";
 import ExpandedCaseRow from "./ExpandedCaseRow";
 import AddNewCaseModal from "./Modals/AddNewCaseModal";
 import DeleteCaseModal from "./Modals/DeleteCaseModal";
-import UpdateCaseModal from "./Modals/UpdateCaseModal";
 
 const Cases: React.FC = () => {
   const { data: session } = useSession();
   const [isAddNewCaseModalOpen, setIsAddNewCaseModalOpen] = useState(false);
-  const [isUpdateCaseModalOpen, setIsUpdateCaseModalOpen] = useState(false);
   const [currentCase, setCurrentCase] = useState<CaseInfoPrpos | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -83,16 +81,12 @@ const Cases: React.FC = () => {
   const toggleFilterIcon = () => setFilterIcon(!filterIcon);
   const toggleAddNewCaseModal = () =>
     setIsAddNewCaseModalOpen(!isAddNewCaseModalOpen);
-  const toggleUpdateCaseModal = () =>
-    setIsUpdateCaseModalOpen(!isUpdateCaseModalOpen);
+
   const toggleDeleteCaseModal = () =>
     setIsDeleteCaseModalOpen(!isDeleteCaseModalOpen);
 
   const openAddNewCaseModal = () => toggleAddNewCaseModal();
-  const openUpdateCaseModal = (caseItem: CaseInfoPrpos) => {
-    setCurrentCase(caseItem);
-    toggleUpdateCaseModal();
-  };
+
   const openDeleteCaseModal = (caseItem: CaseInfoPrpos) => {
     setCurrentCase(caseItem);
     toggleDeleteCaseModal();
@@ -320,7 +314,7 @@ const Cases: React.FC = () => {
                   <th>Case Category</th>
                   <th>Adviser</th>
                   <th>Admin</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody className="text-center">
@@ -490,17 +484,7 @@ const Cases: React.FC = () => {
                               />
                             </button>
 
-                            {/* Edit */}
-                            <Button
-                              size="sm"
-                              color="success"
-                              title="Update Case"
-                              onClick={() => openUpdateCaseModal(caseItem)}
-                            >
-                              <i className="icon-pencil-alt"></i>
-                            </Button>
-
-                            {/* Delete — role-gated, same as before */}
+                            {/* Delete — role-gated */}
                             {session?.user?.role &&
                               ((session.user.is_network &&
                                 (session.user.role === "DIRECTOR" ||
@@ -629,11 +613,7 @@ const Cases: React.FC = () => {
           isOpen={isAddNewCaseModalOpen}
           toggle={toggleAddNewCaseModal}
         />
-        <UpdateCaseModal
-          isOpen={isUpdateCaseModalOpen}
-          toggle={toggleUpdateCaseModal}
-          caseData={currentCase as CaseInfoPrpos}
-        />
+
         <DeleteCaseModal
           isOpen={isDeleteCaseModalOpen}
           toggle={toggleDeleteCaseModal}
