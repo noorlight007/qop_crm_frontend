@@ -991,7 +991,7 @@ const ApplicantsDetailsTabContent: React.FC<ApplicantsUsersProps> = ({
                 <Col md={6}>
                   <FormGroup>
                     <Label for="landing_into_retirement">
-                      Landing into Retirement
+                      Lending into Retirement
                     </Label>
                     {["yes", "no"].map((value) => (
                       <div key={value}>
