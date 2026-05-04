@@ -134,8 +134,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     useState(false);
   const [isArrangementFeeEditing, setIsArrangementFeeEditing] = useState(false);
   const [isMaxErcEditing, setIsMaxErcEditing] = useState(false);
-  const [isAdditionalRecipientsEditing, setIsAdditionalRecipientsEditing] = useState(false);
-  const [additionalRecipientsDraft, setAdditionalRecipientsDraft] = useState("");
+  const [isAdditionalRecipientsEditing, setIsAdditionalRecipientsEditing] =
+    useState(false);
+  const [additionalRecipientsDraft, setAdditionalRecipientsDraft] =
+    useState("");
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -149,7 +151,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [mortgageTermDraft, setMortgageTermDraft] = useState("");
   const [portableWhyDraft, setPortableWhyDraft] = useState("");
   const [protectionDraft, setProtectionDraft] = useState("");
-  const [arrangementFeeDraft, setArrangementFeeDraft] = useState("");
+  const [arrangementFeeDraft, setArrangementFeeDraft] = useState<string | null>(
+    null,
+  );
   const [maxErcDraft, setMaxErcDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
@@ -231,9 +235,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       (o) => o.value === formValues.residential_mortgages_type,
     ) ?? null;
   const selectedProtectionOption =
-    protectionOptionTemplates.find(
-      (o) => o.value === formValues.protection,
-    ) ?? null;
+    protectionOptionTemplates.find((o) => o.value === formValues.protection) ??
+    null;
   const selectedHomeInsuranceOption =
     homeInsuranceOptions.find((o) => o.value === formValues.home_insurance) ??
     null;
@@ -288,15 +291,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
 
   const handleMortgageTermSave = () => {
-    onFormChange({ repayment_method_why_text: mortgageTermDraft });
+    onFormChange({ mortgage_term_text: mortgageTermDraft });
     setIsMortgageTermEditing(false);
   };
   const handleMortgageTermCancel = () => {
-    setMortgageTermDraft(formValues.repayment_method_why_text ?? "");
+    setMortgageTermDraft(formValues.mortgage_term_text ?? "");
     setIsMortgageTermEditing(false);
   };
   const startMortgageTermEdit = () => {
-    setMortgageTermDraft(formValues.repayment_method_why_text ?? "");
+    setMortgageTermDraft(formValues.mortgage_term_text ?? "");
     setIsMortgageTermEditing(true);
   };
 
@@ -327,28 +330,38 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
 
   const handleArrangementFeeSave = () => {
-    onFormChange({ arrangement_fee_value: arrangementFeeDraft });
+    onFormChange({
+      arrangement_fee: arrangementFeeDraft ? Number(arrangementFeeDraft) : null,
+    });
     setIsArrangementFeeEditing(false);
   };
   const handleArrangementFeeCancel = () => {
-    setArrangementFeeDraft(formValues.arrangement_fee_value ?? "");
+    setArrangementFeeDraft(
+      formValues.arrangement_fee != null
+        ? String(formValues.arrangement_fee)
+        : null,
+    );
     setIsArrangementFeeEditing(false);
   };
   const startArrangementFeeEdit = () => {
-    setArrangementFeeDraft(formValues.arrangement_fee_value ?? "");
+    setArrangementFeeDraft(
+      formValues.arrangement_fee != null
+        ? String(formValues.arrangement_fee)
+        : "",
+    );
     setIsArrangementFeeEditing(true);
   };
 
   const handleMaxErcSave = () => {
-    onFormChange({ max_erc_value: maxErcDraft });
+    onFormChange({ max_erc: maxErcDraft });
     setIsMaxErcEditing(false);
   };
   const handleMaxErcCancel = () => {
-    setMaxErcDraft(formValues.max_erc_value ?? "");
+    setMaxErcDraft(formValues.max_erc ?? "");
     setIsMaxErcEditing(false);
   };
   const startMaxErcEdit = () => {
-    setMaxErcDraft(formValues.max_erc_value ?? "");
+    setMaxErcDraft(formValues.max_erc ?? "");
     setIsMaxErcEditing(true);
   };
   const handleAdditionalRecipientsSave = () => {
@@ -839,26 +852,47 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               {isArrangementFeeEditing ? (
                 <>
                   <Input
-                    type="text"
-                    value={arrangementFeeDraft}
+                    type="number"
+                    value={arrangementFeeDraft ?? ""}
                     onChange={(e) => setArrangementFeeDraft(e.target.value)}
                     placeholder="e.g. £999"
                     autoFocus
                     className="w-100 p-1 mb-2"
                   />
                   <div className="d-flex gap-2">
-                    <Button color="light" className="text-dark" size="sm" onClick={handleArrangementFeeSave}>Save</Button>
-                    <Button color="light" className="text-dark" size="sm" onClick={handleArrangementFeeCancel}>Cancel</Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleArrangementFeeSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleArrangementFeeCancel}
+                    >
+                      Cancel
+                    </Button>
                   </div>
                 </>
               ) : (
                 <span
-                  className={formValues.arrangement_fee_value ? "fw-semibold" : "text-success fst-italic"}
-                  style={{ cursor: "pointer", color: formValues.arrangement_fee_value ? blue : undefined }}
+                  className={
+                    formValues.arrangement_fee
+                      ? "fw-normal"
+                      : "text-success"
+                  }
+                  style={{
+                    cursor: "pointer",
+                    color: formValues.arrangement_fee ? blue : undefined,
+                  }}
                   onClick={startArrangementFeeEdit}
                   title="Click to edit"
                 >
-                  {formValues.arrangement_fee_value || "＋ Add arrangement fee"}
+                  {formValues.arrangement_fee || "＋ add arrangement fee"}
                 </span>
               )}
             </td>
@@ -969,8 +1003,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   onClick={startMortgageTermEdit}
                   title="Click to edit"
                 >
-                  {formValues.repayment_method_why_text ||
-                    "click to add reason..."}
+                  {formValues.mortgage_term_text || "click to add reason..."}
                 </span>
               )}
               <span className="mt-2">
@@ -1088,17 +1121,37 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                       style={{ width: "140px" }}
                       className="p-1"
                     />
-                    <Button color="light" className="text-dark" size="sm" onClick={handleMaxErcSave}>Save</Button>
-                    <Button color="light" className="text-dark" size="sm" onClick={handleMaxErcCancel}>Cancel</Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleMaxErcSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleMaxErcCancel}
+                    >
+                      Cancel
+                    </Button>
                   </span>
                 ) : (
-                  <strong
-                    style={{ color: formValues.max_erc_value ? blue : "green", cursor: "pointer" }}
+                  <span
+                    className={ formValues.max_erc ? "fw-normal" : "text-success"}
+                    style={{
+                      color: formValues.max_erc ? blue : undefined,
+                      cursor: "pointer",
+                    }}
                     onClick={startMaxErcEdit}
                     title="Click to edit"
                   >
-                    {formValues.max_erc_value ? `£${formValues.max_erc_value}` : "＋ Add max ERC charge"}
-                  </strong>
+                    {formValues.max_erc
+                      ? `£${formValues.max_erc}`
+                      : "＋ add max ERC charge"}
+                  </span>
                 )}
               </p>
             </td>
@@ -1685,10 +1738,20 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             className="w-100 p-1"
           />
           <div className="d-flex gap-2 mt-2">
-            <Button color="light" className="text-dark" size="sm" onClick={handleAdditionalRecipientsSave}>
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleAdditionalRecipientsSave}
+            >
               Save
             </Button>
-            <Button color="light" className="text-dark" size="sm" onClick={handleAdditionalRecipientsCancel}>
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleAdditionalRecipientsCancel}
+            >
               Cancel
             </Button>
           </div>
@@ -1696,13 +1759,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       ) : (
         <p
           style={{
-            color: formValues.additional_recipients_text ? "#2e7d32" : "green",
             cursor: "pointer",
           }}
+          className="text-success"
           onClick={startAdditionalRecipientsEdit}
           title="Click to edit"
         >
-          {formValues.additional_recipients_text || "click to add email / address"}
+          {formValues.additional_recipients_text ||
+            "click to add email / address..."}
         </p>
       )}
     </>
