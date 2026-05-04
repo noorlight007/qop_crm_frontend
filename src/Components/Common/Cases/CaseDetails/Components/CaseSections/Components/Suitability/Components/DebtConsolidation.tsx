@@ -1,5 +1,14 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
-import React, { useState } from "react";
+import { debtCostOptions } from "@/Data/Cases/SuitabilityData";
+import {
+  useCreateDebtSummaryRecommendationMutation,
+  useUpdateDebtSummaryRecommendationMutation,
+} from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
+import {
+  CreditCommitment,
+  DebtConsolidationProps,
+  DebtSummaryRowDraft,
+} from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Dropdown,
@@ -10,7 +19,6 @@ import {
   Table,
 } from "reactstrap";
 
-/* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
@@ -26,18 +34,6 @@ const thStyle: React.CSSProperties = {
   fontWeight: 600,
 };
 
-const debtCostOptions: { value: string; label: string }[] = [
-  { value: "LESS", label: "less" },
-  { value: "MORE", label: "more" },
-];
-
-interface DebtConsolidationProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
-
 const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   caseData,
   suitability,
@@ -45,6 +41,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   onFormChange,
 }) => {
   const blue = "#1565c0";
+  const s = suitability;
 
   // ── UI-only states ──
   const [isDebtsAroseEditing, setIsDebtsAroseEditing] = useState(false);
@@ -52,6 +49,9 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   const [isAlternativesEditing, setIsAlternativesEditing] = useState(false);
   const [isProceedEditing, setIsProceedEditing] = useState(false);
   const [isDebtCostOptionOpen, setIsDebtCostOptionOpen] = useState(false);
+  const [isBalanceEditing, setIsBalanceEditing] = useState(false);
+  const [balanceDraft, setBalanceDraft] = useState("");
+  const [editingCell, setEditingCell] = useState<Record<string, boolean>>({});
 
   // ── Draft states ──
   const [debtsAroseDraft, setDebtsAroseDraft] = useState("");
@@ -61,7 +61,21 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
 
   // ── Derived from formValues ──
   const selectedDebtCostOption =
-    debtCostOptions.find((o) => o.value === formValues.debt_cost_comparison) ?? null;
+    debtCostOptions.find((o) => o.value === formValues.debt_cost_comparison) ??
+    null;
+
+  const startBalanceEdit = () => {
+    setBalanceDraft(formValues.outstanding_balance ?? "");
+    setIsBalanceEditing(true);
+  };
+  const handleBalanceSave = () => {
+    onFormChange({ outstanding_balance: balanceDraft });
+    setIsBalanceEditing(false);
+  };
+  const handleBalanceCancel = () => {
+    setBalanceDraft(formValues.outstanding_balance ?? "");
+    setIsBalanceEditing(false);
+  };
 
   // ── Debts arose handlers ──
   const startDebtsAroseEdit = () => {
@@ -92,8 +106,6 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   };
 
   // ── Alternatives handlers ──
-  // NOTE: no dedicated backend field yet — mapped to `x` as placeholder
-  // Update the field name once backend confirms the key
   const startAlternativesEdit = () => {
     setAlternativesDraft(formValues.additional_risk_warnings_text ?? "");
     setIsAlternativesEditing(true);
@@ -121,6 +133,74 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
     setIsProceedEditing(false);
   };
 
+  const debts: CreditCommitment[] = s?.credit_commitments ?? [];
+
+  // ── Row drafts ──
+  const [rowDrafts, setRowDrafts] = useState<DebtSummaryRowDraft[]>([]);
+
+  useEffect(() => {
+    const recs = [...(s?.debt_summary_recommendations ?? [])].sort(
+      (a: any, b: any) => a.id - b.id,
+    );
+    setRowDrafts(
+      debts.map((_, i) => {
+        const rec = recs[i];
+        return {
+          alias: rec?.alias ?? null,
+          estimated_cost_text: rec?.estimated_cost_text ?? "",
+          has_adding_the_debt_been_recommended:
+            rec?.has_adding_the_debt_been_recommended ?? null,
+          debt_summary_reason: rec?.debt_summary_reason ?? "",
+        };
+      }),
+    );
+  }, [suitability]);
+
+  // ── Mutations ──
+  const [createDebtSummaryRecommendation] =
+    useCreateDebtSummaryRecommendationMutation();
+  const [updateDebtSummaryRecommendation] =
+    useUpdateDebtSummaryRecommendationMutation();
+
+  // ── Update a single row's draft in state ──
+  const updateRowDraft = (
+    rowIndex: number,
+    patch: Partial<DebtSummaryRowDraft>,
+  ) => {
+    setRowDrafts((prev) =>
+      prev.map((row, i) => (i === rowIndex ? { ...row, ...patch } : row)),
+    );
+  };
+
+  // ── Save handler
+  const handleRowSave = async (
+    rowIndex: number,
+    patch?: Partial<DebtSummaryRowDraft>,
+  ) => {
+    const draft = patch
+      ? { ...rowDrafts[rowIndex], ...patch }
+      : rowDrafts[rowIndex];
+
+    if (draft.alias == null) {
+      const result = await createDebtSummaryRecommendation({
+        case_alias: caseData.alias,
+        payload: draft,
+      }).unwrap();
+
+      setRowDrafts((prev) =>
+        prev.map((row, i) =>
+          i === rowIndex ? { ...row, alias: result.alias } : row,
+        ),
+      );
+    } else {
+      await updateDebtSummaryRecommendation({
+        case_alias: caseData.alias,
+        alias: draft.alias,
+        payload: draft,
+      }).unwrap();
+    }
+  };
+
   return (
     <>
       <SectionHeading>Debt Consolidation</SectionHeading>
@@ -128,7 +208,49 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
       <p>
         During our discussions, we reviewed your existing unsecured debts. Based
         on the information you provided, the total outstanding balance is
-        currently <strong style={{ color: blue }}>£00,000.00</strong>
+        currently{" "}
+        {isBalanceEditing ? (
+          <span className="d-inline-flex align-items-center gap-2 ms-1">
+            <Input
+              type="text"
+              value={balanceDraft}
+              onChange={(e) => setBalanceDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleBalanceSave();
+                if (e.key === "Escape") handleBalanceCancel();
+              }}
+              placeholder="e.g. £12,500.00"
+              autoFocus
+              style={{ width: "160px", display: "inline-block" }}
+              className="p-1"
+            />
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleBalanceSave}
+            >
+              Save
+            </Button>
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleBalanceCancel}
+            >
+              Cancel
+            </Button>
+          </span>
+        ) : (
+          <span
+            className="text-success"
+            style={{ cursor: "pointer" }}
+            onClick={startBalanceEdit}
+            title="Click to edit"
+          >
+            {formValues.outstanding_balance || "click to add balance..."}
+          </span>
+        )}
       </p>
 
       <p>
@@ -152,14 +274,32 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
               className="w-100 p-1"
             />
             <div className="d-flex gap-2 mt-2">
-              <Button color="light" className="text-dark" size="sm" onClick={handleDebtsAroseSave}>Save</Button>
-              <Button color="light" className="text-dark" size="sm" onClick={handleDebtsAroseCancel}>Cancel</Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleDebtsAroseSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleDebtsAroseCancel}
+              >
+                Cancel
+              </Button>
             </div>
           </span>
         ) : (
           <span
             className="d-inline text-success"
-            style={{ cursor: "pointer", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
             onClick={startDebtsAroseEdit}
             title="Click to edit"
           >
@@ -183,14 +323,32 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
               className="w-100 p-1"
             />
             <div className="d-flex gap-2 mt-2">
-              <Button color="light" className="text-dark" size="sm" onClick={handleGoalSave}>Save</Button>
-              <Button color="light" className="text-dark" size="sm" onClick={handleGoalCancel}>Cancel</Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleGoalSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleGoalCancel}
+              >
+                Cancel
+              </Button>
             </div>
           </span>
         ) : (
           <span
             className="d-inline text-success"
-            style={{ cursor: "pointer", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
             onClick={startGoalEdit}
             title="Click to edit"
           >
@@ -219,18 +377,37 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
               className="w-100 p-1"
             />
             <div className="d-flex gap-2 mt-2">
-              <Button color="light" className="text-dark" size="sm" onClick={handleAlternativesSave}>Save</Button>
-              <Button color="light" className="text-dark" size="sm" onClick={handleAlternativesCancel}>Cancel</Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleAlternativesSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleAlternativesCancel}
+              >
+                Cancel
+              </Button>
             </div>
           </span>
         ) : (
           <span
             className="d-inline text-success"
-            style={{ cursor: "pointer", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
             onClick={startAlternativesEdit}
             title="Click to edit"
           >
-            {formValues.additional_risk_warnings_text || "click to add reason..."}
+            {formValues.additional_risk_warnings_text ||
+              "click to add reason..."}
           </span>
         )}
       </p>
@@ -280,24 +457,46 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
               className="w-100 p-1"
             />
             <div className="d-flex gap-2 mt-2">
-              <Button color="light" className="text-dark" size="sm" onClick={handleProceedSave}>Save</Button>
-              <Button color="light" className="text-dark" size="sm" onClick={handleProceedCancel}>Cancel</Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleProceedSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-dark"
+                size="sm"
+                onClick={handleProceedCancel}
+              >
+                Cancel
+              </Button>
             </div>
           </span>
         ) : (
           <span
             className="d-inline text-success"
-            style={{ cursor: "pointer", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+            style={{
+              cursor: "pointer",
+              whiteSpace: "pre-wrap",
+              wordBreak: "break-word",
+            }}
             onClick={startProceedEdit}
             title="Click to edit"
           >
-            {formValues.consolidation_proceed_reason || "click to add reason..."}
+            {formValues.consolidation_proceed_reason ||
+              "click to add reason..."}
           </span>
         )}
       </p>
 
       <p className="fw-bold mb-2 mt-3">Debt Summary and Recommendation</p>
-      <p>A summary of the debts you wish to consolidate is shown in the table below.</p>
+      <p>
+        A summary of the debts you wish to consolidate is shown in the table
+        below.
+      </p>
 
       <Table bordered responsive size="sm" className="mb-3">
         <thead>
@@ -311,34 +510,220 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td style={{ color: blue }}>Barclays credit card</td>
-            <td style={{ color: blue }}>£7,300</td>
-            <td style={{ color: blue }}>£73</td>
-            <td>
-              <AdvisorNote>
-                + _ x Possibly — discuss if debt con calculator can be built in
-              </AdvisorNote>
-            </td>
-            <td style={{ color: blue }}>Y / N</td>
-            <td style={{ color: "#2e7d32" }}>[reason]</td>
-          </tr>
-          <tr>
-            <td style={{ color: blue }}></td>
-            <td style={{ color: blue }}></td>
-            <td style={{ color: blue }}></td>
-            <td></td>
-            <td style={{ color: blue }}>Y / N</td>
-            <td style={{ color: "#2e7d32" }}>[reason]</td>
-          </tr>
-          <tr>
-            <td style={{ color: blue }}></td>
-            <td style={{ color: blue }}></td>
-            <td style={{ color: blue }}></td>
-            <td></td>
-            <td style={{ color: blue }}>Y / N</td>
-            <td style={{ color: "#2e7d32" }}>[reason]</td>
-          </tr>
+          {debts.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="text-center text-muted fst-italic">
+                No debt consolidation entries found.
+              </td>
+            </tr>
+          ) : (
+            debts.map((debt, i) => {
+              const draft = rowDrafts[i] ?? {
+                alias: null,
+                estimated_cost_text: "",
+                has_adding_the_debt_been_recommended: null,
+                debt_summary_reason: "",
+              };
+              const costKey = `${i}_cost`;
+              const reasonKey = `${i}_reason`;
+
+              return (
+                <tr key={i}>
+                  {/* Lender & type */}
+                  <td style={{ color: blue }}>
+                    {debt.company} {debt.type ? `(${debt.type})` : ""}
+                  </td>
+
+                  {/* Balance / settlement figure */}
+                  <td style={{ color: blue }}>
+                    {debt.os_balance != null
+                      ? `£${debt.os_balance.toFixed(2)}`
+                      : "—"}
+                    {debt.settlement_balance != null && (
+                      <span
+                        className="text-muted d-block"
+                        style={{ fontSize: "0.78rem" }}
+                      >
+                        Settlement: £{debt.settlement_balance.toFixed(2)}
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Monthly repayment */}
+                  <td style={{ color: blue }}>
+                    {debt.monthly_repayment != null
+                      ? `£${debt.monthly_repayment.toFixed(2)}`
+                      : "—"}
+                  </td>
+
+                  {/* Estimated cost — Done closes cell and triggers save */}
+                  <td>
+                    {editingCell[costKey] ? (
+                      <>
+                        <Input
+                          type="textarea"
+                          rows={3}
+                          value={draft.estimated_cost_text}
+                          autoFocus
+                          onChange={(e) =>
+                            updateRowDraft(i, {
+                              estimated_cost_text: e.target.value,
+                            })
+                          }
+                          className="w-100 p-1"
+                          style={{ fontSize: "0.82rem" }}
+                        />
+                        <div className="d-flex gap-2 mt-1">
+                          <Button
+                            color="light"
+                            className="text-dark"
+                            size="sm"
+                            onClick={() => {
+                              setEditingCell((prev) => ({
+                                ...prev,
+                                [costKey]: false,
+                              }));
+                              handleRowSave(i);
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <span
+                        className="text-success"
+                        style={{
+                          cursor: "pointer",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          fontSize: "0.82rem",
+                        }}
+                        onClick={() =>
+                          setEditingCell((prev) => ({
+                            ...prev,
+                            [costKey]: true,
+                          }))
+                        }
+                        title="Click to edit"
+                      >
+                        {draft.estimated_cost_text || "click to add..."}
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Has adding the debt been recommended — selecting triggers save */}
+                  <td className="text-center align-middle">
+                    <Dropdown
+                      isOpen={editingCell[`${i}_recommended`] ?? false}
+                      toggle={() =>
+                        setEditingCell((prev) => ({
+                          ...prev,
+                          [`${i}_recommended`]: !prev[`${i}_recommended`],
+                        }))
+                      }
+                      className="d-inline-block"
+                    >
+                      <DropdownToggle
+                        tag="span"
+                        style={{
+                          color: "#6a1b9a",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {draft.has_adding_the_debt_been_recommended === null
+                          ? "Please select"
+                          : draft.has_adding_the_debt_been_recommended
+                            ? "Yes"
+                            : "No"}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem
+                          onClick={() => {
+                            const patch = {
+                              has_adding_the_debt_been_recommended: true,
+                            };
+                            updateRowDraft(i, patch);
+                            handleRowSave(i, patch);
+                          }}
+                        >
+                          Yes
+                        </DropdownItem>
+                        <DropdownItem
+                          onClick={() => {
+                            const patch = {
+                              has_adding_the_debt_been_recommended: false,
+                            };
+                            updateRowDraft(i, patch);
+                            handleRowSave(i, patch);
+                          }}
+                        >
+                          No
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </td>
+
+                  {/* Reason — Done closes cell and triggers save */}
+                  <td>
+                    {editingCell[reasonKey] ? (
+                      <>
+                        <Input
+                          type="textarea"
+                          rows={3}
+                          value={draft.debt_summary_reason}
+                          autoFocus
+                          onChange={(e) =>
+                            updateRowDraft(i, {
+                              debt_summary_reason: e.target.value,
+                            })
+                          }
+                          className="w-100 p-1"
+                          style={{ fontSize: "0.82rem" }}
+                        />
+                        <div className="d-flex gap-2 mt-1">
+                          <Button
+                            color="light"
+                            className="text-dark"
+                            size="sm"
+                            onClick={() => {
+                              setEditingCell((prev) => ({
+                                ...prev,
+                                [reasonKey]: false,
+                              }));
+                              handleRowSave(i);
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <span
+                        className="text-success"
+                        style={{
+                          cursor: "pointer",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          fontSize: "0.82rem",
+                        }}
+                        onClick={() =>
+                          setEditingCell((prev) => ({
+                            ...prev,
+                            [reasonKey]: true,
+                          }))
+                        }
+                        title="Click to edit"
+                      >
+                        {draft.debt_summary_reason || "click to add reason..."}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
+          )}
         </tbody>
       </Table>
 
@@ -364,13 +749,17 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
               textDecoration: "underline",
             }}
           >
-            {selectedDebtCostOption ? selectedDebtCostOption.label : "(select option...)"}
+            {selectedDebtCostOption
+              ? selectedDebtCostOption.label
+              : "(select option...)"}
           </DropdownToggle>
           <DropdownMenu>
             {debtCostOptions.map((option) => (
               <DropdownItem
                 key={option.value}
-                onClick={() => onFormChange({ debt_cost_comparison: option.value })}
+                onClick={() =>
+                  onFormChange({ debt_cost_comparison: option.value })
+                }
               >
                 {option.label}
               </DropdownItem>

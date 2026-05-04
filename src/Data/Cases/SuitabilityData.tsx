@@ -193,3 +193,9 @@ export const notRecommendedOptions: { value: string; label: string }[] = [
       "the early repayment charge was greater than the savings you would have made from securing a lower rate with a new lender.",
   },
 ];
+
+export const debtCostOptions: { value: string; label: string }[] = [
+  { value: "LESS", label: "less" },
+  { value: "MORE", label: "more" },
+];
+

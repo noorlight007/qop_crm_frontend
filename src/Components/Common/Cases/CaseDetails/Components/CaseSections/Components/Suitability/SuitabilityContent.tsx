@@ -34,7 +34,6 @@ const Suitability: React.FC = () => {
 
   const { data: suitability, isLoading: isSuitLoading } =
     useGetSuitabilityQuery({ case_alias: casealias }, { skip: !casealias });
-  console.log("Suitability Data:", suitability);
 
   const [updateSuitability, { isLoading: isUpdatingSuitability }] =
     useUpdateSuitabilityMutation();
@@ -71,13 +70,13 @@ const Suitability: React.FC = () => {
     why_was_this_recommended: "",
     product_transfer_reason: null,
     product_transfer_recommended: "",
-    x: "",
     arrangement_fee: null,
     pension_option: null,
     overpayment_type: null,
     repayment_status_type: null,
     max_erc: null,
     additional_recipients_text: null,
+    outstanding_balance: null,
   });
 
   // Pre-populate from API response
@@ -125,9 +124,7 @@ const Suitability: React.FC = () => {
         why_was_this_recommended: formValues.why_was_this_recommended,
         product_transfer_reason: formValues.product_transfer_reason,
         product_transfer_recommended: formValues.product_transfer_recommended,
-        x: formValues.x,
         arrangement_fee: formValues.arrangement_fee,
-        // fields added by us not in original backend spec
         early_repayment_charges_meaning:
           formValues.early_repayment_charges_meaning,
         early_repayment_charges_recommendation:
@@ -141,6 +138,7 @@ const Suitability: React.FC = () => {
         repayment_status_type: formValues.repayment_status_type,
         max_erc_value: formValues.max_erc,
         additional_recipients_text: formValues.additional_recipients_text,
+        outstanding_balance: formValues.outstanding_balance,
       };
 
       console.log("Suitability Payload:", JSON.stringify(payload, null, 2));
@@ -161,7 +159,7 @@ const Suitability: React.FC = () => {
   return (
     <Container
       fluid
-      className="py-4 px-2 px-md-4 suitability-page-bg" // ← class replaces inline style
+      className="py-4 px-2 px-md-4 suitability-page-bg"
     >
       <h1 className="mb-4 text-danger text-center fw-bold">
         This page is under Development
@@ -173,20 +171,28 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        <Divider />
-        <DebtConsolidation
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
-        <Divider />
-        <LendingIntoRetirement
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
+        {suitability?.is_debt_consolidation_applicable && (
+          <>
+            <Divider />
+            <DebtConsolidation
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
+        {suitability?.is_lending_into_retirement_applicable && (
+          <>
+            <Divider />
+            <LendingIntoRetirement
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
         <Divider />
         <PortingMortgageIncrease
           caseData={caseData}
@@ -194,13 +200,17 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        <Divider />
-        <IslamicMortgage
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
+        {suitability?.is_islamic_mortgage_applicable && (
+          <>
+            <Divider />
+            <IslamicMortgage
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
         <Divider />
         <RateTypePaymentMethod
           caseData={caseData}

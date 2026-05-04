@@ -30,11 +30,40 @@ export interface SuitabilityData {
   why_was_this_recommended: string;
   product_transfer_reason: string | null;
   product_transfer_recommended: string;
-  x: string;
   arrangement_fee: number | null;
   pension_option: string | null;
   overpayment_type: string | null;
   repayment_status_type: string | null;
   max_erc: string | null;
   additional_recipients_text: string | null;
+  outstanding_balance: string | null;
+}
+
+export interface RecommendationLetterProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface DebtConsolidationProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface DebtSummaryRowDraft {
+  alias: string | null;
+  estimated_cost_text: string;
+  has_adding_the_debt_been_recommended: boolean | null;
+  debt_summary_reason: string;
+}
+
+export interface CreditCommitment {
+  type: string;
+  company: string;
+  os_balance: number | null;
+  settlement_balance: number | null;
+  monthly_repayment: number | null;
 }

@@ -11,7 +11,7 @@ import {
   rateSwitchOptions,
 } from "@/Data/Cases/SuitabilityData";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { RecommendationLetterProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import Image from "next/image";
 import React, { useState } from "react";
 import {
@@ -43,13 +43,6 @@ const thStyle: React.CSSProperties = {
   fontSize: "0.84rem",
   fontWeight: 600,
 };
-
-interface RecommendationLetterProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
 
 const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   caseData,
@@ -881,9 +874,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               ) : (
                 <span
                   className={
-                    formValues.arrangement_fee
-                      ? "fw-normal"
-                      : "text-success"
+                    formValues.arrangement_fee ? "fw-normal" : "text-success"
                   }
                   style={{
                     cursor: "pointer",
@@ -1140,7 +1131,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   </span>
                 ) : (
                   <span
-                    className={ formValues.max_erc ? "fw-normal" : "text-success"}
+                    className={
+                      formValues.max_erc ? "fw-normal" : "text-success"
+                    }
                     style={{
                       color: formValues.max_erc ? blue : undefined,
                       cursor: "pointer",
