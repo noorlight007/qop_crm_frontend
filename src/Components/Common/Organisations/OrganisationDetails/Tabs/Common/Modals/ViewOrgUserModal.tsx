@@ -1,26 +1,47 @@
-import { ViewOrgAdminModalProps } from "@/Types/Common/Organisations/OrgAdminTypes";
+import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
+import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
+import { OrgIntroducerInfo } from "@/Types/Common/Organisations/OrgIntroducerTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
+import React from "react";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
+export type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
+export type OrgUserItem = OrgAdminInfo | OrgIntroducerInfo | OrgAdviserInfo;
+
+export type ViewOrgUserModalProps = {
+  isOpen: boolean;
+  toggle: () => void;
+  role: OrgUserRole;
+  selectedUser: Partial<OrgUserItem>;
+};
+
+const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
   isOpen,
   toggle,
-  selectedAdmin,
+  role,
+  selectedUser,
 }) => {
+  const headerTitle =
+    role === "ADMIN"
+      ? "Admin Information"
+      : role === "INTRODUCER"
+        ? "Introducer Information"
+        : "Adviser Information";
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Admin Information</span>
+        <span className="fs-5 fw-bold text-primary">{headerTitle}</span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedAdmin?.profile_image ? (
+            {selectedUser?.profile_image ? (
               <Image
-                src={selectedAdmin.profile_image}
+                src={selectedUser.profile_image as string}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -36,21 +57,25 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">{selectedAdmin?.name}</h4>
+          <h4 className="mb-1 text-dark fw-bold">{selectedUser?.name}</h4>
           <p className="mb-2 text-muted small">
-            {selectedAdmin?.role
-              ? formatChoiceFieldValue(selectedAdmin.role)
-              : "Admin"}
+            {selectedUser?.role
+              ? formatChoiceFieldValue(selectedUser.role)
+              : role === "ADMIN"
+                ? "Admin"
+                : role === "INTRODUCER"
+                  ? "Introducer"
+                  : "Adviser"}
           </p>
 
           <div className="d-flex justify-content-center gap-2">
             <p>
               <Badge pill className="px-3 py-2 bg-light-primary">
-                👤 {formatChoiceFieldValue(selectedAdmin?.role)}
+                👤 {formatChoiceFieldValue((selectedUser as any)?.role)}
               </Badge>
             </p>
             <p>
-              {selectedAdmin?.is_active ? (
+              {(selectedUser as any)?.is_active ? (
                 <Badge pill className="px-3 py-2 bg-light-success">
                   ✓ Approved
                 </Badge>
@@ -79,8 +104,8 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedAdmin?.email ? (
-                        selectedAdmin.email
+                      {selectedUser?.email ? (
+                        selectedUser.email
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -94,9 +119,9 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedAdmin?.phone ? (
+                      {selectedUser?.phone ? (
                         <span className="text-decoration-none text-primary">
-                          {selectedAdmin.phone}
+                          {selectedUser.phone}
                         </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
@@ -119,26 +144,60 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
               Personal Details
             </h6>
             <Row>
-              <Col md="6" className="mb-3">
-                <div>
-                  <small className="text-muted d-block fw-500">Gender</small>
-                  <p className="m-0 text-dark fw-500">
-                    {selectedAdmin?.gender ? (
-                      formatChoiceFieldValue(selectedAdmin.gender)
-                    ) : (
-                      <small className="text-muted">Not Available</small>
-                    )}
-                  </p>
-                </div>
-              </Col>
-              <Col md="6" className="mb-3">
+              {role === "INTRODUCER" ? (
+                <>
+                  <Col md="4" className="mb-3">
+                    <div>
+                      <small className="text-muted d-block fw-500">
+                        Company Name
+                      </small>
+                      <p className="m-0 text-dark fw-500">
+                        {(selectedUser as any)?.company_name ? (
+                          (selectedUser as any).company_name
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </p>
+                    </div>
+                  </Col>
+                  <Col md="4" className="mb-3">
+                    <div>
+                      <small className="text-muted d-block fw-500">
+                        Company Address
+                      </small>
+                      <p className="m-0 text-dark fw-500">
+                        {(selectedUser as any)?.company_address ? (
+                          (selectedUser as any).company_address
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </p>
+                    </div>
+                  </Col>
+                </>
+              ) : (
+                <Col md="6" className="mb-3">
+                  <div>
+                    <small className="text-muted d-block fw-500">Gender</small>
+                    <p className="m-0 text-dark fw-500">
+                      {(selectedUser as any)?.gender ? (
+                        formatChoiceFieldValue((selectedUser as any).gender)
+                      ) : (
+                        <small className="text-muted">Not Available</small>
+                      )}
+                    </p>
+                  </div>
+                </Col>
+              )}
+
+              <Col md={role === "INTRODUCER" ? "4" : "6"} className="mb-3">
                 <div>
                   <small className="text-muted d-block fw-500">
                     Joining Date
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedAdmin?.joining_date ? (
-                      selectedAdmin.joining_date
+                    {selectedUser?.joining_date ? (
+                      selectedUser.joining_date
                     ) : (
                       <small className="text-muted">Not Available</small>
                     )}
@@ -158,26 +217,28 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedAdmin?.created_by ? (
+            {(selectedUser as any)?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
                   <strong>
-                    {selectedAdmin.created_by.title
+                    {(selectedUser as any).created_by.title
                       ? formatChoiceFieldValue(
-                          selectedAdmin.created_by.title,
+                          (selectedUser as any).created_by.title,
                         ).trim() + " "
                       : ""}
-                    {selectedAdmin.created_by.first_name}{" "}
-                    {selectedAdmin.created_by.middle_name}{" "}
-                    {selectedAdmin.created_by.last_name}
+                    {(selectedUser as any).created_by.first_name}{" "}
+                    {(selectedUser as any).created_by.middle_name}{" "}
+                    {(selectedUser as any).created_by.last_name}
                   </strong>
                 </p>
                 <small className="text-muted">
-                  {selectedAdmin.created_by.email
-                    ? formatChoiceFieldValue(selectedAdmin.created_by.email)
+                  {(selectedUser as any).created_by.email
+                    ? formatChoiceFieldValue(
+                        (selectedUser as any).created_by.email,
+                      )
                     : ""}
                 </small>
               </div>
@@ -201,4 +262,4 @@ const ViewOrgAdminModal: React.FC<ViewOrgAdminModalProps> = ({
   );
 };
 
-export default ViewOrgAdminModal;
+export default ViewOrgUserModal;
