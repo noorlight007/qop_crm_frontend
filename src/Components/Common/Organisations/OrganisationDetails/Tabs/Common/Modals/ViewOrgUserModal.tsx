@@ -1,20 +1,18 @@
-import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
-import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
-import { OrgIntroducerInfo } from "@/Types/Common/Organisations/OrgIntroducerTypes";
+import {
+  OrgUserListType,
+  OrgUserRole,
+} from "@/Types/Common/Organisations/OrgUserListTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import React from "react";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-export type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
-export type OrgUserItem = OrgAdminInfo | OrgIntroducerInfo | OrgAdviserInfo;
-
 export type ViewOrgUserModalProps = {
   isOpen: boolean;
   toggle: () => void;
   role: OrgUserRole;
-  selectedUser: Partial<OrgUserItem>;
+  selectedUser: Partial<OrgUserListType>;
 };
 
 const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
@@ -28,7 +26,9 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
       ? "Admin Information"
       : role === "INTRODUCER"
         ? "Introducer Information"
-        : "Adviser Information";
+        : role === "ADVISER"
+          ? "Adviser Information"
+          : "User Information";
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
@@ -61,7 +61,7 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
 
           <div className="d-flex justify-content-center gap-2">
             <p>
-              {(selectedUser as any)?.is_active ? (
+              {selectedUser?.is_active ? (
                 <Badge pill className="px-3 py-2 bg-light-success">
                   ✓ Approved
                 </Badge>
@@ -130,7 +130,7 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
               Personal Details
             </h6>
             <Row>
-              {role === "INTRODUCER" ? (
+              {role === "INTRODUCER" && (
                 <>
                   <Col md="4" className="mb-3">
                     <div>
@@ -138,8 +138,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                         Company Name
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {(selectedUser as any)?.company_name ? (
-                          (selectedUser as any).company_name
+                        {selectedUser?.company_name ? (
+                          selectedUser.company_name
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
@@ -152,8 +152,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                         Company Address
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {(selectedUser as any)?.company_address ? (
-                          (selectedUser as any).company_address
+                        {selectedUser?.company_address ? (
+                          selectedUser.company_address
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
@@ -161,19 +161,6 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                     </div>
                   </Col>
                 </>
-              ) : (
-                <Col md="6" className="mb-3">
-                  <div>
-                    <small className="text-muted d-block fw-500">Gender</small>
-                    <p className="m-0 text-dark fw-500">
-                      {(selectedUser as any)?.gender ? (
-                        formatChoiceFieldValue((selectedUser as any).gender)
-                      ) : (
-                        <small className="text-muted">Not Available</small>
-                      )}
-                    </p>
-                  </div>
-                </Col>
               )}
 
               <Col md={role === "INTRODUCER" ? "4" : "6"} className="mb-3">

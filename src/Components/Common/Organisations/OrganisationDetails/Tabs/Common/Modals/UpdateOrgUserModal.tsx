@@ -1,9 +1,11 @@
 "use client";
 
 import { useUpdateOrgMemberMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
-import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
-import { OrgIntroducerInfo } from "@/Types/Common/Organisations/OrgIntroducerTypes";
+import {
+  OrgUserListType,
+  OrgUserRole,
+} from "@/Types/Common/Organisations/OrgUserListTypes";
+
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -20,18 +22,12 @@ import {
   Row,
 } from "reactstrap";
 
-type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
-
-type OrgUserItem = OrgAdminInfo | OrgIntroducerInfo | OrgAdviserInfo;
-
-type OrgUserForm = Record<string, any>;
-
 export type UpdateOrgUserModalProps = {
   isOpen: boolean;
   toggle: () => void;
   organisationslug: string;
   role: OrgUserRole;
-  selectedUser?: Partial<OrgUserItem>;
+  selectedUser?: Partial<OrgUserListType>;
 };
 
 const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
@@ -41,7 +37,7 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   role,
   selectedUser,
 }) => {
-  const [formData, setFormData] = useState<OrgUserForm>({
+  const [formData, setFormData] = useState<OrgUserListType>({
     title: "",
     first_name: "",
     middle_name: "",
@@ -49,11 +45,12 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
     name: "",
     email: "",
     phone: "",
-    gender: "",
     joining_date: "",
     note: "",
+    company_name: "",
+    company_address: "",
   });
-  const [originalData, setOriginalData] = useState<OrgUserForm>({});
+  const [originalData, setOriginalData] = useState<OrgUserListType>({});
   const [isModified, setIsModified] = useState(false);
 
   const [updateMember, { isLoading }] = useUpdateOrgMemberMutation();
@@ -67,9 +64,10 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
       name: (selectedUser as any)?.name ?? "",
       email: (selectedUser as any)?.email ?? "",
       phone: (selectedUser as any)?.phone ?? "",
-      gender: (selectedUser as any)?.gender ?? "",
       joining_date: (selectedUser as any)?.joining_date ?? "",
       note: (selectedUser as any)?.note ?? "",
+      company_name: (selectedUser as any)?.company_name ?? "",
+      company_address: (selectedUser as any)?.company_address ?? "",
     });
     setOriginalData({
       title: (selectedUser as any)?.title ?? "",
@@ -79,9 +77,10 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
       name: (selectedUser as any)?.name ?? "",
       email: (selectedUser as any)?.email ?? "",
       phone: (selectedUser as any)?.phone ?? "",
-      gender: (selectedUser as any)?.gender ?? "",
       joining_date: (selectedUser as any)?.joining_date ?? "",
       note: (selectedUser as any)?.note ?? "",
+      company_name: (selectedUser as any)?.company_name ?? "",
+      company_address: (selectedUser as any)?.company_address ?? "",
     });
     setIsModified(false);
   }, [selectedUser]);
@@ -130,9 +129,10 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
       "name",
       "email",
       "phone",
-      "gender",
       "joining_date",
       "note",
+      "company_name",
+      "company_address",
     ];
 
     if (role === "INTRODUCER") {
@@ -290,24 +290,35 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
               </FormGroup>
             </Col>
 
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Label for="gender">Gender</Label>
-                <Input
-                  id="gender"
-                  name="gender"
-                  type="select"
-                  value={(formData as any)?.gender ?? ""}
-                  onChange={handleChange}
-                >
-                  <option value="">Select gender</option>
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                  <option value="OTHER">Other</option>
-                </Input>
-              </FormGroup>
-            </Col>
+            {role === "INTRODUCER" && (
+              <>
+                <Col md="6" sm="12">
+                  <FormGroup>
+                    <Label for="company_name">Company Name</Label>
+                    <Input
+                      id="company_name"
+                      name="company_name"
+                      type="text"
+                      value={(formData as any)?.company_name ?? ""}
+                      onChange={handleChange}
+                    />
+                  </FormGroup>
+                </Col>
 
+                <Col md="6" sm="12">
+                  <FormGroup>
+                    <Label for="company_address">Company Address</Label>
+                    <Input
+                      id="company_address"
+                      name="company_address"
+                      type="text"
+                      value={(formData as any)?.company_address ?? ""}
+                      onChange={handleChange}
+                    />
+                  </FormGroup>
+                </Col>
+              </>
+            )}
             <Col sm="12">
               <FormGroup>
                 <Label for="note">Note</Label>

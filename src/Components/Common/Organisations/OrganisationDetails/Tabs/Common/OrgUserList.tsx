@@ -8,9 +8,10 @@ import {
   useGetOrgUserListQuery,
   useUpdateOrgMemberMutation,
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
-import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
-import { OrgIntroducerInfo } from "@/Types/Common/Organisations/OrgIntroducerTypes";
+import {
+  OrgUserListProps,
+  OrgUserListType,
+} from "@/Types/Common/Organisations/OrgUserListTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -41,12 +42,6 @@ import {
   UncontrolledPopover,
 } from "reactstrap";
 
-type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
-
-export type OrgUserListProps = {
-  role: OrgUserRole;
-};
-
 const searchHelpText =
   "🔍 You can search using Name, Email Address or Phone Number.";
 
@@ -60,15 +55,13 @@ const statusColorMap = {
   false: "danger",
 };
 
-type OrgUserItem = OrgAdminInfo | OrgIntroducerInfo | OrgAdviserInfo;
-
 const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   const params = useParams();
   const { data: session } = useSession();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
 
-  const [items, setItems] = useState<OrgUserItem[]>([]);
+  const [items, setItems] = useState<OrgUserListType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,13 +70,17 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Partial<OrgUserItem>>({});
+  const [selectedUser, setSelectedUser] = useState<Partial<OrgUserListType>>(
+    {},
+  );
 
   const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
     {},
   );
 
-  const toggleDropdown = (userAlias: string) => {
+  const toggleDropdown = (userAlias: string | undefined) => {
+    if (!userAlias) return;
+
     setDropdownOpen((prev) => ({
       ...prev,
       [userAlias]: !prev[userAlias],
@@ -120,24 +117,24 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   }, [role]);
 
   const selectItems = useMemo(() => {
-    return (data: any): OrgUserItem[] => {
+    return (data: any): OrgUserListType[] => {
       if (!data) return [];
-      if (Array.isArray(data)) return data as OrgUserItem[];
+      if (Array.isArray(data)) return data as OrgUserListType[];
 
       if (role === "ADMIN")
-        return (data.results || data.admins || []) as OrgUserItem[];
+        return (data.results || data.admins || []) as OrgUserListType[];
       if (role === "INTRODUCER")
-        return (data.results || data.admins || []) as OrgUserItem[];
+        return (data.results || data.introducers || []) as OrgUserListType[];
       if (role === "ADVISER")
-        return (data.results || data.advisers || []) as OrgUserItem[];
+        return (data.results || data.advisers || []) as OrgUserListType[];
 
-      return (data.results || data.users || []) as OrgUserItem[];
+      return (data.results || data.users || []) as OrgUserListType[];
     };
   }, [role]);
 
   const colSpan = role === "INTRODUCER" ? 10 : 8;
 
-  const openModalForUser = (user: OrgUserItem) => {
+  const openModalForUser = (user: OrgUserListType) => {
     setSelectedUser(user);
     setIsViewModalOpen(true);
   };
@@ -154,17 +151,22 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     setIsDeleteModalOpen((prev) => !prev);
   };
 
-  const openUpdateModal = (user: OrgUserItem) => {
+  const openUpdateModal = (user: OrgUserListType) => {
     setSelectedUser(user);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteModal = (user: OrgUserItem) => {
+  const openDeleteModal = (user: OrgUserListType) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);
   };
 
-  const handleStatusChange = async (userAlias: string, newStatus: boolean) => {
+  const handleStatusChange = async (
+    userAlias: string | undefined,
+    newStatus: boolean,
+  ) => {
+    if (!userAlias) return;
+
     try {
       await updateOrgMember({
         organisationslug,
@@ -305,6 +307,12 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Joining Date</th>
+                  {role === "INTRODUCER" && (
+                    <>
+                      <th>Company Name</th>
+                      <th>Company Address</th>
+                    </>
+                  )}
                   <th>Created By</th>
                   <th>Created At</th>
                   <th>Status</th>
@@ -313,17 +321,17 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
               </thead>
               <tbody>
                 {items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={rowKeyFn(item, index)} className="text-center">
+                  items.map((item: OrgUserListType, index) => (
+                    <tr key={index} className="text-center">
                       <td>
                         <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
                           <span
                             className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
                             style={{ width: 40, height: 40 }}
                           >
-                            {(item as any)?.profile_image ? (
+                            {item?.profile_image ? (
                               <Image
-                                src={(item as any).profile_image as string}
+                                src={item.profile_image as string}
                                 alt="Profile"
                                 width={35}
                                 height={35}
@@ -338,62 +346,73 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                             onClick={() => openModalForUser(item)}
                             style={{ cursor: "pointer" }}
                           >
-                            {(item as any)?.name ?? "-"}
+                            {item?.name ?? "-"}
                           </span>
                         </div>
                       </td>
 
                       <td>
-                        {(item as any)?.email ? (
-                          (item as any).email
+                        {item?.email ? (
+                          item.email
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
 
                       <td>
-                        {(item as any)?.phone ? (
-                          (item as any).phone
+                        {item?.phone ? (
+                          item.phone
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
 
                       <td>
-                        {(item as any)?.joining_date ? (
-                          (item as any).joining_date
+                        {item?.joining_date ? (
+                          item.joining_date
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
                       </td>
 
                       {role === "INTRODUCER" && (
-                        <td>
-                          {(item as any)?.company_name ? (
-                            (item as any).company_name
-                          ) : (
-                            <small className="text-muted">Not Available</small>
-                          )}
-                        </td>
+                        <>
+                          <td>
+                            {item?.company_name ? (
+                              item.company_name
+                            ) : (
+                              <small className="text-muted">
+                                Not Available
+                              </small>
+                            )}
+                          </td>
+                          <td>
+                            {item?.company_address ? (
+                              item.company_address
+                            ) : (
+                              <small className="text-muted">
+                                Not Available
+                              </small>
+                            )}
+                          </td>
+                        </>
                       )}
 
                       <td>
-                        {(item as any)?.created_by == null ? (
+                        {item?.created_by == null ? (
                           <small className="text-muted">Not Available</small>
                         ) : (
                           <>
                             <p className="m-0">
-                              {(item as any).created_by?.name || "Unknown User"}
+                              {item.created_by?.name || "Unknown User"}
                             </p>
                             <p
                               className="m-0 opacity-75"
                               style={{ fontSize: "9px" }}
                             >
                               (
-                              {(item as any).created_by?.email
-                                ? formatChoiceFieldValue(
-                                    (item as any).created_by?.email,
-                                  )
+                              {item.created_by?.email
+                                ? formatChoiceFieldValue(item.created_by?.email)
                                 : "Not Found"}
                               )
                             </p>
@@ -401,16 +420,18 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                         )}
                       </td>
 
-                      <td>{formatDateAndTime((item as any)?.created_at)}</td>
+                      <td>{formatDateAndTime(item?.created_at)}</td>
 
                       <td>
                         {session?.user?.role === "SUPER_ADMIN" ? (
                           <div style={{ position: "relative" }}>
                             <Dropdown
                               isOpen={
-                                dropdownOpen[(item as any).alias] || false
+                                item?.alias
+                                  ? dropdownOpen[item.alias] || false
+                                  : false
                               }
-                              toggle={() => toggleDropdown((item as any).alias)}
+                              toggle={() => toggleDropdown(item?.alias)}
                             >
                               <DropdownToggle
                                 tag="span"
@@ -458,7 +479,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                                       key={option.value.toString()}
                                       onClick={() =>
                                         handleStatusChange(
-                                          (item as any).alias,
+                                          item?.alias,
                                           option.value,
                                         )
                                       }
