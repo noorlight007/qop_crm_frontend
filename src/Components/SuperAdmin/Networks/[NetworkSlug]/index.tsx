@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import Advisers from "./Tabs/Advisers/Advisers";
 import Applicants from "./Tabs/Applicants/Applicants";
+import Cases from "./Tabs/Cases/Cases";
 import Compliances from "./Tabs/Compliances/Compliances";
 import Dashboard from "./Tabs/Dashboard/Dashboard";
 import Directors from "./Tabs/Directors/Directors";
@@ -35,6 +36,7 @@ const NetworkDetailsContainer: React.FC = () => {
 
   const navItems = [
     { id: "dashboard", label: "Dashboard" },
+    { id: "cases", label: "Cases" },
     { id: "directors", label: "Directors" },
     { id: "compliances", label: "Compliances" },
     { id: "leads", label: "Leads" },
@@ -90,6 +92,9 @@ const NetworkDetailsContainer: React.FC = () => {
             <TabContent activeTab={activeTab}>
               <TabPane tabId="dashboard">
                 {activeTab === "dashboard" && <Dashboard />}
+              </TabPane>
+              <TabPane tabId="cases">
+                {activeTab === "cases" && <Cases />}
               </TabPane>
               <TabPane tabId="directors">
                 {activeTab === "directors" && <Directors />}
