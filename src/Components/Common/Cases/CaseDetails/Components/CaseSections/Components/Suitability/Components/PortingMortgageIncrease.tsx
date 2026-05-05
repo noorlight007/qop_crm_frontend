@@ -2,10 +2,12 @@ import { notRecommendedOptions } from "@/Data/Cases/SuitabilityData";
 import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
 } from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
@@ -16,8 +18,6 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
-
-
 
 interface PortingMortgageIncreaseProps {
   caseData: any;
@@ -33,14 +33,141 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
   onFormChange,
 }) => {
   const blue = "#1565c0";
-  const s = suitability;
 
-  // ── UI only ──
-  const [isNotRecommendedOptionOpen, setIsNotRecommendedOptionOpen] = useState(false);
+  // ── Dropdown UI ──
+  const [isNotRecommendedOptionOpen, setIsNotRecommendedOptionOpen] =
+    useState(false);
 
-  // ── Derived from formValues ──
+  // ── Editing states ──
+  const [isRepaymentChargeEditing, setIsRepaymentChargeEditing] =
+    useState(false);
+  const [repaymentChargeDraft, setRepaymentChargeDraft] = useState<string>("");
+
+  const [isExistingEndDateEditing, setIsExistingEndDateEditing] =
+    useState(false);
+  const [existingEndDateDraft, setExistingEndDateDraft] = useState<string>("");
+
+  const [isNewEndDateEditing, setIsNewEndDateEditing] = useState(false);
+  const [newEndDateDraft, setNewEndDateDraft] = useState<string>("");
+
+  // ── Dropdown derived ──
   const selectedNotRecommendedOption =
-    notRecommendedOptions.find((o) => o.value === formValues.new_lender_not_recommended_reason) ?? null;
+    notRecommendedOptions.find(
+      (o) => o.value === formValues.new_lender_not_recommended_reason,
+    ) ?? null;
+
+  // ── Repayment Charge handlers ──
+  const startRepaymentChargeEdit = () => {
+    setRepaymentChargeDraft(formValues.repayment_charge ?? "");
+    setIsRepaymentChargeEditing(true);
+  };
+  const handleRepaymentChargeSave = () => {
+    onFormChange({ repayment_charge: repaymentChargeDraft });
+    setIsRepaymentChargeEditing(false);
+  };
+  const handleRepaymentChargeCancel = () => {
+    setIsRepaymentChargeEditing(false);
+  };
+
+  // ── Existing End Date handlers ──
+  const startExistingEndDateEdit = () => {
+    setExistingEndDateDraft(formValues.the_end_date_of_existing_product ?? "");
+    setIsExistingEndDateEditing(true);
+  };
+  const handleExistingEndDateSave = () => {
+    onFormChange({ the_end_date_of_existing_product: existingEndDateDraft });
+    setIsExistingEndDateEditing(false);
+  };
+  const handleExistingEndDateCancel = () => {
+    setIsExistingEndDateEditing(false);
+  };
+
+  // ── New End Date handlers ──
+  const startNewEndDateEdit = () => {
+    setNewEndDateDraft(formValues.the_end_date_of_new_product ?? "");
+    setIsNewEndDateEditing(true);
+  };
+  const handleNewEndDateSave = () => {
+    onFormChange({ the_end_date_of_new_product: newEndDateDraft });
+    setIsNewEndDateEditing(false);
+  };
+  const handleNewEndDateCancel = () => {
+    setIsNewEndDateEditing(false);
+  };
+
+  // ── Shared inline edit renderer ──
+  const renderInlineEdit = ({
+    isEditing,
+    draft,
+    setDraft,
+    onSave,
+    onCancel,
+    onStart,
+    value,
+    inputType = "text",
+    placeholder,
+    emptyLabel,
+    prefix,
+  }: {
+    isEditing: boolean;
+    draft: string;
+    setDraft: (v: string) => void;
+    onSave: () => void;
+    onCancel: () => void;
+    onStart: () => void;
+    value?: string;
+    inputType?: "text" | "number" | "date" | "email" | "password";
+    placeholder?: string;
+    emptyLabel: string;
+    prefix?: string;
+  }) => {
+    if (isEditing) {
+      return (
+        <span className="d-inline-flex align-items-center gap-1 flex-wrap">
+          {prefix && <strong style={{ color: blue }}>{prefix}</strong>}
+          <Input
+            type={inputType as any}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder={placeholder}
+            autoFocus
+            bsSize="sm"
+            style={{
+              width: inputType === "date" ? "155px" : "100px",
+              display: "inline-block",
+            }}
+          />
+          <Button
+            color="light"
+            className="text-dark"
+            size="sm"
+            onClick={onSave}
+          >
+            Save
+          </Button>
+          <Button
+            color="light"
+            className="text-dark"
+            size="sm"
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+        </span>
+      );
+    }
+
+    return (
+      <span
+        style={{ cursor: "pointer" }}
+        className={value ? "fw-bold text-success" : "text-success"}
+        onClick={onStart}
+        title="Click to edit"
+      >
+        {value ? `${prefix ?? ""}${value}` : emptyLabel}
+      </span>
+    );
+  };
 
   return (
     <>
@@ -66,11 +193,21 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
         We assessed whether using a new lender would have been more
         cost-effective. However, this would have incurred an early repayment
         charge of{" "}
-        <strong style={{ color: blue }}>
-          {caseData?.porting_erc
-            ? `£${Number(caseData.porting_erc).toLocaleString("en-GB")}`
-            : "£0,000"}
-        </strong>{" "}
+        {renderInlineEdit({
+          isEditing: isRepaymentChargeEditing,
+          draft: repaymentChargeDraft,
+          setDraft: setRepaymentChargeDraft,
+          onSave: handleRepaymentChargeSave,
+          onCancel: handleRepaymentChargeCancel,
+          onStart: startRepaymentChargeEdit,
+          value: (formValues.repayment_charge ?? undefined) as
+            | string
+            | undefined,
+          inputType: "number",
+          placeholder: "e.g. 5000",
+          emptyLabel: "＋ add repayment charge",
+          prefix: "£",
+        })}{" "}
         with your current lender.
       </p>
 
@@ -104,7 +241,11 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
             {notRecommendedOptions.map((option) => (
               <DropdownItem
                 key={option.value}
-                onClick={() => onFormChange({ new_lender_not_recommended_reason: option.value })}
+                onClick={() =>
+                  onFormChange({
+                    new_lender_not_recommended_reason: option.value,
+                  })
+                }
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
@@ -136,13 +277,33 @@ const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
 
       <p>
         The end date of your existing product being transferred is{" "}
-        <strong style={{ color: blue }}>
-          {caseData?.porting_existing_product_end_date ?? "01/01/0001"}
-        </strong>
+        {renderInlineEdit({
+          isEditing: isExistingEndDateEditing,
+          draft: existingEndDateDraft,
+          setDraft: setExistingEndDateDraft,
+          onSave: handleExistingEndDateSave,
+          onCancel: handleExistingEndDateCancel,
+          onStart: startExistingEndDateEdit,
+          value: (formValues.the_end_date_of_existing_product ?? undefined) as
+            | string
+            | undefined,
+          inputType: "date",
+          emptyLabel: "＋ add existing product end date",
+        })}
         , and the end date of your new product is{" "}
-        <strong style={{ color: blue }}>
-          {caseData?.porting_new_product_end_date ?? "01/01/0001"}
-        </strong>
+        {renderInlineEdit({
+          isEditing: isNewEndDateEditing,
+          draft: newEndDateDraft,
+          setDraft: setNewEndDateDraft,
+          onSave: handleNewEndDateSave,
+          onCancel: handleNewEndDateCancel,
+          onStart: startNewEndDateEdit,
+          value: (formValues.the_end_date_of_new_product ?? undefined) as
+            | string
+            | undefined,
+          inputType: "date",
+          emptyLabel: "＋ add new product end date",
+        })}
         .
       </p>
     </>

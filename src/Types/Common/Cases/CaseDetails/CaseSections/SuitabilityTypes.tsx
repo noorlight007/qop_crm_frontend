@@ -31,12 +31,22 @@ export interface SuitabilityData {
   product_transfer_reason: string | null;
   product_transfer_recommended: string;
   arrangement_fee: number | null;
-  pension_option: string | null;
+  lending_into_retirement_type: string | null;
   overpayment_type: string | null;
   repayment_status_type: string | null;
   max_erc: string | null;
-  additional_recipients_text: string | null;
+  email: string | null;
   outstanding_balance: string | null;
+  interest_rate_type: string | null;
+  repayment_method_type: string | null;
+  repayment_charge: string | null;
+  the_end_date_of_existing_product: string | null;
+  the_end_date_of_new_product: string | null;
+  product_transfer_expired_date: string | null;
+  product_transfer_standard_variable_rate: string | null;
+  shortened_product_transfer_expired_date: string | null;
+  shortened_product_transfer_standard_variable_rate: string | null;
+  product_transfer_recommended_was: string | null;
 }
 
 export interface RecommendationLetterProps {
