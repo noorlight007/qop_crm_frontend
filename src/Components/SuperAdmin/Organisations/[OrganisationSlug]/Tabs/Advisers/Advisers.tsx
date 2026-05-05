@@ -1,7 +1,7 @@
-import OrgAdvisers from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Advisers/OrgAdvisers";
+import OrgUserList from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList";
 
 const Advisers: React.FC = () => {
-  return <OrgAdvisers />;
+  return <OrgUserList role="ADVISER" />;
 };
 
 export default Advisers;

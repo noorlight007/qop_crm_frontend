@@ -1,7 +1,7 @@
-import OrgAdmins from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Admins/OrgAdmins";
+import OrgUserList from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList";
 
 const Admins: React.FC = () => {
-  return <OrgAdmins />;
+  return <OrgUserList role="ADMIN" />;
 };
 
 export default Admins;

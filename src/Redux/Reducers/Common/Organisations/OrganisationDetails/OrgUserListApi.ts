@@ -41,6 +41,23 @@ export const OrgUserListApi = baseApi.injectEndpoints({
       }),
       providesTags: ["OrgUserList"],
     }),
+
+    updateOrgMember: builder.mutation({
+      query: ({ organisationslug, user_alias, payload }) => ({
+        url: `/api/organisations/${organisationslug}/members/${user_alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["OrgUserList"],
+    }),
+
+    deleteOrgMember: builder.mutation({
+      query: ({ organisationslug, user_alias }) => ({
+        url: `/api/organisations/${organisationslug}/members/${user_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["OrgUserList"],
+    }),
   }),
 });
 
@@ -50,4 +67,6 @@ export const {
   useUpdateOrgLeadOrApplicantMutation,
   useDeleteOrgLeadOrApplicantMutation,
   useGetOrgUserListQuery,
+  useUpdateOrgMemberMutation,
+  useDeleteOrgMemberMutation,
 } = OrgUserListApi;

@@ -1,32 +1,44 @@
 "use client";
 
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import DeleteOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/DeleteOrgUserModal";
+import UpdateOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/UpdateOrgUserModal";
 import ViewOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/ViewOrgUserModal";
-import { useGetOrgUserListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import {
+    useGetOrgUserListQuery,
+    useUpdateOrgMemberMutation,
+} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
 import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
 import { OrgIntroducerInfo } from "@/Types/Common/Organisations/OrgIntroducerTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { User } from "react-feather";
-import { FaInfoCircle, FaSearch } from "react-icons/fa";
+import { FaChevronDown, FaInfoCircle, FaSearch } from "react-icons/fa";
+import { toast } from "react-toastify";
 import {
-  Badge,
-  Card,
-  CardBody,
-  Col,
-  Input,
-  InputGroup,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  PopoverBody,
-  Row,
-  Table,
-  UncontrolledPopover,
+    Badge,
+    Button,
+    Card,
+    CardBody,
+    Col,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    Input,
+    InputGroup,
+    Pagination,
+    PaginationItem,
+    PaginationLink,
+    PopoverBody,
+    Row,
+    Table,
+    UncontrolledPopover,
 } from "reactstrap";
 
 type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
@@ -43,10 +55,21 @@ export type OrgUserListProps = {
 const searchHelpText =
   "🔍 You can search using Name, Email Address or Phone Number.";
 
+const statusOptions = [
+  { value: true, label: "Approved" },
+  { value: false, label: "Pending" },
+];
+
+const statusColorMap = {
+  true: "success",
+  false: "danger",
+};
+
 type OrgUserItem = OrgAdminInfo | OrgIntroducerInfo | OrgAdviserInfo;
 
 const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   const params = useParams();
+  const { data: session } = useSession();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
 
@@ -57,7 +80,23 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   const [stablePageSize, setStablePageSize] = useState<number>(0);
 
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Partial<OrgUserItem>>({});
+
+  const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const toggleDropdown = (userAlias: string) => {
+    setDropdownOpen((prev) => ({
+      ...prev,
+      [userAlias]: !prev[userAlias],
+    }));
+  };
+
+  const [updateOrgMember, { isLoading: isUpdateStatusLoading }] =
+    useUpdateOrgMemberMutation();
 
   const title = useMemo(() => {
     switch (role) {
@@ -116,15 +155,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
       header: "Phone",
       cell: (user) =>
         user?.phone ? (
-          <span
-            className={
-              role === "ADVISER"
-                ? "text-black text_decoration_hover"
-                : "text-black"
-            }
-          >
-            {user.phone}
-          </span>
+         user.phone
         ) : (
           <small className="text-muted">Not Available</small>
         ),
@@ -164,16 +195,6 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
       cell: (user) => formatDateAndTime(user?.created_at),
     };
 
-    const statusCol: OrgUserListColumn = {
-      header: "Status",
-      cell: (user) =>
-        user?.is_active ? (
-          <Badge color="success">Approved</Badge>
-        ) : (
-          <Badge color="danger">Pending</Badge>
-        ),
-    };
-
     if (role === "INTRODUCER") {
       return [
         emailCol,
@@ -199,18 +220,10 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
         },
         createdByCol,
         createdAtCol,
-        statusCol,
       ];
     }
 
-    return [
-      emailCol,
-      phoneCol,
-      joiningDateCol,
-      createdByCol,
-      createdAtCol,
-      statusCol,
-    ];
+    return [emailCol, phoneCol, joiningDateCol, createdByCol, createdAtCol];
   }, [role]);
 
   const openModalForUser = (user: OrgUserItem) => {
@@ -220,6 +233,44 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
 
   const toggleModal = () => {
     setIsViewModalOpen((prev) => !prev);
+  };
+
+  const toggleUpdateModal = () => {
+    setIsUpdateModalOpen((prev) => !prev);
+  };
+
+  const toggleDeleteModal = () => {
+    setIsDeleteModalOpen((prev) => !prev);
+  };
+
+  const openUpdateModal = (user: OrgUserItem) => {
+    setSelectedUser(user);
+    setIsUpdateModalOpen(true);
+  };
+
+  const openDeleteModal = (user: OrgUserItem) => {
+    setSelectedUser(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleStatusChange = async (userAlias: string, newStatus: boolean) => {
+    try {
+      await updateOrgMember({
+        organisationslug,
+        user_alias: userAlias,
+        payload: { is_active: newStatus },
+      }).unwrap();
+
+      toast.success("Status updated successfully!");
+
+      setDropdownOpen((prev) => ({
+        ...prev,
+        [userAlias]: false,
+      }));
+    } catch (error) {
+      console.error("Failed to update status", error);
+      toast.error("Failed to update status. Please try again.");
+    }
   };
 
   // debounce search input
@@ -343,6 +394,8 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                   {columns.map((c) => (
                     <th key={c.header}>{c.header}</th>
                   ))}
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -379,11 +432,139 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                       {columns.map((c) => (
                         <td key={c.header}>{c.cell(item)}</td>
                       ))}
+
+                      <td>
+                        {session?.user?.role === "SUPER_ADMIN" ? (
+                          <div style={{ position: "relative" }}>
+                            <Dropdown
+                              isOpen={
+                                dropdownOpen[(item as any).alias] || false
+                              }
+                              toggle={() => toggleDropdown((item as any).alias)}
+                            >
+                              <DropdownToggle
+                                tag="span"
+                                style={{ cursor: "pointer" }}
+                                caret={false}
+                              >
+                                <Badge
+                                  color={
+                                    (item as any)?.is_active
+                                      ? "success"
+                                      : "danger"
+                                  }
+                                  className="d-flex justify-content-center align-items-center gap-1"
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <span>
+                                    {(item as any)?.is_active
+                                      ? "Approved"
+                                      : "Pending"}
+                                  </span>
+                                  <FaChevronDown size={10} />
+                                </Badge>
+                              </DropdownToggle>
+
+                              <DropdownMenu
+                                className="shadow-sm py-2"
+                                style={{
+                                  minWidth: "140px",
+                                  zIndex: 1050,
+                                }}
+                                container="body"
+                              >
+                                {statusOptions.map((option) => {
+                                  const isActive =
+                                    (item as any).is_active === option.value;
+                                  const colorClass =
+                                    statusColorMap[
+                                      option.value.toString() as
+                                        | "true"
+                                        | "false"
+                                    ];
+
+                                  return (
+                                    <DropdownItem
+                                      key={option.value.toString()}
+                                      onClick={() =>
+                                        handleStatusChange(
+                                          (item as any).alias,
+                                          option.value,
+                                        )
+                                      }
+                                      className="d-flex align-items-center gap-3 px-3 py-2"
+                                      active={isActive}
+                                      disabled={isUpdateStatusLoading}
+                                      style={{
+                                        backgroundColor: isActive
+                                          ? "rgba(0,0,0,0.05)"
+                                          : "transparent",
+                                      }}
+                                    >
+                                      <span
+                                        className={`rounded-circle bg-${colorClass}`}
+                                        style={{ width: "8px", height: "8px" }}
+                                      />
+                                      <span
+                                        className={isActive ? "fw-bold" : ""}
+                                      >
+                                        {option.label}
+                                      </span>
+                                      {isActive && (
+                                        <span className="ms-auto">✓</span>
+                                      )}
+                                    </DropdownItem>
+                                  );
+                                })}
+                              </DropdownMenu>
+                            </Dropdown>
+                          </div>
+                        ) : (
+                          <Badge
+                            color={
+                              (item as any)?.is_active ? "success" : "danger"
+                            }
+                            className="d-flex justify-content-center align-items-center gap-1"
+                          >
+                            <span>
+                              {(item as any)?.is_active
+                                ? "Approved"
+                                : "Pending"}
+                            </span>
+                          </Badge>
+                        )}
+                      </td>
+
+                      <td>
+                        <div className="d-flex justify-content-center gap-2 align-items-center">
+                          <Button
+                            color="primary"
+                            size="sm"
+                            title="Update User"
+                            onClick={() => openUpdateModal(item)}
+                          >
+                            <i className="icon-pencil-alt"></i>
+                          </Button>
+                          {session?.user?.role === "SUPER_ADMIN" && (
+                            <Button
+                              color="danger"
+                              size="sm"
+                              title="Delete User"
+                              onClick={() => openDeleteModal(item)}
+                            >
+                              <i className="fa-regular fa-trash-can"></i>
+                            </Button>
+                          )}
+                        </div>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={1 + columns.length} className="text-center">
+                    <td
+                      colSpan={1 + columns.length + 2}
+                      className="text-center"
+                    >
                       {emptyMessage}
                     </td>
                   </tr>
@@ -458,6 +639,22 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
       <ViewOrgUserModal
         isOpen={isViewModalOpen}
         toggle={toggleModal}
+        role={role}
+        selectedUser={selectedUser}
+      />
+
+      <UpdateOrgUserModal
+        isOpen={isUpdateModalOpen}
+        toggle={toggleUpdateModal}
+        organisationslug={organisationslug}
+        role={role}
+        selectedUser={selectedUser}
+      />
+
+      <DeleteOrgUserModal
+        isOpen={isDeleteModalOpen}
+        toggle={toggleDeleteModal}
+        organisationslug={organisationslug}
         role={role}
         selectedUser={selectedUser}
       />
