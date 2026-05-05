@@ -4,7 +4,7 @@ export const SingleOrganisationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSingleOrganisation: builder.query({
       query: ({ organisationslug }) => ({
-        url: `/organization/onboard/${organisationslug}/`,
+        url: `/api/organisations/${organisationslug}/`,
         method: "GET",
       }),
       providesTags: ["SingleOrganisation"],
@@ -18,7 +18,7 @@ export const SingleOrganisationApi = baseApi.injectEndpoints({
     }),
     updateOrganisation: builder.mutation({
       query: ({ slug, payload }) => ({
-        url: `/organization/onboard/${slug}/`,
+        url: `/api/organisations/${slug}/`,
         method: "PATCH",
         body: payload,
       }),
@@ -26,7 +26,7 @@ export const SingleOrganisationApi = baseApi.injectEndpoints({
     }),
     deleteOrganisation: builder.mutation({
       query: ({ slug }) => ({
-        url: `/organization/onboard/${slug}/`,
+        url: `/api/organisations/${slug}/`,
         method: "DELETE",
       }),
       invalidatesTags: ["SingleOrganisation", "OrganisationList"],

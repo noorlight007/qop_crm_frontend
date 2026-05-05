@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./Api/BaseApi";
 import { publicBaseApi } from "./Api/PublicBaseApi";
+import CustomTabReducer from "./CustomTabSlice";
 import appearanceReducer from "./Reducers/Appearance/AppearanceSlice";
 import budgetPlannerReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import CaseSectionsTabIndicatorReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
 import ComplianceReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/Compliance/ComplianceSlice";
 import propertyFormReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/SecurityProperty/SecurityPropertyFormSlice";
-import OrganisationDetailsTabReducer from "./Reducers/Common/Organisations/OrganisationDetails/OrganisationDetailsTabSlice";
 import FormWizardOne from "./Reducers/FormLayout/FormWizardOneSlice";
 import FormWizardTwoSlice from "./Reducers/FormLayout/FormWizardTwoSlice";
 import TwoFactorSlice from "./Reducers/FormLayout/TwoFactorSlice";
@@ -24,7 +24,7 @@ const Store = configureStore({
     formWizardOne: FormWizardOne,
     themeCustomizer: ThemeCustomizerReducer,
     caseSections: CaseSectionsTabIndicatorReducer,
-    organisationDetailsTabs: OrganisationDetailsTabReducer,
+    organisationDetailsTabs: CustomTabReducer,
     propertyForm: propertyFormReducer,
     budgetPlanner: budgetPlannerReducer,
     compliance: ComplianceReducer,

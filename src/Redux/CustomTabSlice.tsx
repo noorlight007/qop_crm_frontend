@@ -14,7 +14,7 @@ const initialState = {
   activeTab: "dashboard" as string,
 };
 
-const OrganisationDetailsTabSlice = createSlice({
+const CustomTabSlice = createSlice({
   name: "organisationDetailsTabs",
   initialState,
   reducers: {
@@ -34,6 +34,6 @@ const OrganisationDetailsTabSlice = createSlice({
 });
 
 export const { setOrganisationDetailsTab, restoreOrganisationDetailsTab } =
-  OrganisationDetailsTabSlice.actions;
+  CustomTabSlice.actions;
 
-export default OrganisationDetailsTabSlice.reducer;
+export default CustomTabSlice.reducer;

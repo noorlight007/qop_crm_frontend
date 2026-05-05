@@ -1,9 +1,9 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
   restoreOrganisationDetailsTab,
   setOrganisationDetailsTab,
-} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrganisationDetailsTabSlice";
+} from "@/Redux/CustomTabSlice";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
