@@ -18,7 +18,6 @@ import Advisers from "./Tabs/Advisers/Advisers";
 import Applicants from "./Tabs/Applicants/Applicants";
 import Cases from "./Tabs/Cases/Cases";
 import Dashboard from "./Tabs/Dashboard/Dashboard";
-import Directors from "./Tabs/Directors/Directors";
 import Introducers from "./Tabs/Introducers/Introducers";
 import Leads from "./Tabs/Leads/Leads";
 
@@ -33,7 +32,6 @@ const OrganisationDetailsContainer: React.FC = () => {
   const navItems = [
     { id: "dashboard", label: "Dashboard" },
     { id: "cases", label: "Cases" },
-    { id: "directors", label: "Directors" },
     { id: "leads", label: "Leads" },
     { id: "applicants", label: "Applicants" },
     { id: "advisers", label: "Advisers" },
@@ -92,9 +90,6 @@ const OrganisationDetailsContainer: React.FC = () => {
               </TabPane>
               <TabPane tabId="cases">
                 {activeTab === "cases" && <Cases />}
-              </TabPane>
-              <TabPane tabId="directors">
-                {activeTab === "directors" && <Directors />}
               </TabPane>
               <TabPane tabId="leads">
                 {activeTab === "leads" && <Leads />}

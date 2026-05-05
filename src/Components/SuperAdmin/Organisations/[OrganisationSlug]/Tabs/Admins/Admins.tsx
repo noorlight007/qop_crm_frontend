@@ -1,10 +1,7 @@
+import OrgAdmins from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Admins/OrgAdmins";
+
 const Admins: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is admin tab
-    </div>
-  );
+  return <OrgAdmins />;
 };
 
 export default Admins;

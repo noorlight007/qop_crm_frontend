@@ -1,10 +1,7 @@
-const Applicants: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is applicants tab
-    </div>
-  );
+import OrgApplicants from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Applicants/OrgApplicant";
+
+const ApplicantsTab: React.FC = () => {
+  return <OrgApplicants />;
 };
 
-export default Applicants;
+export default ApplicantsTab;

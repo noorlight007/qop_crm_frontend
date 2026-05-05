@@ -1,10 +1,7 @@
+import OrgAdvisers from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Advisers/OrgAdvisers";
+
 const Advisers: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is advisers tab
-    </div>
-  );
+  return <OrgAdvisers />;
 };
 
 export default Advisers;

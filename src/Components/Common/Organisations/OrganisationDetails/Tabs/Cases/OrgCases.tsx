@@ -317,7 +317,6 @@ const OrgCases: React.FC = () => {
                                   href={getOrganisationCaseUrl(
                                     organisationslug as string,
                                     caseItem.alias,
-                                    session?.user?.is_network,
                                     session?.user?.role,
                                   )}
                                 >

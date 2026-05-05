@@ -1,10 +1,7 @@
+import OrgLeads from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Leads/OrgLeads";
+
 const Leads: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is leads tab
-    </div>
-  );
+  return <OrgLeads />;
 };
 
 export default Leads;

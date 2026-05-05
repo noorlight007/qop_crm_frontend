@@ -5,9 +5,10 @@ import {
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
   FaCamera,
@@ -28,6 +29,8 @@ import {
   Card,
   CardBody,
   Col,
+  FormGroup,
+  Input,
   Popover,
   PopoverBody,
   PopoverHeader,
@@ -37,6 +40,7 @@ import UpdateOrgDirectorInfoModal from "../Modals/UpdateOrgDirectorModal";
 import UpdateOrgInfoModal from "../Modals/UpdateOrgInfoModal";
 
 const OrganisationDetails: React.FC = () => {
+  const { data: session } = useSession();
   const params = useParams();
   const slug = params?.organisationslug;
   const { data: getOrganisationDetails, isLoading } =
@@ -49,6 +53,17 @@ const OrganisationDetails: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
+
+  const [directorIsActive, setDirectorIsActive] = useState<boolean>(false);
+
+  const resolveOrganisationSlug = () => {
+    const fromParams = Array.isArray(slug) ? slug[0] : slug;
+    return (
+      (typeof fromParams === "string" && fromParams) ||
+      getOrganisationDetails?.organization?.slug ||
+      undefined
+    );
+  };
 
   const toggleUpdateModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -260,6 +275,41 @@ const OrganisationDetails: React.FC = () => {
     const roleArray = Array.isArray(roles) ? roles : [roles];
     return roleArray.map((role) => formatChoiceFieldValue(role)).join(", ");
   };
+
+  const handleToggleDirectorIsActive = async (nextActive: boolean) => {
+    const targetSlug = resolveOrganisationSlug();
+    if (!targetSlug) {
+      toast.error("Organisation identifier missing");
+      return;
+    }
+
+    const previous = directorIsActive;
+    setDirectorIsActive(nextActive);
+
+    try {
+      const payload = new FormData();
+      payload.append("user.is_active", String(nextActive));
+
+      await updateOrganization({
+        slug: targetSlug,
+        payload,
+      }).unwrap();
+
+      toast.success(nextActive ? "Director activated" : "Director deactivated");
+    } catch (err: any) {
+      console.error("Director status update error:", err);
+      setDirectorIsActive(previous);
+      const msg = err?.data?.detail || err?.message || "Update failed";
+      toast.error(msg);
+    }
+  };
+
+  // Sync local UI state with server state when data loads/refetches
+  useEffect(() => {
+    if (typeof getOrganisationDetails?.user?.is_active === "boolean") {
+      setDirectorIsActive(getOrganisationDetails.user.is_active);
+    }
+  }, [getOrganisationDetails?.user?.is_active]);
 
   return (
     <>
@@ -659,7 +709,7 @@ const OrganisationDetails: React.FC = () => {
                       <small className="text-muted">
                         {formatDateAndTime(
                           getOrganisationDetails?.organization?.created_at ??
-                            "",
+                            "Not available",
                         )}
                       </small>
                     </Card>
@@ -851,28 +901,44 @@ const OrganisationDetails: React.FC = () => {
                       {getOrganisationDetails?.user?.phone ? (
                         getOrganisationDetails.user.phone
                       ) : (
-                        <small className="text-muted">Phone not provided</small>
+                        <span className="text-muted">Phone not provided</span>
                       )}
                     </Card>
                   </Col>
                   <Col sm="6">
-                    {getOrganisationDetails?.user?.is_active ? (
-                      <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
-                        <FaShieldAlt
-                          className="me-2 bg-success p-1 rounded-1"
-                          size={25}
-                        />
-                        Verified Director
-                      </Card>
-                    ) : (
-                      <Card className="bg-light-danger p-2 d-flex align-items-center mb-2">
-                        <FaShieldAlt
-                          className="me-2 bg-danger p-1 rounded-1"
-                          size={25}
-                        />
-                        Inactive
-                      </Card>
-                    )}
+                    <Card
+                      className={`${directorIsActive ? "bg-light-success" : "bg-light-danger"} p-2 d-flex align-items-center mb-2 position-relative`}
+                    >
+                      <FaShieldAlt
+                        className={`me-2 ${directorIsActive ? "bg-success" : "bg-danger"} p-1 rounded-1`}
+                        size={25}
+                      />
+                      <span>
+                        {directorIsActive ? "Verified Director" : "Inactive"}
+                      </span>
+
+                      {session?.user?.role === "SUPER_ADMIN" && (
+                        <FormGroup
+                          switch
+                          className="mb-0 position-absolute"
+                          style={{ top: 0, right: 0 }}
+                        >
+                          <Input
+                            id="director-is-active-switch"
+                            type="switch"
+                            role="switch"
+                            checked={directorIsActive}
+                            disabled={isUpdating || !resolveOrganisationSlug()}
+                            onChange={(e) =>
+                              handleToggleDirectorIsActive(e.target.checked)
+                            }
+                            style={{
+                              cursor: isUpdating ? "not-allowed" : "pointer",
+                            }}
+                          />
+                        </FormGroup>
+                      )}
+                    </Card>
                   </Col>
                 </Row>
               </CardBody>

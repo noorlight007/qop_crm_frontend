@@ -1,10 +1,9 @@
+"use client";
+
+import OrgCases from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Cases/OrgCases";
+
 const Cases: React.FC = () => {
-  return (
-    <div>
-      {/* JSX here */}
-      this is cases tab
-    </div>
-  );
+  return <OrgCases />;
 };
 
 export default Cases;
