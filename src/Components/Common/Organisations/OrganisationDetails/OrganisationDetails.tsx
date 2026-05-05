@@ -124,7 +124,7 @@ const OrganisationDetails: React.FC = () => {
           <Col md="12" className="position-relative">
             <Nav
               pills
-              className={`org-details-tabs d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
+              className={`custom-tabs d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
               style={{ top: "4rem", zIndex: 20 }}
             >
               {navItems.map((item) => (
