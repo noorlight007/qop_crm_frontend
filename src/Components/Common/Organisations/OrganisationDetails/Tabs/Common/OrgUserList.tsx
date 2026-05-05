@@ -5,8 +5,8 @@ import DeleteOrgUserModal from "@/Components/Common/Organisations/OrganisationDe
 import UpdateOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/UpdateOrgUserModal";
 import ViewOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/ViewOrgUserModal";
 import {
-    useGetOrgUserListQuery,
-    useUpdateOrgMemberMutation,
+  useGetOrgUserListQuery,
+  useUpdateOrgMemberMutation,
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { OrgAdminInfo } from "@/Types/Common/Organisations/OrgAdminTypes";
 import { OrgAdviserInfo } from "@/Types/Common/Organisations/OrgAdviserType";
@@ -21,32 +21,27 @@ import { User } from "react-feather";
 import { FaChevronDown, FaInfoCircle, FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
 import {
-    Badge,
-    Button,
-    Card,
-    CardBody,
-    Col,
-    Dropdown,
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
-    Input,
-    InputGroup,
-    Pagination,
-    PaginationItem,
-    PaginationLink,
-    PopoverBody,
-    Row,
-    Table,
-    UncontrolledPopover,
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Col,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
+  InputGroup,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  PopoverBody,
+  Row,
+  Table,
+  UncontrolledPopover,
 } from "reactstrap";
 
 type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
-
-type OrgUserListColumn = {
-  header: string;
-  cell: (item: any) => React.ReactNode;
-};
 
 export type OrgUserListProps = {
   role: OrgUserRole;
@@ -140,91 +135,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     };
   }, [role]);
 
-  const columns = useMemo<OrgUserListColumn[]>(() => {
-    const emailCol: OrgUserListColumn = {
-      header: "Email",
-      cell: (user) =>
-        user?.email ? (
-          user.email
-        ) : (
-          <small className="text-muted">Not Available</small>
-        ),
-    };
-
-    const phoneCol: OrgUserListColumn = {
-      header: "Phone",
-      cell: (user) =>
-        user?.phone ? (
-         user.phone
-        ) : (
-          <small className="text-muted">Not Available</small>
-        ),
-    };
-
-    const joiningDateCol: OrgUserListColumn = {
-      header: "Joining Date",
-      cell: (user) =>
-        user?.joining_date ? (
-          user.joining_date
-        ) : (
-          <small className="text-muted">Not Available</small>
-        ),
-    };
-
-    const createdByCol: OrgUserListColumn = {
-      header: "Created By",
-      cell: (user) =>
-        user?.created_by == null ? (
-          <small className="text-muted">Not Available</small>
-        ) : (
-          <>
-            <p className="m-0">{user.created_by?.name || "Unknown User"}</p>
-            <p className="m-0 opacity-75" style={{ fontSize: "9px" }}>
-              (
-              {user.created_by?.email
-                ? formatChoiceFieldValue(user.created_by?.email)
-                : "Not Found"}
-              )
-            </p>
-          </>
-        ),
-    };
-
-    const createdAtCol: OrgUserListColumn = {
-      header: "Created At",
-      cell: (user) => formatDateAndTime(user?.created_at),
-    };
-
-    if (role === "INTRODUCER") {
-      return [
-        emailCol,
-        phoneCol,
-        joiningDateCol,
-        {
-          header: "Company Name",
-          cell: (user) =>
-            user?.company_name ? (
-              user.company_name
-            ) : (
-              <small className="text-muted">Not Available</small>
-            ),
-        },
-        {
-          header: "Company Address",
-          cell: (user) =>
-            user?.company_address ? (
-              user.company_address
-            ) : (
-              <small className="text-muted">Not Available</small>
-            ),
-        },
-        createdByCol,
-        createdAtCol,
-      ];
-    }
-
-    return [emailCol, phoneCol, joiningDateCol, createdByCol, createdAtCol];
-  }, [role]);
+  const colSpan = role === "INTRODUCER" ? 10 : 8;
 
   const openModalForUser = (user: OrgUserItem) => {
     setSelectedUser(user);
@@ -391,9 +302,11 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
               <thead className="thead-light">
                 <tr className="text-center">
                   <th className="text-start">Name</th>
-                  {columns.map((c) => (
-                    <th key={c.header}>{c.header}</th>
-                  ))}
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Joining Date</th>
+                  <th>Created By</th>
+                  <th>Created At</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -429,9 +342,66 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                           </span>
                         </div>
                       </td>
-                      {columns.map((c) => (
-                        <td key={c.header}>{c.cell(item)}</td>
-                      ))}
+
+                      <td>
+                        {(item as any)?.email ? (
+                          (item as any).email
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+
+                      <td>
+                        {(item as any)?.phone ? (
+                          (item as any).phone
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+
+                      <td>
+                        {(item as any)?.joining_date ? (
+                          (item as any).joining_date
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </td>
+
+                      {role === "INTRODUCER" && (
+                        <td>
+                          {(item as any)?.company_name ? (
+                            (item as any).company_name
+                          ) : (
+                            <small className="text-muted">Not Available</small>
+                          )}
+                        </td>
+                      )}
+
+                      <td>
+                        {(item as any)?.created_by == null ? (
+                          <small className="text-muted">Not Available</small>
+                        ) : (
+                          <>
+                            <p className="m-0">
+                              {(item as any).created_by?.name || "Unknown User"}
+                            </p>
+                            <p
+                              className="m-0 opacity-75"
+                              style={{ fontSize: "9px" }}
+                            >
+                              (
+                              {(item as any).created_by?.email
+                                ? formatChoiceFieldValue(
+                                    (item as any).created_by?.email,
+                                  )
+                                : "Not Found"}
+                              )
+                            </p>
+                          </>
+                        )}
+                      </td>
+
+                      <td>{formatDateAndTime((item as any)?.created_at)}</td>
 
                       <td>
                         {session?.user?.role === "SUPER_ADMIN" ? (
@@ -561,10 +531,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan={1 + columns.length + 2}
-                      className="text-center"
-                    >
+                    <td colSpan={colSpan} className="text-center">
                       {emptyMessage}
                     </td>
                   </tr>

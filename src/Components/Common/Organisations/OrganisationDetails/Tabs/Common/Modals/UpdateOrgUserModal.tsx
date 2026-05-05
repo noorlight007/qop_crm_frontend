@@ -24,6 +24,8 @@ type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
 
 type OrgUserItem = OrgAdminInfo | OrgIntroducerInfo | OrgAdviserInfo;
 
+type OrgUserForm = Record<string, any>;
+
 export type UpdateOrgUserModalProps = {
   isOpen: boolean;
   toggle: () => void;
@@ -39,15 +41,48 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   role,
   selectedUser,
 }) => {
-  const [formData, setFormData] = useState<Partial<OrgUserItem>>({});
-  const [originalData, setOriginalData] = useState<Partial<OrgUserItem>>({});
+  const [formData, setFormData] = useState<OrgUserForm>({
+    title: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    name: "",
+    email: "",
+    phone: "",
+    gender: "",
+    joining_date: "",
+    note: "",
+  });
+  const [originalData, setOriginalData] = useState<OrgUserForm>({});
   const [isModified, setIsModified] = useState(false);
 
   const [updateMember, { isLoading }] = useUpdateOrgMemberMutation();
 
   useEffect(() => {
-    setFormData(selectedUser ?? {});
-    setOriginalData(selectedUser ?? {});
+    setFormData({
+      title: (selectedUser as any)?.title ?? "",
+      first_name: (selectedUser as any)?.first_name ?? "",
+      middle_name: (selectedUser as any)?.middle_name ?? "",
+      last_name: (selectedUser as any)?.last_name ?? "",
+      name: (selectedUser as any)?.name ?? "",
+      email: (selectedUser as any)?.email ?? "",
+      phone: (selectedUser as any)?.phone ?? "",
+      gender: (selectedUser as any)?.gender ?? "",
+      joining_date: (selectedUser as any)?.joining_date ?? "",
+      note: (selectedUser as any)?.note ?? "",
+    });
+    setOriginalData({
+      title: (selectedUser as any)?.title ?? "",
+      first_name: (selectedUser as any)?.first_name ?? "",
+      middle_name: (selectedUser as any)?.middle_name ?? "",
+      last_name: (selectedUser as any)?.last_name ?? "",
+      name: (selectedUser as any)?.name ?? "",
+      email: (selectedUser as any)?.email ?? "",
+      phone: (selectedUser as any)?.phone ?? "",
+      gender: (selectedUser as any)?.gender ?? "",
+      joining_date: (selectedUser as any)?.joining_date ?? "",
+      note: (selectedUser as any)?.note ?? "",
+    });
     setIsModified(false);
   }, [selectedUser]);
 
@@ -68,11 +103,10 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    const finalValue = name === "is_active" ? value === "true" : value;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: finalValue,
+      [name]: value,
     }));
     setIsModified(true);
   };
@@ -89,12 +123,15 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
     const payload: Record<string, any> = {};
 
     const fieldsToCheck: string[] = [
+      "title",
+      "first_name",
+      "middle_name",
+      "last_name",
       "name",
       "email",
       "phone",
       "gender",
       "joining_date",
-      "is_active",
       "note",
     ];
 
@@ -144,14 +181,70 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
           <Row>
             <Col md="6" sm="12">
               <FormGroup>
-                <Label for="name">
-                  Name<span className="text-danger">*</span>
+                <Label for="title">
+                  Title<span className="text-danger">*</span>
                 </Label>
                 <Input
-                  id="name"
-                  name="name"
+                  id="title"
+                  name="title"
+                  type="select"
+                  value={(formData as any)?.title ?? ""}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select...</option>
+                  <option value="MR">Mr</option>
+                  <option value="MRS">Mrs</option>
+                  <option value="MS">Ms</option>
+                  <option value="DR">Dr</option>
+                  <option value="MISS">Miss</option>
+                  <option value="MADAM">Madam</option>
+                  <option value="MAIDEN">Maiden</option>
+                  <option value="PROFESSOR">Professor</option>
+                  <option value="DOCTOR">Doctor</option>
+                </Input>
+              </FormGroup>
+            </Col>
+
+            <Col md="6" sm="12">
+              <FormGroup>
+                <Label for="first_name">
+                  First Name<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="first_name"
+                  name="first_name"
                   type="text"
-                  value={(formData as any)?.name ?? ""}
+                  value={(formData as any)?.first_name ?? ""}
+                  onChange={handleChange}
+                  required
+                />
+              </FormGroup>
+            </Col>
+
+            <Col md="6" sm="12">
+              <FormGroup>
+                <Label for="middle_name">Middle Name(s)</Label>
+                <Input
+                  id="middle_name"
+                  name="middle_name"
+                  type="text"
+                  value={(formData as any)?.middle_name ?? ""}
+                  onChange={handleChange}
+                />
+              </FormGroup>
+            </Col>
+
+            <Col md="6" sm="12">
+              <FormGroup>
+                <Label for="last_name">
+                  Last Name<span className="text-danger">*</span>
+                </Label>
+                <Input
+                  id="last_name"
+                  name="last_name"
+                  type="text"
+                  value={(formData as any)?.last_name ?? ""}
                   onChange={handleChange}
                   required
                 />
@@ -203,64 +296,19 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
                 <Input
                   id="gender"
                   name="gender"
-                  type="text"
+                  type="select"
                   value={(formData as any)?.gender ?? ""}
                   onChange={handleChange}
-                />
-              </FormGroup>
-            </Col>
-
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Label for="is_active">Status</Label>
-                <Input
-                  id="is_active"
-                  name="is_active"
-                  type="select"
-                  value={
-                    typeof (formData as any)?.is_active === "boolean"
-                      ? String((formData as any).is_active)
-                      : "false"
-                  }
-                  onChange={handleChange}
                 >
-                  <option value="true">Approved</option>
-                  <option value="false">Pending</option>
+                  <option value="">Select gender</option>
+                  <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                  <option value="OTHER">Other</option>
                 </Input>
               </FormGroup>
             </Col>
 
-            {role === "INTRODUCER" && (
-              <>
-                <Col md="6" sm="12">
-                  <FormGroup>
-                    <Label for="company_name">Company Name</Label>
-                    <Input
-                      id="company_name"
-                      name="company_name"
-                      type="text"
-                      value={(formData as any)?.company_name ?? ""}
-                      onChange={handleChange}
-                    />
-                  </FormGroup>
-                </Col>
-
-                <Col md="6" sm="12">
-                  <FormGroup>
-                    <Label for="company_address">Company Address</Label>
-                    <Input
-                      id="company_address"
-                      name="company_address"
-                      type="text"
-                      value={(formData as any)?.company_address ?? ""}
-                      onChange={handleChange}
-                    />
-                  </FormGroup>
-                </Col>
-              </>
-            )}
-
-            <Col md="12" sm="12">
+            <Col sm="12">
               <FormGroup>
                 <Label for="note">Note</Label>
                 <Input

@@ -58,22 +58,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
             )}
           </div>
           <h4 className="mb-1 text-dark fw-bold">{selectedUser?.name}</h4>
-          <p className="mb-2 text-muted small">
-            {selectedUser?.role
-              ? formatChoiceFieldValue(selectedUser.role)
-              : role === "ADMIN"
-                ? "Admin"
-                : role === "INTRODUCER"
-                  ? "Introducer"
-                  : "Adviser"}
-          </p>
 
           <div className="d-flex justify-content-center gap-2">
-            <p>
-              <Badge pill className="px-3 py-2 bg-light-primary">
-                👤 {formatChoiceFieldValue((selectedUser as any)?.role)}
-              </Badge>
-            </p>
             <p>
               {(selectedUser as any)?.is_active ? (
                 <Badge pill className="px-3 py-2 bg-light-success">
