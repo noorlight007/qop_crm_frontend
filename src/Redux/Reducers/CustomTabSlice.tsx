@@ -6,19 +6,17 @@ type TabPayload = {
 };
 
 const getStorageKey = (organisationslug?: string | null) =>
-  organisationslug
-    ? `organisationDetailsActiveTab:${organisationslug}`
-    : "organisationDetailsActiveTab";
+  organisationslug ? `customTabActive:${organisationslug}` : "customTabActive";
 
 const initialState = {
   activeTab: "dashboard" as string,
 };
 
-const OrganisationDetailsTabSlice = createSlice({
-  name: "organisationDetailsTabs",
+const CustomTabSlice = createSlice({
+  name: "customTabs",
   initialState,
   reducers: {
-    setOrganisationDetailsTab: (state, action: { payload: TabPayload }) => {
+    setCustomTab: (state, action: { payload: TabPayload }) => {
       state.activeTab = action.payload.tabId;
       if (typeof window !== "undefined") {
         localStorage.setItem(
@@ -27,13 +25,12 @@ const OrganisationDetailsTabSlice = createSlice({
         );
       }
     },
-    restoreOrganisationDetailsTab: (state, action: { payload: string }) => {
+    restoreCustomTab: (state, action: { payload: string }) => {
       state.activeTab = action.payload;
     },
   },
 });
 
-export const { setOrganisationDetailsTab, restoreOrganisationDetailsTab } =
-  OrganisationDetailsTabSlice.actions;
+export const { setCustomTab, restoreCustomTab } = CustomTabSlice.actions;
 
-export default OrganisationDetailsTabSlice.reducer;
+export default CustomTabSlice.reducer;

@@ -20,19 +20,9 @@ import {
 } from "react-icons/fa";
 import { TbCopy } from "react-icons/tb";
 import { toast } from "react-toastify";
-import {
-  Badge,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Col,
-  Row,
-  Spinner,
-} from "reactstrap";
-import DeleteNetworkModal from "./Modals/DeleteNetworkModal";
-import UpdateNetworkDirectorInfoModal from "./Modals/UpdateNetworkDirectorInfoModal";
-import UpdateNetworkInfoModal from "./Modals/UpdateNetworkInfoModal";
+import { Badge, Button, Card, CardBody, Col, Row } from "reactstrap";
+import UpdateNetworkDirectorInfoModal from "../Modals/UpdateNetworkDirectorInfoModal";
+import UpdateNetworkInfoModal from "../Modals/UpdateNetworkInfoModal";
 
 const NetworkDetails: React.FC = () => {
   const params = useParams();
@@ -43,7 +33,6 @@ const NetworkDetails: React.FC = () => {
   const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -138,10 +127,6 @@ const NetworkDetails: React.FC = () => {
 
   const toggleDirectorModal = () => {
     setIsDirectorModalOpen(!isDirectorModalOpen);
-  };
-
-  const toggleDeleteModal = () => {
-    setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
   const [isCopied, setIsCopied] = useState(false);
@@ -547,7 +532,7 @@ const NetworkDetails: React.FC = () => {
               className=" d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <Spinner className="primary" />
+              <LoadingGrow />
             </Card>
           ) : (
             <Card className="border-0 overflow-hidden position-relative shadow-lg">
@@ -748,26 +733,6 @@ const NetworkDetails: React.FC = () => {
         </Col>
       </Row>
 
-      <Row>
-        <Card className="shadow p-2">
-          <CardHeader className="h3 text-danger">Danger Zone</CardHeader>
-          <CardBody className="border-danger rounded-2 mb-4">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 className="fw-bold">Delete this Network</h5>
-                <p className="mb-0 opacity-75 text-danger">
-                  Once you delete a network, there is no going back. Please be
-                  certain.
-                </p>
-              </div>
-              <Button color="danger" onClick={toggleDeleteModal}>
-                Delete this Network
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      </Row>
-
       <UpdateNetworkInfoModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
@@ -780,12 +745,6 @@ const NetworkDetails: React.FC = () => {
         toggle={toggleDirectorModal}
         slug={getNetworkDetails?.network?.slug}
         networkData={getNetworkDetails}
-      />
-
-      <DeleteNetworkModal
-        isOpen={isDeleteModalOpen}
-        toggle={toggleDeleteModal}
-        networkInfo={getNetworkDetails}
       />
     </>
   );

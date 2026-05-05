@@ -73,7 +73,6 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   );
   const { data: session } = useSession();
   const userRole = session?.user?.role;
-  const isNetwork = session?.user?.is_network;
   const router = useRouter();
 
   const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
@@ -477,12 +476,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     toggle();
     // Redirect to the new case page
     router.push(
-      getOrganisationCaseUrl(
-        organisationslug as string,
-        caseAlias,
-        isNetwork,
-        userRole,
-      ),
+      getOrganisationCaseUrl(organisationslug as string, caseAlias, userRole),
     );
   };
 

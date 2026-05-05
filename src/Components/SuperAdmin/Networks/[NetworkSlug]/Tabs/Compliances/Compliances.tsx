@@ -1,0 +1,10 @@
+const Compliances: React.FC = () => {
+  return (
+    <div>
+      {/* JSX here */}
+      this is compliances tab
+    </div>
+  );
+};
+
+export default Compliances;

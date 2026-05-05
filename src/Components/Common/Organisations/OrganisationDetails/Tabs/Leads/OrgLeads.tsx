@@ -229,7 +229,7 @@ const OrgLeads: React.FC = () => {
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={9} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <LoadingGrow />
                     </div>
@@ -335,7 +335,7 @@ const OrgLeads: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="text-center">
+                  <td colSpan={9} className="text-center">
                     No leads available.
                   </td>
                 </tr>

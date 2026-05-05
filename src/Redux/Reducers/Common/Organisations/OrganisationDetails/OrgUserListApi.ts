@@ -4,7 +4,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrgLeadAndApplicantList: builder.query({
       query: ({ organisationslug, params }) => ({
-        url: `/organization/${organisationslug}/applicants/`,
+        url: `/api/organisations/${organisationslug}/applicants/`,
         method: "GET",
         params: params,
       }),
@@ -12,7 +12,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
     }),
     addOrgLeadOrApplicant: builder.mutation({
       query: ({ organisationslug, payload }) => ({
-        url: `/organization/${organisationslug}/applicants/`,
+        url: `/api/organisations/${organisationslug}/applicants/`,
         method: "POST",
         body: payload,
       }),
@@ -20,7 +20,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
     }),
     updateOrgLeadOrApplicant: builder.mutation({
       query: ({ organisationslug, user_alias, payload }) => ({
-        url: `/organization/${organisationslug}/applicants/${user_alias}/`,
+        url: `/api/organisations/${organisationslug}/applicants/${user_alias}/`,
         method: "PATCH",
         body: payload,
       }),
@@ -28,18 +28,35 @@ export const OrgUserListApi = baseApi.injectEndpoints({
     }),
     deleteOrgLeadOrApplicant: builder.mutation({
       query: ({ organisationslug, user_alias }) => ({
-        url: `/organization/${organisationslug}/applicants/${user_alias}/`,
+        url: `/api/organisations/${organisationslug}/applicants/${user_alias}/`, //
         method: "DELETE",
       }),
       invalidatesTags: ["OrgLeadAndApplicantList"],
     }),
     getOrgUserList: builder.query({
       query: ({ organisationslug, params }) => ({
-        url: `/organization/${organisationslug}/user-list/`,
+        url: `/api/organisations/${organisationslug}/members/`,
         method: "GET",
         params: params,
       }),
       providesTags: ["OrgUserList"],
+    }),
+
+    updateOrgMember: builder.mutation({
+      query: ({ organisationslug, user_alias, payload }) => ({
+        url: `/api/organisations/${organisationslug}/members/${user_alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["OrgUserList"],
+    }),
+
+    deleteOrgMember: builder.mutation({
+      query: ({ organisationslug, user_alias }) => ({
+        url: `/api/organisations/${organisationslug}/members/${user_alias}/`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["OrgUserList"],
     }),
   }),
 });
@@ -50,4 +67,6 @@ export const {
   useUpdateOrgLeadOrApplicantMutation,
   useDeleteOrgLeadOrApplicantMutation,
   useGetOrgUserListQuery,
+  useUpdateOrgMemberMutation,
+  useDeleteOrgMemberMutation,
 } = OrgUserListApi;
