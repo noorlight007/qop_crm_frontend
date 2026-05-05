@@ -47,7 +47,7 @@ const NetworkDetailsContainer: React.FC = () => {
   useEffect(() => {
     if (typeof window === "undefined" || !networkSlug) return;
     const savedTab = localStorage.getItem(
-      `networkDetailsActiveTab:${networkSlug}`,
+      `customTabActive:${networkSlug}`,
     );
     setActiveTab(savedTab || "dashboard");
   }, [networkSlug]);
@@ -55,7 +55,7 @@ const NetworkDetailsContainer: React.FC = () => {
   const handleSetTab = (tabId: string) => {
     setActiveTab(tabId);
     if (typeof window === "undefined" || !networkSlug) return;
-    localStorage.setItem(`networkDetailsActiveTab:${networkSlug}`, tabId);
+    localStorage.setItem(`customTabActive:${networkSlug}`, tabId);
   };
 
   return (
