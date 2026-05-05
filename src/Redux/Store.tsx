@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./Api/BaseApi";
 import { publicBaseApi } from "./Api/PublicBaseApi";
-import CustomTabReducer from "./CustomTabSlice";
+import CustomTabReducer from "./Reducers/CustomTabSlice";
 import appearanceReducer from "./Reducers/Appearance/AppearanceSlice";
 import budgetPlannerReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/BudgetPlanner/BudgetPlannerFormSlice";
 import CaseSectionsTabIndicatorReducer from "./Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
@@ -24,7 +24,7 @@ const Store = configureStore({
     formWizardOne: FormWizardOne,
     themeCustomizer: ThemeCustomizerReducer,
     caseSections: CaseSectionsTabIndicatorReducer,
-    organisationDetailsTabs: CustomTabReducer,
+    customTabs: CustomTabReducer,
     propertyForm: propertyFormReducer,
     budgetPlanner: budgetPlannerReducer,
     compliance: ComplianceReducer,

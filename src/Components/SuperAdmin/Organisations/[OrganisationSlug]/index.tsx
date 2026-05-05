@@ -43,7 +43,7 @@ const OrganisationDetailsContainer: React.FC = () => {
   useEffect(() => {
     if (typeof window === "undefined" || !organisationslug) return;
     const savedTab = localStorage.getItem(
-      `organisationDetailsActiveTab:${organisationslug}`,
+      `customTabActive:${organisationslug}`,
     );
     setActiveTab(savedTab || "dashboard");
   }, [organisationslug]);
@@ -51,10 +51,7 @@ const OrganisationDetailsContainer: React.FC = () => {
   const handleSetTab = (tabId: string) => {
     setActiveTab(tabId);
     if (typeof window === "undefined" || !organisationslug) return;
-    localStorage.setItem(
-      `organisationDetailsActiveTab:${organisationslug}`,
-      tabId,
-    );
+    localStorage.setItem(`customTabActive:${organisationslug}`, tabId);
   };
 
   return (

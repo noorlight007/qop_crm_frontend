@@ -1,13 +1,13 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import {
-  restoreOrganisationDetailsTab,
-  setOrganisationDetailsTab,
-} from "@/Redux/CustomTabSlice";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import {
+  restoreCustomTab,
+  setCustomTab,
+} from "@/Redux/Reducers/CustomTabSlice";
 import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -55,9 +55,7 @@ const OrganisationDetails: React.FC = () => {
     ? organisationslug[0]
     : organisationslug;
   const router = useRouter();
-  const activeTab = useAppSelector(
-    (state) => state.organisationDetailsTabs.activeTab,
-  );
+  const activeTab = useAppSelector((state) => state.customTabs.activeTab);
 
   // rtk hooks
   const {
@@ -99,10 +97,8 @@ const OrganisationDetails: React.FC = () => {
 
   useEffect(() => {
     if (typeof window === "undefined" || !orgSlug) return;
-    const savedTab = localStorage.getItem(
-      `organisationDetailsActiveTab:${orgSlug}`,
-    );
-    dispatch(restoreOrganisationDetailsTab(savedTab || "dashboard"));
+    const savedTab = localStorage.getItem(`customTabActive:${orgSlug}`);
+    dispatch(restoreCustomTab(savedTab || "dashboard"));
   }, [dispatch, orgSlug]);
 
   if (isLoading) {
@@ -133,7 +129,7 @@ const OrganisationDetails: React.FC = () => {
                     active={activeTab === item.id}
                     onClick={() =>
                       dispatch(
-                        setOrganisationDetailsTab({
+                        setCustomTab({
                           tabId: item.id,
                           organisationslug: orgSlug,
                         }),
