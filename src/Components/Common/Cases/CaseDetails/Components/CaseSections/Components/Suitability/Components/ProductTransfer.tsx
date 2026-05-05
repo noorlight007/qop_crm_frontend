@@ -1,13 +1,14 @@
 import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
 } from "reactstrap";
 
-/* ── Pink: advisor guidance note ── */
 const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
   <p className="suitability-advisor-note rounded">{children}</p>
 );
@@ -48,12 +49,46 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
   const s = suitability;
   const lender = s?.loan_details?.lender ?? "";
 
-  // ── UI only ──
+  // ── UI-only states ──
   const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] = useState(false);
+  const [isDealEndDateEditing, setIsDealEndDateEditing] = useState(false);
+  const [isSvrRateEditing, setIsSvrRateEditing] = useState(false);
+
+  // ── Draft states ──
+  const [dealEndDateDraft, setDealEndDateDraft] = useState("");
+  const [svrRateDraft, setSvrRateDraft] = useState("");
 
   // ── Derived from formValues ──
   const selectedProductTransferOption =
     productTransferOptions.find((o) => o.value === formValues.product_transfer_reason) ?? null;
+
+  // ── Deal end date handlers ──
+  const startDealEndDateEdit = () => {
+    setDealEndDateDraft(formValues.product_transfer_expired_date ?? "");
+    setIsDealEndDateEditing(true);
+  };
+  const handleDealEndDateSave = () => {
+    onFormChange({ product_transfer_expired_date: dealEndDateDraft });
+    setIsDealEndDateEditing(false);
+  };
+  const handleDealEndDateCancel = () => {
+    setDealEndDateDraft(formValues.product_transfer_expired_date ?? "");
+    setIsDealEndDateEditing(false);
+  };
+
+  // ── SVR rate handlers ──
+  const startSvrRateEdit = () => {
+    setSvrRateDraft(formValues.product_transfer_standard_variable_rate ?? "");
+    setIsSvrRateEditing(true);
+  };
+  const handleSvrRateSave = () => {
+    onFormChange({ product_transfer_standard_variable_rate: svrRateDraft });
+    setIsSvrRateEditing(false);
+  };
+  const handleSvrRateCancel = () => {
+    setSvrRateDraft(formValues.product_transfer_standard_variable_rate ?? "");
+    setIsSvrRateEditing(false);
+  };
 
   return (
     <>
@@ -62,9 +97,37 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
       <p>
         Your current mortgage deal with{" "}
         <strong style={{ color: blue }}>{lender}</strong> expires / expired on{" "}
-        <strong style={{ color: blue }}>
-          {caseData?.current_deal_end_date ?? "01/01/0001"}
-        </strong>
+        {isDealEndDateEditing ? (
+          <span className="d-inline-flex align-items-center gap-2 ms-1">
+            <Input
+              type="date"
+              value={dealEndDateDraft}
+              onChange={(e) => setDealEndDateDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleDealEndDateSave();
+                if (e.key === "Escape") handleDealEndDateCancel();
+              }}
+              autoFocus
+              style={{ width: "160px", display: "inline-block" }}
+              className="p-1"
+            />
+            <Button color="light" className="text-black" size="sm" onClick={handleDealEndDateSave}>
+              Save
+            </Button>
+            <Button color="light" className="text-black" size="sm" onClick={handleDealEndDateCancel}>
+              Cancel
+            </Button>
+          </span>
+        ) : (
+          <span
+            className="text-success"
+            style={{ cursor: "pointer" }}
+            onClick={startDealEndDateEdit}
+            title="Click to edit"
+          >
+            {formValues.product_transfer_expired_date || "click to set date..."}
+          </span>
+        )}
         . As there are no penalties for changing this mortgage product beyond
         this date, it allows us to review your options.
       </p>
@@ -74,9 +137,38 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
         <li>
           <span className="me-2">•</span>
           Staying on standard variable rate (SVR){" "}
-          <strong style={{ color: blue }}>
-            {caseData?.svr_rate ?? "X.XX%"}
-          </strong>
+          {isSvrRateEditing ? (
+            <span className="d-inline-flex align-items-center gap-2 ms-1">
+              <Input
+                type="text"
+                value={svrRateDraft}
+                onChange={(e) => setSvrRateDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSvrRateSave();
+                  if (e.key === "Escape") handleSvrRateCancel();
+                }}
+                placeholder="e.g. 5.25"
+                autoFocus
+                style={{ width: "120px", display: "inline-block" }}
+                className="p-1"
+              />
+              <Button color="light" className="text-black" size="sm" onClick={handleSvrRateSave}>
+                Save
+              </Button>
+              <Button color="light" className="text-black" size="sm" onClick={handleSvrRateCancel}>
+                Cancel
+              </Button>
+            </span>
+          ) : (
+            <span
+              className="text-success"
+              style={{ cursor: "pointer" }}
+              onClick={startSvrRateEdit}
+              title="Click to edit"
+            >
+              {formValues.product_transfer_standard_variable_rate ? `${formValues.product_transfer_standard_variable_rate}%` : "click to set rate..."}
+            </span>
+          )}
         </li>
         <li>
           <span className="me-2">•</span>

@@ -38,7 +38,7 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
 
   // ── Derived from formValues — re-hydrates on page load if data exists ──
   const selectedPensionOption =
-    pensionOptions.find((o) => o.value === formValues.pension_option) ?? null;
+    pensionOptions.find((o) => o.value === formValues.lending_into_retirement_type) ?? null;
 
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
 
@@ -102,7 +102,7 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
             {pensionOptions.map((option) => (
               <DropdownItem
                 key={option.value}
-                onClick={() => onFormChange({ pension_option: option.value })}
+                onClick={() => onFormChange({ lending_into_retirement_type: option.value })}
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>

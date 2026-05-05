@@ -58,6 +58,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   const [goalDraft, setGoalDraft] = useState("");
   const [alternativesDraft, setAlternativesDraft] = useState("");
   const [proceedDraft, setProceedDraft] = useState("");
+  const [savingCell, setSavingCell] = useState<Record<string, boolean>>({});
 
   // ── Derived from formValues ──
   const selectedDebtCostOption =
@@ -176,29 +177,52 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
   const handleRowSave = async (
     rowIndex: number,
     patch?: Partial<DebtSummaryRowDraft>,
+    cellKey?: string,
   ) => {
-    const draft = patch
-      ? { ...rowDrafts[rowIndex], ...patch }
-      : rowDrafts[rowIndex];
+    if (cellKey) setSavingCell((prev) => ({ ...prev, [cellKey]: true }));
+    try {
+      const draft = patch
+        ? { ...rowDrafts[rowIndex], ...patch }
+        : rowDrafts[rowIndex];
 
-    if (draft.alias == null) {
-      const result = await createDebtSummaryRecommendation({
-        case_alias: caseData.alias,
-        payload: draft,
-      }).unwrap();
-
-      setRowDrafts((prev) =>
-        prev.map((row, i) =>
-          i === rowIndex ? { ...row, alias: result.alias } : row,
-        ),
-      );
-    } else {
-      await updateDebtSummaryRecommendation({
-        case_alias: caseData.alias,
-        alias: draft.alias,
-        payload: draft,
-      }).unwrap();
+      if (draft.alias == null) {
+        const result = await createDebtSummaryRecommendation({
+          case_alias: caseData.alias,
+          payload: draft,
+        }).unwrap();
+        setRowDrafts((prev) =>
+          prev.map((row, i) =>
+            i === rowIndex ? { ...row, alias: result.alias } : row,
+          ),
+        );
+      } else {
+        await updateDebtSummaryRecommendation({
+          case_alias: caseData.alias,
+          alias: draft.alias,
+          payload: draft,
+        }).unwrap();
+      }
+    } finally {
+      if (cellKey) setSavingCell((prev) => ({ ...prev, [cellKey]: false }));
     }
+  };
+
+  const cancelRowEdit = (rowIndex: number) => {
+    const recs = [...(s?.debt_summary_recommendations ?? [])].sort(
+      (a: any, b: any) => a.id - b.id,
+    );
+    const rec = recs[rowIndex];
+    setRowDrafts((prev) =>
+      prev.map((row, i) =>
+        i === rowIndex
+          ? {
+              ...row,
+              estimated_cost_text: rec?.estimated_cost_text ?? "",
+              debt_summary_reason: rec?.debt_summary_reason ?? "",
+            }
+          : row,
+      ),
+    );
   };
 
   return (
@@ -211,6 +235,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
         currently{" "}
         {isBalanceEditing ? (
           <span className="d-inline-flex align-items-center gap-2 ms-1">
+            £
             <Input
               type="text"
               value={balanceDraft}
@@ -219,7 +244,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
                 if (e.key === "Enter") handleBalanceSave();
                 if (e.key === "Escape") handleBalanceCancel();
               }}
-              placeholder="e.g. £12,500.00"
+              placeholder="e.g. 12,500.00"
               autoFocus
               style={{ width: "160px", display: "inline-block" }}
               className="p-1"
@@ -243,12 +268,12 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
           </span>
         ) : (
           <span
-            className="text-success"
+            className="text-success fw-bold"
             style={{ cursor: "pointer" }}
             onClick={startBalanceEdit}
             title="Click to edit"
           >
-            {formValues.outstanding_balance || "click to add balance..."}
+            £{formValues.outstanding_balance || "click to add balance..."}
           </span>
         )}
       </p>
@@ -560,6 +585,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
                   <td>
                     {editingCell[costKey] ? (
                       <>
+                        £
                         <Input
                           type="textarea"
                           rows={3}
@@ -578,21 +604,37 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
                             color="light"
                             className="text-dark"
                             size="sm"
+                            disabled={savingCell[costKey]}
                             onClick={() => {
                               setEditingCell((prev) => ({
                                 ...prev,
                                 [costKey]: false,
                               }));
-                              handleRowSave(i);
+                              handleRowSave(i, undefined, costKey);
                             }}
                           >
-                            Save
+                            {savingCell[costKey] ? "Saving..." : "Save"}
+                          </Button>
+                          <Button
+                            color="light"
+                            className="text-dark"
+                            size="sm"
+                            disabled={savingCell[costKey]}
+                            onClick={() => {
+                              cancelRowEdit(i);
+                              setEditingCell((prev) => ({
+                                ...prev,
+                                [costKey]: false,
+                              }));
+                            }}
+                          >
+                            Cancel
                           </Button>
                         </div>
                       </>
                     ) : (
                       <span
-                        className="text-success"
+                        className="text-success fw-bold"
                         style={{
                           cursor: "pointer",
                           whiteSpace: "pre-wrap",
@@ -607,7 +649,7 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
                         }
                         title="Click to edit"
                       >
-                        {draft.estimated_cost_text || "click to add..."}
+                        £{draft.estimated_cost_text || "click to add..."}
                       </span>
                     )}
                   </td>
@@ -687,21 +729,37 @@ const DebtConsolidation: React.FC<DebtConsolidationProps> = ({
                             color="light"
                             className="text-dark"
                             size="sm"
+                            disabled={savingCell[reasonKey]}
                             onClick={() => {
                               setEditingCell((prev) => ({
                                 ...prev,
                                 [reasonKey]: false,
                               }));
-                              handleRowSave(i);
+                              handleRowSave(i, undefined, reasonKey);
                             }}
                           >
-                            Save
+                            {savingCell[reasonKey] ? "Saving..." : "Save"}
+                          </Button>
+                          <Button
+                            color="light"
+                            className="text-dark"
+                            size="sm"
+                            disabled={savingCell[reasonKey]}
+                            onClick={() => {
+                              cancelRowEdit(i);
+                              setEditingCell((prev) => ({
+                                ...prev,
+                                [reasonKey]: false,
+                              }));
+                            }}
+                          >
+                            Cancel
                           </Button>
                         </div>
                       </>
                     ) : (
                       <span
-                        className="text-success"
+                        className="text-success fw-bold"
                         style={{
                           cursor: "pointer",
                           whiteSpace: "pre-wrap",

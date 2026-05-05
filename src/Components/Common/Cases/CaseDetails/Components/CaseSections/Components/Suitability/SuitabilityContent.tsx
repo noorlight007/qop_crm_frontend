@@ -71,12 +71,22 @@ const Suitability: React.FC = () => {
     product_transfer_reason: null,
     product_transfer_recommended: "",
     arrangement_fee: null,
-    pension_option: null,
+    lending_into_retirement_type: null,
     overpayment_type: null,
     repayment_status_type: null,
     max_erc: null,
-    additional_recipients_text: null,
+    email: null,
     outstanding_balance: null,
+    interest_rate_type: null,
+    repayment_method_type: null,
+    repayment_charge: null,
+    the_end_date_of_existing_product: null,
+    the_end_date_of_new_product: null,
+    product_transfer_expired_date: null,
+    product_transfer_standard_variable_rate: null,
+    shortened_product_transfer_expired_date: null,
+    shortened_product_transfer_standard_variable_rate: null,
+    product_transfer_recommended_was: null,
   });
 
   // Pre-populate from API response
@@ -133,12 +143,27 @@ const Suitability: React.FC = () => {
         protection: formValues.protection,
         protection_reason: formValues.protection_reason,
         portability_suggestion: formValues.portability_suggestion,
-        pension_option: formValues.pension_option,
+        lending_into_retirement_type: formValues.lending_into_retirement_type,
         overpayment_type: formValues.overpayment_type,
         repayment_status_type: formValues.repayment_status_type,
-        max_erc_value: formValues.max_erc,
-        additional_recipients_text: formValues.additional_recipients_text,
+        max_erc: formValues.max_erc,
+        email: formValues.email,
         outstanding_balance: formValues.outstanding_balance,
+        interest_rate_type: formValues.interest_rate_type,
+        repayment_method_type: formValues.repayment_method_type,
+        repayment_charge: formValues.repayment_charge,
+        the_end_date_of_existing_product:
+          formValues.the_end_date_of_existing_product,
+        the_end_date_of_new_product: formValues.the_end_date_of_new_product,
+        product_transfer_expired_date: formValues.product_transfer_expired_date,
+        product_transfer_standard_variable_rate:
+          formValues.product_transfer_standard_variable_rate,
+        shortened_product_transfer_expired_date:
+          formValues.shortened_product_transfer_expired_date,
+        shortened_product_transfer_standard_variable_rate:
+          formValues.shortened_product_transfer_standard_variable_rate,
+        product_transfer_recommended_was:
+          formValues.product_transfer_recommended_was,
       };
 
       console.log("Suitability Payload:", JSON.stringify(payload, null, 2));
@@ -157,10 +182,7 @@ const Suitability: React.FC = () => {
   if (isCaseLoading || isSuitLoading) return <LoadingGrow />;
 
   return (
-    <Container
-      fluid
-      className="py-4 px-2 px-md-4 suitability-page-bg"
-    >
+    <Container fluid className="py-4 px-2 px-md-4 suitability-page-bg">
       <h1 className="mb-4 text-danger text-center fw-bold">
         This page is under Development
       </h1>
@@ -171,28 +193,28 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        {suitability?.is_debt_consolidation_applicable && (
-          <>
-            <Divider />
-            <DebtConsolidation
-              caseData={caseData}
-              suitability={suitability}
-              formValues={formValues}
-              onFormChange={handleFormChange}
-            />
-          </>
-        )}
-        {suitability?.is_lending_into_retirement_applicable && (
-          <>
-            <Divider />
-            <LendingIntoRetirement
-              caseData={caseData}
-              suitability={suitability}
-              formValues={formValues}
-              onFormChange={handleFormChange}
-            />
-          </>
-        )}
+        {/* {suitability?.is_debt_consolidation_applicable && ( */}
+        <>
+          <Divider />
+          <DebtConsolidation
+            caseData={caseData}
+            suitability={suitability}
+            formValues={formValues}
+            onFormChange={handleFormChange}
+          />
+        </>
+        {/* )} */}
+        {/* {suitability?.is_lending_into_retirement_applicable && ( */}
+        <>
+          <Divider />
+          <LendingIntoRetirement
+            caseData={caseData}
+            suitability={suitability}
+            formValues={formValues}
+            onFormChange={handleFormChange}
+          />
+        </>
+        {/* )} */}
         <Divider />
         <PortingMortgageIncrease
           caseData={caseData}
@@ -200,17 +222,17 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        {suitability?.is_islamic_mortgage_applicable && (
-          <>
-            <Divider />
-            <IslamicMortgage
-              caseData={caseData}
-              suitability={suitability}
-              formValues={formValues}
-              onFormChange={handleFormChange}
-            />
-          </>
-        )}
+        {/* {suitability?.is_islamic_mortgage_applicable && ( */}
+        <>
+          <Divider />
+          <IslamicMortgage
+            caseData={caseData}
+            suitability={suitability}
+            formValues={formValues}
+            onFormChange={handleFormChange}
+          />
+        </>
+        {/* )} */}
         <Divider />
         <RateTypePaymentMethod
           caseData={caseData}
@@ -218,13 +240,18 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        <Divider />
-        <ProductTransfer
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
+        {/* {suitability?.is_product_transfer_applicable && ( */}
+        <>
+          <Divider />
+          <ProductTransfer
+            caseData={caseData}
+            suitability={suitability}
+            formValues={formValues}
+            onFormChange={handleFormChange}
+          />
+        </>
+        {/* )} */}
+
         <Divider />
         <ShortenedProductTransfer
           caseData={caseData}
@@ -232,8 +259,19 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        <Divider />
-        <HighLoanToValue caseData={caseData} />
+        {/* {suitability?.is_high_loan_to_value_applicable && ( */}
+        <>
+          <Divider />
+          <HighLoanToValue caseData={caseData} />
+        </>
+        {/* )} */}
+        {/* ── Footer ── */}
+        <div className="mt-5 pt-3 border-top text-center">
+          <small className="text-muted">
+            This letter is generated as part of your mortgage advice record.
+            Please retain it for your records.
+          </small>
+        </div>
       </div>
       <div className="d-flex justify-content-end mt-4">
         <Button

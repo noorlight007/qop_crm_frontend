@@ -74,11 +74,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const lender = s?.loan_details?.lender ?? "";
   const initialRate = s?.loan_details?.initial_interest_rate ?? "";
   const rateType = s?.loan_details?.interest_rate_type ?? "";
-  const dealEndDate = caseData?.deal_end_date ?? "";
   const repaymentMethod = s?.loan_details?.repayment_method ?? "";
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
   const mortgageType = s?.loan_details?.mortgage_type ?? "";
-  const maxERC = caseData?.max_erc ? `£${caseData.max_erc}` : "£X";
+  const interestRateType = s?.loan_details?.interest_rate_type ?? "";
+  const dealEndDate = (s?.loan_details?.initial_interest_rate ?? "").match(/\d{2}\/\d{2}\/\d{4}/)?.[0] ?? "";
 
   const fmtGBP = (val: any) =>
     val
@@ -358,15 +358,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     setIsMaxErcEditing(true);
   };
   const handleAdditionalRecipientsSave = () => {
-    onFormChange({ additional_recipients_text: additionalRecipientsDraft });
+    onFormChange({ email: additionalRecipientsDraft });
     setIsAdditionalRecipientsEditing(false);
   };
   const handleAdditionalRecipientsCancel = () => {
-    setAdditionalRecipientsDraft(formValues.additional_recipients_text ?? "");
+    setAdditionalRecipientsDraft(formValues.email ?? "");
     setIsAdditionalRecipientsEditing(false);
   };
   const startAdditionalRecipientsEdit = () => {
-    setAdditionalRecipientsDraft(formValues.additional_recipients_text ?? "");
+    setAdditionalRecipientsDraft(formValues.email ?? "");
     setIsAdditionalRecipientsEditing(true);
   };
 
@@ -563,7 +563,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td style={{ color: blue }}>{lender}</td>
             <td>This is the lender who will provide your mortgage.</td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              I have recommended <strong>{lender}</strong> because{" "}
+              I have recommended <strong style={{ color: blue }}>{lender}</strong> because{" "}
               {isLenderEditing ? (
                 <span className="d-block w-100 mt-1">
                   <Input
@@ -615,7 +615,11 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           <tr>
             <td className="fw-bold">Interest Rate Type</td>
             <td style={{ color: blue }}>{rateType}</td>
-            <td>Your payments will not change during the initial period.</td>
+            <td>
+              {interestRateType === "Fixed"
+                ? "Your payments will not change during the initial period."
+                : "Your payments can fluctuate during the initial deal period."}
+            </td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
               You wanted the certainty of knowing exactly what your monthly
               payments will be because{" "}
@@ -680,7 +684,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td className="fw-bold">Initial interest rate / deal period</td>
             <td>
               The recommended deal period will apply until{" "}
-              <strong style={{ color: blue }}>{dealEndDate}</strong>
+              <span style={{ color: blue }}>{dealEndDate}</span>
             </td>
             <td>
               <p className="mb-2 fw-bold">
@@ -1758,8 +1762,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           onClick={startAdditionalRecipientsEdit}
           title="Click to edit"
         >
-          {formValues.additional_recipients_text ||
-            "click to add email / address..."}
+          {formValues.email || "click to add email / address..."}
         </p>
       )}
     </>
