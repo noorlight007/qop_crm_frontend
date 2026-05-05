@@ -547,7 +547,7 @@ const NetworkDetails: React.FC = () => {
               className=" d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <Spinner className="primary" />
+              <LoadingGrow />
             </Card>
           ) : (
             <Card className="border-0 overflow-hidden position-relative shadow-lg">

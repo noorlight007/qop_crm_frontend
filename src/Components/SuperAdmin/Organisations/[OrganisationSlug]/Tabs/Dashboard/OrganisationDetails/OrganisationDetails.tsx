@@ -27,17 +27,14 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Col,
   Popover,
   PopoverBody,
   PopoverHeader,
   Row,
-  Spinner,
 } from "reactstrap";
-import DeleteOrgModal from "./Modals/DeleteOrgModal";
-import UpdateOrgDirectorInfoModal from "./Modals/UpdateOrgDirectorModal";
-import UpdateOrgInfoModal from "./Modals/UpdateOrgInfoModal";
+import UpdateOrgDirectorInfoModal from "../Modals/UpdateOrgDirectorModal";
+import UpdateOrgInfoModal from "../Modals/UpdateOrgInfoModal";
 
 const OrganisationDetails: React.FC = () => {
   const params = useParams();
@@ -52,7 +49,6 @@ const OrganisationDetails: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const toggleUpdateModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -60,10 +56,6 @@ const OrganisationDetails: React.FC = () => {
 
   const toggleDirectorModal = () => {
     setIsDirectorModalOpen(!isDirectorModalOpen);
-  };
-
-  const toggleDeleteModal = () => {
-    setIsDeleteModalOpen(!isDeleteModalOpen);
   };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -685,7 +677,7 @@ const OrganisationDetails: React.FC = () => {
               className=" d-flex justify-content-center align-items-center w-100"
               style={{ minHeight: "450px" }}
             >
-              <Spinner className="primary" />
+              <LoadingGrow />
             </Card>
           ) : (
             <Card className="border-0 overflow-hidden position-relative shadow-lg">
@@ -889,26 +881,6 @@ const OrganisationDetails: React.FC = () => {
         </Col>
       </Row>
 
-      <Row>
-        <Card className="shadow p-2">
-          <CardHeader className="h3 text-danger">Danger Zone</CardHeader>
-          <CardBody className="border-danger rounded-2 mb-4">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 className="fw-bold">Delete this Organization</h5>
-                <p className="mb-0 opacity-75 text-danger">
-                  Once you delete an organization, there is no going back.
-                  Please be certain.
-                </p>
-              </div>
-              <Button color="danger" onClick={toggleDeleteModal}>
-                Delete this Organization
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      </Row>
-
       <UpdateOrgInfoModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
@@ -921,12 +893,6 @@ const OrganisationDetails: React.FC = () => {
         toggle={toggleDirectorModal}
         slug={getOrganisationDetails?.organization?.slug}
         organisationData={getOrganisationDetails}
-      />
-
-      <DeleteOrgModal
-        isOpen={isDeleteModalOpen}
-        toggle={toggleDeleteModal}
-        organisationInfo={getOrganisationDetails}
       />
     </>
   );
