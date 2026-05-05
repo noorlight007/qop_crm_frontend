@@ -16,7 +16,7 @@ import {
 import Advisers from "./Tabs/Advisers/Advisers";
 import Applicants from "./Tabs/Applicants/Applicants";
 import Compliances from "./Tabs/Compliances/Compliances";
-import NetworkDetails from "./Tabs/Dashboard/NetworkDetails";
+import Dashboard from "./Tabs/Dashboard/Dashboard";
 import Directors from "./Tabs/Directors/Directors";
 import Leads from "./Tabs/Leads/Leads";
 
@@ -89,7 +89,7 @@ const NetworkDetailsContainer: React.FC = () => {
 
             <TabContent activeTab={activeTab}>
               <TabPane tabId="dashboard">
-                {activeTab === "dashboard" && <NetworkDetails />}
+                {activeTab === "dashboard" && <Dashboard />}
               </TabPane>
               <TabPane tabId="directors">
                 {activeTab === "directors" && <Directors />}
