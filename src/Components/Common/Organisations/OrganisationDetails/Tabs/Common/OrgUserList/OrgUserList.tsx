@@ -1,10 +1,9 @@
 "use client";
-
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import DeleteOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/DeleteOrgUserModal";
-import UpdateOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/UpdateOrgUserModal";
-import ViewOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/ViewOrgUserModal";
-import { useGetOrgUserListQuery, useUpdateOrgUserMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import {
+  useGetOrgUserListQuery,
+  useUpdateOrgUserMutation,
+} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import {
   OrgUserListProps,
   OrgUserListType,
@@ -38,6 +37,9 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import DeleteOrgUserModal from "./Modals/DeleteOrgUserModal";
+import UpdateOrgUserModal from "./Modals/UpdateOrgUserModal";
+import ViewOrgUserModal from "./Modals/ViewOrgUserModal";
 
 const searchHelpText =
   "🔍 You can search using Name, Email Address or Phone Number.";

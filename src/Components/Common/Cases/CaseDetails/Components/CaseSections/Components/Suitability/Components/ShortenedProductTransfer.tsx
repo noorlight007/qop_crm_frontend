@@ -1,4 +1,5 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { ptCostOptions } from "@/Data/Cases/SuitabilityData";
+import { ShortenedProductTransferProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Button,
@@ -17,25 +18,6 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
-
-const ptCostOptions: { value: string; label: React.ReactNode }[] = [
-  {
-    value: "MOST_COST_EFFECTIVE",
-    label:
-      "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender.",
-  },
-  {
-    value: "NOT_MOST_COST_EFFECTIVE",
-    label: "not the most cost-effective deal available.",
-  },
-];
-
-interface ShortenedProductTransferProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
 
 const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
   caseData,
