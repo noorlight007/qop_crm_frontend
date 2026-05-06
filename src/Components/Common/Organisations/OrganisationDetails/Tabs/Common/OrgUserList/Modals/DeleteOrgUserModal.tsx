@@ -1,6 +1,6 @@
 "use client";
 
-import { useDeleteOrgMemberMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useDeleteOrgUserMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { DeleteOrgUserModalProps } from "@/Types/Common/Organisations/OrgUserListTypes";
 
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ const DeleteOrgUserModal: React.FC<DeleteOrgUserModalProps> = ({
   organisationslug,
   selectedUser,
 }) => {
-  const [deleteMember, { isLoading }] = useDeleteOrgMemberMutation();
+  const [deleteUser, { isLoading }] = useDeleteOrgUserMutation();
 
   const handleDelete = async () => {
     const userAlias = selectedUser?.alias;
@@ -22,7 +22,7 @@ const DeleteOrgUserModal: React.FC<DeleteOrgUserModalProps> = ({
     }
 
     try {
-      await deleteMember({
+      await deleteUser({
         organisationslug,
         user_alias: userAlias,
       }).unwrap();

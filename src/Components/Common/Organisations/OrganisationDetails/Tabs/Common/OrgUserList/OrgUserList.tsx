@@ -4,10 +4,7 @@ import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import DeleteOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/DeleteOrgUserModal";
 import UpdateOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/UpdateOrgUserModal";
 import ViewOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/ViewOrgUserModal";
-import {
-  useGetOrgUserListQuery,
-  useUpdateOrgMemberMutation,
-} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useGetOrgUserListQuery, useUpdateOrgUserMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import {
   OrgUserListProps,
   OrgUserListType,
@@ -87,8 +84,8 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     }));
   };
 
-  const [updateOrgMember, { isLoading: isUpdateStatusLoading }] =
-    useUpdateOrgMemberMutation();
+  const [updateOrgUser, { isLoading: isUpdateStatusLoading }] =
+    useUpdateOrgUserMutation();
 
   const title = useMemo(() => {
     switch (role) {
@@ -168,7 +165,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     if (!userAlias) return;
 
     try {
-      await updateOrgMember({
+      await updateOrgUser({
         organisationslug,
         user_alias: userAlias,
         payload: { is_active: newStatus },

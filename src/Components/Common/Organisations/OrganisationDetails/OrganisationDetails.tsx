@@ -22,9 +22,9 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-import OrgAdmins from "./Tabs/Admins/OrgAdmins";
-import OrgAdvisers from "./Tabs/Advisers/OrgAdvisers";
-import OrgApplicants from "./Tabs/Applicants/OrgApplicantsTab";
+import OrgAdminsTab from "./Tabs/Admins/OrgAdminsTab";
+import OrgAdvisersTab from "./Tabs/Advisers/OrgAdvisersTab";
+import OrgApplicantsTab from "./Tabs/Applicants/OrgApplicantsTab";
 import OrgCases from "./Tabs/Cases/OrgCases";
 import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";
@@ -32,8 +32,8 @@ import DangerZone from "./Tabs/Dashboard/DangerZone/DangerZone";
 import OrganisationDirectorInfo from "./Tabs/Dashboard/OrganisationDirectorInfo/OrganisationDirectorInfo";
 import OrganisationProfile from "./Tabs/Dashboard/OrganisationProfile/OrganisationProfile";
 import Overview from "./Tabs/Dashboard/Overview/Overview";
-import OrgIntroducers from "./Tabs/Introducers/OrgIntroducers";
-import OrgLeads from "./Tabs/Leads/OrgLeads";
+import OrgIntroducersTab from "./Tabs/Introducers/OrgIntroducersTab";
+import OrgLeadsTab from "./Tabs/Leads/OrgLeadsTab";
 
 const OrganisationDetails: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
@@ -202,19 +202,19 @@ const OrganisationDetails: React.FC = () => {
                 {activeTab === "cases" && <OrgCases />}
               </TabPane>
               <TabPane tabId="leads">
-                {activeTab === "leads" && <OrgLeads />}
+                {activeTab === "leads" && <OrgLeadsTab />}
               </TabPane>
               <TabPane tabId="applicants">
-                {activeTab === "applicants" && <OrgApplicants />}
+                {activeTab === "applicants" && <OrgApplicantsTab />}
               </TabPane>
               <TabPane tabId="advisers">
-                {activeTab === "advisers" && <OrgAdvisers />}
+                {activeTab === "advisers" && <OrgAdvisersTab />}
               </TabPane>
               <TabPane tabId="admins">
-                {activeTab === "admins" && <OrgAdmins />}
+                {activeTab === "admins" && <OrgAdminsTab />}
               </TabPane>
               <TabPane tabId="introducers">
-                {activeTab === "introducers" && <OrgIntroducers />}
+                {activeTab === "introducers" && <OrgIntroducersTab />}
               </TabPane>
             </TabContent>
           </Col>

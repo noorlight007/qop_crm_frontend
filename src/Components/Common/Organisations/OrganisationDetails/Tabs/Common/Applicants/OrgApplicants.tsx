@@ -1,6 +1,6 @@
 "use client";
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { useGetOrgLeadAndApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useGetOrgApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
 import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -62,7 +62,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
   }, [searchInput]);
 
   // rtk hooks
-  const { data: leadData, isLoading } = useGetOrgLeadAndApplicantListQuery(
+  const { data: applicantData, isLoading } = useGetOrgApplicantListQuery(
     {
       organisationslug,
       params: {
@@ -102,9 +102,9 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     created_at: "",
   });
 
-  const toggleViewModal = (lead?: OrgLeadInfo) => {
-    if (lead) {
-      setSelectedLead(lead);
+  const toggleViewModal = (item?: OrgLeadInfo) => {
+    if (item) {
+      setSelectedLead(item);
     }
     setIsViewModalOpen(!isViewModalOpen);
   };
@@ -125,34 +125,38 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     }
   };
 
-  const openUpdateLeadModal = (lead: OrgLeadInfo) => {
-    setLeadToUpdate(lead);
+  const openUpdateLeadModal = (item: OrgLeadInfo) => {
+    setLeadToUpdate(item);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteLeadModal = (lead: OrgLeadInfo) => {
-    setLeadToDelete(lead);
+  const openDeleteLeadModal = (item: OrgLeadInfo) => {
+    setLeadToDelete(item);
     setIsDeleteModalOpen(true);
   };
 
-  // Extract leads and pagination info from API response
-  const leads = Array.isArray(leadData) ? leadData : leadData?.results || [];
-  const totalCount = leadData?.count || 0; // from API e.g. 12
+  // Extract applicants and pagination info from API response
+  const applicants = Array.isArray(applicantData)
+    ? applicantData
+    : applicantData?.results || [];
+  const totalCount = applicantData?.count || 0; // from API e.g. 12
   // Capture stable page size from a non-last page to avoid last-page short length
   useEffect(() => {
-    const currentLength = Array.isArray(leadData)
-      ? leadData.length
-      : leadData?.results?.length || 0;
+    const currentLength = Array.isArray(applicantData)
+      ? applicantData.length
+      : applicantData?.results?.length || 0;
     const isLastPage =
-      !Array.isArray(leadData) && leadData && leadData.next === null;
+      !Array.isArray(applicantData) &&
+      applicantData &&
+      applicantData.next === null;
     if (currentLength > 0) {
       if (pageSize === 0) setPageSize(currentLength);
       else if (!isLastPage && currentLength !== pageSize)
         setPageSize(currentLength);
     }
-  }, [leadData, pageSize]);
+  }, [applicantData, pageSize]);
 
-  const effectivePageSize = pageSize || leads.length || 1;
+  const effectivePageSize = pageSize || applicants.length || 1;
   const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
 
   if (isLoading) {
@@ -168,7 +172,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
       <CardBody>
         <Row className="d-flex justify-content-between py-4">
           <Col md="3" xs="12">
-            <h2 className="mb-0">Leads</h2>
+            <h2 className="mb-0">{role === "LEAD" ? "Leads" : "Applicants"}</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -206,10 +210,12 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
             xs="12"
             className="d-flex justify-content-md-end justify-content-start mt-3 mt-md-0"
           >
-            <Button color="primary" onClick={toggleAddModal}>
-              <TbCirclePlus className="me-1" />
-              Add Lead
-            </Button>
+            {role === "LEAD" && (
+              <Button color="primary" onClick={toggleAddModal}>
+                <TbCirclePlus className="me-1" />
+                Add Lead
+              </Button>
+            )}
           </Col>
         </Row>
         <Row>
@@ -235,73 +241,73 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
                     </div>
                   </td>
                 </tr>
-              ) : leads.length > 0 ? (
-                leads.map((lead: OrgLeadInfo) => (
-                  <tr key={lead.alias} className="text-center">
+              ) : applicants.length > 0 ? (
+                applicants.map((item: OrgLeadInfo) => (
+                  <tr key={item.alias} className="text-center">
                     <td className="text-start">
                       <span
                         className="text_decoration_hover"
-                        onClick={() => toggleViewModal(lead)}
+                        onClick={() => toggleViewModal(item)}
                         style={{ cursor: "pointer" }}
                       >
-                        {lead?.name ? (
-                          lead?.name
+                        {item?.name ? (
+                          item?.name
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
                       </span>
                     </td>
                     <td>
-                      {lead?.email ? (
-                        lead.email
+                      {item?.email ? (
+                        item.email
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {lead?.phone ? (
-                        <span className="text-black">{lead?.phone}</span>
+                      {item?.phone ? (
+                        <span className="text-black">{item?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {lead?.source === "OTHER" ? (
-                        lead?.other_source || (
+                      {item?.source === "OTHER" ? (
+                        item?.other_source || (
                           <small className="text-muted">Not Available</small>
                         )
-                      ) : lead?.source ? (
-                        formatChoiceFieldValue(lead.source)
+                      ) : item?.source ? (
+                        formatChoiceFieldValue(item.source)
                       ) : (
                         <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
-                      {lead?.enquiry_type === "OTHER" ? (
-                        lead?.other_enquiry_type || (
+                      {item?.enquiry_type === "OTHER" ? (
+                        item?.other_enquiry_type || (
                           <small className="text-muted">Not Available</small>
                         )
-                      ) : lead?.enquiry_type ? (
-                        formatChoiceFieldValue(lead.enquiry_type)
+                      ) : item?.enquiry_type ? (
+                        formatChoiceFieldValue(item.enquiry_type)
                       ) : (
                         <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
-                      {lead.created_by == null ? (
+                      {item.created_by == null ? (
                         <small className="text-muted">Not Available</small>
                       ) : (
                         <>
                           <p className="m-0">
-                            {lead.created_by?.name || "Unknown User"}
+                            {item.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {lead.created_by?.email
-                              ? formatChoiceFieldValue(lead.created_by?.email)
+                            {item.created_by?.email
+                              ? formatChoiceFieldValue(item.created_by?.email)
                               : "Not Found"}
                             )
                           </p>
@@ -309,21 +315,21 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
                       )}
                     </td>
                     <td>
-                      {formatDateAndTime(lead?.created_at || "Not Available")}
+                      {formatDateAndTime(item?.created_at || "Not Available")}
                     </td>
                     <td>
                       <div className="d-flex justify-content-center gap-2">
                         <Button
                           color="secondary"
                           size="sm"
-                          onClick={() => openUpdateLeadModal(lead)}
+                          onClick={() => openUpdateLeadModal(item)}
                         >
                           <FaEdit />
                         </Button>
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={() => openDeleteLeadModal(lead)}
+                          onClick={() => openDeleteLeadModal(item)}
                         >
                           <FaTrash />
                         </Button>
@@ -334,7 +340,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
               ) : (
                 <tr>
                   <td colSpan={9} className="text-center">
-                    No leads available.
+                    No {role === "LEAD" ? "Leads" : "Applicants"} available.
                   </td>
                 </tr>
               )}
@@ -354,7 +360,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
                   totalCount,
                 )}{" "}
-                of {totalCount} Leads
+                of {totalCount} {role === "LEAD" ? " Leads" : " Applicants"}
               </p>
             </div>{" "}
             <Pagination className="d-flex justify-content-end p-2">

@@ -1,5 +1,5 @@
-import { useUpdateOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { UpdateOrgLeadModalProps } from "@/Types/Common/Organisations/OrgLeadTypes";
+import { useUpdateOrgApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
+import { UpdateOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -17,17 +17,18 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
+const UpdateOrgApplicantModal: React.FC<UpdateOrgApplicantModalProps> = ({
   isOpen,
   toggle,
-  leadToUpdate,
+  applicantToUpdate,
+  role,
 }) => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
 
-  const [updateLeadOrApplicant, { isLoading: isUpdatingLead }] =
-    useUpdateOrgLeadOrApplicantMutation();
+  const [updateApplicant, { isLoading: isUpdating }] =
+    useUpdateOrgApplicantMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -47,23 +48,23 @@ const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
 
   // Populate form when lead data changes
   useEffect(() => {
-    if (leadToUpdate && isOpen) {
+    if (applicantToUpdate && isOpen) {
       setFormData({
-        title: leadToUpdate.title || "",
-        first_name: leadToUpdate.first_name || "",
-        middle_name: leadToUpdate.middle_name || "",
-        last_name: leadToUpdate.last_name || "",
-        email: leadToUpdate.email || "",
-        phone: leadToUpdate.phone || "",
-        source: leadToUpdate.source || "",
-        other_source: leadToUpdate.other_source || "",
-        enquiry_type: leadToUpdate.enquiry_type || "",
-        other_enquiry_type: leadToUpdate.other_enquiry_type || "",
-        note: leadToUpdate.note || "",
+        title: applicantToUpdate.title || "",
+        first_name: applicantToUpdate.first_name || "",
+        middle_name: applicantToUpdate.middle_name || "",
+        last_name: applicantToUpdate.last_name || "",
+        email: applicantToUpdate.email || "",
+        phone: applicantToUpdate.phone || "",
+        source: applicantToUpdate.source || "",
+        other_source: applicantToUpdate.other_source || "",
+        enquiry_type: applicantToUpdate.enquiry_type || "",
+        other_enquiry_type: applicantToUpdate.other_enquiry_type || "",
+        note: applicantToUpdate.note || "",
       });
       setErrors({});
     }
-  }, [leadToUpdate, isOpen]);
+  }, [applicantToUpdate, isOpen]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -162,7 +163,7 @@ const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
   const handleUpdateLead = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!organisationslug || !leadToUpdate?.alias) {
+    if (!organisationslug || !applicantToUpdate?.alias) {
       toast.error("Missing lead information.");
       return;
     }
@@ -170,12 +171,14 @@ const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
     const payload = buildPayload();
 
     try {
-      await updateLeadOrApplicant({
+      await updateApplicant({
         organisationslug,
-        user_alias: leadToUpdate.alias,
+        user_alias: applicantToUpdate.alias,
         payload,
       }).unwrap();
-      toast.success("Lead updated successfully.");
+      toast.success(
+        `${role === "LEAD" ? "Lead" : "Applicant"} updated successfully.`,
+      );
       toggle();
     } catch (error: any) {
       const normalized = normalizeApiErrors(error);
@@ -184,7 +187,9 @@ const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
         Object.values(normalized).flat()[0] ||
         (typeof error?.message === "string"
           ? error.message
-          : "Failed to update lead. Please try again.");
+          : "Failed to update " +
+            (role === "LEAD" ? "lead" : "applicant") +
+            ". Please try again.");
       toast.error(firstMsg);
     }
   };
@@ -192,7 +197,9 @@ const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Update Lead</span>
+        <span className="fs-4 text-primary">
+          Update {role === "LEAD" ? "Lead" : "Applicant"}
+        </span>
       </ModalHeader>
       <Form onSubmit={handleUpdateLead}>
         <ModalBody>
@@ -437,8 +444,10 @@ const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button type="submit" color="primary" disabled={isUpdatingLead}>
-            {isUpdatingLead ? "Updating..." : "Update Lead"}
+          <Button type="submit" color="primary" disabled={isUpdating}>
+            {isUpdating
+              ? `Updating ${role === "LEAD" ? "Lead" : "Applicant"}...`
+              : `Update ${role === "LEAD" ? "Lead" : "Applicant"}`}
           </Button>
           <Button color="danger" onClick={toggle}>
             Cancel

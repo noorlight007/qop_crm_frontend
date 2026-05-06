@@ -1,5 +1,5 @@
-import { useAddOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
+import { useAddOrgApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
+import { AddOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -17,18 +17,19 @@ import {
   Row,
 } from "reactstrap";
 
-const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
+const AddOrgApplicantModal: React.FC<AddOrgApplicantModalProps> = ({
   isOpen,
   toggle,
-  onLeadCreated,
+  onApplicantCreated,
   onOpenCase,
   header,
+  role,
 }) => {
   const params = useParams();
   const { organisationslug } = params;
 
-  const [addLeadsOrApplicants, { isLoading: isAddingLeadsOrApplicants }] =
-    useAddOrgLeadOrApplicantMutation();
+  const [addApplicants, { isLoading: isAddingApplicants }] =
+    useAddOrgApplicantMutation();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -45,7 +46,9 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
+  const [createdApplicantData, setCreatedApplicantData] = useState<any | null>(
+    null,
+  );
   const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
 
   const extractErrorDetail = (err: any): string => {
@@ -216,11 +219,12 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrApplicants({ organisationslug, payload });
+      const result = await addApplicants({ organisationslug, payload });
       if (result.data) {
-        toast.success("Lead added successfully.");
-        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
-        setCreatedLeadData(result.data);
+        toast.success("Applicant added successfully.");
+        if (onApplicantCreated && result.data)
+          onApplicantCreated(result.data as any);
+        setCreatedApplicantData(result.data);
         resetForm();
         setErrors({});
         toggle();
@@ -249,21 +253,21 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
     }
   };
 
-  const computedLeadName = createdLeadData?.user
+  const computedLeadName = createdApplicantData?.user
     ? [
-        createdLeadData.user.title,
-        createdLeadData.user.first_name,
-        createdLeadData.user.middle_name,
-        createdLeadData.user.last_name,
+        createdApplicantData.user.title,
+        createdApplicantData.user.first_name,
+        createdApplicantData.user.middle_name,
+        createdApplicantData.user.last_name,
       ]
         .filter(Boolean)
         .join(" ")
-    : createdLeadData
+    : createdApplicantData
       ? [
-          createdLeadData.title,
-          createdLeadData.first_name,
-          createdLeadData.middle_name,
-          createdLeadData.last_name,
+          createdApplicantData.title,
+          createdApplicantData.first_name,
+          createdApplicantData.middle_name,
+          createdApplicantData.last_name,
         ]
           .filter(Boolean)
           .join(" ")
@@ -276,13 +280,14 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrApplicants({ organisationslug, payload });
+      const result = await addApplicants({ organisationslug, payload });
       if (result.data) {
         toast.success("Lead added successfully.");
-        const leadId =
+        const applicantId =
           (result.data as any)?.id ?? (result.data as any)?.user?.id;
-        setCreatedLeadData(result.data);
-        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
+        setCreatedApplicantData(result.data);
+        if (onApplicantCreated && result.data)
+          onApplicantCreated(result.data as any);
 
         const leadName = (() => {
           const d: any = result.data;
@@ -293,9 +298,9 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
         })();
 
         onOpenCase?.({
-          leadId,
-          leadName: leadName || computedLeadName,
-          leadData: result.data,
+          applicantId,
+          applicantName: leadName || computedLeadName,
+          applicantData: result.data,
         });
         resetForm();
         setErrors({});
@@ -584,10 +589,10 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
           <Button
             type="submit"
             color="primary"
-            disabled={isAddingLeadsOrApplicants}
+            disabled={isAddingApplicants}
             onClick={() => setSubmitType("lead")}
           >
-            {isAddingLeadsOrApplicants && submitType === "lead"
+            {isAddingApplicants && submitType === "lead"
               ? "Saving..."
               : `Save ${header}`}
           </Button>
@@ -595,10 +600,10 @@ const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
             <Button
               type="submit"
               color="secondary"
-              disabled={isAddingLeadsOrApplicants}
+              disabled={isAddingApplicants}
               onClick={() => setSubmitType("case")}
             >
-              {isAddingLeadsOrApplicants && submitType === "case"
+              {isAddingApplicants && submitType === "case"
                 ? "Saving..."
                 : "Save & Create Case"}
             </Button>

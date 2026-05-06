@@ -2,37 +2,6 @@ import { baseApi } from "@/Redux/Api/BaseApi";
 
 export const OrgUserListApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getOrgLeadAndApplicantList: builder.query({
-      query: ({ organisationslug, params }) => ({
-        url: `/api/organisations/${organisationslug}/applicants/`,
-        method: "GET",
-        params: params,
-      }),
-      providesTags: ["OrgLeadAndApplicantList"],
-    }),
-    addOrgLeadOrApplicant: builder.mutation({
-      query: ({ organisationslug, payload }) => ({
-        url: `/api/organisations/${organisationslug}/applicants/`,
-        method: "POST",
-        body: payload,
-      }),
-      invalidatesTags: ["OrgLeadAndApplicantList"],
-    }),
-    updateOrgLeadOrApplicant: builder.mutation({
-      query: ({ organisationslug, user_alias, payload }) => ({
-        url: `/api/organisations/${organisationslug}/applicants/${user_alias}/`,
-        method: "PATCH",
-        body: payload,
-      }),
-      invalidatesTags: ["OrgLeadAndApplicantList"],
-    }),
-    deleteOrgLeadOrApplicant: builder.mutation({
-      query: ({ organisationslug, user_alias }) => ({
-        url: `/api/organisations/${organisationslug}/applicants/${user_alias}/`, //
-        method: "DELETE",
-      }),
-      invalidatesTags: ["OrgLeadAndApplicantList"],
-    }),
     getOrgUserList: builder.query({
       query: ({ organisationslug, params }) => ({
         url: `/api/organisations/${organisationslug}/members/`,
@@ -42,7 +11,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
       providesTags: ["OrgUserList"],
     }),
 
-    updateOrgMember: builder.mutation({
+    updateOrgUser: builder.mutation({
       query: ({ organisationslug, user_alias, payload }) => ({
         url: `/api/organisations/${organisationslug}/members/${user_alias}/`,
         method: "PATCH",
@@ -51,7 +20,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
       invalidatesTags: ["OrgUserList"],
     }),
 
-    deleteOrgMember: builder.mutation({
+    deleteOrgUser: builder.mutation({
       query: ({ organisationslug, user_alias }) => ({
         url: `/api/organisations/${organisationslug}/members/${user_alias}/`,
         method: "DELETE",
@@ -62,11 +31,7 @@ export const OrgUserListApi = baseApi.injectEndpoints({
 });
 
 export const {
-  useGetOrgLeadAndApplicantListQuery,
-  useAddOrgLeadOrApplicantMutation,
-  useUpdateOrgLeadOrApplicantMutation,
-  useDeleteOrgLeadOrApplicantMutation,
   useGetOrgUserListQuery,
-  useUpdateOrgMemberMutation,
-  useDeleteOrgMemberMutation,
+  useUpdateOrgUserMutation,
+  useDeleteOrgUserMutation,
 } = OrgUserListApi;

@@ -23,7 +23,7 @@ export const OrgCasesApi = baseApi.injectEndpoints({
         method: "POST",
         body: payload,
       }),
-      invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
+      invalidatesTags: ["OrgCases", "OrgApplicantList"],
     }),
     updateOrgCase: builder.mutation({
       query: ({ organisationslug, case_alias, payload }) => ({
@@ -31,14 +31,14 @@ export const OrgCasesApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload,
       }),
-      invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
+      invalidatesTags: ["OrgCases", "OrgApplicantList"],
     }),
     deleteOrgCase: builder.mutation({
       query: ({ organisationslug, case_alias }) => ({
         url: `/api/organisations/${organisationslug}/cases/${case_alias}/`,
         method: "DELETE",
       }),
-      invalidatesTags: ["OrgCases", "OrgLeadAndApplicantList"],
+      invalidatesTags: ["OrgCases", "OrgApplicantList"],
     }),
   }),
 });

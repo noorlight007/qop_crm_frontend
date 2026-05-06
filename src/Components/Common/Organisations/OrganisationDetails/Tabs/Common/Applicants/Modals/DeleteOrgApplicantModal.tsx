@@ -1,20 +1,21 @@
-import { useDeleteOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { DeleteOrgLeadModalProps } from "@/Types/Common/Organisations/OrgLeadTypes";
+import { useDeleteOrgApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
+import { DeleteOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteOrgApplicantModal: React.FC<DeleteOrgLeadModalProps> = ({
+const DeleteOrgApplicantModal: React.FC<DeleteOrgApplicantModalProps> = ({
   isOpen,
   toggle,
-  leadToDelete,
+  applicantToDelete,
+  role,
 }) => {
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
 
-  const [deleteOrgLead, { isLoading: isDeletingLead }] =
-    useDeleteOrgLeadOrApplicantMutation();
+  const [deleteOrgApplicant, { isLoading: isDeleting }] =
+    useDeleteOrgApplicantMutation();
 
   const getErrorMessage = (error: any) => {
     const data = error?.data || error?.error?.data || error;
@@ -35,18 +36,20 @@ const DeleteOrgApplicantModal: React.FC<DeleteOrgLeadModalProps> = ({
     return "Failed to delete lead. Please try again.";
   };
 
-  const handleDeleteLead = async () => {
-    if (!organisationslug || !leadToDelete?.alias) {
-      toast.error("Missing lead information.");
+  const handleDeleteApplicant = async () => {
+    if (!organisationslug || !applicantToDelete?.alias) {
+      toast.error("Missing applicant information.");
       return;
     }
 
     try {
-      await deleteOrgLead({
+      await deleteOrgApplicant({
         organisationslug,
-        user_alias: leadToDelete.alias,
+        user_alias: applicantToDelete.alias,
       }).unwrap();
-      toast.success("Lead deleted successfully.");
+      toast.success(
+        `${applicantToDelete.name || "Applicant"} deleted successfully.`,
+      );
       toggle();
     } catch (error: any) {
       toast.error(getErrorMessage(error));
@@ -55,9 +58,13 @@ const DeleteOrgApplicantModal: React.FC<DeleteOrgLeadModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
-      <ModalHeader toggle={toggle}>Delete Lead</ModalHeader>
+      <ModalHeader toggle={toggle}>
+        Delete {role === "APPLICANT" ? "Applicant" : "Lead"}
+      </ModalHeader>
       <ModalBody>
-        Are you sure you want to delete the lead "{leadToDelete?.name || ""}"?
+        Are you sure you want to delete the{" "}
+        {role === "APPLICANT" ? "applicant" : "lead"} "
+        {applicantToDelete?.name || ""}"?
       </ModalBody>
       <ModalFooter>
         <Button color="secondary" onClick={toggle}>
@@ -65,10 +72,10 @@ const DeleteOrgApplicantModal: React.FC<DeleteOrgLeadModalProps> = ({
         </Button>
         <Button
           color="danger"
-          onClick={handleDeleteLead}
-          disabled={isDeletingLead}
+          onClick={handleDeleteApplicant}
+          disabled={isDeleting}
         >
-          {isDeletingLead ? "Deleting..." : "Delete"}
+          {isDeleting ? "Deleting..." : "Delete"}
         </Button>
       </ModalFooter>
     </Modal>
