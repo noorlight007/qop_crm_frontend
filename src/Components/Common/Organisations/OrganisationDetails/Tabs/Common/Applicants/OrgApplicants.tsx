@@ -1,7 +1,7 @@
 "use client";
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetOrgApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
-import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
+import { OrgApplicantInfo } from "@/Types/Common/Organisations/OrgApplicantType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useParams } from "next/navigation";
@@ -42,12 +42,16 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
   const [isAddCaseModalOpen, setIsAddCaseModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [leadToDelete, setLeadToDelete] = useState<OrgLeadInfo | null>(null);
-  const [leadToUpdate, setLeadToUpdate] = useState<OrgLeadInfo | null>(null);
+  const [leadToDelete, setLeadToDelete] = useState<OrgApplicantInfo | null>(
+    null,
+  );
+  const [leadToUpdate, setLeadToUpdate] = useState<OrgApplicantInfo | null>(
+    null,
+  );
   const [newCaseLead, setNewCaseLead] = useState<{
-    leadId?: number;
-    leadName?: string;
-    leadData?: any;
+    applicantId?: number;
+    applicantName?: string;
+    applicantData?: any;
   }>({});
   const [pageSize, setPageSize] = useState<number>(0);
 
@@ -74,7 +78,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     { skip: !organisationslug },
   );
 
-  const [selectedLead, setSelectedLead] = useState<OrgLeadInfo>({
+  const [selectedLead, setSelectedLead] = useState<OrgApplicantInfo>({
     alias: "",
     profile_image: "",
     name: "",
@@ -102,7 +106,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     created_at: "",
   });
 
-  const toggleViewModal = (item?: OrgLeadInfo) => {
+  const toggleViewModal = (item?: OrgApplicantInfo) => {
     if (item) {
       setSelectedLead(item);
     }
@@ -113,8 +117,12 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     setIsAddModalOpen((prev) => !prev);
   };
 
-  const handleOpenCase = ({ leadId, leadName, leadData }: any) => {
-    setNewCaseLead({ leadId, leadName, leadData });
+  const handleOpenCase = ({
+    applicantId,
+    applicantName,
+    applicantData,
+  }: any) => {
+    setNewCaseLead({ applicantId, applicantName, applicantData });
     setIsAddCaseModalOpen(true);
   };
 
@@ -125,12 +133,12 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     }
   };
 
-  const openUpdateLeadModal = (item: OrgLeadInfo) => {
+  const openUpdateLeadModal = (item: OrgApplicantInfo) => {
     setLeadToUpdate(item);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteLeadModal = (item: OrgLeadInfo) => {
+  const openDeleteLeadModal = (item: OrgApplicantInfo) => {
     setLeadToDelete(item);
     setIsDeleteModalOpen(true);
   };
@@ -242,7 +250,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
                   </td>
                 </tr>
               ) : applicants.length > 0 ? (
-                applicants.map((item: OrgLeadInfo) => (
+                applicants.map((item: OrgApplicantInfo) => (
                   <tr key={item.alias} className="text-center">
                     <td className="text-start">
                       <span
@@ -412,26 +420,29 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
         <AddOrgApplicantModal
           isOpen={isAddModalOpen}
           toggle={toggleAddModal}
-          header="Lead"
-          onLeadCreated={() => setCurrentPage(1)}
+          onApplicantCreated={() => setCurrentPage(1)}
           onOpenCase={handleOpenCase}
+          role={role}
         />
         <AddOrgNewCaseModal
           isOpen={isAddCaseModalOpen}
           toggle={toggleAddCaseModal}
-          leadId={newCaseLead.leadId}
-          leadName={newCaseLead.leadName}
-          leadData={newCaseLead.leadData}
+          applicantId={newCaseLead.applicantId}
+          applicantName={newCaseLead.applicantName}
+          applicantData={newCaseLead.applicantData}
+          role={role}
         />
         <UpdateOrgApplicantModal
           isOpen={isUpdateModalOpen}
           toggle={() => setIsUpdateModalOpen(false)}
-          leadToUpdate={leadToUpdate}
+          applicantToUpdate={leadToUpdate}
+          role={role}
         />
         <DeleteOrgApplicantModal
           isOpen={isDeleteModalOpen}
           toggle={() => setIsDeleteModalOpen(false)}
-          leadToDelete={leadToDelete}
+          applicantToDelete={leadToDelete}
+          role={role}
         />
         {/* modals end */}
       </CardBody>

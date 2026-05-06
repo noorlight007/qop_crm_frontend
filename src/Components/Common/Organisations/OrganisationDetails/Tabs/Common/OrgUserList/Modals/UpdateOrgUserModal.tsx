@@ -1,5 +1,5 @@
 "use client";
-import { useUpdateOrgMemberMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+import { useUpdateOrgUserMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import {
   OrgUserListType,
   UpdateOrgUserModalProps,
@@ -44,7 +44,7 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   const [originalData, setOriginalData] = useState<OrgUserListType>({});
   const [isModified, setIsModified] = useState(false);
 
-  const [updateMember, { isLoading }] = useUpdateOrgMemberMutation();
+  const [updateUser, { isLoading }] = useUpdateOrgUserMutation();
 
   useEffect(() => {
     setFormData({
@@ -142,7 +142,7 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
     }
 
     try {
-      const result = await updateMember({
+      const result = await updateUser({
         organisationslug,
         user_alias: userAlias,
         payload,

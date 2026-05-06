@@ -3,10 +3,8 @@ import {
   useLeadOrClientFilterListQuery,
 } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { useAddOrgCaseMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgCasesApi";
-import {
-  AddNewCaseModalProps,
-  LeadOptionType,
-} from "@/Types/Common/Cases/CaseTypes";
+import { LeadOptionType } from "@/Types/Common/Cases/CaseTypes";
+import { AddOrgNewCaseModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import { getOrganisationCaseUrl } from "@/utils/RedirectPaths";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -28,14 +26,14 @@ import {
 } from "reactstrap";
 import AddOrgApplicantModal from "../../Common/Applicants/Modals/AddOrgApplicantModal";
 
-
-const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
+const AddOrgNewCaseModal: React.FC<AddOrgNewCaseModalProps> = ({
   isOpen,
   toggle,
-  leadId,
-  leadName,
-  leadData,
+  applicantId,
+  applicantName,
+  applicantData,
   onCaseCreated,
+  role,
 }) => {
   const params = useParams();
   const { organisationslug } = params;
@@ -62,7 +60,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     useAddOrgCaseMutation();
 
   const [formData, setFormData] = useState({
-    customer_id: leadId || 0,
+    customer_id: applicantId || 0,
     case_category: "",
     assigned_to: "",
     assigned_to_admin: "",
@@ -126,32 +124,32 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     handleCloseAddLead();
   };
 
-  // Update formData.customer_id if leadId changes
+  // Update formData.customer_id if applicantId changes
   useEffect(() => {
-    if (leadId) {
-      setFormData((prev) => ({ ...prev, customer_id: leadId }));
+    if (applicantId) {
+      setFormData((prev) => ({ ...prev, customer_id: applicantId }));
     }
-  }, [leadId]);
+  }, [applicantId]);
 
-  // If a specific leadId/leadName is provided (e.g. from AddLeadModal),
-  // ensure the local leads list contains it so the select can display
-  // the real lead name immediately.
+  // If a specific applicantId/applicantName is provided (e.g. from AddApplicantModal),
+  // ensure the local applicants list contains it so the select can display
+  // the real applicant name immediately.
   useEffect(() => {
-    if (!leadId) return;
+    if (!applicantId) return;
 
     setLeads((prev) => {
-      const exists = prev?.some((lead: any) => {
-        const existingId = lead?.id ?? lead?.user?.id;
-        return existingId === leadId;
+      const exists = prev?.some((applicant: any) => {
+        const existingId = applicant?.id ?? applicant?.user?.id;
+        return existingId === applicantId;
       });
 
       if (exists) return prev;
 
-      // Prefer using leadData (returned from create lead) when present so
+      // Prefer using applicantData (returned from create applicant) when present so
       // the select shows email, user_type and profile_image immediately.
       let leadToAdd: any;
-      if (leadData) {
-        leadToAdd = leadData.user || leadData;
+      if (applicantData) {
+        leadToAdd = applicantData.user || applicantData;
         // Ensure name exists (compose from parts if necessary)
         if (!leadToAdd.name) {
           const parts = [
@@ -163,9 +161,9 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           leadToAdd = { ...leadToAdd, name: parts.join(" ") };
         }
       } else {
-        const displayName = leadName || "Selected Lead";
+        const displayName = applicantName || "Selected Applicant";
         leadToAdd = {
-          id: leadId,
+          id: applicantId,
           name: displayName,
           email: null,
           user_type: null,
@@ -177,8 +175,8 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     });
 
     // also ensure the form selects the created lead
-    setFormData((prev) => ({ ...prev, customer_id: leadId }));
-  }, [leadId, leadName, leadData]);
+    setFormData((prev) => ({ ...prev, customer_id: applicantId }));
+  }, [applicantId, applicantName, applicantData]);
 
   // Fetch leads data from backend (handle array, `leads` or paginated `results`)
   useEffect(() => {
@@ -412,7 +410,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           return;
         }
         setFormData({
-          customer_id: leadId || 0,
+          customer_id: applicantId || 0,
           case_category: "",
           assigned_to: "",
           assigned_to_admin: "",
@@ -485,7 +483,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>
         <h3 className="text-primary">
-          {!!leadId ? "Continue to Case" : "Create New Case"}
+          {!!applicantId ? "Continue to Case" : "Create New Case"}
         </h3>
       </ModalHeader>
       <Form
@@ -505,7 +503,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
               placeholder="Search by name, email or phone..."
               isClearable
               isSearchable
-              isDisabled={!!leadId}
+              isDisabled={!!applicantId}
               isLoading={isFetchingLeads}
               options={leadOptions}
               value={selectedLeadOption}
@@ -692,7 +690,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           </FormGroup>
         </ModalBody>
         <ModalFooter>
-          {!leadId && (
+          {!applicantId && (
             <Button
               type="button"
               color="primary"
@@ -727,8 +725,8 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
       <AddOrgApplicantModal
         isOpen={isAddLeadModalOpen}
         toggle={handleCloseAddLead}
-        onLeadCreated={handleLeadCreated}
-        header="Lead"
+        onApplicantCreated={handleLeadCreated}
+        role={role}
       />
     </Modal>
   );

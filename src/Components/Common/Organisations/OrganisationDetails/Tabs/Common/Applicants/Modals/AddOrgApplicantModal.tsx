@@ -22,7 +22,6 @@ const AddOrgApplicantModal: React.FC<AddOrgApplicantModalProps> = ({
   toggle,
   onApplicantCreated,
   onOpenCase,
-  header,
   role,
 }) => {
   const params = useParams();
@@ -333,7 +332,9 @@ const AddOrgApplicantModal: React.FC<AddOrgApplicantModalProps> = ({
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Add {header}</span>
+        <span className="fs-4 text-primary">
+          Add {role === "LEAD" ? "Lead" : "Applicant"}
+        </span>
       </ModalHeader>
       <Form
         onSubmit={(e) => {
@@ -594,9 +595,9 @@ const AddOrgApplicantModal: React.FC<AddOrgApplicantModalProps> = ({
           >
             {isAddingApplicants && submitType === "lead"
               ? "Saving..."
-              : `Save ${header}`}
+              : `Save ${role === "LEAD" ? "Lead" : "Applicant"}`}
           </Button>
-          {header === "Lead" && (
+          {role === "LEAD" && (
             <Button
               type="submit"
               color="secondary"

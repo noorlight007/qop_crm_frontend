@@ -1,5 +1,4 @@
 "use client";
-
 import { useDeleteOrgUserMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import { DeleteOrgUserModalProps } from "@/Types/Common/Organisations/OrgUserListTypes";
 

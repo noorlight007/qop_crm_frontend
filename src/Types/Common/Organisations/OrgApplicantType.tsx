@@ -35,7 +35,16 @@ export interface AddOrgApplicantModalProps {
     applicantName?: string | undefined;
     applicantData?: any;
   }) => void;
-  header: string;
+  role: string;
+}
+
+export interface AddOrgNewCaseModalProps {
+  isOpen: boolean;
+  toggle: () => void;
+  applicantId?: number;
+  applicantName?: string;
+  applicantData?: any;
+  onCaseCreated?: (caseAlias: string) => void;
   role: string;
 }
 
