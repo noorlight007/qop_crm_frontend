@@ -24,7 +24,7 @@ import {
 } from "reactstrap";
 import OrgAdmins from "./Tabs/Admins/OrgAdmins";
 import OrgAdvisers from "./Tabs/Advisers/OrgAdvisers";
-import OrgApplicants from "./Tabs/Applicants/OrgApplicant";
+import OrgApplicants from "./Tabs/Applicants/OrgApplicantsTab";
 import OrgCases from "./Tabs/Cases/OrgCases";
 import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";

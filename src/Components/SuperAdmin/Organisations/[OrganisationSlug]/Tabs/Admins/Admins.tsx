@@ -1,4 +1,4 @@
-import OrgUserList from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList";
+import OrgUserList from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/OrgUserList";
 
 const Admins: React.FC = () => {
   return <OrgUserList role="ADMIN" />;

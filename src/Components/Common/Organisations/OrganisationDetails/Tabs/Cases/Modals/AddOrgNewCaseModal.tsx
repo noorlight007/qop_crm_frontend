@@ -26,7 +26,8 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import AddOrgLeadModal from "../../Leads/Modals/AddOrgLeadModal";
+import AddOrgApplicantModal from "../../Common/Applicants/Modals/AddOrgApplicantModal";
+
 
 const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
   isOpen,
@@ -723,7 +724,7 @@ const AddOrgNewCaseModal: React.FC<AddNewCaseModalProps> = ({
           </Button>
         </ModalFooter>
       </Form>
-      <AddOrgLeadModal
+      <AddOrgApplicantModal
         isOpen={isAddLeadModalOpen}
         toggle={handleCloseAddLead}
         onLeadCreated={handleLeadCreated}

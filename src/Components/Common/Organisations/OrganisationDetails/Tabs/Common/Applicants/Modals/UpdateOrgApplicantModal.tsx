@@ -17,7 +17,7 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateOrgLeadModal: React.FC<UpdateOrgLeadModalProps> = ({
+const UpdateOrgApplicantModal: React.FC<UpdateOrgLeadModalProps> = ({
   isOpen,
   toggle,
   leadToUpdate,
@@ -449,4 +449,4 @@ const UpdateOrgLeadModal: React.FC<UpdateOrgLeadModalProps> = ({
   );
 };
 
-export default UpdateOrgLeadModal;
+export default UpdateOrgApplicantModal;

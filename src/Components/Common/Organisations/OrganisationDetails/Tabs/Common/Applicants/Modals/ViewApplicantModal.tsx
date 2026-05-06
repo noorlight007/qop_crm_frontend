@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
+const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
   isOpen,
   toggle,
   selectedLead,
@@ -239,4 +239,4 @@ const ViewOrgLeadModal: React.FC<ViewOrgLeadModalProps> = ({
   );
 };
 
-export default ViewOrgLeadModal;
+export default ViewOrgApplicantModal;

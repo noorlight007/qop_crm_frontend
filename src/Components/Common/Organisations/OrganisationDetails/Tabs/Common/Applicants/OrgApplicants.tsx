@@ -1,14 +1,13 @@
 "use client";
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useGetOrgLeadAndApplicantListQuery } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { OrgApplicantInfo } from "@/Types/Common/Organisations/OrgApplicantType";
+import { OrgLeadInfo } from "@/Types/Common/Organisations/OrgLeadTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { User } from "react-feather";
 import { FaEdit, FaInfoCircle, FaSearch, FaTrash } from "react-icons/fa";
+import { TbCirclePlus } from "react-icons/tb";
 import {
   Button,
   Card,
@@ -24,48 +23,58 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
+import AddOrgNewCaseModal from "../../Cases/Modals/AddOrgNewCaseModal";
+import AddOrgApplicantModal from "./Modals/AddOrgApplicantModal";
 import DeleteOrgApplicantModal from "./Modals/DeleteOrgApplicantModal";
 import UpdateOrgApplicantModal from "./Modals/UpdateOrgApplicantModal";
-import ViewOrgApplicantModal from "./Modals/ViewOrgApplicantModal";
+import ViewOrgApplicantModal from "./Modals/ViewApplicantModal";
 
-const OrgApplicants: React.FC = () => {
+const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
+  // Correctly extract dynamic route param (folder is [OrganisationSlug])
   const params = useParams();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
-  const [applicants, setApplicants] = useState<OrgApplicantInfo[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [stablePageSize, setStablePageSize] = useState<number>(0);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddCaseModalOpen, setIsAddCaseModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [leadToDelete, setLeadToDelete] = useState<OrgLeadInfo | null>(null);
+  const [leadToUpdate, setLeadToUpdate] = useState<OrgLeadInfo | null>(null);
+  const [newCaseLead, setNewCaseLead] = useState<{
+    leadId?: number;
+    leadName?: string;
+    leadData?: any;
+  }>({});
+  const [pageSize, setPageSize] = useState<number>(0);
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchQuery(searchInput);
-      setCurrentPage(1);
+      setCurrentPage(1); // Reset to first page on search
     }, 500);
+
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  // rtk query - pass params object to match OrgClientsApi
-  const { data: applicantData, isLoading } = useGetOrgLeadAndApplicantListQuery(
+  // rtk hooks
+  const { data: leadData, isLoading } = useGetOrgLeadAndApplicantListQuery(
     {
       organisationslug,
       params: {
         page: currentPage,
         search: searchQuery,
-        is_lead: false,
+        is_lead: role === "LEAD" ? "true" : "false",
       },
     },
     { skip: !organisationslug },
   );
 
-  const [selectedApplicant, setSelectedApplicant] = useState<
-    Partial<OrgApplicantInfo>
-  >({
+  const [selectedLead, setSelectedLead] = useState<OrgLeadInfo>({
     alias: "",
     profile_image: "",
     name: "",
@@ -93,62 +102,58 @@ const OrgApplicants: React.FC = () => {
     created_at: "",
   });
 
-  const toggleViewModal = (client?: OrgApplicantInfo) => {
-    if (client) {
-      setSelectedApplicant(client);
+  const toggleViewModal = (lead?: OrgLeadInfo) => {
+    if (lead) {
+      setSelectedLead(lead);
     }
     setIsViewModalOpen(!isViewModalOpen);
   };
 
-  const openUpdateApplicantModal = (applicant: OrgApplicantInfo) => {
-    setSelectedApplicant(applicant);
+  const toggleAddModal = () => {
+    setIsAddModalOpen((prev) => !prev);
+  };
+
+  const handleOpenCase = ({ leadId, leadName, leadData }: any) => {
+    setNewCaseLead({ leadId, leadName, leadData });
+    setIsAddCaseModalOpen(true);
+  };
+
+  const toggleAddCaseModal = () => {
+    setIsAddCaseModalOpen((prev) => !prev);
+    if (isAddCaseModalOpen) {
+      setNewCaseLead({});
+    }
+  };
+
+  const openUpdateLeadModal = (lead: OrgLeadInfo) => {
+    setLeadToUpdate(lead);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteApplicantModal = (applicant: OrgApplicantInfo) => {
-    setSelectedApplicant(applicant);
+  const openDeleteLeadModal = (lead: OrgLeadInfo) => {
+    setLeadToDelete(lead);
     setIsDeleteModalOpen(true);
   };
 
+  // Extract leads and pagination info from API response
+  const leads = Array.isArray(leadData) ? leadData : leadData?.results || [];
+  const totalCount = leadData?.count || 0; // from API e.g. 12
+  // Capture stable page size from a non-last page to avoid last-page short length
   useEffect(() => {
-    if (applicantData) {
-      const applicantsData = Array.isArray(applicantData)
-        ? applicantData
-        : applicantData.results || applicantData.clients;
-      setApplicants(applicantsData || []);
-    }
-  }, [applicantData]);
-
-  // Server-side pagination: derive totalCount and a stable page size to avoid inflated pages
-  const totalCount =
-    applicantData && !Array.isArray(applicantData)
-      ? applicantData.count
-      : applicants.length;
-
-  // capture a stable page size from pages that are not the last page
-  useEffect(() => {
-    const currentLength = Array.isArray(applicantData)
-      ? applicantData.length
-      : applicantData?.results?.length || 0;
+    const currentLength = Array.isArray(leadData)
+      ? leadData.length
+      : leadData?.results?.length || 0;
     const isLastPage =
-      !Array.isArray(applicantData) &&
-      applicantData &&
-      applicantData.next === null;
+      !Array.isArray(leadData) && leadData && leadData.next === null;
     if (currentLength > 0) {
-      if (stablePageSize === 0) setStablePageSize(currentLength);
-      else if (!isLastPage && currentLength !== stablePageSize)
-        setStablePageSize(currentLength);
+      if (pageSize === 0) setPageSize(currentLength);
+      else if (!isLastPage && currentLength !== pageSize)
+        setPageSize(currentLength);
     }
-  }, [applicantData, stablePageSize]);
+  }, [leadData, pageSize]);
 
-  const effectivePageSize = stablePageSize || applicants.length || 1;
+  const effectivePageSize = pageSize || leads.length || 1;
   const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
-  const currentApplicants = applicants;
-
-  // Keep currentPage within bounds
-  useEffect(() => {
-    if (totalPages > 0 && currentPage > totalPages) setCurrentPage(totalPages);
-  }, [totalPages]);
 
   if (isLoading) {
     return (
@@ -161,9 +166,9 @@ const OrgApplicants: React.FC = () => {
   return (
     <Card>
       <CardBody>
-        <Row className="flex justify-content-between py-4">
-          <Col md="3">
-            <h2>Applicants</h2>
+        <Row className="d-flex justify-content-between py-4">
+          <Col md="3" xs="12">
+            <h2 className="mb-0">Leads</h2>
           </Col>
           <Col md={3} xs="12">
             <InputGroup className="position-relative">
@@ -180,14 +185,14 @@ const OrgApplicants: React.FC = () => {
                 className="rounded-end-1"
               />
               <FaInfoCircle
-                id="orgClientSearch"
+                id="orgLeadSearch"
                 className="position-absolute top-50 end-0 translate-middle-y me-2 text-primary fs-6"
                 style={{ cursor: "pointer", zIndex: 10 }}
               />
 
               <UncontrolledPopover
                 placement="right"
-                target="orgClientSearch"
+                target="orgLeadSearch"
                 trigger="hover"
               >
                 <PopoverBody className="bg-white rounded text-dark p-3 small">
@@ -196,7 +201,16 @@ const OrgApplicants: React.FC = () => {
               </UncontrolledPopover>
             </InputGroup>
           </Col>
-          <Col md="3" xs="12" />
+          <Col
+            md={3}
+            xs="12"
+            className="d-flex justify-content-md-end justify-content-start mt-3 mt-md-0"
+          >
+            <Button color="primary" onClick={toggleAddModal}>
+              <TbCirclePlus className="me-1" />
+              Add Lead
+            </Button>
+          </Col>
         </Row>
         <Row>
           <Table hover responsive>
@@ -212,123 +226,104 @@ const OrgApplicants: React.FC = () => {
                 <th>Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="text-center">
+                  <td colSpan={9} className="text-center">
                     <div className="d-flex justify-content-center align-items-center">
                       <LoadingGrow />
                     </div>
                   </td>
                 </tr>
-              ) : currentApplicants.length > 0 ? (
-                currentApplicants.map((applicant: any) => (
-                  <tr key={applicant.alias} className="text-center">
-                    <td>
-                      <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
-                        <span
-                          className="border rounded-circle overflow-hidden d-flex justify-content-center align-items-center"
-                          style={{ width: 40, height: 40 }}
-                        >
-                          {applicant?.profile_image ? (
-                            <Image
-                              src={applicant.profile_image}
-                              alt="Profile"
-                              width={35}
-                              height={35}
-                              className="rounded-circle"
-                            />
-                          ) : (
-                            <User size={30} className="text-primary" />
-                          )}
-                        </span>
-                        <span
-                          className="text_decoration_hover"
-                          onClick={() => toggleViewModal(applicant)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {applicant.title
-                            ? formatChoiceFieldValue(applicant.title)
-                            : ""}
-                          {"."} {applicant?.first_name} {applicant?.middle_name}{" "}
-                          {applicant?.last_name}
-                        </span>
-                      </div>
+              ) : leads.length > 0 ? (
+                leads.map((lead: OrgLeadInfo) => (
+                  <tr key={lead.alias} className="text-center">
+                    <td className="text-start">
+                      <span
+                        className="text_decoration_hover"
+                        onClick={() => toggleViewModal(lead)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {lead?.name ? (
+                          lead?.name
+                        ) : (
+                          <small className="text-muted">Not Available</small>
+                        )}
+                      </span>
                     </td>
                     <td>
-                      {applicant?.email ? (
-                        applicant.email
+                      {lead?.email ? (
+                        lead.email
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {applicant?.phone ? (
-                        <span className="text-black">{applicant?.phone}</span>
+                      {lead?.phone ? (
+                        <span className="text-black">{lead?.phone}</span>
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
                     </td>
                     <td>
-                      {applicant?.source === "OTHER" ? (
-                        applicant?.other_source || (
+                      {lead?.source === "OTHER" ? (
+                        lead?.other_source || (
                           <small className="text-muted">Not Available</small>
                         )
-                      ) : applicant?.source ? (
-                        formatChoiceFieldValue(applicant.source)
+                      ) : lead?.source ? (
+                        formatChoiceFieldValue(lead.source)
                       ) : (
                         <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
-                      {applicant?.enquiry_type === "OTHER" ? (
-                        applicant?.other_enquiry_type || (
+                      {lead?.enquiry_type === "OTHER" ? (
+                        lead?.other_enquiry_type || (
                           <small className="text-muted">Not Available</small>
                         )
-                      ) : applicant?.enquiry_type ? (
-                        formatChoiceFieldValue(applicant.enquiry_type)
+                      ) : lead?.enquiry_type ? (
+                        formatChoiceFieldValue(lead.enquiry_type)
                       ) : (
                         <small className="text-muted">Not specified</small>
                       )}
                     </td>
                     <td>
-                      {applicant.created_by == null ? (
+                      {lead.created_by == null ? (
                         <small className="text-muted">Not Available</small>
                       ) : (
                         <>
                           <p className="m-0">
-                            {applicant.created_by?.name || "Unknown User"}
+                            {lead.created_by?.name || "Unknown User"}
                           </p>
                           <p
                             className="m-0 opacity-75"
                             style={{ fontSize: "9px" }}
                           >
                             (
-                            {applicant.created_by?.email
-                              ? formatChoiceFieldValue(
-                                  applicant.created_by?.email,
-                                )
+                            {lead.created_by?.email
+                              ? formatChoiceFieldValue(lead.created_by?.email)
                               : "Not Found"}
                             )
                           </p>
                         </>
                       )}
                     </td>
-                    <td>{formatDateAndTime(applicant?.created_at)}</td>
+                    <td>
+                      {formatDateAndTime(lead?.created_at || "Not Available")}
+                    </td>
                     <td>
                       <div className="d-flex justify-content-center gap-2">
                         <Button
                           color="secondary"
                           size="sm"
-                          onClick={() => openUpdateApplicantModal(applicant)}
+                          onClick={() => openUpdateLeadModal(lead)}
                         >
                           <FaEdit />
                         </Button>
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={() => openDeleteApplicantModal(applicant)}
+                          onClick={() => openDeleteLeadModal(lead)}
                         >
                           <FaTrash />
                         </Button>
@@ -338,8 +333,8 @@ const OrgApplicants: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="text-center">
-                    No applicants available.
+                  <td colSpan={9} className="text-center">
+                    No leads available.
                   </td>
                 </tr>
               )}
@@ -351,7 +346,7 @@ const OrgApplicants: React.FC = () => {
             <div className="px-2">
               <p className="text-primary">
                 Showing{" "}
-                {totalCount === 0
+                {totalCount === 0 || effectivePageSize === 0
                   ? "0"
                   : (currentPage - 1) * effectivePageSize + 1}{" "}
                 to{" "}
@@ -359,9 +354,9 @@ const OrgApplicants: React.FC = () => {
                   (currentPage - 1) * effectivePageSize + effectivePageSize,
                   totalCount,
                 )}{" "}
-                of {totalCount} Applicants
+                of {totalCount} Leads
               </p>
-            </div>
+            </div>{" "}
             <Pagination className="d-flex justify-content-end p-2">
               <PaginationItem disabled={currentPage === 1}>
                 <PaginationLink first onClick={() => setCurrentPage(1)} />
@@ -402,21 +397,35 @@ const OrgApplicants: React.FC = () => {
           </div>
         </Row>
 
-        {/* modals */}
+        {/* Modals */}
         <ViewOrgApplicantModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedApplicant={selectedApplicant}
+          selectedLead={selectedLead}
+        />
+        <AddOrgApplicantModal
+          isOpen={isAddModalOpen}
+          toggle={toggleAddModal}
+          header="Lead"
+          onLeadCreated={() => setCurrentPage(1)}
+          onOpenCase={handleOpenCase}
+        />
+        <AddOrgNewCaseModal
+          isOpen={isAddCaseModalOpen}
+          toggle={toggleAddCaseModal}
+          leadId={newCaseLead.leadId}
+          leadName={newCaseLead.leadName}
+          leadData={newCaseLead.leadData}
         />
         <UpdateOrgApplicantModal
           isOpen={isUpdateModalOpen}
           toggle={() => setIsUpdateModalOpen(false)}
-          applicantToUpdate={selectedApplicant as OrgApplicantInfo}
+          leadToUpdate={leadToUpdate}
         />
         <DeleteOrgApplicantModal
           isOpen={isDeleteModalOpen}
           toggle={() => setIsDeleteModalOpen(false)}
-          applicantToDelete={selectedApplicant as OrgApplicantInfo}
+          leadToDelete={leadToDelete}
         />
         {/* modals end */}
       </CardBody>

@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 
-const DeleteOrgLeadModal: React.FC<DeleteOrgLeadModalProps> = ({
+const DeleteOrgApplicantModal: React.FC<DeleteOrgLeadModalProps> = ({
   isOpen,
   toggle,
   leadToDelete,
@@ -75,4 +75,4 @@ const DeleteOrgLeadModal: React.FC<DeleteOrgLeadModalProps> = ({
   );
 };
 
-export default DeleteOrgLeadModal;
+export default DeleteOrgApplicantModal;

@@ -1,7 +1,7 @@
-import OrgLeads from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Leads/OrgLeads";
+import OrgApplicants from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Applicants/OrgApplicants";
 
 const Leads: React.FC = () => {
-  return <OrgLeads />;
+  return <OrgApplicants role="LEAD" />;
 };
 
 export default Leads;

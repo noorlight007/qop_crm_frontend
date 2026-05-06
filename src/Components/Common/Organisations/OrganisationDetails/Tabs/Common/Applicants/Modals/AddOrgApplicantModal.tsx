@@ -17,7 +17,7 @@ import {
   Row,
 } from "reactstrap";
 
-const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
+const AddOrgApplicantModal: React.FC<AddLeadsModalProps> = ({
   isOpen,
   toggle,
   onLeadCreated,
@@ -612,4 +612,4 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
   );
 };
 
-export default AddOrgLeadModal;
+export default AddOrgApplicantModal;
