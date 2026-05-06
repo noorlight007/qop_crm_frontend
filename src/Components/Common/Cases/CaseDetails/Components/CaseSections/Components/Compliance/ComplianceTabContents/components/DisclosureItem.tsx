@@ -39,8 +39,8 @@ export const DisclosureItem: FC<DisclosureItemProps> = ({
         </div>
       </Col>
 
-      <Col xs={12} md={3} className="mb-3 mb-md-0">
-        <div className="d-flex gap-2 justify-content-md-center">
+      <Col xs={12} md={6} className="mb-3 mb-md-0">
+        <div className="d-flex gap-2 justify-content-end">
           <FormGroup check className="rounded-2">
             <Input
               type="select"
@@ -58,7 +58,7 @@ export const DisclosureItem: FC<DisclosureItemProps> = ({
         </div>
       </Col>
 
-      <Col
+      {/* <Col
         xs={12}
         md={3}
         className="d-flex align-items-center justify-content-md-end"
@@ -72,7 +72,7 @@ export const DisclosureItem: FC<DisclosureItemProps> = ({
           <i className="fas fa-file-alt me-2"></i>
           Associated Documents
         </Button>
-      </Col>
+      </Col> */}
 
       <Col xs={12} className="mt-3">
         <Input
