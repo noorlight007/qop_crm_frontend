@@ -1,10 +1,14 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import {
   useGetSuitabilityQuery,
   useUpdateSuitabilityMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -26,6 +30,8 @@ const Divider = () => <hr className="my-4" />;
 ═══════════════════════════════════════════════════════════════ */
 const Suitability: React.FC = () => {
   const { casealias } = useParams();
+  const dispatch = useAppDispatch();
+  const [submitting, setSubmitting] = useState<"save" | "next" | null>(null);
 
   const { data: caseData, isLoading: isCaseLoading } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -37,6 +43,9 @@ const Suitability: React.FC = () => {
 
   const [updateSuitability, { isLoading: isUpdatingSuitability }] =
     useUpdateSuitabilityMutation();
+
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [formValues, setFormValues] = useState<SuitabilityData>({
     lender_text: "",
@@ -100,7 +109,10 @@ const Suitability: React.FC = () => {
     setFormValues((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (
+    action: "save" | "next" = "save",
+  ): Promise<boolean> => {
+    setSubmitting(action);
     try {
       const payload = {
         lender_text: formValues.lender_text,
@@ -166,23 +178,62 @@ const Suitability: React.FC = () => {
           formValues.product_transfer_recommended_was,
       };
 
-      console.log("Suitability Payload:", JSON.stringify(payload, null, 2));
-
-      await updateSuitability({
+      const response = await updateSuitability({
         case_alias: casealias,
         payload,
       }).unwrap();
-      toast.success("Changes saved successfully");
+
+      if (response) {
+        toast.success("Suitability updated successfully");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_suitability: true },
+          });
+          return true;
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        return false;
+      }
     } catch (err) {
       console.error("Save error:", err);
       toast.error("Failed to save changes");
+      return false;
+    } finally {
+      setSubmitting(null);
+    }
+    return false;
+  };
+
+  const currentTab: string | null = useAppSelector(
+    (state) => state.caseSections.basicTabId,
+  );
+
+  const handleNextTab = () => {
+    const nextTabNav = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!,
+    );
+    if (nextTabNav) {
+      dispatch(basicTabIndicator(nextTabNav));
+    } else {
+      toast.warning("This is the last tab.");
+    }
+  };
+
+  const handleSaveAndNext = async () => {
+    const success = await handleSave("next");
+    if (success) {
+      handleNextTab();
     }
   };
 
   if (isCaseLoading || isSuitLoading) return <LoadingGrow />;
 
   return (
-    <Container fluid className="py-4 px-2 px-md-4 suitability-page-bg">
+    <Container fluid className="py-4 px-2 px-md-4">
       <h1 className="mb-4 text-danger text-center fw-bold">
         This page is under Development
       </h1>
@@ -193,28 +244,28 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        {/* {suitability?.is_debt_consolidation_applicable && ( */}
-        <>
-          <Divider />
-          <DebtConsolidation
-            caseData={caseData}
-            suitability={suitability}
-            formValues={formValues}
-            onFormChange={handleFormChange}
-          />
-        </>
-        {/* )} */}
-        {/* {suitability?.is_lending_into_retirement_applicable && ( */}
-        <>
-          <Divider />
-          <LendingIntoRetirement
-            caseData={caseData}
-            suitability={suitability}
-            formValues={formValues}
-            onFormChange={handleFormChange}
-          />
-        </>
-        {/* )} */}
+        {suitability?.is_debt_consolidation_applicable && (
+          <>
+            <Divider />
+            <DebtConsolidation
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
+        {suitability?.is_lending_into_retirement_applicable && (
+          <>
+            <Divider />
+            <LendingIntoRetirement
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
         <Divider />
         <PortingMortgageIncrease
           caseData={caseData}
@@ -222,17 +273,17 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        {/* {suitability?.is_islamic_mortgage_applicable && ( */}
-        <>
-          <Divider />
-          <IslamicMortgage
-            caseData={caseData}
-            suitability={suitability}
-            formValues={formValues}
-            onFormChange={handleFormChange}
-          />
-        </>
-        {/* )} */}
+        {suitability?.is_islamic_mortgage_applicable && (
+          <>
+            <Divider />
+            <IslamicMortgage
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
         <Divider />
         <RateTypePaymentMethod
           caseData={caseData}
@@ -240,18 +291,17 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        {/* {suitability?.is_product_transfer_applicable && ( */}
-        <>
-          <Divider />
-          <ProductTransfer
-            caseData={caseData}
-            suitability={suitability}
-            formValues={formValues}
-            onFormChange={handleFormChange}
-          />
-        </>
-        {/* )} */}
-
+        {suitability?.is_product_transfer_applicable && (
+          <>
+            <Divider />
+            <ProductTransfer
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
         <Divider />
         <ShortenedProductTransfer
           caseData={caseData}
@@ -259,12 +309,12 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        {/* {suitability?.is_high_loan_to_value_applicable && ( */}
-        <>
-          <Divider />
-          <HighLoanToValue caseData={caseData} />
-        </>
-        {/* )} */}
+        {suitability?.is_high_loan_to_value_applicable && (
+          <>
+            <Divider />
+            <HighLoanToValue />
+          </>
+        )}
         {/* ── Footer ── */}
         <div className="mt-5 pt-3 border-top text-center">
           <small className="text-muted">
@@ -273,19 +323,35 @@ const Suitability: React.FC = () => {
           </small>
         </div>
       </div>
-      <div className="d-flex justify-content-end mt-4">
+      <div className="d-flex justify-content-end mt-4 gap-2">
         <Button
           color="primary"
-          onClick={handleSave}
+          onClick={() => handleSave("save")}
           disabled={isUpdatingSuitability}
         >
-          {isUpdatingSuitability ? (
+          {isUpdatingSuitability && submitting === "save" ? (
             <>
               <span className="spinner-border spinner-border-sm me-2" />
               Saving...
             </>
           ) : (
             "Save Changes"
+          )}
+        </Button>
+
+        <Button
+          type="button"
+          color="secondary"
+          disabled={isUpdatingSuitability}
+          onClick={handleSaveAndNext}
+        >
+          {isUpdatingSuitability && submitting === "next" ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" />
+              Saving...
+            </>
+          ) : (
+            "Save & Next"
           )}
         </Button>
       </div>

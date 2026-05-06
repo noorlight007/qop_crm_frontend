@@ -1,4 +1,4 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { RateTypePaymentMethodProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import { Button, Input } from "reactstrap";
 
@@ -10,13 +10,6 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
-
-const thStyle: React.CSSProperties = {
-  background: "#1a3c5e",
-  color: "#fff",
-  fontSize: "0.84rem",
-  fontWeight: 600,
-};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -164,13 +157,6 @@ const EditableReasonCell: React.FC<EditableCellProps> = ({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-interface RateTypePaymentMethodProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
-
 const RateTypePaymentMethod: React.FC<RateTypePaymentMethodProps> = ({
   caseData,
   suitability,
@@ -210,10 +196,18 @@ const RateTypePaymentMethod: React.FC<RateTypePaymentMethodProps> = ({
       <table className="table table-bordered table-sm mb-3">
         <thead>
           <tr>
-            <th style={{ ...thStyle, width: "13%" }}>Feature</th>
-            <th style={{ ...thStyle, width: "15%" }}>Recommendation</th>
-            <th style={{ ...thStyle, width: "30%" }}>What does this mean?</th>
-            <th style={thStyle}>Why was this recommended to you?</th>
+            <th className="suitability-table-header" style={{ width: "13%" }}>
+              Feature
+            </th>
+            <th className="suitability-table-header" style={{ width: "15%" }}>
+              Recommendation
+            </th>
+            <th className="suitability-table-header" style={{ width: "30%" }}>
+              What does this mean?
+            </th>
+            <th className="suitability-table-header">
+              Why was this recommended to you?
+            </th>
           </tr>
         </thead>
         <tbody>

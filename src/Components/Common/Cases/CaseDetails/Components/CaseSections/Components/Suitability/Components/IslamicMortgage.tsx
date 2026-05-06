@@ -1,4 +1,5 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { shariaDetailOptions } from "@/Data/Cases/SuitabilityData";
+import { IslamicMortgageProps, SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Button,
@@ -18,18 +19,9 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-const shariaDetailOptions = [
-  { value: "IJARA", label: "Option 1 – Ijara" },
-  { value: "MUSHARAKA", label: "Option 2 – Musharaka" },
-  { value: "MURABAHA", label: "Option 3 – Murabaha" },
-];
 
-interface IslamicMortgageProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
+
+
 
 const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
   caseData,

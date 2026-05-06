@@ -4,11 +4,7 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-interface HighLoanToValueProps {
-  caseData: any;
-}
-
-const HighLoanToValue: React.FC<HighLoanToValueProps> = ({ caseData }) => {
+const HighLoanToValue: React.FC = () => {
   return (
     <>
       <SectionHeading>High Loan to Value</SectionHeading>
