@@ -1,9 +1,8 @@
 "use client";
-
 import { useUpdateOrgMemberMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import {
   OrgUserListType,
-  OrgUserRole,
+  UpdateOrgUserModalProps,
 } from "@/Types/Common/Organisations/OrgUserListTypes";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -21,14 +20,6 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-
-export type UpdateOrgUserModalProps = {
-  isOpen: boolean;
-  toggle: () => void;
-  organisationslug: string;
-  role: OrgUserRole;
-  selectedUser?: Partial<OrgUserListType>;
-};
 
 const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   isOpen,

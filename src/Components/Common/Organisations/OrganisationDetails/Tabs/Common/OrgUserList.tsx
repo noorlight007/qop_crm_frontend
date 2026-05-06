@@ -1,9 +1,9 @@
 "use client";
 
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import DeleteOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/DeleteOrgUserModal";
-import UpdateOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/UpdateOrgUserModal";
-import ViewOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Modals/ViewOrgUserModal";
+import DeleteOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/DeleteOrgUserModal";
+import UpdateOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/UpdateOrgUserModal";
+import ViewOrgUserModal from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/Modals/ViewOrgUserModal";
 import {
   useGetOrgUserListQuery,
   useUpdateOrgMemberMutation,
