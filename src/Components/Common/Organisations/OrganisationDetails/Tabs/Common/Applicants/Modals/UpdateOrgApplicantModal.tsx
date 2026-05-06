@@ -1,7 +1,7 @@
-import { useAddOrgLeadOrApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import { AddLeadsModalProps } from "@/Types/Common/CommonUsers/LeadsOrApplicantsTypes";
+import { useUpdateOrgApplicantMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgApplicantApi";
+import { UpdateOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -17,24 +17,24 @@ import {
   Row,
 } from "reactstrap";
 
-const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
+const UpdateOrgApplicantModal: React.FC<UpdateOrgApplicantModalProps> = ({
   isOpen,
   toggle,
-  onLeadCreated,
-  onOpenCase,
-  header,
+  applicantToUpdate,
+  role,
 }) => {
   const params = useParams();
-  const { organisationslug } = params;
+  const organisationslug = (params?.OrganisationSlug ||
+    (params as any)?.organisationslug) as string;
 
-  const [addLeadsOrApplicants, { isLoading: isAddingLeadsOrApplicants }] =
-    useAddOrgLeadOrApplicantMutation();
+  const [updateApplicant, { isLoading: isUpdating }] =
+    useUpdateOrgApplicantMutation();
 
   const [formData, setFormData] = useState({
     title: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
     email: "",
     phone: "",
     source: "",
@@ -45,29 +45,26 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [createdLeadData, setCreatedLeadData] = useState<any | null>(null);
-  const [submitType, setSubmitType] = useState<"lead" | "case" | null>(null);
 
-  const extractErrorDetail = (err: any): string => {
-    if (!err) return "An error occurred. Please try again.";
-    if (err.error) {
-      const data =
-        (err.error as any).data ||
-        (err.error as any).originalStatus ||
-        (err.error as any);
-      return (
-        (data && (data.detail || data?.message)) ||
-        (err.error as any).statusText ||
-        JSON.stringify(err.error)
-      );
+  // Populate form when lead data changes
+  useEffect(() => {
+    if (applicantToUpdate && isOpen) {
+      setFormData({
+        title: applicantToUpdate.title || "",
+        first_name: applicantToUpdate.first_name || "",
+        middle_name: applicantToUpdate.middle_name || "",
+        last_name: applicantToUpdate.last_name || "",
+        email: applicantToUpdate.email || "",
+        phone: applicantToUpdate.phone || "",
+        source: applicantToUpdate.source || "",
+        other_source: applicantToUpdate.other_source || "",
+        enquiry_type: applicantToUpdate.enquiry_type || "",
+        other_enquiry_type: applicantToUpdate.other_enquiry_type || "",
+        note: applicantToUpdate.note || "",
+      });
+      setErrors({});
     }
-    const data = err?.response?.data || err?.data || err;
-    return (
-      (data && (data.detail || data?.message)) ||
-      err.message ||
-      "An error occurred. Please try again."
-    );
-  };
+  }, [applicantToUpdate, isOpen]);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -82,10 +79,6 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
     setErrors((prev) => {
       if (!prev) return prev;
       const copy = { ...prev };
-      delete copy[name];
-      if (name === "firstName") delete copy["first_name"];
-      if (name === "middleName") delete copy["middle_name"];
-      if (name === "lastName") delete copy["last_name"];
       return copy;
     });
   };
@@ -98,45 +91,20 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
       err?.data ||
       err;
 
-    if (data?.user && typeof data.user === "object") {
-      const user = data.user as Record<string, any>;
-      if (user.first_name)
-        newErrors.firstName = Array.isArray(user.first_name)
-          ? user.first_name
-          : [String(user.first_name)];
-      if (user.middle_name)
-        newErrors.middleName = Array.isArray(user.middle_name)
-          ? user.middle_name
-          : [String(user.middle_name)];
-      if (user.last_name)
-        newErrors.lastName = Array.isArray(user.last_name)
-          ? user.last_name
-          : [String(user.last_name)];
-      if (user.email)
-        newErrors.email = Array.isArray(user.email)
-          ? user.email
-          : [String(user.email)];
-      if (user.phone)
-        newErrors.phone = Array.isArray(user.phone)
-          ? user.phone
-          : [String(user.phone)];
-      if (user.title)
-        newErrors.title = Array.isArray(user.title)
-          ? user.title
-          : [String(user.title)];
-    }
-
-    // Also support flat (non-nested) field errors returned by /auth/user-list/
+    if (data?.title)
+      newErrors.title = Array.isArray(data.title)
+        ? data.title
+        : [String(data.title)];
     if (data?.first_name)
-      newErrors.firstName = Array.isArray(data.first_name)
+      newErrors.first_name = Array.isArray(data.first_name)
         ? data.first_name
         : [String(data.first_name)];
     if (data?.middle_name)
-      newErrors.middleName = Array.isArray(data.middle_name)
+      newErrors.middle_name = Array.isArray(data.middle_name)
         ? data.middle_name
         : [String(data.middle_name)];
     if (data?.last_name)
-      newErrors.lastName = Array.isArray(data.last_name)
+      newErrors.last_name = Array.isArray(data.last_name)
         ? data.last_name
         : [String(data.last_name)];
     if (data?.email)
@@ -147,7 +115,6 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
       newErrors.phone = Array.isArray(data.phone)
         ? data.phone
         : [String(data.phone)];
-
     if (data?.title)
       newErrors.title = Array.isArray(data.title)
         ? data.title
@@ -180,14 +147,12 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
   };
 
   const buildPayload = () => ({
-    // /auth/user-list/ expects a flat payload.
     title: formData.title,
-    first_name: formData.firstName,
-    middle_name: formData.middleName,
-    last_name: formData.lastName,
+    first_name: formData.first_name,
+    middle_name: formData.middle_name,
+    last_name: formData.last_name,
     email: formData.email,
     phone: formData.phone || null,
-    role: "LEAD",
     source: formData.source || "",
     other_source: formData.other_source,
     enquiry_type: formData.enquiry_type,
@@ -195,150 +160,48 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
     note: formData.note,
   });
 
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      source: "",
-      other_source: "",
-      enquiry_type: "",
-      other_enquiry_type: "",
-      note: "",
-    });
-  };
-
-  const handleSaveLead = async (e: React.FormEvent) => {
+  const handleUpdateLead = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = buildPayload();
 
-    try {
-      const result = await addLeadsOrApplicants({ organisationslug, payload });
-      if (result.data) {
-        toast.success("Lead added successfully.");
-        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
-        setCreatedLeadData(result.data);
-        resetForm();
-        setErrors({});
-        toggle();
-      } else if ("error" in result) {
-        const normalized = normalizeApiErrors(result);
-        setErrors(normalized);
-        const firstMsg =
-          Object.values(normalized).flat()[0] ||
-          extractErrorDetail(result) ||
-          "Invalid Request...";
-        toast.error(firstMsg);
-      } else {
-        toast.error("Invalid Request...");
-      }
-    } catch (error: any) {
-      const normalized = normalizeApiErrors(error);
-      setErrors(normalized);
-      const firstMsg =
-        Object.values(normalized).flat()[0] ||
-        extractErrorDetail(error) ||
-        "An error occurred. Please try again.";
-      toast.error(firstMsg);
-      console.error("Error creating lead:", error);
-    } finally {
-      setSubmitType(null);
+    if (!organisationslug || !applicantToUpdate?.alias) {
+      toast.error("Missing lead information.");
+      return;
     }
-  };
 
-  const computedLeadName = createdLeadData?.user
-    ? [
-        createdLeadData.user.title,
-        createdLeadData.user.first_name,
-        createdLeadData.user.middle_name,
-        createdLeadData.user.last_name,
-      ]
-        .filter(Boolean)
-        .join(" ")
-    : createdLeadData
-      ? [
-          createdLeadData.title,
-          createdLeadData.first_name,
-          createdLeadData.middle_name,
-          createdLeadData.last_name,
-        ]
-          .filter(Boolean)
-          .join(" ")
-      : formData.firstName || formData.lastName
-        ? `${formData.title ? formData.title + " " : ""}${formData.firstName}${formData.middleName ? " " + formData.middleName : ""} ${formData.lastName}`.trim()
-        : undefined;
-
-  const handleSaveAndCreateCase = async (e: React.FormEvent) => {
-    e.preventDefault();
     const payload = buildPayload();
 
     try {
-      const result = await addLeadsOrApplicants({ organisationslug, payload });
-      if (result.data) {
-        toast.success("Lead added successfully.");
-        const leadId =
-          (result.data as any)?.id ?? (result.data as any)?.user?.id;
-        setCreatedLeadData(result.data);
-        if (onLeadCreated && result.data) onLeadCreated(result.data as any);
-
-        const leadName = (() => {
-          const d: any = result.data;
-          const u = d?.user || d;
-          return [u?.title, u?.first_name, u?.middle_name, u?.last_name]
-            .filter(Boolean)
-            .join(" ");
-        })();
-
-        onOpenCase?.({
-          leadId,
-          leadName: leadName || computedLeadName,
-          leadData: result.data,
-        });
-        resetForm();
-        setErrors({});
-        toggle();
-      } else if ("error" in result) {
-        const normalized = normalizeApiErrors(result);
-        setErrors(normalized);
-        const firstMsg =
-          Object.values(normalized).flat()[0] ||
-          extractErrorDetail(result) ||
-          "Invalid Request...";
-        toast.error(firstMsg);
-      } else {
-        toast.error("Invalid Request...");
-      }
+      await updateApplicant({
+        organisationslug,
+        user_alias: applicantToUpdate.alias,
+        payload,
+      }).unwrap();
+      toast.success(
+        `${role === "LEAD" ? "Lead" : "Applicant"} updated successfully.`,
+      );
+      toggle();
     } catch (error: any) {
       const normalized = normalizeApiErrors(error);
       setErrors(normalized);
       const firstMsg =
         Object.values(normalized).flat()[0] ||
-        extractErrorDetail(error) ||
-        "An error occurred. Please try again.";
+        (typeof error?.message === "string"
+          ? error.message
+          : "Failed to update " +
+            (role === "LEAD" ? "lead" : "applicant") +
+            ". Please try again.");
       toast.error(firstMsg);
-      console.error("Error creating lead:", error);
-    } finally {
-      setSubmitType(null);
     }
   };
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="fs-4 text-primary">Add {header}</span>
+        <span className="fs-4 text-primary">
+          Update {role === "LEAD" ? "Lead" : "Applicant"}
+        </span>
       </ModalHeader>
-      <Form
-        onSubmit={(e) => {
-          if (submitType === "lead") {
-            handleSaveLead(e);
-          } else if (submitType === "case") {
-            handleSaveAndCreateCase(e);
-          }
-        }}
-      >
+      <Form onSubmit={handleUpdateLead}>
         <ModalBody>
           <Row>
             <Col md={6}>
@@ -379,15 +242,15 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
                 </Label>
                 <Input
                   id="firstName"
-                  name="firstName"
+                  name="first_name"
                   type="text"
-                  value={formData.firstName}
+                  value={formData.first_name}
                   onChange={handleInputChange}
                   required
                 />
-                {errors.firstName && (
+                {errors.first_name && (
                   <div className="text-danger small mt-1">
-                    {errors.firstName.join(" ")}
+                    {errors.first_name.join(" ")}
                   </div>
                 )}
               </FormGroup>
@@ -397,14 +260,14 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
                 <Label for="middleName">Middle Name(s)</Label>
                 <Input
                   id="middleName"
-                  name="middleName"
+                  name="middle_name"
                   type="text"
-                  value={formData.middleName || ""}
+                  value={formData.middle_name || ""}
                   onChange={handleInputChange}
                 />
-                {errors.middleName && (
+                {errors.middle_name && (
                   <div className="text-danger small mt-1">
-                    {errors.middleName.join(" ")}
+                    {errors.middle_name.join(" ")}
                   </div>
                 )}
               </FormGroup>
@@ -416,15 +279,15 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
                 </Label>
                 <Input
                   id="lastName"
-                  name="lastName"
+                  name="last_name"
                   type="text"
-                  value={formData.lastName}
+                  value={formData.last_name}
                   onChange={handleInputChange}
                   required
                 />
-                {errors.lastName && (
+                {errors.last_name && (
                   <div className="text-danger small mt-1">
-                    {errors.lastName.join(" ")}
+                    {errors.last_name.join(" ")}
                   </div>
                 )}
               </FormGroup>
@@ -581,28 +444,11 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
           </Row>
         </ModalBody>
         <ModalFooter>
-          <Button
-            type="submit"
-            color="primary"
-            disabled={isAddingLeadsOrApplicants}
-            onClick={() => setSubmitType("lead")}
-          >
-            {isAddingLeadsOrApplicants && submitType === "lead"
-              ? "Saving..."
-              : `Save ${header}`}
+          <Button type="submit" color="primary" disabled={isUpdating}>
+            {isUpdating
+              ? `Updating ${role === "LEAD" ? "Lead" : "Applicant"}...`
+              : `Update ${role === "LEAD" ? "Lead" : "Applicant"}`}
           </Button>
-          {header === "Lead" && (
-            <Button
-              type="submit"
-              color="secondary"
-              disabled={isAddingLeadsOrApplicants}
-              onClick={() => setSubmitType("case")}
-            >
-              {isAddingLeadsOrApplicants && submitType === "case"
-                ? "Saving..."
-                : "Save & Create Case"}
-            </Button>
-          )}
           <Button color="danger" onClick={toggle}>
             Cancel
           </Button>
@@ -612,4 +458,4 @@ const AddOrgLeadModal: React.FC<AddLeadsModalProps> = ({
   );
 };
 
-export default AddOrgLeadModal;
+export default UpdateOrgApplicantModal;

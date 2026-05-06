@@ -1,19 +1,9 @@
-import {
-  OrgUserListType,
-  OrgUserRole,
-} from "@/Types/Common/Organisations/OrgUserListTypes";
+import { ViewOrgUserModalProps } from "@/Types/Common/Organisations/OrgUserListTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import React from "react";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
-
-export type ViewOrgUserModalProps = {
-  isOpen: boolean;
-  toggle: () => void;
-  role: OrgUserRole;
-  selectedUser: Partial<OrgUserListType>;
-};
 
 const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
   isOpen,

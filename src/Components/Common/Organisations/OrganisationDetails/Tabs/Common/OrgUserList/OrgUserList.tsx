@@ -1,9 +1,8 @@
 "use client";
-
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
   useGetOrgUserListQuery,
-  useUpdateOrgMemberMutation,
+  useUpdateOrgUserMutation,
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
 import {
   OrgUserListProps,
@@ -87,8 +86,8 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     }));
   };
 
-  const [updateOrgMember, { isLoading: isUpdateStatusLoading }] =
-    useUpdateOrgMemberMutation();
+  const [updateOrgUser, { isLoading: isUpdateStatusLoading }] =
+    useUpdateOrgUserMutation();
 
   const title = useMemo(() => {
     switch (role) {
@@ -168,7 +167,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     if (!userAlias) return;
 
     try {
-      await updateOrgMember({
+      await updateOrgUser({
         organisationslug,
         user_alias: userAlias,
         payload: { is_active: newStatus },

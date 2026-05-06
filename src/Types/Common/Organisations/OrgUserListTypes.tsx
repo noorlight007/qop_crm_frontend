@@ -25,3 +25,26 @@ export type OrgUserListType = {
   created_at?: string;
   is_active?: boolean;
 };
+
+export type ViewOrgUserModalProps = {
+  isOpen: boolean;
+  toggle: () => void;
+  role: OrgUserRole;
+  selectedUser: Partial<OrgUserListType>;
+};
+
+export type UpdateOrgUserModalProps = {
+  isOpen: boolean;
+  toggle: () => void;
+  organisationslug: string;
+  role: OrgUserRole;
+  selectedUser?: Partial<OrgUserListType>;
+};
+
+export type DeleteOrgUserModalProps = {
+  isOpen: boolean;
+  toggle: () => void;
+  organisationslug: string;
+  role: OrgUserRole;
+  selectedUser?: Partial<OrgUserListType>;
+};
