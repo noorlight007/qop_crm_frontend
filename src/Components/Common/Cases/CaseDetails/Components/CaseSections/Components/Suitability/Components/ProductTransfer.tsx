@@ -1,4 +1,5 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { productTransferOptions } from "@/Data/Cases/SuitabilityData";
+import { ProductTransferProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Button,
@@ -17,28 +18,6 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-const productTransferOptions: { value: string; label: string }[] = [
-  {
-    value: "MORE_COST_EFFECTIVE",
-    label: "this was more cost effective than the cheapest remortgage deal available.",
-  },
-  {
-    value: "TIME_RESTRAINTS",
-    label: "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
-  },
-  {
-    value: "SIMPLER_PROCESS",
-    label: "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
-  },
-];
-
-interface ProductTransferProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
-
 const ProductTransfer: React.FC<ProductTransferProps> = ({
   caseData,
   suitability,
@@ -50,7 +29,8 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
   const lender = s?.loan_details?.lender ?? "";
 
   // ── UI-only states ──
-  const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] = useState(false);
+  const [isProductTransferOptionOpen, setIsProductTransferOptionOpen] =
+    useState(false);
   const [isDealEndDateEditing, setIsDealEndDateEditing] = useState(false);
   const [isSvrRateEditing, setIsSvrRateEditing] = useState(false);
 
@@ -60,7 +40,9 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
 
   // ── Derived from formValues ──
   const selectedProductTransferOption =
-    productTransferOptions.find((o) => o.value === formValues.product_transfer_reason) ?? null;
+    productTransferOptions.find(
+      (o) => o.value === formValues.product_transfer_reason,
+    ) ?? null;
 
   // ── Deal end date handlers ──
   const startDealEndDateEdit = () => {
@@ -111,10 +93,20 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
               style={{ width: "160px", display: "inline-block" }}
               className="p-1"
             />
-            <Button color="light" className="text-black" size="sm" onClick={handleDealEndDateSave}>
+            <Button
+              color="light"
+              className="text-black"
+              size="sm"
+              onClick={handleDealEndDateSave}
+            >
               Save
             </Button>
-            <Button color="light" className="text-black" size="sm" onClick={handleDealEndDateCancel}>
+            <Button
+              color="light"
+              className="text-black"
+              size="sm"
+              onClick={handleDealEndDateCancel}
+            >
               Cancel
             </Button>
           </span>
@@ -152,10 +144,20 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
                 style={{ width: "120px", display: "inline-block" }}
                 className="p-1"
               />
-              <Button color="light" className="text-black" size="sm" onClick={handleSvrRateSave}>
+              <Button
+                color="light"
+                className="text-black"
+                size="sm"
+                onClick={handleSvrRateSave}
+              >
                 Save
               </Button>
-              <Button color="light" className="text-black" size="sm" onClick={handleSvrRateCancel}>
+              <Button
+                color="light"
+                className="text-black"
+                size="sm"
+                onClick={handleSvrRateCancel}
+              >
                 Cancel
               </Button>
             </span>
@@ -166,7 +168,9 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
               onClick={startSvrRateEdit}
               title="Click to edit"
             >
-              {formValues.product_transfer_standard_variable_rate ? `${formValues.product_transfer_standard_variable_rate}%` : "click to set rate..."}
+              {formValues.product_transfer_standard_variable_rate
+                ? `${formValues.product_transfer_standard_variable_rate}%`
+                : "click to set rate..."}
             </span>
           )}
         </li>
@@ -213,7 +217,9 @@ const ProductTransfer: React.FC<ProductTransferProps> = ({
             {productTransferOptions.map((option) => (
               <DropdownItem
                 key={option.value}
-                onClick={() => onFormChange({ product_transfer_reason: option.value })}
+                onClick={() =>
+                  onFormChange({ product_transfer_reason: option.value })
+                }
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>

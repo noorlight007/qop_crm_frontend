@@ -1,5 +1,5 @@
 import { pensionOptions } from "@/Data/Cases/SuitabilityData";
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { LendingIntoRetirementProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Dropdown,
@@ -17,13 +17,6 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-interface LendingIntoRetirementProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
-
 const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
   caseData,
   suitability,
@@ -38,7 +31,9 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
 
   // ── Derived from formValues — re-hydrates on page load if data exists ──
   const selectedPensionOption =
-    pensionOptions.find((o) => o.value === formValues.lending_into_retirement_type) ?? null;
+    pensionOptions.find(
+      (o) => o.value === formValues.lending_into_retirement_type,
+    ) ?? null;
 
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
 
@@ -102,7 +97,9 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
             {pensionOptions.map((option) => (
               <DropdownItem
                 key={option.value}
-                onClick={() => onFormChange({ lending_into_retirement_type: option.value })}
+                onClick={() =>
+                  onFormChange({ lending_into_retirement_type: option.value })
+                }
                 className="text-wrap"
               >
                 <span className="me-1 fw-bolder">•</span>
@@ -129,7 +126,8 @@ const LendingIntoRetirement: React.FC<LendingIntoRetirementProps> = ({
               </>
             )}
 
-            {selectedPensionOption.value === "PENSION_STATEMENTS_NOT_REQUIRED" && (
+            {selectedPensionOption.value ===
+              "PENSION_STATEMENTS_NOT_REQUIRED" && (
               <>
                 <p className="fw-semibold mb-1">
                   Option 2 – Pension statements not required by lender:

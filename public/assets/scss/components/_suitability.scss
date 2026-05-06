@@ -59,7 +59,7 @@
 
 .suitability-advisor-note {
   background: #fff0f3;
-  color: #b0004e !important;   // !important to beat .dark-only *
+  color: #b0004e !important; // !important to beat .dark-only *
   border-left: 3px solid #f48fb1;
   font-style: italic;
   font-size: 0.875rem;
@@ -86,9 +86,21 @@
   border: 1px dashed #ab47bc;
 }
 
+.suitability-table-header {
+  background: #1a3c5e !important;
+  color: #fff !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+}
+
 .dark-only {
   .suitability-purple-box {
     background: #1e1228 !important;
     border-color: #7b1fa2 !important;
+  }
+
+  .suitability-table-header {
+    background: #0d2a45 !important;
+    color: #e0eaf4 !important;
   }
 }

@@ -37,13 +37,6 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-const thStyle: React.CSSProperties = {
-  background: "#1a3c5e",
-  color: "#fff",
-  fontSize: "0.84rem",
-  fontWeight: 600,
-};
-
 const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   caseData,
   suitability,
@@ -78,7 +71,10 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
   const mortgageType = s?.loan_details?.mortgage_type ?? "";
   const interestRateType = s?.loan_details?.interest_rate_type ?? "";
-  const dealEndDate = (s?.loan_details?.initial_interest_rate ?? "").match(/\d{2}\/\d{2}\/\d{4}/)?.[0] ?? "";
+  const dealEndDate =
+    (s?.loan_details?.initial_interest_rate ?? "").match(
+      /\d{2}\/\d{2}\/\d{4}/,
+    )?.[0] ?? "";
 
   const fmtGBP = (val: any) =>
     val
@@ -506,12 +502,16 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <Table bordered responsive size="sm" className="mb-3">
         <thead>
           <tr>
-            <th style={thStyle}>Lender</th>
-            <th style={thStyle}>Initial interest rate, type &amp; period</th>
-            <th style={thStyle}>Repayment method</th>
-            <th style={thStyle}>Mortgage amount (including any added fees)</th>
-            <th style={thStyle}>Mortgage term</th>
-            <th style={thStyle}>Monthly repayment</th>
+            <th className="suitability-table-header">Lender</th>
+            <th className="suitability-table-header">
+              Initial interest rate, type &amp; period
+            </th>
+            <th className="suitability-table-header">Repayment method</th>
+            <th className="suitability-table-header">
+              Mortgage amount (including any added fees)
+            </th>
+            <th className="suitability-table-header">Mortgage term</th>
+            <th className="suitability-table-header">Monthly repayment</th>
           </tr>
         </thead>
         <tbody>
@@ -550,10 +550,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <Table bordered responsive size="sm" className="mb-3">
         <thead>
           <tr>
-            <th style={{ ...thStyle, width: "13%" }}>Feature</th>
-            <th style={{ ...thStyle, width: "15%" }}>Recommendation</th>
-            <th style={{ ...thStyle, width: "30%" }}>What does this mean?</th>
-            <th style={thStyle}>Why was this recommended to you?</th>
+            <th className="suitability-table-header" style={{ width: "13%" }}>
+              Feature
+            </th>
+            <th className="suitability-table-header" style={{ width: "15%" }}>
+              Recommendation
+            </th>
+            <th className="suitability-table-header" style={{ width: "30%" }}>
+              What does this mean?
+            </th>
+            <th className="suitability-table-header">
+              Why was this recommended to you?
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -563,7 +571,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td style={{ color: blue }}>{lender}</td>
             <td>This is the lender who will provide your mortgage.</td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              I have recommended <strong style={{ color: blue }}>{lender}</strong> because{" "}
+              I have recommended{" "}
+              <strong style={{ color: blue }}>{lender}</strong> because{" "}
               {isLenderEditing ? (
                 <span className="d-block w-100 mt-1">
                   <Input

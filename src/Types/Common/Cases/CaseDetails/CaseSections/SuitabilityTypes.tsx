@@ -70,6 +70,48 @@ export interface DebtSummaryRowDraft {
   debt_summary_reason: string;
 }
 
+export interface LendingIntoRetirementProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface PortingMortgageIncreaseProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface IslamicMortgageProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface RateTypePaymentMethodProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface ProductTransferProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
+export interface ShortenedProductTransferProps {
+  caseData: any;
+  suitability: any;
+  formValues: SuitabilityData;
+  onFormChange: (updates: Partial<SuitabilityData>) => void;
+}
+
 export interface CreditCommitment {
   type: string;
   company: string;

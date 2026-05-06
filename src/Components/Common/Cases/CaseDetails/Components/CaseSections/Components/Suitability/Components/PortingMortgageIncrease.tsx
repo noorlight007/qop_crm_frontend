@@ -1,5 +1,5 @@
 import { notRecommendedOptions } from "@/Data/Cases/SuitabilityData";
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { PortingMortgageIncreaseProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Button,
@@ -18,13 +18,6 @@ const AdvisorNote = ({ children }: { children: React.ReactNode }) => (
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
-
-interface PortingMortgageIncreaseProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
 
 const PortingMortgageIncrease: React.FC<PortingMortgageIncreaseProps> = ({
   caseData,
