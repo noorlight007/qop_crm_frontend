@@ -1,26 +1,29 @@
-import { ViewOrgLeadModalProps } from "@/Types/Common/Organisations/OrgLeadTypes";
+import { ViewOrgApplicantModalProps } from "@/Types/Common/Organisations/OrgApplicantType";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import { FileText, Mail, Phone, TrendingUp, User } from "react-feather";
 import { Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
+const ViewOrgApplicantModal: React.FC<ViewOrgApplicantModalProps> = ({
   isOpen,
   toggle,
-  selectedLead,
+  selectedApplicant,
+  role,
 }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle} className="bg-gradient border-0">
-        <span className="fs-5 fw-bold text-primary">Lead Information</span>
+        <span className="fs-5 fw-bold text-primary">
+          {formatChoiceFieldValue(role)} Information
+        </span>
       </ModalHeader>
       <ModalBody className="p-0">
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedLead?.profile_image ? (
+            {selectedApplicant?.profile_image ? (
               <Image
-                src={selectedLead.profile_image}
+                src={selectedApplicant.profile_image}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -36,7 +39,7 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">{selectedLead?.name}</h4>
+          <h4 className="mb-1 text-dark fw-bold">{selectedApplicant?.name}</h4>
         </div>
 
         <div className="p-4">
@@ -55,7 +58,7 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedLead?.email || "-"}
+                      {selectedApplicant?.email || "-"}
                     </p>
                   </div>
                 </div>
@@ -66,9 +69,9 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedLead?.phone ? (
+                      {selectedApplicant?.phone ? (
                         <span className="text-decoration-none">
-                          {selectedLead.phone}
+                          {selectedApplicant.phone}
                         </span>
                       ) : (
                         "-"
@@ -100,8 +103,8 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
                 <div>
                   <small className="text-muted d-block fw-500">Source</small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.source ? (
-                      formatChoiceFieldValue(selectedLead.source)
+                    {selectedApplicant?.source ? (
+                      formatChoiceFieldValue(selectedApplicant.source)
                     ) : (
                       <small className="text-muted">Not Found</small>
                     )}
@@ -114,8 +117,8 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
                     Enquiry Type
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedLead?.enquiry_type ? (
-                      formatChoiceFieldValue(selectedLead.enquiry_type)
+                    {selectedApplicant?.enquiry_type ? (
+                      formatChoiceFieldValue(selectedApplicant.enquiry_type)
                     ) : (
                       <small className="text-muted">Not Available</small>
                     )}
@@ -123,29 +126,29 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
                 </div>
               </Col>
             </Row>
-            {(selectedLead?.other_source ||
-              selectedLead?.other_enquiry_type) && (
+            {(selectedApplicant?.other_source ||
+              selectedApplicant?.other_enquiry_type) && (
               <Row>
-                {selectedLead?.other_source && (
+                {selectedApplicant?.other_source && (
                   <Col md="6" className="mb-3">
                     <div>
                       <small className="text-muted d-block fw-500">
                         Other Source
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {selectedLead.other_source}
+                        {selectedApplicant.other_source}
                       </p>
                     </div>
                   </Col>
                 )}
-                {selectedLead?.other_enquiry_type && (
+                {selectedApplicant?.other_enquiry_type && (
                   <Col md="6" className="mb-3">
                     <div>
                       <small className="text-muted d-block fw-500">
                         Other Enquiry Type
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {selectedLead.other_enquiry_type}
+                        {selectedApplicant.other_enquiry_type}
                       </p>
                     </div>
                   </Col>
@@ -157,7 +160,7 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
           <hr className="my-3" />
 
           {/* Notes */}
-          {selectedLead?.note && (
+          {selectedApplicant?.note && (
             <>
               <div className="mb-4">
                 <h6
@@ -179,7 +182,7 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
                     className="m-0 text-dark"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
-                    {selectedLead.note}
+                    {selectedApplicant.note}
                   </p>
                 </div>
               </div>
@@ -196,26 +199,17 @@ const ViewOrgApplicantModal: React.FC<ViewOrgLeadModalProps> = ({
             >
               Additional Information
             </h6>
-            {selectedLead?.created_by ? (
+            {selectedApplicant?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
-                  <strong>
-                    {selectedLead.created_by.title
-                      ? formatChoiceFieldValue(
-                          selectedLead.created_by.title,
-                        ).trim() + " "
-                      : ""}
-                    {selectedLead.created_by.first_name}{" "}
-                    {selectedLead.created_by.middle_name}{" "}
-                    {selectedLead.created_by.last_name}
-                  </strong>
+                  <strong>{selectedApplicant.created_by.name}</strong>
                 </p>
                 <small className="text-muted">
-                  {selectedLead.created_by.email
-                    ? formatChoiceFieldValue(selectedLead.created_by.email)
+                  {selectedApplicant.created_by.email
+                    ? selectedApplicant.created_by.email
                     : ""}
                 </small>
               </div>

@@ -1,4 +1,4 @@
-const Applicants: React.FC = () => {
+const ApplicantsTab: React.FC = () => {
   return (
     <div>
       {/* JSX here */}
@@ -7,4 +7,4 @@ const Applicants: React.FC = () => {
   );
 };
 
-export default Applicants;
+export default ApplicantsTab;

@@ -1,4 +1,4 @@
-const Cases: React.FC = () => {
+const CasesTab: React.FC = () => {
   return (
     <div>
       {/* JSX here */}
@@ -7,4 +7,4 @@ const Cases: React.FC = () => {
   );
 };
 
-export default Cases;
+export default CasesTab;

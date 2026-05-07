@@ -152,6 +152,7 @@ const OrganisationList: React.FC<OrgListProps> = ({ maxItems }) => {
                     </UncontrolledPopover>
                   </InputGroup>
                 </Col>
+                <Col md="3" />
               </Row>
             </Card>
           </Col>

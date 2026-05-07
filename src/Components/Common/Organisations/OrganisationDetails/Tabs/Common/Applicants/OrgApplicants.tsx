@@ -78,7 +78,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
     { skip: !organisationslug },
   );
 
-  const [selectedLead, setSelectedLead] = useState<OrgApplicantInfo>({
+  const [selectedApplicant, setSelectedApplicant] = useState<OrgApplicantInfo>({
     alias: "",
     profile_image: "",
     name: "",
@@ -108,7 +108,7 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
 
   const toggleViewModal = (item?: OrgApplicantInfo) => {
     if (item) {
-      setSelectedLead(item);
+      setSelectedApplicant(item);
     }
     setIsViewModalOpen(!isViewModalOpen);
   };
@@ -415,7 +415,8 @@ const OrgApplicants: React.FC<{ role: "LEAD" | "APPLICANT" }> = ({ role }) => {
         <ViewOrgApplicantModal
           isOpen={isViewModalOpen}
           toggle={toggleViewModal}
-          selectedLead={selectedLead}
+          selectedApplicant={selectedApplicant}
+          role={role}
         />
         <AddOrgApplicantModal
           isOpen={isAddModalOpen}

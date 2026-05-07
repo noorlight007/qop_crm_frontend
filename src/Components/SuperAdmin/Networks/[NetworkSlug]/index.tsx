@@ -13,13 +13,12 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-import Advisers from "./Tabs/Advisers/Advisers";
-import Applicants from "./Tabs/Applicants/Applicants";
-import Cases from "./Tabs/Cases/Cases";
-import Compliances from "./Tabs/Compliances/Compliances";
+import AdvisersTab from "./Tabs/Advisers/AdvisersTab";
+import ApplicantsTab from "./Tabs/Applicants/ApplicantsTab";
+import CasesTab from "./Tabs/Cases/CasesTab";
+import CompliancesTab from "./Tabs/Compliances/CompliancesTab";
 import Dashboard from "./Tabs/Dashboard/Dashboard";
-import Directors from "./Tabs/Directors/Directors";
-import Leads from "./Tabs/Leads/Leads";
+import LeadsTab from "./Tabs/Leads/LeadsTab";
 
 const NetworkDetailsContainer: React.FC = () => {
   const params = useParams();
@@ -37,18 +36,15 @@ const NetworkDetailsContainer: React.FC = () => {
   const navItems = [
     { id: "dashboard", label: "Dashboard" },
     { id: "cases", label: "Cases" },
-    { id: "directors", label: "Directors" },
-    { id: "compliances", label: "Compliances" },
     { id: "leads", label: "Leads" },
     { id: "applicants", label: "Applicants" },
+    { id: "compliances", label: "Compliances" },
     { id: "advisers", label: "Advisers" },
   ];
 
   useEffect(() => {
     if (typeof window === "undefined" || !networkSlug) return;
-    const savedTab = localStorage.getItem(
-      `customTabActive:${networkSlug}`,
-    );
+    const savedTab = localStorage.getItem(`customTabActive:${networkSlug}`);
     setActiveTab(savedTab || "dashboard");
   }, [networkSlug]);
 
@@ -94,22 +90,19 @@ const NetworkDetailsContainer: React.FC = () => {
                 {activeTab === "dashboard" && <Dashboard />}
               </TabPane>
               <TabPane tabId="cases">
-                {activeTab === "cases" && <Cases />}
-              </TabPane>
-              <TabPane tabId="directors">
-                {activeTab === "directors" && <Directors />}
-              </TabPane>
-              <TabPane tabId="compliances">
-                {activeTab === "compliances" && <Compliances />}
+                {activeTab === "cases" && <CasesTab />}
               </TabPane>
               <TabPane tabId="leads">
-                {activeTab === "leads" && <Leads />}
+                {activeTab === "leads" && <LeadsTab />}
               </TabPane>
               <TabPane tabId="applicants">
-                {activeTab === "applicants" && <Applicants />}
+                {activeTab === "applicants" && <ApplicantsTab />}
+              </TabPane>
+              <TabPane tabId="compliances">
+                {activeTab === "compliances" && <CompliancesTab />}
               </TabPane>
               <TabPane tabId="advisers">
-                {activeTab === "advisers" && <Advisers />}
+                {activeTab === "advisers" && <AdvisersTab />}
               </TabPane>
             </TabContent>
           </Col>
