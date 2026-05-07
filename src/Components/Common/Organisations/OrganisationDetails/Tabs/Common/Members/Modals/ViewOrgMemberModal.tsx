@@ -1,15 +1,15 @@
-import { ViewOrgUserModalProps } from "@/Types/Common/Organisations/OrgUserListTypes";
+import { ViewOrgMemberModalProps } from "@/Types/Common/Organisations/OrgMembersTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
 import React from "react";
 import { Mail, Phone, User } from "react-feather";
 import { Badge, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
 
-const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
+const ViewOrgMemberModal: React.FC<ViewOrgMemberModalProps> = ({
   isOpen,
   toggle,
   role,
-  selectedUser,
+  selectedMember,
 }) => {
   const headerTitle =
     role === "ADMIN"
@@ -29,9 +29,9 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
         {/* Profile Section */}
         <div className="bg-light p-4 text-center border-bottom">
           <div className="mb-3">
-            {selectedUser?.profile_image ? (
+            {selectedMember?.profile_image ? (
               <Image
-                src={selectedUser.profile_image as string}
+                src={selectedMember.profile_image as string}
                 alt="Profile"
                 width={120}
                 height={120}
@@ -47,11 +47,11 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
               </div>
             )}
           </div>
-          <h4 className="mb-1 text-dark fw-bold">{selectedUser?.name}</h4>
+          <h4 className="mb-1 text-dark fw-bold">{selectedMember?.name}</h4>
 
           <div className="d-flex justify-content-center gap-2">
             <p>
-              {selectedUser?.is_active ? (
+              {selectedMember?.is_active ? (
                 <Badge pill className="px-3 py-2 bg-light-success">
                   ✓ Approved
                 </Badge>
@@ -80,8 +80,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Email</small>
                     <p className="m-0 text-dark">
-                      {selectedUser?.email ? (
-                        selectedUser.email
+                      {selectedMember?.email ? (
+                        selectedMember.email
                       ) : (
                         <small className="text-muted">Not Available</small>
                       )}
@@ -95,9 +95,9 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                   <div>
                     <small className="text-muted d-block">Phone</small>
                     <p className="m-0 text-dark">
-                      {selectedUser?.phone ? (
+                      {selectedMember?.phone ? (
                         <span className="text-decoration-none text-primary">
-                          {selectedUser.phone}
+                          {selectedMember.phone}
                         </span>
                       ) : (
                         <small className="text-muted">Not Available</small>
@@ -128,8 +128,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                         Company Name
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {selectedUser?.company_name ? (
-                          selectedUser.company_name
+                        {selectedMember?.company_name ? (
+                          selectedMember.company_name
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
@@ -142,8 +142,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                         Company Address
                       </small>
                       <p className="m-0 text-dark fw-500">
-                        {selectedUser?.company_address ? (
-                          selectedUser.company_address
+                        {selectedMember?.company_address ? (
+                          selectedMember.company_address
                         ) : (
                           <small className="text-muted">Not Available</small>
                         )}
@@ -159,8 +159,8 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
                     Joining Date
                   </small>
                   <p className="m-0 text-dark fw-500">
-                    {selectedUser?.joining_date ? (
-                      selectedUser.joining_date
+                    {selectedMember?.joining_date ? (
+                      selectedMember.joining_date
                     ) : (
                       <small className="text-muted">Not Available</small>
                     )}
@@ -180,28 +180,17 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
             >
               Additional Information
             </h6>
-            {(selectedUser as any)?.created_by ? (
+            {selectedMember?.created_by ? (
               <div className="mb-3 p-3 bg-light rounded">
                 <small className="text-muted d-block fw-500 mb-2">
                   Created By
                 </small>
                 <p className="m-0 text-dark">
-                  <strong>
-                    {(selectedUser as any).created_by.title
-                      ? formatChoiceFieldValue(
-                          (selectedUser as any).created_by.title,
-                        ).trim() + " "
-                      : ""}
-                    {(selectedUser as any).created_by.first_name}{" "}
-                    {(selectedUser as any).created_by.middle_name}{" "}
-                    {(selectedUser as any).created_by.last_name}
-                  </strong>
+                  <strong>{selectedMember.created_by.name}</strong>
                 </p>
                 <small className="text-muted">
-                  {(selectedUser as any).created_by.email
-                    ? formatChoiceFieldValue(
-                        (selectedUser as any).created_by.email,
-                      )
+                  {selectedMember.created_by.email
+                    ? formatChoiceFieldValue(selectedMember.created_by.email)
                     : ""}
                 </small>
               </div>
@@ -225,4 +214,4 @@ const ViewOrgUserModal: React.FC<ViewOrgUserModalProps> = ({
   );
 };
 
-export default ViewOrgUserModal;
+export default ViewOrgMemberModal;

@@ -1,9 +1,8 @@
 "use client";
-import { useUpdateOrgUserMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
-import {
-  OrgUserListType,
-  UpdateOrgUserModalProps,
-} from "@/Types/Common/Organisations/OrgUserListTypes";
+import { useUpdateOrgMemberMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgMembersApi";
+import { UpdateOrgMemberModalProps } from "@/Types/Common/Organisations/OrgMembersTypes";
+import { OrgUserListType } from "@/Types/Common/Organisations/OrgUserListTypes";
+import formatChoiceFieldValue from "@/utils/formatters";
 
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -21,12 +20,12 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
+const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
   isOpen,
   toggle,
   organisationslug,
   role,
-  selectedUser,
+  selectedMember,
 }) => {
   const [formData, setFormData] = useState<OrgUserListType>({
     title: "",
@@ -44,37 +43,37 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   const [originalData, setOriginalData] = useState<OrgUserListType>({});
   const [isModified, setIsModified] = useState(false);
 
-  const [updateUser, { isLoading }] = useUpdateOrgUserMutation();
+  const [updateUser, { isLoading }] = useUpdateOrgMemberMutation();
 
   useEffect(() => {
     setFormData({
-      title: (selectedUser as any)?.title ?? "",
-      first_name: (selectedUser as any)?.first_name ?? "",
-      middle_name: (selectedUser as any)?.middle_name ?? "",
-      last_name: (selectedUser as any)?.last_name ?? "",
-      name: (selectedUser as any)?.name ?? "",
-      email: (selectedUser as any)?.email ?? "",
-      phone: (selectedUser as any)?.phone ?? "",
-      joining_date: (selectedUser as any)?.joining_date ?? "",
-      note: (selectedUser as any)?.note ?? "",
-      company_name: (selectedUser as any)?.company_name ?? "",
-      company_address: (selectedUser as any)?.company_address ?? "",
+      title: (selectedMember as any)?.title ?? "",
+      first_name: (selectedMember as any)?.first_name ?? "",
+      middle_name: (selectedMember as any)?.middle_name ?? "",
+      last_name: (selectedMember as any)?.last_name ?? "",
+      name: (selectedMember as any)?.name ?? "",
+      email: (selectedMember as any)?.email ?? "",
+      phone: (selectedMember as any)?.phone ?? "",
+      joining_date: (selectedMember as any)?.joining_date ?? "",
+      note: (selectedMember as any)?.note ?? "",
+      company_name: (selectedMember as any)?.company_name ?? "",
+      company_address: (selectedMember as any)?.company_address ?? "",
     });
     setOriginalData({
-      title: (selectedUser as any)?.title ?? "",
-      first_name: (selectedUser as any)?.first_name ?? "",
-      middle_name: (selectedUser as any)?.middle_name ?? "",
-      last_name: (selectedUser as any)?.last_name ?? "",
-      name: (selectedUser as any)?.name ?? "",
-      email: (selectedUser as any)?.email ?? "",
-      phone: (selectedUser as any)?.phone ?? "",
-      joining_date: (selectedUser as any)?.joining_date ?? "",
-      note: (selectedUser as any)?.note ?? "",
-      company_name: (selectedUser as any)?.company_name ?? "",
-      company_address: (selectedUser as any)?.company_address ?? "",
+      title: (selectedMember as any)?.title ?? "",
+      first_name: (selectedMember as any)?.first_name ?? "",
+      middle_name: (selectedMember as any)?.middle_name ?? "",
+      last_name: (selectedMember as any)?.last_name ?? "",
+      name: (selectedMember as any)?.name ?? "",
+      email: (selectedMember as any)?.email ?? "",
+      phone: (selectedMember as any)?.phone ?? "",
+      joining_date: (selectedMember as any)?.joining_date ?? "",
+      note: (selectedMember as any)?.note ?? "",
+      company_name: (selectedMember as any)?.company_name ?? "",
+      company_address: (selectedMember as any)?.company_address ?? "",
     });
     setIsModified(false);
-  }, [selectedUser]);
+  }, [selectedMember]);
 
   const title = useMemo(() => {
     switch (role) {
@@ -104,9 +103,9 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const userAlias = formData.alias;
-    if (!userAlias) {
-      toast.error("User alias not found.");
+    const memberAlias = formData.alias;
+    if (!memberAlias) {
+      toast.error(`${formatChoiceFieldValue(role)} alias not found.`);
       return;
     }
 
@@ -144,21 +143,23 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
     try {
       const result = await updateUser({
         organisationslug,
-        user_alias: userAlias,
+        memberAlias: memberAlias,
         payload,
       });
 
       if ((result as any)?.data) {
-        toast.success(`${title} updated successfully.`);
+        toast.success(`${formatChoiceFieldValue(role)} updated successfully.`);
         toggle();
       } else if ("error" in (result as any)) {
-        toast.error("Failed to update user.");
+        toast.error(`Failed to update ${formatChoiceFieldValue(role)}.`);
       } else {
         toast.error("Invalid request.");
       }
     } catch (error) {
       console.error("Failed to update user", error);
-      toast.error("Failed to update user. Please try again.");
+      toast.error(
+        `Failed to update ${formatChoiceFieldValue(role)}. Please try again.`,
+      );
     }
   };
 
@@ -343,4 +344,4 @@ const UpdateOrgUserModal: React.FC<UpdateOrgUserModalProps> = ({
   );
 };
 
-export default UpdateOrgUserModal;
+export default UpdateOrgMemberModal;

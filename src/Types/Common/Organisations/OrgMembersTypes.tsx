@@ -1,10 +1,10 @@
-export type OrgUserRole = "ADMIN" | "INTRODUCER" | "ADVISER";
+export type OrgMemberRole = "ADMIN" | "INTRODUCER" | "ADVISER";
 
-export type OrgUserListProps = {
-  role: OrgUserRole;
+export type OrgMemberProps = {
+  role: OrgMemberRole;
 };
 
-export type OrgUserListType = {
+export type OrgMembersType = {
   alias?: string;
   name?: string;
   title?: string;
@@ -26,25 +26,25 @@ export type OrgUserListType = {
   is_active?: boolean;
 };
 
-export type ViewOrgUserModalProps = {
+export type ViewOrgMemberModalProps = {
   isOpen: boolean;
   toggle: () => void;
-  role: OrgUserRole;
-  selectedUser: Partial<OrgUserListType>;
+  role: OrgMemberRole;
+  selectedMember: Partial<OrgMembersType>;
 };
 
-export type UpdateOrgUserModalProps = {
+export type UpdateOrgMemberModalProps = {
   isOpen: boolean;
   toggle: () => void;
   organisationslug: string;
-  role: OrgUserRole;
-  selectedUser?: Partial<OrgUserListType>;
+  role: OrgMemberRole;
+  selectedMember?: Partial<OrgMembersType>;
 };
 
-export type DeleteOrgUserModalProps = {
+export type DeleteOrgMemberModalProps = {
   isOpen: boolean;
   toggle: () => void;
   organisationslug: string;
-  role: OrgUserRole;
-  selectedUser?: Partial<OrgUserListType>;
+  role: OrgMemberRole;
+  selectedMember?: Partial<OrgMembersType>;
 };
