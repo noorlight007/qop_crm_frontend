@@ -13,10 +13,16 @@ export interface NetworkFormData {
   network: {
     name: string;
     subdomain: string;
-    address: string;
     primary_mobile: string;
     email: string;
     license_no: string;
+  };
+  address: {
+    postcode: string;
+    house_name_or_number: string;
+    address_line_1: string;
+    city: string;
+    country: string;
   };
   user: {
     first_name: string;

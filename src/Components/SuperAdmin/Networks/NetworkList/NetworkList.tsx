@@ -1,12 +1,9 @@
-import {
-  useGetNetworkListQuery,
-  useUpdateNetworkMutation,
-} from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useGetNetworkListQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import { Network } from "@/Types/SuperAdmin/Networks/NetworkType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaCalendarAlt,
   FaCheckCircle,
@@ -44,19 +41,11 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddNetworkModalOpen, setIsAddNetworkModalOpen] = useState(false);
 
-  // LOGIC FIX: Track which specific network is being updated
-  const [uploadingSlug, setUploadingSlug] = useState<string | null>(null);
-
   const { data: getNetworkList, isLoading } = useGetNetworkListQuery({
     search: searchQuery,
     page: currentPage,
     page_size: maxItems,
   });
-  console.log("Network List Data:", getNetworkList);
-  const [updateNetwork, { isLoading: updateNetworkLoading }] =
-    useUpdateNetworkMutation();
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const toggleAddNetworkModal = () =>
     setIsAddNetworkModalOpen(!isAddNetworkModalOpen);
@@ -64,9 +53,11 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
   const openAddNetworkModal = () => toggleAddNetworkModal();
 
   const itemsPerPage = 12;
+  const networkResults = getNetworkList?.results ?? [];
+  const hasNetworks = networkResults.length > 0;
   // Ensure we only render up to `itemsPerPage` items even if the API returned more
-  const currentNetworks = getNetworkList?.results?.slice(0, itemsPerPage) ?? [];
-  const totalCount = (getNetworkList as any)?.count ?? currentNetworks.length;
+  const currentNetworks = networkResults.slice(0, itemsPerPage);
+  const totalCount = (getNetworkList as any)?.count ?? networkResults.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
 
   useEffect(() => {
@@ -194,7 +185,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
             <Col xs="12" className="text-center py-5">
               <Spinner color="primary" className="mb-3" />
             </Col>
-          ) : getNetworkList?.results?.length === 0 ? (
+          ) : !hasNetworks ? (
             <Col xs="12" className="text-center py-5">
               <div className="text-muted">
                 <FaSearch size={48} className="mb-3 opacity-50" />
@@ -207,7 +198,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
               </div>
             </Col>
           ) : (
-            getNetworkList?.results?.map((network: Network) => (
+            networkResults.map((network: Network) => (
               <Col xs="12" lg="6" xxl="4" className="mb-4" key={network.slug}>
                 <Card
                   className="h-100 shadow-sm border-0"

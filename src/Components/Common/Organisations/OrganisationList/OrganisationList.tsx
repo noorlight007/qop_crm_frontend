@@ -22,7 +22,7 @@ import {
   Row,
   UncontrolledPopover,
 } from "reactstrap";
-import AddOrganisationModal from "../Modals/AddOrganisationModal";
+import AddOrganisationModal from "./Modals/AddOrganisationModal";
 
 type OrganisationListProps = {
   maxItems?: number;

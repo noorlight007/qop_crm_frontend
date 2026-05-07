@@ -259,31 +259,34 @@ export interface FetchSingleOrganisationProps {
   isDashboardLoading?: boolean;
 }
 
-export interface UserDataProps {
-  email?: string;
-  phone?: string;
-  title?: string | null;
-  first_name?: string;
-  middle_name?: string;
-  last_name?: string;
-}
-export interface OrganisationListProps {
-  name: string;
-  subdomain: string;
-  email: string;
-  primary_mobile: string;
-  other_contact: string;
-  contact_person: string;
-  contact_person_designation: string;
-  website: string;
-  license_no: string;
-  license_image?: File;
-}
-
 export interface AddOrganisationProps {
-  [key: string]: string | File | null | boolean | UserDataProps | undefined;
-  organization: OrganisationListProps;
-  user: UserDataProps;
+  organization: {
+    name: string;
+    subdomain: string;
+    email: string;
+    primary_mobile: string;
+    other_contact: string;
+    contact_person: string;
+    contact_person_designation: string;
+    website: string;
+    license_no: string;
+    license_image?: File;
+  };
+  address: {
+    postcode: string;
+    house_name_or_number: string;
+    address_line_1: string;
+    city: string;
+    country: string;
+  };
+  user: {
+    email?: string;
+    phone?: string;
+    title?: string | null;
+    first_name?: string;
+    middle_name?: string;
+    last_name?: string;
+  };
 }
 
 // Add OrganisationModal Props

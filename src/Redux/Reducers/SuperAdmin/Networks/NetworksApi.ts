@@ -4,7 +4,7 @@ export const NetworksApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getNetworkList: builder.query({
       query: (params) => ({
-        url: "/organization/onboard/networks/",
+        url: `/api/networks/`,
         method: "GET",
         params,
       }),
@@ -12,14 +12,14 @@ export const NetworksApi = baseApi.injectEndpoints({
     }),
     getNetworkDetails: builder.query({
       query: ({ network_slug }) => ({
-        url: `/organization/onboard/networks/${network_slug}/`,
+        url: `/api/networks/${network_slug}/`,
         method: "GET",
       }),
       providesTags: ["NetworkList"],
     }),
     addNetwork: builder.mutation({
       query: ({ payload }) => ({
-        url: "/organization/onboard/networks/",
+        url: "/api/networks/",
         method: "POST",
         body: payload,
       }),
@@ -27,7 +27,7 @@ export const NetworksApi = baseApi.injectEndpoints({
     }),
     updateNetwork: builder.mutation({
       query: ({ network_slug, payload }) => ({
-        url: `/organization/onboard/networks/${network_slug}/`,
+        url: `/api/networks/${network_slug}/`,
         method: "PATCH",
         body: payload,
       }),
@@ -35,7 +35,7 @@ export const NetworksApi = baseApi.injectEndpoints({
     }),
     deleteNetwork: builder.mutation({
       query: ({ network_slug }) => ({
-        url: `/organization/onboard/networks/${network_slug}/`,
+        url: `/api/networks/${network_slug}/`,
         method: "DELETE",
       }),
       invalidatesTags: ["NetworkList"],
