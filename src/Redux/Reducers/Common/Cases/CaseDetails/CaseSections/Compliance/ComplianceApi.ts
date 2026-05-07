@@ -17,10 +17,35 @@ export const ComplianceApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Compliance"],
     }),
+    getAssignedCompliance: builder.query({
+      query: () => ({
+        url: `/api/networks/compliance-assignments/`,
+        method: "GET",
+      }),
+      providesTags: ["Compliance"],
+    }),
+    createAssignedCompliance: builder.mutation({
+      query: (payload) => ({
+        url: `/api/networks/compliance-assignments/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Compliance"],
+    }),
+    complianceSendRequest: builder.mutation({
+      query: ({ case_alias }) => ({
+        url: `/cases/${case_alias}/send-request/`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Compliance"],
+    }),
   }),
 });
 
 export const {
   useGetComplianceQuery,
   useUpdateComplianceMutation,
+  useGetAssignedComplianceQuery,
+  useCreateAssignedComplianceMutation,
+  useComplianceSendRequestMutation,
 } = ComplianceApi;

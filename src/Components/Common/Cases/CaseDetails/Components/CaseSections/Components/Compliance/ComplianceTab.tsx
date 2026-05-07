@@ -122,7 +122,7 @@ export const ComplianceTab = () => {
       <Card>
         <CardBody>
           <CardHeader className="d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0">
-            <section className=" mb-4">
+            <section className="w-100 mb-4">
               <ComplianceRatingCard />
             </section>
             <Nav

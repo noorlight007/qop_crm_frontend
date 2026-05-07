@@ -1,7 +1,63 @@
 import { ComplianceState } from "@/Types/Common/Cases/CaseDetails/CaseSections/ComplianceTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: ComplianceState = {
+// ─── New Types for Reviews ────────────────────────────────────────────────────
+
+export type ComplianceGrade =
+  | "SUITABLE"
+  | "SUITABLE_WITH_DEVELOPMENT"
+  | "UNSUITABLE"
+  | null;
+
+export type ComplianceStage =
+  | "PRE_SUBMISSION"
+  | "POST_SUBMISSION"
+  | "POST_COMPLETION";
+
+export interface ReviewStageState {
+  id?: number;
+  stage?: ComplianceStage;
+  file_review_request_date: string | null;
+  file_reviewed_date: string | null;
+  remedial_actions_due_date: string | null;
+  compliance_sign_off_date: string | null;
+  admin_grade: ComplianceGrade;
+  advice_grade: ComplianceGrade;
+  comments: string | null;
+  _touched?: boolean;
+}
+
+export interface ReviewsState {
+  PRE_SUBMISSION: ReviewStageState;
+  POST_SUBMISSION: ReviewStageState;
+  POST_COMPLETION: ReviewStageState;
+}
+
+// ─── Extended State (ComplianceState + reviews) ───────────────────────────────
+// We extend ComplianceState so the existing reducers/selectors stay intact.
+// The `reviews` field is the only addition — remove old fields when ready.
+
+export interface ExtendedComplianceState extends ComplianceState {
+  reviews: ReviewsState;
+}
+
+// ─── Default Stage ────────────────────────────────────────────────────────────
+
+const defaultStageState: ReviewStageState = {
+  file_review_request_date: null,
+  file_reviewed_date: null,
+  remedial_actions_due_date: null,
+  compliance_sign_off_date: null,
+  admin_grade: null,
+  advice_grade: null,
+  comments: null,
+  _touched: false,
+};
+
+// ─── Initial State ────────────────────────────────────────────────────────────
+
+const initialState: ExtendedComplianceState = {
+  // --- OLD FIELDS (kept for backward compat — remove when migration complete) ---
   date_file_checked: undefined,
   date_file_rechecked: undefined,
   file_checked: undefined,
@@ -189,12 +245,22 @@ const initialState: ComplianceState = {
   has_wills_section_personalised_text: undefined,
   does_recommended_product_match_your_needs_section: undefined,
   does_recommended_product_match_your_needs_section_text: undefined,
+
+  // --- NEW REVIEWS SHAPE ---
+  reviews: {
+    PRE_SUBMISSION: { ...defaultStageState },
+    POST_SUBMISSION: { ...defaultStageState },
+    POST_COMPLETION: { ...defaultStageState },
+  },
 };
+
+// ─── Slice ────────────────────────────────────────────────────────────────────
 
 const complianceSlice = createSlice({
   name: "compliance",
   initialState,
   reducers: {
+    // --- EXISTING ACTIONS (unchanged) ---
     updateComplianceAnswer: (
       state,
       action: PayloadAction<{
@@ -216,7 +282,57 @@ const complianceSlice = createSlice({
       (state[field] as string | null | undefined | boolean) = value;
     },
     setComplianceData: (state, action: PayloadAction<ComplianceState>) => {
-      return action.payload;
+      // Preserve reviews when resetting flat compliance data
+      const currentReviews = state.reviews;
+      return { ...action.payload, reviews: currentReviews };
+    },
+
+    // --- NEW REVIEW ACTIONS ---
+
+    // Update a single field in a stage and mark it as touched
+    updateReviewField: (
+      state,
+      action: PayloadAction<{
+        stage: ComplianceStage;
+        field: keyof Omit<ReviewStageState, "_touched">;
+        value: any;
+      }>,
+    ) => {
+      const { stage, field, value } = action.payload;
+      (state.reviews[stage] as any)[field] = value;
+      state.reviews[stage]._touched = true;
+    },
+
+    // Populate reviews from GET API response — resets _touched on all stages
+    hydrateReviews: (
+      state,
+      action: PayloadAction<ReviewsState>,
+    ) => {
+      const stages: ComplianceStage[] = [
+        "PRE_SUBMISSION",
+        "POST_SUBMISSION",
+        "POST_COMPLETION",
+      ];
+      stages.forEach((stage) => {
+        if (action.payload[stage]) {
+          state.reviews[stage] = {
+            ...action.payload[stage],
+            _touched: false,
+          };
+        }
+      });
+    },
+
+    // Reset _touched on all stages after a successful save
+    resetReviewTouched: (state) => {
+      const stages: ComplianceStage[] = [
+        "PRE_SUBMISSION",
+        "POST_SUBMISSION",
+        "POST_COMPLETION",
+      ];
+      stages.forEach((stage) => {
+        state.reviews[stage]._touched = false;
+      });
     },
   },
 });
@@ -225,5 +341,9 @@ export const {
   updateComplianceAnswer,
   updateComplianceComment,
   setComplianceData,
+  updateReviewField,
+  hydrateReviews,
+  resetReviewTouched,
 } = complianceSlice.actions;
+
 export default complianceSlice.reducer;
