@@ -127,6 +127,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     useState(false);
   const [additionalRecipientsDraft, setAdditionalRecipientsDraft] =
     useState("");
+  const [isRepaymentMethodEditing, setIsRepaymentMethodEditing] =
+    useState(false);
+  const [repaymentMethodDraft, setRepaymentMethodDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -364,6 +367,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const startAdditionalRecipientsEdit = () => {
     setAdditionalRecipientsDraft(formValues.email ?? "");
     setIsAdditionalRecipientsEditing(true);
+  };
+  const handleRepaymentMethodSave = () => {
+    onFormChange({ repayment_method_recommended_text: repaymentMethodDraft });
+    setIsRepaymentMethodEditing(false);
+  };
+  const handleRepaymentMethodCancel = () => {
+    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
+    setIsRepaymentMethodEditing(false);
+  };
+  const startRepaymentMethodEdit = () => {
+    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
+    setIsRepaymentMethodEditing(true);
   };
 
   // ══════════════════════════════════════════════════════════
@@ -630,8 +645,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                 : "Your payments can fluctuate during the initial deal period."}
             </td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              You wanted the certainty of knowing exactly what your monthly
-              payments will be because{" "}
+              {interestRateType === "Fixed"
+                ? "You wanted the certainty of knowing exactly what your monthly payments will be because "
+                : "You did not need the certainty of knowing exactly what your monthly repayments will be and were satisfied with payments that have the ability to fluctuate because "}
               {isInterestRateEditing ? (
                 <span className="d-block w-100 mt-1">
                   <Input
@@ -788,14 +804,73 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td className="fw-bold">Repayment Method</td>
             <td style={{ color: blue }}>{repaymentMethod}</td>
             <td>
-              Your mortgage will be repaid by the end of its term, provided you
-              make the required monthly payments when due.
+              {repaymentMethod === "Capital and Interest" ? (
+                "Your mortgage will be repaid by the end of its term, provided you make the required monthly payments when due."
+              ) : repaymentMethod === "Interest Only" ? (
+                <>
+                  Your mortgage balance will <strong>not</strong> be repaid by
+                  the end of the term through making your monthly repayments.
+                  You will be responsible for paying the balance{" "}
+                  <strong>in full</strong> at the end of the term.
+                </>
+              ) : null}
             </td>
-            <td>
-              <span>
-                You wanted to be certain that your entire mortgage balance is
-                repaid by the end of the term.
-              </span>
+            <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+              {repaymentMethod === "Capital and Interest" ? (
+                "You wanted the certainty of your mortgage being repaid by the end of the term through making your monthly repayments because "
+              ) : repaymentMethod === "Interest Only" ? (
+                <>
+                  You wanted the certainty of your mortgage not being repaid by
+                  the end of the term through making your monthly repayments and
+                  you will be responsible for paying the balance{" "}
+                  <strong>in full</strong> at the end of the term because{" "}
+                </>
+              ) : null}
+              {isRepaymentMethodEditing ? (
+                <span className="d-block w-100 mt-1">
+                  <Input
+                    type="textarea"
+                    rows={5}
+                    value={repaymentMethodDraft}
+                    onChange={(e) => setRepaymentMethodDraft(e.target.value)}
+                    placeholder="Enter your reason..."
+                    autoFocus
+                    className="w-100 p-1"
+                  />
+                  <div className="d-flex gap-2 mt-2">
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleRepaymentMethodSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleRepaymentMethodCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </span>
+              ) : (
+                <span
+                  className="d-inline text-success"
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={startRepaymentMethodEdit}
+                  title="Click to edit"
+                >
+                  {formValues.repayment_method_recommended_text ||
+                    "click to add reason..."}
+                </span>
+              )}
             </td>
           </tr>
 

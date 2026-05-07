@@ -284,13 +284,6 @@ const Suitability: React.FC = () => {
             />
           </>
         )}
-        <Divider />
-        <RateTypePaymentMethod
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
         {suitability?.is_product_transfer_applicable && (
           <>
             <Divider />
