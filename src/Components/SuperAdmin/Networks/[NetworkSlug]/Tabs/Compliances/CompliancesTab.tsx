@@ -1,4 +1,4 @@
-const Compliances: React.FC = () => {
+const CompliancesTab: React.FC = () => {
   return (
     <div>
       {/* JSX here */}
@@ -7,4 +7,4 @@ const Compliances: React.FC = () => {
   );
 };
 
-export default Compliances;
+export default CompliancesTab;

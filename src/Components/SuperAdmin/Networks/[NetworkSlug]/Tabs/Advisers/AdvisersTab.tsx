@@ -1,4 +1,4 @@
-const Advisers: React.FC = () => {
+const AdvisersTab: React.FC = () => {
   return (
     <div>
       {/* JSX here */}
@@ -7,4 +7,4 @@ const Advisers: React.FC = () => {
   );
 };
 
-export default Advisers;
+export default AdvisersTab;

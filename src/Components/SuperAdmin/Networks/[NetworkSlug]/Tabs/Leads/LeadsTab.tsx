@@ -1,4 +1,4 @@
-const Leads: React.FC = () => {
+const LeadsTab: React.FC = () => {
   return (
     <div>
       {/* JSX here */}
@@ -7,4 +7,4 @@ const Leads: React.FC = () => {
   );
 };
 
-export default Leads;
+export default LeadsTab;

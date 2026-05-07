@@ -1,8 +1,8 @@
 "use client";
-import OrgUserList from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/OrgUserList";
+import OrgMembers from "../Common/Members/OrgMembers";
 
 const OrgAdvisersTab: React.FC = () => {
-  return <OrgUserList role="ADVISER" />;
+  return <OrgMembers role="ADVISER" />;
 };
 
 export default OrgAdvisersTab;

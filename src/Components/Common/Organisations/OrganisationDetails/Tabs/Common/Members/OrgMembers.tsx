@@ -1,13 +1,13 @@
 "use client";
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import {
-  useGetOrgUserListQuery,
-  useUpdateOrgUserMutation,
-} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgUserListApi";
+  useGetOrgMembersQuery,
+  useUpdateOrgMemberMutation,
+} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgMembersApi";
 import {
-  OrgUserListProps,
-  OrgUserListType,
-} from "@/Types/Common/Organisations/OrgUserListTypes";
+  OrgMemberProps,
+  OrgMemberType,
+} from "@/Types/Common/Organisations/OrgMembersTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import { useSession } from "next-auth/react";
@@ -37,9 +37,9 @@ import {
   Table,
   UncontrolledPopover,
 } from "reactstrap";
-import DeleteOrgUserModal from "./Modals/DeleteOrgUserModal";
-import UpdateOrgUserModal from "./Modals/UpdateOrgUserModal";
-import ViewOrgUserModal from "./Modals/ViewOrgUserModal";
+import DeleteOrgMemberModal from "./Modals/DeleteOrgMemberModal";
+import UpdateOrgMemberModal from "./Modals/UpdateOrgMemberModal";
+import ViewOrgMemberModal from "./Modals/ViewOrgMemberModal";
 
 const searchHelpText =
   "🔍 You can search using Name, Email Address or Phone Number.";
@@ -54,13 +54,13 @@ const statusColorMap = {
   false: "danger",
 };
 
-const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
+const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
   const params = useParams();
   const { data: session } = useSession();
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
 
-  const [items, setItems] = useState<OrgUserListType[]>([]);
+  const [items, setItems] = useState<OrgMemberType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,7 +69,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<Partial<OrgUserListType>>(
+  const [selectedMember, setSelectedMember] = useState<Partial<OrgMemberType>>(
     {},
   );
 
@@ -86,8 +86,8 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     }));
   };
 
-  const [updateOrgUser, { isLoading: isUpdateStatusLoading }] =
-    useUpdateOrgUserMutation();
+  const [updateOrgMembers, { isLoading: isUpdateStatusLoading }] =
+    useUpdateOrgMemberMutation();
 
   const title = useMemo(() => {
     switch (role) {
@@ -116,25 +116,25 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   }, [role]);
 
   const selectItems = useMemo(() => {
-    return (data: any): OrgUserListType[] => {
+    return (data: any): OrgMemberType[] => {
       if (!data) return [];
-      if (Array.isArray(data)) return data as OrgUserListType[];
+      if (Array.isArray(data)) return data as OrgMemberType[];
 
       if (role === "ADMIN")
-        return (data.results || data.admins || []) as OrgUserListType[];
+        return (data.results || data.admins || []) as OrgMemberType[];
       if (role === "INTRODUCER")
-        return (data.results || data.introducers || []) as OrgUserListType[];
+        return (data.results || data.introducers || []) as OrgMemberType[];
       if (role === "ADVISER")
-        return (data.results || data.advisers || []) as OrgUserListType[];
+        return (data.results || data.advisers || []) as OrgMemberType[];
 
-      return (data.results || data.users || []) as OrgUserListType[];
+      return (data.results || data.users || []) as OrgMemberType[];
     };
   }, [role]);
 
   const colSpan = role === "INTRODUCER" ? 10 : 8;
 
-  const openModalForUser = (user: OrgUserListType) => {
-    setSelectedUser(user);
+  const openModalForMember = (member: OrgMemberType) => {
+    setSelectedMember(member);
     setIsViewModalOpen(true);
   };
 
@@ -150,13 +150,13 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     setIsDeleteModalOpen((prev) => !prev);
   };
 
-  const openUpdateModal = (user: OrgUserListType) => {
-    setSelectedUser(user);
+  const openUpdateModal = (member: OrgMemberType) => {
+    setSelectedMember(member);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteModal = (user: OrgUserListType) => {
-    setSelectedUser(user);
+  const openDeleteModal = (member: OrgMemberType) => {
+    setSelectedMember(member);
     setIsDeleteModalOpen(true);
   };
 
@@ -167,7 +167,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     if (!userAlias) return;
 
     try {
-      await updateOrgUser({
+      await updateOrgMembers({
         organisationslug,
         user_alias: userAlias,
         payload: { is_active: newStatus },
@@ -194,7 +194,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  const { data, isLoading } = useGetOrgUserListQuery(
+  const { data: memberData, isLoading } = useGetOrgMembersQuery(
     {
       organisationslug,
       params: {
@@ -207,28 +207,28 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
   );
 
   useEffect(() => {
-    if (!data) return;
-    setItems(selectItems(data) || []);
-  }, [data, selectItems]);
+    if (!memberData) return;
+    setItems(selectItems(memberData) || []);
+  }, [memberData, selectItems]);
 
   const totalCount = useMemo(() => {
     if (
-      data &&
-      !Array.isArray(data) &&
-      typeof (data as any).count === "number"
+      memberData &&
+      !Array.isArray(memberData) &&
+      typeof (memberData as any).count === "number"
     ) {
-      return (data as any).count as number;
+      return (memberData as any).count as number;
     }
     return items.length;
-  }, [data, items.length]);
+  }, [memberData, items.length]);
 
   useEffect(() => {
     const currentLength = items.length;
     const isLastPage =
-      !Array.isArray(data) &&
-      data &&
-      Object.prototype.hasOwnProperty.call(data, "next")
-        ? (data as any).next === null
+      !Array.isArray(memberData) &&
+      memberData &&
+      Object.prototype.hasOwnProperty.call(memberData, "next")
+        ? (memberData as any).next === null
         : false;
 
     if (currentLength > 0) {
@@ -236,7 +236,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
       else if (!isLastPage && currentLength !== stablePageSize)
         setStablePageSize(currentLength);
     }
-  }, [data, items.length, stablePageSize]);
+  }, [memberData, items.length, stablePageSize]);
 
   const effectivePageSize = stablePageSize || items.length || 1;
   const totalPages = Math.max(1, Math.ceil(totalCount / effectivePageSize));
@@ -320,7 +320,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
               </thead>
               <tbody>
                 {items.length > 0 ? (
-                  items.map((item: OrgUserListType, index) => (
+                  items.map((item: OrgMemberType, index) => (
                     <tr key={index} className="text-center">
                       <td>
                         <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
@@ -342,7 +342,7 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
                           </span>
                           <span
                             className="text_decoration_hover"
-                            onClick={() => openModalForUser(item)}
+                            onClick={() => openModalForMember(item)}
                             style={{ cursor: "pointer" }}
                           >
                             {item?.name ?? "-"}
@@ -623,30 +623,30 @@ const OrgUserList: React.FC<OrgUserListProps> = ({ role }) => {
         </CardBody>
       </Card>
 
-      <ViewOrgUserModal
+      <ViewOrgMemberModal
         isOpen={isViewModalOpen}
         toggle={toggleModal}
         role={role}
-        selectedUser={selectedUser}
+        selectedMember={selectedMember}
       />
 
-      <UpdateOrgUserModal
+      <UpdateOrgMemberModal
         isOpen={isUpdateModalOpen}
         toggle={toggleUpdateModal}
         organisationslug={organisationslug}
         role={role}
-        selectedUser={selectedUser}
+        selectedMember={selectedMember}
       />
 
-      <DeleteOrgUserModal
+      <DeleteOrgMemberModal
         isOpen={isDeleteModalOpen}
         toggle={toggleDeleteModal}
         organisationslug={organisationslug}
         role={role}
-        selectedUser={selectedUser}
+        selectedMember={selectedMember}
       />
     </>
   );
 };
 
-export default OrgUserList;
+export default OrgMembers;

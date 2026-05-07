@@ -684,6 +684,7 @@ const OrgCases: React.FC = () => {
       <AddOrgNewCaseModal
         isOpen={isAddNewCaseModalOpen}
         toggle={toggleAddNewCaseModal}
+        role={"LEAD"}
       />
       <DeleteOrgNewCaseModal
         isOpen={isDeleteCaseModalOpen}

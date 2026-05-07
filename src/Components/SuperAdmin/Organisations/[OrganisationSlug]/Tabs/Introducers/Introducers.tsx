@@ -1,7 +1,7 @@
-import OrgUserList from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/OrgUserList/OrgUserList";
+import OrgMembers from "@/Components/Common/Organisations/OrganisationDetails/Tabs/Common/Members/OrgMembers";
 
 const Introducers: React.FC = () => {
-  return <OrgUserList role="INTRODUCER" />;
+  return <OrgMembers role="INTRODUCER" />;
 };
 
 export default Introducers;

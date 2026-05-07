@@ -275,7 +275,7 @@ export const baseApi = createApi({
     "OrganisationList",
     "SingleOrganisation",
     "NetworkReports",
-    "OrgUserList",
+    "OrgMembers",
     "OrgApplicantList",
     "OrgCases",
     "NetworkDirectorDashboard",

@@ -224,7 +224,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                       className="fa-solid fa-up-right-from-square"
                     ></i>
                   </Link>
-                  <CardBody className="p-3">
+                  <CardBody className="pb-0">
                     <div className="d-flex gap-3 flex-column flex-sm-row">
                       <div className="flex-shrink-0 position-relative d-flex justify-content-center justify-content-sm-start">
                         {network.logo ? (
@@ -339,7 +339,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
                     </div>
 
                     <hr className="my-3" />
-                    <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div className="d-flex justify-content-between align-items-center">
                       <small
                         className="text-muted"
                         style={{
