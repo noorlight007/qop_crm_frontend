@@ -1,7 +1,9 @@
 "use client";
 import { useUpdateOrgMemberMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgMembersApi";
-import { UpdateOrgMemberModalProps } from "@/Types/Common/Organisations/OrgMembersTypes";
-import { OrgUserListType } from "@/Types/Common/Organisations/OrgUserListTypes";
+import {
+  OrgMemberType,
+  UpdateOrgMemberModalProps,
+} from "@/Types/Common/Organisations/OrgMembersTypes";
 import formatChoiceFieldValue from "@/utils/formatters";
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -27,7 +29,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
   role,
   selectedMember,
 }) => {
-  const [formData, setFormData] = useState<OrgUserListType>({
+  const [formData, setFormData] = useState<OrgMemberType>({
     title: "",
     first_name: "",
     middle_name: "",
@@ -40,7 +42,7 @@ const UpdateOrgMemberModal: React.FC<UpdateOrgMemberModalProps> = ({
     company_name: "",
     company_address: "",
   });
-  const [originalData, setOriginalData] = useState<OrgUserListType>({});
+  const [originalData, setOriginalData] = useState<OrgMemberType>({});
   const [isModified, setIsModified] = useState(false);
 
   const [updateUser, { isLoading }] = useUpdateOrgMemberMutation();

@@ -4,7 +4,7 @@ export type OrgMemberProps = {
   role: OrgMemberRole;
 };
 
-export type OrgMembersType = {
+export type OrgMemberType = {
   alias?: string;
   name?: string;
   title?: string;
@@ -30,7 +30,7 @@ export type ViewOrgMemberModalProps = {
   isOpen: boolean;
   toggle: () => void;
   role: OrgMemberRole;
-  selectedMember: Partial<OrgMembersType>;
+  selectedMember: Partial<OrgMemberType>;
 };
 
 export type UpdateOrgMemberModalProps = {
@@ -38,7 +38,7 @@ export type UpdateOrgMemberModalProps = {
   toggle: () => void;
   organisationslug: string;
   role: OrgMemberRole;
-  selectedMember?: Partial<OrgMembersType>;
+  selectedMember?: Partial<OrgMemberType>;
 };
 
 export type DeleteOrgMemberModalProps = {
@@ -46,5 +46,5 @@ export type DeleteOrgMemberModalProps = {
   toggle: () => void;
   organisationslug: string;
   role: OrgMemberRole;
-  selectedMember?: Partial<OrgMembersType>;
+  selectedMember?: Partial<OrgMemberType>;
 };

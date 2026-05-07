@@ -6,7 +6,7 @@ import {
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrgMembersApi";
 import {
   OrgMemberProps,
-  OrgMembersType,
+  OrgMemberType,
 } from "@/Types/Common/Organisations/OrgMembersTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
@@ -60,7 +60,7 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
   const organisationslug = (params?.OrganisationSlug ||
     (params as any)?.organisationslug) as string;
 
-  const [items, setItems] = useState<OrgMembersType[]>([]);
+  const [items, setItems] = useState<OrgMemberType[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,7 +69,7 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<Partial<OrgMembersType>>(
+  const [selectedMember, setSelectedMember] = useState<Partial<OrgMemberType>>(
     {},
   );
 
@@ -116,24 +116,24 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
   }, [role]);
 
   const selectItems = useMemo(() => {
-    return (data: any): OrgMembersType[] => {
+    return (data: any): OrgMemberType[] => {
       if (!data) return [];
-      if (Array.isArray(data)) return data as OrgMembersType[];
+      if (Array.isArray(data)) return data as OrgMemberType[];
 
       if (role === "ADMIN")
-        return (data.results || data.admins || []) as OrgMembersType[];
+        return (data.results || data.admins || []) as OrgMemberType[];
       if (role === "INTRODUCER")
-        return (data.results || data.introducers || []) as OrgMembersType[];
+        return (data.results || data.introducers || []) as OrgMemberType[];
       if (role === "ADVISER")
-        return (data.results || data.advisers || []) as OrgMembersType[];
+        return (data.results || data.advisers || []) as OrgMemberType[];
 
-      return (data.results || data.users || []) as OrgMembersType[];
+      return (data.results || data.users || []) as OrgMemberType[];
     };
   }, [role]);
 
   const colSpan = role === "INTRODUCER" ? 10 : 8;
 
-  const openModalForMember = (member: OrgMembersType) => {
+  const openModalForMember = (member: OrgMemberType) => {
     setSelectedMember(member);
     setIsViewModalOpen(true);
   };
@@ -150,12 +150,12 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
     setIsDeleteModalOpen((prev) => !prev);
   };
 
-  const openUpdateModal = (member: OrgMembersType) => {
+  const openUpdateModal = (member: OrgMemberType) => {
     setSelectedMember(member);
     setIsUpdateModalOpen(true);
   };
 
-  const openDeleteModal = (member: OrgMembersType) => {
+  const openDeleteModal = (member: OrgMemberType) => {
     setSelectedMember(member);
     setIsDeleteModalOpen(true);
   };
@@ -320,7 +320,7 @@ const OrgMembers: React.FC<OrgMemberProps> = ({ role }) => {
               </thead>
               <tbody>
                 {items.length > 0 ? (
-                  items.map((item: OrgMembersType, index) => (
+                  items.map((item: OrgMemberType, index) => (
                     <tr key={index} className="text-center">
                       <td>
                         <div className="d-flex justify-content-start align-items-center gap-1 text-truncate">
