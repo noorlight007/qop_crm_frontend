@@ -234,9 +234,6 @@ const Suitability: React.FC = () => {
 
   return (
     <Container fluid className="py-4 px-2 px-md-4">
-      <h1 className="mb-4 text-danger text-center fw-bold">
-        This page is under Development
-      </h1>
       <div className="suitability-letter">
         <RecommendationLetter
           caseData={caseData}
@@ -266,13 +263,13 @@ const Suitability: React.FC = () => {
             />
           </>
         )}
-        <Divider />
+        {/* <Divider />
         <PortingMortgageIncrease
           caseData={caseData}
           suitability={suitability}
           formValues={formValues}
           onFormChange={handleFormChange}
-        />
+        /> */}
         {suitability?.is_islamic_mortgage_applicable && (
           <>
             <Divider />
@@ -295,13 +292,13 @@ const Suitability: React.FC = () => {
             />
           </>
         )}
-        <Divider />
+        {/* <Divider />
         <ShortenedProductTransfer
           caseData={caseData}
           suitability={suitability}
           formValues={formValues}
           onFormChange={handleFormChange}
-        />
+        /> */}
         {suitability?.is_high_loan_to_value_applicable && (
           <>
             <Divider />
