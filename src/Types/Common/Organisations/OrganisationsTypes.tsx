@@ -15,6 +15,13 @@ export interface SingleOrganisationProps {
     license_no: string;
     license_image: string | null;
   };
+  address: {
+    postcode: string;
+    house_name_or_number: string;
+    address_line_1: string;
+    city: string;
+    country: string;
+  };
   user: {
     alias: string;
     name: string;
