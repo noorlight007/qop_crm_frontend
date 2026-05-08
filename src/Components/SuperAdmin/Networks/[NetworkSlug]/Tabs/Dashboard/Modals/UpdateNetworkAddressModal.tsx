@@ -1,5 +1,5 @@
-import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
-import { UpdateOrganisationModalProps } from "@/Types/Common/Organisations/OrganisationsTypes";
+import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkType";
 import { countries } from "@/utils/Countries";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -18,11 +18,13 @@ import {
   Row,
 } from "reactstrap";
 
-const UpdateOrganisationAddressModal: React.FC<
-  UpdateOrganisationModalProps
-> = ({ isOpen, toggle, slug, organisationData }) => {
-  const [updateOrganisation, { isLoading: isUpdating }] =
-    useUpdateOrganisationMutation();
+const UpdateNetworkAddressModal: React.FC<UpdateNetworkInfoModalProps> = ({
+  isOpen,
+  toggle,
+  slug,
+  networkData,
+}) => {
+  const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
 
   const [formData, setFormData] = useState({
     address: {
@@ -37,19 +39,24 @@ const UpdateOrganisationAddressModal: React.FC<
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
-    if (!isOpen || !organisationData) return;
+    if (!isOpen || !networkData) return;
+
+    const countryValue = networkData.address?.country ?? "";
+    const normalizedCountry =
+      countries.find((c) => c.code === countryValue)?.code ||
+      countries.find((c) => c.name === countryValue)?.code ||
+      countryValue;
 
     setFormData({
       address: {
-        postcode: organisationData.address?.postcode ?? "",
-        house_name_or_number:
-          organisationData.address?.house_name_or_number ?? "",
-        address_line_1: organisationData.address?.address_line_1 ?? "",
-        city: organisationData.address?.city ?? "",
-        country: organisationData.address?.country ?? "",
+        postcode: networkData.address?.postcode ?? "",
+        house_name_or_number: networkData.address?.house_name_or_number ?? "",
+        address_line_1: networkData.address?.address_line_1 ?? "",
+        city: networkData.address?.city ?? "",
+        country: normalizedCountry,
       },
     });
-  }, [isOpen, organisationData]);
+  }, [isOpen, networkData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -111,12 +118,11 @@ const UpdateOrganisationAddressModal: React.FC<
     try {
       const payload = new FormData();
       const originalAddress = {
-        postcode: organisationData?.address?.postcode ?? "",
-        house_name_or_number:
-          organisationData?.address?.house_name_or_number ?? "",
-        address_line_1: organisationData?.address?.address_line_1 ?? "",
-        city: organisationData?.address?.city ?? "",
-        country: organisationData?.address?.country ?? "",
+        postcode: networkData?.address?.postcode ?? "",
+        house_name_or_number: networkData?.address?.house_name_or_number ?? "",
+        address_line_1: networkData?.address?.address_line_1 ?? "",
+        city: networkData?.address?.city ?? "",
+        country: networkData?.address?.country ?? "",
       } as Record<string, string>;
 
       let hasChanges = false;
@@ -134,26 +140,23 @@ const UpdateOrganisationAddressModal: React.FC<
         return;
       }
 
-      const organisationSlug =
-        slug ?? organisationData?.organization?.slug ?? organisationData?.slug;
-
-      if (!organisationSlug) {
-        toast.error("Organisation identifier is missing.");
+      if (!slug) {
+        toast.error("Network identifier is missing.");
         return;
       }
 
-      const response = await updateOrganisation({
-        slug: organisationSlug,
+      const response = await updateNetwork({
+        network_slug: slug,
         payload,
       }).unwrap();
 
       if (response) {
-        toast.success("Organisation address updated successfully.");
+        toast.success("Network address updated successfully.");
         setApiErrors({});
         toggle();
       }
     } catch (err: any) {
-      console.error("Update organisation address error:", err);
+      console.error("Update network address error:", err);
       const source = err?.data && typeof err.data === "object" ? err.data : err;
       const flattened = flattenErrors(source);
       if (flattened.length) {
@@ -169,7 +172,7 @@ const UpdateOrganisationAddressModal: React.FC<
         return;
       }
 
-      const fallback = err?.message ?? "Failed to update organisation address.";
+      const fallback = err?.message ?? "Failed to update network address.";
       toast.error(fallback);
     }
   };
@@ -178,7 +181,7 @@ const UpdateOrganisationAddressModal: React.FC<
     <Modal isOpen={isOpen} toggle={toggle} centered>
       <Form onSubmit={handleSubmit}>
         <ModalHeader toggle={toggle}>
-            <h3 className="text-primary">Update Organisation Address</h3>
+          <h3 className="text-primary">Update Network Address</h3>
         </ModalHeader>
         <ModalBody>
           <Row>
@@ -327,4 +330,4 @@ const UpdateOrganisationAddressModal: React.FC<
   );
 };
 
-export default UpdateOrganisationAddressModal;
+export default UpdateNetworkAddressModal;

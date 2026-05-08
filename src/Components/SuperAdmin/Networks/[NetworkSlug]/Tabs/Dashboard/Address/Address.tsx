@@ -1,19 +1,19 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
+import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkType";
 import { countries } from "@/utils/Countries";
 import { useState } from "react";
 import { Edit } from "react-feather";
 import { Button, Card, CardBody, CardTitle } from "reactstrap";
-import UpdateOrganisationAddressModal from "../../../Modals/UpdateOrganisationAddressModal";
+import UpdateNetworkAddressModal from "../Modals/UpdateNetworkAddressModal";
 
-interface AddressProps {
-  singleOrgInfo?: SingleOrganisationProps;
-  isLoading?: boolean;
-}
-const Address: React.FC<AddressProps> = ({ singleOrgInfo, isLoading }) => {
+const Address: React.FC<NetworkDetailsProps> = ({
+  networkData,
+  isLoading,
+  slug,
+}) => {
   const [addressUpdateModalIsOpen, setaddressUpdateModalIsOpen] =
     useState(false);
-  const address = singleOrgInfo?.address;
+  const address = networkData?.address;
 
   {
     isLoading && (
@@ -86,11 +86,11 @@ const Address: React.FC<AddressProps> = ({ singleOrgInfo, isLoading }) => {
           </div>
         </div>
       </CardBody>
-      <UpdateOrganisationAddressModal
+      <UpdateNetworkAddressModal
         isOpen={addressUpdateModalIsOpen}
         toggle={() => setaddressUpdateModalIsOpen(false)}
-        slug={singleOrgInfo?.organization?.slug ?? singleOrgInfo?.slug}
-        organisationData={singleOrgInfo}
+        slug={slug}
+        networkData={networkData}
       />
     </Card>
   );

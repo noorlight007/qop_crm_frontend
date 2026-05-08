@@ -157,6 +157,19 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     }));
   };
 
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      address: {
+        ...prevState.address,
+        [name]: value,
+      },
+    }));
+  };
+
   // Handle user text input changes
   const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -371,7 +384,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
           "subdomain",
           "postcode",
           "house_name_or_number",
-          "address_1",
+          "address_line_1",
           "city",
           "primary_mobile",
           "email",
@@ -398,6 +411,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
       // Build JSON payload
       const payload = {
         network: { ...formData.network },
+        address: { ...formData.address },
         user: { ...formData.user },
       };
 
@@ -521,18 +535,17 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "network" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Network Info
+                Information
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
                 active={activeTab === "address"}
-                onClick={() => toggleTab("address")}
-                // onClick={() => activeTab !== "address" && onNext()}
+                onClick={() => activeTab !== "address" && onNext()}
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "address" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Network Address
+                Address
               </NavLink>
             </NavItem>
             <NavItem>
@@ -542,7 +555,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Network Director Info
+                Director
               </NavLink>
             </NavItem>
           </Nav>
@@ -681,7 +694,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                         id="postcode"
                         name="postcode"
                         value={formData.address.postcode}
-                        onChange={handleChange}
+                        onChange={handleAddressChange}
                         placeholder="Enter postcode"
                         className="rounded-end-0"
                         required
@@ -713,7 +726,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       id="house_name_or_number"
                       name="house_name_or_number"
                       value={formData.address.house_name_or_number}
-                      onChange={handleChange}
+                      onChange={handleAddressChange}
                       placeholder="Enter house name or number"
                       required
                     />
@@ -735,7 +748,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       id="address_line_1"
                       name="address_line_1"
                       value={formData.address.address_line_1}
-                      onChange={handleChange}
+                      onChange={handleAddressChange}
                       placeholder="Enter address line 1"
                       required
                     />
@@ -757,7 +770,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       id="city"
                       name="city"
                       value={formData.address.city}
-                      onChange={handleChange}
+                      onChange={handleAddressChange}
                       placeholder="Enter city"
                       required
                     />
@@ -777,7 +790,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       id="country"
                       name="country"
                       value={formData.address.country}
-                      onChange={handleChange}
+                      onChange={handleAddressChange}
                     >
                       <option value="">Please select a country</option>
                       {countries.map((c) => (
