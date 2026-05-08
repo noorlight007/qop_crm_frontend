@@ -36,6 +36,15 @@ const UpdateOrganisationAddressModal: React.FC<
 
   const [apiErrors, setApiErrors] = useState<Record<string, string[]>>({});
 
+  const normalizeCountryValue = (value: string) => {
+    if (!value) return "";
+    return (
+      countries.find((c) => c.code === value)?.code ||
+      countries.find((c) => c.name === value)?.code ||
+      value
+    );
+  };
+
   useEffect(() => {
     if (!isOpen || !organisationData) return;
 
@@ -46,7 +55,7 @@ const UpdateOrganisationAddressModal: React.FC<
           organisationData.address?.house_name_or_number ?? "",
         address_line_1: organisationData.address?.address_line_1 ?? "",
         city: organisationData.address?.city ?? "",
-        country: organisationData.address?.country ?? "",
+        country: normalizeCountryValue(organisationData.address?.country ?? ""),
       },
     });
   }, [isOpen, organisationData]);
@@ -116,7 +125,9 @@ const UpdateOrganisationAddressModal: React.FC<
           organisationData?.address?.house_name_or_number ?? "",
         address_line_1: organisationData?.address?.address_line_1 ?? "",
         city: organisationData?.address?.city ?? "",
-        country: organisationData?.address?.country ?? "",
+        country: normalizeCountryValue(
+          organisationData?.address?.country ?? "",
+        ),
       } as Record<string, string>;
 
       let hasChanges = false;
@@ -178,7 +189,7 @@ const UpdateOrganisationAddressModal: React.FC<
     <Modal isOpen={isOpen} toggle={toggle} centered>
       <Form onSubmit={handleSubmit}>
         <ModalHeader toggle={toggle}>
-            <h3 className="text-primary">Update Organisation Address</h3>
+          <h3 className="text-primary">Update Organisation Address</h3>
         </ModalHeader>
         <ModalBody>
           <Row>
