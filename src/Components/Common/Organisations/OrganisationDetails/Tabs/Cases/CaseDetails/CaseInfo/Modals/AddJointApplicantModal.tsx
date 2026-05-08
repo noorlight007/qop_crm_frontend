@@ -1,4 +1,3 @@
-import AddLeadModal from "@/Components/Common/CommonUsers/LeadsOrApplicants/Modals/AddLeadModal";
 import { useAddJointApplicantInfoMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/JointApplicant/JointApplicantApi";
 import { useLeadOrClientFilterListQuery } from "@/Redux/Reducers/Common/Cases/UserFiltersListApi";
 import { AddJointApplicantModalProps } from "@/Types/Common/Cases/CaseDetails/JointApplicant/JointApplicantTypes";
@@ -21,7 +20,7 @@ import {
   ModalHeader,
   Row,
 } from "reactstrap";
-import AddOrgLeadModal from "../../../../Leads/Modals/AddOrgLeadModal";
+import AddOrgApplicantModal from "../../../../Common/Applicants/Modals/AddOrgApplicantModal";
 
 // ─── Local option type (value = alias string) ────────────────────────────────
 type JointLeadOption = {
@@ -615,11 +614,11 @@ const AddJointApplicantModal: React.FC<AddJointApplicantModalProps> = ({
         </ModalFooter>
       </Form>
 
-      <AddOrgLeadModal
+      <AddOrgApplicantModal
         isOpen={isAddLeadModalOpen}
         toggle={handleCloseAddLead}
-        onLeadCreated={handleLeadCreated}
-        header="Applicant"
+        onApplicantCreated={handleLeadCreated}
+        role={"LEAD"}
       />
     </Modal>
   );

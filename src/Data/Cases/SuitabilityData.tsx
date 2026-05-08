@@ -193,3 +193,44 @@ export const notRecommendedOptions: { value: string; label: string }[] = [
       "the early repayment charge was greater than the savings you would have made from securing a lower rate with a new lender.",
   },
 ];
+
+export const debtCostOptions: { value: string; label: string }[] = [
+  { value: "LESS", label: "less" },
+  { value: "MORE", label: "more" },
+];
+
+export const productTransferOptions: { value: string; label: string }[] = [
+  {
+    value: "MORE_COST_EFFECTIVE",
+    label:
+      "this was more cost effective than the cheapest remortgage deal available.",
+  },
+  {
+    value: "TIME_RESTRAINTS",
+    label:
+      "time restraints meant that a remortgage may not complete in time for the end of your current product, and you did not want to roll onto the standard variable rate.",
+  },
+  {
+    value: "SIMPLER_PROCESS",
+    label:
+      "it was your preference to go through a simpler application process and not have to complete steps such as a lender remortgage questionnaire and the legal work involved in transferring the mortgage to a new lender.",
+  },
+];
+
+export const shariaDetailOptions = [
+  { value: "IJARA", label: "Option 1 – Ijara" },
+  { value: "MUSHARAKA", label: "Option 2 – Musharaka" },
+  { value: "MURABAHA", label: "Option 3 – Murabaha" },
+];
+
+export const ptCostOptions: { value: string; label: React.ReactNode }[] = [
+  {
+    value: "MOST_COST_EFFECTIVE",
+    label:
+      "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender.",
+  },
+  {
+    value: "NOT_MOST_COST_EFFECTIVE",
+    label: "not the most cost-effective deal available.",
+  },
+];

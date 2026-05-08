@@ -1,10 +1,13 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { ptCostOptions } from "@/Data/Cases/SuitabilityData";
+import { ShortenedProductTransferProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
+  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
 } from "reactstrap";
 
 /* ── Pink: advisor guidance note ── */
@@ -16,24 +19,6 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-const ptCostOptions: { value: string; label: React.ReactNode }[] = [
-  {
-    value: "MOST_COST_EFFECTIVE",
-    label: "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender.",
-  },
-  {
-    value: "NOT_MOST_COST_EFFECTIVE",
-    label: "not the most cost-effective deal available.",
-  },
-];
-
-interface ShortenedProductTransferProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
-
 const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
   caseData,
   suitability,
@@ -41,14 +26,61 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
   onFormChange,
 }) => {
   const blue = "#1565c0";
-  const lender = caseData?.lender_name ?? "HSBC";
+  const s = suitability;
+  const lender = s?.loan_details?.lender ?? "";
 
-  // ── UI only ──
+  // ── UI-only states ──
   const [isPTCostOptionOpen, setIsPTCostOptionOpen] = useState(false);
+  const [isDealEndDateEditing, setIsDealEndDateEditing] = useState(false);
+  const [isSvrRateEditing, setIsSvrRateEditing] = useState(false);
+
+  // ── Draft states ──
+  const [dealEndDateDraft, setDealEndDateDraft] = useState("");
+  const [svrRateDraft, setSvrRateDraft] = useState("");
 
   // ── Derived from formValues ──
   const selectedPTCostOption =
-    ptCostOptions.find((o) => o.value === formValues.product_transfer_recommended) ?? null;
+    ptCostOptions.find(
+      (o) => o.value === formValues.product_transfer_recommended_was,
+    ) ?? null;
+
+  // ── Deal end date handlers ──
+  const startDealEndDateEdit = () => {
+    setDealEndDateDraft(
+      formValues.shortened_product_transfer_expired_date ?? "",
+    );
+    setIsDealEndDateEditing(true);
+  };
+  const handleDealEndDateSave = () => {
+    onFormChange({ shortened_product_transfer_expired_date: dealEndDateDraft });
+    setIsDealEndDateEditing(false);
+  };
+  const handleDealEndDateCancel = () => {
+    setDealEndDateDraft(
+      formValues.shortened_product_transfer_expired_date ?? "",
+    );
+    setIsDealEndDateEditing(false);
+  };
+
+  // ── SVR rate handlers ──
+  const startSvrRateEdit = () => {
+    setSvrRateDraft(
+      formValues.shortened_product_transfer_standard_variable_rate ?? "",
+    );
+    setIsSvrRateEditing(true);
+  };
+  const handleSvrRateSave = () => {
+    onFormChange({
+      shortened_product_transfer_standard_variable_rate: svrRateDraft,
+    });
+    setIsSvrRateEditing(false);
+  };
+  const handleSvrRateCancel = () => {
+    setSvrRateDraft(
+      formValues.shortened_product_transfer_standard_variable_rate ?? "",
+    );
+    setIsSvrRateEditing(false);
+  };
 
   return (
     <>
@@ -57,9 +89,48 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
       <p>
         Your current mortgage deal with{" "}
         <strong style={{ color: blue }}>{lender}</strong> expires / expired on{" "}
-        <strong style={{ color: blue }}>
-          {caseData?.current_deal_end_date ?? "01/01/0001"}
-        </strong>
+        {isDealEndDateEditing ? (
+          <span className="d-inline-flex align-items-center gap-2 ms-1">
+            <Input
+              type="date"
+              value={dealEndDateDraft}
+              onChange={(e) => setDealEndDateDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleDealEndDateSave();
+                if (e.key === "Escape") handleDealEndDateCancel();
+              }}
+              autoFocus
+              style={{ width: "160px", display: "inline-block" }}
+              className="p-1"
+            />
+            <Button
+              color="light"
+              className="text-black"
+              size="sm"
+              onClick={handleDealEndDateSave}
+            >
+              Save
+            </Button>
+            <Button
+              color="light"
+              className="text-black"
+              size="sm"
+              onClick={handleDealEndDateCancel}
+            >
+              Cancel
+            </Button>
+          </span>
+        ) : (
+          <span
+            className="text-success"
+            style={{ cursor: "pointer" }}
+            onClick={startDealEndDateEdit}
+            title="Click to edit"
+          >
+            {formValues.shortened_product_transfer_expired_date ||
+              "click to set date..."}
+          </span>
+        )}
         . As there are no penalties for changing this mortgage product beyond
         this date, it allowed us to review your options.
       </p>
@@ -69,9 +140,50 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
         <li>
           <span className="me-2">•</span>
           Staying on standard variable rate (SVR) currently{" "}
-          <strong style={{ color: blue }}>
-            {caseData?.svr_rate ?? "X.XX%"}
-          </strong>
+          {isSvrRateEditing ? (
+            <span className="d-inline-flex align-items-center gap-2 ms-1">
+              <Input
+                type="text"
+                value={svrRateDraft}
+                onChange={(e) => setSvrRateDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSvrRateSave();
+                  if (e.key === "Escape") handleSvrRateCancel();
+                }}
+                placeholder="e.g. 5.25"
+                autoFocus
+                style={{ width: "120px", display: "inline-block" }}
+                className="p-1"
+              />
+              <Button
+                color="light"
+                className="text-black"
+                size="sm"
+                onClick={handleSvrRateSave}
+              >
+                Save
+              </Button>
+              <Button
+                color="light"
+                className="text-black"
+                size="sm"
+                onClick={handleSvrRateCancel}
+              >
+                Cancel
+              </Button>
+            </span>
+          ) : (
+            <span
+              className="text-success"
+              style={{ cursor: "pointer" }}
+              onClick={startSvrRateEdit}
+              title="Click to edit"
+            >
+              {formValues.shortened_product_transfer_standard_variable_rate
+                ? `${formValues.shortened_product_transfer_standard_variable_rate}%`
+                : "click to set rate..."}
+            </span>
+          )}
         </li>
         <li>
           <span className="me-2">•</span>
@@ -124,13 +236,8 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
               "the most cost-effective deal available, therefore there was no disadvantage to remaining with your current lender."}
             {selectedPTCostOption?.value === "NOT_MOST_COST_EFFECTIVE" && (
               <>
-                not the most cost-effective deal available, and will cost{" "}
-                <strong style={{ color: blue }}>
-                  {caseData?.pt_cost_difference
-                    ? `£${Number(caseData.pt_cost_difference).toLocaleString("en-GB")}`
-                    : "£0,000"}
-                </strong>{" "}
-                more during the initial product term. However, you were happy to
+                not the most cost-effective deal available, and will cost more
+                during the initial product term. However, you were happy to
                 forfeit this saving to proceed with a product transfer.
               </>
             )}
@@ -143,7 +250,11 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
             }}
           >
             <DropdownItem
-              onClick={() => onFormChange({ product_transfer_recommended: "MOST_COST_EFFECTIVE" })}
+              onClick={() =>
+                onFormChange({
+                  product_transfer_recommended_was: "MOST_COST_EFFECTIVE",
+                })
+              }
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
@@ -151,17 +262,16 @@ const ShortenedProductTransfer: React.FC<ShortenedProductTransferProps> = ({
               disadvantage to remaining with your current lender.
             </DropdownItem>
             <DropdownItem
-              onClick={() => onFormChange({ product_transfer_recommended: "NOT_MOST_COST_EFFECTIVE" })}
+              onClick={() =>
+                onFormChange({
+                  product_transfer_recommended_was: "NOT_MOST_COST_EFFECTIVE",
+                })
+              }
               className="text-wrap"
             >
               <span className="me-1 fw-bolder">•</span>
-              not the most cost-effective deal available, and will cost{" "}
-              <strong style={{ color: blue }}>
-                {caseData?.pt_cost_difference
-                  ? `£${Number(caseData.pt_cost_difference).toLocaleString("en-GB")}`
-                  : "£0,000"}
-              </strong>{" "}
-              more during the initial product term. However, you were happy to
+              not the most cost-effective deal available, and will cost more
+              during the initial product term. However, you were happy to
               forfeit this saving to proceed with a product transfer.
             </DropdownItem>
           </DropdownMenu>

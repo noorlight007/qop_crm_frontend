@@ -1,10 +1,14 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
+import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
+import { basicTabIndicator } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/CaseDetailsTabIndicatorSlice";
+import { useUpdateSectionCompleteStatusMutation } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/SectionCompleteApi";
 import {
   useGetSuitabilityQuery,
   useUpdateSuitabilityMutation,
 } from "@/Redux/Reducers/Common/Cases/CaseDetails/CaseSections/Suitability/SuitabilityApi";
 import { useGetSingleCaseQuery } from "@/Redux/Reducers/Common/Cases/CasesApi";
 import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { getNextTabNav } from "@/utils/Helper/nextTabUtils";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -26,6 +30,8 @@ const Divider = () => <hr className="my-4" />;
 ═══════════════════════════════════════════════════════════════ */
 const Suitability: React.FC = () => {
   const { casealias } = useParams();
+  const dispatch = useAppDispatch();
+  const [submitting, setSubmitting] = useState<"save" | "next" | null>(null);
 
   const { data: caseData, isLoading: isCaseLoading } = useGetSingleCaseQuery(
     { case_alias: casealias },
@@ -34,16 +40,18 @@ const Suitability: React.FC = () => {
 
   const { data: suitability, isLoading: isSuitLoading } =
     useGetSuitabilityQuery({ case_alias: casealias }, { skip: !casealias });
-  console.log("Suitability Data:", suitability);
 
   const [updateSuitability, { isLoading: isUpdatingSuitability }] =
     useUpdateSuitabilityMutation();
+
+  const [updateSectionCompleteStatus] =
+    useUpdateSectionCompleteStatusMutation();
 
   const [formValues, setFormValues] = useState<SuitabilityData>({
     lender_text: "",
     initial_interest_rate_text: "",
     initial_interest_rate_deal_period_text: "",
-    repayment_method_why_text: "",
+    mortgage_term_text: "",
     repayment_method_recommended_text: "",
     mortgage_amount_type: null,
     arrangement_fee_type: null,
@@ -71,14 +79,23 @@ const Suitability: React.FC = () => {
     why_was_this_recommended: "",
     product_transfer_reason: null,
     product_transfer_recommended: "",
-    x: "",
     arrangement_fee: null,
-    pension_option: null,
+    lending_into_retirement_type: null,
     overpayment_type: null,
     repayment_status_type: null,
-    arrangement_fee_value: null,
-    max_erc_value: null,
-    additional_recipients_text: null,
+    max_erc: null,
+    email: null,
+    outstanding_balance: null,
+    interest_rate_type: null,
+    repayment_method_type: null,
+    repayment_charge: null,
+    the_end_date_of_existing_product: null,
+    the_end_date_of_new_product: null,
+    product_transfer_expired_date: null,
+    product_transfer_standard_variable_rate: null,
+    shortened_product_transfer_expired_date: null,
+    shortened_product_transfer_standard_variable_rate: null,
+    product_transfer_recommended_was: null,
   });
 
   // Pre-populate from API response
@@ -92,14 +109,17 @@ const Suitability: React.FC = () => {
     setFormValues((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (
+    action: "save" | "next" = "save",
+  ): Promise<boolean> => {
+    setSubmitting(action);
     try {
       const payload = {
         lender_text: formValues.lender_text,
         initial_interest_rate_text: formValues.initial_interest_rate_text,
         initial_interest_rate_deal_period_text:
           formValues.initial_interest_rate_deal_period_text,
-        repayment_method_why_text: formValues.repayment_method_why_text,
+        mortgage_term_text: formValues.mortgage_term_text,
         repayment_method_recommended_text:
           formValues.repayment_method_recommended_text,
         mortgage_amount_type: formValues.mortgage_amount_type,
@@ -126,9 +146,7 @@ const Suitability: React.FC = () => {
         why_was_this_recommended: formValues.why_was_this_recommended,
         product_transfer_reason: formValues.product_transfer_reason,
         product_transfer_recommended: formValues.product_transfer_recommended,
-        x: formValues.x,
         arrangement_fee: formValues.arrangement_fee,
-        // fields added by us not in original backend spec
         early_repayment_charges_meaning:
           formValues.early_repayment_charges_meaning,
         early_repayment_charges_recommendation:
@@ -137,37 +155,85 @@ const Suitability: React.FC = () => {
         protection: formValues.protection,
         protection_reason: formValues.protection_reason,
         portability_suggestion: formValues.portability_suggestion,
-        pension_option: formValues.pension_option,
+        lending_into_retirement_type: formValues.lending_into_retirement_type,
         overpayment_type: formValues.overpayment_type,
         repayment_status_type: formValues.repayment_status_type,
-        arrangement_fee_value: formValues.arrangement_fee_value,
-        max_erc_value: formValues.max_erc_value,
-        additional_recipients_text: formValues.additional_recipients_text,
+        max_erc: formValues.max_erc,
+        email: formValues.email,
+        outstanding_balance: formValues.outstanding_balance,
+        interest_rate_type: formValues.interest_rate_type,
+        repayment_method_type: formValues.repayment_method_type,
+        repayment_charge: formValues.repayment_charge,
+        the_end_date_of_existing_product:
+          formValues.the_end_date_of_existing_product,
+        the_end_date_of_new_product: formValues.the_end_date_of_new_product,
+        product_transfer_expired_date: formValues.product_transfer_expired_date,
+        product_transfer_standard_variable_rate:
+          formValues.product_transfer_standard_variable_rate,
+        shortened_product_transfer_expired_date:
+          formValues.shortened_product_transfer_expired_date,
+        shortened_product_transfer_standard_variable_rate:
+          formValues.shortened_product_transfer_standard_variable_rate,
+        product_transfer_recommended_was:
+          formValues.product_transfer_recommended_was,
       };
 
-      console.log("Suitability Payload:", JSON.stringify(payload, null, 2));
-
-      await updateSuitability({
+      const response = await updateSuitability({
         case_alias: casealias,
         payload,
       }).unwrap();
-      toast.success("Changes saved successfully");
+
+      if (response) {
+        toast.success("Suitability updated successfully");
+        try {
+          await updateSectionCompleteStatus({
+            case_alias: casealias,
+            section_data: { is_suitability: true },
+          });
+          return true;
+        } catch (err) {
+          console.error("Failed to update section complete status:", err);
+        }
+        return false;
+      }
     } catch (err) {
       console.error("Save error:", err);
       toast.error("Failed to save changes");
+      return false;
+    } finally {
+      setSubmitting(null);
+    }
+    return false;
+  };
+
+  const currentTab: string | null = useAppSelector(
+    (state) => state.caseSections.basicTabId,
+  );
+
+  const handleNextTab = () => {
+    const nextTabNav = getNextTabNav(
+      caseData?.case_stage,
+      caseData?.case_category,
+      currentTab!,
+    );
+    if (nextTabNav) {
+      dispatch(basicTabIndicator(nextTabNav));
+    } else {
+      toast.warning("This is the last tab.");
+    }
+  };
+
+  const handleSaveAndNext = async () => {
+    const success = await handleSave("next");
+    if (success) {
+      handleNextTab();
     }
   };
 
   if (isCaseLoading || isSuitLoading) return <LoadingGrow />;
 
   return (
-    <Container
-      fluid
-      className="py-4 px-2 px-md-4 suitability-page-bg" // ← class replaces inline style
-    >
-      <h1 className="mb-4 text-danger text-center fw-bold">
-        This page is under Development
-      </h1>
+    <Container fluid className="py-4 px-2 px-md-4">
       <div className="suitability-letter">
         <RecommendationLetter
           caseData={caseData}
@@ -175,71 +241,107 @@ const Suitability: React.FC = () => {
           formValues={formValues}
           onFormChange={handleFormChange}
         />
-        <Divider />
-        <DebtConsolidation
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
-        <Divider />
-        <LendingIntoRetirement
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
-        <Divider />
+        {suitability?.is_debt_consolidation_applicable && (
+          <>
+            <Divider />
+            <DebtConsolidation
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
+        {suitability?.is_lending_into_retirement_applicable && (
+          <>
+            <Divider />
+            <LendingIntoRetirement
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
+        {/* <Divider />
         <PortingMortgageIncrease
           caseData={caseData}
           suitability={suitability}
           formValues={formValues}
           onFormChange={handleFormChange}
-        />
-        <Divider />
-        <IslamicMortgage
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
-        <Divider />
-        <RateTypePaymentMethod
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
-        <Divider />
-        <ProductTransfer
-          caseData={caseData}
-          suitability={suitability}
-          formValues={formValues}
-          onFormChange={handleFormChange}
-        />
-        <Divider />
+        /> */}
+        {suitability?.is_islamic_mortgage_applicable && (
+          <>
+            <Divider />
+            <IslamicMortgage
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
+        {suitability?.is_product_transfer_applicable && (
+          <>
+            <Divider />
+            <ProductTransfer
+              caseData={caseData}
+              suitability={suitability}
+              formValues={formValues}
+              onFormChange={handleFormChange}
+            />
+          </>
+        )}
+        {/* <Divider />
         <ShortenedProductTransfer
           caseData={caseData}
           suitability={suitability}
           formValues={formValues}
           onFormChange={handleFormChange}
-        />
-        <Divider />
-        <HighLoanToValue caseData={caseData} />
+        /> */}
+        {suitability?.is_high_loan_to_value_applicable && (
+          <>
+            <Divider />
+            <HighLoanToValue />
+          </>
+        )}
+        {/* ── Footer ── */}
+        <div className="mt-5 pt-3 border-top text-center">
+          <small className="text-muted">
+            This letter is generated as part of your mortgage advice record.
+            Please retain it for your records.
+          </small>
+        </div>
       </div>
-      <div className="d-flex justify-content-end mt-4">
+      <div className="d-flex justify-content-end mt-4 gap-2">
         <Button
           color="primary"
-          onClick={handleSave}
+          onClick={() => handleSave("save")}
           disabled={isUpdatingSuitability}
         >
-          {isUpdatingSuitability ? (
+          {isUpdatingSuitability && submitting === "save" ? (
             <>
               <span className="spinner-border spinner-border-sm me-2" />
               Saving...
             </>
           ) : (
             "Save Changes"
+          )}
+        </Button>
+
+        <Button
+          type="button"
+          color="secondary"
+          disabled={isUpdatingSuitability}
+          onClick={handleSaveAndNext}
+        >
+          {isUpdatingSuitability && submitting === "next" ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2" />
+              Saving...
+            </>
+          ) : (
+            "Save & Next"
           )}
         </Button>
       </div>

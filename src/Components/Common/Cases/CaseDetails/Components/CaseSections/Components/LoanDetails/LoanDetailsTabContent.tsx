@@ -583,6 +583,7 @@ export const LoanDetailsTabContent: React.FC<LoanDetailsTabContentProps> = ({
                         Invoice Discounting
                       </option>
                       <option value="ASSET_FINANCE">Asset Finance</option>
+                      <option value="ISLAMIC_MORTGAGE">Islamic Mortgage</option>
                     </Input>
                     {getFieldError("mortgage_type") && (
                       <FormText className="text-danger">

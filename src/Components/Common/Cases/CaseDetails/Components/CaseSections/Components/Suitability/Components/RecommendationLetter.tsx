@@ -11,7 +11,7 @@ import {
   rateSwitchOptions,
 } from "@/Data/Cases/SuitabilityData";
 import { useGetPublicAppranceQuery } from "@/Redux/Reducers/Appearance/AppearanceApi";
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { RecommendationLetterProps } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import Image from "next/image";
 import React, { useState } from "react";
 import {
@@ -36,20 +36,6 @@ const Divider = () => <hr className="my-4" />;
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
-
-const thStyle: React.CSSProperties = {
-  background: "#1a3c5e",
-  color: "#fff",
-  fontSize: "0.84rem",
-  fontWeight: 600,
-};
-
-interface RecommendationLetterProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
 
 const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   caseData,
@@ -81,11 +67,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const lender = s?.loan_details?.lender ?? "";
   const initialRate = s?.loan_details?.initial_interest_rate ?? "";
   const rateType = s?.loan_details?.interest_rate_type ?? "";
-  const dealEndDate = caseData?.deal_end_date ?? "";
   const repaymentMethod = s?.loan_details?.repayment_method ?? "";
   const mortgageTerm = s?.loan_details?.mortgage_term ?? "";
   const mortgageType = s?.loan_details?.mortgage_type ?? "";
-  const maxERC = caseData?.max_erc ? `£${caseData.max_erc}` : "£X";
+  const interestRateType = s?.loan_details?.interest_rate_type ?? "";
+  const dealEndDate =
+    (s?.loan_details?.initial_interest_rate ?? "").match(
+      /\d{2}\/\d{2}\/\d{4}/,
+    )?.[0] ?? "";
 
   const fmtGBP = (val: any) =>
     val
@@ -134,8 +123,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
     useState(false);
   const [isArrangementFeeEditing, setIsArrangementFeeEditing] = useState(false);
   const [isMaxErcEditing, setIsMaxErcEditing] = useState(false);
-  const [isAdditionalRecipientsEditing, setIsAdditionalRecipientsEditing] = useState(false);
-  const [additionalRecipientsDraft, setAdditionalRecipientsDraft] = useState("");
+  const [isAdditionalRecipientsEditing, setIsAdditionalRecipientsEditing] =
+    useState(false);
+  const [additionalRecipientsDraft, setAdditionalRecipientsDraft] =
+    useState("");
+  const [isRepaymentMethodEditing, setIsRepaymentMethodEditing] =
+    useState(false);
+  const [repaymentMethodDraft, setRepaymentMethodDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
   // LOCAL DRAFT STATES
@@ -149,7 +143,9 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const [mortgageTermDraft, setMortgageTermDraft] = useState("");
   const [portableWhyDraft, setPortableWhyDraft] = useState("");
   const [protectionDraft, setProtectionDraft] = useState("");
-  const [arrangementFeeDraft, setArrangementFeeDraft] = useState("");
+  const [arrangementFeeDraft, setArrangementFeeDraft] = useState<string | null>(
+    null,
+  );
   const [maxErcDraft, setMaxErcDraft] = useState("");
 
   // ══════════════════════════════════════════════════════════
@@ -231,9 +227,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       (o) => o.value === formValues.residential_mortgages_type,
     ) ?? null;
   const selectedProtectionOption =
-    protectionOptionTemplates.find(
-      (o) => o.value === formValues.protection,
-    ) ?? null;
+    protectionOptionTemplates.find((o) => o.value === formValues.protection) ??
+    null;
   const selectedHomeInsuranceOption =
     homeInsuranceOptions.find((o) => o.value === formValues.home_insurance) ??
     null;
@@ -288,15 +283,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
 
   const handleMortgageTermSave = () => {
-    onFormChange({ repayment_method_why_text: mortgageTermDraft });
+    onFormChange({ mortgage_term_text: mortgageTermDraft });
     setIsMortgageTermEditing(false);
   };
   const handleMortgageTermCancel = () => {
-    setMortgageTermDraft(formValues.repayment_method_why_text ?? "");
+    setMortgageTermDraft(formValues.mortgage_term_text ?? "");
     setIsMortgageTermEditing(false);
   };
   const startMortgageTermEdit = () => {
-    setMortgageTermDraft(formValues.repayment_method_why_text ?? "");
+    setMortgageTermDraft(formValues.mortgage_term_text ?? "");
     setIsMortgageTermEditing(true);
   };
 
@@ -327,41 +322,63 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   };
 
   const handleArrangementFeeSave = () => {
-    onFormChange({ arrangement_fee_value: arrangementFeeDraft });
+    onFormChange({
+      arrangement_fee: arrangementFeeDraft ? Number(arrangementFeeDraft) : null,
+    });
     setIsArrangementFeeEditing(false);
   };
   const handleArrangementFeeCancel = () => {
-    setArrangementFeeDraft(formValues.arrangement_fee_value ?? "");
+    setArrangementFeeDraft(
+      formValues.arrangement_fee != null
+        ? String(formValues.arrangement_fee)
+        : null,
+    );
     setIsArrangementFeeEditing(false);
   };
   const startArrangementFeeEdit = () => {
-    setArrangementFeeDraft(formValues.arrangement_fee_value ?? "");
+    setArrangementFeeDraft(
+      formValues.arrangement_fee != null
+        ? String(formValues.arrangement_fee)
+        : "",
+    );
     setIsArrangementFeeEditing(true);
   };
 
   const handleMaxErcSave = () => {
-    onFormChange({ max_erc_value: maxErcDraft });
+    onFormChange({ max_erc: maxErcDraft });
     setIsMaxErcEditing(false);
   };
   const handleMaxErcCancel = () => {
-    setMaxErcDraft(formValues.max_erc_value ?? "");
+    setMaxErcDraft(formValues.max_erc ?? "");
     setIsMaxErcEditing(false);
   };
   const startMaxErcEdit = () => {
-    setMaxErcDraft(formValues.max_erc_value ?? "");
+    setMaxErcDraft(formValues.max_erc ?? "");
     setIsMaxErcEditing(true);
   };
   const handleAdditionalRecipientsSave = () => {
-    onFormChange({ additional_recipients_text: additionalRecipientsDraft });
+    onFormChange({ email: additionalRecipientsDraft });
     setIsAdditionalRecipientsEditing(false);
   };
   const handleAdditionalRecipientsCancel = () => {
-    setAdditionalRecipientsDraft(formValues.additional_recipients_text ?? "");
+    setAdditionalRecipientsDraft(formValues.email ?? "");
     setIsAdditionalRecipientsEditing(false);
   };
   const startAdditionalRecipientsEdit = () => {
-    setAdditionalRecipientsDraft(formValues.additional_recipients_text ?? "");
+    setAdditionalRecipientsDraft(formValues.email ?? "");
     setIsAdditionalRecipientsEditing(true);
+  };
+  const handleRepaymentMethodSave = () => {
+    onFormChange({ repayment_method_recommended_text: repaymentMethodDraft });
+    setIsRepaymentMethodEditing(false);
+  };
+  const handleRepaymentMethodCancel = () => {
+    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
+    setIsRepaymentMethodEditing(false);
+  };
+  const startRepaymentMethodEdit = () => {
+    setRepaymentMethodDraft(formValues.repayment_method_recommended_text ?? "");
+    setIsRepaymentMethodEditing(true);
   };
 
   // ══════════════════════════════════════════════════════════
@@ -500,12 +517,16 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <Table bordered responsive size="sm" className="mb-3">
         <thead>
           <tr>
-            <th style={thStyle}>Lender</th>
-            <th style={thStyle}>Initial interest rate, type &amp; period</th>
-            <th style={thStyle}>Repayment method</th>
-            <th style={thStyle}>Mortgage amount (including any added fees)</th>
-            <th style={thStyle}>Mortgage term</th>
-            <th style={thStyle}>Monthly repayment</th>
+            <th className="suitability-table-header">Lender</th>
+            <th className="suitability-table-header">
+              Initial interest rate, type &amp; period
+            </th>
+            <th className="suitability-table-header">Repayment method</th>
+            <th className="suitability-table-header">
+              Mortgage amount (including any added fees)
+            </th>
+            <th className="suitability-table-header">Mortgage term</th>
+            <th className="suitability-table-header">Monthly repayment</th>
           </tr>
         </thead>
         <tbody>
@@ -544,10 +565,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       <Table bordered responsive size="sm" className="mb-3">
         <thead>
           <tr>
-            <th style={{ ...thStyle, width: "13%" }}>Feature</th>
-            <th style={{ ...thStyle, width: "15%" }}>Recommendation</th>
-            <th style={{ ...thStyle, width: "30%" }}>What does this mean?</th>
-            <th style={thStyle}>Why was this recommended to you?</th>
+            <th className="suitability-table-header" style={{ width: "13%" }}>
+              Feature
+            </th>
+            <th className="suitability-table-header" style={{ width: "15%" }}>
+              Recommendation
+            </th>
+            <th className="suitability-table-header" style={{ width: "30%" }}>
+              What does this mean?
+            </th>
+            <th className="suitability-table-header">
+              Why was this recommended to you?
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -557,7 +586,8 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td style={{ color: blue }}>{lender}</td>
             <td>This is the lender who will provide your mortgage.</td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              I have recommended <strong>{lender}</strong> because{" "}
+              I have recommended{" "}
+              <strong style={{ color: blue }}>{lender}</strong> because{" "}
               {isLenderEditing ? (
                 <span className="d-block w-100 mt-1">
                   <Input
@@ -609,10 +639,15 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
           <tr>
             <td className="fw-bold">Interest Rate Type</td>
             <td style={{ color: blue }}>{rateType}</td>
-            <td>Your payments will not change during the initial period.</td>
+            <td>
+              {interestRateType === "Fixed"
+                ? "Your payments will not change during the initial period."
+                : "Your payments can fluctuate during the initial deal period."}
+            </td>
             <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
-              You wanted the certainty of knowing exactly what your monthly
-              payments will be because{" "}
+              {interestRateType === "Fixed"
+                ? "You wanted the certainty of knowing exactly what your monthly payments will be because "
+                : "You did not need the certainty of knowing exactly what your monthly repayments will be and were satisfied with payments that have the ability to fluctuate because "}
               {isInterestRateEditing ? (
                 <span className="d-block w-100 mt-1">
                   <Input
@@ -674,7 +709,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td className="fw-bold">Initial interest rate / deal period</td>
             <td>
               The recommended deal period will apply until{" "}
-              <strong style={{ color: blue }}>{dealEndDate}</strong>
+              <span style={{ color: blue }}>{dealEndDate}</span>
             </td>
             <td>
               <p className="mb-2 fw-bold">
@@ -769,14 +804,73 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             <td className="fw-bold">Repayment Method</td>
             <td style={{ color: blue }}>{repaymentMethod}</td>
             <td>
-              Your mortgage will be repaid by the end of its term, provided you
-              make the required monthly payments when due.
+              {repaymentMethod === "Capital and Interest" ? (
+                "Your mortgage will be repaid by the end of its term, provided you make the required monthly payments when due."
+              ) : repaymentMethod === "Interest Only" ? (
+                <>
+                  Your mortgage balance will <strong>not</strong> be repaid by
+                  the end of the term through making your monthly repayments.
+                  You will be responsible for paying the balance{" "}
+                  <strong>in full</strong> at the end of the term.
+                </>
+              ) : null}
             </td>
-            <td>
-              <span>
-                You wanted to be certain that your entire mortgage balance is
-                repaid by the end of the term.
-              </span>
+            <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>
+              {repaymentMethod === "Capital and Interest" ? (
+                "You wanted the certainty of your mortgage being repaid by the end of the term through making your monthly repayments because "
+              ) : repaymentMethod === "Interest Only" ? (
+                <>
+                  You wanted the certainty of your mortgage not being repaid by
+                  the end of the term through making your monthly repayments and
+                  you will be responsible for paying the balance{" "}
+                  <strong>in full</strong> at the end of the term because{" "}
+                </>
+              ) : null}
+              {isRepaymentMethodEditing ? (
+                <span className="d-block w-100 mt-1">
+                  <Input
+                    type="textarea"
+                    rows={5}
+                    value={repaymentMethodDraft}
+                    onChange={(e) => setRepaymentMethodDraft(e.target.value)}
+                    placeholder="Enter your reason..."
+                    autoFocus
+                    className="w-100 p-1"
+                  />
+                  <div className="d-flex gap-2 mt-2">
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleRepaymentMethodSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleRepaymentMethodCancel}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </span>
+              ) : (
+                <span
+                  className="d-inline text-success"
+                  style={{
+                    cursor: "pointer",
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={startRepaymentMethodEdit}
+                  title="Click to edit"
+                >
+                  {formValues.repayment_method_recommended_text ||
+                    "click to add reason..."}
+                </span>
+              )}
             </td>
           </tr>
 
@@ -839,26 +933,45 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
               {isArrangementFeeEditing ? (
                 <>
                   <Input
-                    type="text"
-                    value={arrangementFeeDraft}
+                    type="number"
+                    value={arrangementFeeDraft ?? ""}
                     onChange={(e) => setArrangementFeeDraft(e.target.value)}
                     placeholder="e.g. £999"
                     autoFocus
                     className="w-100 p-1 mb-2"
                   />
                   <div className="d-flex gap-2">
-                    <Button color="light" className="text-dark" size="sm" onClick={handleArrangementFeeSave}>Save</Button>
-                    <Button color="light" className="text-dark" size="sm" onClick={handleArrangementFeeCancel}>Cancel</Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleArrangementFeeSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleArrangementFeeCancel}
+                    >
+                      Cancel
+                    </Button>
                   </div>
                 </>
               ) : (
                 <span
-                  className={formValues.arrangement_fee_value ? "fw-semibold" : "text-success fst-italic"}
-                  style={{ cursor: "pointer", color: formValues.arrangement_fee_value ? blue : undefined }}
+                  className={
+                    formValues.arrangement_fee ? "fw-normal" : "text-success"
+                  }
+                  style={{
+                    cursor: "pointer",
+                    color: formValues.arrangement_fee ? blue : undefined,
+                  }}
                   onClick={startArrangementFeeEdit}
                   title="Click to edit"
                 >
-                  {formValues.arrangement_fee_value || "＋ Add arrangement fee"}
+                  {formValues.arrangement_fee || "＋ add arrangement fee"}
                 </span>
               )}
             </td>
@@ -969,8 +1082,7 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                   onClick={startMortgageTermEdit}
                   title="Click to edit"
                 >
-                  {formValues.repayment_method_why_text ||
-                    "click to add reason..."}
+                  {formValues.mortgage_term_text || "click to add reason..."}
                 </span>
               )}
               <span className="mt-2">
@@ -1088,17 +1200,39 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
                       style={{ width: "140px" }}
                       className="p-1"
                     />
-                    <Button color="light" className="text-dark" size="sm" onClick={handleMaxErcSave}>Save</Button>
-                    <Button color="light" className="text-dark" size="sm" onClick={handleMaxErcCancel}>Cancel</Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleMaxErcSave}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      color="light"
+                      className="text-dark"
+                      size="sm"
+                      onClick={handleMaxErcCancel}
+                    >
+                      Cancel
+                    </Button>
                   </span>
                 ) : (
-                  <strong
-                    style={{ color: formValues.max_erc_value ? blue : "green", cursor: "pointer" }}
+                  <span
+                    className={
+                      formValues.max_erc ? "fw-normal" : "text-success"
+                    }
+                    style={{
+                      color: formValues.max_erc ? blue : undefined,
+                      cursor: "pointer",
+                    }}
                     onClick={startMaxErcEdit}
                     title="Click to edit"
                   >
-                    {formValues.max_erc_value ? `£${formValues.max_erc_value}` : "＋ Add max ERC charge"}
-                  </strong>
+                    {formValues.max_erc
+                      ? `£${formValues.max_erc}`
+                      : "＋ add max ERC charge"}
+                  </span>
                 )}
               </p>
             </td>
@@ -1685,10 +1819,20 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
             className="w-100 p-1"
           />
           <div className="d-flex gap-2 mt-2">
-            <Button color="light" className="text-dark" size="sm" onClick={handleAdditionalRecipientsSave}>
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleAdditionalRecipientsSave}
+            >
               Save
             </Button>
-            <Button color="light" className="text-dark" size="sm" onClick={handleAdditionalRecipientsCancel}>
+            <Button
+              color="light"
+              className="text-dark"
+              size="sm"
+              onClick={handleAdditionalRecipientsCancel}
+            >
               Cancel
             </Button>
           </div>
@@ -1696,13 +1840,13 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       ) : (
         <p
           style={{
-            color: formValues.additional_recipients_text ? "#2e7d32" : "green",
             cursor: "pointer",
           }}
+          className="text-success"
           onClick={startAdditionalRecipientsEdit}
           title="Click to edit"
         >
-          {formValues.additional_recipients_text || "click to add email / address"}
+          {formValues.email || "click to add email / address..."}
         </p>
       )}
     </>

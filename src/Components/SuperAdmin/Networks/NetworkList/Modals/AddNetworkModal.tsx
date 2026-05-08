@@ -2,7 +2,8 @@ import { useAddNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/Netw
 import {
   AddNetworkModalProps,
   NetworkFormData,
-} from "@/Types/SuperAdmin/Networks/NetworkType";
+} from "@/Types/SuperAdmin/Networks/NetworkTypes";
+import { countries } from "@/utils/Countries";
 import { validateAndSanitizePhone } from "@/utils/inputHandlers";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -12,6 +13,7 @@ import {
   Form,
   FormGroup,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -78,10 +80,16 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     network: {
       name: "",
       subdomain: "",
-      address: "",
       primary_mobile: "",
       email: "",
       license_no: "",
+    },
+    address: {
+      postcode: "",
+      house_name_or_number: "",
+      address_line_1: "",
+      city: "",
+      country: "",
     },
     user: {
       first_name: "",
@@ -149,6 +157,19 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     }));
   };
 
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      address: {
+        ...prevState.address,
+        [name]: value,
+      },
+    }));
+  };
+
   // Handle user text input changes
   const handleUserChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -181,15 +202,38 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     }));
   };
 
-  // Validate required network fields
+  const handlePostcodeLookup = () => {
+    toast.info("Postcode lookup is not available yet.");
+  };
+
+  // Validate required network header fields (before address step)
+  const validateNetworkHeader = () => {
+    const name = formData.network.name.trim();
+    const subdomain = formData.network.subdomain.trim();
+    const primary = formData.network.primary_mobile.trim();
+    const email = formData.network.email.trim();
+
+    return !!(name && subdomain && primary && email);
+  };
+
+  // Validate required address fields in the address step
+  const validateAddress = () => {
+    const postcode = formData.address.postcode.trim();
+    const houseNameOrNumber = formData.address.house_name_or_number.trim();
+    const address1 = formData.address.address_line_1.trim();
+    const city = formData.address.city.trim();
+
+    return !!(postcode && houseNameOrNumber && address1 && city);
+  };
+
+  // Validate full network fields for final submission
   const validateNetwork = () => {
     const name = formData.network.name.trim();
     const subdomain = formData.network.subdomain.trim();
     const primary = formData.network.primary_mobile.trim();
     const email = formData.network.email.trim();
-    const address = formData.network.address.trim();
 
-    return !!(name && subdomain && primary && email && address);
+    return !!(name && subdomain && primary && email);
   };
 
   // Helper to flatten nested validation error payloads into [{ field, messages[] }]
@@ -234,63 +278,98 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
   };
 
   const onNext = async () => {
-    if (!validateNetwork()) {
-      // Show native browser validation on the first invalid network field
-      if (formRef.current) {
-        const ids = ["name", "subdomain", "address", "primary_mobile", "email"];
-        for (const id of ids) {
-          const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
-          if (el && !el.checkValidity()) {
-            el.reportValidity();
-            el.focus();
-            break;
+    if (activeTab === "network") {
+      if (!validateNetworkHeader()) {
+        if (formRef.current) {
+          const ids = ["name", "subdomain", "primary_mobile", "email"];
+          for (const id of ids) {
+            const el = formRef.current.querySelector<HTMLInputElement>(
+              `#${id}`,
+            );
+            if (el && !el.checkValidity()) {
+              el.reportValidity();
+              el.focus();
+              break;
+            }
           }
         }
+        return;
       }
+
+      setActiveTab("address");
       return;
     }
 
-    // Call API to validate network fields before moving to user tab
-    setValidating(true);
-    try {
-      const payload = { network: { ...formData.network } };
-      const res = await addNetwork({ payload }).unwrap();
-      // Consider success as validation success (server did not return field errors)
-      setApiErrors({});
-      setNetworkValidated(true);
-      toast.success("Network validated");
-      toggleTab("user");
-    } catch (error: any) {
-      console.error("Network validation error:", error);
-      const source =
-        error?.data && typeof error.data === "object" ? error.data : error;
-      const flattened = flattenErrors(source);
-      if (flattened.length) {
-        const map: Record<string, string[]> = {};
-        flattened.forEach((entry) => {
-          const field = entry.field || "error";
-          map[field] = map[field]
-            ? [...map[field], ...entry.messages]
-            : [...entry.messages];
-        });
-        setApiErrors(map);
-
-        const firstField = flattened[0]?.field || Object.keys(map)[0];
-        if (firstField && firstField.startsWith("user")) {
-          toggleTab("user");
-        } else {
-          toggleTab("network");
+    if (activeTab === "address") {
+      if (!validateAddress()) {
+        if (formRef.current) {
+          const ids = ["postcode", "house_name_or_number", "address_1", "city"];
+          for (const id of ids) {
+            const el = formRef.current.querySelector<HTMLInputElement>(
+              `#${id}`,
+            );
+            if (el && !el.checkValidity()) {
+              el.reportValidity();
+              el.focus();
+              break;
+            }
+          }
         }
-      } else {
-        const msg = getErrorMessage(error) || "Validation failed";
-        toast.error(msg);
+        return;
       }
-    } finally {
-      setValidating(false);
+
+      setValidating(true);
+      try {
+        const payload = { network: { ...formData.network } };
+        await addNetwork({ payload }).unwrap();
+        setApiErrors({});
+        setNetworkValidated(true);
+        toast.success("Network validated");
+        toggleTab("user");
+      } catch (error: any) {
+        console.error("Network validation error:", error);
+        const source =
+          error?.data && typeof error.data === "object" ? error.data : error;
+        const flattened = flattenErrors(source);
+        if (flattened.length) {
+          const map: Record<string, string[]> = {};
+          flattened.forEach((entry) => {
+            const field = entry.field || "error";
+            map[field] = map[field]
+              ? [...map[field], ...entry.messages]
+              : [...entry.messages];
+          });
+          setApiErrors(map);
+
+          const firstField = flattened[0]?.field || Object.keys(map)[0];
+          if (firstField && firstField.startsWith("user")) {
+            toggleTab("user");
+          } else if (firstField && firstField.includes("address")) {
+            toggleTab("address");
+          } else {
+            toggleTab("network");
+          }
+        } else {
+          const msg = getErrorMessage(error) || "Validation failed";
+          toast.error(msg);
+        }
+      } finally {
+        setValidating(false);
+      }
     }
   };
 
   const onBack = () => {
+    if (activeTab === "user") {
+      toggleTab("address");
+      return;
+    }
+
+    if (activeTab === "address") {
+      toggleTab("network");
+      return;
+    }
+
     toggleTab("network");
   };
 
@@ -300,7 +379,16 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
     // Final validation: ensure network required fields
     if (!validateNetwork()) {
       if (formRef.current) {
-        const ids = ["name", "subdomain", "address", "primary_mobile", "email"];
+        const ids = [
+          "name",
+          "subdomain",
+          "postcode",
+          "house_name_or_number",
+          "address_line_1",
+          "city",
+          "primary_mobile",
+          "email",
+        ];
         for (const id of ids) {
           const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
           if (el && !el.checkValidity()) {
@@ -323,6 +411,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
       // Build JSON payload
       const payload = {
         network: { ...formData.network },
+        address: { ...formData.address },
         user: { ...formData.user },
       };
 
@@ -335,10 +424,16 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
           network: {
             name: "",
             subdomain: "",
-            address: "",
             primary_mobile: "",
             email: "",
             license_no: "",
+          },
+          address: {
+            postcode: "",
+            house_name_or_number: "",
+            address_line_1: "",
+            city: "",
+            country: "",
           },
           user: {
             first_name: "",
@@ -397,10 +492,16 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
       network: {
         name: "",
         subdomain: "",
-        address: "",
         primary_mobile: "",
         email: "",
         license_no: "",
+      },
+      address: {
+        postcode: "",
+        house_name_or_number: "",
+        address_line_1: "",
+        city: "",
+        country: "",
       },
       user: {
         first_name: "",
@@ -434,17 +535,27 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "network" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Network
+                Information
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                active={activeTab === "address"}
+                onClick={() => activeTab !== "address" && onNext()}
+                style={{ cursor: "pointer" }}
+                className={`${activeTab === "address" ? "bg-primary" : "text-primary border-primary"}`}
+              >
+                Address
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
                 active={activeTab === "user"}
-                onClick={onNext}
+                onClick={() => activeTab !== "user" && onNext()}
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Network Director
+                Director
               </NavLink>
             </NavItem>
           </Nav>
@@ -532,7 +643,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       name="primary_mobile"
                       value={formData.network.primary_mobile}
                       onChange={handleChange}
-                      placeholder="Enter primary mobile (e.g., +8801700000000)"
+                      placeholder="Enter primary mobile"
                       required
                       pattern="^\+?\d+$"
                       title="Phone number can only contain + and digits"
@@ -549,27 +660,6 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                   </FormGroup>
                 </Col>
 
-                <Col md={6} xs={12}>
-                  <FormGroup>
-                    <Label for="address">
-                      Address<span className="text-danger">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="address"
-                      name="address"
-                      value={formData.network.address}
-                      onChange={handleChange}
-                      placeholder="Enter address"
-                      required
-                    />
-                    {apiErrors["network.address"] ? (
-                      <div className="text-danger small mt-1">
-                        {apiErrors["network.address"].join(", ")}
-                      </div>
-                    ) : null}
-                  </FormGroup>
-                </Col>
                 <Col>
                   <FormGroup>
                     <Label for="license_no">License Number</Label>
@@ -584,6 +674,134 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                     {apiErrors["network.license_no"] ? (
                       <div className="text-danger small mt-1">
                         {apiErrors["network.license_no"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+              </Row>
+            </TabPane>
+
+            <TabPane tabId="address">
+              <Row>
+                <Col md={12} xs={12}>
+                  <FormGroup>
+                    <Label for="postcode">
+                      Postcode<span className="text-danger">*</span>
+                    </Label>
+                    <InputGroup>
+                      <Input
+                        type="text"
+                        id="postcode"
+                        name="postcode"
+                        value={formData.address.postcode}
+                        onChange={handleAddressChange}
+                        placeholder="Enter postcode"
+                        className="rounded-end-0"
+                        required
+                      />
+                      <Button
+                        color="info"
+                        type="button"
+                        className="text-nowrap rounded-start-0"
+                        onClick={handlePostcodeLookup}
+                      >
+                        Lookup
+                      </Button>
+                    </InputGroup>
+                    {apiErrors["address.postcode"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.postcode"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="house_name_or_number">
+                      House Name or Number<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="house_name_or_number"
+                      name="house_name_or_number"
+                      value={formData.address.house_name_or_number}
+                      onChange={handleAddressChange}
+                      placeholder="Enter house name or number"
+                      required
+                    />
+                    {apiErrors["address.house_name_or_number"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.house_name_or_number"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="address_line_1">
+                      Address L1<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="address_line_1"
+                      name="address_line_1"
+                      value={formData.address.address_line_1}
+                      onChange={handleAddressChange}
+                      placeholder="Enter address line 1"
+                      required
+                    />
+                    {apiErrors["address.address_line_1"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.address_line_1"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="city">
+                      City<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="city"
+                      name="city"
+                      value={formData.address.city}
+                      onChange={handleAddressChange}
+                      placeholder="Enter city"
+                      required
+                    />
+                    {apiErrors["address.city"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.city"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="country">Country</Label>
+                    <Input
+                      type="select"
+                      id="country"
+                      name="country"
+                      value={formData.address.country}
+                      onChange={handleAddressChange}
+                    >
+                      <option value="">Please select a country</option>
+                      {countries.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </Input>
+                    {apiErrors["address.country"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.country"].join(", ")}
                       </div>
                     ) : null}
                   </FormGroup>
@@ -670,7 +888,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                       name="phone"
                       value={formData.user.phone}
                       onChange={handleUserChange}
-                      placeholder="Enter user phone (e.g., +8801700000000)"
+                      placeholder="Enter user phone"
                       required
                       pattern="^\+?\d+$"
                       title="Phone number can only contain + and digits"
@@ -693,7 +911,7 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
 
         <ModalFooter className="d-flex justify-content-between">
           <div>
-            {activeTab === "user" ? (
+            {activeTab !== "network" ? (
               <Button color="secondary" type="button" onClick={onBack}>
                 Back
               </Button>
@@ -707,7 +925,11 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
             >
               Cancel
             </Button>
-            {activeTab === "network" ? (
+            {activeTab === "user" ? (
+              <Button color="primary" type="submit" disabled={isLoading}>
+                {isLoading ? "Saving..." : "Save Network"}
+              </Button>
+            ) : (
               <Button
                 color="primary"
                 type="button"
@@ -715,10 +937,6 @@ const AddNetworkModal: React.FC<AddNetworkModalProps> = ({
                 disabled={validating}
               >
                 {validating ? "Validating..." : "Go Next"}
-              </Button>
-            ) : (
-              <Button color="primary" type="submit" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save Network"}
               </Button>
             )}
           </div>

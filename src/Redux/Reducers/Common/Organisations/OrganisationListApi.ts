@@ -4,7 +4,7 @@ export const OrganisationListApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getOrganisationList: builder.query({
       query: (params) => ({
-        url: `/organization/onboard/`,
+        url: `/api/organisations/`,
         method: "GET",
         params,
       }),
@@ -12,7 +12,7 @@ export const OrganisationListApi = baseApi.injectEndpoints({
     }),
     addOrganisation: builder.mutation({
       query: (payload) => ({
-        url: `/organization/onboard/`,
+        url: `/api/organisations/`,
         method: "POST",
         body: payload,
       }),

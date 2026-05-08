@@ -1,13 +1,13 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useAppDispatch, useAppSelector } from "@/Redux/Hooks";
 import {
-  restoreOrganisationDetailsTab,
-  setOrganisationDetailsTab,
-} from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/OrganisationDetailsTabSlice";
-import {
   useGetSingleOrganisationDashboardDataQuery,
   useGetSingleOrganisationQuery,
 } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
+import {
+  restoreCustomTab,
+  setCustomTab,
+} from "@/Redux/Reducers/CustomTabSlice";
 import { SingleOrganisationProps } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -22,18 +22,19 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
-import OrgAdmins from "./Tabs/Admins/OrgAdmins";
-import OrgAdvisers from "./Tabs/Advisers/OrgAdvisers";
-import OrgApplicants from "./Tabs/Applicants/OrgApplicant";
+import OrgAdminsTab from "./Tabs/Admins/OrgAdminsTab";
+import OrgAdvisersTab from "./Tabs/Advisers/OrgAdvisersTab";
+import OrgApplicantsTab from "./Tabs/Applicants/OrgApplicantsTab";
 import OrgCases from "./Tabs/Cases/OrgCases";
+import Address from "./Tabs/Dashboard/Address/Address";
 import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";
 import DangerZone from "./Tabs/Dashboard/DangerZone/DangerZone";
 import OrganisationDirectorInfo from "./Tabs/Dashboard/OrganisationDirectorInfo/OrganisationDirectorInfo";
 import OrganisationProfile from "./Tabs/Dashboard/OrganisationProfile/OrganisationProfile";
 import Overview from "./Tabs/Dashboard/Overview/Overview";
-import OrgIntroducers from "./Tabs/Introducers/OrgIntroducers";
-import OrgLeads from "./Tabs/Leads/OrgLeads";
+import OrgIntroducersTab from "./Tabs/Introducers/OrgIntroducersTab";
+import OrgLeadsTab from "./Tabs/Leads/OrgLeadsTab";
 
 const OrganisationDetails: React.FC = () => {
   const [singleOrgInfo, setSingleOrgInfo] = useState<SingleOrganisationProps>();
@@ -55,9 +56,7 @@ const OrganisationDetails: React.FC = () => {
     ? organisationslug[0]
     : organisationslug;
   const router = useRouter();
-  const activeTab = useAppSelector(
-    (state) => state.organisationDetailsTabs.activeTab,
-  );
+  const activeTab = useAppSelector((state) => state.customTabs.activeTab);
 
   // rtk hooks
   const {
@@ -99,10 +98,8 @@ const OrganisationDetails: React.FC = () => {
 
   useEffect(() => {
     if (typeof window === "undefined" || !orgSlug) return;
-    const savedTab = localStorage.getItem(
-      `organisationDetailsActiveTab:${orgSlug}`,
-    );
-    dispatch(restoreOrganisationDetailsTab(savedTab || "dashboard"));
+    const savedTab = localStorage.getItem(`customTabActive:${orgSlug}`);
+    dispatch(restoreCustomTab(savedTab || "dashboard"));
   }, [dispatch, orgSlug]);
 
   if (isLoading) {
@@ -124,7 +121,7 @@ const OrganisationDetails: React.FC = () => {
           <Col md="12" className="position-relative">
             <Nav
               pills
-              className={`org-details-tabs d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
+              className={`custom-tabs d-flex justify-content-center flex-wrap gap-2 mb-3 position-sticky ${currentTheme === "light" ? "bg-white" : "bg-dark"} rounded-3 p-4 shadow-md`}
               style={{ top: "4rem", zIndex: 20 }}
             >
               {navItems.map((item) => (
@@ -133,7 +130,7 @@ const OrganisationDetails: React.FC = () => {
                     active={activeTab === item.id}
                     onClick={() =>
                       dispatch(
-                        setOrganisationDetailsTab({
+                        setCustomTab({
                           tabId: item.id,
                           organisationslug: orgSlug,
                         }),
@@ -162,6 +159,14 @@ const OrganisationDetails: React.FC = () => {
                       </Col>
                       <Col lg="6" md="12">
                         <OrganisationDirectorInfo
+                          singleOrgInfo={singleOrgInfo}
+                          isLoading={isLoading}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="12">
+                        <Address
                           singleOrgInfo={singleOrgInfo}
                           isLoading={isLoading}
                         />
@@ -206,19 +211,19 @@ const OrganisationDetails: React.FC = () => {
                 {activeTab === "cases" && <OrgCases />}
               </TabPane>
               <TabPane tabId="leads">
-                {activeTab === "leads" && <OrgLeads />}
+                {activeTab === "leads" && <OrgLeadsTab />}
               </TabPane>
               <TabPane tabId="applicants">
-                {activeTab === "applicants" && <OrgApplicants />}
+                {activeTab === "applicants" && <OrgApplicantsTab />}
               </TabPane>
               <TabPane tabId="advisers">
-                {activeTab === "advisers" && <OrgAdvisers />}
+                {activeTab === "advisers" && <OrgAdvisersTab />}
               </TabPane>
               <TabPane tabId="admins">
-                {activeTab === "admins" && <OrgAdmins />}
+                {activeTab === "admins" && <OrgAdminsTab />}
               </TabPane>
               <TabPane tabId="introducers">
-                {activeTab === "introducers" && <OrgIntroducers />}
+                {activeTab === "introducers" && <OrgIntroducersTab />}
               </TabPane>
             </TabContent>
           </Col>

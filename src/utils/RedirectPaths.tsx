@@ -192,26 +192,25 @@ export const getOrganisationUrl = (session: Session | null) => {
 export const getOrganisationCaseUrl = (
   organisationSlug: string,
   caseAlias: string,
-  isNetwork?: boolean,
   role?: string,
 ) => {
   if (!organisationSlug || !caseAlias) {
     return "#";
   }
 
+  if (role === "SUPER_ADMIN") {
+    return `/super-admin/organisations/${organisationSlug}/${caseAlias}`;
+  }
+
   if (role === "DIRECTOR" || role === "COMPLIANCE") {
-    return isNetwork
-      ? `/network/director/organisations/${organisationSlug}/${caseAlias}`
-      : `url not found`;
+    return `/network/director/organisations/${organisationSlug}/${caseAlias}`;
   }
 
   if (role === "ADVISER") {
-    return isNetwork
-      ? `/network/adviser/organisations/${organisationSlug}/${caseAlias}`
-      : `url not found`;
+    return `/network/adviser/organisations/${organisationSlug}/${caseAlias}`;
   }
 
-  return "url not found";
+  return "#";
 };
 
 export const getApplicantCaseUrl = (

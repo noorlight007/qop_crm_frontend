@@ -1,18 +1,10 @@
 import React from "react";
 
 const SectionHeading = ({ children }: { children: React.ReactNode }) => (
-  <h6 className="suitability-section-heading">
-    {children}
-  </h6>
+  <h6 className="suitability-section-heading">{children}</h6>
 );
 
-interface HighLoanToValueProps {
-  caseData: any;
-}
-
-const HighLoanToValue: React.FC<HighLoanToValueProps> = ({ caseData }) => {
-  const companyName = caseData?.company_name ?? "Cityplus Network";
-
+const HighLoanToValue: React.FC = () => {
   return (
     <>
       <SectionHeading>High Loan to Value</SectionHeading>
@@ -27,14 +19,6 @@ const HighLoanToValue: React.FC<HighLoanToValueProps> = ({ caseData }) => {
         associated with a higher risk of repossession, please consider these
         risks carefully.
       </p>
-
-      {/* ── Footer ── */}
-      <div className="mt-5 pt-3 border-top text-center">
-        <small className="text-muted">
-          {companyName} &mdash; This letter is generated as part of your
-          mortgage advice record. Please retain it for your records.
-        </small>
-      </div>
     </>
   );
 };

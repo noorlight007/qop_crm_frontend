@@ -1,4 +1,5 @@
-import { SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
+import { shariaDetailOptions } from "@/Data/Cases/SuitabilityData";
+import { IslamicMortgageProps, SuitabilityData } from "@/Types/Common/Cases/CaseDetails/CaseSections/SuitabilityTypes";
 import React, { useState } from "react";
 import {
   Button,
@@ -18,18 +19,9 @@ const SectionHeading = ({ children }: { children: React.ReactNode }) => (
   <h6 className="suitability-section-heading">{children}</h6>
 );
 
-const shariaDetailOptions = [
-  { value: "IJARA", label: "Option 1 – Ijara" },
-  { value: "MUSHARAKA", label: "Option 2 – Musharaka" },
-  { value: "MURABAHA", label: "Option 3 – Murabaha" },
-];
 
-interface IslamicMortgageProps {
-  caseData: any;
-  suitability: any;
-  formValues: SuitabilityData;
-  onFormChange: (updates: Partial<SuitabilityData>) => void;
-}
+
+
 
 const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
   caseData,
@@ -174,71 +166,17 @@ const IslamicMortgage: React.FC<IslamicMortgageProps> = ({
                   immediately sells it to you for a higher price (original cost
                   plus an agreed profit level). You pay this higher price on a
                   deferred basis by making regular payments to the provider in
-                  line with a fixed repayment schedule.
+                  line with a fixed repayment schedule. <br /> <br />A feature of this plan
+                  means that if you are in a position to contribute additional
+                  funds you can do so without penalty at anytime or you do not
+                  exceed the total Home Purchase Plan amount during any annual
+                  period.
                 </p>
               </>
             )}
           </div>
         )}
       </div>
-
-      <p>
-        A feature of this plan means that if you are in a position to contribute
-        additional funds you can do so{" "}
-        <Dropdown
-          isOpen={isOverpaymentOptionOpen}
-          toggle={() => setIsOverpaymentOptionOpen((prev) => !prev)}
-          className="d-inline"
-        >
-          <DropdownToggle
-            tag="span"
-            style={{
-              color: "#6a1b9a",
-              cursor: "pointer",
-              textDecoration: "underline dotted",
-            }}
-          >
-            {selectedOverpaymentOption === null && "select option..."}
-            {selectedOverpaymentOption === "NO_PENALTY" &&
-              "without penalty at any time."}
-            {selectedOverpaymentOption === "WITH_LIMIT" && (
-              <>
-                provided you do not exceed{" "}
-                <strong style={{ color: blue }}>
-                  {caseData?.hpp_overpayment_limit ?? "XX"}%
-                </strong>{" "}
-                of the total Home Purchase Plan amount during any annual period.
-              </>
-            )}
-          </DropdownToggle>
-          <DropdownMenu
-            style={{
-              whiteSpace: "normal",
-              wordBreak: "break-word",
-              maxWidth: "400px",
-            }}
-          >
-            <DropdownItem
-              onClick={() => onFormChange({ overpayment_type: "NO_PENALTY" })}
-              className="text-wrap"
-            >
-              <span className="me-1 fw-bolder">•</span>
-              without penalty at any time.
-            </DropdownItem>
-            <DropdownItem
-              onClick={() => onFormChange({ overpayment_type: "WITH_LIMIT" })}
-              className="text-wrap"
-            >
-              <span className="me-1 fw-bolder">•</span>
-              provided you do not exceed{" "}
-              <strong style={{ color: blue }}>
-                {caseData?.hpp_overpayment_limit ?? "XX"}%
-              </strong>{" "}
-              of the total Home Purchase Plan amount during any annual period.
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-      </p>
 
       {/* ── Lender reason ── */}
       <p className="mt-3">

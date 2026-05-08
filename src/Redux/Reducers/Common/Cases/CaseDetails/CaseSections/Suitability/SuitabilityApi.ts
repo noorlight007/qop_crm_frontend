@@ -17,6 +17,22 @@ export const SuitabilityApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Suitability"],
     }),
+    createDebtSummaryRecommendation: builder.mutation({
+      query: ({ case_alias, payload }) => ({
+        url: `/cases/${case_alias}/suitability-letter/debt-summary-recommendations/`,
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: ["Suitability"],
+    }),
+    updateDebtSummaryRecommendation: builder.mutation({
+      query: ({ case_alias, payload, alias }) => ({
+        url: `/cases/${case_alias}/suitability-letter/debt-summary-recommendations/${alias}/`,
+        method: "PATCH",
+        body: payload,
+      }),
+      invalidatesTags: ["Suitability"],
+    }),
     // Modals endpoints start here
     getExtraAnswer: builder.query({
       query: ({ case_alias }) => ({
@@ -39,6 +55,8 @@ export const SuitabilityApi = baseApi.injectEndpoints({
 export const {
   useGetSuitabilityQuery,
   useUpdateSuitabilityMutation,
+  useCreateDebtSummaryRecommendationMutation,
+  useUpdateDebtSummaryRecommendationMutation,
   useGetExtraAnswerQuery,
   useAddExtraAnswerMutation,
 } = SuitabilityApi;
