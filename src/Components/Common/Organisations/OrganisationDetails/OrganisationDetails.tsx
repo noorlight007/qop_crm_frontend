@@ -26,13 +26,7 @@ import OrgAdminsTab from "./Tabs/Admins/OrgAdminsTab";
 import OrgAdvisersTab from "./Tabs/Advisers/OrgAdvisersTab";
 import OrgApplicantsTab from "./Tabs/Applicants/OrgApplicantsTab";
 import OrgCases from "./Tabs/Cases/OrgCases";
-import Address from "./Tabs/Dashboard/Address/Address";
-import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
-import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";
-import DangerZone from "./Tabs/Dashboard/DangerZone/DangerZone";
-import OrganisationDirectorInfo from "./Tabs/Dashboard/OrganisationDirectorInfo/OrganisationDirectorInfo";
-import OrganisationProfile from "./Tabs/Dashboard/OrganisationProfile/OrganisationProfile";
-import Overview from "./Tabs/Dashboard/Overview/Overview";
+import DashboardTab from "./Tabs/Dashboard/DashboardTab";
 import OrgIntroducersTab from "./Tabs/Introducers/OrgIntroducersTab";
 import OrgLeadsTab from "./Tabs/Leads/OrgLeadsTab";
 
@@ -70,13 +64,7 @@ const OrganisationDetails: React.FC = () => {
     },
   );
 
-  const { data: singleOrgDashboardData, isLoading: isDashboardLoading } =
-    useGetSingleOrganisationDashboardDataQuery(
-      { organisationslug },
-      {
-        skip: !organisationslug,
-      },
-    );
+ 
 
   useEffect(() => {
     if (!isLoading) {
@@ -146,65 +134,7 @@ const OrganisationDetails: React.FC = () => {
 
             <TabContent activeTab={activeTab}>
               <TabPane tabId="dashboard">
-                {activeTab === "dashboard" && (
-                  <>
-                    <Row>
-                      <Col lg="6" md="12">
-                        <OrganisationProfile
-                          singleOrgInfo={singleOrgInfo}
-                          singleOrgDashboardData={singleOrgDashboardData}
-                          isLoading={isLoading}
-                          isDashboardLoading={isDashboardLoading}
-                        />
-                      </Col>
-                      <Col lg="6" md="12">
-                        <OrganisationDirectorInfo
-                          singleOrgInfo={singleOrgInfo}
-                          isLoading={isLoading}
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="12">
-                        <Address
-                          singleOrgInfo={singleOrgInfo}
-                          isLoading={isLoading}
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col lg="6" md="12">
-                        <OrgMortgagesChart
-                          singleOrgInfo={singleOrgInfo}
-                          singleOrgDashboardData={singleOrgDashboardData}
-                          isLoading={isLoading}
-                          isDashboardLoading={isDashboardLoading}
-                        />
-                      </Col>
-                      <Col lg="6" md="12">
-                        <OrgLendersChart
-                          singleOrgInfo={singleOrgInfo}
-                          singleOrgDashboardData={singleOrgDashboardData}
-                          isLoading={isLoading}
-                          isDashboardLoading={isDashboardLoading}
-                        />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col md="12">
-                        <Overview
-                          singleOrgInfo={singleOrgInfo}
-                          singleOrgDashboardData={singleOrgDashboardData}
-                          isLoading={isLoading}
-                          isDashboardLoading={isDashboardLoading}
-                        />
-                      </Col>
-                      <Col md="12">
-                        <DangerZone singleOrgInfo={singleOrgInfo} />
-                      </Col>
-                    </Row>
-                  </>
-                )}
+                {activeTab === "dashboard" && <DashboardTab />}
               </TabPane>
 
               <TabPane tabId="cases">

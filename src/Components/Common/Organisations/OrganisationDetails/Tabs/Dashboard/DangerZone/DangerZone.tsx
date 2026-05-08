@@ -9,9 +9,9 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
 }) => {
   const { data: session } = useSession();
   const canDeleteOrganisation =
-    session?.user?.is_network &&
-    (session?.user?.role === "DIRECTOR" ||
-      session?.user?.role === "COMPLIANCE");
+    session?.user?.role === "SUPER_ADMIN" ||
+    session?.user?.role === "DIRECTOR" ||
+    session?.user?.role === "COMPLIANCE";
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const irreversibleLossItems = [
