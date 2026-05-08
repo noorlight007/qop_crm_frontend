@@ -842,7 +842,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                     >
                       <option value="">Select...</option>
                       {countries.map((c) => (
-                        <option key={c.code} value={c.name}>
+                        <option key={c.code} value={c.code}>
                           {c.name}
                         </option>
                       ))}
