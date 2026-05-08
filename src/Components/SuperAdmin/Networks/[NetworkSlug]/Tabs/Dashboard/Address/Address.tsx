@@ -24,7 +24,7 @@ const Address: React.FC<NetworkDetailsProps> = ({
   }
 
   return (
-    <Card className="shadow-sm border-0 overflow-hidden">
+    <Card className="shadow-lg border-0 overflow-hidden">
       <CardBody className="p-4 bg-white">
         <div className="d-flex align-items-center justify-content-between mb-4">
           <CardTitle tag="h5" className="mb-0">

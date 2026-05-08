@@ -28,7 +28,7 @@ const DangerZone: React.FC<FetchSingleOrganisationProps> = ({
   };
 
   return (
-    <Card className="border-danger shadow-sm overflow-hidden">
+    <Card className="border-danger shadow-lg overflow-hidden">
       <CardHeader className="bg-danger text-white border-0 py-3 px-4">
         <h4 className="mb-1 fw-bold">Danger Zone</h4>
         <p className="mb-0 small text-white">

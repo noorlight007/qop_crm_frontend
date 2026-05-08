@@ -1,7 +1,7 @@
 import { useGetNetworkDetailsQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
 import { useParams } from "next/navigation";
 import Address from "./Address/Address";
-import NetworkDelete from "./NetworkDelete/NetworkDelete";
+import NetworkDelete from "./DangerZone/NetworkDelete";
 import NetworkDetails from "./NetworkDetails/NetworkDetails";
 
 const Dashboard: React.FC = () => {
