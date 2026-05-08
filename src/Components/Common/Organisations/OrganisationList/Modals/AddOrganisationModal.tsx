@@ -4,7 +4,7 @@ import {
   AddOrganisationProps,
 } from "@/Types/Common/Organisations/OrganisationsTypes";
 import { countries } from "@/utils/Countries";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -186,14 +186,21 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("organisation");
-  // API validation state (used when user clicks "Go Next")
-  const [validating, setValidating] = useState(false);
   const [orgValidated, setOrgValidated] = useState(false);
   const [addressValidated, setAddressValidated] = useState(false);
   // Local validation message for subdomain (client-side only)
   const [subdomainError, setSubdomainError] = useState<string | null>(null);
   // form ref for native validity/reporting
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setActiveTab("organisation");
+    setApiErrors({});
+    setOrgValidated(false);
+    setAddressValidated(false);
+    setSubdomainError(null);
+  }, [isOpen]);
   const toggleTab = (tab: string) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -271,42 +278,11 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
         return;
       }
 
-      setValidating(true);
-      try {
-        const payload = { organization: { ...(formData.organization as any) } };
-        await addOrganisation(payload).unwrap();
-        setApiErrors({});
-        setOrgValidated(true);
-        toast.success("Organisation validated");
-        toggleTab("address");
-      } catch (error: any) {
-        console.error("Organisation validation error:", error);
-        const source =
-          error?.data && typeof error.data === "object" ? error.data : error;
-        const flattened = flattenErrors(source);
-        if (flattened.length) {
-          const map: Record<string, string[]> = {};
-          flattened.forEach((entry) => {
-            const field = entry.field || "error";
-            map[field] = map[field]
-              ? [...map[field], ...entry.messages]
-              : [...entry.messages];
-          });
-          setApiErrors(map);
-
-          const firstField = flattened[0]?.field || Object.keys(map)[0];
-          if (firstField && firstField.startsWith("user")) {
-            toggleTab("user");
-          } else {
-            toggleTab("organisation");
-          }
-        } else {
-          const msg = getErrorMessage(error) || "Validation failed";
-          // toast.error(msg);
-        }
-      } finally {
-        setValidating(false);
-      }
+      // Only client-side validation is required to move to the next step.
+      // Server-side validation (e.g. subdomain uniqueness) happens on final submit.
+      setApiErrors({});
+      setOrgValidated(true);
+      toggleTab("address");
       return;
     }
 
@@ -514,7 +490,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "organisation" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Organisation Info
+                Information
               </NavLink>
             </NavItem>
             <NavItem>
@@ -530,7 +506,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "address" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Organisation Address
+                Address
               </NavLink>
             </NavItem>
             <NavItem>
@@ -548,7 +524,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Organisation Director
+                Director
               </NavLink>
             </NavItem>
           </Nav>
@@ -1030,14 +1006,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             <Button color="warning" onClick={toggleModal}>
               Cancel
             </Button>
-            {activeTab === "organisation" ? (
-              <Button
-                color="primary"
-                type="button"
-                onClick={onNext}
-                disabled={validating}
-              >
-                {validating ? "Validating..." : "Go Next"}
+            {activeTab === "organisation" || activeTab === "address" ? (
+              <Button color="primary" type="button" onClick={onNext}>
+                Go Next
               </Button>
             ) : (
               <Button color="primary" type="submit">
