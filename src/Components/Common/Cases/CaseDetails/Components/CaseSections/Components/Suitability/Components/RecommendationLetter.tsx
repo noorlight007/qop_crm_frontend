@@ -54,8 +54,14 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
   const advisorEmail = s?.adviser?.email ?? "";
   const advisorPhone = s?.adviser?.phone ?? "";
   const companyName = s?.adviser?.company ?? "";
-  const companyAddress =
-    caseData?.company_address ?? "77 Marsh Wall\nLondon\nE14 9SH";
+  const companyAddress = s?.company_address ?? 
+  [
+    s?.address?.house_name_or_number,
+    s?.address?.city,
+    s?.address?.postcode
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const clientName = s?.applicant?.name;
   const jointApplicantNames = s?.joint_applicants || [];
@@ -76,25 +82,18 @@ const RecommendationLetter: React.FC<RecommendationLetterProps> = ({
       /\d{2}\/\d{2}\/\d{4}/,
     )?.[0] ?? "";
 
-  const fmtGBP = (val: any) =>
-    val
-      ? `£${Number(val).toLocaleString("en-GB", { minimumFractionDigits: 2 })}`
-      : null;
-
   const mortgageAmount = s?.loan_details?.mortgage_amount ?? "";
-  const monthlyRepayment = s?.loan_details?.monthly_repayment ?? "£657.81";
-  const arrangementFee = fmtGBP(caseData?.arrangement_fee) ?? "£X or N/A";
+  const monthlyRepayment = s?.loan_details?.monthly_repayment ?? "";
 
   const { house_number_or_name, city, post_code } = s?.applicant ?? {};
   const clientAddress = [house_number_or_name, city, post_code]
     .filter(Boolean)
     .join("\n");
-  const property = caseData?.property_details;
+  const property = s?.property_details;
 
   const propertyAddress = property
     ? `${property.house_name_or_number}, ${property.city}, ${property.postcode}`
     : "";
-  const additionalRecipients = caseData?.additional_recipients ?? "";
 
   // ══════════════════════════════════════════════════════════
   // LOCAL UI-ONLY STATES (dropdown open/close + edit toggles)

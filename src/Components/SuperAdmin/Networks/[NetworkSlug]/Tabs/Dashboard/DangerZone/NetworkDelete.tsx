@@ -18,7 +18,7 @@ const NetworkDelete: React.FC = () => {
   return (
     <div>
       <Row>
-        <Card className="shadow p-2">
+        <Card className="shadow-lg p-2">
           <CardHeader className="h3 text-danger">Danger Zone</CardHeader>
           <CardBody className="border-danger rounded-2 mb-4">
             <div className="d-flex justify-content-between align-items-center">

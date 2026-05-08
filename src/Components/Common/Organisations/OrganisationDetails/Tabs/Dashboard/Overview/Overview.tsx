@@ -13,7 +13,7 @@ const Overview: React.FC<FetchSingleOrganisationProps> = ({
           <LoadingGrow />
         </Card>
       ) : (
-        <Card className="shadow-sm px-3 pt-4">
+        <Card className="shadow-lg px-3 pt-4">
           <CardTitle>
             <h2>Overview</h2>
           </CardTitle>
