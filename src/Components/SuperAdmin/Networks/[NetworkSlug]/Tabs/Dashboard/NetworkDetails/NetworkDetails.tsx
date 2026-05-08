@@ -1,12 +1,9 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import {
-  useGetNetworkDetailsQuery,
-  useUpdateNetworkMutation,
-} from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
+import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkType";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";
-import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { Mail } from "react-feather";
 import {
@@ -24,12 +21,11 @@ import { Badge, Button, Card, CardBody, Col, Row } from "reactstrap";
 import UpdateNetworkDirectorInfoModal from "../Modals/UpdateNetworkDirectorInfoModal";
 import UpdateNetworkInfoModal from "../Modals/UpdateNetworkInfoModal";
 
-const NetworkDetails: React.FC = () => {
-  const params = useParams();
-  const slug = params?.networkslug;
-  const { data: getNetworkDetails, isLoading } = useGetNetworkDetailsQuery({
-    network_slug: slug,
-  });
+const NetworkDetails: React.FC<NetworkDetailsProps> = ({
+  networkData,
+  isLoading,
+  slug,
+}) => {
   const [updateNetwork, { isLoading: isUpdating }] = useUpdateNetworkMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDirectorModalOpen, setIsDirectorModalOpen] = useState(false);
@@ -132,7 +128,7 @@ const NetworkDetails: React.FC = () => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopyDomain = () => {
-    const url = `https://${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
+    const url = `https://${networkData?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
     navigator.clipboard
       .writeText(url)
       .then(() => {
@@ -155,7 +151,7 @@ const NetworkDetails: React.FC = () => {
   const [isEmailCopied, setIsEmailCopied] = useState(false);
 
   const handleCopyEmail = () => {
-    const email = getNetworkDetails?.network?.email;
+    const email = networkData?.network?.email;
     if (!email) return;
     navigator.clipboard
       .writeText(email)
@@ -179,7 +175,7 @@ const NetworkDetails: React.FC = () => {
   const [isDirectorEmailCopied, setIsDirectorEmailCopied] = useState(false);
 
   const handleCopyDirectorEmail = () => {
-    const email = getNetworkDetails?.user?.email;
+    const email = networkData?.user?.email;
     if (!email) return;
     navigator.clipboard
       .writeText(email)
@@ -266,7 +262,7 @@ const NetworkDetails: React.FC = () => {
                       >
                         <img
                           src={
-                            getNetworkDetails?.network?.logo ||
+                            networkData?.network?.logo ||
                             "/assets/images/network/logo.jpg"
                           }
                           alt="Logo"
@@ -305,15 +301,15 @@ const NetworkDetails: React.FC = () => {
                     </Col>
                     <Col className="text-white">
                       <h2 className="mb-1 fw-bold">
-                        {getNetworkDetails?.network?.name}
+                        {networkData?.network?.name}
                       </h2>
                       <div className="d-flex align-items-center gap-2 mb-2">
-                        {getNetworkDetails?.network?.subdomain && (
+                        {networkData?.network?.subdomain && (
                           <Badge className="bg-warning text-truncate d-flex gap-2 align-items-center">
                             <span className="d-flex align-items-center">
                               <FaGlobe className="me-1" />
                               <span style={{ paddingTop: "0.175rem" }}>
-                                {`${"https://"}${getNetworkDetails?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
+                                {`${"https://"}${networkData?.network?.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`}
                               </span>
                             </span>
                             <span
@@ -371,7 +367,7 @@ const NetworkDetails: React.FC = () => {
                         </div>
                         <div className="flex-grow-1">
                           <p className="small text-muted mb-1">Phone</p>
-                          {getNetworkDetails?.network?.primary_mobile ? (
+                          {networkData?.network?.primary_mobile ? (
                             <span
                               className="fw-500 text-dark text-decoration-none text-break"
                               style={{
@@ -386,7 +382,7 @@ const NetworkDetails: React.FC = () => {
                                 (e.currentTarget.style.color = "inherit")
                               }
                             >
-                              {getNetworkDetails?.network?.primary_mobile}
+                              {networkData?.network?.primary_mobile}
                             </span>
                           ) : (
                             <span className="text-muted">Not Available</span>
@@ -411,7 +407,7 @@ const NetworkDetails: React.FC = () => {
                         </div>
                         <div className="flex-grow-1" style={{ minWidth: 0 }}>
                           <p className="small text-muted mb-1">Email</p>
-                          {getNetworkDetails?.network?.email ? (
+                          {networkData?.network?.email ? (
                             <span
                               className="d-flex align-items-center gap-2"
                               style={{ minWidth: 0 }}
@@ -431,7 +427,7 @@ const NetworkDetails: React.FC = () => {
                                   (e.currentTarget.style.color = "inherit")
                                 }
                               >
-                                {getNetworkDetails?.network?.email}
+                                {networkData?.network?.email}
                               </span>
                               <span
                                 className=""
@@ -465,14 +461,14 @@ const NetworkDetails: React.FC = () => {
                         size={25}
                       />
                       <a
-                        href={getNetworkDetails?.network?.website}
+                        href={networkData?.network?.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-truncate text-decoration-none text-dark"
                         style={{ maxWidth: "200px" }}
-                        title={getNetworkDetails?.network?.website}
+                        title={networkData?.network?.website}
                       >
-                        {getNetworkDetails?.network?.website ??
+                        {networkData?.network?.website ??
                           "Website not provided"}
                       </a>
                     </Card>
@@ -484,7 +480,7 @@ const NetworkDetails: React.FC = () => {
                         size={25}
                       />
                       <div className="text-truncate">
-                        {getNetworkDetails?.network?.license_no ??
+                        {networkData?.network?.license_no ??
                           "License number not provided"}
                       </div>
                     </Card>
@@ -497,8 +493,8 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-secondary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.network?.other_contact ? (
-                        getNetworkDetails.network.other_contact
+                      {networkData?.network?.other_contact ? (
+                        networkData.network.other_contact
                       ) : (
                         <small className="text-muted text-truncate">
                           Secondary contact not provided
@@ -514,7 +510,7 @@ const NetworkDetails: React.FC = () => {
                       />
                       <small className="text-muted">
                         {formatDateAndTime(
-                          getNetworkDetails?.network?.created_at ?? "",
+                          networkData?.network?.created_at ?? "",
                         )}
                       </small>
                     </Card>
@@ -578,14 +574,14 @@ const NetworkDetails: React.FC = () => {
                 {/* Avatar section - positioned to overlap gradient */}
                 <div className="d-flex justify-content-center organisation-avatar-container">
                   <div className="position-relative">
-                    {getNetworkDetails?.user?.profile_image ? (
+                    {networkData?.user?.profile_image ? (
                       <div
                         className="position-relative rounded-circle"
                         style={{ width: 90, height: 90, overflow: "hidden" }}
                       >
                         <Image
-                          src={getNetworkDetails.user.profile_image}
-                          alt={getNetworkDetails?.user?.name ?? "Director"}
+                          src={networkData.user.profile_image}
+                          alt={networkData?.user?.name ?? "Director"}
                           width={90}
                           height={90}
                           className="rounded-circle organisation-avatar-img border border-2 border-secondary"
@@ -614,7 +610,7 @@ const NetworkDetails: React.FC = () => {
                         className="position-relative rounded-circle d-flex justify-content-center align-items-center text-white organisation-initials border border-2 border-secondary"
                         style={{ width: 90, height: 90, overflow: "hidden" }}
                       >
-                        {getNetworkDetails?.user?.name
+                        {networkData?.user?.name
                           ?.split(" ")
                           .map((n: any) => n[0])
                           .join("")
@@ -655,11 +651,11 @@ const NetworkDetails: React.FC = () => {
                 {/* Name and role */}
                 <div className="text-center mt-1 mb-3">
                   <h4 className="mb-2 fw-bold fs-4">
-                    {getNetworkDetails?.user?.name ?? "—"}
+                    {networkData?.user?.name ?? "—"}
                   </h4>
                   <Badge className="px-3 py-2 bg-light-primary fw-semibold rounded-pill">
                     <i className="fa fa-crown me-1" />
-                    {formatDirectorRoles(getNetworkDetails?.user?.roles)}
+                    Director
                   </Badge>
                 </div>
 
@@ -670,11 +666,10 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-primary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.user?.email ? (
+                      {networkData?.user?.email ? (
                         <>
                           <span className="me-2 text-truncate">
-                            {getNetworkDetails?.user?.email ??
-                              "Email not provided"}
+                            {networkData?.user?.email ?? "Email not provided"}
                           </span>
                           <span
                             onClick={handleCopyDirectorEmail}
@@ -700,15 +695,15 @@ const NetworkDetails: React.FC = () => {
                         className="me-2 bg-secondary p-1 rounded-1"
                         size={25}
                       />
-                      {getNetworkDetails?.user?.phone ? (
-                        getNetworkDetails.user.phone
+                      {networkData?.user?.phone ? (
+                        networkData.user.phone
                       ) : (
                         <small className="text-muted">Phone not provided</small>
                       )}
                     </Card>
                   </Col>
                   <Col sm="6">
-                    {getNetworkDetails?.user?.is_active ? (
+                    {networkData?.user?.is_active ? (
                       <Card className="bg-light-success p-2 d-flex align-items-center mb-2">
                         <FaShieldAlt
                           className="me-2 bg-success p-1 rounded-1"
@@ -736,15 +731,15 @@ const NetworkDetails: React.FC = () => {
       <UpdateNetworkInfoModal
         isOpen={isModalOpen}
         toggle={toggleUpdateModal}
-        slug={getNetworkDetails?.network?.slug}
-        networkData={getNetworkDetails}
+        slug={slug}
+        networkData={networkData}
       />
 
       <UpdateNetworkDirectorInfoModal
         isOpen={isDirectorModalOpen}
         toggle={toggleDirectorModal}
-        slug={getNetworkDetails?.network?.slug}
-        networkData={getNetworkDetails}
+        slug={slug}
+        networkData={networkData}
       />
     </>
   );

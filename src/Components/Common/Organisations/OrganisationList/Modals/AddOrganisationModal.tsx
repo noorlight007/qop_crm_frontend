@@ -2,9 +2,9 @@ import { useAddOrganisationMutation } from "@/Redux/Reducers/Common/Organisation
 import {
   AddOrganisationModalProps,
   AddOrganisationProps,
-  UserDataProps,
 } from "@/Types/Common/Organisations/OrganisationsTypes";
-import { useRef, useState } from "react";
+import { countries } from "@/utils/Countries";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Button,
@@ -12,6 +12,7 @@ import {
   Form,
   FormGroup,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -86,6 +87,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       website: "",
       license_no: "",
     },
+    address: {
+      postcode: "",
+      house_name_or_number: "",
+      address_line_1: "",
+      city: "",
+      country: "",
+    },
     user: {
       email: "",
       phone: "",
@@ -101,7 +109,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
   const [addOrganisation, { isLoading }] = useAddOrganisationMutation();
 
   // Handle text input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
 
     // Special handling for subdomain: allow lowercase letters, numbers and hyphen; show specific validation messages
@@ -131,6 +141,25 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
       return;
     }
 
+    const addressFields = new Set([
+      "postcode",
+      "house_name_or_number",
+      "address_line_1",
+      "city",
+      "country",
+    ]);
+
+    if (addressFields.has(name)) {
+      setFormData((prevState) => ({
+        ...prevState,
+        address: {
+          ...(prevState.address as any),
+          [name]: value,
+        },
+      }));
+      return;
+    }
+
     setFormData((prevState) => ({
       ...prevState,
       organization: {
@@ -149,7 +178,7 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     setFormData((prevState) => ({
       ...prevState,
       user: {
-        ...(prevState.user as UserDataProps),
+        ...(prevState.user as any),
         [name]: fieldValue,
       },
     }));
@@ -157,13 +186,21 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
 
   // Tab state
   const [activeTab, setActiveTab] = useState<string>("organisation");
-  // API validation state (used when user clicks "Go Next")
-  const [validating, setValidating] = useState(false);
   const [orgValidated, setOrgValidated] = useState(false);
+  const [addressValidated, setAddressValidated] = useState(false);
   // Local validation message for subdomain (client-side only)
   const [subdomainError, setSubdomainError] = useState<string | null>(null);
   // form ref for native validity/reporting
   const formRef = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setActiveTab("organisation");
+    setApiErrors({});
+    setOrgValidated(false);
+    setAddressValidated(false);
+    setSubdomainError(null);
+  }, [isOpen]);
   const toggleTab = (tab: string) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -207,66 +244,82 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     return !!(name && subdomain && primary && email && subdomainValid);
   };
 
+  const validateAddress = () => {
+    const postcode = ((formData as any).address?.postcode || "")
+      .toString()
+      .trim();
+    const house = ((formData as any).address?.house_name_or_number || "")
+      .toString()
+      .trim();
+    const addressLine1 = ((formData as any).address?.address_line_1 || "")
+      .toString()
+      .trim();
+    const city = ((formData as any).address?.city || "").toString().trim();
+
+    return !!(postcode && house && addressLine1 && city);
+  };
+
   const onNext = async () => {
-    if (!validateOrganisation()) {
-      // show native browser validation on the first invalid organisation field
-      if (formRef.current) {
-        const ids = ["name", "subdomain", "primary_mobile", "email"];
-        for (const id of ids) {
-          const el = formRef.current.querySelector<HTMLInputElement>(`#${id}`);
-          if (el && !el.checkValidity()) {
-            el.reportValidity();
-            el.focus();
-            break;
+    if (activeTab === "organisation") {
+      if (!validateOrganisation()) {
+        if (formRef.current) {
+          const ids = ["name", "subdomain", "primary_mobile", "email"];
+          for (const id of ids) {
+            const el = formRef.current.querySelector<HTMLInputElement>(
+              `#${id}`,
+            );
+            if (el && !el.checkValidity()) {
+              el.reportValidity();
+              el.focus();
+              break;
+            }
           }
         }
+        return;
       }
+
+      // Only client-side validation is required to move to the next step.
+      // Server-side validation (e.g. subdomain uniqueness) happens on final submit.
+      setApiErrors({});
+      setOrgValidated(true);
+      toggleTab("address");
       return;
     }
 
-    // Call API to validate organisation fields before moving to user tab
-    setValidating(true);
-    try {
-      const payload = { organization: { ...(formData.organization as any) } };
-      const res = await addOrganisation(payload).unwrap();
-      // Consider success as validation success (server did not return field errors)
-      setApiErrors({});
-      setOrgValidated(true);
-      toast.success("Organisation validated");
-      toggleTab("user");
-    } catch (error: any) {
-      console.error("Organisation validation error:", error);
-      const source =
-        error?.data && typeof error.data === "object" ? error.data : error;
-      const flattened = flattenErrors(source);
-      if (flattened.length) {
-        const map: Record<string, string[]> = {};
-        flattened.forEach((entry) => {
-          const field = entry.field || "error";
-          map[field] = map[field]
-            ? [...map[field], ...entry.messages]
-            : [...entry.messages];
-          const body = entry.messages.join(", ");
-          // toast.error(body);
-        });
-        setApiErrors(map);
-
-        const firstField = flattened[0]?.field || Object.keys(map)[0];
-        if (firstField && firstField.startsWith("user")) {
-          toggleTab("user");
-        } else {
-          toggleTab("organisation");
+    if (activeTab === "address") {
+      if (!validateAddress()) {
+        if (formRef.current) {
+          const ids = [
+            "postcode",
+            "house_name_or_number",
+            "address_line_1",
+            "city",
+          ];
+          for (const id of ids) {
+            const el = formRef.current.querySelector<HTMLInputElement>(
+              `#${id}`,
+            );
+            if (el && !el.checkValidity()) {
+              el.reportValidity();
+              el.focus();
+              break;
+            }
+          }
         }
-      } else {
-        const msg = getErrorMessage(error) || "Validation failed";
-        // toast.error(msg);
+        return;
       }
-    } finally {
-      setValidating(false);
+
+      setAddressValidated(true);
+      toggleTab("user");
+      return;
     }
   };
 
   const onBack = () => {
+    if (activeTab === "user") {
+      toggleTab("address");
+      return;
+    }
     toggleTab("organisation");
   };
 
@@ -361,6 +414,13 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             website: "",
             license_no: "",
           },
+          address: {
+            postcode: "",
+            house_name_or_number: "",
+            address_line_1: "",
+            city: "",
+            country: "",
+          },
           user: {
             email: "",
             phone: "",
@@ -411,6 +471,10 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
     }
   };
 
+  const handlePostcodeLookup = () => {
+    toast.info("Postcode lookup is not available yet.");
+  };
+
   return (
     <Modal isOpen={isOpen} toggle={toggleModal} size="lg" centered>
       <ModalHeader toggle={toggleModal}>
@@ -426,17 +490,41 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "organisation" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Organisation
+                Information
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                active={activeTab === "address"}
+                onClick={() => {
+                  if (orgValidated) {
+                    toggleTab("address");
+                  } else {
+                    onNext();
+                  }
+                }}
+                style={{ cursor: "pointer" }}
+                className={`${activeTab === "address" ? "bg-primary" : "text-primary border-primary"}`}
+              >
+                Address
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
                 active={activeTab === "user"}
-                onClick={onNext}
+                onClick={() => {
+                  if (activeTab === "address") {
+                    onNext();
+                  } else if (orgValidated && addressValidated) {
+                    toggleTab("user");
+                  } else {
+                    onNext();
+                  }
+                }}
                 style={{ cursor: "pointer" }}
                 className={`${activeTab === "user" ? "bg-primary" : "text-primary border-primary"}`}
               >
-                Organisation Director
+                Director
               </NavLink>
             </NavItem>
           </Nav>
@@ -642,7 +730,134 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
                 </Col>
               </Row>
             </TabPane>
+            {/* Address Tab */}
+            <TabPane tabId="address">
+              <Row>
+                <Col md={12} xs={12}>
+                  <FormGroup>
+                    <Label for="postcode">
+                      Postcode<span className="text-danger">*</span>
+                    </Label>
+                    <InputGroup>
+                      <Input
+                        type="text"
+                        id="postcode"
+                        name="postcode"
+                        value={formData.address.postcode}
+                        onChange={handleChange}
+                        placeholder="Enter postcode"
+                        className="rounded-end-0"
+                        required
+                      />
+                      <Button
+                        color="info"
+                        type="button"
+                        className="text-nowrap rounded-start-0"
+                        onClick={handlePostcodeLookup}
+                      >
+                        Lookup
+                      </Button>
+                    </InputGroup>
+                    {apiErrors["address.postcode"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.postcode"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="house_name_or_number">
+                      House Name/Number<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="house_name_or_number"
+                      name="house_name_or_number"
+                      value={formData.address.house_name_or_number}
+                      onChange={handleChange}
+                      placeholder="Enter house name or number"
+                      required
+                    />
+                    {apiErrors["address.house_name_or_number"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.house_name_or_number"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="address_line_1">
+                      Address Line 1<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="address_line_1"
+                      name="address_line_1"
+                      value={formData.address.address_line_1}
+                      onChange={handleChange}
+                      placeholder="Enter address line 1"
+                      required
+                    />
+                    {apiErrors["address.address_line_1"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.address_line_1"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="city">
+                      City<span className="text-danger">*</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      id="city"
+                      name="city"
+                      value={formData.address.city}
+                      onChange={handleChange}
+                      placeholder="Enter city"
+                      required
+                    />
+                    {apiErrors["address.city"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.city"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
 
+                <Col md={6} xs={12}>
+                  <FormGroup>
+                    <Label for="country">Country</Label>
+                    <Input
+                      type="select"
+                      id="country"
+                      name="country"
+                      value={formData.address.country}
+                      onChange={handleChange}
+                      placeholder="Enter country"
+                    >
+                      <option value="">Select...</option>
+                      {countries.map((c) => (
+                        <option key={c.code} value={c.name}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </Input>
+                    {apiErrors["address.country"] ? (
+                      <div className="text-danger small mt-1">
+                        {apiErrors["address.country"].join(", ")}
+                      </div>
+                    ) : null}
+                  </FormGroup>
+                </Col>
+              </Row>
+            </TabPane>
+
+            {/* User Tab */}
             <TabPane tabId="user">
               <Row>
                 <Col md={6} xs={12}>
@@ -791,14 +1006,9 @@ const AddOrganisationModal: React.FC<AddOrganisationModalProps> = ({
             <Button color="warning" onClick={toggleModal}>
               Cancel
             </Button>
-            {activeTab === "organisation" ? (
-              <Button
-                color="primary"
-                type="button"
-                onClick={onNext}
-                disabled={validating}
-              >
-                {validating ? "Validating..." : "Go Next"}
+            {activeTab === "organisation" || activeTab === "address" ? (
+              <Button color="primary" type="button" onClick={onNext}>
+                Go Next
               </Button>
             ) : (
               <Button color="primary" type="submit">

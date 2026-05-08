@@ -26,6 +26,7 @@ import OrgAdminsTab from "./Tabs/Admins/OrgAdminsTab";
 import OrgAdvisersTab from "./Tabs/Advisers/OrgAdvisersTab";
 import OrgApplicantsTab from "./Tabs/Applicants/OrgApplicantsTab";
 import OrgCases from "./Tabs/Cases/OrgCases";
+import Address from "./Tabs/Dashboard/Address/Address";
 import OrgLendersChart from "./Tabs/Dashboard/Charts/LendersChart/LendersChart";
 import OrgMortgagesChart from "./Tabs/Dashboard/Charts/MortgagesChart/MortgagesChart";
 import DangerZone from "./Tabs/Dashboard/DangerZone/DangerZone";
@@ -158,6 +159,14 @@ const OrganisationDetails: React.FC = () => {
                       </Col>
                       <Col lg="6" md="12">
                         <OrganisationDirectorInfo
+                          singleOrgInfo={singleOrgInfo}
+                          isLoading={isLoading}
+                        />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="12">
+                        <Address
                           singleOrgInfo={singleOrgInfo}
                           isLoading={isLoading}
                         />
