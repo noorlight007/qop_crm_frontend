@@ -61,7 +61,7 @@ const About: React.FC = () => {
         {appearanceData?.about ? (
           appearanceData.about
         ) : (
-          <p className="text-muted">No about information available.</p>
+          <p className="text-muted text-center">No about information available.</p>
         )}
       </CardBody>
 

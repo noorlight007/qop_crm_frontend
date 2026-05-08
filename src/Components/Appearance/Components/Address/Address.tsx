@@ -1,10 +1,17 @@
-import { Card } from "reactstrap";
+import { Edit } from "react-feather";
+import { Button, Card, CardBody, CardHeader } from "reactstrap";
 
 const Address: React.FC = () => {
   return (
     <Card>
-      {/* JSX here */}
-      address
+      <CardHeader className="d-flex justify-content-between align-items-center">
+        <h5 className="card-title">Address</h5>
+        <Button color="primary" size="sm">
+          <Edit size={14} className="me-1" />
+          Edit
+        </Button>
+      </CardHeader>
+      <CardBody></CardBody>
     </Card>
   );
 };

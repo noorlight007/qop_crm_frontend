@@ -71,9 +71,9 @@ const Profile = () => {
         >
           <ul className="profile-body">
             <li className="d-flex">
-              <Link href="/profile-settings" className="d-flex gap-2">
+              <Link href="/profile" className="d-flex gap-2">
                 <i className="fa-solid fa-user-gear"></i>
-                Profile & Settings
+                Profile
               </Link>
             </li>
             {session?.user?.role === "SUPER_ADMIN" ||
