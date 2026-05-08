@@ -2,7 +2,7 @@ import { useAddNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/Netw
 import {
   AddNetworkModalProps,
   NetworkFormData,
-} from "@/Types/SuperAdmin/Networks/NetworkType";
+} from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { countries } from "@/utils/Countries";
 import { validateAndSanitizePhone } from "@/utils/inputHandlers";
 import { useRef, useState } from "react";

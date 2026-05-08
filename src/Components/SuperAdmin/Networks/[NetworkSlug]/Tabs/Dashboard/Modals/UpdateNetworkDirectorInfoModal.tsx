@@ -1,5 +1,5 @@
 import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkType";
+import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
@@ -51,14 +51,12 @@ const UpdateNetworkDirectorInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
   useEffect(() => {
     if (!networkData) return;
     const original = {
-      title: networkData?.user?.title ?? networkData?.title ?? null,
-      first_name:
-        networkData?.user?.first_name ?? networkData?.first_name ?? "",
-      middle_name:
-        networkData?.user?.middle_name ?? networkData?.middle_name ?? "",
-      last_name: networkData?.user?.last_name ?? networkData?.last_name ?? "",
-      email: networkData?.user?.email ?? networkData?.email ?? "",
-      phone: networkData?.user?.phone ?? networkData?.phone ?? "",
+      title: networkData?.user?.title ?? null,
+      first_name: networkData?.user?.first_name ?? "",
+      middle_name: networkData?.user?.middle_name ?? "",
+      last_name: networkData?.user?.last_name ?? "",
+      email: networkData?.user?.email ?? "",
+      phone: networkData?.user?.phone ?? "",
     } as Record<string, string | null>;
     originalRef.current = original;
     setForm({ user: { ...original } as any });
@@ -101,7 +99,7 @@ const UpdateNetworkDirectorInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
         return;
       }
 
-      const targetSlug = slug ?? networkData?.network?.slug;
+      const targetSlug = slug;
       if (!targetSlug) {
         toast.error("Network identifier missing");
         return;

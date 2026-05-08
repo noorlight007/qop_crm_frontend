@@ -1,5 +1,5 @@
 import { useDeleteNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { DeleteNetworkModalProps } from "@/Types/SuperAdmin/Networks/NetworkType";
+import { DeleteNetworkModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { useRouter } from "next/navigation";
 
 import { toast } from "react-toastify";
@@ -9,6 +9,7 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
   isOpen,
   toggle,
   networkInfo,
+  slug,
 }) => {
   const router = useRouter();
   // rtk hooks
@@ -16,7 +17,7 @@ const DeleteNetworkModal: React.FC<DeleteNetworkModalProps> = ({
 
   const handleDelete = async () => {
     try {
-      const network_slug = networkInfo?.network?.slug;
+      const network_slug = slug;
       const response = await deleteNetwork({ network_slug });
       toggle();
       if (response.data === null) {

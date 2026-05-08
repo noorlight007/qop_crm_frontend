@@ -1,5 +1,6 @@
 import { useGetNetworkListQuery } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { Network } from "@/Types/SuperAdmin/Networks/NetworkType";
+
+import { Networktype } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import Image from "next/image";
 import Link from "next/link";
@@ -73,7 +74,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
     null,
   );
 
-  const handleCopyDomain = (network: Network) => {
+  const handleCopyDomain = (network: Networktype) => {
     const url = `https://${network.subdomain}${process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? ""}`;
     navigator.clipboard
       .writeText(url)
@@ -96,7 +97,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
 
   const [isEmailCopied, setIsEmailCopied] = useState<string | null>(null);
 
-  const handleCopyEmail = (network: Network) => {
+  const handleCopyEmail = (network: Networktype) => {
     const email = network?.email;
     if (!email) return;
     navigator.clipboard
@@ -198,7 +199,7 @@ const NetworkList: React.FC<NetworkListProps> = ({ maxItems }) => {
               </div>
             </Col>
           ) : (
-            networkResults.map((network: Network) => (
+            networkResults.map((network: Networktype) => (
               <Col xs="12" lg="6" xxl="4" className="mb-4" key={network.slug}>
                 <Card
                   className="h-100 shadow-sm border-0"

@@ -1,5 +1,5 @@
 import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkType";
+import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { countries } from "@/utils/Countries";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";

@@ -1,6 +1,6 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
 import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkType";
+import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { formatDateAndTime } from "@/utils/dateAndTimeFormatter";
 import formatChoiceFieldValue from "@/utils/formatters";
 import Image from "next/image";

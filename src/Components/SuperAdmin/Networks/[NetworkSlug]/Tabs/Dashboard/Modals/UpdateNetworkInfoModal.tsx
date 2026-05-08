@@ -1,5 +1,5 @@
 import { useUpdateNetworkMutation } from "@/Redux/Reducers/SuperAdmin/Networks/NetworksApi";
-import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkType";
+import { UpdateNetworkInfoModalProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -52,28 +52,16 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
     if (networkData && isOpen) {
       setFormData({
         network: {
-          name: networkData?.network?.name ?? networkData?.name ?? "",
-          email: networkData?.network?.email ?? networkData?.email ?? "",
-          primary_mobile:
-            networkData?.network?.primary_mobile ??
-            networkData?.primary_mobile ??
-            "",
-          other_contact:
-            networkData?.network?.other_contact ??
-            networkData?.other_contact ??
-            "",
-          website: networkData?.network?.website ?? networkData?.website ?? "",
-          contact_person:
-            networkData?.network?.contact_person ??
-            networkData?.contact_person ??
-            "",
-          license_no:
-            networkData?.network?.license_no ??
-            networkData?.license_no ??
-            "",
+          name: networkData?.network?.name ?? "",
+          email: networkData?.network?.email ?? "",
+          primary_mobile: networkData?.network?.primary_mobile ?? "",
+          other_contact: networkData?.network?.other_contact ?? "",
+          website: networkData?.network?.website ?? "",
+          contact_person: networkData?.network?.contact_person ?? "",
+          license_no: networkData?.network?.license_no ?? "",
         },
       });
-      setOldName(networkData?.network?.name ?? networkData?.name ?? "");
+      setOldName(networkData?.network?.name ?? "");
     }
   }, [networkData, isOpen]);
 
@@ -104,25 +92,13 @@ const UpdateNetworkInfoModal: React.FC<UpdateNetworkInfoModalProps> = ({
 
       // Build original network values to compare against
       const originalNetwork = {
-        name: networkData?.network?.name ?? networkData?.name ?? "",
-        email: networkData?.network?.email ?? networkData?.email ?? "",
-        primary_mobile:
-          networkData?.network?.primary_mobile ??
-          networkData?.primary_mobile ??
-          "",
-        other_contact:
-          networkData?.network?.other_contact ??
-          networkData?.other_contact ??
-          "",
-        website: networkData?.network?.website ?? networkData?.website ?? "",
-        contact_person:
-          networkData?.network?.contact_person ??
-          networkData?.contact_person ??
-          "",
-        license_no:
-          networkData?.network?.license_no ??
-          networkData?.license_no ??
-          "",
+        name: networkData?.network?.name ?? "",
+        email: networkData?.network?.email ?? "",
+        primary_mobile: networkData?.network?.primary_mobile ?? "",
+        other_contact: networkData?.network?.other_contact ?? "",
+        website: networkData?.network?.website ?? "",
+        contact_person: networkData?.network?.contact_person ?? "",
+        license_no: networkData?.network?.license_no ?? "",
       } as Record<string, string>;
 
       // Append only changed text fields

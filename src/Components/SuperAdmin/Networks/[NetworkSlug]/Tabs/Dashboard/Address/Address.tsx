@@ -1,5 +1,5 @@
 import LoadingGrow from "@/CommonComponent/LoadingGrow/LoadingGrow";
-import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkType";
+import { NetworkDetailsProps } from "@/Types/SuperAdmin/Networks/NetworkTypes";
 import { countries } from "@/utils/Countries";
 import { useState } from "react";
 import { Edit } from "react-feather";
