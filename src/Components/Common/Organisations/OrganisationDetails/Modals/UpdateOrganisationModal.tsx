@@ -1,5 +1,6 @@
 import { useUpdateOrganisationMutation } from "@/Redux/Reducers/Common/Organisations/OrganisationDetails/SingleOrganisationApi";
 import { UpdateOrganisationModalProps } from "@/Types/Common/Organisations/OrganisationsTypes";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,6 +25,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
   slug,
   organisationData,
 }) => {
+  const { data: session } = useSession();
   const router = useRouter();
   const [formData, setFormData] = useState({
     organization: {
@@ -31,7 +33,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
       email: "",
       primary_mobile: "",
       other_contact: "",
-      website: "",
+      subdomain: "",
       contact_person: "",
       license_no: "",
     },
@@ -66,9 +68,9 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
             organisationData?.organization?.other_contact ??
             organisationData?.other_contact ??
             "",
-          website:
-            organisationData?.organization?.website ??
-            organisationData?.website ??
+          subdomain:
+            organisationData?.organization?.subdomain ??
+            organisationData?.subdomain ??
             "",
           contact_person:
             organisationData?.organization?.contact_person ??
@@ -127,9 +129,9 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
           organisationData?.organization?.other_contact ??
           organisationData?.other_contact ??
           "",
-        website:
-          organisationData?.organization?.website ??
-          organisationData?.website ??
+        subdomain:
+          organisationData?.organization?.subdomain ??
+          organisationData?.subdomain ??
           "",
         contact_person:
           organisationData?.organization?.contact_person ??
@@ -265,10 +267,47 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                   value={formData.organization.name}
                   onChange={handleInputChange}
                   required
+                  readOnly={session?.user?.role !== "SUPER_ADMIN"}
+                  disabled={session?.user?.role !== "SUPER_ADMIN"}
                 />
+                {session?.user?.role !== "SUPER_ADMIN" && (
+                  <div
+                    className="text-warning mt-1 opacity-75"
+                    style={{ fontSize: "10px" }}
+                  >
+                    For name changes, please contact administrator.
+                  </div>
+                )}
                 {apiErrors["organization.name"] ? (
                   <div className="text-danger small mt-1">
                     {apiErrors["organization.name"].join(", ")}
+                  </div>
+                ) : null}
+              </FormGroup>
+            </Col>
+            <Col md="6">
+              <FormGroup>
+                <Label for="subdomain">Subdomain</Label>
+                <Input
+                  type="url"
+                  id="subdomain"
+                  name="subdomain"
+                  value={formData.organization.subdomain}
+                  onChange={handleInputChange}
+                  readOnly={session?.user?.role !== "SUPER_ADMIN"}
+                  disabled={session?.user?.role !== "SUPER_ADMIN"}
+                />
+                {session?.user?.role !== "SUPER_ADMIN" && (
+                  <div
+                    className="text-warning mt-1 opacity-75"
+                    style={{ fontSize: "10px" }}
+                  >
+                    For subdomain changes, please contact administrator.
+                  </div>
+                )}
+                {apiErrors["organization.subdomain"] ? (
+                  <div className="text-danger small mt-1">
+                    {apiErrors["organization.subdomain"].join(", ")}
                   </div>
                 ) : null}
               </FormGroup>
@@ -308,28 +347,7 @@ const UpdateOrganisationModal: React.FC<UpdateOrganisationModalProps> = ({
                 ) : null}
               </FormGroup>
             </Col>
-            <Col md="6">
-              <FormGroup>
-                <Label for="website">
-                  Website{" "}
-                  <span style={{ fontSize: "0.7rem", color: "#f39c12" }}>
-                    (Example: https://yourdomain.com)
-                  </span>
-                </Label>
-                <Input
-                  type="url"
-                  id="website"
-                  name="website"
-                  value={formData.organization.website}
-                  onChange={handleInputChange}
-                />
-                {apiErrors["organization.website"] ? (
-                  <div className="text-danger small mt-1">
-                    {apiErrors["organization.website"].join(", ")}
-                  </div>
-                ) : null}
-              </FormGroup>
-            </Col>
+
             <Col md="6">
               <FormGroup>
                 <Label for="contact_person">Contact Person</Label>

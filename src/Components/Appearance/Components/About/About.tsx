@@ -3,7 +3,7 @@ import {
   useUpdateAppearanceMutation,
 } from "@/Redux/Reducers/Appearance/AppearanceApi";
 import { useEffect, useState } from "react";
-import { PlusCircle } from "react-feather";
+import { Edit } from "react-feather";
 import {
   Button,
   Card,
@@ -49,11 +49,12 @@ const About: React.FC = () => {
         <h3>About</h3>
         <Button
           color="primary"
+          size="sm"
           disabled={isUpdatingAbout}
           onClick={toggleModal}
         >
-          <PlusCircle className="me-1" size={18} />
-          Update About Info
+          <Edit className="me-1" size={14} />
+          Edit
         </Button>
       </CardHeader>
       <CardBody>
