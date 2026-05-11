@@ -46,7 +46,7 @@ const About: React.FC = () => {
   return (
     <Card>
       <CardHeader className="d-flex justify-content-between align-items-center">
-        <h3>About</h3>
+        <h4>About</h4>
         <Button
           color="primary"
           size="sm"
