@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { TbBuilding, TbSettings } from "react-icons/tb";
+import { TbBrush, TbBuilding, TbBuildingSkyscraper, TbSettings } from "react-icons/tb";
 
 const Profile = () => {
   const [show, setShow] = useState(false);
@@ -77,22 +77,19 @@ const Profile = () => {
               </Link>
             </li>
             {session?.user?.role === "SUPER_ADMIN" ||
-            (session?.user?.is_network &&
-              (session?.user?.role === "DIRECTOR" ||
-                session?.user?.role === "COMPLIANCE")) ||
-            (!session?.user?.is_network &&
-              session?.user?.role === "DIRECTOR") ? (
+            session?.user?.role === "DIRECTOR" ||
+            session?.user?.role === "COMPLIANCE" ? (
               <>
                 <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
                   <Link href="/appearance" className="d-flex gap-2">
-                    <TbSettings />
+                    <TbBrush />
                     Appearance
                   </Link>
                 </li>
 
                 <li className="d-flex gap-2" style={{ cursor: "pointer" }}>
                   <Link href="/company-info" className="d-flex gap-2">
-                    <TbBuilding />
+                    <TbBuildingSkyscraper />
                     Company Info
                   </Link>
                 </li>
